@@ -93,6 +93,7 @@
     <member refid="MaaController_8h_1a22203468df2e11d45892a524d48404a4" kind="typedef"><name>MaaCustomControllerCallbacks</name></member>
     <member refid="MaaController_8h_1a7b3f6215fdc0ae3e8beeb51a3dd75e16" kind="function"><name>MaaAdbControllerCreate</name></member>
     <member refid="MaaController_8h_1a0a0532a08e57b6b8b23282b51f6431a0" kind="function"><name>MaaWin32ControllerCreate</name></member>
+    <member refid="MaaController_8h_1af8ff627f00593364f9654343461af20c" kind="function"><name>MaaMacOSControllerCreate</name></member>
     <member refid="MaaController_8h_1a2ff145414faed5fdeedc36e97729677e" kind="function"><name>MaaCustomControllerCreate</name></member>
     <member refid="MaaController_8h_1a1ea4c3aa0b3bcb39d35dc13cdde9a044" kind="function"><name>MaaDbgControllerCreate</name></member>
     <member refid="MaaController_8h_1af9b278b0a220ea72ff4ce564a055ff52" kind="function"><name>MaaPlayCoverControllerCreate</name></member>
@@ -239,6 +240,11 @@
     <member refid="MaaDef_8h_1abb8a086b671038580f7acc36248d4163" kind="define"><name>MaaWin32InputMethod_PostMessageWithCursorPos</name></member>
     <member refid="MaaDef_8h_1afa5aca8f812f6146ef66b2a8db0da7a2" kind="define"><name>MaaWin32InputMethod_SendMessageWithWindowPos</name></member>
     <member refid="MaaDef_8h_1a923e6bae66dabe3f86e618af84905cac" kind="define"><name>MaaWin32InputMethod_PostMessageWithWindowPos</name></member>
+    <member refid="MaaDef_8h_1ae8d4518e6db7d5e7b17d81c2cc95a2ec" kind="define"><name>MaaMacOSScreencapMethod_None</name></member>
+    <member refid="MaaDef_8h_1ae0f15a02730f2a664e62e13573ff3aad" kind="define"><name>MaaMacOSScreencapMethod_ScreenCaptureKit</name></member>
+    <member refid="MaaDef_8h_1af14dd44b20e4b0ce26c8e48c611236b4" kind="define"><name>MaaMacOSInputMethod_None</name></member>
+    <member refid="MaaDef_8h_1aeeb5f700b6826581d1d3ec7b2271561d" kind="define"><name>MaaMacOSInputMethod_GlobalEvent</name></member>
+    <member refid="MaaDef_8h_1a54494f426182d7a0b0d7ac5caca2620d" kind="define"><name>MaaMacOSInputMethod_PostToPid</name></member>
     <member refid="MaaDef_8h_1ab67ca0fce1cf517080804b1cae4be9b6" kind="define"><name>MaaDbgControllerType_None</name></member>
     <member refid="MaaDef_8h_1a6a9179147858e053948175909352e60d" kind="define"><name>MaaDbgControllerType_CarouselImage</name></member>
     <member refid="MaaDef_8h_1ad5fbfc89110fdbfd5f535c0a4557b809" kind="define"><name>MaaDbgControllerType_ReplayRecording</name></member>
@@ -358,6 +364,8 @@
     <member refid="MaaDef_8h_1aa02386b09246fa0704ec371f80bb661f" kind="typedef"><name>MaaAdbInputMethod</name></member>
     <member refid="MaaDef_8h_1a23833339ba6406d680688350d27d37b3" kind="typedef"><name>MaaWin32ScreencapMethod</name></member>
     <member refid="MaaDef_8h_1a29af4457ff72b57b157a1d58d6d28878" kind="typedef"><name>MaaWin32InputMethod</name></member>
+    <member refid="MaaDef_8h_1ac2226415cbf081d3ce6fde4b3a5fe205" kind="typedef"><name>MaaMacOSScreencapMethod</name></member>
+    <member refid="MaaDef_8h_1a428e432bbc782281526f5bd272c38e65" kind="typedef"><name>MaaMacOSInputMethod</name></member>
     <member refid="MaaDef_8h_1a7a7491d55c50840ccb1891ba9b7740c4" kind="typedef"><name>MaaDbgControllerType</name></member>
     <member refid="MaaDef_8h_1a53a0d2c454370893abfbaf100b48dc0d" kind="typedef"><name>MaaGamepadType</name></member>
     <member refid="MaaDef_8h_1abb0b4cd931aa02d962781dbe496df3cd" kind="typedef"><name>MaaGamepadButton</name></member>
@@ -492,10 +500,19 @@
   <compound refid="MaaToolkitAPI_8h" kind="file"><name>MaaToolkitAPI.h</name>
   </compound>
   <compound refid="MaaToolkitDef_8h" kind="file"><name>MaaToolkitDef.h</name>
+    <member refid="MaaToolkitDef_8h_1a2906320994f3cc516770fdaeb456e72f" kind="enum"><name>MaaMacOSPermissionEnum</name></member>
+    <member refid="MaaToolkitDef_8h_1a2906320994f3cc516770fdaeb456e72fac5e10e2877bb53fe1a2af951c6e4129f" kind="enumvalue"><name>MaaMacOSPermissionScreenCapture</name></member>
+    <member refid="MaaToolkitDef_8h_1a2906320994f3cc516770fdaeb456e72fa5520a37ee0a329600feaa1a09accd3e4" kind="enumvalue"><name>MaaMacOSPermissionAccessibility</name></member>
     <member refid="MaaToolkitDef_8h_1a4ed920f548223ae34817b720532407cf" kind="typedef"><name>MaaToolkitAdbDevice</name></member>
     <member refid="MaaToolkitDef_8h_1a61bc7b4be1b04be75314fe7d088b0bc6" kind="typedef"><name>MaaToolkitAdbDeviceList</name></member>
     <member refid="MaaToolkitDef_8h_1a5d8743988770806277c247ba9e84040a" kind="typedef"><name>MaaToolkitDesktopWindow</name></member>
     <member refid="MaaToolkitDef_8h_1aaf164274a2c0089edb67f33e26719ff0" kind="typedef"><name>MaaToolkitDesktopWindowList</name></member>
+    <member refid="MaaToolkitDef_8h_1acdcb49d9222ccceaeedb28b7fcdd8fe8" kind="typedef"><name>MaaMacOSPermission</name></member>
+  </compound>
+  <compound refid="MaaToolkitMacOS_8h" kind="file"><name>MaaToolkitMacOS.h</name>
+    <member refid="MaaToolkitMacOS_8h_1ae471356de642c11ad8be5aacc0c6b6be" kind="function"><name>MaaToolkitMacOSCheckPermission</name></member>
+    <member refid="MaaToolkitMacOS_8h_1ac7333b3798dd3c44bd9a58f1a078aaa6" kind="function"><name>MaaToolkitMacOSRequestPermission</name></member>
+    <member refid="MaaToolkitMacOS_8h_1a383cc89f8762e8c7e8e5cb0fc7598bbb" kind="function"><name>MaaToolkitMacOSRevealPermissionSettings</name></member>
   </compound>
   <compound refid="group__MaaMsg" kind="group"><name>MaaMsg</name>
     <member refid="group__MaaMsg_1ga7297c67f0f81b33f8811e1405a24a437" kind="define"><name>MaaMsg_Resource_Loading_Starting</name></member>
@@ -545,6 +562,8 @@
   <compound refid="dir_370cd1367c21b1a87c5c9c6803b8d0b9" kind="dir"><name>include/MaaFramework</name>
   </compound>
   <compound refid="dir_229d1428d76e394aeaec36b75a5d5699" kind="dir"><name>include/MaaToolkit</name>
+  </compound>
+  <compound refid="dir_0daaf0002ac5c3ef7d4a81eb57e45b7c" kind="dir"><name>include/MaaToolkit/MacOS</name>
   </compound>
   <compound refid="dir_d3f066ca4d2612436eb7c36c3816b59b" kind="dir"><name>include/MaaFramework/Utility</name>
   </compound>

@@ -146,7 +146,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="20" column="26" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="20" declcolumn="26"/>
+        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="22" column="26" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="22" declcolumn="26"/>
       </memberdef>
       <memberdef kind="function" id="MaaToolkitDesktopWindow_8h_1aaa1d8918fd09a42fdd9fadf562200040" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
@@ -163,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="21" column="32" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="21" declcolumn="32"/>
+        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="26" column="32" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="26" declcolumn="32"/>
       </memberdef>
       <memberdef kind="function" id="MaaToolkitDesktopWindow_8h_1ad41c0d4f44b0ea74def23a1bdf82811c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
@@ -180,7 +180,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="22" column="32" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="22" declcolumn="32"/>
+        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="30" column="32" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="30" declcolumn="32"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

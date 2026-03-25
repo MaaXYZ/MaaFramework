@@ -7,6 +7,7 @@
     <includedby refid="MaaToolkitConfig_8h" local="yes">include/MaaToolkit/Config/MaaToolkitConfig.h</includedby>
     <includedby refid="MaaToolkitDesktopWindow_8h" local="yes">include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h</includedby>
     <includedby refid="MaaToolkitAPI_8h" local="yes">include/MaaToolkit/MaaToolkitAPI.h</includedby>
+    <includedby refid="MaaToolkitMacOS_8h" local="yes">include/MaaToolkit/MacOS/MaaToolkitMacOS.h</includedby>
     <incdepgraph>
       <node id="2">
         <label>MaaFramework/MaaDef.h</label>
@@ -64,8 +65,45 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>include/MaaToolkit/MacOS/MaaToolkitMacOS.h</label>
+        <link refid="MaaToolkitMacOS_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="MaaToolkitDef_8h_1a2906320994f3cc516770fdaeb456e72f" prot="public" static="no" strong="no">
+        <type></type>
+        <name>MaaMacOSPermissionEnum</name>
+        <enumvalue id="MaaToolkitDef_8h_1a2906320994f3cc516770fdaeb456e72fac5e10e2877bb53fe1a2af951c6e4129f" prot="public">
+          <name>MaaMacOSPermissionScreenCapture</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="MaaToolkitDef_8h_1a2906320994f3cc516770fdaeb456e72fa5520a37ee0a329600feaa1a09accd3e4" prot="public">
+          <name>MaaMacOSPermissionAccessibility</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/MaaToolkitDef.h" line="11" column="1" bodyfile="include/MaaToolkit/MaaToolkitDef.h" bodystart="12" bodyend="15"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="typedef">
       <memberdef kind="typedef" id="MaaToolkitDef_8h_1a4ed920f548223ae34817b720532407cf" prot="public" static="no">
         <type>struct <ref refid="MaaToolkitDef_8h_1a4ed920f548223ae34817b720532407cf" kindref="member">MaaToolkitAdbDevice</ref></type>
@@ -118,6 +156,19 @@
         <inbodydescription>
         </inbodydescription>
         <location file="include/MaaToolkit/MaaToolkitDef.h" line="9" column="42" bodyfile="include/MaaToolkit/MaaToolkitDef.h" bodystart="9" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="MaaToolkitDef_8h_1acdcb49d9222ccceaeedb28b7fcdd8fe8" prot="public" static="no">
+        <type>int32_t</type>
+        <definition>typedef int32_t MaaMacOSPermission</definition>
+        <argsstring></argsstring>
+        <name>MaaMacOSPermission</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/MaaToolkitDef.h" line="17" column="17" bodyfile="include/MaaToolkit/MaaToolkitDef.h" bodystart="17" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

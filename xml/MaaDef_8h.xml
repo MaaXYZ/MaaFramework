@@ -167,6 +167,14 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>include/MaaToolkit/MacOS/MaaToolkitMacOS.h</label>
+        <link refid="MaaToolkitMacOS_8h"/>
+        <childnode refid="17" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="structMaaRect" prot="public">MaaRect</innerclass>
@@ -601,6 +609,61 @@
         </inbodydescription>
         <location file="include/MaaFramework/MaaDef.h" line="378" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="378" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1ae8d4518e6db7d5e7b17d81c2cc95a2ec" prot="public" static="no">
+        <name>MaaMacOSScreencapMethod_None</name>
+        <initializer>0ULL</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="391" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="391" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1ae0f15a02730f2a664e62e13573ff3aad" prot="public" static="no">
+        <name>MaaMacOSScreencapMethod_ScreenCaptureKit</name>
+        <initializer>1ULL</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="392" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="392" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1af14dd44b20e4b0ce26c8e48c611236b4" prot="public" static="no">
+        <name>MaaMacOSInputMethod_None</name>
+        <initializer>0ULL</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="407" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="407" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1aeeb5f700b6826581d1d3ec7b2271561d" prot="public" static="no">
+        <name>MaaMacOSInputMethod_GlobalEvent</name>
+        <initializer>1ULL</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="408" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="408" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a54494f426182d7a0b0d7ac5caca2620d" prot="public" static="no">
+        <name>MaaMacOSInputMethod_PostToPid</name>
+        <initializer>(1ULL &lt;&lt; 1)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="409" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="409" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1ab67ca0fce1cf517080804b1cae4be9b6" prot="public" static="no">
         <name>MaaDbgControllerType_None</name>
         <initializer>0</initializer>
@@ -610,7 +673,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="385" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="385" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="416" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="416" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a6a9179147858e053948175909352e60d" prot="public" static="no">
         <name>MaaDbgControllerType_CarouselImage</name>
@@ -621,7 +684,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="386" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="386" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="417" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="417" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1ad5fbfc89110fdbfd5f535c0a4557b809" prot="public" static="no">
         <name>MaaDbgControllerType_ReplayRecording</name>
@@ -632,7 +695,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="387" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="387" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="418" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="418" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a586ad29ada2c999ae75b77ad6baeedb9" prot="public" static="no">
         <name>MaaGamepadType_Xbox360</name>
@@ -643,7 +706,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="401" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="401" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="432" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="432" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1af8af7e509a456f76d65db79f99b14591" prot="public" static="no">
         <name>MaaGamepadType_DualShock4</name>
@@ -654,7 +717,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="402" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="402" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="433" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="433" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1acbc161630001bc8f54f7cf136a0493fc" prot="public" static="no">
         <name>MaaGamepadButton_A</name>
@@ -665,7 +728,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="450" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="450" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="481" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="481" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1ab6642c8e33ef8fd4663844c7902a4b88" prot="public" static="no">
         <name>MaaGamepadButton_B</name>
@@ -676,7 +739,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="451" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="451" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="482" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="482" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1aff435019a0fd0944954b3359ec995b73" prot="public" static="no">
         <name>MaaGamepadButton_X</name>
@@ -687,7 +750,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="452" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="452" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="483" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="483" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a721c98469b8587587d49e3faa7cd4e91" prot="public" static="no">
         <name>MaaGamepadButton_Y</name>
@@ -698,7 +761,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="453" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="453" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="484" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="484" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a829f56dfed642469c93e764ecb2a2324" prot="public" static="no">
         <name>MaaGamepadButton_LB</name>
@@ -709,7 +772,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="454" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="454" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="485" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="485" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1ad485ac5c8162c383e480dda71d5e3de2" prot="public" static="no">
         <name>MaaGamepadButton_RB</name>
@@ -720,7 +783,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="455" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="455" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="486" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="486" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a092eaebcba991de49d33bcd1b43157a0" prot="public" static="no">
         <name>MaaGamepadButton_LEFT_THUMB</name>
@@ -731,7 +794,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="456" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="456" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="487" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="487" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a96858ccbeab2d09b260f5cf8f7853e3b" prot="public" static="no">
         <name>MaaGamepadButton_RIGHT_THUMB</name>
@@ -742,7 +805,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="457" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="457" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="488" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="488" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a026a34d3279ae1914494b719d45da075" prot="public" static="no">
         <name>MaaGamepadButton_START</name>
@@ -753,7 +816,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="458" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="458" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="489" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="489" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a6ab0f942cf53ee5bef82efc619aff6d8" prot="public" static="no">
         <name>MaaGamepadButton_BACK</name>
@@ -764,7 +827,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="459" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="459" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="490" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="490" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1adb6bd0da85936d9b6241faad67037b50" prot="public" static="no">
         <name>MaaGamepadButton_GUIDE</name>
@@ -775,7 +838,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="460" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="460" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="491" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="491" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a528a2bcf79894972c5827c112bf55691" prot="public" static="no">
         <name>MaaGamepadButton_DPAD_UP</name>
@@ -786,7 +849,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="461" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="461" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="492" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="492" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a7b123c7d27ed4f240ba8ba46e50ce086" prot="public" static="no">
         <name>MaaGamepadButton_DPAD_DOWN</name>
@@ -797,7 +860,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="462" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="462" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="493" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="493" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1aff4c7b27b10eba1ad519448582e57d84" prot="public" static="no">
         <name>MaaGamepadButton_DPAD_LEFT</name>
@@ -808,7 +871,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="463" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="463" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="494" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="494" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a6e1c8783f1d81f51c21dbe95aa21f9fa" prot="public" static="no">
         <name>MaaGamepadButton_DPAD_RIGHT</name>
@@ -819,7 +882,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="464" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="464" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="495" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="495" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1ad80f0a36dd65cb8208b9c28a1112b796" prot="public" static="no">
         <name>MaaGamepadButton_CROSS</name>
@@ -830,7 +893,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="467" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="467" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="498" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="498" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a34aaaf26cf91ddab88362a1f7c900154" prot="public" static="no">
         <name>MaaGamepadButton_CIRCLE</name>
@@ -841,7 +904,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="468" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="468" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="499" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="499" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a5aadc42136d91795ddbe892bf392a807" prot="public" static="no">
         <name>MaaGamepadButton_SQUARE</name>
@@ -852,7 +915,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="469" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="469" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="500" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="500" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a028f1515ebc3918b3c0abd6a85400e6d" prot="public" static="no">
         <name>MaaGamepadButton_TRIANGLE</name>
@@ -863,7 +926,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="470" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="470" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="501" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="501" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a280c5b45d707fc75dee7b03bcbd3f2ce" prot="public" static="no">
         <name>MaaGamepadButton_L1</name>
@@ -874,7 +937,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="471" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="471" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="502" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="502" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a7d05d73a2577c84ef7ff42d53c634cdf" prot="public" static="no">
         <name>MaaGamepadButton_R1</name>
@@ -885,7 +948,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="472" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="472" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="503" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="503" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a13ebdda97661a8af94d90c0866b5ba5a" prot="public" static="no">
         <name>MaaGamepadButton_L3</name>
@@ -896,7 +959,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="473" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="473" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="504" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="504" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a3ffbb685bbaaa306ad59f2ab1fbd75ec" prot="public" static="no">
         <name>MaaGamepadButton_R3</name>
@@ -907,7 +970,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="474" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="474" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="505" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="505" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a97d149138ef0e0aae4615c53c5547105" prot="public" static="no">
         <name>MaaGamepadButton_OPTIONS</name>
@@ -918,7 +981,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="475" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="475" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="506" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="506" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1aca9de8235428dece0d8a5dfec486ae73" prot="public" static="no">
         <name>MaaGamepadButton_SHARE</name>
@@ -929,7 +992,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="476" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="476" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="507" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="507" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a294262e494093148a4205e34c3fea63f" prot="public" static="no">
         <name>MaaGamepadButton_PS</name>
@@ -940,7 +1003,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="479" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="479" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="510" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="510" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a7aaba2e0a11aee00e7b56b0c51bb239a" prot="public" static="no">
         <name>MaaGamepadButton_TOUCHPAD</name>
@@ -951,7 +1014,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="480" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="480" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="511" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="511" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a3713b287136eabe2203bcc488320e524" prot="public" static="no">
         <name>MaaGamepadTouch_LeftStick</name>
@@ -962,7 +1025,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="505" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="505" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="536" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="536" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1ad2c4f9269c40a83671a74d188f0e6002" prot="public" static="no">
         <name>MaaGamepadTouch_RightStick</name>
@@ -973,7 +1036,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="506" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="506" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="537" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="537" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a572fba9d73a204b8a4aa05f7d478fbd2" prot="public" static="no">
         <name>MaaGamepadTouch_LeftTrigger</name>
@@ -984,7 +1047,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="507" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="507" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="538" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="538" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1ae9473fa358a86a65f4fed2bb5bc6a6e4" prot="public" static="no">
         <name>MaaGamepadTouch_RightTrigger</name>
@@ -995,7 +1058,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="508" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="508" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="539" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="539" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a9d97a808d79e338e4a9001268e805336" prot="public" static="no">
         <name>MaaControllerFeature_None</name>
@@ -1007,7 +1070,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="517" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="517" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="548" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="548" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a717d745204302e5eabf406b008c5a957" prot="public" static="no">
         <name>MaaControllerFeature_UseMouseDownAndUpInsteadOfClick</name>
@@ -1019,7 +1082,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="522" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="522" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="553" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="553" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1ac8dc1b4410fe6a3ff2d62f5a2ee803ec" prot="public" static="no">
         <name>MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick</name>
@@ -1031,7 +1094,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="526" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="526" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="557" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="557" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1a5ca72cf3815fc88ba7ef8b762bc6ed94" prot="public" static="no">
         <name>MaaControllerFeature_NoScalingTouchPoints</name>
@@ -1043,7 +1106,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="530" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="530" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="561" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="561" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="enum">
@@ -2075,6 +2138,60 @@ default value is 4096
         </inbodydescription>
         <location file="include/MaaFramework/MaaDef.h" line="368" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="368" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="typedef" id="MaaDef_8h_1ac2226415cbf081d3ce6fde4b3a5fe205" prot="public" static="no">
+        <type>uint64_t</type>
+        <definition>typedef uint64_t MaaMacOSScreencapMethod</definition>
+        <argsstring></argsstring>
+        <name>MaaMacOSScreencapMethod</name>
+        <briefdescription>
+<para>macOS screencap method </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Select ONE method only.</para>
+<para><table rows="2" cols="2"><row>
+<entry thead="yes"><para>Method   </para>
+</entry><entry thead="yes"><para>Description    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>ScreenCaptureKit   </para>
+</entry><entry thead="no"><para>Modern macOS screencap using ScreenCaptureKit   </para>
+</entry></row>
+</table>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="390" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="390" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="MaaDef_8h_1a428e432bbc782281526f5bd272c38e65" prot="public" static="no">
+        <type>uint64_t</type>
+        <definition>typedef uint64_t MaaMacOSInputMethod</definition>
+        <argsstring></argsstring>
+        <name>MaaMacOSInputMethod</name>
+        <briefdescription>
+<para>macOS input method </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Select ONE method only.</para>
+<para><table rows="3" cols="2"><row>
+<entry thead="yes"><para>Method   </para>
+</entry><entry thead="yes"><para>Description    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>GlobalEvent   </para>
+</entry><entry thead="no"><para>Injects into the global HID event stream via CGEventPost(kCGHIDEventTap), dispatched by the OS to the front window    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>PostToPid   </para>
+</entry><entry thead="no"><para>Directly send to target process using CGEventPostToPid   </para>
+</entry></row>
+</table>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="406" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="406" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a7a7491d55c50840ccb1891ba9b7740c4" prot="public" static="no">
         <type>uint64_t</type>
         <definition>typedef uint64_t MaaDbgControllerType</definition>
@@ -2087,7 +2204,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="384" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="384" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="415" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="415" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a53a0d2c454370893abfbaf100b48dc0d" prot="public" static="no">
         <type>uint64_t</type>
@@ -2116,7 +2233,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="400" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="400" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="431" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="431" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1abb0b4cd931aa02d962781dbe496df3cd" prot="public" static="no">
         <type>uint64_t</type>
@@ -2295,7 +2412,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="448" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="448" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="479" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="479" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a4970adab630ddcf1e06f84acb415d270" prot="public" static="no">
         <type>uint64_t</type>
@@ -2363,7 +2480,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="504" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="504" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="535" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="535" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a350d60e24f82240806bc6569f4da65f8" prot="public" static="no">
         <type>uint64_t</type>
@@ -2377,7 +2494,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="514" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="514" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="545" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="545" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a90ae9b4896224481bd0967903dafdfa1" prot="public" static="no">
         <type>struct <ref refid="structMaaRect" kindref="compound">MaaRect</ref></type>
@@ -2390,7 +2507,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="538" column="9"/>
+        <location file="include/MaaFramework/MaaDef.h" line="569" column="9"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a83fe073ae3fefc09c17fd9eb6b6b3e50" prot="public" static="no">
         <type>void(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
@@ -2403,7 +2520,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="545" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="545" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="576" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="576" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a6b9bcefbd6beaf7a0da83c92318a8693" prot="public" static="no">
         <type>void(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
@@ -2423,7 +2540,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="552" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="552" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="583" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="583" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a5ea5d33341ce8007c366ebd04f08ee51" prot="public" static="no">
         <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
@@ -2436,7 +2553,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="554" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="554" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="585" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="585" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a5d8d307550fff35a2df364eeac7f5191" prot="public" static="no">
         <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
@@ -2449,7 +2566,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="566" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="566" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="597" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="597" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

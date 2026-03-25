@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_0daaf0002ac5c3ef7d4a81eb57e45b7c" kind="dir">
+    <compoundname>include/MaaToolkit/MacOS</compoundname>
+    <innerfile refid="MaaToolkitMacOS_8h">MaaToolkitMacOS.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaToolkit/MacOS/"/>
+  </compounddef>
+</doxygen>
