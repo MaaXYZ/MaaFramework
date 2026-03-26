@@ -519,6 +519,12 @@ MaaToolkitAdbDeviceHandle = ctypes.c_void_p
 MaaToolkitDesktopWindowListHandle = ctypes.c_void_p
 MaaToolkitDesktopWindowHandle = ctypes.c_void_p
 
+MaaMacOSPermission = ctypes.c_int32
+
+class MaaMacOSPermissionEnum(IntEnum):
+    ScreenCapture = 1
+    Accessibility = 2
+
 MaaAgentClientHandle = ctypes.c_void_p
 
 

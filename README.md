@@ -89,9 +89,6 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaInspector](https://github.com/TanyaShue/MaaInspector) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaInspector?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaInspector?style=social)  
     基于 vue-flow 的可视化编辑器，集成节点预览,编辑,调试于一体的简单好用的 MaaFramework Pipeline 编辑器
 
-- [MaaMCP](https://github.com/MaaXYZ/MaaMCP) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MaaMCP) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaMCP?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaMCP?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/maa-mcp)  
-    基于 MaaFramework 的 MCP 服务器 为 AI 助手提供 Android 设备和 Windows 桌面自动化能力
-
 - [MaaLogAnalyzer](https://github.com/MaaXYZ/MaaLogAnalyzer) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MAALogAnalyzer) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MAALogAnalyzer?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MAALogAnalyzer?style=social) [![vscode](https://img.shields.io/badge/VSCode-0f81c2?style=plastic&logo=data:image/svg+xml)](https://marketplace.visualstudio.com/items?itemName=Windsland52.maa-log-analyzer) [![website](https://img.shields.io/badge/https://mla.maafw.com-%234285F4)](https://mla.maafw.com/)  
     MaaFramework 日志分析工具，提供用户友好的多视角可视化任务执行流程分析
 

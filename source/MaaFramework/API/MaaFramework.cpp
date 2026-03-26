@@ -55,7 +55,7 @@ MaaController* MaaWin32ControllerCreate(
 
 #ifndef _WIN32
 
-    LogError << "This API" << __FUNCTION__ << "is only available on Windows";
+    LogError << "This API " << __FUNCTION__ << " is only available on Windows";
     return nullptr;
 
 #else
@@ -200,7 +200,7 @@ MaaController* MaaGamepadControllerCreate(void* hWnd, MaaGamepadType gamepad_typ
 
 #ifndef _WIN32
 
-    LogError << "This API" << __FUNCTION__ << "is only available on Windows";
+    LogError << "This API " << __FUNCTION__ << " is only available on Windows";
     return nullptr;
 
 #else
@@ -222,7 +222,7 @@ MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path)
 
 #ifndef __linux__
 
-    LogError << "This API" << __FUNCTION__ << "is only available on Linux";
+    LogError << "This API " << __FUNCTION__ << " is only available on Linux";
     return nullptr;
 
 #else
