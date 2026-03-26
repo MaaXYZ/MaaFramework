@@ -37,7 +37,7 @@ bool GlobalEventInput::swipe(int x1, int y1, int x2, int y2, int duration)
 
 bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
 {
-    (void)pressure;
+    std::ignore = pressure;
 
     update_window_info();
 
@@ -62,7 +62,7 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
 
 bool GlobalEventInput::touch_move(int contact, int x, int y, int pressure)
 {
-    (void)pressure;
+    std::ignore = pressure;
 
     MouseEventInfo info;
     if (!contact_to_mouse_move_info(contact, info)) {
