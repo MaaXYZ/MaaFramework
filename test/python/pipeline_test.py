@@ -38,7 +38,7 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource
-from maa.controller import DbgController
+from maa.controller import DbgController, ReplayController
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
@@ -1352,7 +1352,7 @@ def create_test_pipeline_resource(resource_dir: Path):
 
 
 
-def main():
+def pipeline_node_test():
     print(f"MaaFw Version: {Library.version()}")
     Toolkit.init_option(install_dir / "bin")
 
@@ -1441,5 +1441,39 @@ def main():
     print("=" * 50)
 
 
+def pipeline_smoking():
+    print("\n" + "=" * 50)
+    print("Running pipeline_smoking test...")
+    print("=" * 50)
+
+    recording_path = install_dir / "test" / "PipelineSmoking" / "MaaRecording.jsonl"
+    resource_dir = install_dir / "test" / "PipelineSmoking" / "resource"
+
+    controller = ReplayController(recording_path)
+    ctrl_job = controller.post_connection()
+
+    resource = Resource()
+    res_job = resource.post_bundle(str(resource_dir))
+
+    ctrl_job.wait()
+    res_job.wait()
+
+    tasker = Tasker()
+    tasker.bind(resource, controller)
+
+    if not tasker.inited:
+        print("Failed to init tasker")
+        sys.exit(1)
+
+    detail = tasker.post_task("Wilderness", {}).wait().get()
+
+    if not detail:
+        print("pipeline_smoking task failed")
+        sys.exit(1)
+
+    print("pipeline_smoking test passed!")
+
+
 if __name__ == "__main__":
-    main()
+    pipeline_node_test()
+    pipeline_smoking()
