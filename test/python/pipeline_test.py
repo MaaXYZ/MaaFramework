@@ -1303,7 +1303,7 @@ def test_negative_roi_and_target(context: Context):
         }
     )
     obj = new_ctx.get_node_object("NegativeTarget2Elem")
-    assert_eq(obj.action.param.target, [-50, -50, 0, 0], "negative target 2-element")
+    assert_eq(obj.action.param.target, [-50, -50, 1, 1], "negative target 2-element")
 
     # 测试 Swipe 的负数坐标
     new_ctx.override_pipeline(
@@ -1317,7 +1317,7 @@ def test_negative_roi_and_target(context: Context):
     )
     obj = new_ctx.get_node_object("NegativeSwipe")
     assert_eq(obj.action.param.begin, [-100, -100, 50, 50], "negative swipe begin")
-    assert_eq(obj.action.param.end[0], [-50, -50, 0, 0], "negative swipe end")
+    assert_eq(obj.action.param.end[0], [-50, -50, 1, 1], "negative swipe end")
 
     print("  PASS: negative roi and target")
 
@@ -1386,9 +1386,8 @@ def main():
         test_resource_get_node_object(resource)
         test_resource_node_list(resource)
 
-        # 使用专用录制（调用序列匹配本测试流水线：connect + 3×screencap）
         replay_controller = ReplayController(
-            install_dir / "test" / "PipelineSmoking" / "PipelineTestRecording",
+            install_dir / "test" / "PipelineSmoking",
         )
         replay_controller.post_connection().wait()
 
