@@ -39,6 +39,8 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
 {
     (void)pressure;
 
+    update_window_info();
+
     MouseEventInfo info;
     if (!contact_to_mouse_down_info(contact, info)) {
         LogError << "contact out of range" << VAR(contact);
