@@ -116,6 +116,25 @@ MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controlle
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
+MaaController* MaaDbgControllerCreate(const char* read_path)
+{
+    LogFunc << VAR(read_path);
+
+    if (!read_path) {
+        LogError << "read_path is null";
+        return nullptr;
+    }
+
+    auto control_unit = MAA_NS::DbgControlUnitLibraryHolder::create_control_unit(read_path);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+}
+
 MaaController* MaaReplayControllerCreate(const char* recording_path)
 {
     LogFunc << VAR(recording_path);

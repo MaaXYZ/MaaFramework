@@ -99,8 +99,8 @@ async function api_test() {
     })
     console.log('rsource', resource)
 
-    const replay_controller = new maa.ReplayController(
-        '../../install/test/PipelineSmoking/MaaRecording.jsonl'
+    const replay_controller = new maa.DbgController(
+        '../../install/test/PipelineSmoking/Screenshot'
     )
     replay_controller.add_sink((res, msg) => {
         console.log(msg)

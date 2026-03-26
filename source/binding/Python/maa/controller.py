@@ -14,6 +14,7 @@ from .library import Library
 
 __all__ = [
     "AdbController",
+    "DbgController",
     "ReplayController",
     "RecordController",
     "PlayCoverController",
@@ -962,6 +963,39 @@ class WlRootsController(Controller):
     def _set_wlroots_api_properties(self):
         Library.framework().MaaWlRootsControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaWlRootsControllerCreate.argtypes = [
+            ctypes.c_char_p,
+        ]
+
+
+class DbgController(Controller):
+    """调试控制器，轮播图片截图，所有操作直接返回成功 / Debug controller that cycles through images from a directory"""
+
+    def __init__(
+        self,
+        read_path: Union[str, Path],
+    ):
+        """创建调试控制器 / Create debug controller
+
+        Args:
+            read_path: 图片目录（或单个图片文件）路径。连接时加载所有图片，截图时轮播。
+                        / Path to a directory of images (or a single image file). Images are loaded on connect and cycled on screencap.
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._set_dbg_api_properties()
+
+        self._handle = Library.framework().MaaDbgControllerCreate(
+            str(read_path).encode(),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create dbg controller.")
+
+    def _set_dbg_api_properties(self):
+        Library.framework().MaaDbgControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaDbgControllerCreate.argtypes = [
             ctypes.c_char_p,
         ]
 

@@ -40,7 +40,7 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource, ResourceEventSink
-from maa.controller import ReplayController, CustomController, Win32Controller, ControllerEventSink
+from maa.controller import DbgController, CustomController, Win32Controller, ControllerEventSink
 from maa.tasker import Tasker, TaskerEventSink
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
@@ -366,8 +366,8 @@ def test_resource_api():
 def test_controller_api():
     print("\n=== test_controller_api ===")
 
-    replay_controller = ReplayController(
-        install_dir / "test" / "PipelineSmoking" / "MaaRecording.jsonl",
+    replay_controller = DbgController(
+        install_dir / "test" / "PipelineSmoking" / "Screenshot",
     )
     print(f"  controller: {replay_controller}")
 
@@ -404,7 +404,7 @@ def test_controller_api():
     print(f"  info: {info}")
     assert isinstance(info, dict), "info should be a dict"
     assert "type" in info, "info should contain 'type'"
-    assert info["type"] == "replay", "replay controller type should be 'replay'"
+    assert info["type"] == "dbg", "dbg controller type should be 'dbg'"
 
     # 测试输入操作
     replay_controller.post_click(100, 100).wait()
@@ -465,7 +465,7 @@ def test_buffer_api():
 # ============================================================================
 
 
-def test_tasker_api(resource: Resource, controller: ReplayController):
+def test_tasker_api(resource: Resource, controller: DbgController):
     print("\n=== test_tasker_api ===")
 
     # 测试全局选项 (静态方法)

@@ -55,6 +55,16 @@ extern "C"
     MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg);
 
     /**
+     * @brief Create a debug controller that serves images from a directory.
+     *
+     * @param read_path Path to a directory of images (or a single image file).
+     *                  Images are loaded on connect and cycled through on each screencap request.
+     *                  All input operations (click, swipe, etc.) are no-ops that return success.
+     * @return The controller handle, or nullptr on failure.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaDbgControllerCreate(const char* read_path);
+
+    /**
      * @brief Create a replay controller that replays recorded operations.
      *
      * @param recording_path Path to the recording JSONL file written by MaaRecordControllerCreate.

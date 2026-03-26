@@ -262,6 +262,10 @@ declare global {
             constructor(address: string, uuid: string)
         }
 
+        class DbgController extends Controller {
+            constructor(read_path: string)
+        }
+
         class ReplayController extends Controller {
             constructor(recording_path: string)
         }

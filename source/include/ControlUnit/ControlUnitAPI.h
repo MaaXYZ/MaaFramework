@@ -123,3 +123,4 @@ using MaaGamepadControlUnitHandle = MAA_CTRL_UNIT_NS::GamepadControlUnitAPI*;
 using MaaCustomControlUnitHandle = MAA_CTRL_UNIT_NS::CustomControlUnitAPI*;
 using MaaReplayControlUnitHandle = MAA_CTRL_UNIT_NS::FullControlUnitAPI*;
 using MaaRecordControlUnitHandle = MAA_CTRL_UNIT_NS::FullControlUnitAPI*;
+using MaaDbgControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;

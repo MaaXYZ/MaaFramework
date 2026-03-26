@@ -38,7 +38,7 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource
-from maa.controller import ReplayController
+from maa.controller import DbgController
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
@@ -1332,10 +1332,9 @@ def create_test_pipeline_resource(resource_dir: Path):
     pipeline_dir = resource_dir / "pipeline"
     pipeline_dir.mkdir(parents=True, exist_ok=True)
 
-    # 创建测试 pipeline JSON
     test_pipeline = {
         "TestBasic": {
-            # 使用默认值
+            # 使用默认值，用于 Resource 级别测试
         },
         "TestEntry": {
             "next": ["TestReco"],
@@ -1357,25 +1356,24 @@ def main():
     print(f"MaaFw Version: {Library.version()}")
     Toolkit.init_option(install_dir / "bin")
 
-    # 重置测试状态，避免同一进程多次运行时残留陈旧状态
     PipelineTestRecognition.test_results.clear()
 
-    # 创建临时测试资源目录
     import tempfile
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         test_resource_dir = Path(tmp_dir) / "resource"
         create_test_pipeline_resource(test_resource_dir)
 
-        # 创建 Resource 并加载
         resource = Resource()
+        resource.post_bundle(
+            str(install_dir / "test" / "PipelineSmoking" / "resource")
+        ).wait()
         resource.post_bundle(str(test_resource_dir)).wait()
 
         if not resource.loaded:
             print("Failed to load resource")
             sys.exit(1)
 
-        # 注册自定义识别和动作
         resource.register_custom_recognition(
             "PipelineTestReco", PipelineTestRecognition()
         )
@@ -1386,34 +1384,29 @@ def main():
         test_resource_get_node_object(resource)
         test_resource_node_list(resource)
 
-        replay_controller = ReplayController(
-            install_dir / "test" / "PipelineSmoking" / "MaaRecording.jsonl",
+        dbg_controller = DbgController(
+            install_dir / "test" / "PipelineSmoking" / "Screenshot",
         )
-        replay_controller.post_connection().wait()
+        dbg_controller.post_connection().wait()
 
         tasker = Tasker()
-        tasker.bind(resource, replay_controller)
+        tasker.bind(resource, dbg_controller)
 
         if not tasker.inited:
             print("Failed to init tasker")
             sys.exit(1)
 
-        # 运行任务触发 Context 级别测试
         detail = tasker.post_task("TestEntry", {}).wait().get()
         if not detail:
             print("Pipeline task failed")
             sys.exit(1)
 
-        # 检查 Context 测试结果
         if not PipelineTestRecognition.test_results.get("context_tests"):
             print("Context tests failed")
             sys.exit(1)
 
-        # 额外的 Context 级别测试（在任务外进行）
-        # 这些测试需要通过创建一个简单的任务来获取 Context
         print("\n=== Additional Context-level tests ===")
 
-        # 创建一个新任务来测试更多场景
         class AdditionalTestReco(CustomRecognition):
             def analyze(self, context, argv):
                 test_wait_freezes(context)

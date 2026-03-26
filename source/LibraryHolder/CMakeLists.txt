@@ -23,6 +23,10 @@ if(WITH_PLAYCOVER_CONTROLLER)
     add_dependencies(LibraryHolder MaaPlayCoverControlUnit)
 endif()
 
+if(WITH_DBG_CONTROLLER)
+    add_dependencies(LibraryHolder MaaDbgControlUnit)
+endif()
+
 if(WITH_REPLAY_CONTROLLER)
     add_dependencies(LibraryHolder MaaReplayControlUnit)
 endif()

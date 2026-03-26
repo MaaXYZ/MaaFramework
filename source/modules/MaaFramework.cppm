@@ -153,6 +153,7 @@ export using ::MaaAdbControllerCreate;
 export using ::MaaWin32ControllerCreate;
 export using ::MaaMacOSControllerCreate;
 export using ::MaaCustomControllerCreate;
+export using ::MaaDbgControllerCreate;
 export using ::MaaReplayControllerCreate;
 export using ::MaaRecordControllerCreate;
 export using ::MaaPlayCoverControllerCreate;

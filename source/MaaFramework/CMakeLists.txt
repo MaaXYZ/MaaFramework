@@ -28,6 +28,10 @@ if(WITH_MACOS_CONTROLLER)
     add_dependencies(MaaFramework MaaMacOSControlUnit)
 endif()
 
+if(WITH_DBG_CONTROLLER)
+    add_dependencies(MaaFramework MaaDbgControlUnit)
+endif()
+
 if(WITH_REPLAY_CONTROLLER)
     add_dependencies(MaaFramework MaaReplayControlUnit)
 endif()

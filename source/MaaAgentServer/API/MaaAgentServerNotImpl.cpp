@@ -26,6 +26,12 @@ MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks*, void*)
     return nullptr;
 }
 
+MaaController* MaaDbgControllerCreate(const char*)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
 MaaController* MaaReplayControllerCreate(const char*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
