@@ -1352,6 +1352,7 @@ def create_test_pipeline_resource(resource_dir: Path):
         json.dump(test_pipeline, f, indent=4)
 
 
+
 def main():
     print(f"MaaFw Version: {Library.version()}")
     Toolkit.init_option(install_dir / "bin")
@@ -1385,9 +1386,9 @@ def main():
         test_resource_get_node_object(resource)
         test_resource_node_list(resource)
 
-        # 创建 Controller 和 Tasker 进行 Context 级别测试
+        # 使用专用录制（调用序列匹配本测试流水线：connect + 3×screencap）
         replay_controller = ReplayController(
-            install_dir / "test" / "PipelineSmoking",
+            install_dir / "test" / "PipelineSmoking" / "PipelineTestRecording",
         )
         replay_controller.post_connection().wait()
 
