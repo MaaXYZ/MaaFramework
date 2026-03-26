@@ -58,16 +58,8 @@ int main()
 
 #endif
 
-// #ifdef WITH_REPLAY_CONTROLLER
-
-//     std::cout << "********** ReplayControlUnitLibraryHolder::create_control_unit **********" << std::endl;
-//     auto replay_handle = MAA_NS::ReplayControlUnitLibraryHolder::create_control_unit("./");
-//     if (!replay_handle) {
-//         std::cerr << "Failed to create replay control unit" << std::endl;
-//         return -1;
-//     }
-
-// #endif
+// ReplayControlUnit requires a valid recording JSONL file to create successfully,
+// so it cannot be tested in this simple dlopen smoke test.
 
 #ifdef WITH_CUSTOM_CONTROLLER
 

@@ -57,6 +57,9 @@ private:
     const Record* expect_record(RecordType expected_type);
     bool consume_record(const Record& record);
 
+    template <typename T>
+    const T* get_param(const Record& record);
+
 private:
     Recording recording_;
     size_t record_index_ = 0;

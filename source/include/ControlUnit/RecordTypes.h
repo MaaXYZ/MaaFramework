@@ -28,6 +28,7 @@ enum class RecordType
     key_up,
     scroll,
     relative_move,
+    shell,
 };
 
 struct RecordLine
@@ -129,6 +130,15 @@ struct RecordRelativeMove
     int dy = 0;
 
     MEO_JSONIZATION(dx, dy);
+};
+
+struct RecordShell
+{
+    std::string cmd;
+    int64_t timeout = 20000;
+    std::string output;
+
+    MEO_JSONIZATION(cmd, timeout, MEO_OPT output);
 };
 
 template <typename ParamT>

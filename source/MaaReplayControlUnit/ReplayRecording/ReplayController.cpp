@@ -11,6 +11,9 @@ ReplayController::ReplayController(Recording recording)
 
 ReplayController::~ReplayController()
 {
+    // Intentional abort: ReplayController is designed for deterministic pipeline testing.
+    // If the task ends early, it means the pipeline behavior diverged from the recording,
+    // which is a test failure that should be caught immediately.
     if (record_index_ != recording_.records.size()) {
         LogError << "Failed to reproduce, the task ended early!" << VAR(record_index_) << VAR(recording_.records.size());
         std::abort();
@@ -39,6 +42,16 @@ bool ReplayController::consume_record(const Record& record)
     std::this_thread::sleep_for(std::chrono::milliseconds(record.cost));
     ++record_index_;
     return record.success;
+}
+
+template <typename T>
+const T* ReplayController::get_param(const Record& record)
+{
+    auto* p = std::get_if<T>(&record.action.param);
+    if (!p) {
+        LogError << "variant type mismatch in record" << VAR(record.raw_data);
+    }
+    return p;
 }
 
 bool ReplayController::connect()
@@ -77,9 +90,11 @@ bool ReplayController::start_app(const std::string& intent)
     auto* record = expect_record(RecordType::start_app);
     if (!record) return false;
 
-    auto param = std::get<RecordApp>(record->action.param);
-    if (param.package != intent) {
-        LogError << "record intent mismatch" << VAR(param.package) << VAR(intent) << VAR(record->raw_data);
+    auto* param = get_param<RecordApp>(*record);
+    if (!param) return false;
+
+    if (param->package != intent) {
+        LogError << "record intent mismatch" << VAR(param->package) << VAR(intent) << VAR(record->raw_data);
         return false;
     }
 
@@ -93,9 +108,11 @@ bool ReplayController::stop_app(const std::string& intent)
     auto* record = expect_record(RecordType::stop_app);
     if (!record) return false;
 
-    auto param = std::get<RecordApp>(record->action.param);
-    if (param.package != intent) {
-        LogError << "record intent mismatch" << VAR(param.package) << VAR(intent) << VAR(record->raw_data);
+    auto* param = get_param<RecordApp>(*record);
+    if (!param) return false;
+
+    if (param->package != intent) {
+        LogError << "record intent mismatch" << VAR(param->package) << VAR(intent) << VAR(record->raw_data);
         return false;
     }
 
@@ -109,10 +126,12 @@ bool ReplayController::screencap(cv::Mat& image)
     auto* record = expect_record(RecordType::screencap);
     if (!record) return false;
 
-    auto param = std::get<RecordScreencapData>(record->action.param);
+    auto* param = get_param<RecordScreencapData>(*record);
+    if (!param) return false;
+
     bool ret = consume_record(*record);
 
-    image = record->success ? param.image : cv::Mat();
+    image = record->success ? param->image : cv::Mat();
     return ret;
 }
 
@@ -145,9 +164,11 @@ bool ReplayController::touch_down(int contact, int x, int y, int pressure)
     auto* record = expect_record(RecordType::touch_down);
     if (!record) return false;
 
-    auto param = std::get<RecordTouch>(record->action.param);
-    if (param.contact != contact || param.x != x || param.y != y || param.pressure != pressure) {
-        LogError << "record touch_down mismatch" << VAR(param.contact) << VAR(param.x) << VAR(param.y) << VAR(param.pressure)
+    auto* param = get_param<RecordTouch>(*record);
+    if (!param) return false;
+
+    if (param->contact != contact || param->x != x || param->y != y || param->pressure != pressure) {
+        LogError << "record touch_down mismatch" << VAR(param->contact) << VAR(param->x) << VAR(param->y) << VAR(param->pressure)
                  << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(record->raw_data);
         return false;
     }
@@ -162,9 +183,11 @@ bool ReplayController::touch_move(int contact, int x, int y, int pressure)
     auto* record = expect_record(RecordType::touch_move);
     if (!record) return false;
 
-    auto param = std::get<RecordTouch>(record->action.param);
-    if (param.contact != contact || param.x != x || param.y != y || param.pressure != pressure) {
-        LogError << "record touch_move mismatch" << VAR(param.contact) << VAR(param.x) << VAR(param.y) << VAR(param.pressure)
+    auto* param = get_param<RecordTouch>(*record);
+    if (!param) return false;
+
+    if (param->contact != contact || param->x != x || param->y != y || param->pressure != pressure) {
+        LogError << "record touch_move mismatch" << VAR(param->contact) << VAR(param->x) << VAR(param->y) << VAR(param->pressure)
                  << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(record->raw_data);
         return false;
     }
@@ -179,9 +202,11 @@ bool ReplayController::touch_up(int contact)
     auto* record = expect_record(RecordType::touch_up);
     if (!record) return false;
 
-    auto param = std::get<RecordTouch>(record->action.param);
-    if (param.contact != contact) {
-        LogError << "record touch_up mismatch" << VAR(param.contact) << VAR(contact) << VAR(record->raw_data);
+    auto* param = get_param<RecordTouch>(*record);
+    if (!param) return false;
+
+    if (param->contact != contact) {
+        LogError << "record touch_up mismatch" << VAR(param->contact) << VAR(contact) << VAR(record->raw_data);
         return false;
     }
 
@@ -195,9 +220,11 @@ bool ReplayController::click_key(int key)
     auto* record = expect_record(RecordType::click_key);
     if (!record) return false;
 
-    auto param = std::get<RecordKey>(record->action.param);
-    if (param.keycode != key) {
-        LogError << "record click_key mismatch" << VAR(param.keycode) << VAR(key) << VAR(record->raw_data);
+    auto* param = get_param<RecordKey>(*record);
+    if (!param) return false;
+
+    if (param->keycode != key) {
+        LogError << "record click_key mismatch" << VAR(param->keycode) << VAR(key) << VAR(record->raw_data);
         return false;
     }
 
@@ -211,9 +238,11 @@ bool ReplayController::input_text(const std::string& text)
     auto* record = expect_record(RecordType::input_text);
     if (!record) return false;
 
-    auto param = std::get<RecordInputText>(record->action.param);
-    if (param.text != text) {
-        LogError << "record input_text mismatch" << VAR(param.text) << VAR(text) << VAR(record->raw_data);
+    auto* param = get_param<RecordInputText>(*record);
+    if (!param) return false;
+
+    if (param->text != text) {
+        LogError << "record input_text mismatch" << VAR(param->text) << VAR(text) << VAR(record->raw_data);
         return false;
     }
 
@@ -227,9 +256,11 @@ bool ReplayController::key_down(int key)
     auto* record = expect_record(RecordType::key_down);
     if (!record) return false;
 
-    auto param = std::get<RecordKey>(record->action.param);
-    if (param.keycode != key) {
-        LogError << "record key_down mismatch" << VAR(param.keycode) << VAR(key) << VAR(record->raw_data);
+    auto* param = get_param<RecordKey>(*record);
+    if (!param) return false;
+
+    if (param->keycode != key) {
+        LogError << "record key_down mismatch" << VAR(param->keycode) << VAR(key) << VAR(record->raw_data);
         return false;
     }
 
@@ -243,9 +274,11 @@ bool ReplayController::key_up(int key)
     auto* record = expect_record(RecordType::key_up);
     if (!record) return false;
 
-    auto param = std::get<RecordKey>(record->action.param);
-    if (param.keycode != key) {
-        LogError << "record key_up mismatch" << VAR(param.keycode) << VAR(key) << VAR(record->raw_data);
+    auto* param = get_param<RecordKey>(*record);
+    if (!param) return false;
+
+    if (param->keycode != key) {
+        LogError << "record key_up mismatch" << VAR(param->keycode) << VAR(key) << VAR(record->raw_data);
         return false;
     }
 
@@ -274,12 +307,26 @@ bool ReplayController::relative_move(int dx, int dy)
 
 bool ReplayController::shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout)
 {
-    std::ignore = cmd;
-    std::ignore = output;
-    std::ignore = timeout;
+    LogInfo << VAR(cmd) << VAR(timeout.count());
 
-    LogWarn << "Shell is not supported for replay controller";
-    return false;
+    auto* record = expect_record(RecordType::shell);
+    if (!record) return false;
+
+    auto* param = get_param<RecordShell>(*record);
+    if (!param) return false;
+
+    if (param->cmd != cmd) {
+        LogError << "record shell cmd mismatch" << VAR(param->cmd) << VAR(cmd) << VAR(record->raw_data);
+        return false;
+    }
+
+    bool ret = consume_record(*record);
+
+    if (record->success) {
+        output = param->output;
+    }
+
+    return ret;
 }
 
 bool ReplayController::inactive()

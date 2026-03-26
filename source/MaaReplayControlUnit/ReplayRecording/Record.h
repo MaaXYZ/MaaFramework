@@ -37,7 +37,8 @@ struct Record
         RecordApp,
         RecordScreencapData,
         RecordScroll,
-        RecordRelativeMove>;
+        RecordRelativeMove,
+        RecordShell>;
 
     struct Action
     {
@@ -45,7 +46,7 @@ struct Record
         Param param;
     };
 
-    size_t timestamp = 0;
+    int64_t timestamp = 0;
     Action action;
     bool success = false;
     int cost = 0;

@@ -4,6 +4,7 @@
 
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -196,14 +197,33 @@ bool RecordController::inactive()
 
 json::object RecordController::get_info() const
 {
-    return inner_->get_info();
+    json::object info = inner_->get_info();
+    info["recording"] = true;
+    info["recording_path"] = MAA_NS::path_to_utf8_string(recording_path_);
+    return info;
 }
 
 bool RecordController::shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout)
 {
-    if (auto p = std::dynamic_pointer_cast<ShellableUnit>(inner_)) return p->shell(cmd, output, timeout);
-    LogError << "Inner controller does not support shell";
-    return false;
+    auto start = std::chrono::steady_clock::now();
+
+    bool success = false;
+    if (auto p = std::dynamic_pointer_cast<ShellableUnit>(inner_)) {
+        success = p->shell(cmd, output, timeout);
+    }
+    else {
+        LogError << "Inner controller does not support shell";
+    }
+
+    auto end = std::chrono::steady_clock::now();
+
+    auto ts = std::chrono::duration_cast<std::chrono::milliseconds>(start - recording_start_).count();
+    auto cost = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+    RecordShell param { .cmd = cmd, .timeout = timeout.count(), .output = success ? output : std::string() };
+    write_record(make_record_json(make_line(RecordType::shell, success, ts, static_cast<int>(cost)), param));
+
+    return success;
 }
 
 void RecordController::write_record(const json::value& record)

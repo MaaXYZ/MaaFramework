@@ -133,8 +133,7 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
             sp.image = imread(fullpath);
         }
         else {
-            LogError << "Screencap file not found:" << VAR(fullpath);
-            return std::nullopt;
+            LogWarn << "Screencap file not found, image will be empty:" << VAR(fullpath);
         }
         param_opt = std::move(sp);
         break;
@@ -145,6 +144,12 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
         break;
     case RecordType::scroll:
         param_opt = parse_param.operator()<RecordScroll>();
+        break;
+    case RecordType::relative_move:
+        param_opt = parse_param.operator()<RecordRelativeMove>();
+        break;
+    case RecordType::shell:
+        param_opt = parse_param.operator()<RecordShell>();
         break;
     default:
         LogError << "Unhandled record type:" << VAR(line.type);
