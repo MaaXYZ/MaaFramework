@@ -63,7 +63,7 @@ bool DbgController::connect()
     else if (std::filesystem::is_directory(path_, ec)) {
         for (const auto& entry : std::filesystem::recursive_directory_iterator(path_, ec)) {
             if (ec) {
-                LogWarn << "recursive_directory_iterator error" << VAR(ec);
+                LogWarn << "recursive_directory_iterator error" << VAR(ec.message());
                 break;
             }
             if (!entry.is_regular_file()) {
