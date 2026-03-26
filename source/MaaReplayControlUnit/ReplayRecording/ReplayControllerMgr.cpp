@@ -5,9 +5,8 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ReplayController* create_replay_controller(const std::filesystem::path& dump_dir)
+ReplayController* create_replay_controller(const std::filesystem::path& recording_path)
 {
-    auto recording_path = dump_dir / "recording.jsonl";
     auto record_opt = RecordParser::parse(recording_path);
     if (!record_opt) {
         LogError << "Failed to parse record file:" << recording_path;

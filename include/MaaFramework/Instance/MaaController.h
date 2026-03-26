@@ -57,23 +57,24 @@ extern "C"
     /**
      * @brief Create a replay controller that replays recorded operations.
      *
-     * @param dump_dir Directory path where recording files were written by MaaRecordControllerCreate.
-     *                 Must contain a "recording.jsonl" file and associated screenshot images.
+     * @param recording_path Path to the recording JSONL file written by MaaRecordControllerCreate.
+     *                       Screenshot image paths in the file are resolved relative to this file's parent directory.
      * @return The controller handle, or nullptr on failure.
      */
-    MAA_FRAMEWORK_API MaaController* MaaReplayControllerCreate(const char* dump_dir);
+    MAA_FRAMEWORK_API MaaController* MaaReplayControllerCreate(const char* recording_path);
 
     /**
      * @brief Create a record controller that wraps an existing controller and records all operations.
      *
      * @param inner The inner controller to forward all operations to. Must not be null.
      *              The record controller does NOT take ownership of the inner controller.
-     * @param dump_dir Directory path where recording files will be written.
-     *                 A "recording.jsonl" file and screenshot images will be created here.
-     *                 The recorded files can be replayed using MaaReplayControllerCreate.
+     * @param recording_path Path to the recording JSONL file to write.
+     *                       Screenshot images will be saved to a "{stem}-Screenshot" folder
+     *                       in the same directory as this file.
+     *                       The recorded file can be replayed using MaaReplayControllerCreate.
      * @return The record controller handle, or nullptr on failure.
      */
-    MAA_FRAMEWORK_API MaaController* MaaRecordControllerCreate(MaaController* inner, const char* dump_dir);
+    MAA_FRAMEWORK_API MaaController* MaaRecordControllerCreate(MaaController* inner, const char* recording_path);
 
     /**
      * @brief Create a PlayCover controller for macOS.

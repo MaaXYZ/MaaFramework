@@ -263,17 +263,17 @@ declare global {
         }
 
         class ReplayController extends Controller {
-            constructor(dump_dir: string)
+            constructor(recording_path: string)
         }
 
         /**
          * Proxy controller that wraps an existing controller and records all operations.
-         * The recorded files can be replayed using ReplayController.
+         * The recorded file can be replayed using ReplayController.
          */
         class RecordController extends Controller {
             constructor(
                 inner: Controller,
-                dump_dir: string,
+                recording_path: string,
             )
         }
 

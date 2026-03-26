@@ -971,13 +971,13 @@ class ReplayController(Controller):
 
     def __init__(
         self,
-        dump_dir: Union[str, Path],
+        recording_path: Union[str, Path],
     ):
         """创建回放控制器 / Create replay controller
 
         Args:
-            dump_dir: 录制文件目录，由 RecordController 写入（包含 recording.jsonl 与截图）
-                      / Directory where recording files were written by RecordController (contains recording.jsonl and screenshots)
+            recording_path: 录制 JSONL 文件路径，由 RecordController 写入。截图路径基于该文件所在目录解析。
+                            / Path to the recording JSONL file written by RecordController. Screenshot paths are resolved relative to this file's parent directory.
 
         Raises:
             RuntimeError: 如果创建失败
@@ -986,7 +986,7 @@ class ReplayController(Controller):
         self._set_replay_api_properties()
 
         self._handle = Library.framework().MaaReplayControllerCreate(
-            str(dump_dir).encode(),
+            str(recording_path).encode(),
         )
 
         if not self._handle:
@@ -1005,13 +1005,14 @@ class RecordController(Controller):
     def __init__(
         self,
         inner: Controller,
-        dump_dir: Union[str, Path],
+        recording_path: Union[str, Path],
     ):
         """创建录制控制器 / Create record controller
 
         Args:
             inner: 被包装的内部控制器 / The inner controller to wrap
-            dump_dir: 录制文件输出目录 / Directory for recording output files
+            recording_path: 录制 JSONL 文件输出路径。截图会保存到同目录下的 "{stem}-Screenshot" 文件夹。
+                            / Path to the recording JSONL file to write. Screenshots are saved to a "{stem}-Screenshot" folder in the same directory.
 
         Raises:
             RuntimeError: 如果创建失败
@@ -1022,7 +1023,7 @@ class RecordController(Controller):
 
         self._handle = Library.framework().MaaRecordControllerCreate(
             inner._handle,
-            str(dump_dir).encode(),
+            str(recording_path).encode(),
         )
 
         if not self._handle:

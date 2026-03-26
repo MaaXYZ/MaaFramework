@@ -116,16 +116,16 @@ MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controlle
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
-MaaController* MaaReplayControllerCreate(const char* dump_dir)
+MaaController* MaaReplayControllerCreate(const char* recording_path)
 {
-    LogFunc << VAR(dump_dir);
+    LogFunc << VAR(recording_path);
 
-    if (!dump_dir) {
-        LogError << "dump_dir is null";
+    if (!recording_path) {
+        LogError << "recording_path is null";
         return nullptr;
     }
 
-    auto control_unit = MAA_NS::ReplayControlUnitLibraryHolder::create_control_unit(dump_dir);
+    auto control_unit = MAA_NS::ReplayControlUnitLibraryHolder::create_control_unit(recording_path);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -135,17 +135,17 @@ MaaController* MaaReplayControllerCreate(const char* dump_dir)
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
-MaaController* MaaRecordControllerCreate(MaaController* inner, const char* dump_dir)
+MaaController* MaaRecordControllerCreate(MaaController* inner, const char* recording_path)
 {
-    LogFunc << VAR_VOIDP(inner) << VAR(dump_dir);
+    LogFunc << VAR_VOIDP(inner) << VAR(recording_path);
 
     if (!inner) {
         LogError << "inner controller is null";
         return nullptr;
     }
 
-    if (!dump_dir) {
-        LogError << "dump_dir is null";
+    if (!recording_path) {
+        LogError << "recording_path is null";
         return nullptr;
     }
 
@@ -161,7 +161,7 @@ MaaController* MaaRecordControllerCreate(MaaController* inner, const char* dump_
         return nullptr;
     }
 
-    auto control_unit = MAA_NS::RecordControlUnitLibraryHolder::create_control_unit(std::move(inner_unit), dump_dir);
+    auto control_unit = MAA_NS::RecordControlUnitLibraryHolder::create_control_unit(std::move(inner_unit), recording_path);
     if (!control_unit) {
         LogError << "Failed to create record control unit";
         return nullptr;

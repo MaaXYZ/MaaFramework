@@ -1387,7 +1387,7 @@ def main():
         test_resource_node_list(resource)
 
         replay_controller = ReplayController(
-            install_dir / "test" / "PipelineSmoking",
+            install_dir / "test" / "PipelineSmoking" / "MaaRecording.jsonl",
         )
         replay_controller.post_connection().wait()
 

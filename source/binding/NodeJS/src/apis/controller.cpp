@@ -603,8 +603,8 @@ maajs::ValueType load_playcover_controller(maajs::EnvType env)
 
 ReplayControllerImpl* ReplayControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [dump_dir] = maajs::UnWrapArgs<ReplayControllerCtorParam, void>(info);
-    auto ctrl = MaaReplayControllerCreate(dump_dir.c_str());
+    auto [recording_path] = maajs::UnWrapArgs<ReplayControllerCtorParam, void>(info);
+    auto ctrl = MaaReplayControllerCreate(recording_path.c_str());
     if (!ctrl) {
         return nullptr;
     }
@@ -625,11 +625,11 @@ maajs::ValueType load_replay_controller(maajs::EnvType env)
 
 RecordControllerImpl* RecordControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [inner_ctrl, dump_dir] = maajs::UnWrapArgs<RecordControllerCtorParam, void>(info);
+    auto [inner_ctrl, recording_path] = maajs::UnWrapArgs<RecordControllerCtorParam, void>(info);
     if (!inner_ctrl || !inner_ctrl->controller) {
         return nullptr;
     }
-    auto ctrl = MaaRecordControllerCreate(inner_ctrl->controller, dump_dir.c_str());
+    auto ctrl = MaaRecordControllerCreate(inner_ctrl->controller, recording_path.c_str());
     if (!ctrl) {
         return nullptr;
     }

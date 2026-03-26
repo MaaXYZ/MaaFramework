@@ -11,16 +11,16 @@ const char* MaaReplayControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaReplayControlUnitHandle MaaReplayControlUnitCreate(const char* dump_dir)
+MaaReplayControlUnitHandle MaaReplayControlUnitCreate(const char* recording_path)
 {
-    LogFunc << VAR(dump_dir);
+    LogFunc << VAR(recording_path);
 
-    if (!dump_dir) {
-        LogError << "dump_dir is null";
+    if (!recording_path) {
+        LogError << "recording_path is null";
         return nullptr;
     }
 
-    auto handle = MAA_CTRL_UNIT_NS::create_replay_controller(MAA_NS::path(dump_dir));
+    auto handle = MAA_CTRL_UNIT_NS::create_replay_controller(MAA_NS::path(recording_path));
 
     LogDebug << VAR_VOIDP(handle);
 

@@ -7,23 +7,33 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-RecordController::RecordController(std::shared_ptr<ControlUnitAPI> inner, std::filesystem::path dump_dir)
+RecordController::RecordController(std::shared_ptr<ControlUnitAPI> inner, std::filesystem::path recording_path)
     : inner_(std::move(inner))
-    , dump_dir_(std::move(dump_dir))
+    , recording_path_(std::move(recording_path))
     , recording_start_(std::chrono::steady_clock::now())
 {
-    LogFunc << VAR_VOIDP(inner_.get()) << VAR(dump_dir_);
+    LogFunc << VAR_VOIDP(inner_.get()) << VAR(recording_path_);
+
+    auto parent_dir = recording_path_.parent_path();
+    auto stem = recording_path_.stem().string();
+
+    screenshot_dir_ = parent_dir / (stem + "-Screenshot");
+    screenshot_rel_prefix_ = stem + "-Screenshot";
 
     std::error_code ec;
-    std::filesystem::create_directories(dump_dir_, ec);
+    std::filesystem::create_directories(parent_dir, ec);
     if (ec) {
-        LogError << "Failed to create dump directory:" << dump_dir_ << VAR(ec.message());
+        LogError << "Failed to create parent directory:" << parent_dir << VAR(ec.message());
     }
 
-    auto recording_path = dump_dir_ / "recording.jsonl";
-    record_file_.open(recording_path, std::ios::out | std::ios::trunc);
+    std::filesystem::create_directories(screenshot_dir_, ec);
+    if (ec) {
+        LogError << "Failed to create screenshot directory:" << screenshot_dir_ << VAR(ec.message());
+    }
+
+    record_file_.open(recording_path_, std::ios::out | std::ios::trunc);
     if (!record_file_.is_open()) {
-        LogError << "Failed to open recording file:" << recording_path;
+        LogError << "Failed to open recording file:" << recording_path_;
     }
 }
 
@@ -94,10 +104,11 @@ bool RecordController::screencap(cv::Mat& image)
 
     if (success && !image.empty()) {
         std::unique_lock lock(recording_mutex_);
-        param.path = std::format("screencap_{}.png", screencap_count_++);
+        auto filename = std::format("screencap_{}.png", screencap_count_++);
+        param.path = screenshot_rel_prefix_ + "/" + filename;
         lock.unlock();
 
-        MAA_NS::imwrite(dump_dir_ / param.path, image);
+        MAA_NS::imwrite(screenshot_dir_ / filename, image);
     }
 
     write_record(make_record_json(make_line(RecordType::screencap, success, timestamp, static_cast<int>(cost)), param));

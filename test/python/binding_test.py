@@ -367,7 +367,7 @@ def test_controller_api():
     print("\n=== test_controller_api ===")
 
     replay_controller = ReplayController(
-        install_dir / "test" / "PipelineSmoking",
+        install_dir / "test" / "PipelineSmoking" / "MaaRecording.jsonl",
     )
     print(f"  controller: {replay_controller}")
 

@@ -71,7 +71,7 @@ private:
 class ReplayControlUnitLibraryHolder : public LibraryHolder<ReplayControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI> create_control_unit(const char* dump_dir);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI> create_control_unit(const char* recording_path);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaReplayControlUnit");
@@ -122,7 +122,7 @@ class RecordControlUnitLibraryHolder : public LibraryHolder<RecordControlUnitLib
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>
-        create_control_unit(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> inner, const char* dump_dir);
+        create_control_unit(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> inner, const char* recording_path);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaRecordControlUnit");

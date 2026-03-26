@@ -48,7 +48,7 @@ def prepare_runtime():
     print(f"resource.loaded: {resource.loaded}")
 
     replay_controller = ReplayController(
-        install_dir / "test" / "PipelineSmoking",
+        install_dir / "test" / "PipelineSmoking" / "MaaRecording.jsonl",
     )
     print(f"controller: {replay_controller}")
     replay_controller.post_connection().wait()

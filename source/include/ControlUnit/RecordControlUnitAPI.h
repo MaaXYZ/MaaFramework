@@ -10,7 +10,7 @@ extern "C"
 
     MAA_CONTROL_UNIT_API const char* MaaRecordControlUnitGetVersion();
 
-    MAA_CONTROL_UNIT_API MaaRecordControlUnitHandle MaaRecordControlUnitCreate(void* shared_inner, const char* dump_dir);
+    MAA_CONTROL_UNIT_API MaaRecordControlUnitHandle MaaRecordControlUnitCreate(void* shared_inner, const char* recording_path);
 
     MAA_CONTROL_UNIT_API void MaaRecordControlUnitDestroy(MaaRecordControlUnitHandle handle);
 

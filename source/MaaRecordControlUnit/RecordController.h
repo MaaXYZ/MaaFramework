@@ -18,7 +18,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class RecordController : public FullControlUnitAPI
 {
 public:
-    RecordController(std::shared_ptr<ControlUnitAPI> inner, std::filesystem::path dump_dir);
+    RecordController(std::shared_ptr<ControlUnitAPI> inner, std::filesystem::path recording_path);
     virtual ~RecordController() override;
 
 public: // from ControlUnitAPI
@@ -66,7 +66,9 @@ private:
 
 private:
     std::shared_ptr<ControlUnitAPI> inner_;
-    std::filesystem::path dump_dir_;
+    std::filesystem::path recording_path_;
+    std::filesystem::path screenshot_dir_;
+    std::string screenshot_rel_prefix_;
 
     std::mutex recording_mutex_;
     std::ofstream record_file_;

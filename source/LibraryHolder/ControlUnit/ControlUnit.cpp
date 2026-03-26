@@ -105,7 +105,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI> Win32ControlUnitLibraryHo
     return std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI> ReplayControlUnitLibraryHolder::create_control_unit(const char* dump_dir)
+std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI> ReplayControlUnitLibraryHolder::create_control_unit(const char* recording_path)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -126,7 +126,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI> ReplayControlUnitLibraryHo
         return nullptr;
     }
 
-    auto control_unit_handle = create_control_unit_func(dump_dir);
+    auto control_unit_handle = create_control_unit_func(recording_path);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";
@@ -233,7 +233,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::GamepadControlUnitAPI>
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>
-    RecordControlUnitLibraryHolder::create_control_unit(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> inner, const char* dump_dir)
+    RecordControlUnitLibraryHolder::create_control_unit(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> inner, const char* recording_path)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -254,7 +254,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>
         return nullptr;
     }
 
-    auto control_unit_handle = create_control_unit_func(&inner, dump_dir);
+    auto control_unit_handle = create_control_unit_func(&inner, recording_path);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";
