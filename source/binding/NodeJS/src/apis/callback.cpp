@@ -399,7 +399,7 @@ MaaBool CustomShell(const char* cmd, int64_t timeout, void* trans_arg, MaaString
         return func.Call(
             {
                 maajs::StringType::New(func.Env(), cmd),
-                maajs::NumberType::New(func.Env(), timeout),
+                maajs::NumberType::New(func.Env(), static_cast<double>(timeout)),
             });
     });
     if (result) {
