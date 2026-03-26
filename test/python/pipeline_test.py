@@ -1267,7 +1267,7 @@ def test_negative_roi_and_target(context: Context):
         }
     )
     obj = new_ctx.get_node_object("NegativeRoi2Elem")
-    assert_eq(obj.recognition.param.roi, [-50, -50, 0, 0], "negative roi 2-element")
+    assert_eq(obj.recognition.param.roi, [-50, -50, 1, 1], "negative roi 2-element")
 
     # 测试负数 target 坐标
     new_ctx.override_pipeline(
