@@ -380,8 +380,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
 
 bool Configurator::is_option_applicable(const InterfaceData::Option& opt) const
 {
-    if (!opt.controller.empty()
-        && std::ranges::find(opt.controller, config_.controller.name) == opt.controller.end()) {
+    if (!opt.controller.empty() && std::ranges::find(opt.controller, config_.controller.name) == opt.controller.end()) {
         return false;
     }
     if (!opt.resource.empty() && std::ranges::find(opt.resource, config_.resource) == opt.resource.end()) {
@@ -390,9 +389,7 @@ bool Configurator::is_option_applicable(const InterfaceData::Option& opt) const
     return true;
 }
 
-void Configurator::merge_option_overrides(
-    RuntimeParam::Task& runtime_task,
-    const std::vector<Configuration::Option>& config_options) const
+void Configurator::merge_option_overrides(RuntimeParam::Task& runtime_task, const std::vector<Configuration::Option>& config_options) const
 {
     for (const auto& config_option : config_options) {
         auto data_option_iter = data_.option.find(config_option.name);

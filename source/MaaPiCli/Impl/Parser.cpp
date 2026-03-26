@@ -186,8 +186,7 @@ bool Parser::check_configuration(const InterfaceData& data, Configuration& confi
             case InterfaceData::Option::Type::Select:
             case InterfaceData::Option::Type::Switch: {
                 if (!it->value.empty()) {
-                    auto case_iter =
-                        std::ranges::find(data_option.cases, it->value, std::mem_fn(&InterfaceData::Option::Case::name));
+                    auto case_iter = std::ranges::find(data_option.cases, it->value, std::mem_fn(&InterfaceData::Option::Case::name));
                     if (case_iter == data_option.cases.end()) {
                         LogWarn << "Option case not found, removing from config" << VAR(it->name) << VAR(it->value);
                         valid = false;

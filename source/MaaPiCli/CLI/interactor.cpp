@@ -386,7 +386,9 @@ void Interactor::print_config() const
     std::cout << "\t" << MAA_NS::utf8_to_crt(config_.configuration().resource) << "\n\n";
 
     auto print_level_options = [&](const std::string& label, const std::vector<MAA_PROJECT_INTERFACE_NS::Configuration::Option>& opts) {
-        if (opts.empty()) return;
+        if (opts.empty()) {
+            return;
+        }
         std::cout << label << ":\n\n";
         for (const auto& opt : opts) {
             if (!opt.value.empty()) {
@@ -395,7 +397,9 @@ void Interactor::print_config() const
             else if (!opt.values.empty()) {
                 std::cout << "\t" << MAA_NS::utf8_to_crt(opt.name) << ": [";
                 for (size_t j = 0; j < opt.values.size(); ++j) {
-                    if (j > 0) std::cout << ", ";
+                    if (j > 0) {
+                        std::cout << ", ";
+                    }
                     std::cout << MAA_NS::utf8_to_crt(opt.values[j]);
                 }
                 std::cout << "]\n";
@@ -431,8 +435,7 @@ void Interactor::interact_for_first_time_use()
             config_.interface_data().resource,
             config_.configuration().resource,
             std::mem_fn(&MAA_PROJECT_INTERFACE_NS::InterfaceData::Resource::name));
-        res_it != config_.interface_data().resource.end())
-    {
+        res_it != config_.interface_data().resource.end()) {
         process_level_options(res_it->option, config_.configuration().resource_option, "Resource");
     }
 
@@ -440,8 +443,7 @@ void Interactor::interact_for_first_time_use()
             config_.interface_data().controller,
             config_.configuration().controller.name,
             std::mem_fn(&MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::name));
-        ctrl_it != config_.interface_data().controller.end())
-    {
+        ctrl_it != config_.interface_data().controller.end()) {
         process_level_options(ctrl_it->option, config_.configuration().controller_option, "Controller");
     }
 
@@ -1325,12 +1327,10 @@ bool Interactor::process_option(
     const auto& opt = config_.interface_data().option.at(option_name);
 
     // v2.3.1: check option applicability
-    if (!opt.controller.empty()
-        && std::ranges::find(opt.controller, config_.configuration().controller.name) == opt.controller.end()) {
+    if (!opt.controller.empty() && std::ranges::find(opt.controller, config_.configuration().controller.name) == opt.controller.end()) {
         return true;
     }
-    if (!opt.resource.empty()
-        && std::ranges::find(opt.resource, config_.configuration().resource) == opt.resource.end()) {
+    if (!opt.resource.empty() && std::ranges::find(opt.resource, config_.configuration().resource) == opt.resource.end()) {
         return true;
     }
 
@@ -1595,7 +1595,9 @@ void Interactor::print_config_tasks(bool with_index) const
             else if (!opt.values.empty()) {
                 std::cout << "\t\t- " << MAA_NS::utf8_to_crt(opt.name) << ": [";
                 for (size_t j = 0; j < opt.values.size(); ++j) {
-                    if (j > 0) std::cout << ", ";
+                    if (j > 0) {
+                        std::cout << ", ";
+                    }
                     std::cout << MAA_NS::utf8_to_crt(opt.values[j]);
                 }
                 std::cout << "]\n";
@@ -1618,18 +1620,28 @@ void Interactor::print_config_tasks(bool with_index) const
             bool has_task_in_group = false;
             for (const auto& cfg_task : all_config_tasks) {
                 auto data_it = std::ranges::find(config_.interface_data().task, cfg_task.name, std::mem_fn(&InterfaceData::Task::name));
-                if (data_it == config_.interface_data().task.end()) continue;
-                if (std::ranges::find(data_it->group, grp.name) == data_it->group.end()) continue;
+                if (data_it == config_.interface_data().task.end()) {
+                    continue;
+                }
+                if (std::ranges::find(data_it->group, grp.name) == data_it->group.end()) {
+                    continue;
+                }
                 has_task_in_group = true;
                 break;
             }
-            if (!has_task_in_group) continue;
+            if (!has_task_in_group) {
+                continue;
+            }
 
             std::cout << "  [" << MAA_NS::utf8_to_crt(grp_display) << "]\n";
             for (const auto& cfg_task : all_config_tasks) {
                 auto data_it = std::ranges::find(config_.interface_data().task, cfg_task.name, std::mem_fn(&InterfaceData::Task::name));
-                if (data_it == config_.interface_data().task.end()) continue;
-                if (std::ranges::find(data_it->group, grp.name) == data_it->group.end()) continue;
+                if (data_it == config_.interface_data().task.end()) {
+                    continue;
+                }
+                if (std::ranges::find(data_it->group, grp.name) == data_it->group.end()) {
+                    continue;
+                }
                 std::cout << MAA_NS::utf8_to_crt(std::format("\t- {}\n", cfg_task.name));
                 print_task_options(cfg_task);
                 printed_tasks.insert(cfg_task.name);
@@ -1638,7 +1650,9 @@ void Interactor::print_config_tasks(bool with_index) const
 
         bool has_ungrouped = false;
         for (const auto& cfg_task : all_config_tasks) {
-            if (printed_tasks.contains(cfg_task.name)) continue;
+            if (printed_tasks.contains(cfg_task.name)) {
+                continue;
+            }
             if (!has_ungrouped) {
                 std::cout << "  [Other]\n";
                 has_ungrouped = true;

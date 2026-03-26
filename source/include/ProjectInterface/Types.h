@@ -201,7 +201,7 @@ struct InterfaceData
         std::vector<std::string> resource;   // v2.3.0: applicable resources
         std::vector<Case> cases;
         std::vector<Input> inputs;
-        json::object pipeline_override; // for input type
+        json::object pipeline_override;                                   // for input type
         std::variant<std::string, std::vector<std::string>> default_case; // string for select/switch, array for checkbox
 
         MEO_JSONIZATION(
