@@ -41,6 +41,11 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
 
     update_window_info();
 
+    // 记录当前鼠标位置，touch_up 后恢复
+    CGEventRef cur = CGEventCreate(nullptr);
+    saved_cursor_pos_ = CGEventGetLocation(cur);
+    CFRelease(cur);
+
     MouseEventInfo info;
     if (!contact_to_mouse_down_info(contact, info)) {
         LogError << "contact out of range" << VAR(contact);
@@ -87,14 +92,17 @@ bool GlobalEventInput::touch_up(int contact)
     }
 
     // 获取当前鼠标位置作为释放位置
-    CGEventRef current_event = CGEventCreate(nullptr);
-    CGPoint location = CGEventGetLocation(current_event);
-    CFRelease(current_event);
+    CGEventRef cur = CGEventCreate(nullptr);
+    CGPoint pos = CGEventGetLocation(cur);
+    CFRelease(cur);
 
-    if (!post_mouse_event(info.event_type, location, info.mouse_button)) {
+    if (!post_mouse_event(info.event_type, pos, info.mouse_button)) {
         LogError << "Failed to post mouse up event";
         return false;
     }
+
+    // 恢复鼠标到 touch_down 之前的位置
+    CGDisplayMoveCursorToPoint(CGMainDisplayID(), saved_cursor_pos_);
 
     return true;
 }
