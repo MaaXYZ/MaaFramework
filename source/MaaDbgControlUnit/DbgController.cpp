@@ -43,7 +43,7 @@ bool DbgController::connect()
 {
     LogFunc << VAR(path_);
 
-    images_.clear();
+    image_paths_.clear();
     image_index_ = 0;
     connected_ = false;
 
@@ -53,11 +53,9 @@ bool DbgController::connect()
         return false;
     }
 
-    std::vector<std::filesystem::path> paths;
-
     if (std::filesystem::is_regular_file(path_, ec)) {
         if (is_image_path(path_)) {
-            paths.push_back(path_);
+            image_paths_.push_back(path_);
         }
     }
     else if (std::filesystem::is_directory(path_, ec)) {
@@ -70,24 +68,17 @@ bool DbgController::connect()
                 continue;
             }
             if (is_image_path(entry.path())) {
-                paths.push_back(entry.path());
+                image_paths_.push_back(entry.path());
             }
         }
     }
 
-    std::ranges::sort(paths, [](const std::filesystem::path& a, const std::filesystem::path& b) {
+    std::ranges::sort(image_paths_, [](const std::filesystem::path& a, const std::filesystem::path& b) {
         return MAA_NS::path_to_utf8_string(a) < MAA_NS::path_to_utf8_string(b);
     });
 
-    for (const auto& p : paths) {
-        cv::Mat img = MAA_NS::imread(p);
-        if (!img.empty()) {
-            images_.push_back(std::move(img));
-        }
-    }
-
-    if (images_.empty()) {
-        LogError << "no loadable images" << VAR(path_);
+    if (image_paths_.empty()) {
+        LogError << "no image files found" << VAR(path_);
         return false;
     }
 
@@ -123,14 +114,20 @@ bool DbgController::stop_app(const std::string& /*intent*/)
 
 bool DbgController::screencap(cv::Mat& image)
 {
-    if (!connected_ || images_.empty()) {
+    if (!connected_ || image_paths_.empty()) {
         LogError << "not connected or no images";
         return false;
     }
 
-    const size_t idx = image_index_ % images_.size();
-    images_[idx].copyTo(image);
-    image_index_ = (image_index_ + 1) % images_.size();
+    const size_t idx = image_index_ % image_paths_.size();
+    image = MAA_NS::imread(image_paths_[idx]);
+    image_index_ = (image_index_ + 1) % image_paths_.size();
+
+    if (image.empty()) {
+        LogError << "failed to load image" << VAR(image_paths_[idx]);
+        return false;
+    }
+
     return true;
 }
 
@@ -189,7 +186,7 @@ json::object DbgController::get_info() const
     json::object info;
     info["type"] = "dbg";
     info["path"] = MAA_NS::path_to_utf8_string(path_);
-    info["image_count"] = static_cast<int64_t>(images_.size());
+    info["image_count"] = static_cast<int64_t>(image_paths_.size());
     info["image_index"] = static_cast<int64_t>(image_index_);
     return info;
 }

@@ -48,7 +48,7 @@ public:
 
 private:
     std::filesystem::path path_;
-    std::vector<cv::Mat> images_;
+    std::vector<std::filesystem::path> image_paths_;
     size_t image_index_ = 0;
     bool connected_ = false;
 };
