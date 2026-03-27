@@ -1,46 +1,28 @@
-#include "ControlUnit/DbgControlUnitAPI.h"
+#include "MaaControlUnit/DbgControlUnitAPI.h"
 
-#include "CarouselImage/CarouselImage.h"
+#include "DbgController.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
-#include "ReplayRecording/ReplayRecordingMgr.h"
 
 const char* MaaDbgControlUnitGetVersion()
 {
 #pragma message("MaaDbgControlUnit MAA_VERSION: " MAA_VERSION)
-
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MaaDbgControlUnitCreate(MaaDbgControllerType type, const char* read_path)
+MaaDbgControlUnitHandle MaaDbgControlUnitCreate(const char* read_path)
 {
-    LogFunc << VAR(type) << VAR(read_path);
+    LogFunc << VAR(read_path);
 
     if (!read_path) {
         LogError << "read_path is null";
         return nullptr;
     }
 
-    auto read_stdpath = MAA_NS::path(read_path);
-
-    MaaControlUnitHandle handle = nullptr;
-
-    switch (type) {
-    case MaaDbgControllerType_CarouselImage:
-        handle = new MAA_CTRL_UNIT_NS::CarouselImage(read_stdpath);
-        break;
-
-    case MaaDbgControllerType_ReplayRecording:
-        handle = MAA_CTRL_UNIT_NS::create_replay_recording(read_stdpath);
-        break;
-    }
-
-    LogDebug << VAR_VOIDP(handle);
-
-    return handle;
+    return new MAA_CTRL_UNIT_NS::DbgController(MAA_NS::path(read_path));
 }
 
-void MaaDbgControlUnitDestroy(MaaControlUnitHandle handle)
+void MaaDbgControlUnitDestroy(MaaDbgControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
 

@@ -7,7 +7,7 @@
 
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/NoWarningCVMat.hpp"
 #include "Utils/EventDispatcher.hpp"
@@ -246,6 +246,8 @@ public: // for Actuator
 
     bool scroll(ScrollParam p);
     bool shell(const std::string& cmd, std::string& output, int64_t timeout = 20000);
+
+    std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit() const { return control_unit_; }
 
 private:
     bool handle_connect();

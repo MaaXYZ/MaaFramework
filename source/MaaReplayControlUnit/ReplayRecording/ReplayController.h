@@ -4,21 +4,19 @@
 
 #include <meojson/json.hpp>
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
+#include "Record.h"
 
 #include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class CarouselImage : public ControlUnitAPI
+class ReplayController : public FullControlUnitAPI
 {
 public:
-    explicit CarouselImage(std::filesystem::path path)
-        : path_(std::move(path))
-    {
-    }
+    explicit ReplayController(Recording recording);
 
-    virtual ~CarouselImage() = default;
+    virtual ~ReplayController() override;
 
 public: // from ControlUnitAPI
     virtual bool connect() override;
@@ -47,13 +45,24 @@ public: // from ControlUnitAPI
 
     virtual bool inactive() override;
 
+public: // from FullControlUnitAPI
+    virtual bool relative_move(int dx, int dy) override;
+    virtual bool scroll(int dx, int dy) override;
+    virtual bool
+        shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000)) override;
+
     virtual json::object get_info() const override;
 
 private:
-    std::filesystem::path path_;
-    std::vector<cv::Mat> images_;
-    size_t image_index_ = 0;
-    cv::Size resolution_ { };
+    const Record* expect_record(RecordType expected_type);
+    bool consume_record(const Record& record);
+
+    template <typename T>
+    const T* get_param(const Record& record);
+
+private:
+    Recording recording_;
+    size_t record_index_ = 0;
     bool connected_ = false;
 };
 

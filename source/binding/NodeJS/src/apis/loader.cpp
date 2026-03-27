@@ -23,6 +23,8 @@ static maajs::ObjectType init(maajs::EnvType env)
     maajs::BindValue(maa, "MacOSController", load_macos_controller(env));
     maajs::BindValue(maa, "PlayCoverController", load_playcover_controller(env));
     maajs::BindValue(maa, "DbgController", load_dbg_controller(env));
+    maajs::BindValue(maa, "ReplayController", load_replay_controller(env));
+    maajs::BindValue(maa, "RecordController", load_record_controller(env));
     maajs::BindValue(maa, "GamepadController", load_gamepad_controller(env));
     maajs::BindValue(maa, "WlRootsController", load_wlroots_controller(env));
     maajs::BindValue(maa, "CustomController", load_custom_controller(env));

@@ -16,6 +16,7 @@ class MacOSControlUnitAPI;
 class GamepadControlUnitAPI;
 class CustomControlUnitAPI;
 class WlRootsControlUnitAPI;
+class FullControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
 
 MAA_NS_BEGIN
@@ -70,13 +71,25 @@ private:
 class DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(MaaDbgControllerType type, const char* read_path);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(const char* read_path);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaDbgControlUnit");
     inline static const std::string version_func_name_ = "MaaDbgControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaDbgControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaDbgControlUnitDestroy";
+};
+
+class ReplayControlUnitLibraryHolder : public LibraryHolder<ReplayControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI> create_control_unit(const char* recording_path);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaReplayControlUnit");
+    inline static const std::string version_func_name_ = "MaaReplayControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaReplayControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaReplayControlUnitDestroy";
 };
 
 class CustomControlUnitLibraryHolder : public LibraryHolder<CustomControlUnitLibraryHolder>
@@ -115,6 +128,19 @@ private:
     inline static const std::string version_func_name_ = "MaaGamepadControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaGamepadControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaGamepadControlUnitDestroy";
+};
+
+class RecordControlUnitLibraryHolder : public LibraryHolder<RecordControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>
+        create_control_unit(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> inner, const char* recording_path);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaRecordControlUnit");
+    inline static const std::string version_func_name_ = "MaaRecordControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaRecordControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaRecordControlUnitDestroy";
 };
 
 class WlRootsControlUnitLibraryHolder : public LibraryHolder<WlRootsControlUnitLibraryHolder>

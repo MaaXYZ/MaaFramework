@@ -1,5 +1,5 @@
 file(GLOB_RECURSE maa_macos_control_unit_src *.h *.hpp *.cpp *.mm)
-file(GLOB_RECURSE maa_macos_control_unit_header ${MAA_PRIVATE_INC}/ControlUnit/MacOSControlUnitAPI.h ${MAA_PRIVATE_INC}/ControlUnit/ControlUnitAPI.h)
+file(GLOB_RECURSE maa_macos_control_unit_header ${MAA_PUBLIC_INC}/MaaControlUnit/MacOSControlUnitAPI.h ${MAA_PUBLIC_INC}/MaaControlUnit/ControlUnitAPI.h)
 
 add_library(MaaMacOSControlUnit SHARED ${maa_macos_control_unit_src} ${maa_macos_control_unit_header})
 
