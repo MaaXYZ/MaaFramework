@@ -86,6 +86,15 @@ public:
     virtual bool find_device(/*out*/ std::vector<std::string>& devices) = 0;
 };
 
+class AndroidNativeControlUnitAPI : public ControlUnitAPI
+{
+public:
+    ~AndroidNativeControlUnitAPI() override = default;
+
+    virtual void* attach_thread() const = 0;
+    virtual int detach_thread(void* env) const = 0;
+};
+
 class Win32ControlUnitAPI
     : public ControlUnitAPI
     , public ScrollableUnit
@@ -141,4 +150,4 @@ using MaaCustomControlUnitHandle = MAA_CTRL_UNIT_NS::CustomControlUnitAPI*;
 using MaaReplayControlUnitHandle = MAA_CTRL_UNIT_NS::FullControlUnitAPI*;
 using MaaRecordControlUnitHandle = MAA_CTRL_UNIT_NS::FullControlUnitAPI*;
 using MaaDbgControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;
-using MaaAndroidNativeControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;
+using MaaAndroidNativeControlUnitHandle = MAA_CTRL_UNIT_NS::AndroidNativeControlUnitAPI*;
