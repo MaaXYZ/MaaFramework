@@ -76,7 +76,9 @@ public:
 
 // Platform-specific APIs, composed from base + capability mixins
 
-class AdbControlUnitAPI : public ControlUnitAPI, public ShellableUnit
+class AdbControlUnitAPI
+    : public ControlUnitAPI
+    , public ShellableUnit
 {
 public:
     virtual ~AdbControlUnitAPI() = default;
@@ -84,19 +86,29 @@ public:
     virtual bool find_device(/*out*/ std::vector<std::string>& devices) = 0;
 };
 
-class Win32ControlUnitAPI : public ControlUnitAPI, public ScrollableUnit, public RelativeMovableUnit
+class Win32ControlUnitAPI
+    : public ControlUnitAPI
+    , public ScrollableUnit
+    , public RelativeMovableUnit
 {
 public:
     virtual ~Win32ControlUnitAPI() = default;
 };
 
-class MacOSControlUnitAPI : public ControlUnitAPI, public ScrollableUnit, public RelativeMovableUnit
+class MacOSControlUnitAPI
+    : public ControlUnitAPI
+    , public ScrollableUnit
+    , public RelativeMovableUnit
 {
 public:
     virtual ~MacOSControlUnitAPI() = default;
 };
 
-class CustomControlUnitAPI : public ControlUnitAPI, public ScrollableUnit, public RelativeMovableUnit, public ShellableUnit
+class CustomControlUnitAPI
+    : public ControlUnitAPI
+    , public ScrollableUnit
+    , public RelativeMovableUnit
+    , public ShellableUnit
 {
 public:
     virtual ~CustomControlUnitAPI() = default;
@@ -108,7 +120,11 @@ public:
     virtual ~GamepadControlUnitAPI() = default;
 };
 
-class FullControlUnitAPI : public ControlUnitAPI, public ScrollableUnit, public RelativeMovableUnit, public ShellableUnit
+class FullControlUnitAPI
+    : public ControlUnitAPI
+    , public ScrollableUnit
+    , public RelativeMovableUnit
+    , public ShellableUnit
 {
 public:
     virtual ~FullControlUnitAPI() = default;

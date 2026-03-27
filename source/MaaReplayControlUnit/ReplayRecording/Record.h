@@ -60,5 +60,4 @@ struct Recording
     std::vector<Record> records;
 };
 
-
 MAA_CTRL_UNIT_NS_END

@@ -58,8 +58,8 @@ int main()
 
 #endif
 
-// ReplayControlUnit requires a valid recording JSONL file to create successfully,
-// so it cannot be tested in this simple dlopen smoke test.
+    // ReplayControlUnit requires a valid recording JSONL file to create successfully,
+    // so it cannot be tested in this simple dlopen smoke test.
 
 #ifdef WITH_CUSTOM_CONTROLLER
 

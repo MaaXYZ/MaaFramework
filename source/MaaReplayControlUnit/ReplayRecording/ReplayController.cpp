@@ -61,7 +61,9 @@ bool ReplayController::connect()
     connected_ = false;
 
     auto* record = expect_record(RecordType::connect);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     connected_ = record->success;
     return consume_record(*record);
@@ -88,10 +90,14 @@ bool ReplayController::start_app(const std::string& intent)
     LogInfo << VAR(intent);
 
     auto* record = expect_record(RecordType::start_app);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     auto* param = get_param<RecordApp>(*record);
-    if (!param) return false;
+    if (!param) {
+        return false;
+    }
 
     if (param->package != intent) {
         LogError << "record intent mismatch" << VAR(param->package) << VAR(intent) << VAR(record->raw_data);
@@ -106,10 +112,14 @@ bool ReplayController::stop_app(const std::string& intent)
     LogInfo << VAR(intent);
 
     auto* record = expect_record(RecordType::stop_app);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     auto* param = get_param<RecordApp>(*record);
-    if (!param) return false;
+    if (!param) {
+        return false;
+    }
 
     if (param->package != intent) {
         LogError << "record intent mismatch" << VAR(param->package) << VAR(intent) << VAR(record->raw_data);
@@ -124,10 +134,14 @@ bool ReplayController::screencap(cv::Mat& image)
     LogInfo;
 
     auto* record = expect_record(RecordType::screencap);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     auto* param = get_param<RecordScreencapData>(*record);
-    if (!param) return false;
+    if (!param) {
+        return false;
+    }
 
     bool ret = consume_record(*record);
 
@@ -141,7 +155,9 @@ bool ReplayController::click(int x, int y)
 
     // TODO: 现在点击的点是随机区域，没法直接检查
     auto* record = expect_record(RecordType::click);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     return consume_record(*record);
 }
@@ -152,7 +168,9 @@ bool ReplayController::swipe(int x1, int y1, int x2, int y2, int duration)
 
     // TODO: 现在点击的点是随机区域，没法直接检查
     auto* record = expect_record(RecordType::swipe);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     return consume_record(*record);
 }
@@ -162,10 +180,14 @@ bool ReplayController::touch_down(int contact, int x, int y, int pressure)
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
     auto* record = expect_record(RecordType::touch_down);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     auto* param = get_param<RecordTouch>(*record);
-    if (!param) return false;
+    if (!param) {
+        return false;
+    }
 
     if (param->contact != contact || param->x != x || param->y != y || param->pressure != pressure) {
         LogError << "record touch_down mismatch" << VAR(param->contact) << VAR(param->x) << VAR(param->y) << VAR(param->pressure)
@@ -181,10 +203,14 @@ bool ReplayController::touch_move(int contact, int x, int y, int pressure)
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
     auto* record = expect_record(RecordType::touch_move);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     auto* param = get_param<RecordTouch>(*record);
-    if (!param) return false;
+    if (!param) {
+        return false;
+    }
 
     if (param->contact != contact || param->x != x || param->y != y || param->pressure != pressure) {
         LogError << "record touch_move mismatch" << VAR(param->contact) << VAR(param->x) << VAR(param->y) << VAR(param->pressure)
@@ -200,10 +226,14 @@ bool ReplayController::touch_up(int contact)
     LogInfo << VAR(contact);
 
     auto* record = expect_record(RecordType::touch_up);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     auto* param = get_param<RecordTouch>(*record);
-    if (!param) return false;
+    if (!param) {
+        return false;
+    }
 
     if (param->contact != contact) {
         LogError << "record touch_up mismatch" << VAR(param->contact) << VAR(contact) << VAR(record->raw_data);
@@ -218,10 +248,14 @@ bool ReplayController::click_key(int key)
     LogInfo << VAR(key);
 
     auto* record = expect_record(RecordType::click_key);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     auto* param = get_param<RecordKey>(*record);
-    if (!param) return false;
+    if (!param) {
+        return false;
+    }
 
     if (param->keycode != key) {
         LogError << "record click_key mismatch" << VAR(param->keycode) << VAR(key) << VAR(record->raw_data);
@@ -236,10 +270,14 @@ bool ReplayController::input_text(const std::string& text)
     LogInfo << VAR(text);
 
     auto* record = expect_record(RecordType::input_text);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     auto* param = get_param<RecordInputText>(*record);
-    if (!param) return false;
+    if (!param) {
+        return false;
+    }
 
     if (param->text != text) {
         LogError << "record input_text mismatch" << VAR(param->text) << VAR(text) << VAR(record->raw_data);
@@ -254,10 +292,14 @@ bool ReplayController::key_down(int key)
     LogInfo << VAR(key);
 
     auto* record = expect_record(RecordType::key_down);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     auto* param = get_param<RecordKey>(*record);
-    if (!param) return false;
+    if (!param) {
+        return false;
+    }
 
     if (param->keycode != key) {
         LogError << "record key_down mismatch" << VAR(param->keycode) << VAR(key) << VAR(record->raw_data);
@@ -272,10 +314,14 @@ bool ReplayController::key_up(int key)
     LogInfo << VAR(key);
 
     auto* record = expect_record(RecordType::key_up);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     auto* param = get_param<RecordKey>(*record);
-    if (!param) return false;
+    if (!param) {
+        return false;
+    }
 
     if (param->keycode != key) {
         LogError << "record key_up mismatch" << VAR(param->keycode) << VAR(key) << VAR(record->raw_data);
@@ -290,7 +336,9 @@ bool ReplayController::scroll(int dx, int dy)
     LogInfo << VAR(dx) << VAR(dy);
 
     auto* record = expect_record(RecordType::scroll);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     return consume_record(*record);
 }
@@ -300,7 +348,9 @@ bool ReplayController::relative_move(int dx, int dy)
     LogInfo << VAR(dx) << VAR(dy);
 
     auto* record = expect_record(RecordType::relative_move);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     return consume_record(*record);
 }
@@ -310,10 +360,14 @@ bool ReplayController::shell(const std::string& cmd, std::string& output, std::c
     LogInfo << VAR(cmd) << VAR(timeout.count());
 
     auto* record = expect_record(RecordType::shell);
-    if (!record) return false;
+    if (!record) {
+        return false;
+    }
 
     auto* param = get_param<RecordShell>(*record);
-    if (!param) return false;
+    if (!param) {
+        return false;
+    }
 
     if (param->cmd != cmd) {
         LogError << "record shell cmd mismatch" << VAR(param->cmd) << VAR(cmd) << VAR(record->raw_data);

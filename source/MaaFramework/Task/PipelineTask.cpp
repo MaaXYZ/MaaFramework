@@ -156,7 +156,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
             return false;
         }
 
-	LogDebug << "sleep_until" << VAR(pretask.rate_limit);
+        LogDebug << "sleep_until" << VAR(pretask.rate_limit);
         std::this_thread::sleep_until(current_clock + pretask.rate_limit);
         return true;
     };

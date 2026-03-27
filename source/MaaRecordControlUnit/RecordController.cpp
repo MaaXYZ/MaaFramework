@@ -123,26 +123,23 @@ bool RecordController::click(int x, int y)
 
 bool RecordController::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    return forward_and_record(
-        RecordType::swipe,
-        RecordSwipe { x1, y1, x2, y2, duration },
-        [&]() { return inner_->swipe(x1, y1, x2, y2, duration); });
+    return forward_and_record(RecordType::swipe, RecordSwipe { x1, y1, x2, y2, duration }, [&]() {
+        return inner_->swipe(x1, y1, x2, y2, duration);
+    });
 }
 
 bool RecordController::touch_down(int contact, int x, int y, int pressure)
 {
-    return forward_and_record(
-        RecordType::touch_down,
-        RecordTouch { contact, x, y, pressure },
-        [&]() { return inner_->touch_down(contact, x, y, pressure); });
+    return forward_and_record(RecordType::touch_down, RecordTouch { contact, x, y, pressure }, [&]() {
+        return inner_->touch_down(contact, x, y, pressure);
+    });
 }
 
 bool RecordController::touch_move(int contact, int x, int y, int pressure)
 {
-    return forward_and_record(
-        RecordType::touch_move,
-        RecordTouch { contact, x, y, pressure },
-        [&]() { return inner_->touch_move(contact, x, y, pressure); });
+    return forward_and_record(RecordType::touch_move, RecordTouch { contact, x, y, pressure }, [&]() {
+        return inner_->touch_move(contact, x, y, pressure);
+    });
 }
 
 bool RecordController::touch_up(int contact)
@@ -173,7 +170,9 @@ bool RecordController::key_up(int key)
 bool RecordController::scroll(int dx, int dy)
 {
     auto action = [&]() -> bool {
-        if (auto p = std::dynamic_pointer_cast<ScrollableUnit>(inner_)) return p->scroll(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<ScrollableUnit>(inner_)) {
+            return p->scroll(dx, dy);
+        }
         LogError << "Inner controller does not support scroll";
         return false;
     };
@@ -183,7 +182,9 @@ bool RecordController::scroll(int dx, int dy)
 bool RecordController::relative_move(int dx, int dy)
 {
     auto action = [&]() -> bool {
-        if (auto p = std::dynamic_pointer_cast<RelativeMovableUnit>(inner_)) return p->relative_move(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<RelativeMovableUnit>(inner_)) {
+            return p->relative_move(dx, dy);
+        }
         LogError << "Inner controller does not support relative_move";
         return false;
     };

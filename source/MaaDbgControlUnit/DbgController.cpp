@@ -14,22 +14,22 @@ MAA_CTRL_UNIT_NS_BEGIN
 namespace
 {
 
-    bool is_image_extension(std::string_view ext)
-    {
-        static const std::unordered_set<std::string> kExts = {
-            ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".tif", ".tiff",
-        };
-        std::string lower(ext.begin(), ext.end());
-        for (char& c : lower) {
-            c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
-        }
-        return kExts.contains(lower);
+bool is_image_extension(std::string_view ext)
+{
+    static const std::unordered_set<std::string> kExts = {
+        ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".tif", ".tiff",
+    };
+    std::string lower(ext.begin(), ext.end());
+    for (char& c : lower) {
+        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
     }
+    return kExts.contains(lower);
+}
 
-    bool is_image_path(const std::filesystem::path& p)
-    {
-        return is_image_extension(MAA_NS::path_to_utf8_string(p.extension()));
-    }
+bool is_image_path(const std::filesystem::path& p)
+{
+    return is_image_extension(MAA_NS::path_to_utf8_string(p.extension()));
+}
 
 } // namespace
 
