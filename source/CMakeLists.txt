@@ -14,6 +14,10 @@ if(WITH_DBG_CONTROLLER)
     add_subdirectory(MaaDbgControlUnit)
 endif()
 
+if(WITH_REPLAY_CONTROLLER)
+    add_subdirectory(MaaReplayControlUnit)
+endif()
+
 if(WITH_CUSTOM_CONTROLLER)
     add_subdirectory(MaaCustomControlUnit)
 endif()
@@ -24,6 +28,10 @@ endif()
 
 if(WITH_GAMEPAD_CONTROLLER)
     add_subdirectory(MaaGamepadControlUnit)
+endif()
+
+if(WITH_RECORD_CONTROLLER)
+    add_subdirectory(MaaRecordControlUnit)
 endif()
 
 if(WITH_WLROOTS_CONTROLLER)

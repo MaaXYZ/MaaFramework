@@ -27,12 +27,24 @@ if(WITH_DBG_CONTROLLER)
     add_dependencies(LibraryHolder MaaDbgControlUnit)
 endif()
 
+if(WITH_REPLAY_CONTROLLER)
+    add_dependencies(LibraryHolder MaaReplayControlUnit)
+endif()
+
 if(WITH_CUSTOM_CONTROLLER)
     add_dependencies(LibraryHolder MaaCustomControlUnit)
 endif()
 
 if(WITH_GAMEPAD_CONTROLLER)
     add_dependencies(LibraryHolder MaaGamepadControlUnit)
+endif()
+
+if(WITH_RECORD_CONTROLLER)
+    add_dependencies(LibraryHolder MaaRecordControlUnit)
+endif()
+
+if(WITH_WLROOTS_CONTROLLER)
+    add_dependencies(LibraryHolder MaaWlRootsControlUnit)
 endif()
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${library_holder_src})

@@ -43,6 +43,10 @@ public: // from ControlUnitAPI
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual bool relative_move(int dx, int dy) override;
+    virtual bool
+        shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000)) override;
+
     virtual bool inactive() override;
 
     virtual json::object get_info() const override;

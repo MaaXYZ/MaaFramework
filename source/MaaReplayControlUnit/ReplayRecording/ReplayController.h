@@ -11,12 +11,12 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ReplayRecording : public ControlUnitAPI
+class ReplayController : public FullControlUnitAPI
 {
 public:
-    explicit ReplayRecording(Recording recording);
+    explicit ReplayController(Recording recording);
 
-    virtual ~ReplayRecording() override;
+    virtual ~ReplayController() override;
 
 public: // from ControlUnitAPI
     virtual bool connect() override;
@@ -45,10 +45,20 @@ public: // from ControlUnitAPI
 
     virtual bool inactive() override;
 
+public: // from FullControlUnitAPI
+    virtual bool relative_move(int dx, int dy) override;
+    virtual bool scroll(int dx, int dy) override;
+    virtual bool
+        shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000)) override;
+
     virtual json::object get_info() const override;
 
 private:
-    void sleep(int ms);
+    const Record* expect_record(RecordType expected_type);
+    bool consume_record(const Record& record);
+
+    template <typename T>
+    const T* get_param(const Record& record);
 
 private:
     Recording recording_;

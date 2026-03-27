@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <vector>
 
 #include <meojson/json.hpp>
 
@@ -10,27 +11,23 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class CarouselImage : public ControlUnitAPI
+class DbgController : public ControlUnitAPI
 {
 public:
-    explicit CarouselImage(std::filesystem::path path)
-        : path_(std::move(path))
-    {
-    }
+    explicit DbgController(std::filesystem::path path);
+    virtual ~DbgController() = default;
 
-    virtual ~CarouselImage() = default;
-
-public: // from ControlUnitAPI
+public:
     virtual bool connect() override;
     virtual bool connected() const override;
 
-    virtual bool request_uuid(/*out*/ std::string& uuid) override;
+    virtual bool request_uuid(std::string& uuid) override;
     virtual MaaControllerFeature get_features() const override;
 
     virtual bool start_app(const std::string& intent) override;
     virtual bool stop_app(const std::string& intent) override;
 
-    virtual bool screencap(/*out*/ cv::Mat& image) override;
+    virtual bool screencap(cv::Mat& image) override;
 
     virtual bool click(int x, int y) override;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;
@@ -51,9 +48,8 @@ public: // from ControlUnitAPI
 
 private:
     std::filesystem::path path_;
-    std::vector<cv::Mat> images_;
+    std::vector<std::filesystem::path> image_paths_;
     size_t image_index_ = 0;
-    cv::Size resolution_ { };
     bool connected_ = false;
 };
 
