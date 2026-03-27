@@ -968,7 +968,7 @@ class WlRootsController(Controller):
 
 
 class DbgController(Controller):
-    """调试控制器，轮播图片截图，所有操作直接返回成功 / Debug controller that cycles through images from a directory"""
+    """调试控制器，轮播图片截图，基本输入操作直接返回成功 / Debug controller that cycles through images from a directory"""
 
     def __init__(
         self,
@@ -1252,18 +1252,14 @@ class CustomController(Controller):
     def key_up(self, keycode: int) -> bool:
         raise NotImplementedError
 
-    @abstractmethod
     def scroll(self, dx: int, dy: int) -> bool:
-        raise NotImplementedError
+        return False
 
-    @abstractmethod
     def relative_move(self, dx: int, dy: int) -> bool:
-        raise NotImplementedError
+        return False
 
-    @abstractmethod
     def shell(self, cmd: str, timeout: int) -> Optional[str]:
-        """Execute shell command. Return output string on success, None on failure."""
-        raise NotImplementedError
+        return None
 
     def inactive(self) -> bool:
         """设置控制器为不活跃状态（可选实现，默认返回 True）"""

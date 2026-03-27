@@ -99,14 +99,14 @@ async function api_test() {
     })
     console.log('rsource', resource)
 
-    const replay_controller = new maa.DbgController(
+    const dbg_controller = new maa.DbgController(
         '../../install/test/PipelineSmoking/Screenshot'
     )
-    replay_controller.add_sink((res, msg) => {
+    dbg_controller.add_sink((res, msg) => {
         console.log(msg)
     })
-    console.log('controller', replay_controller)
-    await replay_controller.post_connection().wait()
+    console.log('controller', dbg_controller)
+    await dbg_controller.post_connection().wait()
 
     const tasker = new maa.Tasker()
     tasker.add_sink(msg => {
@@ -114,7 +114,7 @@ async function api_test() {
     })
     console.log('tasker', tasker)
     tasker.resource = resource
-    tasker.controller = replay_controller
+    tasker.controller = dbg_controller
 
     if (!tasker.inited) {
         console.log('failed to init tasker')

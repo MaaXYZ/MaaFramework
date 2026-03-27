@@ -29,9 +29,9 @@ MaaBool my_action(
 
 bool run_without_file(const std::filesystem::path& testset_dir)
 {
-    auto recording_path = testset_dir / "PipelineSmoking" / "Screenshot";
+    auto screenshot_path = testset_dir / "PipelineSmoking" / "Screenshot";
 
-    auto controller_handle = MaaDbgControllerCreate(recording_path.string().c_str());
+    auto controller_handle = MaaDbgControllerCreate(screenshot_path.string().c_str());
 
     MaaControllerWait(controller_handle, MaaControllerPostConnection(controller_handle));
 

@@ -366,33 +366,33 @@ def test_resource_api():
 def test_controller_api():
     print("\n=== test_controller_api ===")
 
-    replay_controller = DbgController(
+    dbg_controller = DbgController(
         install_dir / "test" / "PipelineSmoking" / "Screenshot",
     )
-    print(f"  controller: {replay_controller}")
+    print(f"  controller: {dbg_controller}")
 
     # 测试事件监听器
     sink = MyControllerEventSink()
-    sink_id = replay_controller.add_sink(sink)
+    sink_id = dbg_controller.add_sink(sink)
     print(f"  sink_id: {sink_id}")
 
     # 连接
-    replay_controller.post_connection().wait()
-    print(f"  connected: {replay_controller.connected}")
-    print(f"  uuid: {replay_controller.uuid}")
+    dbg_controller.post_connection().wait()
+    print(f"  connected: {dbg_controller.connected}")
+    print(f"  uuid: {dbg_controller.uuid}")
 
     # 测试截图
-    screencap_job = replay_controller.post_screencap().wait()
+    screencap_job = dbg_controller.post_screencap().wait()
     assert screencap_job.succeeded, "screencap should succeed"
     image = screencap_job.get()
     print(f"  screencap shape: {image.shape}")
 
     # 测试 cached_image
-    cached = replay_controller.cached_image
+    cached = dbg_controller.cached_image
     print(f"  cached_image shape: {cached.shape}")
 
     # 测试 resolution (需要在首次截图后才能获取有效值)
-    resolution = replay_controller.resolution
+    resolution = dbg_controller.resolution
     print(f"  resolution: {resolution}")
     assert isinstance(resolution, tuple), "resolution should be a tuple"
     assert len(resolution) == 2, "resolution should have 2 elements"
@@ -400,42 +400,42 @@ def test_controller_api():
     assert isinstance(resolution[1], int), "resolution height should be int"
 
     # 测试 info
-    info = replay_controller.info
+    info = dbg_controller.info
     print(f"  info: {info}")
     assert isinstance(info, dict), "info should be a dict"
     assert "type" in info, "info should contain 'type'"
     assert info["type"] == "dbg", "dbg controller type should be 'dbg'"
 
     # 测试输入操作
-    replay_controller.post_click(100, 100).wait()
-    replay_controller.post_swipe(100, 100, 200, 200, 100).wait()
-    replay_controller.post_click_key(32).wait()
-    replay_controller.post_key_down(65).wait()
-    replay_controller.post_key_up(65).wait()
-    replay_controller.post_input_text("test").wait()
-    replay_controller.post_touch_down(0, 100, 100, 0).wait()
-    replay_controller.post_touch_move(0, 150, 150, 0).wait()
-    replay_controller.post_touch_up(0).wait()
-    assert not replay_controller.post_scroll(0, 120).wait().succeeded, (
-        "replay controller scroll should fail"
+    dbg_controller.post_click(100, 100).wait()
+    dbg_controller.post_swipe(100, 100, 200, 200, 100).wait()
+    dbg_controller.post_click_key(32).wait()
+    dbg_controller.post_key_down(65).wait()
+    dbg_controller.post_key_up(65).wait()
+    dbg_controller.post_input_text("test").wait()
+    dbg_controller.post_touch_down(0, 100, 100, 0).wait()
+    dbg_controller.post_touch_move(0, 150, 150, 0).wait()
+    dbg_controller.post_touch_up(0).wait()
+    assert not dbg_controller.post_scroll(0, 120).wait().succeeded, (
+        "dbg controller scroll should fail"
     )
-    replay_controller.post_start_app("com.test.app").wait()
-    replay_controller.post_stop_app("com.test.app").wait()
-    replay_controller.post_inactive().wait()
+    dbg_controller.post_start_app("com.test.app").wait()
+    dbg_controller.post_stop_app("com.test.app").wait()
+    dbg_controller.post_inactive().wait()
 
     # 测试截图选项
-    replay_controller.set_screenshot_target_long_side(1920)
-    replay_controller.set_screenshot_target_short_side(1080)
-    replay_controller.set_screenshot_use_raw_size(False)
+    dbg_controller.set_screenshot_target_long_side(1920)
+    dbg_controller.set_screenshot_target_short_side(1080)
+    dbg_controller.set_screenshot_use_raw_size(False)
 
     # 测试 remove_sink 和 clear_sinks
     assert sink_id is not None, "sink_id should not be None"
-    replay_controller.remove_sink(sink_id)
-    replay_controller.add_sink(MyControllerEventSink())
-    replay_controller.clear_sinks()
+    dbg_controller.remove_sink(sink_id)
+    dbg_controller.add_sink(MyControllerEventSink())
+    dbg_controller.clear_sinks()
 
     print("  PASS: controller API")
-    return replay_controller
+    return dbg_controller
 
 
 # ============================================================================
