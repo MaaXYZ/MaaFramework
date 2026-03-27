@@ -1,4 +1,4 @@
-#include "ControlUnit/ReplayControlUnitAPI.h"
+#include "MaaControlUnit/ReplayControlUnitAPI.h"
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"

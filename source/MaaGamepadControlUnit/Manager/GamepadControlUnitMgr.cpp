@@ -1,6 +1,6 @@
 #include "GamepadControlUnitMgr.h"
 
-#include "ControlUnit/Win32ControlUnitAPI.h"
+#include "MaaControlUnit/Win32ControlUnitAPI.h"
 #include "Input/ViGEmInput.h"
 #include "MaaUtils/LibraryHolder.h"
 #include "MaaUtils/Logger.h"

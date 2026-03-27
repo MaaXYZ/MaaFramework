@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 
 #include "Base/UnitBase.h"
 #include "MaaUtils/SafeWindows.hpp"

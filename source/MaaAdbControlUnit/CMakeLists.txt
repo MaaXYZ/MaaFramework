@@ -1,5 +1,5 @@
 file(GLOB_RECURSE maa_adb_control_unit_src *.h *.hpp *.cpp)
-file(GLOB_RECURSE maa_adb_control_unit_header ${MAA_PRIVATE_INC}/ControlUnit/AdbControlUnitAPI.h ${MAA_PRIVATE_INC}/ControlUnit/ControlUnitAPI.h)
+file(GLOB_RECURSE maa_adb_control_unit_header ${MAA_PUBLIC_INC}/MaaControlUnit/AdbControlUnitAPI.h ${MAA_PUBLIC_INC}/MaaControlUnit/ControlUnitAPI.h)
 
 add_library(MaaAdbControlUnit SHARED ${maa_adb_control_unit_src} ${maa_adb_control_unit_header})
 

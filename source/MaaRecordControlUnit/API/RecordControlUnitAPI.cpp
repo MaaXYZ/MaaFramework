@@ -1,4 +1,4 @@
-#include "ControlUnit/RecordControlUnitAPI.h"
+#include "MaaControlUnit/RecordControlUnitAPI.h"
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"

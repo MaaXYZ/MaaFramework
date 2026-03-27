@@ -7,8 +7,8 @@
 #include <memory>
 #include <mutex>
 
-#include "ControlUnit/ControlUnitAPI.h"
-#include "ControlUnit/RecordTypes.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/RecordTypes.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
 
 #include "Common/Conf.h"
