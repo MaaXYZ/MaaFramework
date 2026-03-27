@@ -59,6 +59,7 @@ private:
 
     // 存储上次的窗口大小，用于检测窗口大小变化
     std::pair<int, int> last_capture_size_ = { 0, 0 };
+    cv::Mat cached_image_;
 };
 
 MAA_CTRL_UNIT_NS_END

@@ -68,8 +68,11 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     }
 
     if (!frame) {
-        LogError << "Failed to get frame after timeout";
-        return std::nullopt;
+        if (cached_image_.empty()) {
+            LogError << "Failed to get frame and no cached image available";
+            return std::nullopt;
+        }
+        return cached_image_.clone();
     }
 
     auto surface = frame.Surface();
@@ -173,7 +176,9 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     cv::Rect client_roi(border_left, border_top, client_width, client_height);
     cv::Mat image = trimmed(client_roi);
 
-    return bgra_to_bgr(image);
+    cv::Mat result = bgra_to_bgr(image);
+    cached_image_ = result.clone();
+    return result;
 }
 
 bool FramePoolScreencap::init()
