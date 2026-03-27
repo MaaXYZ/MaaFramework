@@ -42,6 +42,8 @@ add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)
 
+install(DIRECTORY "${MAA_PUBLIC_INC}/MaaControlUnit" DESTINATION "include")
+
 if(BUILD_PICLI)
     add_subdirectory(MaaPiCli)
 endif()

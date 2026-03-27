@@ -7,7 +7,7 @@
 
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/NoWarningCVMat.hpp"
 #include "Utils/EventDispatcher.hpp"

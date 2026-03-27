@@ -1,5 +1,5 @@
 file(GLOB_RECURSE maa_replay_control_unit_src *.h *.hpp *.cpp)
-file(GLOB_RECURSE maa_replay_control_unit_header ${MAA_PRIVATE_INC}/ControlUnit/ReplayControlUnitAPI.h ${MAA_PRIVATE_INC}/ControlUnit/ControlUnitAPI.h)
+file(GLOB_RECURSE maa_replay_control_unit_header ${MAA_PUBLIC_INC}/MaaControlUnit/ReplayControlUnitAPI.h ${MAA_PUBLIC_INC}/MaaControlUnit/ControlUnitAPI.h)
 
 add_library(MaaReplayControlUnit SHARED ${maa_replay_control_unit_src} ${maa_replay_control_unit_header})
 

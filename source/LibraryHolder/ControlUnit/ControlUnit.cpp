@@ -2,16 +2,16 @@
 
 #include <filesystem>
 
-#include "ControlUnit/AdbControlUnitAPI.h"
-#include "ControlUnit/CustomControlUnitAPI.h"
-#include "ControlUnit/DbgControlUnitAPI.h"
-#include "ControlUnit/ReplayControlUnitAPI.h"
-#include "ControlUnit/GamepadControlUnitAPI.h"
-#include "ControlUnit/MacOSControlUnitAPI.h"
-#include "ControlUnit/PlayCoverControlUnitAPI.h"
-#include "ControlUnit/RecordControlUnitAPI.h"
-#include "ControlUnit/Win32ControlUnitAPI.h"
-#include "ControlUnit/WlRootsControlUnitAPI.h"
+#include "MaaControlUnit/AdbControlUnitAPI.h"
+#include "MaaControlUnit/CustomControlUnitAPI.h"
+#include "MaaControlUnit/DbgControlUnitAPI.h"
+#include "MaaControlUnit/ReplayControlUnitAPI.h"
+#include "MaaControlUnit/GamepadControlUnitAPI.h"
+#include "MaaControlUnit/MacOSControlUnitAPI.h"
+#include "MaaControlUnit/PlayCoverControlUnitAPI.h"
+#include "MaaControlUnit/RecordControlUnitAPI.h"
+#include "MaaControlUnit/Win32ControlUnitAPI.h"
+#include "MaaControlUnit/WlRootsControlUnitAPI.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Runtime.h"
 

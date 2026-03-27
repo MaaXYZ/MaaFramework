@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/Instance/MaaCustomController.h"
 
 #include "Common/Conf.h"

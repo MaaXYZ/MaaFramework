@@ -7,7 +7,7 @@
 #include <meojson/json.hpp>
 
 #include "Common/Conf.h"
-#include "ControlUnit/RecordTypes.h"
+#include "MaaControlUnit/RecordTypes.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN

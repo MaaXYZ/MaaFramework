@@ -1,4 +1,4 @@
-#include "ControlUnit/PlayCoverControlUnitAPI.h"
+#include "MaaControlUnit/PlayCoverControlUnitAPI.h"
 
 #include "MaaUtils/Logger.h"
 #include "Manager/PlayCoverControlUnitMgr.h"

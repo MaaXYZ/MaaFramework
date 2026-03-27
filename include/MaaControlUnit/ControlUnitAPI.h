@@ -6,9 +6,10 @@
 
 #include <meojson/json.hpp>
 
-#include "Common/Conf.h"
+#include <opencv2/core/mat.hpp>
+
+#include "MaaControlUnit/MaaControlUnitDef.h"
 #include "MaaFramework/MaaDef.h"
-#include "MaaUtils/NoWarningCVMat.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

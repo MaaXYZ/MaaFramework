@@ -4,7 +4,7 @@
 #include <thread>
 
 #include "Common/Conf.h"
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/SafeWindows.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
