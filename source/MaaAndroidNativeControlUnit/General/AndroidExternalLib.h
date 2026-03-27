@@ -23,11 +23,6 @@ typedef struct
     void* frame_ref;
 } FrameInfo;
 
-enum ImageFormat : int
-{
-    IMAGE_FORMAT_UNKNOWN = 0,
-    IMAGE_FORMAT_RGBA_8888 = 2
-};
 
 enum MethodType : int
 {
