@@ -45,19 +45,22 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     winrt::Windows::Graphics::Capture::Direct3D11CaptureFrame frame = nullptr;
 
     try {
-        // 先清空 FramePool 中可能残留的旧帧
-        while (auto old_frame = cap_frame_pool_.TryGetNextFrame()) {
-            old_frame.Close();
+        while (auto next_frame = cap_frame_pool_.TryGetNextFrame()) {
+            if (frame) {
+                frame.Close();
+            }
+            frame = next_frame;
         }
 
-        // 等待新帧到来
-        using namespace std::chrono_literals;
-        auto start_time = std::chrono::steady_clock::now();
-        while (duration_since(start_time) < 2000ms) {
-            std::this_thread::sleep_for(2ms);
-            frame = cap_frame_pool_.TryGetNextFrame();
-            if (frame) {
-                break;
+        if (!frame) {
+            using namespace std::chrono_literals;
+            auto start_time = std::chrono::steady_clock::now();
+            while (duration_since(start_time) < 2000ms) {
+                std::this_thread::sleep_for(2ms);
+                frame = cap_frame_pool_.TryGetNextFrame();
+                if (frame) {
+                    break;
+                }
             }
         }
     }
@@ -68,8 +71,11 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     }
 
     if (!frame) {
-        LogError << "Failed to get frame after timeout";
-        return std::nullopt;
+        if (cached_image_.empty()) {
+            LogError << "Failed to get frame and no cached image available";
+            return std::nullopt;
+        }
+        return cached_image_.clone();
     }
 
     auto surface = frame.Surface();
@@ -173,7 +179,9 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     cv::Rect client_roi(border_left, border_top, client_width, client_height);
     cv::Mat image = trimmed(client_roi);
 
-    return bgra_to_bgr(image);
+    cv::Mat result = bgra_to_bgr(image);
+    cached_image_ = result.clone();
+    return result;
 }
 
 bool FramePoolScreencap::init()
@@ -352,6 +360,7 @@ void FramePoolScreencap::uninit()
     cap_item_ = nullptr;
     texture_desc_ = { 0 };
     last_capture_size_ = { };
+    cached_image_ = cv::Mat();
 }
 
 bool FramePoolScreencap::check_and_handle_size_changed()
