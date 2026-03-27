@@ -40,20 +40,20 @@ std::optional<AndroidNativeControlUnitConfig> parse_config(const json::value& co
         return std::nullopt;
     }
 
-    auto library_path_opt = config.find<std::string>("library_path");
+    const auto library_path_opt = config.find<std::string>("library_path");
     if (!library_path_opt || library_path_opt->empty()) {
         LogError << "library_path is missing or empty" << VAR(config);
         return std::nullopt;
     }
 
-    auto screen_resolution_opt = config.find("screen_resolution");
+    const auto screen_resolution_opt = config.find("screen_resolution");
     if (!screen_resolution_opt || !screen_resolution_opt->is_object()) {
         LogError << "screen_resolution is missing or not an object" << VAR(config);
         return std::nullopt;
     }
 
-    auto width_opt = screen_resolution_opt->find<int>("width");
-    auto height_opt = screen_resolution_opt->find<int>("height");
+    const auto width_opt = screen_resolution_opt->find<int>("width");
+    const auto height_opt = screen_resolution_opt->find<int>("height");
     if (!width_opt || !height_opt || *width_opt <= 0 || *height_opt <= 0) {
         LogError << "screen_resolution.width or screen_resolution.height is invalid" << VAR(config);
         return std::nullopt;
@@ -112,36 +112,4 @@ void MaaAndroidNativeControlUnitDestroy(MaaAndroidNativeControlUnitHandle handle
 {
     LogFunc << VAR_VOIDP(handle);
     delete handle;
-}
-
-void* MaaAndroidNativeControlUnitAttachThread(MaaAndroidNativeControlUnitHandle handle)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return nullptr;
-    }
-
-    auto* mgr = dynamic_cast<MAA_CTRL_UNIT_NS::AndroidNativeControlUnitMgr*>(handle);
-    if (!mgr) {
-        LogError << "handle is not AndroidNativeControlUnitMgr";
-        return nullptr;
-    }
-
-    return mgr->attach_thread();
-}
-
-int MaaAndroidNativeControlUnitDetachThread(MaaAndroidNativeControlUnitHandle handle, void* env)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return -1;
-    }
-
-    auto* mgr = dynamic_cast<MAA_CTRL_UNIT_NS::AndroidNativeControlUnitMgr*>(handle);
-    if (!mgr) {
-        LogError << "handle is not AndroidNativeControlUnitMgr";
-        return -1;
-    }
-
-    return mgr->detach_thread(env);
 }

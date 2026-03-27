@@ -31,9 +31,8 @@ std::optional<AndroidNativeNS::AndroidExternalFunctions>
     }
 
     AndroidNativeNS::AndroidExternalFunctions funcs;
-    bool ok = true;
 
-    ok = ok && get_required_function<AndroidNativeNS::GetLockedPixelsSignature>(get_locked_pixels_func_name_, funcs.get_locked_pixels);
+    bool ok = get_required_function<AndroidNativeNS::GetLockedPixelsSignature>(get_locked_pixels_func_name_, funcs.get_locked_pixels);
     ok = ok && get_required_function<AndroidNativeNS::UnlockPixelsSignature>(unlock_pixels_func_name_, funcs.unlock_pixels);
     ok = ok && get_required_function<AndroidNativeNS::AttachThreadSignature>(attach_thread_func_name_, funcs.attach_thread);
     ok = ok && get_required_function<AndroidNativeNS::DetachThreadSignature>(detach_thread_func_name_, funcs.detach_thread);

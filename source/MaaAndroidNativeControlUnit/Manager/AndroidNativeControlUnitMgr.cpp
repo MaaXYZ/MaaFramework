@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <chrono>
-#include <cmath>
 #include <thread>
 #include <utility>
 
@@ -40,8 +39,6 @@ bool AndroidNativeControlUnitMgr::connect()
         return false;
     }
 
-    frame_width_ = 0;
-    frame_height_ = 0;
     last_touch_points_.clear();
     connected_ = true;
     return true;
@@ -72,7 +69,7 @@ bool AndroidNativeControlUnitMgr::start_app(const std::string& intent)
         return false;
     }
 
-    MethodParam param {};
+    MethodParam param { };
     param.display_id = config_.display_id;
     param.method = START_GAME;
     param.args.start_game.package_name = intent.c_str();
@@ -89,7 +86,7 @@ bool AndroidNativeControlUnitMgr::stop_app(const std::string& intent)
         return false;
     }
 
-    MethodParam param {};
+    MethodParam param { };
     param.display_id = config_.display_id;
     param.method = STOP_GAME;
     param.args.stop_game.client_type = intent.c_str();
@@ -105,8 +102,7 @@ bool AndroidNativeControlUnitMgr::screencap(cv::Mat& image)
         return false;
     }
 
-    ScopedThreadAttach attach(&library_);
-    if (!attach.attached()) {
+    if (const ScopedThreadAttach attach(&library_); !attach.attached()) {
         return false;
     }
 
@@ -122,15 +118,11 @@ bool AndroidNativeControlUnitMgr::screencap(cv::Mat& image)
         return false;
     }
 
-    cv::Mat bgr(static_cast<int>(info.height), static_cast<int>(info.width), CV_8UC3, info.data, info.stride);
+    const cv::Mat bgr(static_cast<int>(info.height), static_cast<int>(info.width), CV_8UC3, info.data, info.stride);
     image = bgr.clone();
 
-    frame_width_ = static_cast<int>(info.width);
-    frame_height_ = static_cast<int>(info.height);
-
     if (need_unlock) {
-        int unlock_ret = library_.UnlockPixels(info);
-        if (unlock_ret != 0) {
+        if (int unlock_ret = library_.UnlockPixels(info); unlock_ret != 0) {
             LogError << "UnlockPixels failed" << VAR(unlock_ret);
             return false;
         }
@@ -194,11 +186,11 @@ bool AndroidNativeControlUnitMgr::touch_down(int contact, int x, int y, int pres
     }
 
     cv::Point mapped;
-    if (!map_touch_point(x, y, mapped)) {
+    if (!normalize_touch_point(x, y, mapped)) {
         return false;
     }
 
-    MethodParam param {};
+    MethodParam param { };
     param.display_id = config_.display_id;
     param.method = TOUCH_DOWN;
     param.args.touch.p = { mapped.x, mapped.y };
@@ -226,11 +218,11 @@ bool AndroidNativeControlUnitMgr::touch_move(int contact, int x, int y, int pres
     }
 
     cv::Point mapped;
-    if (!map_touch_point(x, y, mapped)) {
+    if (!normalize_touch_point(x, y, mapped)) {
         return false;
     }
 
-    MethodParam param {};
+    MethodParam param { };
     param.display_id = config_.display_id;
     param.method = TOUCH_MOVE;
     param.args.touch.p = { mapped.x, mapped.y };
@@ -258,7 +250,7 @@ bool AndroidNativeControlUnitMgr::touch_up(int contact)
 
     const cv::Point mapped = get_touch_up_point(contact);
 
-    MethodParam param {};
+    MethodParam param { };
     param.display_id = config_.display_id;
     param.method = TOUCH_UP;
     param.args.touch.p = { mapped.x, mapped.y };
@@ -275,8 +267,7 @@ bool AndroidNativeControlUnitMgr::click_key(int key)
 {
     LogFunc << VAR(key);
 
-    bool ret = key_down(key);
-    if (!ret) {
+    if (const bool ret = key_down(key); !ret) {
         return false;
     }
 
@@ -293,7 +284,7 @@ bool AndroidNativeControlUnitMgr::input_text(const std::string& text)
         return false;
     }
 
-    MethodParam param {};
+    MethodParam param { };
     param.display_id = config_.display_id;
     param.method = INPUT;
     param.args.input.text = text.c_str();
@@ -309,7 +300,7 @@ bool AndroidNativeControlUnitMgr::key_down(int key)
         return false;
     }
 
-    MethodParam param {};
+    MethodParam param { };
     param.display_id = config_.display_id;
     param.method = KEY_DOWN;
     param.args.key.key_code = key;
@@ -325,17 +316,11 @@ bool AndroidNativeControlUnitMgr::key_up(int key)
         return false;
     }
 
-    MethodParam param {};
+    MethodParam param { };
     param.display_id = config_.display_id;
     param.method = KEY_UP;
     param.args.key.key_code = key;
     return dispatch_input_message(param);
-}
-
-bool AndroidNativeControlUnitMgr::scroll(int dx, int dy)
-{
-    LogWarn << "scroll is not supported" << VAR(dx) << VAR(dy);
-    return false;
 }
 
 bool AndroidNativeControlUnitMgr::inactive()
@@ -357,12 +342,6 @@ json::object AndroidNativeControlUnitMgr::get_info() const
     touch_resolution["width"] = config_.touch_width;
     touch_resolution["height"] = config_.touch_height;
     info["touch_resolution"] = std::move(touch_resolution);
-
-    json::object frame_resolution;
-    frame_resolution["width"] = frame_width_;
-    frame_resolution["height"] = frame_height_;
-    info["frame_resolution"] = std::move(frame_resolution);
-
     return info;
 }
 
@@ -378,8 +357,7 @@ bool AndroidNativeControlUnitMgr::validate_contact(int contact)
 
 bool AndroidNativeControlUnitMgr::dispatch_input_message(MethodParam param) const
 {
-    ScopedThreadAttach attach(&library_);
-    if (!attach.attached()) {
+    if (const ScopedThreadAttach attach(&library_); !attach.attached()) {
         return false;
     }
 
@@ -392,21 +370,21 @@ bool AndroidNativeControlUnitMgr::dispatch_input_message(MethodParam param) cons
     return false;
 }
 
-bool AndroidNativeControlUnitMgr::map_touch_point(int raw_x, int raw_y, cv::Point& mapped) const
+bool AndroidNativeControlUnitMgr::normalize_touch_point(int raw_x, int raw_y, cv::Point& mapped) const
 {
-    if (frame_width_ <= 0 || frame_height_ <= 0) {
-        LogError << "frame resolution is unavailable, call screencap before touch input" << VAR(frame_width_) << VAR(frame_height_);
+    if (config_.touch_width <= 0 || config_.touch_height <= 0) {
+        LogError << "touch resolution is invalid" << VAR(config_.touch_width) << VAR(config_.touch_height);
         return false;
     }
 
-    mapped.x = map_axis(raw_x, frame_width_, config_.touch_width);
-    mapped.y = map_axis(raw_y, frame_height_, config_.touch_height);
+    mapped.x = std::clamp(raw_x, 0, std::max(0, config_.touch_width - 1));
+    mapped.y = std::clamp(raw_y, 0, std::max(0, config_.touch_height - 1));
     return true;
 }
 
 cv::Point AndroidNativeControlUnitMgr::get_touch_up_point(int contact) const
 {
-    if (auto it = last_touch_points_.find(contact); it != last_touch_points_.end()) {
+    if (const auto it = last_touch_points_.find(contact); it != last_touch_points_.end()) {
         return it->second;
     }
 
@@ -417,33 +395,13 @@ cv::Point AndroidNativeControlUnitMgr::get_touch_up_point(int contact) const
     };
 }
 
-int AndroidNativeControlUnitMgr::map_axis(int raw_value, int frame_size, int touch_size)
-{
-    if (frame_size <= 0 || touch_size <= 0) {
-        return raw_value;
-    }
-
-    const auto mapped = static_cast<int>(std::lround(static_cast<double>(raw_value) * touch_size / frame_size));
-    return std::clamp(mapped, 0, std::max(0, touch_size - 1));
-}
-
 void* AndroidNativeControlUnitMgr::attach_thread() const
 {
-    if (!connected()) {
-        LogError << "controller is not connected";
-        return nullptr;
-    }
-
     return library_.AttachThread();
 }
 
 int AndroidNativeControlUnitMgr::detach_thread(void* env) const
 {
-    if (!connected()) {
-        LogError << "controller is not connected";
-        return -1;
-    }
-
     return library_.DetachThread(env);
 }
 

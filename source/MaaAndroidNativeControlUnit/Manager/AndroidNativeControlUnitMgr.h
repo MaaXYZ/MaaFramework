@@ -4,8 +4,8 @@
 #include <unordered_map>
 
 #include "Common/Conf.h"
-#include "MaaControlUnit/ControlUnitAPI.h"
 #include "General/AndroidExternalLib.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/NoWarningCV.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -19,15 +19,13 @@ struct AndroidNativeControlUnitConfig
     bool force_stop = false;
 };
 
-class AndroidNativeControlUnitMgr
-    : public ControlUnitAPI
-    , public ScrollableUnit
+class AndroidNativeControlUnitMgr : public AndroidNativeControlUnitAPI
 {
 public:
     explicit AndroidNativeControlUnitMgr(AndroidNativeControlUnitConfig config);
     ~AndroidNativeControlUnitMgr() override = default;
 
-public: // from ControlUnitAPI
+    // from ControlUnitAPI
     bool connect() override;
     bool connected() const override;
 
@@ -52,28 +50,22 @@ public: // from ControlUnitAPI
     bool key_down(int key) override;
     bool key_up(int key) override;
 
-    bool scroll(int dx, int dy) override;
-
     bool inactive() override;
 
     json::object get_info() const override;
 
-public: // JNI thread management (non-virtual, exposed via C API)
-    void* attach_thread() const;
-    int detach_thread(void* env) const;
+    void* attach_thread() const override;
+    int detach_thread(void* env) const override;
 
 private:
     static bool validate_contact(int contact);
     bool dispatch_input_message(AndroidNativeNS::MethodParam param) const;
-    bool map_touch_point(int raw_x, int raw_y, cv::Point& mapped) const;
+    bool normalize_touch_point(int raw_x, int raw_y, cv::Point& mapped) const;
     cv::Point get_touch_up_point(int contact) const;
-    static int map_axis(int raw_value, int frame_size, int touch_size);
 
     AndroidNativeControlUnitConfig config_;
     AndroidNativeNS::AndroidExternalLib library_;
     bool connected_ = false;
-    int frame_width_ = 0;
-    int frame_height_ = 0;
     std::unordered_map<int, cv::Point> last_touch_points_;
 };
 
