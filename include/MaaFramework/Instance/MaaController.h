@@ -52,6 +52,22 @@ extern "C"
     MAA_FRAMEWORK_API MaaController*
         MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
 
+    /**
+     * @brief Create an Android native controller backed by MaaAndroidNativeControlUnit.
+     *
+     * @param config_json JSON config for the control unit. Required fields:
+     *                    - library_path: path to the Android native control unit library
+     *                    - screen_resolution.width / screen_resolution.height: raw screenshot and touch resolution
+     *                    Optional fields:
+     *                    - display_id: target display id, defaults to 0
+     *                    - force_stop: whether to force stop before start_app, defaults to false
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note This controller is only available on Android.
+     * @note The configured screen_resolution must match the control unit's raw screenshot/touch coordinate space.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaAndroidNativeControllerCreate(const char* config_json);
+
     MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg);
 
     /**

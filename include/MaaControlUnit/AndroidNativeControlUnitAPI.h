@@ -3,6 +3,7 @@
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
 
+#ifdef __ANDROID__
 #ifdef __cplusplus
 extern "C"
 {
@@ -16,4 +17,5 @@ extern "C"
 
 #ifdef __cplusplus
 }
+#endif
 #endif

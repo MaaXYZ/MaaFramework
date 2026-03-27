@@ -20,6 +20,12 @@ MaaController* MaaMacOSControllerCreate(uint32_t, MaaMacOSScreencapMethod, MaaMa
     return nullptr;
 }
 
+MaaController* MaaAndroidNativeControllerCreate(const char*)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
 MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks*, void*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";

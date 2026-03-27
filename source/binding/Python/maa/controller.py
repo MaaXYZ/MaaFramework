@@ -21,6 +21,7 @@ __all__ = [
     "Win32Controller",
     "GamepadController",
     "WlRootsController",
+    "AndroidNativeController",
     "CustomController",
 ]
 
@@ -889,6 +890,46 @@ class MacOSController(Controller):
             MaaMacOSScreencapMethod,
             MaaMacOSInputMethod,
         ]
+
+
+class AndroidNativeController(Controller):
+    """Android Native 控制器 / Android native controller"""
+
+    def __init__(
+        self,
+        config: Dict[str, Any],
+    ):
+        """创建 Android Native 控制器 / Create Android native controller
+
+        Args:
+            config: 控制器配置 JSON 对象 / controller config JSON object
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        create = self._set_android_native_api_properties()
+
+        self._handle = create(
+            json.dumps(config, ensure_ascii=False).encode(),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create Android native controller.")
+
+    def _set_android_native_api_properties(self):
+        try:
+            create = Library.framework().MaaAndroidNativeControllerCreate
+        except AttributeError as exc:
+            raise RuntimeError(
+                "Android native controller is not available in this MaaFramework build.",
+            ) from exc
+
+        create.restype = MaaControllerHandle
+        create.argtypes = [
+            ctypes.c_char_p,
+        ]
+        return create
 
 
 class PlayCoverController(Controller):

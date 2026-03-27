@@ -97,6 +97,32 @@ MaaController* MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMet
 #endif
 }
 
+MaaController* MaaAndroidNativeControllerCreate(const char* config_json)
+{
+    LogFunc << VAR(config_json);
+
+#ifndef __ANDROID__
+
+    LogError << "This API " << __FUNCTION__ << " is only available on Android";
+    return nullptr;
+
+#else
+
+    if (!config_json) {
+        LogError << "config_json is null";
+        return nullptr;
+    }
+
+    auto control_unit = MAA_NS::AndroidNativeControlUnitLibraryHolder::create_control_unit(config_json);
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+#endif
+}
+
 MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg)
 {
     LogFunc << VAR(controller) << VAR(controller_arg);

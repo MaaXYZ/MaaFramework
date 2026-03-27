@@ -36,7 +36,7 @@ if(WITH_REPLAY_CONTROLLER)
     add_dependencies(MaaFramework MaaReplayControlUnit)
 endif()
 
-if(WITH_ANDROID_NATIVE_CONTROLLER)
+if(WITH_ANDROID_NATIVE_CONTROLLER AND ANDROID)
     add_dependencies(MaaFramework MaaAndroidNativeControlUnit)
 endif()
 
