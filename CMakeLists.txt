@@ -14,7 +14,7 @@ option(WITH_PLAYCOVER_CONTROLLER "build with PlayCover controller for macOS" ON)
 option(WITH_GAMEPAD_CONTROLLER "build with virtual gamepad controller for Windows" ON)
 option(WITH_WLROOTS_CONTROLLER "build with wlroots controller for Linux" ON)
 option(WITH_RECORD_CONTROLLER "build with record controller for recording" ON)
-option(WITH_REPLAY_CONTROLLER "build with replay controller" OFF)
+option(WITH_REPLAY_CONTROLLER "build with replay controller" ON)
 option(WITH_DBG_CONTROLLER "build with debug controller" OFF)
 
 option(WITH_NODEJS_BINDING "build with nodejs binding" OFF)
