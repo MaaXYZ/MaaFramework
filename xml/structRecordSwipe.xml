@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structRecordSwipe" kind="struct" language="C++" prot="public">
+    <compoundname>RecordSwipe</compoundname>
+    <includes refid="RecordTypes_8h" local="no">RecordTypes.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structRecordSwipe_1aa8e0ab229392ba72368a82f86728f0be" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordSwipe::x1</definition>
+        <argsstring></argsstring>
+        <name>x1</name>
+        <qualifiedname>RecordSwipe::x1</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="64" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordSwipe_1aa9600ba192b932e77c943e8445f5b4e5" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordSwipe::y1</definition>
+        <argsstring></argsstring>
+        <name>y1</name>
+        <qualifiedname>RecordSwipe::y1</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="65" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordSwipe_1adc7cdcd538df3f14ad10b9aeefcaec38" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordSwipe::x2</definition>
+        <argsstring></argsstring>
+        <name>x2</name>
+        <qualifiedname>RecordSwipe::x2</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="66" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordSwipe_1a0a76db2885efe33a7743bcf1c803f5be" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordSwipe::y2</definition>
+        <argsstring></argsstring>
+        <name>y2</name>
+        <qualifiedname>RecordSwipe::y2</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="67" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordSwipe_1a3b5dae0e938b03499bbed3e2e10cf275" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordSwipe::duration</definition>
+        <argsstring></argsstring>
+        <name>duration</name>
+        <qualifiedname>RecordSwipe::duration</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="68" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordSwipe_1aa7076a3c4c07cde535c4bb79ffae4b73" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordSwipe::starting</definition>
+        <argsstring></argsstring>
+        <name>starting</name>
+        <qualifiedname>RecordSwipe::starting</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="69" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structRecordSwipe_1ac7b2d7cefde74a496e40ee2a4ee9c58f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>RecordSwipe::MEO_JSONIZATION</definition>
+        <argsstring>(x1, y1, x2, y2, duration, MEO_OPT starting)</argsstring>
+        <name>MEO_JSONIZATION</name>
+        <qualifiedname>RecordSwipe::MEO_JSONIZATION</qualifiedname>
+        <param>
+          <type><ref refid="structRecordSwipe_1aa8e0ab229392ba72368a82f86728f0be" kindref="member">x1</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordSwipe_1aa9600ba192b932e77c943e8445f5b4e5" kindref="member">y1</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordSwipe_1adc7cdcd538df3f14ad10b9aeefcaec38" kindref="member">x2</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordSwipe_1a0a76db2885efe33a7743bcf1c803f5be" kindref="member">y2</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordSwipe_1a3b5dae0e938b03499bbed3e2e10cf275" kindref="member">duration</ref></type>
+        </param>
+        <param>
+          <type>MEO_OPT</type>
+          <declname>starting</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="71" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/RecordTypes.h" line="62" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="63" bodyend="72"/>
+    <listofallmembers>
+      <member refid="structRecordSwipe_1a3b5dae0e938b03499bbed3e2e10cf275" prot="public" virt="non-virtual"><scope>RecordSwipe</scope><name>duration</name></member>
+      <member refid="structRecordSwipe_1ac7b2d7cefde74a496e40ee2a4ee9c58f" prot="public" virt="non-virtual"><scope>RecordSwipe</scope><name>MEO_JSONIZATION</name></member>
+      <member refid="structRecordSwipe_1aa7076a3c4c07cde535c4bb79ffae4b73" prot="public" virt="non-virtual"><scope>RecordSwipe</scope><name>starting</name></member>
+      <member refid="structRecordSwipe_1aa8e0ab229392ba72368a82f86728f0be" prot="public" virt="non-virtual"><scope>RecordSwipe</scope><name>x1</name></member>
+      <member refid="structRecordSwipe_1adc7cdcd538df3f14ad10b9aeefcaec38" prot="public" virt="non-virtual"><scope>RecordSwipe</scope><name>x2</name></member>
+      <member refid="structRecordSwipe_1aa9600ba192b932e77c943e8445f5b4e5" prot="public" virt="non-virtual"><scope>RecordSwipe</scope><name>y1</name></member>
+      <member refid="structRecordSwipe_1a0a76db2885efe33a7743bcf1c803f5be" prot="public" virt="non-virtual"><scope>RecordSwipe</scope><name>y2</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

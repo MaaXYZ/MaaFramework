@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classShellableUnit" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>ShellableUnit</compoundname>
+    <derivedcompoundref refid="classAdbControlUnitAPI" prot="public" virt="non-virtual">AdbControlUnitAPI</derivedcompoundref>
+    <derivedcompoundref refid="classCustomControlUnitAPI" prot="public" virt="non-virtual">CustomControlUnitAPI</derivedcompoundref>
+    <derivedcompoundref refid="classFullControlUnitAPI" prot="public" virt="non-virtual">FullControlUnitAPI</derivedcompoundref>
+    <includes refid="ControlUnitAPI_8h" local="no">ControlUnitAPI.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classShellableUnit_1aa1f70d3f41339f00ab40f2fb95988e6f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual ShellableUnit::~ShellableUnit</definition>
+        <argsstring>()=default</argsstring>
+        <name>~ShellableUnit</name>
+        <qualifiedname>ShellableUnit::~ShellableUnit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="71" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classShellableUnit_1a5b255f95926f91a4c2452dbaa3043356" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool ShellableUnit::shell</definition>
+        <argsstring>(const std::string &amp;cmd, std::string &amp;output, std::chrono::milliseconds timeout=std::chrono::milliseconds(20000))=0</argsstring>
+        <name>shell</name>
+        <qualifiedname>ShellableUnit::shell</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>cmd</declname>
+        </param>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>output</declname>
+        </param>
+        <param>
+          <type>std::chrono::milliseconds</type>
+          <declname>timeout</declname>
+          <defval>std::chrono::milliseconds(20000)</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="74" column="9"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>AdbControlUnitAPI</label>
+        <link refid="classAdbControlUnitAPI"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>CustomControlUnitAPI</label>
+        <link refid="classCustomControlUnitAPI"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>FullControlUnitAPI</label>
+        <link refid="classFullControlUnitAPI"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>ShellableUnit</label>
+        <link refid="classShellableUnit"/>
+      </node>
+    </inheritancegraph>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="68" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="69" bodyend="75"/>
+    <listofallmembers>
+      <member refid="classShellableUnit_1a5b255f95926f91a4c2452dbaa3043356" prot="public" virt="pure-virtual"><scope>ShellableUnit</scope><name>shell</name></member>
+      <member refid="classShellableUnit_1aa1f70d3f41339f00ab40f2fb95988e6f" prot="public" virt="virtual"><scope>ShellableUnit</scope><name>~ShellableUnit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

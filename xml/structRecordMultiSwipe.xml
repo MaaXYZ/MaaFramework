@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structRecordMultiSwipe" kind="struct" language="C++" prot="public">
+    <compoundname>RecordMultiSwipe</compoundname>
+    <includes refid="RecordTypes_8h" local="no">RecordTypes.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structRecordMultiSwipe_1a9d743fb60251a23018ab3ce47d444aa7" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structRecordSwipe" kindref="compound">RecordSwipe</ref> &gt;</type>
+        <definition>std::vector&lt;RecordSwipe&gt; RecordMultiSwipe::swipes</definition>
+        <argsstring></argsstring>
+        <name>swipes</name>
+        <qualifiedname>RecordMultiSwipe::swipes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="76" column="17" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structRecordMultiSwipe_1a090a28e823757dd7f9f63da79fd6d832" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>RecordMultiSwipe::MEO_JSONIZATION</definition>
+        <argsstring>(swipes)</argsstring>
+        <name>MEO_JSONIZATION</name>
+        <qualifiedname>RecordMultiSwipe::MEO_JSONIZATION</qualifiedname>
+        <param>
+          <type><ref refid="structRecordMultiSwipe_1a9d743fb60251a23018ab3ce47d444aa7" kindref="member">swipes</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="78" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>RecordMultiSwipe</label>
+        <link refid="structRecordMultiSwipe"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>swipes</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>RecordSwipe</label>
+        <link refid="structRecordSwipe"/>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; RecordSwipe &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="include/MaaControlUnit/RecordTypes.h" line="74" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="75" bodyend="79"/>
+    <listofallmembers>
+      <member refid="structRecordMultiSwipe_1a090a28e823757dd7f9f63da79fd6d832" prot="public" virt="non-virtual"><scope>RecordMultiSwipe</scope><name>MEO_JSONIZATION</name></member>
+      <member refid="structRecordMultiSwipe_1a9d743fb60251a23018ab3ce47d444aa7" prot="public" virt="non-virtual"><scope>RecordMultiSwipe</scope><name>swipes</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

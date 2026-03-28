@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structRecordShell" kind="struct" language="C++" prot="public">
+    <compoundname>RecordShell</compoundname>
+    <includes refid="RecordTypes_8h" local="no">RecordTypes.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structRecordShell_1a986841ca28b93fecaba46863dfaf5ee0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string RecordShell::cmd</definition>
+        <argsstring></argsstring>
+        <name>cmd</name>
+        <qualifiedname>RecordShell::cmd</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="137" column="17" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="137" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordShell_1afbf65a924a7025a24b26be64da6cb962" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t RecordShell::timeout</definition>
+        <argsstring></argsstring>
+        <name>timeout</name>
+        <qualifiedname>RecordShell::timeout</qualifiedname>
+        <initializer>= 20000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="138" column="13" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="138" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordShell_1ac93a15b1825d477d7a032fd594fb0b6b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string RecordShell::output</definition>
+        <argsstring></argsstring>
+        <name>output</name>
+        <qualifiedname>RecordShell::output</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="139" column="17" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="139" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structRecordShell_1ad809e771fbc6c0887129cb7f7f814a06" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>RecordShell::MEO_JSONIZATION</definition>
+        <argsstring>(cmd, timeout, MEO_OPT output)</argsstring>
+        <name>MEO_JSONIZATION</name>
+        <qualifiedname>RecordShell::MEO_JSONIZATION</qualifiedname>
+        <param>
+          <type><ref refid="structRecordShell_1a986841ca28b93fecaba46863dfaf5ee0" kindref="member">cmd</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordShell_1afbf65a924a7025a24b26be64da6cb962" kindref="member">timeout</ref></type>
+        </param>
+        <param>
+          <type>MEO_OPT</type>
+          <declname>output</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="141" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>RecordShell</label>
+        <link refid="structRecordShell"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>cmd</edgelabel>
+          <edgelabel>output</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="include/MaaControlUnit/RecordTypes.h" line="135" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="136" bodyend="142"/>
+    <listofallmembers>
+      <member refid="structRecordShell_1a986841ca28b93fecaba46863dfaf5ee0" prot="public" virt="non-virtual"><scope>RecordShell</scope><name>cmd</name></member>
+      <member refid="structRecordShell_1ad809e771fbc6c0887129cb7f7f814a06" prot="public" virt="non-virtual"><scope>RecordShell</scope><name>MEO_JSONIZATION</name></member>
+      <member refid="structRecordShell_1ac93a15b1825d477d7a032fd594fb0b6b" prot="public" virt="non-virtual"><scope>RecordShell</scope><name>output</name></member>
+      <member refid="structRecordShell_1afbf65a924a7025a24b26be64da6cb962" prot="public" virt="non-virtual"><scope>RecordShell</scope><name>timeout</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

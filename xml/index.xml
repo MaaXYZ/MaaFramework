@@ -1,5 +1,39 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.9.8" xml:lang="en-US">
+  <compound refid="classAdbControlUnitAPI" kind="class"><name>AdbControlUnitAPI</name>
+    <member refid="classAdbControlUnitAPI_1abad3a55acb315f087bdbf2b2a6f8d3bb" kind="function"><name>~AdbControlUnitAPI</name></member>
+    <member refid="classAdbControlUnitAPI_1a2debdeaa087d38facc106ba574da6b91" kind="function"><name>find_device</name></member>
+  </compound>
+  <compound refid="classControlUnitAPI" kind="class"><name>ControlUnitAPI</name>
+    <member refid="classControlUnitAPI_1a9c5542a5c81747468050d8610a18e6b0" kind="function"><name>~ControlUnitAPI</name></member>
+    <member refid="classControlUnitAPI_1a5bff4217a5cbd6789dca3957b469cd5b" kind="function"><name>connect</name></member>
+    <member refid="classControlUnitAPI_1afc899c23f271738b73540eb9efc93fae" kind="function"><name>connected</name></member>
+    <member refid="classControlUnitAPI_1a3bd5a15929e42ef25d990256ed1a97d4" kind="function"><name>request_uuid</name></member>
+    <member refid="classControlUnitAPI_1aa1b8f3ae574ca2edcced418f138e110b" kind="function"><name>get_features</name></member>
+    <member refid="classControlUnitAPI_1a816cb859403ae76b9beb202069a0bce9" kind="function"><name>start_app</name></member>
+    <member refid="classControlUnitAPI_1ab1d3190020919a44d6866e589d51e937" kind="function"><name>stop_app</name></member>
+    <member refid="classControlUnitAPI_1aa163c4ba062d316f248d4b0fe7f3b72d" kind="function"><name>screencap</name></member>
+    <member refid="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" kind="function"><name>click</name></member>
+    <member refid="classControlUnitAPI_1a94868297b93c4d118396418c838dc0a0" kind="function"><name>swipe</name></member>
+    <member refid="classControlUnitAPI_1a9ce21c91ca2fbff7369d8a6403cb28df" kind="function"><name>touch_down</name></member>
+    <member refid="classControlUnitAPI_1a987d84182ad2ff7fcba062ec5d7c4b01" kind="function"><name>touch_move</name></member>
+    <member refid="classControlUnitAPI_1a6ac99054d055c4300f1ff6f908113030" kind="function"><name>touch_up</name></member>
+    <member refid="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" kind="function"><name>click_key</name></member>
+    <member refid="classControlUnitAPI_1a221dbd3eb78f32d1574554f11224abb9" kind="function"><name>input_text</name></member>
+    <member refid="classControlUnitAPI_1a395577c785ecade8664430928c6a201e" kind="function"><name>key_down</name></member>
+    <member refid="classControlUnitAPI_1afcdd6f7125786389adef584492f214e5" kind="function"><name>key_up</name></member>
+    <member refid="classControlUnitAPI_1a95ce12fe9d30787af79adbbb84a45e1b" kind="function"><name>inactive</name></member>
+    <member refid="classControlUnitAPI_1a1bba5cdf24de2b536f4ed436bdda9513" kind="function"><name>get_info</name></member>
+  </compound>
+  <compound refid="classCustomControlUnitAPI" kind="class"><name>CustomControlUnitAPI</name>
+    <member refid="classCustomControlUnitAPI_1a1ab89bbb9bfd999605ce10c28a7559cd" kind="function"><name>~CustomControlUnitAPI</name></member>
+  </compound>
+  <compound refid="classFullControlUnitAPI" kind="class"><name>FullControlUnitAPI</name>
+    <member refid="classFullControlUnitAPI_1a9c11d11a471a89189a07e709a3aef5e9" kind="function"><name>~FullControlUnitAPI</name></member>
+  </compound>
+  <compound refid="classGamepadControlUnitAPI" kind="class"><name>GamepadControlUnitAPI</name>
+    <member refid="classGamepadControlUnitAPI_1ac3b2653203c9ca157a70b11aac8db99b" kind="function"><name>~GamepadControlUnitAPI</name></member>
+  </compound>
   <compound refid="structMaaCustomControllerCallbacks" kind="struct"><name>MaaCustomControllerCallbacks</name>
     <member refid="structMaaCustomControllerCallbacks_1a74d6aa4b9e6fc074f4d97d6ebe3be6ad" kind="variable"><name>connect</name></member>
     <member refid="structMaaCustomControllerCallbacks_1a5294cb3629297bc3449019222b445a79" kind="variable"><name>connected</name></member>
@@ -18,6 +52,8 @@
     <member refid="structMaaCustomControllerCallbacks_1a46da9230073fb4ac1ccc7b8c28d87467" kind="variable"><name>key_down</name></member>
     <member refid="structMaaCustomControllerCallbacks_1a99d5b6c3270039db39a1f5cdeb27b269" kind="variable"><name>key_up</name></member>
     <member refid="structMaaCustomControllerCallbacks_1ae2381df699964f6e95fe89ad2fc22e38" kind="variable"><name>scroll</name></member>
+    <member refid="structMaaCustomControllerCallbacks_1a9b3b3cc2dc653c40c3f9090f83142485" kind="variable"><name>relative_move</name></member>
+    <member refid="structMaaCustomControllerCallbacks_1a0727d6aacbc583631c94d5ed3ff537e0" kind="variable"><name>shell</name></member>
     <member refid="structMaaCustomControllerCallbacks_1a1b40637a2af654c10ce501d968abefc7" kind="variable"><name>inactive</name></member>
     <member refid="structMaaCustomControllerCallbacks_1a6d16b04282a3cf8354e5e326464263b7" kind="variable"><name>get_info</name></member>
   </compound>
@@ -26,6 +62,95 @@
     <member refid="structMaaRect_1ad01ed70b06d17f552838eaa84447041c" kind="variable"><name>y</name></member>
     <member refid="structMaaRect_1a73e6dc516ec3103c7ac89d94eaa9550b" kind="variable"><name>width</name></member>
     <member refid="structMaaRect_1adfa84de77550a2afc6c92349f20e12cc" kind="variable"><name>height</name></member>
+  </compound>
+  <compound refid="classMacOSControlUnitAPI" kind="class"><name>MacOSControlUnitAPI</name>
+    <member refid="classMacOSControlUnitAPI_1a265015ca88f15fb013dcf2e735fb262f" kind="function"><name>~MacOSControlUnitAPI</name></member>
+  </compound>
+  <compound refid="structRecordApp" kind="struct"><name>RecordApp</name>
+    <member refid="structRecordApp_1a0f733944303312b8bffb7aced69a087a" kind="variable"><name>package</name></member>
+    <member refid="structRecordApp_1a59707976c54291265c8beb74a7e9220b" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="structRecordClick" kind="struct"><name>RecordClick</name>
+    <member refid="structRecordClick_1aca7fa079fb8ff4b69a1afc58ea2a9506" kind="variable"><name>x</name></member>
+    <member refid="structRecordClick_1af2b2a4c0faea89e09ae85d64ebef41c8" kind="variable"><name>y</name></member>
+    <member refid="structRecordClick_1a4dc0d82c8766fabb4b8b84dba10d2dd8" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="structRecordConnect" kind="struct"><name>RecordConnect</name>
+    <member refid="structRecordConnect_1ab3d288437aeb6d6029861f287ab67894" kind="variable"><name>version</name></member>
+    <member refid="structRecordConnect_1a19dce4b36e47c6f76e7541cf399ac129" kind="variable"><name>uuid</name></member>
+    <member refid="structRecordConnect_1adce47e91ee1e06df78e5451e3912aa90" kind="variable"><name>width</name></member>
+    <member refid="structRecordConnect_1a2d9e4654da135fe7dc6ba426ba295e90" kind="variable"><name>height</name></member>
+    <member refid="structRecordConnect_1a9eb9c92a8a3bd847c74227d3bbfd1c7b" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="structRecordInputText" kind="struct"><name>RecordInputText</name>
+    <member refid="structRecordInputText_1a533ead316ccaaff0db4424913cfd8a11" kind="variable"><name>text</name></member>
+    <member refid="structRecordInputText_1af59c92f3b1d722f037c127fe628c4df0" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="structRecordKey" kind="struct"><name>RecordKey</name>
+    <member refid="structRecordKey_1aed956c2ee9801928d70910d8fd765ac2" kind="variable"><name>keycode</name></member>
+    <member refid="structRecordKey_1a9854cdd3d7a95e2989346e1f904331fd" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="structRecordLine" kind="struct"><name>RecordLine</name>
+    <member refid="structRecordLine_1ae956d183dbaff9594e92a4c9b132d403" kind="variable"><name>type</name></member>
+    <member refid="structRecordLine_1a8608cc2bfab02d03124f4606f1715d3a" kind="variable"><name>timestamp</name></member>
+    <member refid="structRecordLine_1acbe03999ace92b4f4472013b2651f5fa" kind="variable"><name>success</name></member>
+    <member refid="structRecordLine_1a9fb21bb8aa4a7c02a5684d72e4eae6dc" kind="variable"><name>cost</name></member>
+    <member refid="structRecordLine_1a6fb0a9d69b170ce5864fc6180cac1a3a" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="structRecordMultiSwipe" kind="struct"><name>RecordMultiSwipe</name>
+    <member refid="structRecordMultiSwipe_1a9d743fb60251a23018ab3ce47d444aa7" kind="variable"><name>swipes</name></member>
+    <member refid="structRecordMultiSwipe_1a090a28e823757dd7f9f63da79fd6d832" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="structRecordRelativeMove" kind="struct"><name>RecordRelativeMove</name>
+    <member refid="structRecordRelativeMove_1a78b00efc63489323da9b96363ed9a8b2" kind="variable"><name>dx</name></member>
+    <member refid="structRecordRelativeMove_1ad7fe4591b6ebc3b5473b005eb9be46c6" kind="variable"><name>dy</name></member>
+    <member refid="structRecordRelativeMove_1a638e4e11736d11d4c904c5ac70ac3e2a" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="structRecordScreencap" kind="struct"><name>RecordScreencap</name>
+    <member refid="structRecordScreencap_1a8cd66b6be4bc185908e8cd5c0e487d31" kind="variable"><name>path</name></member>
+    <member refid="structRecordScreencap_1abb1cf32c6dbd48ebe3eed82fe721fb15" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="structRecordScroll" kind="struct"><name>RecordScroll</name>
+    <member refid="structRecordScroll_1a56a78df6771147d6cbe06088907c68b1" kind="variable"><name>dx</name></member>
+    <member refid="structRecordScroll_1a21635995aed3a8a8ad0df36fd7896f4b" kind="variable"><name>dy</name></member>
+    <member refid="structRecordScroll_1a535156e7e59c7579ae1fabf9a7eee275" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="structRecordShell" kind="struct"><name>RecordShell</name>
+    <member refid="structRecordShell_1a986841ca28b93fecaba46863dfaf5ee0" kind="variable"><name>cmd</name></member>
+    <member refid="structRecordShell_1afbf65a924a7025a24b26be64da6cb962" kind="variable"><name>timeout</name></member>
+    <member refid="structRecordShell_1ac93a15b1825d477d7a032fd594fb0b6b" kind="variable"><name>output</name></member>
+    <member refid="structRecordShell_1ad809e771fbc6c0887129cb7f7f814a06" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="structRecordSwipe" kind="struct"><name>RecordSwipe</name>
+    <member refid="structRecordSwipe_1aa8e0ab229392ba72368a82f86728f0be" kind="variable"><name>x1</name></member>
+    <member refid="structRecordSwipe_1aa9600ba192b932e77c943e8445f5b4e5" kind="variable"><name>y1</name></member>
+    <member refid="structRecordSwipe_1adc7cdcd538df3f14ad10b9aeefcaec38" kind="variable"><name>x2</name></member>
+    <member refid="structRecordSwipe_1a0a76db2885efe33a7743bcf1c803f5be" kind="variable"><name>y2</name></member>
+    <member refid="structRecordSwipe_1a3b5dae0e938b03499bbed3e2e10cf275" kind="variable"><name>duration</name></member>
+    <member refid="structRecordSwipe_1aa7076a3c4c07cde535c4bb79ffae4b73" kind="variable"><name>starting</name></member>
+    <member refid="structRecordSwipe_1ac7b2d7cefde74a496e40ee2a4ee9c58f" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="structRecordTouch" kind="struct"><name>RecordTouch</name>
+    <member refid="structRecordTouch_1ad8e0dd20ce33c3035e78850c37311b3e" kind="variable"><name>contact</name></member>
+    <member refid="structRecordTouch_1a6f37c130125b34b7cb5aee355a7bedbf" kind="variable"><name>x</name></member>
+    <member refid="structRecordTouch_1a1a7da180318019e996f72b523a4c67e1" kind="variable"><name>y</name></member>
+    <member refid="structRecordTouch_1ab7ddd20d6d36e614c5780bba3dbb1e57" kind="variable"><name>pressure</name></member>
+    <member refid="structRecordTouch_1aab5878c1a04647e1f335d8c6f7fe29d7" kind="function"><name>MEO_JSONIZATION</name></member>
+  </compound>
+  <compound refid="classRelativeMovableUnit" kind="class"><name>RelativeMovableUnit</name>
+    <member refid="classRelativeMovableUnit_1a4964cbe22bca1df4d12eba776b92d24c" kind="function"><name>~RelativeMovableUnit</name></member>
+    <member refid="classRelativeMovableUnit_1aa0dc25bd17997c2c76feb3e196315320" kind="function"><name>relative_move</name></member>
+  </compound>
+  <compound refid="classScrollableUnit" kind="class"><name>ScrollableUnit</name>
+    <member refid="classScrollableUnit_1a4ed7de43ab24acb3b1708d5700c37b54" kind="function"><name>~ScrollableUnit</name></member>
+    <member refid="classScrollableUnit_1a92ab073b5d139bba1b6c76fea8b9c299" kind="function"><name>scroll</name></member>
+  </compound>
+  <compound refid="classShellableUnit" kind="class"><name>ShellableUnit</name>
+    <member refid="classShellableUnit_1aa1f70d3f41339f00ab40f2fb95988e6f" kind="function"><name>~ShellableUnit</name></member>
+    <member refid="classShellableUnit_1a5b255f95926f91a4c2452dbaa3043356" kind="function"><name>shell</name></member>
+  </compound>
+  <compound refid="classWin32ControlUnitAPI" kind="class"><name>Win32ControlUnitAPI</name>
+    <member refid="classWin32ControlUnitAPI_1a0c919ea1e0bd03379b1459e6e09e425e" kind="function"><name>~Win32ControlUnitAPI</name></member>
   </compound>
   <compound refid="namespacestd" kind="namespace"><name>std</name>
   </compound>
@@ -65,6 +190,97 @@
   </compound>
   <compound refid="MaaAgentServerDef_8h" kind="file"><name>MaaAgentServerDef.h</name>
   </compound>
+  <compound refid="AdbControlUnitAPI_8h" kind="file"><name>AdbControlUnitAPI.h</name>
+    <member refid="AdbControlUnitAPI_8h_1a4ecd37391fac4066f1e8a72000d369fd" kind="function"><name>MaaAdbControlUnitGetVersion</name></member>
+    <member refid="AdbControlUnitAPI_8h_1a003557ff761a8d42cbe0bb52422606a9" kind="function"><name>MaaAdbControlUnitCreate</name></member>
+    <member refid="AdbControlUnitAPI_8h_1aa48834f54ca34f08aa3d8e9493f1c994" kind="function"><name>MaaAdbControlUnitDestroy</name></member>
+  </compound>
+  <compound refid="ControlUnitAPI_8h" kind="file"><name>ControlUnitAPI.h</name>
+    <member refid="ControlUnitAPI_8h_1afdd4ccae8b5f8fca2fd8f23c9fee6844" kind="typedef"><name>MaaControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1ad717257089675a8dc0e80e574cfe5243" kind="typedef"><name>MaaAdbControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1a65786017771209552b0f1836a58deef0" kind="typedef"><name>MaaWin32ControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1a8adab01abd6e9dcc167b4540f771c73a" kind="typedef"><name>MaaMacOSControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1ae7686964fb7e1e28b6c43b69902d21bb" kind="typedef"><name>MaaGamepadControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1ae379a64534f66d7fc6fe047476d5563e" kind="typedef"><name>MaaCustomControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1a0e8e5772a651edd77531940be1d0304a" kind="typedef"><name>MaaReplayControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1aa8183f5044591116d0ce44318571d14e" kind="typedef"><name>MaaRecordControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1a90d6e45f84fbbed8d11f88ca1c2eb09d" kind="typedef"><name>MaaDbgControlUnitHandle</name></member>
+  </compound>
+  <compound refid="CustomControlUnitAPI_8h" kind="file"><name>CustomControlUnitAPI.h</name>
+    <member refid="CustomControlUnitAPI_8h_1ad6294c247a6f7021b5f86ca2060e9298" kind="function"><name>MaaCustomControlUnitGetVersion</name></member>
+    <member refid="CustomControlUnitAPI_8h_1abf8d1da4e81aaa95540e90bbc5f77048" kind="function"><name>MaaCustomControlUnitCreate</name></member>
+    <member refid="CustomControlUnitAPI_8h_1a6c4dc1b6da33a5f580ed3e254f29b123" kind="function"><name>MaaCustomControlUnitDestroy</name></member>
+  </compound>
+  <compound refid="DbgControlUnitAPI_8h" kind="file"><name>DbgControlUnitAPI.h</name>
+    <member refid="DbgControlUnitAPI_8h_1a987e952ec0f58f6d9e92c4585f0fa578" kind="function"><name>MaaDbgControlUnitGetVersion</name></member>
+    <member refid="DbgControlUnitAPI_8h_1a6331d376f234b2f19ffc32ad77aa4082" kind="function"><name>MaaDbgControlUnitCreate</name></member>
+    <member refid="DbgControlUnitAPI_8h_1a7734a89415c49460078b876413d5a3e2" kind="function"><name>MaaDbgControlUnitDestroy</name></member>
+  </compound>
+  <compound refid="GamepadControlUnitAPI_8h" kind="file"><name>GamepadControlUnitAPI.h</name>
+    <member refid="GamepadControlUnitAPI_8h_1ab9bcf7b6bf623919015fadac32b9cc8d" kind="function"><name>MaaGamepadControlUnitGetVersion</name></member>
+    <member refid="GamepadControlUnitAPI_8h_1ad3e9a885b37a409655923b92ca9be65f" kind="function"><name>MaaGamepadControlUnitCreate</name></member>
+    <member refid="GamepadControlUnitAPI_8h_1a657109c85fb7ec8d750a244d125ab9d3" kind="function"><name>MaaGamepadControlUnitDestroy</name></member>
+  </compound>
+  <compound refid="MaaControlUnitAPI_8h" kind="file"><name>MaaControlUnitAPI.h</name>
+  </compound>
+  <compound refid="MaaControlUnitDef_8h" kind="file"><name>MaaControlUnitDef.h</name>
+    <member refid="MaaControlUnitDef_8h_1ac69bb68241f7cbba6c1761ce4e882e01" kind="define"><name>MAA_CTRL_UNIT_NS</name></member>
+    <member refid="MaaControlUnitDef_8h_1a4351030b08881f9a592456db185565a4" kind="define"><name>MAA_CTRL_UNIT_NS_BEGIN</name></member>
+    <member refid="MaaControlUnitDef_8h_1adaa9552e903ded8ccc393ee19f6c480b" kind="define"><name>MAA_CTRL_UNIT_NS_END</name></member>
+  </compound>
+  <compound refid="MacOSControlUnitAPI_8h" kind="file"><name>MacOSControlUnitAPI.h</name>
+    <member refid="MacOSControlUnitAPI_8h_1aa76648de661faebcd944c4bd0cd1d795" kind="function"><name>MaaMacOSControlUnitGetVersion</name></member>
+    <member refid="MacOSControlUnitAPI_8h_1a40bb2935f288f2b7d78d74fed8cb4810" kind="function"><name>MaaMacOSControlUnitCreate</name></member>
+    <member refid="MacOSControlUnitAPI_8h_1ac86aec4779a55d9d4999d8d719a52c5e" kind="function"><name>MaaMacOSControlUnitDestroy</name></member>
+  </compound>
+  <compound refid="PlayCoverControlUnitAPI_8h" kind="file"><name>PlayCoverControlUnitAPI.h</name>
+    <member refid="PlayCoverControlUnitAPI_8h_1ae14b0ce5a022cc2e52df642cdbfab90b" kind="function"><name>MaaPlayCoverControlUnitGetVersion</name></member>
+    <member refid="PlayCoverControlUnitAPI_8h_1a0b51e56152fc5e5db0e90c6632501889" kind="function"><name>MaaPlayCoverControlUnitCreate</name></member>
+    <member refid="PlayCoverControlUnitAPI_8h_1a08a124ba4c3916720dc11d61940b7fa3" kind="function"><name>MaaPlayCoverControlUnitDestroy</name></member>
+  </compound>
+  <compound refid="RecordControlUnitAPI_8h" kind="file"><name>RecordControlUnitAPI.h</name>
+    <member refid="RecordControlUnitAPI_8h_1a5f3bb2ae352219a4ab66b9e7016fa096" kind="function"><name>MaaRecordControlUnitGetVersion</name></member>
+    <member refid="RecordControlUnitAPI_8h_1a4450a94a9c4682b3535895ed300bc461" kind="function"><name>MaaRecordControlUnitCreate</name></member>
+    <member refid="RecordControlUnitAPI_8h_1ae82ecf29420920e52c2c08e0f2b102f4" kind="function"><name>MaaRecordControlUnitDestroy</name></member>
+  </compound>
+  <compound refid="RecordTypes_8h" kind="file"><name>RecordTypes.h</name>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44" kind="enum"><name>RecordType</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44afedb2d84cafe20862cb4399751a8a7e3" kind="enumvalue"><name>invalid</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44ab640a0ce465fa2a4150c36b305c1c11b" kind="enumvalue"><name>connect</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44aa8affc088cbca89fa20dbd98c91362e4" kind="enumvalue"><name>click</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44aa139b05b7f8e496c00991733ef7cd589" kind="enumvalue"><name>swipe</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44aa823338b63f54dfe3e9839b4ff1e1509" kind="enumvalue"><name>multi_swipe</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a36acdbf9714963b10ba93cfc39791787" kind="enumvalue"><name>touch_down</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44abe01435119c324ee3224c7d266d80cce" kind="enumvalue"><name>touch_move</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a703aaa492c24c09fc36119dbf99d3cfd" kind="enumvalue"><name>touch_up</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a2d40785ff4341cd3e884f8b5d11b57ca" kind="enumvalue"><name>click_key</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44afa63575c3c5d8bf2c92b4800e8122432" kind="enumvalue"><name>input_text</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a7aa092d0034e51239f1343cc3a5d9b1e" kind="enumvalue"><name>screencap</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a5760d6abad0c4a61fa562d8c73e288e4" kind="enumvalue"><name>start_app</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a19fefdd0ff0c1843254cfaba9b3900f8" kind="enumvalue"><name>stop_app</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a88aee4617a01e1e5da7f11f3b5fb7ac0" kind="enumvalue"><name>key_down</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a2d19def4e5861d6d2e62450fcc84cb97" kind="enumvalue"><name>key_up</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a089b0cdd8835d09cb1cabf38b3ce9c09" kind="enumvalue"><name>scroll</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44aa86ccf87f4a3eb6b6874a5304ba20438" kind="enumvalue"><name>relative_move</name></member>
+    <member refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a2591c98b70119fe624898b1e424b5e91" kind="enumvalue"><name>shell</name></member>
+    <member refid="RecordTypes_8h_1acabef60a76edf534fba081f1129a747b" kind="function"><name>make_record_json</name></member>
+    <member refid="RecordTypes_8h_1a274fbfa82584b06ab312ccb4a4c50722" kind="function"><name>make_record_json</name></member>
+  </compound>
+  <compound refid="ReplayControlUnitAPI_8h" kind="file"><name>ReplayControlUnitAPI.h</name>
+    <member refid="ReplayControlUnitAPI_8h_1a17d4a436704ad7a5a44ee6e359d8c21a" kind="function"><name>MaaReplayControlUnitGetVersion</name></member>
+    <member refid="ReplayControlUnitAPI_8h_1aec9bb3cd4f196fa10147705488f30699" kind="function"><name>MaaReplayControlUnitCreate</name></member>
+    <member refid="ReplayControlUnitAPI_8h_1a97865abbcedd727684a3e7a3d46f323b" kind="function"><name>MaaReplayControlUnitDestroy</name></member>
+  </compound>
+  <compound refid="Win32ControlUnitAPI_8h" kind="file"><name>Win32ControlUnitAPI.h</name>
+    <member refid="Win32ControlUnitAPI_8h_1a1741b1aa42af5f8a34bfb5783560ec7f" kind="function"><name>MaaWin32ControlUnitGetVersion</name></member>
+    <member refid="Win32ControlUnitAPI_8h_1a959efa07dc2f996b1f4a82081be0cd08" kind="function"><name>MaaWin32ControlUnitCreate</name></member>
+    <member refid="Win32ControlUnitAPI_8h_1a312eb68afaeffa32ba865a7468345e4c" kind="function"><name>MaaWin32ControlUnitDestroy</name></member>
+  </compound>
+  <compound refid="WlRootsControlUnitAPI_8h" kind="file"><name>WlRootsControlUnitAPI.h</name>
+    <member refid="WlRootsControlUnitAPI_8h_1a51b7f50f15ae18c2ddc41eada366fd2f" kind="function"><name>MaaWlRootsControlUnitGetVersion</name></member>
+    <member refid="WlRootsControlUnitAPI_8h_1a3b8a7677a5a72acdcd4ba45c9e8de55e" kind="function"><name>MaaWlRootsControlUnitCreate</name></member>
+    <member refid="WlRootsControlUnitAPI_8h_1aaf9e709ea798ff0c5911bde3e5bd19e6" kind="function"><name>MaaWlRootsControlUnitDestroy</name></member>
+  </compound>
   <compound refid="MaaGlobal_8h" kind="file"><name>MaaGlobal.h</name>
     <member refid="MaaGlobal_8h_1ab8a3bdd731560655c4fa049bf5886501" kind="function"><name>MaaGlobalSetOption</name></member>
     <member refid="MaaGlobal_8h_1ab488228d24cc5477ccff6d83ca505441" kind="function"><name>MaaGlobalLoadPlugin</name></member>
@@ -95,7 +311,9 @@
     <member refid="MaaController_8h_1a0a0532a08e57b6b8b23282b51f6431a0" kind="function"><name>MaaWin32ControllerCreate</name></member>
     <member refid="MaaController_8h_1af8ff627f00593364f9654343461af20c" kind="function"><name>MaaMacOSControllerCreate</name></member>
     <member refid="MaaController_8h_1a2ff145414faed5fdeedc36e97729677e" kind="function"><name>MaaCustomControllerCreate</name></member>
-    <member refid="MaaController_8h_1a1ea4c3aa0b3bcb39d35dc13cdde9a044" kind="function"><name>MaaDbgControllerCreate</name></member>
+    <member refid="MaaController_8h_1aadb57e80415b69b895a4ea1fd26dfa75" kind="function"><name>MaaDbgControllerCreate</name></member>
+    <member refid="MaaController_8h_1ac617f958211e394d69a38e1177d4f996" kind="function"><name>MaaReplayControllerCreate</name></member>
+    <member refid="MaaController_8h_1a801ccbca7db84ce9a6f6333183b6cc3c" kind="function"><name>MaaRecordControllerCreate</name></member>
     <member refid="MaaController_8h_1af9b278b0a220ea72ff4ce564a055ff52" kind="function"><name>MaaPlayCoverControllerCreate</name></member>
     <member refid="MaaController_8h_1a49a0cea456829030f106857728783500" kind="function"><name>MaaWlRootsControllerCreate</name></member>
     <member refid="MaaController_8h_1ab979f25e17e04ae8cc2d2a6aa1b2540a" kind="function"><name>MaaGamepadControllerCreate</name></member>
@@ -245,9 +463,6 @@
     <member refid="MaaDef_8h_1af14dd44b20e4b0ce26c8e48c611236b4" kind="define"><name>MaaMacOSInputMethod_None</name></member>
     <member refid="MaaDef_8h_1aeeb5f700b6826581d1d3ec7b2271561d" kind="define"><name>MaaMacOSInputMethod_GlobalEvent</name></member>
     <member refid="MaaDef_8h_1a54494f426182d7a0b0d7ac5caca2620d" kind="define"><name>MaaMacOSInputMethod_PostToPid</name></member>
-    <member refid="MaaDef_8h_1ab67ca0fce1cf517080804b1cae4be9b6" kind="define"><name>MaaDbgControllerType_None</name></member>
-    <member refid="MaaDef_8h_1a6a9179147858e053948175909352e60d" kind="define"><name>MaaDbgControllerType_CarouselImage</name></member>
-    <member refid="MaaDef_8h_1ad5fbfc89110fdbfd5f535c0a4557b809" kind="define"><name>MaaDbgControllerType_ReplayRecording</name></member>
     <member refid="MaaDef_8h_1a586ad29ada2c999ae75b77ad6baeedb9" kind="define"><name>MaaGamepadType_Xbox360</name></member>
     <member refid="MaaDef_8h_1af8af7e509a456f76d65db79f99b14591" kind="define"><name>MaaGamepadType_DualShock4</name></member>
     <member refid="MaaDef_8h_1acbc161630001bc8f54f7cf136a0493fc" kind="define"><name>MaaGamepadButton_A</name></member>
@@ -366,7 +581,6 @@
     <member refid="MaaDef_8h_1a29af4457ff72b57b157a1d58d6d28878" kind="typedef"><name>MaaWin32InputMethod</name></member>
     <member refid="MaaDef_8h_1ac2226415cbf081d3ce6fde4b3a5fe205" kind="typedef"><name>MaaMacOSScreencapMethod</name></member>
     <member refid="MaaDef_8h_1a428e432bbc782281526f5bd272c38e65" kind="typedef"><name>MaaMacOSInputMethod</name></member>
-    <member refid="MaaDef_8h_1a7a7491d55c50840ccb1891ba9b7740c4" kind="typedef"><name>MaaDbgControllerType</name></member>
     <member refid="MaaDef_8h_1a53a0d2c454370893abfbaf100b48dc0d" kind="typedef"><name>MaaGamepadType</name></member>
     <member refid="MaaDef_8h_1abb0b4cd931aa02d962781dbe496df3cd" kind="typedef"><name>MaaGamepadButton</name></member>
     <member refid="MaaDef_8h_1a4970adab630ddcf1e06f84acb415d270" kind="typedef"><name>MaaGamepadTouch</name></member>
@@ -558,6 +772,8 @@
   <compound refid="dir_a5fd325a74c1f9193b470b47e297ce9b" kind="dir"><name>include/MaaAgentClient</name>
   </compound>
   <compound refid="dir_6373d74a239aad5eeb934988eedbd366" kind="dir"><name>include/MaaAgentServer</name>
+  </compound>
+  <compound refid="dir_4b181761ecfce2f2bb55ba5b96618c4b" kind="dir"><name>include/MaaControlUnit</name>
   </compound>
   <compound refid="dir_370cd1367c21b1a87c5c9c6803b8d0b9" kind="dir"><name>include/MaaFramework</name>
   </compound>

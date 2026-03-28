@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structRecordRelativeMove" kind="struct" language="C++" prot="public">
+    <compoundname>RecordRelativeMove</compoundname>
+    <includes refid="RecordTypes_8h" local="no">RecordTypes.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structRecordRelativeMove_1a78b00efc63489323da9b96363ed9a8b2" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordRelativeMove::dx</definition>
+        <argsstring></argsstring>
+        <name>dx</name>
+        <qualifiedname>RecordRelativeMove::dx</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="129" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="129" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordRelativeMove_1ad7fe4591b6ebc3b5473b005eb9be46c6" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordRelativeMove::dy</definition>
+        <argsstring></argsstring>
+        <name>dy</name>
+        <qualifiedname>RecordRelativeMove::dy</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="130" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structRecordRelativeMove_1a638e4e11736d11d4c904c5ac70ac3e2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>RecordRelativeMove::MEO_JSONIZATION</definition>
+        <argsstring>(dx, dy)</argsstring>
+        <name>MEO_JSONIZATION</name>
+        <qualifiedname>RecordRelativeMove::MEO_JSONIZATION</qualifiedname>
+        <param>
+          <type><ref refid="structRecordRelativeMove_1a78b00efc63489323da9b96363ed9a8b2" kindref="member">dx</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordRelativeMove_1ad7fe4591b6ebc3b5473b005eb9be46c6" kindref="member">dy</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="132" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/RecordTypes.h" line="127" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="128" bodyend="133"/>
+    <listofallmembers>
+      <member refid="structRecordRelativeMove_1a78b00efc63489323da9b96363ed9a8b2" prot="public" virt="non-virtual"><scope>RecordRelativeMove</scope><name>dx</name></member>
+      <member refid="structRecordRelativeMove_1ad7fe4591b6ebc3b5473b005eb9be46c6" prot="public" virt="non-virtual"><scope>RecordRelativeMove</scope><name>dy</name></member>
+      <member refid="structRecordRelativeMove_1a638e4e11736d11d4c904c5ac70ac3e2a" prot="public" virt="non-virtual"><scope>RecordRelativeMove</scope><name>MEO_JSONIZATION</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

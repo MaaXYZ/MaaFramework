@@ -1,0 +1,306 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="ControlUnitAPI_8h" kind="file" language="C++">
+    <compoundname>ControlUnitAPI.h</compoundname>
+    <includes local="no">chrono</includes>
+    <includes local="no">string</includes>
+    <includes local="no">utility</includes>
+    <includes local="no">meojson/json.hpp</includes>
+    <includes local="no">opencv2/core/mat.hpp</includes>
+    <includes refid="MaaControlUnitDef_8h" local="yes">MaaControlUnit/MaaControlUnitDef.h</includes>
+    <includes refid="MaaDef_8h" local="yes">MaaFramework/MaaDef.h</includes>
+    <includedby refid="AdbControlUnitAPI_8h" local="yes">include/MaaControlUnit/AdbControlUnitAPI.h</includedby>
+    <includedby refid="CustomControlUnitAPI_8h" local="yes">include/MaaControlUnit/CustomControlUnitAPI.h</includedby>
+    <includedby refid="DbgControlUnitAPI_8h" local="yes">include/MaaControlUnit/DbgControlUnitAPI.h</includedby>
+    <includedby refid="GamepadControlUnitAPI_8h" local="yes">include/MaaControlUnit/GamepadControlUnitAPI.h</includedby>
+    <includedby refid="MaaControlUnitAPI_8h" local="yes">include/MaaControlUnit/MaaControlUnitAPI.h</includedby>
+    <includedby refid="MacOSControlUnitAPI_8h" local="yes">include/MaaControlUnit/MacOSControlUnitAPI.h</includedby>
+    <includedby refid="PlayCoverControlUnitAPI_8h" local="yes">include/MaaControlUnit/PlayCoverControlUnitAPI.h</includedby>
+    <includedby refid="RecordControlUnitAPI_8h" local="yes">include/MaaControlUnit/RecordControlUnitAPI.h</includedby>
+    <includedby refid="ReplayControlUnitAPI_8h" local="yes">include/MaaControlUnit/ReplayControlUnitAPI.h</includedby>
+    <includedby refid="Win32ControlUnitAPI_8h" local="yes">include/MaaControlUnit/Win32ControlUnitAPI.h</includedby>
+    <includedby refid="WlRootsControlUnitAPI_8h" local="yes">include/MaaControlUnit/WlRootsControlUnitAPI.h</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>include/MaaControlUnit/ControlUnitAPI.h</label>
+        <link refid="ControlUnitAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>MaaControlUnit/MaaControlUnitDef.h</label>
+        <link refid="MaaControlUnitDef_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>MaaFramework/MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="2">
+        <label>chrono</label>
+      </node>
+      <node id="5">
+        <label>meojson/json.hpp</label>
+      </node>
+      <node id="6">
+        <label>opencv2/core/mat.hpp</label>
+      </node>
+      <node id="10">
+        <label>stdint.h</label>
+      </node>
+      <node id="3">
+        <label>string</label>
+      </node>
+      <node id="4">
+        <label>utility</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>include/MaaControlUnit/AdbControlUnitAPI.h</label>
+        <link refid="AdbControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>include/MaaControlUnit/ControlUnitAPI.h</label>
+        <link refid="ControlUnitAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>include/MaaControlUnit/CustomControlUnitAPI.h</label>
+        <link refid="CustomControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>include/MaaControlUnit/DbgControlUnitAPI.h</label>
+        <link refid="DbgControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>include/MaaControlUnit/GamepadControlUnitAPI.h</label>
+        <link refid="GamepadControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
+        <link refid="MaaControlUnitAPI_8h"/>
+      </node>
+      <node id="7">
+        <label>include/MaaControlUnit/MacOSControlUnitAPI.h</label>
+        <link refid="MacOSControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>include/MaaControlUnit/PlayCoverControlUnitAPI.h</label>
+        <link refid="PlayCoverControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>include/MaaControlUnit/RecordControlUnitAPI.h</label>
+        <link refid="RecordControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>include/MaaControlUnit/ReplayControlUnitAPI.h</label>
+        <link refid="ReplayControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>include/MaaControlUnit/Win32ControlUnitAPI.h</label>
+        <link refid="Win32ControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>include/MaaControlUnit/WlRootsControlUnitAPI.h</label>
+        <link refid="WlRootsControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classControlUnitAPI" prot="public">ControlUnitAPI</innerclass>
+    <innerclass refid="classScrollableUnit" prot="public">ScrollableUnit</innerclass>
+    <innerclass refid="classRelativeMovableUnit" prot="public">RelativeMovableUnit</innerclass>
+    <innerclass refid="classShellableUnit" prot="public">ShellableUnit</innerclass>
+    <innerclass refid="classAdbControlUnitAPI" prot="public">AdbControlUnitAPI</innerclass>
+    <innerclass refid="classWin32ControlUnitAPI" prot="public">Win32ControlUnitAPI</innerclass>
+    <innerclass refid="classMacOSControlUnitAPI" prot="public">MacOSControlUnitAPI</innerclass>
+    <innerclass refid="classCustomControlUnitAPI" prot="public">CustomControlUnitAPI</innerclass>
+    <innerclass refid="classGamepadControlUnitAPI" prot="public">GamepadControlUnitAPI</innerclass>
+    <innerclass refid="classFullControlUnitAPI" prot="public">FullControlUnitAPI</innerclass>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="ControlUnitAPI_8h_1afdd4ccae8b5f8fca2fd8f23c9fee6844" prot="public" static="no">
+        <type>MAA_CTRL_UNIT_NS::ControlUnitAPI *</type>
+        <definition>using MaaControlUnitHandle =  MAA_CTRL_UNIT_NS::ControlUnitAPI*</definition>
+        <argsstring></argsstring>
+        <name>MaaControlUnitHandle</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="135" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="135" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="ControlUnitAPI_8h_1ad717257089675a8dc0e80e574cfe5243" prot="public" static="no">
+        <type>MAA_CTRL_UNIT_NS::AdbControlUnitAPI *</type>
+        <definition>using MaaAdbControlUnitHandle =  MAA_CTRL_UNIT_NS::AdbControlUnitAPI*</definition>
+        <argsstring></argsstring>
+        <name>MaaAdbControlUnitHandle</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="136" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="136" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="ControlUnitAPI_8h_1a65786017771209552b0f1836a58deef0" prot="public" static="no">
+        <type>MAA_CTRL_UNIT_NS::Win32ControlUnitAPI *</type>
+        <definition>using MaaWin32ControlUnitHandle =  MAA_CTRL_UNIT_NS::Win32ControlUnitAPI*</definition>
+        <argsstring></argsstring>
+        <name>MaaWin32ControlUnitHandle</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="137" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="137" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="ControlUnitAPI_8h_1a8adab01abd6e9dcc167b4540f771c73a" prot="public" static="no">
+        <type>MAA_CTRL_UNIT_NS::MacOSControlUnitAPI *</type>
+        <definition>using MaaMacOSControlUnitHandle =  MAA_CTRL_UNIT_NS::MacOSControlUnitAPI*</definition>
+        <argsstring></argsstring>
+        <name>MaaMacOSControlUnitHandle</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="138" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="138" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="ControlUnitAPI_8h_1ae7686964fb7e1e28b6c43b69902d21bb" prot="public" static="no">
+        <type>MAA_CTRL_UNIT_NS::GamepadControlUnitAPI *</type>
+        <definition>using MaaGamepadControlUnitHandle =  MAA_CTRL_UNIT_NS::GamepadControlUnitAPI*</definition>
+        <argsstring></argsstring>
+        <name>MaaGamepadControlUnitHandle</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="139" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="139" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="ControlUnitAPI_8h_1ae379a64534f66d7fc6fe047476d5563e" prot="public" static="no">
+        <type>MAA_CTRL_UNIT_NS::CustomControlUnitAPI *</type>
+        <definition>using MaaCustomControlUnitHandle =  MAA_CTRL_UNIT_NS::CustomControlUnitAPI*</definition>
+        <argsstring></argsstring>
+        <name>MaaCustomControlUnitHandle</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="140" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="140" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="ControlUnitAPI_8h_1a0e8e5772a651edd77531940be1d0304a" prot="public" static="no">
+        <type>MAA_CTRL_UNIT_NS::FullControlUnitAPI *</type>
+        <definition>using MaaReplayControlUnitHandle =  MAA_CTRL_UNIT_NS::FullControlUnitAPI*</definition>
+        <argsstring></argsstring>
+        <name>MaaReplayControlUnitHandle</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="141" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="141" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="ControlUnitAPI_8h_1aa8183f5044591116d0ce44318571d14e" prot="public" static="no">
+        <type>MAA_CTRL_UNIT_NS::FullControlUnitAPI *</type>
+        <definition>using MaaRecordControlUnitHandle =  MAA_CTRL_UNIT_NS::FullControlUnitAPI*</definition>
+        <argsstring></argsstring>
+        <name>MaaRecordControlUnitHandle</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="142" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="142" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="ControlUnitAPI_8h_1a90d6e45f84fbbed8d11f88ca1c2eb09d" prot="public" static="no">
+        <type>MAA_CTRL_UNIT_NS::ControlUnitAPI *</type>
+        <definition>using MaaDbgControlUnitHandle =  MAA_CTRL_UNIT_NS::ControlUnitAPI*</definition>
+        <argsstring></argsstring>
+        <name>MaaDbgControlUnitHandle</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="143" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="143" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h"/>
+  </compounddef>
+</doxygen>

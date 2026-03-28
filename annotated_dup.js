@@ -1,5 +1,28 @@
 var annotated_dup =
 [
+    [ "AdbControlUnitAPI", "classAdbControlUnitAPI.html", "classAdbControlUnitAPI" ],
+    [ "ControlUnitAPI", "classControlUnitAPI.html", "classControlUnitAPI" ],
+    [ "CustomControlUnitAPI", "classCustomControlUnitAPI.html", "classCustomControlUnitAPI" ],
+    [ "FullControlUnitAPI", "classFullControlUnitAPI.html", "classFullControlUnitAPI" ],
+    [ "GamepadControlUnitAPI", "classGamepadControlUnitAPI.html", "classGamepadControlUnitAPI" ],
     [ "MaaCustomControllerCallbacks", "structMaaCustomControllerCallbacks.html", "structMaaCustomControllerCallbacks" ],
-    [ "MaaRect", "structMaaRect.html", "structMaaRect" ]
+    [ "MaaRect", "structMaaRect.html", "structMaaRect" ],
+    [ "MacOSControlUnitAPI", "classMacOSControlUnitAPI.html", "classMacOSControlUnitAPI" ],
+    [ "RecordApp", "structRecordApp.html", "structRecordApp" ],
+    [ "RecordClick", "structRecordClick.html", "structRecordClick" ],
+    [ "RecordConnect", "structRecordConnect.html", "structRecordConnect" ],
+    [ "RecordInputText", "structRecordInputText.html", "structRecordInputText" ],
+    [ "RecordKey", "structRecordKey.html", "structRecordKey" ],
+    [ "RecordLine", "structRecordLine.html", "structRecordLine" ],
+    [ "RecordMultiSwipe", "structRecordMultiSwipe.html", "structRecordMultiSwipe" ],
+    [ "RecordRelativeMove", "structRecordRelativeMove.html", "structRecordRelativeMove" ],
+    [ "RecordScreencap", "structRecordScreencap.html", "structRecordScreencap" ],
+    [ "RecordScroll", "structRecordScroll.html", "structRecordScroll" ],
+    [ "RecordShell", "structRecordShell.html", "structRecordShell" ],
+    [ "RecordSwipe", "structRecordSwipe.html", "structRecordSwipe" ],
+    [ "RecordTouch", "structRecordTouch.html", "structRecordTouch" ],
+    [ "RelativeMovableUnit", "classRelativeMovableUnit.html", "classRelativeMovableUnit" ],
+    [ "ScrollableUnit", "classScrollableUnit.html", "classScrollableUnit" ],
+    [ "ShellableUnit", "classShellableUnit.html", "classShellableUnit" ],
+    [ "Win32ControlUnitAPI", "classWin32ControlUnitAPI.html", "classWin32ControlUnitAPI" ]
 ];

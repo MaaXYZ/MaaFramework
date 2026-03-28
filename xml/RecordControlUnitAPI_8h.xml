@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="RecordControlUnitAPI_8h" kind="file" language="C++">
+    <compoundname>RecordControlUnitAPI.h</compoundname>
+    <includes refid="ControlUnitAPI_8h" local="yes">MaaControlUnit/ControlUnitAPI.h</includes>
+    <includes refid="MaaDef_8h" local="yes">MaaFramework/MaaDef.h</includes>
+    <includedby refid="MaaControlUnitAPI_8h" local="yes">include/MaaControlUnit/MaaControlUnitAPI.h</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>MaaControlUnit/ControlUnitAPI.h</label>
+        <link refid="ControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>MaaControlUnit/MaaControlUnitDef.h</label>
+        <link refid="MaaControlUnitDef_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>include/MaaControlUnit/RecordControlUnitAPI.h</label>
+        <link refid="RecordControlUnitAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>MaaFramework/MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="3">
+        <label>chrono</label>
+      </node>
+      <node id="6">
+        <label>meojson/json.hpp</label>
+      </node>
+      <node id="7">
+        <label>opencv2/core/mat.hpp</label>
+      </node>
+      <node id="11">
+        <label>stdint.h</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="5">
+        <label>utility</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
+        <link refid="MaaControlUnitAPI_8h"/>
+      </node>
+      <node id="1">
+        <label>include/MaaControlUnit/RecordControlUnitAPI.h</label>
+        <link refid="RecordControlUnitAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="RecordControlUnitAPI_8h_1a5f3bb2ae352219a4ab66b9e7016fa096" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> const char *</type>
+        <definition>MAA_CONTROL_UNIT_API const char * MaaRecordControlUnitGetVersion</definition>
+        <argsstring>()</argsstring>
+        <name>MaaRecordControlUnitGetVersion</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordControlUnitAPI.h" line="11" column="37" declfile="include/MaaControlUnit/RecordControlUnitAPI.h" declline="11" declcolumn="37"/>
+      </memberdef>
+      <memberdef kind="function" id="RecordControlUnitAPI_8h_1a4450a94a9c4682b3535895ed300bc461" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> <ref refid="ControlUnitAPI_8h_1aa8183f5044591116d0ce44318571d14e" kindref="member">MaaRecordControlUnitHandle</ref></type>
+        <definition>MAA_CONTROL_UNIT_API MaaRecordControlUnitHandle MaaRecordControlUnitCreate</definition>
+        <argsstring>(void *shared_inner, const char *recording_path)</argsstring>
+        <name>MaaRecordControlUnitCreate</name>
+        <param>
+          <type>void *</type>
+          <declname>shared_inner</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>recording_path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>shared_inner</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to std::shared_ptr&lt;ControlUnitAPI&gt; (passed as void* across DLL boundary). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordControlUnitAPI.h" line="14" column="53" declfile="include/MaaControlUnit/RecordControlUnitAPI.h" declline="14" declcolumn="53"/>
+      </memberdef>
+      <memberdef kind="function" id="RecordControlUnitAPI_8h_1ae82ecf29420920e52c2c08e0f2b102f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> void</type>
+        <definition>MAA_CONTROL_UNIT_API void MaaRecordControlUnitDestroy</definition>
+        <argsstring>(MaaRecordControlUnitHandle handle)</argsstring>
+        <name>MaaRecordControlUnitDestroy</name>
+        <param>
+          <type><ref refid="ControlUnitAPI_8h_1aa8183f5044591116d0ce44318571d14e" kindref="member">MaaRecordControlUnitHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordControlUnitAPI.h" line="16" column="31" declfile="include/MaaControlUnit/RecordControlUnitAPI.h" declline="16" declcolumn="31"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/RecordControlUnitAPI.h"/>
+  </compounddef>
+</doxygen>

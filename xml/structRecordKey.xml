@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structRecordKey" kind="struct" language="C++" prot="public">
+    <compoundname>RecordKey</compoundname>
+    <includes refid="RecordTypes_8h" local="no">RecordTypes.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structRecordKey_1aed956c2ee9801928d70910d8fd765ac2" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordKey::keycode</definition>
+        <argsstring></argsstring>
+        <name>keycode</name>
+        <qualifiedname>RecordKey::keycode</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="93" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structRecordKey_1a9854cdd3d7a95e2989346e1f904331fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>RecordKey::MEO_JSONIZATION</definition>
+        <argsstring>(keycode)</argsstring>
+        <name>MEO_JSONIZATION</name>
+        <qualifiedname>RecordKey::MEO_JSONIZATION</qualifiedname>
+        <param>
+          <type><ref refid="structRecordKey_1aed956c2ee9801928d70910d8fd765ac2" kindref="member">keycode</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="95" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/RecordTypes.h" line="91" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="92" bodyend="96"/>
+    <listofallmembers>
+      <member refid="structRecordKey_1aed956c2ee9801928d70910d8fd765ac2" prot="public" virt="non-virtual"><scope>RecordKey</scope><name>keycode</name></member>
+      <member refid="structRecordKey_1a9854cdd3d7a95e2989346e1f904331fd" prot="public" virt="non-virtual"><scope>RecordKey</scope><name>MEO_JSONIZATION</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

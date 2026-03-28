@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structRecordTouch" kind="struct" language="C++" prot="public">
+    <compoundname>RecordTouch</compoundname>
+    <includes refid="RecordTypes_8h" local="no">RecordTypes.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structRecordTouch_1ad8e0dd20ce33c3035e78850c37311b3e" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordTouch::contact</definition>
+        <argsstring></argsstring>
+        <name>contact</name>
+        <qualifiedname>RecordTouch::contact</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="83" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordTouch_1a6f37c130125b34b7cb5aee355a7bedbf" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordTouch::x</definition>
+        <argsstring></argsstring>
+        <name>x</name>
+        <qualifiedname>RecordTouch::x</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="84" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordTouch_1a1a7da180318019e996f72b523a4c67e1" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordTouch::y</definition>
+        <argsstring></argsstring>
+        <name>y</name>
+        <qualifiedname>RecordTouch::y</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="85" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordTouch_1ab7ddd20d6d36e614c5780bba3dbb1e57" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordTouch::pressure</definition>
+        <argsstring></argsstring>
+        <name>pressure</name>
+        <qualifiedname>RecordTouch::pressure</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="86" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structRecordTouch_1aab5878c1a04647e1f335d8c6f7fe29d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>RecordTouch::MEO_JSONIZATION</definition>
+        <argsstring>(contact, x, y, pressure)</argsstring>
+        <name>MEO_JSONIZATION</name>
+        <qualifiedname>RecordTouch::MEO_JSONIZATION</qualifiedname>
+        <param>
+          <type><ref refid="structRecordTouch_1ad8e0dd20ce33c3035e78850c37311b3e" kindref="member">contact</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordTouch_1a6f37c130125b34b7cb5aee355a7bedbf" kindref="member">x</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordTouch_1a1a7da180318019e996f72b523a4c67e1" kindref="member">y</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordTouch_1ab7ddd20d6d36e614c5780bba3dbb1e57" kindref="member">pressure</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="88" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/RecordTypes.h" line="81" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="82" bodyend="89"/>
+    <listofallmembers>
+      <member refid="structRecordTouch_1ad8e0dd20ce33c3035e78850c37311b3e" prot="public" virt="non-virtual"><scope>RecordTouch</scope><name>contact</name></member>
+      <member refid="structRecordTouch_1aab5878c1a04647e1f335d8c6f7fe29d7" prot="public" virt="non-virtual"><scope>RecordTouch</scope><name>MEO_JSONIZATION</name></member>
+      <member refid="structRecordTouch_1ab7ddd20d6d36e614c5780bba3dbb1e57" prot="public" virt="non-virtual"><scope>RecordTouch</scope><name>pressure</name></member>
+      <member refid="structRecordTouch_1a6f37c130125b34b7cb5aee355a7bedbf" prot="public" virt="non-virtual"><scope>RecordTouch</scope><name>x</name></member>
+      <member refid="structRecordTouch_1a1a7da180318019e996f72b523a4c67e1" prot="public" virt="non-virtual"><scope>RecordTouch</scope><name>y</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

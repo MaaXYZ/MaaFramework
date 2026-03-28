@@ -17,6 +17,48 @@
     <loc>https://maafw.com/MaaAgentServerDef_8h_source.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/AdbControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/ControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/CustomControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/DbgControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/GamepadControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/MaaControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/MaaControlUnitDef_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/MacOSControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/PlayCoverControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/RecordControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/RecordTypes_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/ReplayControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/Win32ControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/WlRootsControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/MaaGlobal_8h_source.html</loc>
   </url>
   <url>
@@ -83,6 +125,48 @@
     <loc>https://maafw.com/MaaAgentServerDef_8h.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/AdbControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/ControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/CustomControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/DbgControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/GamepadControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/MaaControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/MaaControlUnitDef_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/MacOSControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/PlayCoverControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/RecordControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/RecordTypes_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/ReplayControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/Win32ControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/WlRootsControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/MaaGlobal_8h.html</loc>
   </url>
   <url>
@@ -140,6 +224,36 @@
     <loc>https://maafw.com/group__MaaMsg.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/classAdbControlUnitAPI.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classAdbControlUnitAPI-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classControlUnitAPI.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classControlUnitAPI-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classCustomControlUnitAPI.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classCustomControlUnitAPI-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classFullControlUnitAPI.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classFullControlUnitAPI-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classGamepadControlUnitAPI.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classGamepadControlUnitAPI-members.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/structMaaCustomControllerCallbacks.html</loc>
   </url>
   <url>
@@ -150,6 +264,114 @@
   </url>
   <url>
     <loc>https://maafw.com/structMaaRect-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classMacOSControlUnitAPI.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classMacOSControlUnitAPI-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordApp.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordApp-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordClick.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordClick-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordConnect.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordConnect-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordInputText.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordInputText-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordKey.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordKey-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordLine.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordLine-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordMultiSwipe.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordMultiSwipe-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordRelativeMove.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordRelativeMove-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordScreencap.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordScreencap-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordScroll.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordScroll-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordShell.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordShell-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordSwipe.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordSwipe-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordTouch.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/structRecordTouch-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classRelativeMovableUnit.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classRelativeMovableUnit-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classScrollableUnit.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classScrollableUnit-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classShellableUnit.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classShellableUnit-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classWin32ControlUnitAPI.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classWin32ControlUnitAPI-members.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/dir_3f6e8cd112d1e824096c35d6249bbf1f.html</loc>
@@ -176,6 +398,9 @@
     <loc>https://maafw.com/dir_6373d74a239aad5eeb934988eedbd366.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/dir_4b181761ecfce2f2bb55ba5b96618c4b.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/dir_370cd1367c21b1a87c5c9c6803b8d0b9.html</loc>
   </url>
   <url>
@@ -200,7 +425,7 @@
     <loc>https://maafw.com/classes.html</loc>
   </url>
   <url>
-    <loc>https://maafw.com/functions.html</loc>
+    <loc>https://maafw.com/hierarchy.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/functions.html</loc>
@@ -231,6 +456,78 @@
   </url>
   <url>
     <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_vars.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_vars.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_vars.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_vars.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_vars.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/functions_vars.html</loc>
@@ -272,10 +569,16 @@
     <loc>https://maafw.com/globals.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/globals_r.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/globals_func.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/globals_type.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/globals_enum.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/globals_enum.html</loc>

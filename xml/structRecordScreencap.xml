@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structRecordScreencap" kind="struct" language="C++" prot="public">
+    <compoundname>RecordScreencap</compoundname>
+    <includes refid="RecordTypes_8h" local="no">RecordTypes.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structRecordScreencap_1a8cd66b6be4bc185908e8cd5c0e487d31" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string RecordScreencap::path</definition>
+        <argsstring></argsstring>
+        <name>path</name>
+        <qualifiedname>RecordScreencap::path</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="114" column="17" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="114" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structRecordScreencap_1abb1cf32c6dbd48ebe3eed82fe721fb15" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>RecordScreencap::MEO_JSONIZATION</definition>
+        <argsstring>(path)</argsstring>
+        <name>MEO_JSONIZATION</name>
+        <qualifiedname>RecordScreencap::MEO_JSONIZATION</qualifiedname>
+        <param>
+          <type><ref refid="structRecordScreencap_1a8cd66b6be4bc185908e8cd5c0e487d31" kindref="member">path</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="116" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>RecordScreencap</label>
+        <link refid="structRecordScreencap"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="include/MaaControlUnit/RecordTypes.h" line="112" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="113" bodyend="117"/>
+    <listofallmembers>
+      <member refid="structRecordScreencap_1abb1cf32c6dbd48ebe3eed82fe721fb15" prot="public" virt="non-virtual"><scope>RecordScreencap</scope><name>MEO_JSONIZATION</name></member>
+      <member refid="structRecordScreencap_1a8cd66b6be4bc185908e8cd5c0e487d31" prot="public" virt="non-virtual"><scope>RecordScreencap</scope><name>path</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

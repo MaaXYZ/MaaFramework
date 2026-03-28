@@ -244,6 +244,35 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaCustomController.h" line="64" column="9" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="64" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structMaaCustomControllerCallbacks_1a9b3b3cc2dc653c40c3f9090f83142485" prot="public" static="no" mutable="no">
+        <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(*</type>
+        <definition>MaaBool(* MaaCustomControllerCallbacks::relative_move) (int32_t dx, int32_t dy, void *trans_arg)</definition>
+        <argsstring>)(int32_t dx, int32_t dy, void *trans_arg)</argsstring>
+        <name>relative_move</name>
+        <qualifiedname>MaaCustomControllerCallbacks::relative_move</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaCustomController.h" line="66" column="9" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structMaaCustomControllerCallbacks_1a0727d6aacbc583631c94d5ed3ff537e0" prot="public" static="no" mutable="no">
+        <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(*</type>
+        <definition>MaaBool(* MaaCustomControllerCallbacks::shell) (const char *cmd, int64_t timeout, void *trans_arg, MaaStringBuffer *buffer)</definition>
+        <argsstring>)(const char *cmd, int64_t timeout, void *trans_arg, MaaStringBuffer *buffer)</argsstring>
+        <name>shell</name>
+        <qualifiedname>MaaCustomControllerCallbacks::shell</qualifiedname>
+        <briefdescription>
+<para>Write result to buffer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaCustomController.h" line="69" column="9" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="variable" id="structMaaCustomControllerCallbacks_1a1b40637a2af654c10ce501d968abefc7" prot="public" static="no" mutable="no">
         <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(*</type>
         <definition>MaaBool(* MaaCustomControllerCallbacks::inactive) (void *trans_arg)</definition>
@@ -256,7 +285,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaCustomController.h" line="66" column="9" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="66" bodyend="-1"/>
+        <location file="include/MaaFramework/Instance/MaaCustomController.h" line="71" column="9" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="71" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structMaaCustomControllerCallbacks_1a6d16b04282a3cf8354e5e326464263b7" prot="public" static="no" mutable="no">
         <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(*</type>
@@ -271,7 +300,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaCustomController.h" line="69" column="9" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="69" bodyend="-1"/>
+        <location file="include/MaaFramework/Instance/MaaCustomController.h" line="74" column="9" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="74" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -281,7 +310,7 @@
 <para>To create a custom controller, you need to implement this API.</para>
 <para>You do not have to implement all the functions in this API. Instead, just implement the functions you need. Do note that if an unimplemented function is called, the framework will likely crash. </para>
     </detaileddescription>
-    <location file="include/MaaFramework/Instance/MaaCustomController.h" line="31" column="5" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="32" bodyend="70"/>
+    <location file="include/MaaFramework/Instance/MaaCustomController.h" line="31" column="5" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="32" bodyend="75"/>
     <listofallmembers>
       <member refid="structMaaCustomControllerCallbacks_1ace80d9863f4faaa37fcf1a00bc521561" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>click</name></member>
       <member refid="structMaaCustomControllerCallbacks_1a2df5a214e13e5d9542d3458016c5f51c" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>click_key</name></member>
@@ -293,9 +322,11 @@
       <member refid="structMaaCustomControllerCallbacks_1add383d0ce3995532bfe0db9d008b6f7e" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>input_text</name></member>
       <member refid="structMaaCustomControllerCallbacks_1a46da9230073fb4ac1ccc7b8c28d87467" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>key_down</name></member>
       <member refid="structMaaCustomControllerCallbacks_1a99d5b6c3270039db39a1f5cdeb27b269" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>key_up</name></member>
+      <member refid="structMaaCustomControllerCallbacks_1a9b3b3cc2dc653c40c3f9090f83142485" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>relative_move</name></member>
       <member refid="structMaaCustomControllerCallbacks_1af0a00cdd379be8608bf360acfdfde4ea" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>request_uuid</name></member>
       <member refid="structMaaCustomControllerCallbacks_1a08c5a1a4ae71f851dbc8a98954d60f0b" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>screencap</name></member>
       <member refid="structMaaCustomControllerCallbacks_1ae2381df699964f6e95fe89ad2fc22e38" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>scroll</name></member>
+      <member refid="structMaaCustomControllerCallbacks_1a0727d6aacbc583631c94d5ed3ff537e0" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>shell</name></member>
       <member refid="structMaaCustomControllerCallbacks_1ac25e877ae83b359a0b3e7ee8b02f534f" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>start_app</name></member>
       <member refid="structMaaCustomControllerCallbacks_1a5a1d73d4f14d2d7b702a1cdafcf96efd" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>stop_app</name></member>
       <member refid="structMaaCustomControllerCallbacks_1a8ce576133ec0c5560be16bb84b0b650d" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>swipe</name></member>

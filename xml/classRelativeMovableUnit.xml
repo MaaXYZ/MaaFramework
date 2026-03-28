@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classRelativeMovableUnit" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>RelativeMovableUnit</compoundname>
+    <derivedcompoundref refid="classCustomControlUnitAPI" prot="public" virt="non-virtual">CustomControlUnitAPI</derivedcompoundref>
+    <derivedcompoundref refid="classFullControlUnitAPI" prot="public" virt="non-virtual">FullControlUnitAPI</derivedcompoundref>
+    <derivedcompoundref refid="classMacOSControlUnitAPI" prot="public" virt="non-virtual">MacOSControlUnitAPI</derivedcompoundref>
+    <derivedcompoundref refid="classWin32ControlUnitAPI" prot="public" virt="non-virtual">Win32ControlUnitAPI</derivedcompoundref>
+    <includes refid="ControlUnitAPI_8h" local="no">ControlUnitAPI.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classRelativeMovableUnit_1a4964cbe22bca1df4d12eba776b92d24c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual RelativeMovableUnit::~RelativeMovableUnit</definition>
+        <argsstring>()=default</argsstring>
+        <name>~RelativeMovableUnit</name>
+        <qualifiedname>RelativeMovableUnit::~RelativeMovableUnit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="63" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classRelativeMovableUnit_1aa0dc25bd17997c2c76feb3e196315320" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool RelativeMovableUnit::relative_move</definition>
+        <argsstring>(int dx, int dy)=0</argsstring>
+        <name>relative_move</name>
+        <qualifiedname>RelativeMovableUnit::relative_move</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>dx</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dy</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="65" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>CustomControlUnitAPI</label>
+        <link refid="classCustomControlUnitAPI"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>FullControlUnitAPI</label>
+        <link refid="classFullControlUnitAPI"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>MacOSControlUnitAPI</label>
+        <link refid="classMacOSControlUnitAPI"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>RelativeMovableUnit</label>
+        <link refid="classRelativeMovableUnit"/>
+      </node>
+      <node id="5">
+        <label>Win32ControlUnitAPI</label>
+        <link refid="classWin32ControlUnitAPI"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="60" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="61" bodyend="66"/>
+    <listofallmembers>
+      <member refid="classRelativeMovableUnit_1aa0dc25bd17997c2c76feb3e196315320" prot="public" virt="pure-virtual"><scope>RelativeMovableUnit</scope><name>relative_move</name></member>
+      <member refid="classRelativeMovableUnit_1a4964cbe22bca1df4d12eba776b92d24c" prot="public" virt="virtual"><scope>RelativeMovableUnit</scope><name>~RelativeMovableUnit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

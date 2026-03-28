@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structRecordApp" kind="struct" language="C++" prot="public">
+    <compoundname>RecordApp</compoundname>
+    <includes refid="RecordTypes_8h" local="no">RecordTypes.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structRecordApp_1a0f733944303312b8bffb7aced69a087a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string RecordApp::package</definition>
+        <argsstring></argsstring>
+        <name>package</name>
+        <qualifiedname>RecordApp::package</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="107" column="17" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structRecordApp_1a59707976c54291265c8beb74a7e9220b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>RecordApp::MEO_JSONIZATION</definition>
+        <argsstring>(package)</argsstring>
+        <name>MEO_JSONIZATION</name>
+        <qualifiedname>RecordApp::MEO_JSONIZATION</qualifiedname>
+        <param>
+          <type><ref refid="structRecordApp_1a0f733944303312b8bffb7aced69a087a" kindref="member">package</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="109" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>RecordApp</label>
+        <link refid="structRecordApp"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>package</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="include/MaaControlUnit/RecordTypes.h" line="105" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="106" bodyend="110"/>
+    <listofallmembers>
+      <member refid="structRecordApp_1a59707976c54291265c8beb74a7e9220b" prot="public" virt="non-virtual"><scope>RecordApp</scope><name>MEO_JSONIZATION</name></member>
+      <member refid="structRecordApp_1a0f733944303312b8bffb7aced69a087a" prot="public" virt="non-virtual"><scope>RecordApp</scope><name>package</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

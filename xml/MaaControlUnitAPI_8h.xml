@@ -1,0 +1,237 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="MaaControlUnitAPI_8h" kind="file" language="C++">
+    <compoundname>MaaControlUnitAPI.h</compoundname>
+    <includes refid="MaaControlUnitDef_8h" local="yes">MaaControlUnitDef.h</includes>
+    <includes refid="ControlUnitAPI_8h" local="yes">ControlUnitAPI.h</includes>
+    <includes refid="RecordTypes_8h" local="yes">RecordTypes.h</includes>
+    <includes refid="AdbControlUnitAPI_8h" local="yes">AdbControlUnitAPI.h</includes>
+    <includes refid="CustomControlUnitAPI_8h" local="yes">CustomControlUnitAPI.h</includes>
+    <includes refid="DbgControlUnitAPI_8h" local="yes">DbgControlUnitAPI.h</includes>
+    <includes refid="GamepadControlUnitAPI_8h" local="yes">GamepadControlUnitAPI.h</includes>
+    <includes refid="MacOSControlUnitAPI_8h" local="yes">MacOSControlUnitAPI.h</includes>
+    <includes refid="PlayCoverControlUnitAPI_8h" local="yes">PlayCoverControlUnitAPI.h</includes>
+    <includes refid="RecordControlUnitAPI_8h" local="yes">RecordControlUnitAPI.h</includes>
+    <includes refid="ReplayControlUnitAPI_8h" local="yes">ReplayControlUnitAPI.h</includes>
+    <includes refid="Win32ControlUnitAPI_8h" local="yes">Win32ControlUnitAPI.h</includes>
+    <includes refid="WlRootsControlUnitAPI_8h" local="yes">WlRootsControlUnitAPI.h</includes>
+    <incdepgraph>
+      <node id="14">
+        <label>AdbControlUnitAPI.h</label>
+        <link refid="AdbControlUnitAPI_8h"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ControlUnitAPI.h</label>
+        <link refid="ControlUnitAPI_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>CustomControlUnitAPI.h</label>
+        <link refid="CustomControlUnitAPI_8h"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>DbgControlUnitAPI.h</label>
+        <link refid="DbgControlUnitAPI_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>GamepadControlUnitAPI.h</label>
+        <link refid="GamepadControlUnitAPI_8h"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
+        <link refid="MaaControlUnitAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>MaaControlUnitDef.h</label>
+        <link refid="MaaControlUnitDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>MacOSControlUnitAPI.h</label>
+        <link refid="MacOSControlUnitAPI_8h"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>PlayCoverControlUnitAPI.h</label>
+        <link refid="PlayCoverControlUnitAPI_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>RecordControlUnitAPI.h</label>
+        <link refid="RecordControlUnitAPI_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>RecordTypes.h</label>
+        <link refid="RecordTypes_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>ReplayControlUnitAPI.h</label>
+        <link refid="ReplayControlUnitAPI_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>Win32ControlUnitAPI.h</label>
+        <link refid="Win32ControlUnitAPI_8h"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>WlRootsControlUnitAPI.h</label>
+        <link refid="WlRootsControlUnitAPI_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>MaaFramework/Instance/MaaCustomController.h</label>
+        <link refid="MaaCustomController_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>MaaFramework/MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="5">
+        <label>chrono</label>
+      </node>
+      <node id="15">
+        <label>memory</label>
+      </node>
+      <node id="8">
+        <label>meojson/json.hpp</label>
+      </node>
+      <node id="9">
+        <label>opencv2/core/mat.hpp</label>
+      </node>
+      <node id="16">
+        <label>optional</label>
+      </node>
+      <node id="11">
+        <label>stdint.h</label>
+      </node>
+      <node id="6">
+        <label>string</label>
+      </node>
+      <node id="7">
+        <label>utility</label>
+      </node>
+      <node id="13">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/MaaControlUnitAPI.h"/>
+  </compounddef>
+</doxygen>

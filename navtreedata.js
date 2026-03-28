@@ -29,8 +29,10 @@ var NAVTREE =
     [ "Topics", "topics.html", "topics" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
+      [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", null ],
+        [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],
@@ -50,9 +52,9 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"MaaAPI_8h.html",
-"MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6",
-"group__MaaMsg.html#gab65345cec2c40588cb4037c50fc73176"
+"AdbControlUnitAPI_8h.html",
+"MaaDef_8h.html#a6ab0f942cf53ee5bef82efc619aff6d8",
+"PlayCoverControlUnitAPI_8h.html#a08a124ba4c3916720dc11d61940b7fa3"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

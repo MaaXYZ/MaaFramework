@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classAdbControlUnitAPI" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>AdbControlUnitAPI</compoundname>
+    <basecompoundref refid="classControlUnitAPI" prot="public" virt="non-virtual">ControlUnitAPI</basecompoundref>
+    <basecompoundref refid="classShellableUnit" prot="public" virt="non-virtual">ShellableUnit</basecompoundref>
+    <includes refid="ControlUnitAPI_8h" local="no">ControlUnitAPI.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classAdbControlUnitAPI_1abad3a55acb315f087bdbf2b2a6f8d3bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual AdbControlUnitAPI::~AdbControlUnitAPI</definition>
+        <argsstring>()=default</argsstring>
+        <name>~AdbControlUnitAPI</name>
+        <qualifiedname>AdbControlUnitAPI::~AdbControlUnitAPI</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="84" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classAdbControlUnitAPI_1a2debdeaa087d38facc106ba574da6b91" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool AdbControlUnitAPI::find_device</definition>
+        <argsstring>(std::vector&lt; std::string &gt; &amp;devices)=0</argsstring>
+        <name>find_device</name>
+        <qualifiedname>AdbControlUnitAPI::find_device</qualifiedname>
+        <param>
+          <type>std::vector&lt; std::string &gt; &amp;</type>
+          <declname>devices</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="86" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>AdbControlUnitAPI</label>
+        <link refid="classAdbControlUnitAPI"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ControlUnitAPI</label>
+        <link refid="classControlUnitAPI"/>
+      </node>
+      <node id="3">
+        <label>ShellableUnit</label>
+        <link refid="classShellableUnit"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>AdbControlUnitAPI</label>
+        <link refid="classAdbControlUnitAPI"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ControlUnitAPI</label>
+        <link refid="classControlUnitAPI"/>
+      </node>
+      <node id="3">
+        <label>ShellableUnit</label>
+        <link refid="classShellableUnit"/>
+      </node>
+    </collaborationgraph>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="79" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="82" bodyend="87"/>
+    <listofallmembers>
+      <member refid="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>click</name></member>
+      <member refid="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>click_key</name></member>
+      <member refid="classControlUnitAPI_1a5bff4217a5cbd6789dca3957b469cd5b" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>connect</name></member>
+      <member refid="classControlUnitAPI_1afc899c23f271738b73540eb9efc93fae" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>connected</name></member>
+      <member refid="classAdbControlUnitAPI_1a2debdeaa087d38facc106ba574da6b91" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>find_device</name></member>
+      <member refid="classControlUnitAPI_1aa1b8f3ae574ca2edcced418f138e110b" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>get_features</name></member>
+      <member refid="classControlUnitAPI_1a1bba5cdf24de2b536f4ed436bdda9513" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>get_info</name></member>
+      <member refid="classControlUnitAPI_1a95ce12fe9d30787af79adbbb84a45e1b" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>inactive</name></member>
+      <member refid="classControlUnitAPI_1a221dbd3eb78f32d1574554f11224abb9" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>input_text</name></member>
+      <member refid="classControlUnitAPI_1a395577c785ecade8664430928c6a201e" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>key_down</name></member>
+      <member refid="classControlUnitAPI_1afcdd6f7125786389adef584492f214e5" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>key_up</name></member>
+      <member refid="classControlUnitAPI_1a3bd5a15929e42ef25d990256ed1a97d4" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>request_uuid</name></member>
+      <member refid="classControlUnitAPI_1aa163c4ba062d316f248d4b0fe7f3b72d" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>screencap</name></member>
+      <member refid="classShellableUnit_1a5b255f95926f91a4c2452dbaa3043356" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>shell</name></member>
+      <member refid="classControlUnitAPI_1a816cb859403ae76b9beb202069a0bce9" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>start_app</name></member>
+      <member refid="classControlUnitAPI_1ab1d3190020919a44d6866e589d51e937" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>stop_app</name></member>
+      <member refid="classControlUnitAPI_1a94868297b93c4d118396418c838dc0a0" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>swipe</name></member>
+      <member refid="classControlUnitAPI_1a9ce21c91ca2fbff7369d8a6403cb28df" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>touch_down</name></member>
+      <member refid="classControlUnitAPI_1a987d84182ad2ff7fcba062ec5d7c4b01" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>touch_move</name></member>
+      <member refid="classControlUnitAPI_1a6ac99054d055c4300f1ff6f908113030" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>touch_up</name></member>
+      <member refid="classAdbControlUnitAPI_1abad3a55acb315f087bdbf2b2a6f8d3bb" prot="public" virt="virtual"><scope>AdbControlUnitAPI</scope><name>~AdbControlUnitAPI</name></member>
+      <member refid="classControlUnitAPI_1a9c5542a5c81747468050d8610a18e6b0" prot="public" virt="virtual"><scope>AdbControlUnitAPI</scope><name>~ControlUnitAPI</name></member>
+      <member refid="classShellableUnit_1aa1f70d3f41339f00ab40f2fb95988e6f" prot="public" virt="virtual"><scope>AdbControlUnitAPI</scope><name>~ShellableUnit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

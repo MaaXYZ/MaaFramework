@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structRecordConnect" kind="struct" language="C++" prot="public">
+    <compoundname>RecordConnect</compoundname>
+    <includes refid="RecordTypes_8h" local="no">RecordTypes.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structRecordConnect_1ab3d288437aeb6d6029861f287ab67894" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string RecordConnect::version</definition>
+        <argsstring></argsstring>
+        <name>version</name>
+        <qualifiedname>RecordConnect::version</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="46" column="17" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordConnect_1a19dce4b36e47c6f76e7541cf399ac129" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string RecordConnect::uuid</definition>
+        <argsstring></argsstring>
+        <name>uuid</name>
+        <qualifiedname>RecordConnect::uuid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="47" column="17" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordConnect_1adce47e91ee1e06df78e5451e3912aa90" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordConnect::width</definition>
+        <argsstring></argsstring>
+        <name>width</name>
+        <qualifiedname>RecordConnect::width</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="48" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordConnect_1a2d9e4654da135fe7dc6ba426ba295e90" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordConnect::height</definition>
+        <argsstring></argsstring>
+        <name>height</name>
+        <qualifiedname>RecordConnect::height</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="49" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structRecordConnect_1a9eb9c92a8a3bd847c74227d3bbfd1c7b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>RecordConnect::MEO_JSONIZATION</definition>
+        <argsstring>(version, uuid, MEO_OPT width, MEO_OPT height)</argsstring>
+        <name>MEO_JSONIZATION</name>
+        <qualifiedname>RecordConnect::MEO_JSONIZATION</qualifiedname>
+        <param>
+          <type><ref refid="structRecordConnect_1ab3d288437aeb6d6029861f287ab67894" kindref="member">version</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordConnect_1a19dce4b36e47c6f76e7541cf399ac129" kindref="member">uuid</ref></type>
+        </param>
+        <param>
+          <type>MEO_OPT</type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type>MEO_OPT</type>
+          <declname>height</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="51" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>RecordConnect</label>
+        <link refid="structRecordConnect"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>uuid</edgelabel>
+          <edgelabel>version</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="include/MaaControlUnit/RecordTypes.h" line="44" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="45" bodyend="52"/>
+    <listofallmembers>
+      <member refid="structRecordConnect_1a2d9e4654da135fe7dc6ba426ba295e90" prot="public" virt="non-virtual"><scope>RecordConnect</scope><name>height</name></member>
+      <member refid="structRecordConnect_1a9eb9c92a8a3bd847c74227d3bbfd1c7b" prot="public" virt="non-virtual"><scope>RecordConnect</scope><name>MEO_JSONIZATION</name></member>
+      <member refid="structRecordConnect_1a19dce4b36e47c6f76e7541cf399ac129" prot="public" virt="non-virtual"><scope>RecordConnect</scope><name>uuid</name></member>
+      <member refid="structRecordConnect_1ab3d288437aeb6d6029861f287ab67894" prot="public" virt="non-virtual"><scope>RecordConnect</scope><name>version</name></member>
+      <member refid="structRecordConnect_1adce47e91ee1e06df78e5451e3912aa90" prot="public" virt="non-virtual"><scope>RecordConnect</scope><name>width</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

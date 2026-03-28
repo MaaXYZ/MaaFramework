@@ -141,6 +141,11 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a99d5b6c3270039db39a1f5cdeb27b269"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2381df699964f6e95fe89ad2fc22e38" id="r_ae2381df699964f6e95fe89ad2fc22e38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaaCustomControllerCallbacks.html#ae2381df699964f6e95fe89ad2fc22e38">scroll</a> )(int32_t dx, int32_t dy, void *trans_arg)</td></tr>
 <tr class="separator:ae2381df699964f6e95fe89ad2fc22e38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b3b3cc2dc653c40c3f9090f83142485" id="r_a9b3b3cc2dc653c40c3f9090f83142485"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaaCustomControllerCallbacks.html#a9b3b3cc2dc653c40c3f9090f83142485">relative_move</a> )(int32_t dx, int32_t dy, void *trans_arg)</td></tr>
+<tr class="separator:a9b3b3cc2dc653c40c3f9090f83142485"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0727d6aacbc583631c94d5ed3ff537e0" id="r_a0727d6aacbc583631c94d5ed3ff537e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaaCustomControllerCallbacks.html#a0727d6aacbc583631c94d5ed3ff537e0">shell</a> )(const char *cmd, int64_t timeout, void *trans_arg, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *buffer)</td></tr>
+<tr class="memdesc:a0727d6aacbc583631c94d5ed3ff537e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write result to buffer.  <br /></td></tr>
+<tr class="separator:a0727d6aacbc583631c94d5ed3ff537e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b40637a2af654c10ce501d968abefc7" id="r_a1b40637a2af654c10ce501d968abefc7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaaCustomControllerCallbacks.html#a1b40637a2af654c10ce501d968abefc7">inactive</a> )(void *trans_arg)</td></tr>
 <tr class="separator:a1b40637a2af654c10ce501d968abefc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d16b04282a3cf8354e5e326464263b7" id="r_a6d16b04282a3cf8354e5e326464263b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaaCustomControllerCallbacks.html#a6d16b04282a3cf8354e5e326464263b7">get_info</a> )(void *trans_arg, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *buffer)</td></tr>
@@ -394,6 +399,36 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a9b3b3cc2dc653c40c3f9090f83142485" name="a9b3b3cc2dc653c40c3f9090f83142485"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b3b3cc2dc653c40c3f9090f83142485">&#9670;&#160;</a></span>relative_move</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(* MaaCustomControllerCallbacks::relative_move) (int32_t dx, int32_t dy, void *trans_arg)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0727d6aacbc583631c94d5ed3ff537e0" name="a0727d6aacbc583631c94d5ed3ff537e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0727d6aacbc583631c94d5ed3ff537e0">&#9670;&#160;</a></span>shell</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(* MaaCustomControllerCallbacks::shell) (const char *cmd, int64_t timeout, void *trans_arg, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *buffer)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write result to buffer. </p>
+
+</div>
+</div>
 <a id="a1b40637a2af654c10ce501d968abefc7" name="a1b40637a2af654c10ce501d968abefc7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1b40637a2af654c10ce501d968abefc7">&#9670;&#160;</a></span>inactive</h2>
 
@@ -433,7 +468,7 @@ Public Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="structMaaCustomControllerCallbacks.html">MaaCustomControllerCallbacks</a></li>
-    <li class="footer">Generated on Wed Mar 25 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Sat Mar 28 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

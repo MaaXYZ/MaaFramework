@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structRecordInputText" kind="struct" language="C++" prot="public">
+    <compoundname>RecordInputText</compoundname>
+    <includes refid="RecordTypes_8h" local="no">RecordTypes.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structRecordInputText_1a533ead316ccaaff0db4424913cfd8a11" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string RecordInputText::text</definition>
+        <argsstring></argsstring>
+        <name>text</name>
+        <qualifiedname>RecordInputText::text</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="100" column="17" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structRecordInputText_1af59c92f3b1d722f037c127fe628c4df0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>RecordInputText::MEO_JSONIZATION</definition>
+        <argsstring>(MEO_KEY(&quot;input_text&quot;) text)</argsstring>
+        <name>MEO_JSONIZATION</name>
+        <qualifiedname>RecordInputText::MEO_JSONIZATION</qualifiedname>
+        <param>
+          <type>MEO_KEY(&quot;input_text&quot;)</type>
+          <declname>text</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="102" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>RecordInputText</label>
+        <link refid="structRecordInputText"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>text</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="include/MaaControlUnit/RecordTypes.h" line="98" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="99" bodyend="103"/>
+    <listofallmembers>
+      <member refid="structRecordInputText_1af59c92f3b1d722f037c127fe628c4df0" prot="public" virt="non-virtual"><scope>RecordInputText</scope><name>MEO_JSONIZATION</name></member>
+      <member refid="structRecordInputText_1a533ead316ccaaff0db4424913cfd8a11" prot="public" virt="non-virtual"><scope>RecordInputText</scope><name>text</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['get_5ffeatures_0',['get_features',['../structMaaCustomControllerCallbacks.html#a318dbd580c96d8bf215a2df9d565d450',1,'MaaCustomControllerCallbacks']]],
-  ['get_5finfo_1',['get_info',['../structMaaCustomControllerCallbacks.html#a6d16b04282a3cf8354e5e326464263b7',1,'MaaCustomControllerCallbacks']]]
+  ['find_5fdevice_0',['find_device',['../classAdbControlUnitAPI.html#a2debdeaa087d38facc106ba574da6b91',1,'AdbControlUnitAPI']]],
+  ['fullcontrolunitapi_1',['FullControlUnitAPI',['../classFullControlUnitAPI.html',1,'']]]
 ];

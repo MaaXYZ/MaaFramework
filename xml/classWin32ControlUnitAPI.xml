@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classWin32ControlUnitAPI" kind="class" language="C++" prot="public">
+    <compoundname>Win32ControlUnitAPI</compoundname>
+    <basecompoundref refid="classControlUnitAPI" prot="public" virt="non-virtual">ControlUnitAPI</basecompoundref>
+    <basecompoundref refid="classScrollableUnit" prot="public" virt="non-virtual">ScrollableUnit</basecompoundref>
+    <basecompoundref refid="classRelativeMovableUnit" prot="public" virt="non-virtual">RelativeMovableUnit</basecompoundref>
+    <includes refid="ControlUnitAPI_8h" local="no">ControlUnitAPI.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classWin32ControlUnitAPI_1a0c919ea1e0bd03379b1459e6e09e425e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual Win32ControlUnitAPI::~Win32ControlUnitAPI</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Win32ControlUnitAPI</name>
+        <qualifiedname>Win32ControlUnitAPI::~Win32ControlUnitAPI</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="95" column="13"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>ControlUnitAPI</label>
+        <link refid="classControlUnitAPI"/>
+      </node>
+      <node id="4">
+        <label>RelativeMovableUnit</label>
+        <link refid="classRelativeMovableUnit"/>
+      </node>
+      <node id="3">
+        <label>ScrollableUnit</label>
+        <link refid="classScrollableUnit"/>
+      </node>
+      <node id="1">
+        <label>Win32ControlUnitAPI</label>
+        <link refid="classWin32ControlUnitAPI"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>ControlUnitAPI</label>
+        <link refid="classControlUnitAPI"/>
+      </node>
+      <node id="4">
+        <label>RelativeMovableUnit</label>
+        <link refid="classRelativeMovableUnit"/>
+      </node>
+      <node id="3">
+        <label>ScrollableUnit</label>
+        <link refid="classScrollableUnit"/>
+      </node>
+      <node id="1">
+        <label>Win32ControlUnitAPI</label>
+        <link refid="classWin32ControlUnitAPI"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="89" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="93" bodyend="96"/>
+    <listofallmembers>
+      <member refid="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>click</name></member>
+      <member refid="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>click_key</name></member>
+      <member refid="classControlUnitAPI_1a5bff4217a5cbd6789dca3957b469cd5b" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>connect</name></member>
+      <member refid="classControlUnitAPI_1afc899c23f271738b73540eb9efc93fae" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>connected</name></member>
+      <member refid="classControlUnitAPI_1aa1b8f3ae574ca2edcced418f138e110b" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>get_features</name></member>
+      <member refid="classControlUnitAPI_1a1bba5cdf24de2b536f4ed436bdda9513" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>get_info</name></member>
+      <member refid="classControlUnitAPI_1a95ce12fe9d30787af79adbbb84a45e1b" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>inactive</name></member>
+      <member refid="classControlUnitAPI_1a221dbd3eb78f32d1574554f11224abb9" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>input_text</name></member>
+      <member refid="classControlUnitAPI_1a395577c785ecade8664430928c6a201e" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>key_down</name></member>
+      <member refid="classControlUnitAPI_1afcdd6f7125786389adef584492f214e5" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>key_up</name></member>
+      <member refid="classRelativeMovableUnit_1aa0dc25bd17997c2c76feb3e196315320" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>relative_move</name></member>
+      <member refid="classControlUnitAPI_1a3bd5a15929e42ef25d990256ed1a97d4" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>request_uuid</name></member>
+      <member refid="classControlUnitAPI_1aa163c4ba062d316f248d4b0fe7f3b72d" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>screencap</name></member>
+      <member refid="classScrollableUnit_1a92ab073b5d139bba1b6c76fea8b9c299" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>scroll</name></member>
+      <member refid="classControlUnitAPI_1a816cb859403ae76b9beb202069a0bce9" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>start_app</name></member>
+      <member refid="classControlUnitAPI_1ab1d3190020919a44d6866e589d51e937" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>stop_app</name></member>
+      <member refid="classControlUnitAPI_1a94868297b93c4d118396418c838dc0a0" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>swipe</name></member>
+      <member refid="classControlUnitAPI_1a9ce21c91ca2fbff7369d8a6403cb28df" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>touch_down</name></member>
+      <member refid="classControlUnitAPI_1a987d84182ad2ff7fcba062ec5d7c4b01" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>touch_move</name></member>
+      <member refid="classControlUnitAPI_1a6ac99054d055c4300f1ff6f908113030" prot="public" virt="pure-virtual"><scope>Win32ControlUnitAPI</scope><name>touch_up</name></member>
+      <member refid="classControlUnitAPI_1a9c5542a5c81747468050d8610a18e6b0" prot="public" virt="virtual"><scope>Win32ControlUnitAPI</scope><name>~ControlUnitAPI</name></member>
+      <member refid="classRelativeMovableUnit_1a4964cbe22bca1df4d12eba776b92d24c" prot="public" virt="virtual"><scope>Win32ControlUnitAPI</scope><name>~RelativeMovableUnit</name></member>
+      <member refid="classScrollableUnit_1a4ed7de43ab24acb3b1708d5700c37b54" prot="public" virt="virtual"><scope>Win32ControlUnitAPI</scope><name>~ScrollableUnit</name></member>
+      <member refid="classWin32ControlUnitAPI_1a0c919ea1e0bd03379b1459e6e09e425e" prot="public" virt="virtual"><scope>Win32ControlUnitAPI</scope><name>~Win32ControlUnitAPI</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

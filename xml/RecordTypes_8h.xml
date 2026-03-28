@@ -1,0 +1,258 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="RecordTypes_8h" kind="file" language="C++">
+    <compoundname>RecordTypes.h</compoundname>
+    <includes local="no">string</includes>
+    <includes local="no">vector</includes>
+    <includes local="no">meojson/json.hpp</includes>
+    <includes refid="MaaControlUnitDef_8h" local="yes">MaaControlUnit/MaaControlUnitDef.h</includes>
+    <includedby refid="MaaControlUnitAPI_8h" local="yes">include/MaaControlUnit/MaaControlUnitAPI.h</includedby>
+    <incdepgraph>
+      <node id="5">
+        <label>MaaControlUnit/MaaControlUnitDef.h</label>
+        <link refid="MaaControlUnitDef_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>include/MaaControlUnit/RecordTypes.h</label>
+        <link refid="RecordTypes_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>MaaFramework/MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="4">
+        <label>meojson/json.hpp</label>
+      </node>
+      <node id="2">
+        <label>string</label>
+      </node>
+      <node id="3">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
+        <link refid="MaaControlUnitAPI_8h"/>
+      </node>
+      <node id="1">
+        <label>include/MaaControlUnit/RecordTypes.h</label>
+        <link refid="RecordTypes_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structRecordLine" prot="public">RecordLine</innerclass>
+    <innerclass refid="structRecordConnect" prot="public">RecordConnect</innerclass>
+    <innerclass refid="structRecordClick" prot="public">RecordClick</innerclass>
+    <innerclass refid="structRecordSwipe" prot="public">RecordSwipe</innerclass>
+    <innerclass refid="structRecordMultiSwipe" prot="public">RecordMultiSwipe</innerclass>
+    <innerclass refid="structRecordTouch" prot="public">RecordTouch</innerclass>
+    <innerclass refid="structRecordKey" prot="public">RecordKey</innerclass>
+    <innerclass refid="structRecordInputText" prot="public">RecordInputText</innerclass>
+    <innerclass refid="structRecordApp" prot="public">RecordApp</innerclass>
+    <innerclass refid="structRecordScreencap" prot="public">RecordScreencap</innerclass>
+    <innerclass refid="structRecordScroll" prot="public">RecordScroll</innerclass>
+    <innerclass refid="structRecordRelativeMove" prot="public">RecordRelativeMove</innerclass>
+    <innerclass refid="structRecordShell" prot="public">RecordShell</innerclass>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>RecordType</name>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44afedb2d84cafe20862cb4399751a8a7e3" prot="public">
+          <name>invalid</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44ab640a0ce465fa2a4150c36b305c1c11b" prot="public">
+          <name>connect</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44aa8affc088cbca89fa20dbd98c91362e4" prot="public">
+          <name>click</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44aa139b05b7f8e496c00991733ef7cd589" prot="public">
+          <name>swipe</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44aa823338b63f54dfe3e9839b4ff1e1509" prot="public">
+          <name>multi_swipe</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a36acdbf9714963b10ba93cfc39791787" prot="public">
+          <name>touch_down</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44abe01435119c324ee3224c7d266d80cce" prot="public">
+          <name>touch_move</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a703aaa492c24c09fc36119dbf99d3cfd" prot="public">
+          <name>touch_up</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a2d40785ff4341cd3e884f8b5d11b57ca" prot="public">
+          <name>click_key</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44afa63575c3c5d8bf2c92b4800e8122432" prot="public">
+          <name>input_text</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a7aa092d0034e51239f1343cc3a5d9b1e" prot="public">
+          <name>screencap</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a5760d6abad0c4a61fa562d8c73e288e4" prot="public">
+          <name>start_app</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a19fefdd0ff0c1843254cfaba9b3900f8" prot="public">
+          <name>stop_app</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a88aee4617a01e1e5da7f11f3b5fb7ac0" prot="public">
+          <name>key_down</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a2d19def4e5861d6d2e62450fcc84cb97" prot="public">
+          <name>key_up</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a089b0cdd8835d09cb1cabf38b3ce9c09" prot="public">
+          <name>scroll</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44aa86ccf87f4a3eb6b6874a5304ba20438" prot="public">
+          <name>relative_move</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44a2591c98b70119fe624898b1e424b5e91" prot="public">
+          <name>shell</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="12" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="13" bodyend="32"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="RecordTypes_8h_1acabef60a76edf534fba081f1129a747b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename ParamT</type>
+          </param>
+        </templateparamlist>
+        <type>json::value</type>
+        <definition>json::value make_record_json</definition>
+        <argsstring>(const RecordLine &amp;line, const ParamT &amp;param)</argsstring>
+        <name>make_record_json</name>
+        <param>
+          <type>const <ref refid="structRecordLine" kindref="compound">RecordLine</ref> &amp;</type>
+          <declname>line</declname>
+        </param>
+        <param>
+          <type>const ParamT &amp;</type>
+          <declname>param</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="145" column="20" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="145" bodyend="153"/>
+      </memberdef>
+      <memberdef kind="function" id="RecordTypes_8h_1a274fbfa82584b06ab312ccb4a4c50722" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>json::value</type>
+        <definition>json::value make_record_json</definition>
+        <argsstring>(const RecordLine &amp;line)</argsstring>
+        <name>make_record_json</name>
+        <param>
+          <type>const <ref refid="structRecordLine" kindref="compound">RecordLine</ref> &amp;</type>
+          <declname>line</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="155" column="20" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="155" bodyend="158"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/RecordTypes.h"/>
+  </compounddef>
+</doxygen>

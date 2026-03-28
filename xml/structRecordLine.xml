@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structRecordLine" kind="struct" language="C++" prot="public">
+    <compoundname>RecordLine</compoundname>
+    <includes refid="RecordTypes_8h" local="no">RecordTypes.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structRecordLine_1ae956d183dbaff9594e92a4c9b132d403" prot="public" static="no" mutable="no">
+        <type><ref refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44" kindref="member">RecordType</ref></type>
+        <definition>RecordType RecordLine::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>RecordLine::type</qualifiedname>
+        <initializer>= <ref refid="RecordTypes_8h_1ad7dc06ed9ae2cf0a910eed652dca9a44afedb2d84cafe20862cb4399751a8a7e3" kindref="member">RecordType::invalid</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="36" column="16" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordLine_1a8608cc2bfab02d03124f4606f1715d3a" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t RecordLine::timestamp</definition>
+        <argsstring></argsstring>
+        <name>timestamp</name>
+        <qualifiedname>RecordLine::timestamp</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="37" column="13" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordLine_1acbe03999ace92b4f4472013b2651f5fa" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool RecordLine::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>RecordLine::success</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="38" column="10" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordLine_1a9fb21bb8aa4a7c02a5684d72e4eae6dc" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordLine::cost</definition>
+        <argsstring></argsstring>
+        <name>cost</name>
+        <qualifiedname>RecordLine::cost</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="39" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structRecordLine_1a6fb0a9d69b170ce5864fc6180cac1a3a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>RecordLine::MEO_JSONIZATION</definition>
+        <argsstring>(type, timestamp, success, cost)</argsstring>
+        <name>MEO_JSONIZATION</name>
+        <qualifiedname>RecordLine::MEO_JSONIZATION</qualifiedname>
+        <param>
+          <type><ref refid="structRecordLine_1ae956d183dbaff9594e92a4c9b132d403" kindref="member">type</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordLine_1a8608cc2bfab02d03124f4606f1715d3a" kindref="member">timestamp</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordLine_1acbe03999ace92b4f4472013b2651f5fa" kindref="member">success</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordLine_1a9fb21bb8aa4a7c02a5684d72e4eae6dc" kindref="member">cost</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="41" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/RecordTypes.h" line="34" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="35" bodyend="42"/>
+    <listofallmembers>
+      <member refid="structRecordLine_1a9fb21bb8aa4a7c02a5684d72e4eae6dc" prot="public" virt="non-virtual"><scope>RecordLine</scope><name>cost</name></member>
+      <member refid="structRecordLine_1a6fb0a9d69b170ce5864fc6180cac1a3a" prot="public" virt="non-virtual"><scope>RecordLine</scope><name>MEO_JSONIZATION</name></member>
+      <member refid="structRecordLine_1acbe03999ace92b4f4472013b2651f5fa" prot="public" virt="non-virtual"><scope>RecordLine</scope><name>success</name></member>
+      <member refid="structRecordLine_1a8608cc2bfab02d03124f4606f1715d3a" prot="public" virt="non-virtual"><scope>RecordLine</scope><name>timestamp</name></member>
+      <member refid="structRecordLine_1ae956d183dbaff9594e92a4c9b132d403" prot="public" virt="non-virtual"><scope>RecordLine</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

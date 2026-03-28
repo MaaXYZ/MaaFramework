@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_4b181761ecfce2f2bb55ba5b96618c4b" kind="dir">
+    <compoundname>include/MaaControlUnit</compoundname>
+    <innerfile refid="AdbControlUnitAPI_8h">AdbControlUnitAPI.h</innerfile>
+    <innerfile refid="ControlUnitAPI_8h">ControlUnitAPI.h</innerfile>
+    <innerfile refid="CustomControlUnitAPI_8h">CustomControlUnitAPI.h</innerfile>
+    <innerfile refid="DbgControlUnitAPI_8h">DbgControlUnitAPI.h</innerfile>
+    <innerfile refid="GamepadControlUnitAPI_8h">GamepadControlUnitAPI.h</innerfile>
+    <innerfile refid="MaaControlUnitAPI_8h">MaaControlUnitAPI.h</innerfile>
+    <innerfile refid="MaaControlUnitDef_8h">MaaControlUnitDef.h</innerfile>
+    <innerfile refid="MacOSControlUnitAPI_8h">MacOSControlUnitAPI.h</innerfile>
+    <innerfile refid="PlayCoverControlUnitAPI_8h">PlayCoverControlUnitAPI.h</innerfile>
+    <innerfile refid="RecordControlUnitAPI_8h">RecordControlUnitAPI.h</innerfile>
+    <innerfile refid="RecordTypes_8h">RecordTypes.h</innerfile>
+    <innerfile refid="ReplayControlUnitAPI_8h">ReplayControlUnitAPI.h</innerfile>
+    <innerfile refid="Win32ControlUnitAPI_8h">Win32ControlUnitAPI.h</innerfile>
+    <innerfile refid="WlRootsControlUnitAPI_8h">WlRootsControlUnitAPI.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/"/>
+  </compounddef>
+</doxygen>

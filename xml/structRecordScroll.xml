@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structRecordScroll" kind="struct" language="C++" prot="public">
+    <compoundname>RecordScroll</compoundname>
+    <includes refid="RecordTypes_8h" local="no">RecordTypes.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structRecordScroll_1a56a78df6771147d6cbe06088907c68b1" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordScroll::dx</definition>
+        <argsstring></argsstring>
+        <name>dx</name>
+        <qualifiedname>RecordScroll::dx</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="121" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structRecordScroll_1a21635995aed3a8a8ad0df36fd7896f4b" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RecordScroll::dy</definition>
+        <argsstring></argsstring>
+        <name>dy</name>
+        <qualifiedname>RecordScroll::dy</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="122" column="9" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structRecordScroll_1a535156e7e59c7579ae1fabf9a7eee275" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>RecordScroll::MEO_JSONIZATION</definition>
+        <argsstring>(dx, dy)</argsstring>
+        <name>MEO_JSONIZATION</name>
+        <qualifiedname>RecordScroll::MEO_JSONIZATION</qualifiedname>
+        <param>
+          <type><ref refid="structRecordScroll_1a56a78df6771147d6cbe06088907c68b1" kindref="member">dx</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structRecordScroll_1a21635995aed3a8a8ad0df36fd7896f4b" kindref="member">dy</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/RecordTypes.h" line="124" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/RecordTypes.h" line="119" column="1" bodyfile="include/MaaControlUnit/RecordTypes.h" bodystart="120" bodyend="125"/>
+    <listofallmembers>
+      <member refid="structRecordScroll_1a56a78df6771147d6cbe06088907c68b1" prot="public" virt="non-virtual"><scope>RecordScroll</scope><name>dx</name></member>
+      <member refid="structRecordScroll_1a21635995aed3a8a8ad0df36fd7896f4b" prot="public" virt="non-virtual"><scope>RecordScroll</scope><name>dy</name></member>
+      <member refid="structRecordScroll_1a535156e7e59c7579ae1fabf9a7eee275" prot="public" virt="non-virtual"><scope>RecordScroll</scope><name>MEO_JSONIZATION</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

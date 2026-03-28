@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['get_5ffeatures_0',['get_features',['../structMaaCustomControllerCallbacks.html#a318dbd580c96d8bf215a2df9d565d450',1,'MaaCustomControllerCallbacks']]],
-  ['get_5finfo_1',['get_info',['../structMaaCustomControllerCallbacks.html#a6d16b04282a3cf8354e5e326464263b7',1,'MaaCustomControllerCallbacks']]]
+  ['duration_0',['duration',['../structRecordSwipe.html#a3b5dae0e938b03499bbed3e2e10cf275',1,'RecordSwipe']]],
+  ['dx_1',['dx',['../structRecordScroll.html#a56a78df6771147d6cbe06088907c68b1',1,'RecordScroll::dx'],['../structRecordRelativeMove.html#a78b00efc63489323da9b96363ed9a8b2',1,'RecordRelativeMove::dx']]],
+  ['dy_2',['dy',['../structRecordScroll.html#a21635995aed3a8a8ad0df36fd7896f4b',1,'RecordScroll::dy'],['../structRecordRelativeMove.html#ad7fe4591b6ebc3b5473b005eb9be46c6',1,'RecordRelativeMove::dy']]]
 ];

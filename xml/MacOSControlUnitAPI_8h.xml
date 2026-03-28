@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="MacOSControlUnitAPI_8h" kind="file" language="C++">
+    <compoundname>MacOSControlUnitAPI.h</compoundname>
+    <includes local="no">memory</includes>
+    <includes local="no">optional</includes>
+    <includes refid="ControlUnitAPI_8h" local="yes">MaaControlUnit/ControlUnitAPI.h</includes>
+    <includes refid="MaaDef_8h" local="yes">MaaFramework/MaaDef.h</includes>
+    <includedby refid="MaaControlUnitAPI_8h" local="yes">include/MaaControlUnit/MaaControlUnitAPI.h</includedby>
+    <incdepgraph>
+      <node id="4">
+        <label>MaaControlUnit/ControlUnitAPI.h</label>
+        <link refid="ControlUnitAPI_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>MaaControlUnit/MaaControlUnitDef.h</label>
+        <link refid="MaaControlUnitDef_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>include/MaaControlUnit/MacOSControlUnitAPI.h</label>
+        <link refid="MacOSControlUnitAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>MaaFramework/MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="5">
+        <label>chrono</label>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="8">
+        <label>meojson/json.hpp</label>
+      </node>
+      <node id="9">
+        <label>opencv2/core/mat.hpp</label>
+      </node>
+      <node id="3">
+        <label>optional</label>
+      </node>
+      <node id="13">
+        <label>stdint.h</label>
+      </node>
+      <node id="6">
+        <label>string</label>
+      </node>
+      <node id="7">
+        <label>utility</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
+        <link refid="MaaControlUnitAPI_8h"/>
+      </node>
+      <node id="1">
+        <label>include/MaaControlUnit/MacOSControlUnitAPI.h</label>
+        <link refid="MacOSControlUnitAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="MacOSControlUnitAPI_8h_1aa76648de661faebcd944c4bd0cd1d795" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> const char *</type>
+        <definition>MAA_CONTROL_UNIT_API const char * MaaMacOSControlUnitGetVersion</definition>
+        <argsstring>()</argsstring>
+        <name>MaaMacOSControlUnitGetVersion</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/MacOSControlUnitAPI.h" line="14" column="37" declfile="include/MaaControlUnit/MacOSControlUnitAPI.h" declline="14" declcolumn="37"/>
+      </memberdef>
+      <memberdef kind="function" id="MacOSControlUnitAPI_8h_1a40bb2935f288f2b7d78d74fed8cb4810" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> <ref refid="ControlUnitAPI_8h_1a8adab01abd6e9dcc167b4540f771c73a" kindref="member">MaaMacOSControlUnitHandle</ref></type>
+        <definition>MAA_CONTROL_UNIT_API MaaMacOSControlUnitHandle MaaMacOSControlUnitCreate</definition>
+        <argsstring>(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method)</argsstring>
+        <name>MaaMacOSControlUnitCreate</name>
+        <param>
+          <type>uint32_t</type>
+          <declname>window_id</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1ac2226415cbf081d3ce6fde4b3a5fe205" kindref="member">MaaMacOSScreencapMethod</ref></type>
+          <declname>screencap_method</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a428e432bbc782281526f5bd272c38e65" kindref="member">MaaMacOSInputMethod</ref></type>
+          <declname>input_method</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/MacOSControlUnitAPI.h" line="17" column="9" declfile="include/MaaControlUnit/MacOSControlUnitAPI.h" declline="17" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MacOSControlUnitAPI_8h_1ac86aec4779a55d9d4999d8d719a52c5e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> void</type>
+        <definition>MAA_CONTROL_UNIT_API void MaaMacOSControlUnitDestroy</definition>
+        <argsstring>(MaaMacOSControlUnitHandle handle)</argsstring>
+        <name>MaaMacOSControlUnitDestroy</name>
+        <param>
+          <type><ref refid="ControlUnitAPI_8h_1a8adab01abd6e9dcc167b4540f771c73a" kindref="member">MaaMacOSControlUnitHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/MacOSControlUnitAPI.h" line="19" column="31" declfile="include/MaaControlUnit/MacOSControlUnitAPI.h" declline="19" declcolumn="31"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/MacOSControlUnitAPI.h"/>
+  </compounddef>
+</doxygen>

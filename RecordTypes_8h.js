@@ -1,0 +1,38 @@
+var RecordTypes_8h =
+[
+    [ "RecordLine", "structRecordLine.html", "structRecordLine" ],
+    [ "RecordConnect", "structRecordConnect.html", "structRecordConnect" ],
+    [ "RecordClick", "structRecordClick.html", "structRecordClick" ],
+    [ "RecordSwipe", "structRecordSwipe.html", "structRecordSwipe" ],
+    [ "RecordMultiSwipe", "structRecordMultiSwipe.html", "structRecordMultiSwipe" ],
+    [ "RecordTouch", "structRecordTouch.html", "structRecordTouch" ],
+    [ "RecordKey", "structRecordKey.html", "structRecordKey" ],
+    [ "RecordInputText", "structRecordInputText.html", "structRecordInputText" ],
+    [ "RecordApp", "structRecordApp.html", "structRecordApp" ],
+    [ "RecordScreencap", "structRecordScreencap.html", "structRecordScreencap" ],
+    [ "RecordScroll", "structRecordScroll.html", "structRecordScroll" ],
+    [ "RecordRelativeMove", "structRecordRelativeMove.html", "structRecordRelativeMove" ],
+    [ "RecordShell", "structRecordShell.html", "structRecordShell" ],
+    [ "RecordType", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44", [
+      [ "invalid", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44afedb2d84cafe20862cb4399751a8a7e3", null ],
+      [ "connect", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44ab640a0ce465fa2a4150c36b305c1c11b", null ],
+      [ "click", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44aa8affc088cbca89fa20dbd98c91362e4", null ],
+      [ "swipe", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44aa139b05b7f8e496c00991733ef7cd589", null ],
+      [ "multi_swipe", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44aa823338b63f54dfe3e9839b4ff1e1509", null ],
+      [ "touch_down", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44a36acdbf9714963b10ba93cfc39791787", null ],
+      [ "touch_move", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44abe01435119c324ee3224c7d266d80cce", null ],
+      [ "touch_up", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44a703aaa492c24c09fc36119dbf99d3cfd", null ],
+      [ "click_key", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44a2d40785ff4341cd3e884f8b5d11b57ca", null ],
+      [ "input_text", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44afa63575c3c5d8bf2c92b4800e8122432", null ],
+      [ "screencap", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44a7aa092d0034e51239f1343cc3a5d9b1e", null ],
+      [ "start_app", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44a5760d6abad0c4a61fa562d8c73e288e4", null ],
+      [ "stop_app", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44a19fefdd0ff0c1843254cfaba9b3900f8", null ],
+      [ "key_down", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44a88aee4617a01e1e5da7f11f3b5fb7ac0", null ],
+      [ "key_up", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44a2d19def4e5861d6d2e62450fcc84cb97", null ],
+      [ "scroll", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44a089b0cdd8835d09cb1cabf38b3ce9c09", null ],
+      [ "relative_move", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44aa86ccf87f4a3eb6b6874a5304ba20438", null ],
+      [ "shell", "RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44a2591c98b70119fe624898b1e424b5e91", null ]
+    ] ],
+    [ "make_record_json", "RecordTypes_8h.html#acabef60a76edf534fba081f1129a747b", null ],
+    [ "make_record_json", "RecordTypes_8h.html#a274fbfa82584b06ab312ccb4a4c50722", null ]
+];
