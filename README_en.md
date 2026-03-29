@@ -102,6 +102,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [Auto Green Background](https://github.com/Joe-Bao/Auto-Green-Background) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust) ![activity](https://img.shields.io/github/commit-activity/m/Joe-Bao/Auto-Green-Background?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Joe-Bao/Auto-Green-Background?style=social) [![release](https://img.shields.io/github/v/release/Joe-Bao/Auto-Green-Background?display_name=tag)](https://github.com/Joe-Bao/Auto-Green-Background/releases)  
     An automatic green screen painting tool (Python/OpenCV, for TemplateMatch), supporting multi-algorithm segmentation, fixed canvas output, real-time preview, and a portable, out-of-the-box package.
+  
+- [maafw-cli](https://github.com/otowa-kotori/maafw-cli) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/otowa-kotori/maafw-cli) ![activity](https://img.shields.io/github/commit-activity/m/otowa-kotori/maafw-cli?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/otowa-kotori/maafw-cli?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/maafw-cli/)  
+    A MaaFramework command-line interface (CLI) for AI Agents.
 
 ### Application
 
