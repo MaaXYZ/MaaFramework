@@ -62,7 +62,7 @@ struct ControllerImpl : public maajs::NativeClassBase
     maajs::ValueType post_touch_move(maajs::ValueType self, maajs::EnvType env, int32_t contact, int32_t x, int32_t y, int32_t pressure);
     maajs::ValueType post_touch_up(maajs::ValueType self, maajs::EnvType env, int32_t contact);
     maajs::ValueType post_relative_move(maajs::ValueType self, maajs::EnvType env, int32_t dx, int32_t dy);
-    maajs::ValueType post_mouse_lock_follow(maajs::ValueType self, maajs::EnvType env, bool enabled);
+    void set_mouse_lock_follow(bool enabled);
     maajs::ValueType post_key_down(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_key_up(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_scroll(maajs::ValueType self, maajs::EnvType env, int32_t dx, int32_t dy);

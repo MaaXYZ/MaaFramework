@@ -226,18 +226,6 @@ MaaCtrlId MaaControllerPostRelativeMove(MaaController* ctrl, int32_t dx, int32_t
     return ctrl->post_relative_move(dx, dy);
 }
 
-MaaCtrlId MaaControllerPostMouseLockFollow(MaaController* ctrl, MaaBool enabled)
-{
-    LogFunc << VAR_VOIDP(ctrl) << VAR(enabled);
-
-    if (!ctrl) {
-        LogError << "handle is null";
-        return MaaInvalidId;
-    }
-
-    return ctrl->post_mouse_lock_follow(enabled != 0);
-}
-
 MaaCtrlId MaaControllerPostKeyDown(MaaController* ctrl, int32_t keycode)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(keycode);

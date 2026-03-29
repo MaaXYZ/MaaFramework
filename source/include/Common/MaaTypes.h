@@ -91,8 +91,6 @@ public:
 
     virtual MaaCtrlId post_relative_move(int dx, int dy) = 0;
 
-    virtual MaaCtrlId post_mouse_lock_follow(bool enabled) = 0;
-
     virtual MaaCtrlId post_key_down(int keycode) = 0;
     virtual MaaCtrlId post_key_up(int keycode) = 0;
 

@@ -188,19 +188,6 @@ MaaCtrlId RemoteController::post_relative_move(int dx, int dy)
     return resp_opt->ctrl_id;
 }
 
-MaaCtrlId RemoteController::post_mouse_lock_follow(bool enabled)
-{
-    ControllerPostMouseLockFollowReverseRequest req {
-        .controller_id = controller_id_,
-        .enabled = enabled,
-    };
-    auto resp_opt = server_.send_and_recv<ControllerPostMouseLockFollowReverseResponse>(req);
-    if (!resp_opt) {
-        return MaaInvalidId;
-    }
-    return resp_opt->ctrl_id;
-}
-
 MaaCtrlId RemoteController::post_key_down(int keycode)
 {
     ControllerPostKeyDownReverseRequest req {

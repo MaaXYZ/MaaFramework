@@ -456,9 +456,6 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_controller_post_relative_move(j)) {
         return true;
     }
-    else if (handle_controller_post_mouse_lock_follow(j)) {
-        return true;
-    }
     else if (handle_controller_post_touch_up(j)) {
         return true;
     }
@@ -2104,26 +2101,6 @@ bool AgentClient::handle_controller_post_relative_move(const json::value& j)
     }
     MaaCtrlId ctrl_id = controller->post_relative_move(req.dx, req.dy);
     ControllerPostRelativeMoveReverseResponse resp {
-        .ctrl_id = ctrl_id,
-    };
-    send(resp);
-    return true;
-}
-
-bool AgentClient::handle_controller_post_mouse_lock_follow(const json::value& j)
-{
-    if (!j.is<ControllerPostMouseLockFollowReverseRequest>()) {
-        return false;
-    }
-    const ControllerPostMouseLockFollowReverseRequest& req = j.as<ControllerPostMouseLockFollowReverseRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_);
-    MaaController* controller = query_controller(req.controller_id);
-    if (!controller) {
-        LogError << "controller not found" << VAR(req.controller_id);
-        return false;
-    }
-    MaaCtrlId ctrl_id = controller->post_mouse_lock_follow(req.enabled);
-    ControllerPostMouseLockFollowReverseResponse resp {
         .ctrl_id = ctrl_id,
     };
     send(resp);

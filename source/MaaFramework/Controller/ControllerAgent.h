@@ -123,13 +123,6 @@ struct ShellParam
     MEO_TOJSON(cmd, shell_timeout);
 };
 
-struct MouseLockFollowParam
-{
-    bool enabled = false;
-
-    MEO_TOJSON(enabled);
-};
-
 using Param = std::variant<
     std::monostate,
     ClickParam,
@@ -143,8 +136,7 @@ using Param = std::variant<
     AppParam,
     ScrollParam,
     ShellParam,
-    RelativeMoveParam,
-    MouseLockFollowParam>;
+    RelativeMoveParam>;
 
 struct Action
 {
@@ -170,7 +162,6 @@ struct Action
         scroll,
         shell,
         relative_move,
-        set_mouse_lock_follow,
         inactive,
     } type = Type::invalid;
 
@@ -200,8 +191,6 @@ public: // MaaController
     virtual MaaCtrlId post_touch_up(int contact) override;
 
     virtual MaaCtrlId post_relative_move(int dx, int dy) override;
-
-    virtual MaaCtrlId post_mouse_lock_follow(bool enabled) override;
 
     virtual MaaCtrlId post_key_down(int keycode) override;
     virtual MaaCtrlId post_key_up(int keycode) override;
@@ -244,8 +233,6 @@ public: // for Actuator
 
     bool relative_move(RelativeMoveParam p);
 
-    bool mouse_lock_follow(MouseLockFollowParam p);
-
     bool click_key(ClickKeyParam p);
     bool long_press_key(LongPressKeyParam p);
     bool key_down(ClickKeyParam p);
@@ -272,7 +259,6 @@ private:
     bool handle_touch_move(const TouchParam& param);
     bool handle_touch_up(const TouchParam& param);
     bool handle_relative_move(const RelativeMoveParam& param);
-    bool handle_mouse_lock_follow(const MouseLockFollowParam& param);
     bool handle_click_key(const ClickKeyParam& param);
     bool handle_long_press_key(const LongPressKeyParam& param);
     bool handle_input_text(const InputTextParam& param);
@@ -302,6 +288,7 @@ private: // options
     bool set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_image_use_raw_size(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_mouse_lock_follow_option(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     bool need_to_stop_ = false;
