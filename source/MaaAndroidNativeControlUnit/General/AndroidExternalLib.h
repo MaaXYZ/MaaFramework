@@ -13,16 +13,15 @@ namespace AndroidNativeNS
 {
 
 // Frame info structure - for reading screen frames (32 bytes)
-typedef struct
+struct FrameInfo
 {
-    uint32_t width;
-    uint32_t height;
-    uint32_t stride;
-    uint32_t length;
-    void* data;
-    void* frame_ref;
-} FrameInfo;
-
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint32_t stride = 0;
+    uint32_t length = 0;
+    void* data = nullptr;
+    void* frame_ref = nullptr;
+};
 
 enum MethodType : int
 {
@@ -36,53 +35,53 @@ enum MethodType : int
     KEY_UP = 10
 };
 
-typedef struct
+struct Position
 {
-    int x;
-    int y;
-} Position;
+    int x = 0;
+    int y = 0;
+};
 
-typedef struct
+struct StartGameArgs
 {
-    const char* package_name;
-    int force_stop;
-} StartGameArgs;
+    const char* package_name = nullptr;
+    int force_stop = 0;
+};
 
-typedef struct
+struct StopGameArgs
 {
-    const char* client_type;
-} StopGameArgs;
+    const char* client_type = nullptr;
+};
 
-typedef struct
+struct InputArgs
 {
-    const char* text;
-} InputArgs;
+    const char* text = nullptr;
+};
 
-typedef struct
+struct TouchArgs
 {
-    Position p;
-} TouchArgs;
+    Position p { };
+};
 
-typedef struct
+struct KeyArgs
 {
-    int key_code;
-} KeyArgs;
+    int key_code = 0;
+};
 
-typedef union
+union ArgUnion
 {
     StartGameArgs start_game;
     StopGameArgs stop_game;
     InputArgs input;
     TouchArgs touch;
     KeyArgs key;
-} ArgUnion;
+};
 
-typedef struct
+struct MethodParam
 {
-    int display_id;
-    MethodType method;
-    ArgUnion args;
-} MethodParam;
+    int display_id = 0;
+    MethodType method = START_GAME;
+    ArgUnion args { };
+};
 
 using GetLockedPixelsSignature = FrameInfo();
 using UnlockPixelsSignature = int(FrameInfo);
@@ -98,11 +97,11 @@ using DispatchInputMessageFunc = boost::function<DispatchInputMessageSignature>;
 
 struct AndroidExternalFunctions
 {
-    GetLockedPixelsFunc get_locked_pixels {};
-    UnlockPixelsFunc unlock_pixels {};
-    AttachThreadFunc attach_thread {};
-    DetachThreadFunc detach_thread {};
-    DispatchInputMessageFunc dispatch_input_message {};
+    GetLockedPixelsFunc get_locked_pixels { };
+    UnlockPixelsFunc unlock_pixels { };
+    AttachThreadFunc attach_thread { };
+    DetachThreadFunc detach_thread { };
+    DispatchInputMessageFunc dispatch_input_message { };
 };
 
 class AndroidExternalLib
@@ -130,7 +129,7 @@ public:
 private:
     void clear_functions();
 
-    AndroidExternalFunctions funcs_ {};
+    AndroidExternalFunctions funcs_ { };
     std::filesystem::path library_path_;
     bool loaded_ = false;
 };
@@ -142,8 +141,7 @@ MAA_NS_BEGIN
 class AndroidNativeExternalLibraryHolder : public LibraryHolder<AndroidNativeExternalLibraryHolder>
 {
 public:
-    static std::optional<AndroidNativeNS::AndroidExternalFunctions>
-        create_functions(const std::filesystem::path& library_path);
+    static std::optional<AndroidNativeNS::AndroidExternalFunctions> create_functions(const std::filesystem::path& library_path);
 
 private:
     static constexpr std::string get_locked_pixels_func_name_ = "GetLockedPixels";
