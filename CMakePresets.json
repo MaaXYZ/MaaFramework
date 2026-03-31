@@ -52,6 +52,37 @@
             }
         },
         {
+            "name": "NinjaMulti Android",
+            "hidden": true,
+            "inherits": "NinjaMulti",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "$env{ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake",
+                "ANDROID_PLATFORM": "android-23"
+            }
+        },
+        {
+            "name": "NinjaMulti Android x64",
+            "displayName": "Ninja MultiConfig Android x64",
+            "description": "Ninja MultiConfig Android x64, requires ANDROID_NDK_ROOT",
+            "inherits": "NinjaMulti Android",
+            "binaryDir": "${sourceDir}/build/android/x86_64",
+            "cacheVariables": {
+                "ANDROID_ABI": "x86_64",
+                "MAADEPS_TRIPLET": "maa-x64-android"
+            }
+        },
+        {
+            "name": "NinjaMulti Android arm64",
+            "displayName": "Ninja MultiConfig Android arm64",
+            "description": "Ninja MultiConfig Android arm64, requires ANDROID_NDK_ROOT",
+            "inherits": "NinjaMulti Android",
+            "binaryDir": "${sourceDir}/build/android/arm64-v8a",
+            "cacheVariables": {
+                "ANDROID_ABI": "arm64-v8a",
+                "MAADEPS_TRIPLET": "maa-arm64-android"
+            }
+        },
+        {
             "name": "MSVC 2022",
             "displayName": "MSVC 2022",
             "description": "MSVC 2022",
@@ -150,6 +181,54 @@
             "displayName": "Ninja MultiConfig Linux arm64 Release",
             "description": "Ninja MultiConfig Linux arm64 Release",
             "configurePreset": "NinjaMulti Linux arm64",
+            "configuration": "Release",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti Android x64 - Debug",
+            "displayName": "Ninja MultiConfig Android x64 Debug",
+            "description": "Ninja MultiConfig Android x64 Debug",
+            "configurePreset": "NinjaMulti Android x64",
+            "configuration": "Debug",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti Android x64 - RelWithDebInfo",
+            "displayName": "Ninja MultiConfig Android x64 RelWithDebInfo",
+            "description": "Ninja MultiConfig Android x64 RelWithDebInfo",
+            "configurePreset": "NinjaMulti Android x64",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti Android x64 - Release",
+            "displayName": "Ninja MultiConfig Android x64 Release",
+            "description": "Ninja MultiConfig Android x64 Release",
+            "configurePreset": "NinjaMulti Android x64",
+            "configuration": "Release",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti Android arm64 - Debug",
+            "displayName": "Ninja MultiConfig Android arm64 Debug",
+            "description": "Ninja MultiConfig Android arm64 Debug",
+            "configurePreset": "NinjaMulti Android arm64",
+            "configuration": "Debug",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti Android arm64 - RelWithDebInfo",
+            "displayName": "Ninja MultiConfig Android arm64 RelWithDebInfo",
+            "description": "Ninja MultiConfig Android arm64 RelWithDebInfo",
+            "configurePreset": "NinjaMulti Android arm64",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti Android arm64 - Release",
+            "displayName": "Ninja MultiConfig Android arm64 Release",
+            "description": "Ninja MultiConfig Android arm64 Release",
+            "configurePreset": "NinjaMulti Android arm64",
             "configuration": "Release",
             "jobs": 16
         },

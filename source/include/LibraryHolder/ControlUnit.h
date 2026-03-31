@@ -17,6 +17,7 @@ class GamepadControlUnitAPI;
 class CustomControlUnitAPI;
 class WlRootsControlUnitAPI;
 class FullControlUnitAPI;
+class AndroidNativeControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
 
 MAA_NS_BEGIN
@@ -66,6 +67,18 @@ private:
     inline static const std::string version_func_name_ = "MaaMacOSControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaMacOSControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaMacOSControlUnitDestroy";
+};
+
+class AndroidNativeControlUnitLibraryHolder : public LibraryHolder<AndroidNativeControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::AndroidNativeControlUnitAPI> create_control_unit(const char* config_json);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaAndroidNativeControlUnit");
+    inline static const std::string version_func_name_ = "MaaAndroidNativeControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaAndroidNativeControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaAndroidNativeControlUnitDestroy";
 };
 
 class DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>
