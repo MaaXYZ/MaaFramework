@@ -133,42 +133,18 @@ bool AndroidNativeControlUnitMgr::screencap(cv::Mat& image)
 
 bool AndroidNativeControlUnitMgr::click(int x, int y)
 {
-    LogFunc << VAR(x) << VAR(y);
-
-    bool ret = touch_down(0, x, y, 1);
-    if (!ret) {
-        return false;
-    }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    return touch_up(0);
+    LogError << "get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
+                "use touch_down/touch_up instead"
+             << VAR(x) << VAR(y);
+    return false;
 }
 
 bool AndroidNativeControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogFunc << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
-
-    bool ret = touch_down(0, x1, y1, 1);
-    if (!ret) {
-        return false;
-    }
-
-    const auto total_step = std::max(1, duration / static_cast<int>(kTouchInterval.count()));
-    auto now = std::chrono::steady_clock::now();
-
-    for (int step = 1; step < total_step; ++step) {
-        const double ratio = static_cast<double>(step) / total_step;
-        int mx = static_cast<int>(std::lround(x1 + (x2 - x1) * ratio));
-        int my = static_cast<int>(std::lround(y1 + (y2 - y1) * ratio));
-        std::this_thread::sleep_until(now + kTouchInterval);
-        now = std::chrono::steady_clock::now();
-        ret &= touch_move(0, mx, my, 1);
-    }
-
-    std::this_thread::sleep_until(now + kTouchInterval);
-    ret &= touch_move(0, x2, y2, 1);
-    ret &= touch_up(0);
-    return ret;
+    LogError << "get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
+                "use touch_down/touch_move/touch_up instead"
+             << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    return false;
 }
 
 bool AndroidNativeControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
@@ -265,14 +241,10 @@ bool AndroidNativeControlUnitMgr::touch_up(int contact)
 
 bool AndroidNativeControlUnitMgr::click_key(int key)
 {
-    LogFunc << VAR(key);
-
-    if (const bool ret = key_down(key); !ret) {
-        return false;
-    }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    return key_up(key);
+    LogError << "get_features() returns MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick, "
+                "use key_down/key_up instead"
+             << VAR(key);
+    return false;
 }
 
 bool AndroidNativeControlUnitMgr::input_text(const std::string& text)
