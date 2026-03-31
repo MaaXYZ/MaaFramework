@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['touch_5fdown_0',['touch_down',['../classControlUnitAPI.html#a9ce21c91ca2fbff7369d8a6403cb28df',1,'ControlUnitAPI']]],
-  ['touch_5fmove_1',['touch_move',['../classControlUnitAPI.html#a987d84182ad2ff7fcba062ec5d7c4b01',1,'ControlUnitAPI']]],
-  ['touch_5fup_2',['touch_up',['../classControlUnitAPI.html#a6ac99054d055c4300f1ff6f908113030',1,'ControlUnitAPI']]]
+  ['relative_5fmove_0',['relative_move',['../classRelativeMovableUnit.html#aa0dc25bd17997c2c76feb3e196315320',1,'RelativeMovableUnit']]],
+  ['request_5fuuid_1',['request_uuid',['../classControlUnitAPI.html#a3bd5a15929e42ef25d990256ed1a97d4',1,'ControlUnitAPI']]]
 ];

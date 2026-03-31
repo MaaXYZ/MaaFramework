@@ -1,6 +1,7 @@
 var annotated_dup =
 [
     [ "AdbControlUnitAPI", "classAdbControlUnitAPI.html", "classAdbControlUnitAPI" ],
+    [ "AndroidNativeControlUnitAPI", "classAndroidNativeControlUnitAPI.html", "classAndroidNativeControlUnitAPI" ],
     [ "ControlUnitAPI", "classControlUnitAPI.html", "classControlUnitAPI" ],
     [ "CustomControlUnitAPI", "classCustomControlUnitAPI.html", "classCustomControlUnitAPI" ],
     [ "FullControlUnitAPI", "classFullControlUnitAPI.html", "classFullControlUnitAPI" ],

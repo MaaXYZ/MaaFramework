@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="AndroidNativeControlUnitAPI_8h" kind="file" language="C++">
+    <compoundname>AndroidNativeControlUnitAPI.h</compoundname>
+    <includes refid="ControlUnitAPI_8h" local="yes">MaaControlUnit/ControlUnitAPI.h</includes>
+    <includes refid="MaaDef_8h" local="yes">MaaFramework/MaaDef.h</includes>
+    <includedby refid="MaaControlUnitAPI_8h" local="yes">include/MaaControlUnit/MaaControlUnitAPI.h</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>include/MaaControlUnit/AndroidNativeControlUnitAPI.h</label>
+        <link refid="AndroidNativeControlUnitAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>MaaControlUnit/ControlUnitAPI.h</label>
+        <link refid="ControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>MaaControlUnit/MaaControlUnitDef.h</label>
+        <link refid="MaaControlUnitDef_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>MaaFramework/MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="3">
+        <label>chrono</label>
+      </node>
+      <node id="6">
+        <label>meojson/json.hpp</label>
+      </node>
+      <node id="7">
+        <label>opencv2/core/mat.hpp</label>
+      </node>
+      <node id="11">
+        <label>stdint.h</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="5">
+        <label>utility</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>include/MaaControlUnit/AndroidNativeControlUnitAPI.h</label>
+        <link refid="AndroidNativeControlUnitAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
+        <link refid="MaaControlUnitAPI_8h"/>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="AndroidNativeControlUnitAPI_8h_1a70884fe701612b21a262a3991d9fe224" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> const char *</type>
+        <definition>MAA_CONTROL_UNIT_API const char * MaaAndroidNativeControlUnitGetVersion</definition>
+        <argsstring>()</argsstring>
+        <name>MaaAndroidNativeControlUnitGetVersion</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/AndroidNativeControlUnitAPI.h" line="11" column="37" declfile="include/MaaControlUnit/AndroidNativeControlUnitAPI.h" declline="11" declcolumn="37"/>
+      </memberdef>
+      <memberdef kind="function" id="AndroidNativeControlUnitAPI_8h_1ad47a1a220c90669beac63dfbfb204b1d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> <ref refid="ControlUnitAPI_8h_1a2f106931f75023960c2b0a313bd26174" kindref="member">MaaAndroidNativeControlUnitHandle</ref></type>
+        <definition>MAA_CONTROL_UNIT_API MaaAndroidNativeControlUnitHandle MaaAndroidNativeControlUnitCreate</definition>
+        <argsstring>(const char *config_json)</argsstring>
+        <name>MaaAndroidNativeControlUnitCreate</name>
+        <param>
+          <type>const char *</type>
+          <declname>config_json</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/AndroidNativeControlUnitAPI.h" line="13" column="60" declfile="include/MaaControlUnit/AndroidNativeControlUnitAPI.h" declline="13" declcolumn="60"/>
+      </memberdef>
+      <memberdef kind="function" id="AndroidNativeControlUnitAPI_8h_1ab28091ca2e90569a7577010daa9a477f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> void</type>
+        <definition>MAA_CONTROL_UNIT_API void MaaAndroidNativeControlUnitDestroy</definition>
+        <argsstring>(MaaAndroidNativeControlUnitHandle handle)</argsstring>
+        <name>MaaAndroidNativeControlUnitDestroy</name>
+        <param>
+          <type><ref refid="ControlUnitAPI_8h_1a2f106931f75023960c2b0a313bd26174" kindref="member">MaaAndroidNativeControlUnitHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/AndroidNativeControlUnitAPI.h" line="15" column="31" declfile="include/MaaControlUnit/AndroidNativeControlUnitAPI.h" declline="15" declcolumn="31"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/AndroidNativeControlUnitAPI.h"/>
+  </compounddef>
+</doxygen>

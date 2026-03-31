@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['relative_5fmove_0',['relative_move',['../classRelativeMovableUnit.html#aa0dc25bd17997c2c76feb3e196315320',1,'RelativeMovableUnit']]],
-  ['request_5fuuid_1',['request_uuid',['../classControlUnitAPI.html#a3bd5a15929e42ef25d990256ed1a97d4',1,'ControlUnitAPI']]]
+  ['key_5fdown_0',['key_down',['../classControlUnitAPI.html#a395577c785ecade8664430928c6a201e',1,'ControlUnitAPI']]],
+  ['key_5fup_1',['key_up',['../classControlUnitAPI.html#afcdd6f7125786389adef584492f214e5',1,'ControlUnitAPI']]]
 ];

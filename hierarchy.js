@@ -2,6 +2,7 @@ var hierarchy =
 [
     [ "ControlUnitAPI", "classControlUnitAPI.html", [
       [ "AdbControlUnitAPI", "classAdbControlUnitAPI.html", null ],
+      [ "AndroidNativeControlUnitAPI", "classAndroidNativeControlUnitAPI.html", null ],
       [ "CustomControlUnitAPI", "classCustomControlUnitAPI.html", null ],
       [ "FullControlUnitAPI", "classFullControlUnitAPI.html", null ],
       [ "GamepadControlUnitAPI", "classGamepadControlUnitAPI.html", null ],

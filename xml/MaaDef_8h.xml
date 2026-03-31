@@ -7,6 +7,7 @@
     <includedby refid="MaaAgentClientDef_8h" local="yes">include/MaaAgentClient/MaaAgentClientDef.h</includedby>
     <includedby refid="MaaAgentServerDef_8h" local="yes">include/MaaAgentServer/MaaAgentServerDef.h</includedby>
     <includedby refid="AdbControlUnitAPI_8h" local="yes">include/MaaControlUnit/AdbControlUnitAPI.h</includedby>
+    <includedby refid="AndroidNativeControlUnitAPI_8h" local="yes">include/MaaControlUnit/AndroidNativeControlUnitAPI.h</includedby>
     <includedby refid="ControlUnitAPI_8h" local="yes">include/MaaControlUnit/ControlUnitAPI.h</includedby>
     <includedby refid="CustomControlUnitAPI_8h" local="yes">include/MaaControlUnit/CustomControlUnitAPI.h</includedby>
     <includedby refid="GamepadControlUnitAPI_8h" local="yes">include/MaaControlUnit/GamepadControlUnitAPI.h</includedby>
@@ -70,19 +71,25 @@
         </childnode>
       </node>
       <node id="8">
+        <label>include/MaaControlUnit/AndroidNativeControlUnitAPI.h</label>
+        <link refid="AndroidNativeControlUnitAPI_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
         <label>include/MaaControlUnit/ControlUnitAPI.h</label>
         <link refid="ControlUnitAPI_8h"/>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
         <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -94,20 +101,22 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>include/MaaControlUnit/CustomControlUnitAPI.h</label>
         <link refid="CustomControlUnitAPI_8h"/>
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>include/MaaControlUnit/DbgControlUnitAPI.h</label>
         <link refid="DbgControlUnitAPI_8h"/>
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>include/MaaControlUnit/GamepadControlUnitAPI.h</label>
         <link refid="GamepadControlUnitAPI_8h"/>
         <childnode refid="7" relation="include">
@@ -117,81 +126,81 @@
         <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
         <link refid="MaaControlUnitAPI_8h"/>
       </node>
-      <node id="12">
+      <node id="13">
         <label>include/MaaControlUnit/MacOSControlUnitAPI.h</label>
         <link refid="MacOSControlUnitAPI_8h"/>
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="13">
+      <node id="14">
         <label>include/MaaControlUnit/PlayCoverControlUnitAPI.h</label>
         <link refid="PlayCoverControlUnitAPI_8h"/>
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="14">
+      <node id="15">
         <label>include/MaaControlUnit/RecordControlUnitAPI.h</label>
         <link refid="RecordControlUnitAPI_8h"/>
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="15">
+      <node id="16">
         <label>include/MaaControlUnit/ReplayControlUnitAPI.h</label>
         <link refid="ReplayControlUnitAPI_8h"/>
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="16">
+      <node id="17">
         <label>include/MaaControlUnit/Win32ControlUnitAPI.h</label>
         <link refid="Win32ControlUnitAPI_8h"/>
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="17">
+      <node id="18">
         <label>include/MaaControlUnit/WlRootsControlUnitAPI.h</label>
         <link refid="WlRootsControlUnitAPI_8h"/>
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="18">
+      <node id="19">
         <label>include/MaaFramework/Global/MaaGlobal.h</label>
         <link refid="MaaGlobal_8h"/>
-        <childnode refid="19" relation="include">
-        </childnode>
-      </node>
-      <node id="20">
-        <label>include/MaaFramework/Instance/MaaContext.h</label>
-        <link refid="MaaContext_8h"/>
-        <childnode refid="19" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="21">
-        <label>include/MaaFramework/Instance/MaaController.h</label>
-        <link refid="MaaController_8h"/>
-        <childnode refid="19" relation="include">
+        <label>include/MaaFramework/Instance/MaaContext.h</label>
+        <link refid="MaaContext_8h"/>
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="22">
-        <label>include/MaaFramework/Instance/MaaCustomController.h</label>
-        <link refid="MaaCustomController_8h"/>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
+        <label>include/MaaFramework/Instance/MaaController.h</label>
+        <link refid="MaaController_8h"/>
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="23">
-        <label>include/MaaFramework/Instance/MaaResource.h</label>
-        <link refid="MaaResource_8h"/>
-        <childnode refid="19" relation="include">
+        <label>include/MaaFramework/Instance/MaaCustomController.h</label>
+        <link refid="MaaCustomController_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="24">
-        <label>include/MaaFramework/Instance/MaaTasker.h</label>
-        <link refid="MaaTasker_8h"/>
-        <childnode refid="19" relation="include">
+        <label>include/MaaFramework/Instance/MaaResource.h</label>
+        <link refid="MaaResource_8h"/>
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="25">
+        <label>include/MaaFramework/Instance/MaaTasker.h</label>
+        <link refid="MaaTasker_8h"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
         <label>include/MaaFramework/MaaAPI.h</label>
         <link refid="MaaAPI_8h"/>
       </node>
@@ -208,7 +217,7 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
@@ -216,13 +225,13 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
@@ -232,67 +241,69 @@
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
         <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
-      </node>
-      <node id="25">
-        <label>include/MaaFramework/Utility/MaaBuffer.h</label>
-        <link refid="MaaBuffer_8h"/>
-        <childnode refid="19" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
       </node>
       <node id="26">
+        <label>include/MaaFramework/Utility/MaaBuffer.h</label>
+        <link refid="MaaBuffer_8h"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
         <label>include/MaaFramework/Utility/MaaUtility.h</label>
         <link refid="MaaUtility_8h"/>
-        <childnode refid="19" relation="include">
-        </childnode>
-      </node>
-      <node id="28">
-        <label>include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h</label>
-        <link refid="MaaToolkitAdbDevice_8h"/>
-        <childnode refid="29" relation="include">
-        </childnode>
-      </node>
-      <node id="30">
-        <label>include/MaaToolkit/Config/MaaToolkitConfig.h</label>
-        <link refid="MaaToolkitConfig_8h"/>
-        <childnode refid="29" relation="include">
-        </childnode>
-      </node>
-      <node id="31">
-        <label>include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h</label>
-        <link refid="MaaToolkitDesktopWindow_8h"/>
-        <childnode refid="29" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="29">
-        <label>include/MaaToolkit/MaaToolkitAPI.h</label>
-        <link refid="MaaToolkitAPI_8h"/>
-      </node>
-      <node id="27">
-        <label>include/MaaToolkit/MaaToolkitDef.h</label>
-        <link refid="MaaToolkitDef_8h"/>
-        <childnode refid="28" relation="include">
-        </childnode>
+        <label>include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h</label>
+        <link refid="MaaToolkitAdbDevice_8h"/>
         <childnode refid="30" relation="include">
         </childnode>
-        <childnode refid="31" relation="include">
-        </childnode>
-        <childnode refid="29" relation="include">
-        </childnode>
-        <childnode refid="32" relation="include">
+      </node>
+      <node id="31">
+        <label>include/MaaToolkit/Config/MaaToolkitConfig.h</label>
+        <link refid="MaaToolkitConfig_8h"/>
+        <childnode refid="30" relation="include">
         </childnode>
       </node>
       <node id="32">
+        <label>include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h</label>
+        <link refid="MaaToolkitDesktopWindow_8h"/>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>include/MaaToolkit/MaaToolkitAPI.h</label>
+        <link refid="MaaToolkitAPI_8h"/>
+      </node>
+      <node id="28">
+        <label>include/MaaToolkit/MaaToolkitDef.h</label>
+        <link refid="MaaToolkitDef_8h"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
         <label>include/MaaToolkit/MacOS/MaaToolkitMacOS.h</label>
         <link refid="MaaToolkitMacOS_8h"/>
-        <childnode refid="29" relation="include">
+        <childnode refid="30" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

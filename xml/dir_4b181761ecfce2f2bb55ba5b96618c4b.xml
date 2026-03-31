@@ -3,6 +3,7 @@
   <compounddef id="dir_4b181761ecfce2f2bb55ba5b96618c4b" kind="dir">
     <compoundname>include/MaaControlUnit</compoundname>
     <innerfile refid="AdbControlUnitAPI_8h">AdbControlUnitAPI.h</innerfile>
+    <innerfile refid="AndroidNativeControlUnitAPI_8h">AndroidNativeControlUnitAPI.h</innerfile>
     <innerfile refid="ControlUnitAPI_8h">ControlUnitAPI.h</innerfile>
     <innerfile refid="CustomControlUnitAPI_8h">CustomControlUnitAPI.h</innerfile>
     <innerfile refid="DbgControlUnitAPI_8h">DbgControlUnitAPI.h</innerfile>

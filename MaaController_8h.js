@@ -4,6 +4,7 @@ var MaaController_8h =
     [ "MaaAdbControllerCreate", "MaaController_8h.html#a7b3f6215fdc0ae3e8beeb51a3dd75e16", null ],
     [ "MaaWin32ControllerCreate", "MaaController_8h.html#a0a0532a08e57b6b8b23282b51f6431a0", null ],
     [ "MaaMacOSControllerCreate", "MaaController_8h.html#af8ff627f00593364f9654343461af20c", null ],
+    [ "MaaAndroidNativeControllerCreate", "MaaController_8h.html#a5c2f51f37d79fd393442956884a7ba3c", null ],
     [ "MaaCustomControllerCreate", "MaaController_8h.html#a2ff145414faed5fdeedc36e97729677e", null ],
     [ "MaaDbgControllerCreate", "MaaController_8h.html#aadb57e80415b69b895a4ea1fd26dfa75", null ],
     [ "MaaReplayControllerCreate", "MaaController_8h.html#ac617f958211e394d69a38e1177d4f996", null ],

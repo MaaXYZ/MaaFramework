@@ -10,6 +10,7 @@
     <includes refid="MaaControlUnitDef_8h" local="yes">MaaControlUnit/MaaControlUnitDef.h</includes>
     <includes refid="MaaDef_8h" local="yes">MaaFramework/MaaDef.h</includes>
     <includedby refid="AdbControlUnitAPI_8h" local="yes">include/MaaControlUnit/AdbControlUnitAPI.h</includedby>
+    <includedby refid="AndroidNativeControlUnitAPI_8h" local="yes">include/MaaControlUnit/AndroidNativeControlUnitAPI.h</includedby>
     <includedby refid="CustomControlUnitAPI_8h" local="yes">include/MaaControlUnit/CustomControlUnitAPI.h</includedby>
     <includedby refid="DbgControlUnitAPI_8h" local="yes">include/MaaControlUnit/DbgControlUnitAPI.h</includedby>
     <includedby refid="GamepadControlUnitAPI_8h" local="yes">include/MaaControlUnit/GamepadControlUnitAPI.h</includedby>
@@ -83,6 +84,12 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
+      <node id="4">
+        <label>include/MaaControlUnit/AndroidNativeControlUnitAPI.h</label>
+        <link refid="AndroidNativeControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
       <node id="1">
         <label>include/MaaControlUnit/ControlUnitAPI.h</label>
         <link refid="ControlUnitAPI_8h"/>
@@ -94,9 +101,9 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
@@ -108,20 +115,22 @@
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>include/MaaControlUnit/CustomControlUnitAPI.h</label>
         <link refid="CustomControlUnitAPI_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>include/MaaControlUnit/DbgControlUnitAPI.h</label>
         <link refid="DbgControlUnitAPI_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>include/MaaControlUnit/GamepadControlUnitAPI.h</label>
         <link refid="GamepadControlUnitAPI_8h"/>
         <childnode refid="3" relation="include">
@@ -131,37 +140,37 @@
         <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
         <link refid="MaaControlUnitAPI_8h"/>
       </node>
-      <node id="7">
+      <node id="8">
         <label>include/MaaControlUnit/MacOSControlUnitAPI.h</label>
         <link refid="MacOSControlUnitAPI_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="9">
         <label>include/MaaControlUnit/PlayCoverControlUnitAPI.h</label>
         <link refid="PlayCoverControlUnitAPI_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>include/MaaControlUnit/RecordControlUnitAPI.h</label>
         <link refid="RecordControlUnitAPI_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>include/MaaControlUnit/ReplayControlUnitAPI.h</label>
         <link refid="ReplayControlUnitAPI_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>include/MaaControlUnit/Win32ControlUnitAPI.h</label>
         <link refid="Win32ControlUnitAPI_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>include/MaaControlUnit/WlRootsControlUnitAPI.h</label>
         <link refid="WlRootsControlUnitAPI_8h"/>
         <childnode refid="3" relation="include">
@@ -173,6 +182,7 @@
     <innerclass refid="classRelativeMovableUnit" prot="public">RelativeMovableUnit</innerclass>
     <innerclass refid="classShellableUnit" prot="public">ShellableUnit</innerclass>
     <innerclass refid="classAdbControlUnitAPI" prot="public">AdbControlUnitAPI</innerclass>
+    <innerclass refid="classAndroidNativeControlUnitAPI" prot="public">AndroidNativeControlUnitAPI</innerclass>
     <innerclass refid="classWin32ControlUnitAPI" prot="public">Win32ControlUnitAPI</innerclass>
     <innerclass refid="classMacOSControlUnitAPI" prot="public">MacOSControlUnitAPI</innerclass>
     <innerclass refid="classCustomControlUnitAPI" prot="public">CustomControlUnitAPI</innerclass>
@@ -190,7 +200,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="135" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="135" bodyend="-1"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="144" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="144" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="ControlUnitAPI_8h_1ad717257089675a8dc0e80e574cfe5243" prot="public" static="no">
         <type>MAA_CTRL_UNIT_NS::AdbControlUnitAPI *</type>
@@ -203,7 +213,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="136" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="136" bodyend="-1"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="145" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="145" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="ControlUnitAPI_8h_1a65786017771209552b0f1836a58deef0" prot="public" static="no">
         <type>MAA_CTRL_UNIT_NS::Win32ControlUnitAPI *</type>
@@ -216,7 +226,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="137" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="137" bodyend="-1"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="146" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="146" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="ControlUnitAPI_8h_1a8adab01abd6e9dcc167b4540f771c73a" prot="public" static="no">
         <type>MAA_CTRL_UNIT_NS::MacOSControlUnitAPI *</type>
@@ -229,7 +239,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="138" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="138" bodyend="-1"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="147" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="147" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="ControlUnitAPI_8h_1ae7686964fb7e1e28b6c43b69902d21bb" prot="public" static="no">
         <type>MAA_CTRL_UNIT_NS::GamepadControlUnitAPI *</type>
@@ -242,7 +252,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="139" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="139" bodyend="-1"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="148" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="148" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="ControlUnitAPI_8h_1ae379a64534f66d7fc6fe047476d5563e" prot="public" static="no">
         <type>MAA_CTRL_UNIT_NS::CustomControlUnitAPI *</type>
@@ -255,7 +265,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="140" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="140" bodyend="-1"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="149" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="149" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="ControlUnitAPI_8h_1a0e8e5772a651edd77531940be1d0304a" prot="public" static="no">
         <type>MAA_CTRL_UNIT_NS::FullControlUnitAPI *</type>
@@ -268,7 +278,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="141" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="141" bodyend="-1"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="150" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="150" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="ControlUnitAPI_8h_1aa8183f5044591116d0ce44318571d14e" prot="public" static="no">
         <type>MAA_CTRL_UNIT_NS::FullControlUnitAPI *</type>
@@ -281,7 +291,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="142" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="142" bodyend="-1"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="151" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="151" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="ControlUnitAPI_8h_1a90d6e45f84fbbed8d11f88ca1c2eb09d" prot="public" static="no">
         <type>MAA_CTRL_UNIT_NS::ControlUnitAPI *</type>
@@ -294,7 +304,20 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="143" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="143" bodyend="-1"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="152" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="152" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="ControlUnitAPI_8h_1a2f106931f75023960c2b0a313bd26174" prot="public" static="no">
+        <type>MAA_CTRL_UNIT_NS::AndroidNativeControlUnitAPI *</type>
+        <definition>using MaaAndroidNativeControlUnitHandle =  MAA_CTRL_UNIT_NS::AndroidNativeControlUnitAPI*</definition>
+        <argsstring></argsstring>
+        <name>MaaAndroidNativeControlUnitHandle</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="153" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="153" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

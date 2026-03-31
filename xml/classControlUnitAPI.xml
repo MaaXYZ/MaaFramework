@@ -3,6 +3,7 @@
   <compounddef id="classControlUnitAPI" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>ControlUnitAPI</compoundname>
     <derivedcompoundref refid="classAdbControlUnitAPI" prot="public" virt="non-virtual">AdbControlUnitAPI</derivedcompoundref>
+    <derivedcompoundref refid="classAndroidNativeControlUnitAPI" prot="public" virt="non-virtual">AndroidNativeControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classCustomControlUnitAPI" prot="public" virt="non-virtual">CustomControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classFullControlUnitAPI" prot="public" virt="non-virtual">FullControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classGamepadControlUnitAPI" prot="public" virt="non-virtual">GamepadControlUnitAPI</derivedcompoundref>
@@ -384,35 +385,41 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="3">
+        <label>AndroidNativeControlUnitAPI</label>
+        <link refid="classAndroidNativeControlUnitAPI"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="1">
         <label>ControlUnitAPI</label>
         <link refid="classControlUnitAPI"/>
       </node>
-      <node id="3">
+      <node id="4">
         <label>CustomControlUnitAPI</label>
         <link refid="classCustomControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>FullControlUnitAPI</label>
         <link refid="classFullControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>GamepadControlUnitAPI</label>
         <link refid="classGamepadControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>MacOSControlUnitAPI</label>
         <link refid="classMacOSControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="8">
         <label>Win32ControlUnitAPI</label>
         <link refid="classWin32ControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">

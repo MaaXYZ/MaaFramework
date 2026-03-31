@@ -188,6 +188,46 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaController.h" line="53" column="9" declfile="include/MaaFramework/Instance/MaaController.h" declline="53" declcolumn="9"/>
       </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1a5c2f51f37d79fd393442956884a7ba3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
+        <definition>MAA_FRAMEWORK_API MaaController * MaaAndroidNativeControllerCreate</definition>
+        <argsstring>(const char *config_json)</argsstring>
+        <name>MaaAndroidNativeControllerCreate</name>
+        <param>
+          <type>const char *</type>
+          <declname>config_json</declname>
+        </param>
+        <briefdescription>
+<para>Create an Android native controller backed by MaaAndroidNativeControlUnit. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>config_json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>JSON config for the control unit. Required fields:<itemizedlist>
+<listitem><para>library_path: path to the Android native control unit library</para>
+</listitem><listitem><para>screen_resolution.width / screen_resolution.height: raw screenshot and touch resolution Optional fields:</para>
+</listitem><listitem><para>display_id: target display id, defaults to 0</para>
+</listitem><listitem><para>force_stop: whether to force stop before start_app, defaults to false </para>
+</listitem></itemizedlist>
+</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The controller handle, or nullptr on failure.</para>
+</simplesect>
+<simplesect kind="note"><para>This controller is only available on Android. </para>
+</simplesect>
+<simplesect kind="note"><para>The configured screen_resolution must match the control unit&apos;s raw screenshot/touch coordinate space. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="69" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="69" declcolumn="37"/>
+      </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a2ff145414faed5fdeedc36e97729677e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
         <definition>MAA_FRAMEWORK_API MaaController * MaaCustomControllerCreate</definition>
@@ -207,7 +247,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="55" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="55" declcolumn="37"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="71" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="71" declcolumn="37"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1aadb57e80415b69b895a4ea1fd26dfa75" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
@@ -237,7 +277,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="65" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="65" declcolumn="37"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="81" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="81" declcolumn="37"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1ac617f958211e394d69a38e1177d4f996" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
@@ -267,7 +307,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="74" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="74" declcolumn="37"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="90" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="90" declcolumn="37"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a801ccbca7db84ce9a6f6333183b6cc3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
@@ -309,7 +349,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="87" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="87" declcolumn="37"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="103" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="103" declcolumn="37"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1af9b278b0a220ea72ff4ce564a055ff52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
@@ -357,7 +397,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="100" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="100" declcolumn="37"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="116" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="116" declcolumn="37"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a49a0cea456829030f106857728783500" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
@@ -389,7 +429,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="110" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="110" declcolumn="37"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="126" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="126" declcolumn="37"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1ab979f25e17e04ae8cc2d2a6aa1b2540a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
@@ -463,7 +503,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="134" column="9" declfile="include/MaaFramework/Instance/MaaController.h" declline="134" declcolumn="9"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="150" column="9" declfile="include/MaaFramework/Instance/MaaController.h" declline="150" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a497982481bf79e89bc457d8a6e5e7bed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> void</type>
@@ -480,7 +520,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="136" column="28" declfile="include/MaaFramework/Instance/MaaController.h" declline="136" declcolumn="28"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="152" column="28" declfile="include/MaaFramework/Instance/MaaController.h" declline="152" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1aa01ed95af83d12f7bc3d49fdba415419" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aac4cf6870bfe8fef31ead507dcfb4251" kindref="member">MaaSinkId</ref></type>
@@ -505,7 +545,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="138" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="138" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="154" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="154" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a1ae3f067cb374a85ae7580a08945e7b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> void</type>
@@ -526,7 +566,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="140" column="28" declfile="include/MaaFramework/Instance/MaaController.h" declline="140" declcolumn="28"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="156" column="28" declfile="include/MaaFramework/Instance/MaaController.h" declline="156" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a4b4a854e5d591d14a303d9ab622332fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> void</type>
@@ -543,7 +583,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="142" column="28" declfile="include/MaaFramework/Instance/MaaController.h" declline="142" declcolumn="28"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="158" column="28" declfile="include/MaaFramework/Instance/MaaController.h" declline="158" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1ac0247a25f33dfbc7bd3a0183a669aad3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -584,7 +624,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="147" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="147" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="163" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="163" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a08f41be1ab0845f494ad7357adac0336" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -601,7 +641,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="153" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="153" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="169" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="169" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1aaf0eb096930a8a9592b11baf918a5910" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -626,7 +666,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="155" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="155" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="171" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="171" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a3f72c71e3668ff13371f7439e6764d95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -659,7 +699,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="159" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="159" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="175" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="175" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1ab45ddcc66eede5ebd38fd5952427006d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -696,7 +736,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="162" column="9" declfile="include/MaaFramework/Instance/MaaController.h" declline="162" declcolumn="9"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="178" column="9" declfile="include/MaaFramework/Instance/MaaController.h" declline="178" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1ad1c58989515de52fecba405b779ec1e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -741,7 +781,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="166" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="166" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="182" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="182" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a8d39d06718c5961f0f9a51849e3ed349" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -762,7 +802,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="176" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="176" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="192" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="192" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1ac7d6cae7d63684a3d6e78201fcca4b40" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -783,7 +823,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="178" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="178" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="194" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="194" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1aab01b6a21228d8e18a0733f481278148" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -804,7 +844,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="180" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="180" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="196" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="196" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a1938a4f9df4fcb4c56aadd1ab5da7f3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -825,7 +865,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="182" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="182" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="198" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="198" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1ad4b315ff1a1c5da834aa76b6651a9cb7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -858,7 +898,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="186" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="186" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="202" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="202" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1aa6044d3df3b659994b845317d4e67ec7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -891,7 +931,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="188" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="188" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="204" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="204" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a1131966cc2abcf3bf11d317413d4a529" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -912,7 +952,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="192" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="192" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="208" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="208" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a353affe8d15d6a2e192775250d6c75b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -937,7 +977,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="194" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="194" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="210" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="210" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1ab879179f0c655d61c684d20132cc7c98" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -958,7 +998,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="196" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="196" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="212" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="212" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1afb7c57e77010237effcfe2f638e0bd79" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -979,7 +1019,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="198" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="198" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="214" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="214" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1ad65392ee4028a2d8ba74d2fab960fb50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -1013,7 +1053,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="210" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="210" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="226" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="226" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1ab5b9b134755f4381cb4e5e99f21732b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -1073,7 +1113,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="226" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="226" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="242" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="242" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a307a93663ec1034d905be07e56703cdf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -1107,7 +1147,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="237" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="237" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="253" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="253" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a3f16bddc42e950694efd7da2fa51cb9f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -1165,7 +1205,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="250" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="250" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="266" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="266" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a92255bcc65b61750e01fa07bcd8d17e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -1209,7 +1249,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="261" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="261" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="277" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="277" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1afb8528c818e4fd03c7493b7b013474ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ada00e4de6b9b4dcae75ed50f4bcaeef5" kindref="member">MaaStatus</ref></type>
@@ -1230,7 +1270,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="263" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="263" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="279" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="279" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a67674de1a9a97550510068d7c9a5abd1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ada00e4de6b9b4dcae75ed50f4bcaeef5" kindref="member">MaaStatus</ref></type>
@@ -1251,7 +1291,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="265" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="265" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="281" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="281" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a0066bfa64a73b16f82a5060bdef72982" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -1268,7 +1308,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="267" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="267" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="283" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="283" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a730b6f3a5048f143a83c22bb05aec583" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -1314,7 +1354,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="281" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="281" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="297" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="297" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a0d7b5199f257b233e79a062c0811b555" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -1335,7 +1375,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="283" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="283" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="299" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="299" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a5373a7227d07d8d46c9a011111d2083b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -1393,7 +1433,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="298" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="298" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="314" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="314" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a3d3746b5ad82db515edb9c32378823d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -1437,7 +1477,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="310" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="310" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="326" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="326" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a5d20a13ed1473795423cc2f51423bea0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1aea94eb63afa29e65c59844ec3f57d691" kindref="member">MAA_DEPRECATED</ref> <ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -1458,7 +1498,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="312" column="48" declfile="include/MaaFramework/Instance/MaaController.h" declline="312" declcolumn="48"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="328" column="48" declfile="include/MaaFramework/Instance/MaaController.h" declline="328" declcolumn="48"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

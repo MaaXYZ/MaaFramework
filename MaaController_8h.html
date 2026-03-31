@@ -119,6 +119,9 @@ Functions</h2></td></tr>
 <tr class="memitem:af8ff627f00593364f9654343461af20c" id="r_af8ff627f00593364f9654343461af20c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#af8ff627f00593364f9654343461af20c">MaaMacOSControllerCreate</a> (uint32_t window_id, <a class="el" href="MaaDef_8h.html#ac2226415cbf081d3ce6fde4b3a5fe205">MaaMacOSScreencapMethod</a> screencap_method, <a class="el" href="MaaDef_8h.html#a428e432bbc782281526f5bd272c38e65">MaaMacOSInputMethod</a> input_method)</td></tr>
 <tr class="memdesc:af8ff627f00593364f9654343461af20c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a macOS controller for native macOS applications.  <br /></td></tr>
 <tr class="separator:af8ff627f00593364f9654343461af20c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c2f51f37d79fd393442956884a7ba3c" id="r_a5c2f51f37d79fd393442956884a7ba3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a5c2f51f37d79fd393442956884a7ba3c">MaaAndroidNativeControllerCreate</a> (const char *config_json)</td></tr>
+<tr class="memdesc:a5c2f51f37d79fd393442956884a7ba3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an Android native controller backed by MaaAndroidNativeControlUnit.  <br /></td></tr>
+<tr class="separator:a5c2f51f37d79fd393442956884a7ba3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ff145414faed5fdeedc36e97729677e" id="r_a2ff145414faed5fdeedc36e97729677e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a2ff145414faed5fdeedc36e97729677e">MaaCustomControllerCreate</a> (<a class="el" href="structMaaCustomControllerCallbacks.html">MaaCustomControllerCallbacks</a> *controller, void *controller_arg)</td></tr>
 <tr class="separator:a2ff145414faed5fdeedc36e97729677e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aadb57e80415b69b895a4ea1fd26dfa75" id="r_aadb57e80415b69b895a4ea1fd26dfa75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#aadb57e80415b69b895a4ea1fd26dfa75">MaaDbgControllerCreate</a> (const char *read_path)</td></tr>
@@ -377,6 +380,42 @@ Input simulation requires Accessibility permission. </dd>
 Some features are not supported: start_app, stop_app, scroll. </dd>
 <dd>
 Only single touch is supported (contact must be 0). </dd></dl>
+
+</div>
+</div>
+<a id="a5c2f51f37d79fd393442956884a7ba3c" name="a5c2f51f37d79fd393442956884a7ba3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c2f51f37d79fd393442956884a7ba3c">&#9670;&#160;</a></span>MaaAndroidNativeControllerCreate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> * MaaAndroidNativeControllerCreate </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>config_json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an Android native controller backed by MaaAndroidNativeControlUnit. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">config_json</td><td>JSON config for the control unit. Required fields:<ul>
+<li>library_path: path to the Android native control unit library</li>
+<li>screen_resolution.width / screen_resolution.height: raw screenshot and touch resolution Optional fields:</li>
+<li>display_id: target display id, defaults to 0</li>
+<li>force_stop: whether to force stop before start_app, defaults to false </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The controller handle, or nullptr on failure.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This controller is only available on Android. </dd>
+<dd>
+The configured screen_resolution must match the control unit's raw screenshot/touch coordinate space. </dd></dl>
 
 </div>
 </div>
@@ -1777,7 +1816,7 @@ For other controllers, this is a no-op that always succeeds. </dd></dl>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="dir_0debf1eee29073ebb629a4e1dfd2a5f6.html">Instance</a></li><li class="navelem"><a class="el" href="MaaController_8h.html">MaaController.h</a></li>
-    <li class="footer">Generated on Sat Mar 28 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Tue Mar 31 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

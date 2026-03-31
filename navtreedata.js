@@ -53,8 +53,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "AdbControlUnitAPI_8h.html",
-"MaaDef_8h.html#a6ab0f942cf53ee5bef82efc619aff6d8",
-"PlayCoverControlUnitAPI_8h.html#a08a124ba4c3916720dc11d61940b7fa3"
+"MaaDef_8h.html#a5d201ca1f58e33b38be2fd7b9f977975",
+"MaaUtility_8h_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

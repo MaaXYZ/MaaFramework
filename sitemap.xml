@@ -20,6 +20,9 @@
     <loc>https://maafw.com/AdbControlUnitAPI_8h_source.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/AndroidNativeControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/ControlUnitAPI_8h_source.html</loc>
   </url>
   <url>
@@ -128,6 +131,9 @@
     <loc>https://maafw.com/AdbControlUnitAPI_8h.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/AndroidNativeControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/ControlUnitAPI_8h.html</loc>
   </url>
   <url>
@@ -228,6 +234,12 @@
   </url>
   <url>
     <loc>https://maafw.com/classAdbControlUnitAPI-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classAndroidNativeControlUnitAPI.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classAndroidNativeControlUnitAPI-members.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/classControlUnitAPI.html</loc>
@@ -483,6 +495,15 @@
   </url>
   <url>
     <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/functions_func.html</loc>

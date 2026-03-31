@@ -5,6 +5,7 @@ var ControlUnitAPI_8h =
     [ "RelativeMovableUnit", "classRelativeMovableUnit.html", "classRelativeMovableUnit" ],
     [ "ShellableUnit", "classShellableUnit.html", "classShellableUnit" ],
     [ "AdbControlUnitAPI", "classAdbControlUnitAPI.html", "classAdbControlUnitAPI" ],
+    [ "AndroidNativeControlUnitAPI", "classAndroidNativeControlUnitAPI.html", "classAndroidNativeControlUnitAPI" ],
     [ "Win32ControlUnitAPI", "classWin32ControlUnitAPI.html", "classWin32ControlUnitAPI" ],
     [ "MacOSControlUnitAPI", "classMacOSControlUnitAPI.html", "classMacOSControlUnitAPI" ],
     [ "CustomControlUnitAPI", "classCustomControlUnitAPI.html", "classCustomControlUnitAPI" ],
@@ -18,5 +19,6 @@ var ControlUnitAPI_8h =
     [ "MaaCustomControlUnitHandle", "ControlUnitAPI_8h.html#ae379a64534f66d7fc6fe047476d5563e", null ],
     [ "MaaReplayControlUnitHandle", "ControlUnitAPI_8h.html#a0e8e5772a651edd77531940be1d0304a", null ],
     [ "MaaRecordControlUnitHandle", "ControlUnitAPI_8h.html#aa8183f5044591116d0ce44318571d14e", null ],
-    [ "MaaDbgControlUnitHandle", "ControlUnitAPI_8h.html#a90d6e45f84fbbed8d11f88ca1c2eb09d", null ]
+    [ "MaaDbgControlUnitHandle", "ControlUnitAPI_8h.html#a90d6e45f84fbbed8d11f88ca1c2eb09d", null ],
+    [ "MaaAndroidNativeControlUnitHandle", "ControlUnitAPI_8h.html#a2f106931f75023960c2b0a313bd26174", null ]
 ];

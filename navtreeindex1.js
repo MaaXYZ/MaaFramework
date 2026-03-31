@@ -1,5 +1,12 @@
 var NAVTREEINDEX1 =
 {
+"MaaDef_8h.html#a5d201ca1f58e33b38be2fd7b9f977975":[3,0,0,3,4,17],
+"MaaDef_8h.html#a5d8d307550fff35a2df364eeac7f5191":[3,0,0,3,4,125],
+"MaaDef_8h.html#a5ea5d33341ce8007c366ebd04f08ee51":[3,0,0,3,4,124],
+"MaaDef_8h.html#a614ef2e0ce06147b8077158da914292f":[3,0,0,3,4,20],
+"MaaDef_8h.html#a637a673d747aa47edfa545da69c936b1":[3,0,0,3,4,30],
+"MaaDef_8h.html#a64dc561558d3344586b97b208ca466eb":[3,0,0,3,4,4],
+"MaaDef_8h.html#a6969fc9b9c90c5bff9e560898e47e6bf":[3,0,0,3,4,24],
 "MaaDef_8h.html#a6ab0f942cf53ee5bef82efc619aff6d8":[3,0,0,3,4,56],
 "MaaDef_8h.html#a6b9bcefbd6beaf7a0da83c92318a8693":[3,0,0,3,4,123],
 "MaaDef_8h.html#a6e1c8783f1d81f51c21dbe95aa21f9fa":[3,0,0,3,4,61],
@@ -242,12 +249,5 @@ var NAVTREEINDEX1 =
 "MaaToolkitMacOS_8h.html#ae471356de642c11ad8be5aacc0c6b6be":[3,0,0,4,3,0,0],
 "MaaToolkitMacOS_8h_source.html":[3,0,0,4,3,0],
 "MaaUtility_8h.html":[3,0,0,3,2,1],
-"MaaUtility_8h.html#a0329e2aed44c80bc9d10f6c1f6a8872f":[3,0,0,3,2,1,0],
-"MaaUtility_8h_source.html":[3,0,0,3,2,1],
-"MacOSControlUnitAPI_8h.html":[3,0,0,2,7],
-"MacOSControlUnitAPI_8h.html#a40bb2935f288f2b7d78d74fed8cb4810":[3,0,0,2,7,1],
-"MacOSControlUnitAPI_8h.html#aa76648de661faebcd944c4bd0cd1d795":[3,0,0,2,7,0],
-"MacOSControlUnitAPI_8h.html#ac86aec4779a55d9d4999d8d719a52c5e":[3,0,0,2,7,2],
-"MacOSControlUnitAPI_8h_source.html":[3,0,0,2,7],
-"PlayCoverControlUnitAPI_8h.html":[3,0,0,2,8]
+"MaaUtility_8h.html#a0329e2aed44c80bc9d10f6c1f6a8872f":[3,0,0,3,2,1,0]
 };

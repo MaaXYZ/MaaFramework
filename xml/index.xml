@@ -4,6 +4,11 @@
     <member refid="classAdbControlUnitAPI_1abad3a55acb315f087bdbf2b2a6f8d3bb" kind="function"><name>~AdbControlUnitAPI</name></member>
     <member refid="classAdbControlUnitAPI_1a2debdeaa087d38facc106ba574da6b91" kind="function"><name>find_device</name></member>
   </compound>
+  <compound refid="classAndroidNativeControlUnitAPI" kind="class"><name>AndroidNativeControlUnitAPI</name>
+    <member refid="classAndroidNativeControlUnitAPI_1aef52b927e847aa013d425ceb2d15918c" kind="function"><name>~AndroidNativeControlUnitAPI</name></member>
+    <member refid="classAndroidNativeControlUnitAPI_1a12931e89215ff70efc689bd1ce6e7653" kind="function"><name>attach_thread</name></member>
+    <member refid="classAndroidNativeControlUnitAPI_1aa90244a53ac7b83c99181bad58966165" kind="function"><name>detach_thread</name></member>
+  </compound>
   <compound refid="classControlUnitAPI" kind="class"><name>ControlUnitAPI</name>
     <member refid="classControlUnitAPI_1a9c5542a5c81747468050d8610a18e6b0" kind="function"><name>~ControlUnitAPI</name></member>
     <member refid="classControlUnitAPI_1a5bff4217a5cbd6789dca3957b469cd5b" kind="function"><name>connect</name></member>
@@ -195,6 +200,11 @@
     <member refid="AdbControlUnitAPI_8h_1a003557ff761a8d42cbe0bb52422606a9" kind="function"><name>MaaAdbControlUnitCreate</name></member>
     <member refid="AdbControlUnitAPI_8h_1aa48834f54ca34f08aa3d8e9493f1c994" kind="function"><name>MaaAdbControlUnitDestroy</name></member>
   </compound>
+  <compound refid="AndroidNativeControlUnitAPI_8h" kind="file"><name>AndroidNativeControlUnitAPI.h</name>
+    <member refid="AndroidNativeControlUnitAPI_8h_1a70884fe701612b21a262a3991d9fe224" kind="function"><name>MaaAndroidNativeControlUnitGetVersion</name></member>
+    <member refid="AndroidNativeControlUnitAPI_8h_1ad47a1a220c90669beac63dfbfb204b1d" kind="function"><name>MaaAndroidNativeControlUnitCreate</name></member>
+    <member refid="AndroidNativeControlUnitAPI_8h_1ab28091ca2e90569a7577010daa9a477f" kind="function"><name>MaaAndroidNativeControlUnitDestroy</name></member>
+  </compound>
   <compound refid="ControlUnitAPI_8h" kind="file"><name>ControlUnitAPI.h</name>
     <member refid="ControlUnitAPI_8h_1afdd4ccae8b5f8fca2fd8f23c9fee6844" kind="typedef"><name>MaaControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1ad717257089675a8dc0e80e574cfe5243" kind="typedef"><name>MaaAdbControlUnitHandle</name></member>
@@ -205,6 +215,7 @@
     <member refid="ControlUnitAPI_8h_1a0e8e5772a651edd77531940be1d0304a" kind="typedef"><name>MaaReplayControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1aa8183f5044591116d0ce44318571d14e" kind="typedef"><name>MaaRecordControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1a90d6e45f84fbbed8d11f88ca1c2eb09d" kind="typedef"><name>MaaDbgControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1a2f106931f75023960c2b0a313bd26174" kind="typedef"><name>MaaAndroidNativeControlUnitHandle</name></member>
   </compound>
   <compound refid="CustomControlUnitAPI_8h" kind="file"><name>CustomControlUnitAPI.h</name>
     <member refid="CustomControlUnitAPI_8h_1ad6294c247a6f7021b5f86ca2060e9298" kind="function"><name>MaaCustomControlUnitGetVersion</name></member>
@@ -310,6 +321,7 @@
     <member refid="MaaController_8h_1a7b3f6215fdc0ae3e8beeb51a3dd75e16" kind="function"><name>MaaAdbControllerCreate</name></member>
     <member refid="MaaController_8h_1a0a0532a08e57b6b8b23282b51f6431a0" kind="function"><name>MaaWin32ControllerCreate</name></member>
     <member refid="MaaController_8h_1af8ff627f00593364f9654343461af20c" kind="function"><name>MaaMacOSControllerCreate</name></member>
+    <member refid="MaaController_8h_1a5c2f51f37d79fd393442956884a7ba3c" kind="function"><name>MaaAndroidNativeControllerCreate</name></member>
     <member refid="MaaController_8h_1a2ff145414faed5fdeedc36e97729677e" kind="function"><name>MaaCustomControllerCreate</name></member>
     <member refid="MaaController_8h_1aadb57e80415b69b895a4ea1fd26dfa75" kind="function"><name>MaaDbgControllerCreate</name></member>
     <member refid="MaaController_8h_1ac617f958211e394d69a38e1177d4f996" kind="function"><name>MaaReplayControllerCreate</name></member>
