@@ -38,6 +38,7 @@ public:
     }
 
     bool attached() const { return env_ != nullptr; }
+
     void* env() const { return env_; }
 
 private:

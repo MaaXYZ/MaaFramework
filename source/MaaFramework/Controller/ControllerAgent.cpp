@@ -45,10 +45,7 @@ public:
         }
     }
 
-    bool ready() const
-    {
-        return !attach_failed_;
-    }
+    bool ready() const { return !attach_failed_; }
 
 private:
     std::shared_ptr<MAA_CTRL_UNIT_NS::AndroidNativeControlUnitAPI> unit_;

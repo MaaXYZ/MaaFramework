@@ -118,8 +118,8 @@ void MessageInput::restore_window_pos()
     LONG top = saved_window_rect_.top;
 
     if (!MonitorFromRect(&saved_window_rect_, MONITOR_DEFAULTTONULL)) {
-        LogWarn << "saved window position is off-screen, restoring to top-left"
-                << VAR(saved_window_rect_.left) << VAR(saved_window_rect_.top);
+        LogWarn << "saved window position is off-screen, restoring to top-left" << VAR(saved_window_rect_.left)
+                << VAR(saved_window_rect_.top);
         left = 0;
         top = 0;
     }

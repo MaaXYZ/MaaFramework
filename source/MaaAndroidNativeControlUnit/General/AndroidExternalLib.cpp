@@ -35,9 +35,10 @@ std::optional<AndroidNativeNS::AndroidExternalFunctions>
     ok = ok && get_required_function<AndroidNativeNS::UnlockPixelsSignature>(unlock_pixels_func_name_, funcs.unlock_pixels);
     ok = ok && get_required_function<AndroidNativeNS::AttachThreadSignature>(attach_thread_func_name_, funcs.attach_thread);
     ok = ok && get_required_function<AndroidNativeNS::DetachThreadSignature>(detach_thread_func_name_, funcs.detach_thread);
-    ok = ok && get_required_function<AndroidNativeNS::DispatchInputMessageSignature>(
-        dispatch_input_message_func_name_,
-        funcs.dispatch_input_message);
+    ok = ok
+         && get_required_function<AndroidNativeNS::DispatchInputMessageSignature>(
+             dispatch_input_message_func_name_,
+             funcs.dispatch_input_message);
 
     if (!ok) {
         unload_library();

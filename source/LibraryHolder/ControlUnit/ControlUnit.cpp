@@ -3,6 +3,7 @@
 #include <filesystem>
 
 #include "MaaControlUnit/AdbControlUnitAPI.h"
+#include "MaaControlUnit/AndroidNativeControlUnitAPI.h"
 #include "MaaControlUnit/CustomControlUnitAPI.h"
 #include "MaaControlUnit/DbgControlUnitAPI.h"
 #include "MaaControlUnit/GamepadControlUnitAPI.h"
@@ -12,7 +13,6 @@
 #include "MaaControlUnit/ReplayControlUnitAPI.h"
 #include "MaaControlUnit/Win32ControlUnitAPI.h"
 #include "MaaControlUnit/WlRootsControlUnitAPI.h"
-#include "MaaControlUnit/AndroidNativeControlUnitAPI.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Runtime.h"
 
