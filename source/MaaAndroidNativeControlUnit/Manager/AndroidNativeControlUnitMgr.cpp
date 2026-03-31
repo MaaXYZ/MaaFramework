@@ -1,8 +1,6 @@
 #include "AndroidNativeControlUnitMgr.h"
 
 #include <algorithm>
-#include <chrono>
-#include <thread>
 #include <utility>
 
 #include "General/ScopedThreadAttach.h"
@@ -25,6 +23,14 @@ AndroidNativeControlUnitMgr::AndroidNativeControlUnitMgr(AndroidNativeControlUni
             << VAR(config_.force_stop);
 }
 
+AndroidNativeControlUnitMgr::~AndroidNativeControlUnitMgr()
+{
+    if (funcs_) {
+        AndroidNativeExternalLibraryHolder::unload_library();
+        funcs_.reset();
+    }
+}
+
 bool AndroidNativeControlUnitMgr::connect()
 {
     LogFunc;
@@ -33,11 +39,13 @@ bool AndroidNativeControlUnitMgr::connect()
         return true;
     }
 
-    if (!library_.load(config_.library_path)) {
+    auto funcs_opt = AndroidNativeExternalLibraryHolder::create_functions(config_.library_path);
+    if (!funcs_opt) {
         LogError << "Failed to load native android external library" << VAR(config_.library_path);
         return false;
     }
 
+    funcs_ = std::move(*funcs_opt);
     last_touch_points_.clear();
     connected_ = true;
     return true;
@@ -45,7 +53,7 @@ bool AndroidNativeControlUnitMgr::connect()
 
 bool AndroidNativeControlUnitMgr::connected() const
 {
-    return connected_ && library_.loaded();
+    return connected_ && funcs_.has_value();
 }
 
 bool AndroidNativeControlUnitMgr::request_uuid(std::string& uuid)
@@ -101,16 +109,16 @@ bool AndroidNativeControlUnitMgr::screencap(cv::Mat& image)
         return false;
     }
 
-    if (const ScopedThreadAttach attach(&library_); !attach.attached()) {
+    if (const ScopedThreadAttach attach(&*funcs_); !attach.attached()) {
         return false;
     }
 
-    const FrameInfo info = library_.GetLockedPixels();
+    const FrameInfo info = funcs_->get_locked_pixels();
     const bool need_unlock = info.frame_ref != nullptr;
 
     if (!info.data || info.width == 0 || info.height == 0 || info.stride == 0) {
         if (need_unlock) {
-            (void)library_.UnlockPixels(info);
+            (void)funcs_->unlock_pixels(info);
         }
         LogError << "GetLockedPixels returned invalid frame info" << VAR(info.width) << VAR(info.height) << VAR(info.stride)
                  << VAR(info.length) << VAR_VOIDP(info.data) << VAR_VOIDP(info.frame_ref);
@@ -121,7 +129,7 @@ bool AndroidNativeControlUnitMgr::screencap(cv::Mat& image)
     image = bgr.clone();
 
     if (need_unlock) {
-        if (int unlock_ret = library_.UnlockPixels(info); unlock_ret != 0) {
+        if (int unlock_ret = funcs_->unlock_pixels(info); unlock_ret != 0) {
             LogError << "UnlockPixels failed" << VAR(unlock_ret);
             return false;
         }
@@ -306,7 +314,7 @@ json::object AndroidNativeControlUnitMgr::get_info() const
     info["library_path"] = path_to_utf8_string(config_.library_path);
     info["display_id"] = config_.display_id;
     info["force_stop"] = config_.force_stop;
-    info["loaded"] = library_.loaded();
+    info["loaded"] = funcs_.has_value();
     info["connected"] = connected();
 
     json::object touch_resolution;
@@ -328,11 +336,11 @@ bool AndroidNativeControlUnitMgr::validate_contact(int contact)
 
 bool AndroidNativeControlUnitMgr::dispatch_input_message(MethodParam param) const
 {
-    if (const ScopedThreadAttach attach(&library_); !attach.attached()) {
+    if (const ScopedThreadAttach attach(&*funcs_); !attach.attached()) {
         return false;
     }
 
-    int ret = library_.DispatchInputMessage(param);
+    int ret = funcs_->dispatch_input_message(param);
     if (ret == 0) {
         return true;
     }
@@ -368,12 +376,20 @@ cv::Point AndroidNativeControlUnitMgr::get_touch_up_point(int contact) const
 
 void* AndroidNativeControlUnitMgr::attach_thread() const
 {
-    return library_.AttachThread();
+    if (!funcs_) {
+        LogError << "library is not loaded";
+        return nullptr;
+    }
+    return funcs_->attach_thread();
 }
 
 int AndroidNativeControlUnitMgr::detach_thread(void* env) const
 {
-    return library_.DetachThread(env);
+    if (!funcs_) {
+        LogError << "library is not loaded";
+        return -1;
+    }
+    return funcs_->detach_thread(env);
 }
 
 MAA_CTRL_UNIT_NS_END

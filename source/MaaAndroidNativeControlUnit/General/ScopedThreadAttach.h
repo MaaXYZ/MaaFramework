@@ -9,14 +9,14 @@ namespace AndroidNativeNS
 class ScopedThreadAttach
 {
 public:
-    explicit ScopedThreadAttach(const AndroidExternalLib* library)
-        : library_(library)
+    explicit ScopedThreadAttach(const AndroidExternalFunctions* funcs)
+        : funcs_(funcs)
     {
-        if (!library_) {
+        if (!funcs_) {
             return;
         }
 
-        env_ = library_->AttachThread();
+        env_ = funcs_->attach_thread();
         if (!env_) {
             LogError << "AttachThread returned nullptr";
         }
@@ -27,11 +27,11 @@ public:
 
     ~ScopedThreadAttach()
     {
-        if (!library_ || !env_) {
+        if (!funcs_ || !env_) {
             return;
         }
 
-        int ret = library_->DetachThread(env_);
+        int ret = funcs_->detach_thread(env_);
         if (ret != 0) {
             LogWarn << "DetachThread failed" << VAR(ret);
         }
@@ -41,7 +41,7 @@ public:
     void* env() const { return env_; }
 
 private:
-    const AndroidExternalLib* library_ = nullptr;
+    const AndroidExternalFunctions* funcs_ = nullptr;
     void* env_ = nullptr;
 };
 

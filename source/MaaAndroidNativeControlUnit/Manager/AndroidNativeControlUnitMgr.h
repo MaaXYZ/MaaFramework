@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <optional>
 #include <unordered_map>
 
 #include "Common/Conf.h"
@@ -23,7 +24,7 @@ class AndroidNativeControlUnitMgr : public AndroidNativeControlUnitAPI
 {
 public:
     explicit AndroidNativeControlUnitMgr(AndroidNativeControlUnitConfig config);
-    ~AndroidNativeControlUnitMgr() override = default;
+    ~AndroidNativeControlUnitMgr() override;
 
     // from ControlUnitAPI
     bool connect() override;
@@ -64,7 +65,7 @@ private:
     cv::Point get_touch_up_point(int contact) const;
 
     AndroidNativeControlUnitConfig config_;
-    AndroidNativeNS::AndroidExternalLib library_;
+    std::optional<AndroidNativeNS::AndroidExternalFunctions> funcs_;
     bool connected_ = false;
     std::unordered_map<int, cv::Point> last_touch_points_;
 };
