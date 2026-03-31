@@ -16,7 +16,6 @@ using namespace AndroidNativeNS;
 namespace
 {
 constexpr auto kUuid = "AndroidNativeController";
-constexpr auto kTouchInterval = std::chrono::milliseconds(10);
 } // namespace
 
 AndroidNativeControlUnitMgr::AndroidNativeControlUnitMgr(AndroidNativeControlUnitConfig config)

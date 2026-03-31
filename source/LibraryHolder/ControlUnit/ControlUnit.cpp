@@ -12,9 +12,7 @@
 #include "MaaControlUnit/ReplayControlUnitAPI.h"
 #include "MaaControlUnit/Win32ControlUnitAPI.h"
 #include "MaaControlUnit/WlRootsControlUnitAPI.h"
-#ifdef __ANDROID__
 #include "MaaControlUnit/AndroidNativeControlUnitAPI.h"
-#endif
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Runtime.h"
 
@@ -109,7 +107,6 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI> Win32ControlUnitLibraryHo
     return std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-#ifdef __ANDROID__
 std::shared_ptr<MAA_CTRL_UNIT_NS::AndroidNativeControlUnitAPI>
     AndroidNativeControlUnitLibraryHolder::create_control_unit(const char* config_json)
 {
@@ -140,7 +137,6 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::AndroidNativeControlUnitAPI>
 
     return std::shared_ptr<MAA_CTRL_UNIT_NS::AndroidNativeControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
-#endif
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> DbgControlUnitLibraryHolder::create_control_unit(const char* read_path)
 {
