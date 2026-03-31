@@ -114,7 +114,17 @@ void MessageInput::restore_window_pos()
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-    if (!SetWindowPos(hwnd_, nullptr, saved_window_rect_.left, saved_window_rect_.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE)) {
+    LONG left = saved_window_rect_.left;
+    LONG top = saved_window_rect_.top;
+
+    if (!MonitorFromRect(&saved_window_rect_, MONITOR_DEFAULTTONULL)) {
+        LogWarn << "saved window position is off-screen, restoring to top-left"
+                << VAR(saved_window_rect_.left) << VAR(saved_window_rect_.top);
+        left = 0;
+        top = 0;
+    }
+
+    if (!SetWindowPos(hwnd_, nullptr, left, top, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE)) {
         LogError << "SetWindowPos failed during restore" << VAR(hwnd_) << VAR(GetLastError());
     }
     window_pos_saved_ = false;
