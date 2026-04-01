@@ -13,6 +13,63 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+namespace
+{
+
+struct NtDllHolder : public LibraryHolder<NtDllHolder>
+{
+};
+
+struct User32DllHolder : public LibraryHolder<User32DllHolder>
+{
+};
+
+struct ShcoreDllHolder : public LibraryHolder<ShcoreDllHolder>
+{
+};
+
+template <typename Holder>
+void ensure_library_loaded(const wchar_t* libname)
+{
+    static std::once_flag once;
+    std::call_once(once, [libname]() { Holder::load_library(libname); });
+}
+
+template <typename Holder, typename Fn>
+boost::function<Fn> resolve_library_function(const wchar_t* libname, const std::string& name)
+{
+    ensure_library_loaded<Holder>(libname);
+    return Holder::template get_function<Fn>(name);
+}
+
+void ensure_process_dpi_awareness_once()
+{
+    static std::once_flag once;
+    std::call_once(once, []() {
+        using FnCtx = BOOL WINAPI(DPI_AWARENESS_CONTEXT);
+        auto fn_ctx = resolve_library_function<User32DllHolder, FnCtx>(L"user32.dll", "SetProcessDpiAwarenessContext");
+        if (fn_ctx && fn_ctx(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)) {
+            return;
+        }
+        if (fn_ctx && GetLastError() == ERROR_ACCESS_DENIED) {
+            return;
+        }
+
+        using FnAware = HRESULT WINAPI(int);
+        auto fn_aware = resolve_library_function<ShcoreDllHolder, FnAware>(L"shcore.dll", "SetProcessDpiAwareness");
+        if (!fn_aware) {
+            return;
+        }
+
+        auto hr = fn_aware(2 /*PROCESS_PER_MONITOR_DPI_AWARE*/);
+        if (SUCCEEDED(hr) || hr == E_ACCESSDENIED) {
+            return;
+        }
+    });
+}
+
+}
+
 MessageInput::MessageInput(HWND hwnd, Config config)
     : hwnd_(hwnd)
     , config_(config)
@@ -361,20 +418,10 @@ void MessageInput::close_target_process()
     target_process_handle_ = nullptr;
 }
 
-// 动态解析 ntdll 未文档化函数（仅解析一次，线程安全由 static 局部变量保证）
-struct NtDllHolder : public LibraryHolder<NtDllHolder>
-{
-};
-
 template <typename Fn>
 static boost::function<Fn> resolve_nt_function(const std::string& name)
 {
-    static bool loaded = false;
-    if (!loaded) {
-        NtDllHolder::load_library(L"ntdll.dll");
-        loaded = true;
-    }
-    return NtDllHolder::get_function<Fn>(name);
+    return resolve_library_function<NtDllHolder, Fn>(L"ntdll.dll", name);
 }
 
 void MessageInput::suspend_target_process()
@@ -474,53 +521,16 @@ void MessageInput::tracking_thread_func()
 {
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 
-    // DPI 感知：MSLLHOOKSTRUCT::pt 始终物理像素，GetCursorPos/SetCursorPos/SetWindowPos
-    // 必须在同一坐标系下。SetThreadDpiAwarenessContext 在部分宿主进程中不可靠，
-    // 需要进程级设置作为兜底。三级回退：Per-Monitor V2 → Per-Monitor V1 → System Aware。
-    {
-        bool ok = false;
-        HMODULE user32 = GetModuleHandleW(L"user32.dll");
-        if (user32) {
-            using FnCtx = BOOL(WINAPI*)(DPI_AWARENESS_CONTEXT);
-            auto fnCtx = reinterpret_cast<FnCtx>(GetProcAddress(user32, "SetProcessDpiAwarenessContext"));
-            if (fnCtx) {
-                ok = fnCtx(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-                // 如果失败可能是已经设置过（E_ACCESSDENIED），这是可以接受的
-            }
-        }
-        if (!ok) {
-            HMODULE shcore = LoadLibraryW(L"shcore.dll");
-            if (shcore) {
-                using FnAware = HRESULT(WINAPI*)(int);
-                auto fnAware = reinterpret_cast<FnAware>(GetProcAddress(shcore, "SetProcessDpiAwareness"));
-                if (fnAware) {
-                    fnAware(2 /*PROCESS_PER_MONITOR_DPI_AWARE*/);
-                }
-            }
-        }
-        // 无论进程级是否成功，都设置线程级
-        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-    }
+    // Win32ControlUnitMgr::connect() 只覆盖创建 MessageInput 的线程；tracking 线程仍需单独设置。
+    // 进程级 DPI 兜底会影响整个宿主进程，因此只初始化一次；线程级设置仍需每个 tracking 线程执行。
+    ensure_process_dpi_awareness_once();
+    SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
     // 将系统定时器精度提升到 1ms，确保 Sleep/MsgWait 精度
     timeBeginPeriod(1);
     bool init_reported = false;
-    OnScopeLeave([&]() {
-        {
-            std::lock_guard lock(tracking_state_mutex_);
-            if (!init_reported) {
-                tracking_thread_init_done_ = true;
-                tracking_thread_init_ok_ = false;
-            }
-            rawinput_ensure_requested_ = false;
-            rawinput_ensure_done_ = true;
-            rawinput_ensure_ok_ = false;
-        }
-        tracking_state_cv_.notify_all();
-        close_target_process();
-        destroy_rawinput_window();
-        timeEndPeriod(1);
-    });
+    auto cleanup_tracking_thread = [this, &init_reported]() { this->cleanup_tracking_thread(init_reported); };
+    OnScopeLeave(cleanup_tracking_thread);
 
     // 预先打开目标进程句柄（用于挂起/恢复）
     open_target_process();
@@ -596,6 +606,24 @@ void MessageInput::tracking_thread_func()
             maybe_stop_window_tracking();
         }
     }
+}
+
+void MessageInput::cleanup_tracking_thread(bool init_reported)
+{
+    {
+        std::lock_guard lock(tracking_state_mutex_);
+        if (!init_reported) {
+            tracking_thread_init_done_ = true;
+            tracking_thread_init_ok_ = false;
+        }
+        rawinput_ensure_requested_ = false;
+        rawinput_ensure_done_ = true;
+        rawinput_ensure_ok_ = false;
+    }
+    tracking_state_cv_.notify_all();
+    close_target_process();
+    destroy_rawinput_window();
+    timeEndPeriod(1);
 }
 
 void MessageInput::check_and_block_input()
@@ -1266,39 +1294,68 @@ void MessageInput::send_counter_move(int raw_dx, int raw_dy)
     }
 }
 
-LRESULT CALLBACK MessageInput::RawInputWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+bool MessageInput::handle_rawinput_message(LPARAM lParam)
 {
-    if (msg == WM_INPUT) {
-        auto* inst = s_active_instance_.load();
-        if (inst && inst->mouse_lock_follow_active_) {
-            UINT size = 0;
-            GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
-            if (size <= sizeof(RAWINPUT)) {
-                RAWINPUT raw = {};
-                UINT copied = size;
-                if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, &raw, &copied, sizeof(RAWINPUTHEADER)) == size) {
-                    if (raw.header.dwType == RIM_TYPEMOUSE) {
-                        auto& mouse = raw.data.mouse;
-                        if ((mouse.usFlags & MOUSE_MOVE_ABSOLUTE) == 0 && (mouse.lLastX != 0 || mouse.lLastY != 0)) {
-                            // 检查是否是我们自己的对冲或 relative_move 事件
-                            int prev = inst->counter_pending_.load();
-                            bool is_synthetic = false;
-                            while (prev > 0) {
-                                if (inst->counter_pending_.compare_exchange_weak(prev, prev - 1)) {
-                                    is_synthetic = true;
-                                    break;
-                                }
-                            }
-                            if (!is_synthetic) {
-                                // 真实硬件事件，发送对冲
-                                inst->send_counter_move(mouse.lLastX, mouse.lLastY);
-                            }
-                        }
-                    }
-                }
-            }
+    if (!mouse_lock_follow_active_) {
+        return false;
+    }
+
+    UINT size = 0;
+    if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) != 0 ||
+        size == 0 ||
+        size > sizeof(RAWINPUT)) {
+        return false;
+    }
+
+    RAWINPUT raw = {};
+    UINT copied = size;
+    if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, &raw, &copied, sizeof(RAWINPUTHEADER)) != size) {
+        return false;
+    }
+
+    if (raw.header.dwType != RIM_TYPEMOUSE) {
+        return false;
+    }
+
+    const auto& mouse = raw.data.mouse;
+    if ((mouse.usFlags & MOUSE_MOVE_ABSOLUTE) != 0) {
+        return false;
+    }
+    if (mouse.lLastX == 0 && mouse.lLastY == 0) {
+        return false;
+    }
+
+    if (consume_synthetic_rawinput()) {
+        return true;
+    }
+
+    send_counter_move(mouse.lLastX, mouse.lLastY);
+    return true;
+}
+
+bool MessageInput::consume_synthetic_rawinput()
+{
+    int prev = counter_pending_.load();
+    while (prev > 0) {
+        if (counter_pending_.compare_exchange_weak(prev, prev - 1)) {
+            return true;
         }
     }
+    return false;
+}
+
+LRESULT CALLBACK MessageInput::RawInputWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    if (msg != WM_INPUT) {
+        return DefWindowProcW(hwnd, msg, wParam, lParam);
+    }
+
+    auto* inst = s_active_instance_.load();
+    if (!inst) {
+        return DefWindowProcW(hwnd, msg, wParam, lParam);
+    }
+
+    inst->handle_rawinput_message(lParam);
     return DefWindowProcW(hwnd, msg, wParam, lParam);
 }
 

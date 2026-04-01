@@ -98,6 +98,7 @@ private:
 
     // WithWindowPos 通过后台追踪把真实鼠标位移折算回窗口位置，避免会话期间目标点漂移。
     void tracking_thread_func();
+    void cleanup_tracking_thread(bool init_reported);
     void process_pending_mouse_frame();
     std::thread tracking_thread_;
     std::atomic_bool tracking_exit_ = false;
@@ -149,6 +150,8 @@ private:
     bool create_rawinput_window();
     void destroy_rawinput_window();
     void send_counter_move(int raw_dx, int raw_dy);
+    bool handle_rawinput_message(LPARAM lParam);
+    bool consume_synthetic_rawinput();
     static LRESULT CALLBACK RawInputWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
     HWND rawinput_hwnd_ = nullptr;
     std::atomic_int counter_pending_ = 0;
