@@ -1,7 +1,7 @@
 file(GLOB_RECURSE maa_gamepad_control_unit_src *.h *.hpp *.cpp)
 file(GLOB_RECURSE maa_gamepad_control_unit_header
-    ${MAA_PRIVATE_INC}/ControlUnit/GamepadControlUnitAPI.h
-    ${MAA_PRIVATE_INC}/ControlUnit/ControlUnitAPI.h)
+    ${MAA_PUBLIC_INC}/MaaControlUnit/GamepadControlUnitAPI.h
+    ${MAA_PUBLIC_INC}/MaaControlUnit/ControlUnitAPI.h)
 
 add_library(MaaGamepadControlUnit SHARED ${maa_gamepad_control_unit_src} ${maa_gamepad_control_unit_header})
 

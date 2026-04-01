@@ -3,7 +3,7 @@
 #include <memory>
 #include <optional>
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
 
 #ifdef __cplusplus

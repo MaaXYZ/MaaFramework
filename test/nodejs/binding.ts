@@ -100,10 +100,7 @@ async function api_test() {
     console.log('rsource', resource)
 
     const dbg_controller = new maa.DbgController(
-        '../../install/test/PipelineSmoking/Screenshot',
-        '../../install/test/user',
-        maa.DbgControllerType.CarouselImage,
-        '{}'
+        '../../install/test/PipelineSmoking/Screenshot'
     )
     dbg_controller.add_sink((res, msg) => {
         console.log(msg)

@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "MaaFramework Project Interface V2",
-    "description": "MaaFramework 项目接口配置文件 V2 版本的 JSON Schema",
+    "description": "MaaFramework 项目接口配置文件 V2 版本的 JSON Schema。💡 v2.5.0：Client 启动 agent 子进程时应按文档约定注入 PI_* 环境变量（见 Project Interface 文档 Agent 子进程环境变量 / Agent subprocess environment variables 章节）",
     "type": "object",
     "definitions": {
         "i18nString": {
@@ -814,7 +814,7 @@
         "agentConfig": {
             "type": "object",
             "title": "代理配置",
-            "description": "包含子进程（AgentServer）的信息",
+            "description": "包含子进程（AgentServer）的信息。💡 v2.5.0：Client 启动该子进程时应向环境注入 PI_INTERFACE_VERSION、PI_CLIENT_*、PI_VERSION、PI_CONTROLLER、PI_RESOURCE 等变量，详见 Project Interface 文档",
             "properties": {
                 "child_exec": {
                     "type": "string",
@@ -845,7 +845,7 @@
         "interface_version": {
             "type": "number",
             "title": "接口版本号",
-            "description": "当前为 2，固定且必须设置。用于标识 ProjectInterface 协议版本",
+            "description": "当前为 2，固定且必须设置。标识 interface.json 的 JSON 结构主版本；与 PI 文档独立演进的语义化版本（如 v2.5.0 的 PI_* 环境变量约定）不同，二者不必对应",
             "const": 2
         },
         "languages": {
@@ -948,6 +948,7 @@
             }
         },
         "agent": {
+            "description": "💡 v2.5.0：启动各子进程时 Client 应注入 PI_* 环境变量，详见 Project Interface 文档",
             "oneOf": [
                 {
                     "$ref": "#/definitions/agentConfig"
@@ -955,7 +956,7 @@
                 {
                     "type": "array",
                     "title": "代理配置数组",
-                    "description": "多个子进程（AgentServer）的配置",
+                    "description": "多个子进程（AgentServer）的配置。💡 v2.5.0：每个子进程启动时均应获得 PI_* 环境变量",
                     "items": {
                         "$ref": "#/definitions/agentConfig"
                     }

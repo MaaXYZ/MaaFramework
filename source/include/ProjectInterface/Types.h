@@ -83,6 +83,9 @@ struct InterfaceData
         // 附加资源路径，在 resource.path 加载完成后额外加载
         std::vector<std::string> attach_resource_path;
 
+        // v2.3.0: 控制器级选项
+        std::vector<std::string> option;
+
         Win32Config win32;
         MacOSConfig macos;
         PlayCoverConfig playcover;
@@ -98,6 +101,7 @@ struct InterfaceData
             MEO_OPT display_long_side,
             MEO_OPT display_raw,
             MEO_OPT attach_resource_path,
+            MEO_OPT option,
             MEO_OPT win32,
             MEO_OPT macos,
             MEO_OPT playcover,
@@ -111,8 +115,9 @@ struct InterfaceData
         std::string description;
         std::vector<std::string> path;
         std::vector<std::string> controller; // 支持的控制器列表
+        std::vector<std::string> option;     // v2.3.0: 资源级选项
 
-        MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, path, MEO_OPT controller);
+        MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, path, MEO_OPT controller, MEO_OPT option);
     };
 
     struct Task
@@ -126,6 +131,7 @@ struct InterfaceData
         std::vector<std::string> option;
         std::vector<std::string> resource;   // 支持的资源包列表
         std::vector<std::string> controller; // 支持的控制器列表
+        std::vector<std::string> group;      // v2.4.0: 所属任务组
 
         MEO_JSONIZATION(
             name,
@@ -136,7 +142,8 @@ struct InterfaceData
             MEO_OPT pipeline_override,
             MEO_OPT option,
             MEO_OPT resource,
-            MEO_OPT controller);
+            MEO_OPT controller,
+            MEO_OPT group);
     };
 
     struct Option
@@ -146,6 +153,7 @@ struct InterfaceData
             Select,
             Input,
             Switch,
+            Checkbox,
         };
 
         struct Case
@@ -189,15 +197,19 @@ struct InterfaceData
         Type type = Type::Select;
         std::string label;
         std::string description;
+        std::vector<std::string> controller; // v2.3.0: applicable controllers
+        std::vector<std::string> resource;   // v2.3.0: applicable resources
         std::vector<Case> cases;
         std::vector<Input> inputs;
-        json::object pipeline_override; // for input type
-        std::string default_case;       // case.name
+        json::object pipeline_override;                                   // for input type
+        std::variant<std::string, std::vector<std::string>> default_case; // string for select/switch, array for checkbox
 
         MEO_JSONIZATION(
             MEO_OPT type,
             MEO_OPT label,
             MEO_OPT description,
+            MEO_OPT controller,
+            MEO_OPT resource,
             MEO_OPT cases,
             MEO_OPT inputs,
             MEO_OPT pipeline_override,
@@ -211,6 +223,37 @@ struct InterfaceData
         std::string identifier;
 
         MEO_JSONIZATION(child_exec, MEO_OPT child_args, MEO_OPT identifier);
+    };
+
+    struct Group
+    {
+        std::string name;
+        std::string label;
+        std::string description;
+        std::string icon;
+        bool default_expand = true;
+
+        MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, MEO_OPT icon, MEO_OPT default_expand);
+    };
+
+    struct Preset
+    {
+        struct PresetTask
+        {
+            std::string name;
+            bool enabled = true;
+            json::object option;
+
+            MEO_JSONIZATION(name, MEO_OPT enabled, MEO_OPT option);
+        };
+
+        std::string name;
+        std::string label;
+        std::string description;
+        std::string icon;
+        std::vector<PresetTask> task;
+
+        MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, MEO_OPT icon, task);
     };
 
     int interface_version = 2;
@@ -231,6 +274,9 @@ struct InterfaceData
     std::unordered_map<std::string, Option> option;
     std::variant<Agent, std::vector<Agent>> agent;
 
+    std::vector<std::string> global_option; // v2.3.0
+    std::vector<Group> group;               // v2.4.0
+    std::vector<Preset> preset;             // v2.3.0
     std::vector<std::string> import_;
 
     MEO_JSONIZATION(
@@ -250,6 +296,9 @@ struct InterfaceData
         task,
         MEO_OPT option,
         MEO_OPT agent,
+        MEO_OPT global_option,
+        MEO_OPT group,
+        MEO_OPT preset,
         MEO_OPT MEO_KEY("import") import_);
 };
 
@@ -257,8 +306,9 @@ struct ImportData
 {
     std::vector<InterfaceData::Task> task;
     std::unordered_map<std::string, InterfaceData::Option> option;
+    std::vector<InterfaceData::Preset> preset;
 
-    MEO_JSONIZATION(MEO_OPT task, MEO_OPT option);
+    MEO_JSONIZATION(MEO_OPT task, MEO_OPT option, MEO_OPT preset);
 };
 
 struct Configuration
@@ -332,9 +382,10 @@ struct Configuration
     {
         std::string name;
         std::string value;                                   // for select/switch
+        std::vector<std::string> values;                     // for checkbox
         std::unordered_map<std::string, std::string> inputs; // for input type
 
-        MEO_JSONIZATION(name, MEO_OPT value, MEO_OPT inputs);
+        MEO_JSONIZATION(name, MEO_OPT value, MEO_OPT values, MEO_OPT inputs);
     };
 
     struct Task
@@ -355,6 +406,10 @@ struct Configuration
     std::string resource;
     std::vector<Task> task;
 
+    std::vector<Option> global_option;     // v2.3.0
+    std::vector<Option> resource_option;   // v2.3.0
+    std::vector<Option> controller_option; // v2.3.0
+
     MEO_JSONIZATION(
         controller,
         MEO_OPT adb,
@@ -364,7 +419,10 @@ struct Configuration
         MEO_OPT gamepad,
         MEO_OPT wlroots,
         resource,
-        task);
+        task,
+        MEO_OPT global_option,
+        MEO_OPT resource_option,
+        MEO_OPT controller_option);
 };
 
 struct RuntimeParam
@@ -434,6 +492,7 @@ struct RuntimeParam
         std::vector<std::string> child_args;
         std::string identifier;
         std::filesystem::path cwd;
+        std::unordered_map<std::string, std::string> env_vars; // v2.5.0: PI_* env vars
     };
 
     std::variant<std::monostate, AdbParam, Win32Param, MacOSParam, PlayCoverParam, GamepadParam, WlRootsParam> controller_param;

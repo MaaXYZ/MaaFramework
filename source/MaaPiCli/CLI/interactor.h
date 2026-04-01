@@ -37,6 +37,12 @@ private:
     void edit_task();
     void delete_task();
     void move_task();
+    void apply_preset();
+
+    void process_level_options(
+        const std::vector<std::string>& option_names,
+        std::vector<MAA_PROJECT_INTERFACE_NS::Configuration::Option>& config_options,
+        const std::string& level_label);
 
     // Process option and its nested sub-options recursively
     // Returns false if option processing failed (e.g., option not found, invalid configuration)

@@ -15,6 +15,8 @@ from .library import Library
 __all__ = [
     "AdbController",
     "DbgController",
+    "ReplayController",
+    "RecordController",
     "PlayCoverController",
     "Win32Controller",
     "GamepadController",
@@ -966,22 +968,17 @@ class WlRootsController(Controller):
 
 
 class DbgController(Controller):
-    """调试控制器 / Debug controller"""
+    """调试控制器，轮播图片截图，基本输入操作直接返回成功 / Debug controller that cycles through images from a directory"""
 
     def __init__(
         self,
         read_path: Union[str, Path],
-        write_path: Union[str, Path],
-        dbg_type: int,
-        config: Dict[str, Any] = {},
     ):
         """创建调试控制器 / Create debug controller
 
         Args:
-            read_path: 输入路径, 包含通过 Recording 选项记录的操作 / Input path, includes operations recorded via Recording option
-            write_path: 输出路径, 包含执行结果 / Output path, includes execution results
-            dbg_type: 控制器模式 / Controller mode
-            config: 额外配置 / Extra config
+            read_path: 图片目录（或单个图片文件）路径。连接时加载所有图片，截图时轮播。
+                        / Path to a directory of images (or a single image file). Images are loaded on connect and cycled on screencap.
 
         Raises:
             RuntimeError: 如果创建失败
@@ -991,20 +988,85 @@ class DbgController(Controller):
 
         self._handle = Library.framework().MaaDbgControllerCreate(
             str(read_path).encode(),
-            str(write_path).encode(),
-            MaaDbgControllerType(dbg_type),
-            json.dumps(config, ensure_ascii=False).encode(),
         )
 
         if not self._handle:
-            raise RuntimeError("Failed to create DBG controller.")
+            raise RuntimeError("Failed to create dbg controller.")
 
     def _set_dbg_api_properties(self):
         Library.framework().MaaDbgControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaDbgControllerCreate.argtypes = [
             ctypes.c_char_p,
+        ]
+
+
+class ReplayController(Controller):
+    """回放控制器，用于回放录制文件 / Replay controller for replaying recorded operations"""
+
+    def __init__(
+        self,
+        recording_path: Union[str, Path],
+    ):
+        """创建回放控制器 / Create replay controller
+
+        Args:
+            recording_path: 录制 JSONL 文件路径，由 RecordController 写入。截图路径基于该文件所在目录解析。
+                            / Path to the recording JSONL file written by RecordController. Screenshot paths are resolved relative to this file's parent directory.
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._set_replay_api_properties()
+
+        self._handle = Library.framework().MaaReplayControllerCreate(
+            str(recording_path).encode(),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create replay controller.")
+
+    def _set_replay_api_properties(self):
+        Library.framework().MaaReplayControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaReplayControllerCreate.argtypes = [
             ctypes.c_char_p,
-            MaaDbgControllerType,
+        ]
+
+
+class RecordController(Controller):
+    """录制控制器，包装现有控制器并记录所有操作 / Record controller that wraps an existing controller and records all operations"""
+
+    def __init__(
+        self,
+        inner: Controller,
+        recording_path: Union[str, Path],
+    ):
+        """创建录制控制器 / Create record controller
+
+        Args:
+            inner: 被包装的内部控制器 / The inner controller to wrap
+            recording_path: 录制 JSONL 文件输出路径。截图会保存到同目录下的 "{stem}-Screenshot" 文件夹。
+                            / Path to the recording JSONL file to write. Screenshots are saved to a "{stem}-Screenshot" folder in the same directory.
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._inner = inner
+        self._set_record_api_properties()
+
+        self._handle = Library.framework().MaaRecordControllerCreate(
+            inner._handle,
+            str(recording_path).encode(),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create record controller.")
+
+    def _set_record_api_properties(self):
+        Library.framework().MaaRecordControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaRecordControllerCreate.argtypes = [
+            MaaControllerHandle,
             ctypes.c_char_p,
         ]
 
@@ -1090,6 +1152,8 @@ class CustomController(Controller):
             CustomController._c_key_down_agent,
             CustomController._c_key_up_agent,
             CustomController._c_scroll_agent,
+            CustomController._c_relative_move_agent,
+            CustomController._c_shell_agent,
             CustomController._c_inactive_agent,
             CustomController._c_get_info_agent,
         )
@@ -1188,9 +1252,14 @@ class CustomController(Controller):
     def key_up(self, keycode: int) -> bool:
         raise NotImplementedError
 
-    @abstractmethod
     def scroll(self, dx: int, dy: int) -> bool:
-        raise NotImplementedError
+        return False
+
+    def relative_move(self, dx: int, dy: int) -> bool:
+        return False
+
+    def shell(self, cmd: str, timeout: int) -> Optional[str]:
+        return None
 
     def inactive(self) -> bool:
         """设置控制器为不活跃状态（可选实现，默认返回 True）"""
@@ -1495,6 +1564,47 @@ class CustomController(Controller):
         ).value
 
         return int(self.scroll(int(c_dx), int(c_dy)))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.RelativeMoveFunc
+    def _c_relative_move_agent(
+        c_dx: ctypes.c_int32,
+        c_dy: ctypes.c_int32,
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.relative_move(int(c_dx), int(c_dy)))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.ShellFunc
+    def _c_shell_agent(
+        c_cmd: ctypes.c_char_p,
+        c_timeout: ctypes.c_int64,
+        trans_arg: ctypes.c_void_p,
+        c_buffer: MaaStringBufferHandle,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        result = self.shell(c_cmd.decode(), int(c_timeout))
+        if result is None:
+            return int(False)
+
+        output_buffer = StringBuffer(c_buffer)
+        output_buffer.set(result)
+        return int(True)
 
     @staticmethod
     @MaaCustomControllerCallbacks.InactiveFunc
