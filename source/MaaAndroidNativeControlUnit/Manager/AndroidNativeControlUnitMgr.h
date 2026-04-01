@@ -55,9 +55,6 @@ public:
 
     json::object get_info() const override;
 
-    void* attach_thread() const override;
-    int detach_thread(void* env) const override;
-
 private:
     static bool validate_contact(int contact);
     bool dispatch_input_message(AndroidNativeNS::MethodParam param) const;

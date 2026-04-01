@@ -90,9 +90,6 @@ class AndroidNativeControlUnitAPI : public ControlUnitAPI
 {
 public:
     ~AndroidNativeControlUnitAPI() override = default;
-
-    virtual void* attach_thread() const = 0;
-    virtual int detach_thread(void* env) const = 0;
 };
 
 class Win32ControlUnitAPI
