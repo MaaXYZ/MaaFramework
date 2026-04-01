@@ -96,9 +96,15 @@ bool GlobalEventInput::touch_up(int contact)
     }
 
     // 获取当前鼠标位置作为释放位置
+    CGPoint pos = {};
     CGEventRef cur = CGEventCreate(nullptr);
-    CGPoint pos = CGEventGetLocation(cur);
-    CFRelease(cur);
+    if (cur != nullptr) {
+        pos = CGEventGetLocation(cur);
+        CFRelease(cur);
+    }
+    else {
+        LogWarn << "Failed to create CGEvent for current cursor position";
+    }
 
     bool result = post_mouse_event(info.event_type, pos, info.mouse_button);
     if (!result) {
