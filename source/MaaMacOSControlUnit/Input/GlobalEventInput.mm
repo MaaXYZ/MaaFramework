@@ -96,18 +96,18 @@ bool GlobalEventInput::touch_up(int contact)
     CGPoint pos = CGEventGetLocation(cur);
     CFRelease(cur);
 
-    if (!post_mouse_event(info.event_type, pos, info.mouse_button)) {
+    bool result = post_mouse_event(info.event_type, pos, info.mouse_button);
+    if (!result) {
         LogError << "Failed to post mouse up event";
-        return false;
     }
 
-    // 恢复鼠标到 touch_down 之前的位置
+    // 无论 post_mouse_event 是否成功，均恢复鼠标到 touch_down 之前的位置
     if (!std::isnan(saved_cursor_pos_.x)) {
         CGDisplayMoveCursorToPoint(CGMainDisplayID(), saved_cursor_pos_);
         saved_cursor_pos_ = { NAN, NAN };
     }
 
-    return true;
+    return result;
 }
 
 // get_features() 返回 MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick，
