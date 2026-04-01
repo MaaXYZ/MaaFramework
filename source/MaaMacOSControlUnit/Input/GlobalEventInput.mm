@@ -103,7 +103,7 @@ bool GlobalEventInput::touch_up(int contact)
 
     // 无论 post_mouse_event 是否成功，均恢复鼠标到 touch_down 之前的位置
     if (!std::isnan(saved_cursor_pos_.x)) {
-        CGDisplayMoveCursorToPoint(CGMainDisplayID(), saved_cursor_pos_);
+        CGWarpMouseCursorPosition(saved_cursor_pos_);
         saved_cursor_pos_ = { NAN, NAN };
     }
 
