@@ -51,7 +51,7 @@ private:
     pid_t pid_ = -1;
     int offset_x_ = 0;
     int offset_y_ = 0;
-    CGPoint saved_cursor_pos_ = {};
+    CGPoint saved_cursor_pos_ = { NAN, NAN };
 };
 
 MAA_CTRL_UNIT_NS_END

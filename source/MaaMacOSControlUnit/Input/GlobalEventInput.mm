@@ -102,7 +102,10 @@ bool GlobalEventInput::touch_up(int contact)
     }
 
     // 恢复鼠标到 touch_down 之前的位置
-    CGDisplayMoveCursorToPoint(CGMainDisplayID(), saved_cursor_pos_);
+    if (!std::isnan(saved_cursor_pos_.x)) {
+        CGDisplayMoveCursorToPoint(CGMainDisplayID(), saved_cursor_pos_);
+        saved_cursor_pos_ = { NAN, NAN };
+    }
 
     return true;
 }
