@@ -43,8 +43,12 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
 
     // 记录当前鼠标位置，touch_up 后恢复
     CGEventRef cur = CGEventCreate(nullptr);
-    saved_cursor_pos_ = CGEventGetLocation(cur);
-    CFRelease(cur);
+    if (cur != nullptr) {
+        saved_cursor_pos_ = CGEventGetLocation(cur);
+        CFRelease(cur);
+    } else {
+        LogWarn << "Failed to create CGEvent for current cursor position, saved_cursor_pos_ not updated";
+    }
 
     MouseEventInfo info;
     if (!contact_to_mouse_down_info(contact, info)) {
