@@ -37,7 +37,18 @@ bool GlobalEventInput::swipe(int x1, int y1, int x2, int y2, int duration)
 
 bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
 {
-    (void)pressure;
+    std::ignore = pressure;
+
+    update_window_info();
+
+    // 记录当前鼠标位置，touch_up 后恢复
+    CGEventRef cur = CGEventCreate(nullptr);
+    if (cur != nullptr) {
+        saved_cursor_pos_ = CGEventGetLocation(cur);
+        CFRelease(cur);
+    } else {
+        LogWarn << "Failed to create CGEvent for current cursor position, saved_cursor_pos_ not updated";
+    }
 
     MouseEventInfo info;
     if (!contact_to_mouse_down_info(contact, info)) {
@@ -60,7 +71,7 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
 
 bool GlobalEventInput::touch_move(int contact, int x, int y, int pressure)
 {
-    (void)pressure;
+    std::ignore = pressure;
 
     MouseEventInfo info;
     if (!contact_to_mouse_move_info(contact, info)) {
@@ -85,16 +96,28 @@ bool GlobalEventInput::touch_up(int contact)
     }
 
     // 获取当前鼠标位置作为释放位置
-    CGEventRef current_event = CGEventCreate(nullptr);
-    CGPoint location = CGEventGetLocation(current_event);
-    CFRelease(current_event);
-
-    if (!post_mouse_event(info.event_type, location, info.mouse_button)) {
-        LogError << "Failed to post mouse up event";
-        return false;
+    CGPoint pos = {};
+    CGEventRef cur = CGEventCreate(nullptr);
+    if (cur != nullptr) {
+        pos = CGEventGetLocation(cur);
+        CFRelease(cur);
+    }
+    else {
+        LogWarn << "Failed to create CGEvent for current cursor position";
     }
 
-    return true;
+    bool result = post_mouse_event(info.event_type, pos, info.mouse_button);
+    if (!result) {
+        LogError << "Failed to post mouse up event";
+    }
+
+    // 无论 post_mouse_event 是否成功，均恢复鼠标到 touch_down 之前的位置
+    if (!std::isnan(saved_cursor_pos_.x)) {
+        CGWarpMouseCursorPosition(saved_cursor_pos_);
+        saved_cursor_pos_ = { NAN, NAN };
+    }
+
+    return result;
 }
 
 // get_features() 返回 MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick，

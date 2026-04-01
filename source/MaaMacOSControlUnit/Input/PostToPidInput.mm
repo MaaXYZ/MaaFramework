@@ -37,7 +37,7 @@ bool PostToPidInput::swipe(int x1, int y1, int x2, int y2, int duration)
 
 bool PostToPidInput::touch_down(int contact, int x, int y, int pressure)
 {
-    (void)pressure;
+    std::ignore = pressure;
 
     MouseEventInfo info;
     if (!contact_to_mouse_down_info(contact, info)) {
@@ -58,7 +58,7 @@ bool PostToPidInput::touch_down(int contact, int x, int y, int pressure)
 
 bool PostToPidInput::touch_move(int contact, int x, int y, int pressure)
 {
-    (void)pressure;
+    std::ignore = pressure;
 
     MouseEventInfo info;
     if (!contact_to_mouse_move_info(contact, info)) {
