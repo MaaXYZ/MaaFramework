@@ -122,6 +122,7 @@ extern "C"
 
     /**
      * @param[out] node_name
+     * @param[out] phase
      * @param[out] success
      * @param[out] elapsed_ms
      * @param[out] reco_id_list
@@ -132,6 +133,7 @@ extern "C"
         const MaaTasker* tasker,
         MaaWfId wf_id,
         /* out */ MaaStringBuffer* node_name,
+        /* out */ MaaStringBuffer* phase,
         /* out */ MaaBool* success,
         /* out */ MaaSize* elapsed_ms,
         /* out */ MaaRecoId* reco_id_list /**< array */,

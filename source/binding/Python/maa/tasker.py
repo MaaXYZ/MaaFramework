@@ -492,6 +492,7 @@ class Tasker:
         name = StringBuffer()
         c_success = MaaBool()
         c_elapsed_ms = MaaSize()
+        phase = StringBuffer()
         roi = RectBuffer()
 
         size = MaaSize()
@@ -500,6 +501,7 @@ class Tasker:
                 self._handle,
                 MaaWfId(wf_id),
                 name._handle,
+                phase._handle,
                 ctypes.pointer(c_success),
                 ctypes.pointer(c_elapsed_ms),
                 None,
@@ -518,6 +520,7 @@ class Tasker:
                 None,
                 None,
                 None,
+                None,
                 reco_id_list,
                 ctypes.pointer(size),
                 None,
@@ -529,6 +532,7 @@ class Tasker:
         return WaitFreezesDetail(
             wf_id=wf_id,
             name=name.get(),
+            phase=phase.get(),
             success=bool(c_success),
             elapsed_ms=int(c_elapsed_ms.value),
             reco_id_list=[int(reco_id_list[i]) for i in range(int(size.value))],
@@ -983,6 +987,7 @@ class Tasker:
         Library.framework().MaaTaskerGetWaitFreezesDetail.argtypes = [
             MaaTaskerHandle,
             MaaWfId,
+            MaaStringBufferHandle,
             MaaStringBufferHandle,
             ctypes.POINTER(MaaBool),
             ctypes.POINTER(MaaSize),

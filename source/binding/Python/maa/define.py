@@ -1064,6 +1064,7 @@ class ActionDetail:
 class WaitFreezesDetail:
     wf_id: int
     name: str
+    phase: str
     success: bool
     elapsed_ms: int
     reco_id_list: List[int]

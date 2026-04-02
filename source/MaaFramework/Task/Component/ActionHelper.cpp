@@ -61,25 +61,7 @@ bool ActionHelper::wait_freezes(
     };
     notify(MaaMsg_Node_WaitFreezes_Starting, cb_detail);
 
-    auto rate_limit = std::min(param.rate_limit, param.time);
-
-    auto screencap_clock = std::chrono::steady_clock::now();
-    cv::Mat pre_image = controller()->screencap();
-
-    auto corrected_roi = correct_roi(roi, pre_image);
-    if (!corrected_roi) {
-        LogError << "corrected roi is empty" << VAR(roi);
-        return false;
-    }
-
-    TemplateComparatorParam comp_param {
-        .threshold = param.threshold,
-        .method = param.method,
-    };
-
     const auto start_clock = std::chrono::steady_clock::now();
-    auto pre_image_clock = start_clock;
-
     std::vector<MaaRecoId> reco_ids;
 
     auto finish = [&](bool success) {
@@ -105,6 +87,24 @@ bool ActionHelper::wait_freezes(
 
         return success;
     };
+
+    auto rate_limit = std::min(param.rate_limit, param.time);
+
+    auto screencap_clock = std::chrono::steady_clock::now();
+    cv::Mat pre_image = controller()->screencap();
+
+    auto corrected_roi = correct_roi(roi, pre_image);
+    if (!corrected_roi) {
+        LogError << "corrected roi is empty" << VAR(roi);
+        return finish(false);
+    }
+
+    TemplateComparatorParam comp_param {
+        .threshold = param.threshold,
+        .method = param.method,
+    };
+
+    auto pre_image_clock = start_clock;
 
     while (true) {
         LogDebug << "sleep_until" << VAR(rate_limit);

@@ -452,6 +452,7 @@ MaaBool MaaTaskerGetWaitFreezesDetail(
     const MaaTasker* tasker,
     MaaWfId wf_id,
     MaaStringBuffer* node_name,
+    MaaStringBuffer* phase,
     MaaBool* success,
     MaaSize* elapsed_ms,
     MaaRecoId* reco_id_list,
@@ -474,6 +475,10 @@ MaaBool MaaTaskerGetWaitFreezesDetail(
     CheckNullAndWarn(node_name)
     {
         node_name->set(result.name);
+    }
+    CheckNullAndWarn(phase)
+    {
+        phase->set(result.phase);
     }
     CheckNullAndWarn(success)
     {

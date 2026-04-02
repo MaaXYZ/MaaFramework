@@ -188,8 +188,8 @@
  *         rate_limit: number,
  *         timeout: number,
  *     },
- *     reco_ids: number[],
- *     elapsed: number,
+ *     reco_ids?: number[],  // Succeeded / Failed only
+ *     elapsed?: number,     // Succeeded / Failed only
  *     focus: any,
  * }
  */
