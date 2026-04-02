@@ -215,6 +215,13 @@ maajs::ValueType ControllerImpl::post_relative_move(maajs::ValueType self, maajs
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+void ControllerImpl::set_mouse_lock_follow(bool enabled)
+{
+    if (!MaaControllerSetOption(controller, MaaCtrlOption_MouseLockFollow, &enabled, sizeof(enabled))) {
+        throw maajs::MaaError { "Controller set mouse_lock_follow failed" };
+    }
+}
+
 maajs::ValueType ControllerImpl::post_key_down(maajs::ValueType self, maajs::EnvType, int32_t keycode)
 {
     auto id = MaaControllerPostKeyDown(controller, keycode);
@@ -360,6 +367,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_touch_move", ControllerImpl::post_touch_move);
     MAA_BIND_FUNC(proto, "post_touch_up", ControllerImpl::post_touch_up);
     MAA_BIND_FUNC(proto, "post_relative_move", ControllerImpl::post_relative_move);
+    MAA_BIND_SETTER(proto, "mouse_lock_follow", ControllerImpl::set_mouse_lock_follow);
     MAA_BIND_FUNC(proto, "post_key_down", ControllerImpl::post_key_down);
     MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
     MAA_BIND_FUNC(proto, "post_scroll", ControllerImpl::post_scroll);

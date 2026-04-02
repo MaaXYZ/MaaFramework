@@ -393,6 +393,22 @@ bool Win32ControlUnitMgr::scroll(int dx, int dy)
     return mouse_->scroll(dx, dy);
 }
 
+bool Win32ControlUnitMgr::set_mouse_lock_follow(bool enabled)
+{
+    if (!mouse_) {
+        LogError << "mouse_ is null";
+        return false;
+    }
+
+    auto message_input = std::dynamic_pointer_cast<MessageInput>(mouse_);
+    if (!message_input) {
+        LogError << "Mouse lock follow is only supported by MessageInput-based input methods";
+        return false;
+    }
+
+    return message_input->set_mouse_lock_follow(enabled);
+}
+
 bool Win32ControlUnitMgr::inactive()
 {
     LogFunc;

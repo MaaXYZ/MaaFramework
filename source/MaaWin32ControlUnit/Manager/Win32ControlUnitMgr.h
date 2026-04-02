@@ -52,6 +52,8 @@ public: // from ControlUnitAPI
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual bool set_mouse_lock_follow(bool enabled) override;
+
     virtual bool inactive() override;
 
     virtual json::object get_info() const override;

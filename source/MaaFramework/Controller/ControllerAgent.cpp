@@ -41,6 +41,8 @@ bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOpt
         return set_image_target_short_side(value, val_size);
     case MaaCtrlOption_ScreenshotUseRawSize:
         return set_image_use_raw_size(value, val_size);
+    case MaaCtrlOption_MouseLockFollow:
+        return set_mouse_lock_follow_option(value, val_size);
 
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
@@ -1199,6 +1201,30 @@ bool ControllerAgent::set_image_use_raw_size(MaaOptionValue value, MaaOptionValu
     clear_target_image_size();
 
     return true;
+}
+
+bool ControllerAgent::set_mouse_lock_follow_option(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogDebug;
+
+    if (val_size != sizeof(bool)) {
+        LogError << "invalid value size: " << val_size;
+        return false;
+    }
+
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    auto win32_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_);
+    if (!win32_unit) {
+        LogError << "Mouse lock follow is only supported for Win32 controllers.";
+        return false;
+    }
+
+    bool enabled = *reinterpret_cast<bool*>(value);
+    return win32_unit->set_mouse_lock_follow(enabled);
 }
 
 MAA_CTRL_NS_END

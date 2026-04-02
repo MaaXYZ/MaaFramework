@@ -125,6 +125,12 @@ class MaaCtrlOptionEnum(IntEnum):
     # value: bool, eg: true; val_size: sizeof(bool)
     ScreenshotUseRawSize = 3
 
+    # Enable or disable mouse-lock-follow mode for Win32 controllers.
+    # This is designed for TPS/FPS games that lock the mouse to their window in the background.
+    # Only valid for Win32 controllers using message-based input methods.
+    # value: bool, eg: true; val_size: sizeof(bool)
+    MouseLockFollow = 4
+
     # Deprecated
     # Dump all screenshots and actions
     # this option will || with MaaGlobalOptionEnum.Recording
