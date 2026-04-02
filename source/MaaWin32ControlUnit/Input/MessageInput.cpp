@@ -9,6 +9,7 @@
 
 #include "InputUtils.h"
 
+#include <algorithm>
 #include <mmsystem.h>
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -30,7 +31,7 @@ struct ShcoreDllHolder : public LibraryHolder<ShcoreDllHolder>
 
 void ensure_process_dpi_awareness_once()
 {
-    static const int _ = []() {
+    [[maybe_unused]] static const int dpi_init_once = []() {
         User32DllHolder::load_library(L"user32.dll");
 
         using FnCtx = BOOL WINAPI(DPI_AWARENESS_CONTEXT);
@@ -71,6 +72,8 @@ MessageInput::~MessageInput()
     if (mouse_lock_follow_active_) {
         deactivate_mouse_lock_follow();
     }
+    MessageInput* expected = this;
+    s_active_instance_.compare_exchange_strong(expected, nullptr);
     restore_pos();
     unblock_input();
     tracking_exit_ = true;
@@ -938,7 +941,7 @@ bool MessageInput::relative_move(int dx, int dy)
 
 bool MessageInput::set_mouse_lock_follow(bool enabled)
 {
-    LogInfo << VAR(enabled) << VAR(mouse_lock_follow_active_);
+    LogInfo << VAR(enabled) << VAR(mouse_lock_follow_active_.load());
 
     if (enabled && !mouse_lock_follow_active_) {
         return activate_mouse_lock_follow();
