@@ -41,8 +41,11 @@ bool ActionHelper::wait_freezes(
     LogTrace << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.timeout) << VAR(param.threshold)
              << VAR(param.method);
 
+    const MaaWfId wf_id = generate_wf_id();
+
     json::value cb_detail {
         { "task_id", context_ ? context_->task_id() : MaaInvalidId },
+        { "wf_id", wf_id },
         { "name", noti_ctx.name },
         { "phase", noti_ctx.phase },
         { "roi", roi },
@@ -80,9 +83,26 @@ bool ActionHelper::wait_freezes(
     std::vector<MaaRecoId> reco_ids;
 
     auto finish = [&](bool success) {
+        auto elapsed_ms = duration_since(start_clock).count();
+
         cb_detail["reco_ids"] = json::array(reco_ids);
-        cb_detail["elapsed"] = duration_since(start_clock).count();
+        cb_detail["elapsed"] = elapsed_ms;
         notify(success ? MaaMsg_Node_WaitFreezes_Succeeded : MaaMsg_Node_WaitFreezes_Failed, cb_detail);
+
+        if (auto* t = tasker()) {
+            t->runtime_cache().set_wf_detail(
+                wf_id,
+                WaitFreezesDetail {
+                    .wf_id = wf_id,
+                    .name = noti_ctx.name,
+                    .phase = noti_ctx.phase,
+                    .success = success,
+                    .elapsed_ms = elapsed_ms,
+                    .reco_ids = reco_ids,
+                    .roi = roi,
+                });
+        }
+
         return success;
     };
 

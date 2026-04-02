@@ -122,6 +122,34 @@ void RuntimeCache::set_action_detail(MaaActId uid, MAA_TASK_NS::ActionResult det
     action_details_.insert_or_assign(uid, std::move(detail));
 }
 
+std::optional<MAA_TASK_NS::WaitFreezesDetail> RuntimeCache::get_wf_detail(MaaWfId uid) const
+{
+    if (uid == MaaInvalidId) {
+        LogWarn << "uid is invalid";
+        return std::nullopt;
+    }
+
+    std::shared_lock lock(wf_details_mutex_);
+
+    auto it = wf_details_.find(uid);
+    if (it == wf_details_.end()) {
+        return std::nullopt;
+    }
+    return it->second;
+}
+
+void RuntimeCache::set_wf_detail(MaaWfId uid, MAA_TASK_NS::WaitFreezesDetail detail)
+{
+    if (uid == MaaInvalidId) {
+        LogError << "uid is invalid";
+        return;
+    }
+
+    std::unique_lock lock(wf_details_mutex_);
+
+    wf_details_.insert_or_assign(uid, std::move(detail));
+}
+
 std::optional<MAA_TASK_NS::NodeDetail> RuntimeCache::get_node_detail(MaaNodeId uid) const
 {
     if (uid == MaaInvalidId) {
@@ -195,6 +223,10 @@ void RuntimeCache::clear()
     {
         std::unique_lock lock(action_details_mutex_);
         action_details_.clear();
+    }
+    {
+        std::unique_lock lock(wf_details_mutex_);
+        wf_details_.clear();
     }
     {
         std::unique_lock lock(node_details_mutex_);

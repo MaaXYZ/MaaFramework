@@ -615,6 +615,7 @@ class ContextEventSink(EventSink):
     @dataclass
     class NodeWaitFreezesDetail:
         task_id: int
+        wf_id: int
         name: str
         phase: str
         roi: Tuple[int, int, int, int]
@@ -731,6 +732,7 @@ class ContextEventSink(EventSink):
         if msg.startswith("Node.WaitFreezes"):
             detail = self.NodeWaitFreezesDetail(
                 task_id=details["task_id"],
+                wf_id=details["wf_id"],
                 name=details["name"],
                 phase=details["phase"],
                 roi=tuple(details["roi"]),

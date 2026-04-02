@@ -776,6 +776,30 @@ struct TaskerGetActionResultReverseResponse
     MEO_JSONIZATION(has_value, action_id, name, action, box, success, detail, _TaskerGetActionResultReverseResponse);
 };
 
+struct TaskerGetWfDetailReverseRequest
+{
+    std::string tasker_id;
+    int64_t wf_id = 0;
+
+    MessageTypePlaceholder _TaskerGetWfDetailReverseRequest = 1;
+    MEO_JSONIZATION(tasker_id, wf_id, _TaskerGetWfDetailReverseRequest);
+};
+
+struct TaskerGetWfDetailReverseResponse
+{
+    bool has_value = false;
+    int64_t wf_id = 0;
+    std::string name;
+    std::string phase;
+    bool success = false;
+    int64_t elapsed_ms = 0;
+    std::vector<int64_t> reco_ids;
+    std::array<int32_t, 4> roi {};
+
+    MessageTypePlaceholder _TaskerGetWfDetailReverseResponse = 1;
+    MEO_JSONIZATION(has_value, wf_id, name, phase, success, elapsed_ms, reco_ids, roi, _TaskerGetWfDetailReverseResponse);
+};
+
 struct TaskerGetLatestNodeReverseRequest
 {
     std::string tasker_id;

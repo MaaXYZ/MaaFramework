@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <string_view>
 
 #include <meojson/json.hpp>
@@ -24,6 +25,8 @@ public:
     };
 
 public:
+    static MaaWfId generate_wf_id() { return ++s_global_wf_id; }
+
     explicit ActionHelper(Context* context);
 
     bool wait_freezes(
@@ -40,6 +43,8 @@ private:
     MAA_CTRL_NS::ControllerAgent* controller();
 
 private:
+    inline static std::atomic<MaaWfId> s_global_wf_id = kWfIdBase;
+
     Context* context_ = nullptr;
 };
 

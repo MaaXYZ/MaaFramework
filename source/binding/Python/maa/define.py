@@ -18,6 +18,7 @@ MaaTaskId = MaaId
 MaaRecoId = MaaId
 MaaActId = MaaId
 MaaNodeId = MaaId
+MaaWfId = MaaId
 MaaSinkId = MaaId
 MaaInvalidId = MaaId(0)
 
@@ -1057,6 +1058,16 @@ class ActionDetail:
     success: bool
     result: Optional[ActionResult]
     raw_detail: Dict
+
+
+@dataclass
+class WaitFreezesDetail:
+    wf_id: int
+    name: str
+    success: bool
+    elapsed_ms: int
+    reco_id_list: List[int]
+    roi: Rect
 
 
 @dataclass

@@ -327,6 +327,34 @@ std::optional<MAA_TASK_NS::ActionResult> RemoteTasker::get_action_result(MaaActI
     return result;
 }
 
+std::optional<MAA_TASK_NS::WaitFreezesDetail> RemoteTasker::get_wf_detail(MaaWfId wf_id) const
+{
+    TaskerGetWfDetailReverseRequest req {
+        .tasker_id = tasker_id_,
+        .wf_id = wf_id,
+    };
+
+    auto resp_opt = server_.send_and_recv<TaskerGetWfDetailReverseResponse>(req);
+    if (!resp_opt) {
+        return std::nullopt;
+    }
+
+    if (!resp_opt->has_value) {
+        return std::nullopt;
+    }
+
+    MAA_TASK_NS::WaitFreezesDetail result;
+    result.wf_id = resp_opt->wf_id;
+    result.name = std::move(resp_opt->name);
+    result.phase = std::move(resp_opt->phase);
+    result.success = resp_opt->success;
+    result.elapsed_ms = resp_opt->elapsed_ms;
+    result.reco_ids.assign(resp_opt->reco_ids.begin(), resp_opt->reco_ids.end());
+    result.roi = cv::Rect(resp_opt->roi[0], resp_opt->roi[1], resp_opt->roi[2], resp_opt->roi[3]);
+
+    return result;
+}
+
 std::optional<MaaNodeId> RemoteTasker::get_latest_node(const std::string& node_name) const
 {
     TaskerGetLatestNodeReverseRequest req {

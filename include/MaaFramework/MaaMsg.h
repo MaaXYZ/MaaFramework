@@ -177,6 +177,7 @@
  *
  * details_json: {
  *     task_id: number,
+ *     wf_id: number,
  *     name: string,
  *     phase: string,  // "pre" | "post" | "repeat" | "context"
  *     roi: [number, number, number, number],

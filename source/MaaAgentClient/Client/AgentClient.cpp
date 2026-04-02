@@ -358,6 +358,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_tasker_get_action_result(j)) {
         return true;
     }
+    else if (handle_tasker_get_wf_detail(j)) {
+        return true;
+    }
     else if (handle_tasker_get_latest_node(j)) {
         return true;
     }
@@ -1328,6 +1331,38 @@ bool AgentClient::handle_tasker_get_action_result(const json::value& j)
         .box = std::array<int32_t, 4> { detail.box.x, detail.box.y, detail.box.width, detail.box.height },
         .success = detail.success,
         .detail = detail.detail,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_tasker_get_wf_detail(const json::value& j)
+{
+    if (!j.is<TaskerGetWfDetailReverseRequest>()) {
+        return false;
+    }
+    const TaskerGetWfDetailReverseRequest& req = j.as<TaskerGetWfDetailReverseRequest>();
+
+    MaaTasker* tasker = query_tasker(req.tasker_id);
+    if (!tasker) {
+        LogError << "tasker not found" << VAR(req.tasker_id);
+        return false;
+    }
+    auto detail_opt = tasker->get_wf_detail(req.wf_id);
+    const auto& detail = detail_opt.value_or(MAA_TASK_NS::WaitFreezesDetail {});
+
+    std::vector<int64_t> reco_ids(detail.reco_ids.begin(), detail.reco_ids.end());
+
+    TaskerGetWfDetailReverseResponse resp {
+        .has_value = detail_opt.has_value(),
+        .wf_id = detail.wf_id,
+        .name = detail.name,
+        .phase = detail.phase,
+        .success = detail.success,
+        .elapsed_ms = detail.elapsed_ms,
+        .reco_ids = std::move(reco_ids),
+        .roi = { detail.roi.x, detail.roi.y, detail.roi.width, detail.roi.height },
     };
     send(resp);
 

@@ -17,6 +17,7 @@ export using ::MaaTaskId;
 export using ::MaaRecoId;
 export using ::MaaActId;
 export using ::MaaNodeId;
+export using ::MaaWfId;
 export using ::MaaSinkId;
 export constexpr auto _MaaInvalidId = MaaInvalidId;
 
@@ -256,6 +257,7 @@ export using ::MaaTaskerClearCache;
 export using ::MaaTaskerOverridePipeline;
 export using ::MaaTaskerGetRecognitionDetail;
 export using ::MaaTaskerGetActionDetail;
+export using ::MaaTaskerGetWaitFreezesDetail;
 export using ::MaaTaskerGetNodeDetail;
 export using ::MaaTaskerGetTaskDetail;
 export using ::MaaTaskerGetLatestNode;
