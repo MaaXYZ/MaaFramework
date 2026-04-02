@@ -43,6 +43,8 @@ bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOpt
         return set_image_use_raw_size(value, val_size);
     case MaaCtrlOption_MouseLockFollow:
         return set_mouse_lock_follow_option(value, val_size);
+    case MaaCtrlOption_ScreenshotResizeMethod:
+        return set_screenshot_resize_method(value, val_size);
 
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
@@ -1075,7 +1077,7 @@ bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
         }
     }
 
-    cv::resize(raw, image_, { image_target_width_, image_target_height_ }, 0, 0, cv::INTER_AREA);
+    cv::resize(raw, image_, { image_target_width_, image_target_height_ }, 0, 0, image_resize_method_);
     return !image_.empty();
 }
 
@@ -1225,6 +1227,27 @@ bool ControllerAgent::set_mouse_lock_follow_option(MaaOptionValue value, MaaOpti
 
     bool enabled = *reinterpret_cast<bool*>(value);
     return win32_unit->set_mouse_lock_follow(enabled);
+}
+
+bool ControllerAgent::set_screenshot_resize_method(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogDebug;
+
+    if (val_size != sizeof(int)) {
+        LogError << "invalid value size: " << val_size;
+        return false;
+    }
+
+    int method = *reinterpret_cast<int*>(value);
+    // valid range: cv::INTER_NEAREST(0) ~ cv::INTER_LANCZOS4(4)
+    if (method < cv::INTER_NEAREST || method > cv::INTER_LANCZOS4) {
+        LogError << "invalid resize method: " << method;
+        return false;
+    }
+
+    image_resize_method_ = method;
+    LogInfo << "image_resize_method_ = " << image_resize_method_;
+    return true;
 }
 
 MAA_CTRL_NS_END

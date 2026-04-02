@@ -151,6 +151,7 @@ declare global {
             set screenshot_target_long_side(value: number)
             set screenshot_target_short_side(value: number)
             set screenshot_use_raw_size(value: boolean)
+            set screenshot_resize_method(value: number)
 
             post_connection(): Job<CtrlId, Controller>
             post_click(

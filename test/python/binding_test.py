@@ -427,6 +427,7 @@ def test_controller_api():
     dbg_controller.set_screenshot_target_long_side(1920)
     dbg_controller.set_screenshot_target_short_side(1080)
     dbg_controller.set_screenshot_use_raw_size(False)
+    dbg_controller.set_screenshot_resize_method(3)  # INTER_AREA
 
     # 测试 remove_sink 和 clear_sinks
     assert sink_id is not None, "sink_id should not be None"

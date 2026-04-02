@@ -508,6 +508,28 @@ class Controller:
             )
         )
 
+    def set_screenshot_resize_method(self, method: int) -> bool:
+        """设置截图缩放插值方法 / Set screenshot resize interpolation method
+
+        值对应 cv::InterpolationFlags / Value corresponds to cv::InterpolationFlags:
+          INTER_NEAREST=0, INTER_LINEAR=1, INTER_CUBIC=2, INTER_AREA=3, INTER_LANCZOS4=4
+
+        Args:
+            method: 插值方法 / Interpolation method (default: 3, INTER_AREA)
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        cint = ctypes.c_int32(method)
+        return bool(
+            Library.framework().MaaControllerSetOption(
+                self._handle,
+                MaaOption(MaaCtrlOptionEnum.ScreenshotResizeMethod),
+                ctypes.pointer(cint),
+                ctypes.sizeof(ctypes.c_int32),
+            )
+        )
+
     _sink_holder: Dict[int, "ControllerEventSink"] = {}
 
     def add_sink(self, sink: "ControllerEventSink") -> Optional[int]:
