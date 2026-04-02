@@ -55,7 +55,7 @@ MaaController* MaaWin32ControllerCreate(
 
 #ifndef _WIN32
 
-    LogError << "This API" << __FUNCTION__ << "is only available on Windows";
+    LogError << "This API " << __FUNCTION__ << " is only available on Windows";
     return nullptr;
 
 #else
@@ -66,6 +66,54 @@ MaaController* MaaWin32ControllerCreate(
 
     auto control_unit = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, screencap_method, mouse_method, keyboard_method);
 
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+#endif
+}
+
+MaaController* MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method)
+{
+    LogFunc << VAR(window_id) << VAR(screencap_method) << VAR(input_method);
+
+#ifndef __APPLE__
+
+    LogError << "This API " << __FUNCTION__ << " is only available on macOS";
+    return nullptr;
+
+#else
+
+    auto control_unit = MAA_NS::MacOSControlUnitLibraryHolder::create_control_unit(window_id, screencap_method, input_method);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+#endif
+}
+
+MaaController* MaaAndroidNativeControllerCreate(const char* config_json)
+{
+    LogFunc << VAR(config_json);
+
+#ifndef __ANDROID__
+
+    LogError << "This API " << __FUNCTION__ << " is only available on Android";
+    return nullptr;
+
+#else
+
+    if (!config_json) {
+        LogError << "config_json is null";
+        return nullptr;
+    }
+
+    auto control_unit = MAA_NS::AndroidNativeControlUnitLibraryHolder::create_control_unit(config_json);
     if (!control_unit) {
         LogError << "Failed to create control unit";
         return nullptr;
@@ -94,22 +142,73 @@ MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controlle
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
-MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_path, MaaDbgControllerType type, const char* config)
+MaaController* MaaDbgControllerCreate(const char* read_path)
 {
-    LogFunc << VAR(read_path) << VAR(write_path) << VAR(type);
+    LogFunc << VAR(read_path);
 
     if (!read_path) {
         LogError << "read_path is null";
         return nullptr;
     }
 
-    std::ignore = write_path;
-    std::ignore = config;
-
-    auto control_unit = MAA_NS::DbgControlUnitLibraryHolder::create_control_unit(type, read_path);
+    auto control_unit = MAA_NS::DbgControlUnitLibraryHolder::create_control_unit(read_path);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+}
+
+MaaController* MaaReplayControllerCreate(const char* recording_path)
+{
+    LogFunc << VAR(recording_path);
+
+    if (!recording_path) {
+        LogError << "recording_path is null";
+        return nullptr;
+    }
+
+    auto control_unit = MAA_NS::ReplayControlUnitLibraryHolder::create_control_unit(recording_path);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+}
+
+MaaController* MaaRecordControllerCreate(MaaController* inner, const char* recording_path)
+{
+    LogFunc << VAR_VOIDP(inner) << VAR(recording_path);
+
+    if (!inner) {
+        LogError << "inner controller is null";
+        return nullptr;
+    }
+
+    if (!recording_path) {
+        LogError << "recording_path is null";
+        return nullptr;
+    }
+
+    auto* agent = dynamic_cast<MAA_CTRL_NS::ControllerAgent*>(inner);
+    if (!agent) {
+        LogError << "inner is not a ControllerAgent";
+        return nullptr;
+    }
+
+    auto inner_unit = agent->control_unit();
+    if (!inner_unit) {
+        LogError << "inner control unit is null";
+        return nullptr;
+    }
+
+    auto control_unit = MAA_NS::RecordControlUnitLibraryHolder::create_control_unit(std::move(inner_unit), recording_path);
+    if (!control_unit) {
+        LogError << "Failed to create record control unit";
         return nullptr;
     }
 
@@ -146,7 +245,7 @@ MaaController* MaaGamepadControllerCreate(void* hWnd, MaaGamepadType gamepad_typ
 
 #ifndef _WIN32
 
-    LogError << "This API" << __FUNCTION__ << "is only available on Windows";
+    LogError << "This API " << __FUNCTION__ << " is only available on Windows";
     return nullptr;
 
 #else
@@ -168,7 +267,7 @@ MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path)
 
 #ifndef __linux__
 
-    LogError << "This API" << __FUNCTION__ << "is only available on Linux";
+    LogError << "This API " << __FUNCTION__ << " is only available on Linux";
     return nullptr;
 
 #else

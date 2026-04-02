@@ -214,9 +214,18 @@ struct QjsNumber : public QjsValue
 
     static QjsNumber New(QjsEnv env, int32_t val) { return { env, JS_NewInt32(env, val) }; }
 
+    static QjsNumber New(QjsEnv env, uint32_t val) { return { env, JS_NewUint32(env, val) }; }
+
     static QjsNumber New(QjsEnv env, double val) { return { env, JS_NewFloat64(env, val) }; }
 
     int32_t Int32Value() const { return JS_VALUE_GET_INT(value); }
+
+    uint32_t Uint32Value() const
+    {
+        uint32_t res = 0;
+        JS_ToUint32(context, &res, value);
+        return res;
+    }
 };
 
 struct QjsString : public QjsValue

@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/Instance/MaaCustomController.h"
 
 #include "Common/Conf.h"
@@ -42,6 +42,10 @@ public: // from ControlUnitAPI
     virtual bool key_up(int key) override;
 
     virtual bool scroll(int dx, int dy) override;
+
+    virtual bool relative_move(int dx, int dy) override;
+    virtual bool
+        shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000)) override;
 
     virtual bool inactive() override;
 

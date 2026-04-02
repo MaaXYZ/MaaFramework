@@ -4,8 +4,8 @@
 #include <ranges>
 #include <unordered_set>
 
-#include "ControlUnit/ControlUnitAPI.h"
 #include "LibraryHolder/ControlUnit.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/IOStream/BoostIO.hpp"
 #include "MaaUtils/Logger.h"
 

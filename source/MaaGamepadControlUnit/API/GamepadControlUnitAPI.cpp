@@ -1,4 +1,4 @@
-#include "ControlUnit/GamepadControlUnitAPI.h"
+#include "MaaControlUnit/GamepadControlUnitAPI.h"
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/SafeWindows.hpp"

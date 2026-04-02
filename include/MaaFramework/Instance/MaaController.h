@@ -35,10 +35,72 @@ extern "C"
         MaaWin32InputMethod mouse_method,
         MaaWin32InputMethod keyboard_method);
 
+    /**
+     * @brief Create a macOS controller for native macOS applications.
+     *
+     * @param window_id The CGWindowID of the target window (0 for desktop).
+     * @param screencap_method macOS screencap method to use.
+     * @param input_method macOS input method to use.
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note This controller is designed for native macOS applications.
+     * @note Requires Screen Recording permission for screencap.
+     * @note Input simulation requires Accessibility permission.
+     * @note Some features are not supported: start_app, stop_app, scroll.
+     * @note Only single touch is supported (contact must be 0).
+     */
+    MAA_FRAMEWORK_API MaaController*
+        MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
+
+    /**
+     * @brief Create an Android native controller backed by MaaAndroidNativeControlUnit.
+     *
+     * @param config_json JSON config for the control unit. Required fields:
+     *                    - library_path: path to the Android native control unit library
+     *                    - screen_resolution.width / screen_resolution.height: raw screenshot and touch resolution
+     *                    Optional fields:
+     *                    - display_id: target display id, defaults to 0
+     *                    - force_stop: whether to force stop before start_app, defaults to false
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note This controller is only available on Android.
+     * @note The configured screen_resolution must match the control unit's raw screenshot/touch coordinate space.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaAndroidNativeControllerCreate(const char* config_json);
+
     MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg);
 
-    MAA_FRAMEWORK_API MaaController*
-        MaaDbgControllerCreate(const char* read_path, const char* write_path, MaaDbgControllerType type, const char* config);
+    /**
+     * @brief Create a debug controller that serves images from a directory.
+     *
+     * @param read_path Path to a directory of images (or a single image file).
+     *                  Images are loaded on connect and cycled through on each screencap request.
+     *                  All input operations (click, swipe, etc.) are no-ops that return success.
+     * @return The controller handle, or nullptr on failure.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaDbgControllerCreate(const char* read_path);
+
+    /**
+     * @brief Create a replay controller that replays recorded operations.
+     *
+     * @param recording_path Path to the recording JSONL file written by MaaRecordControllerCreate.
+     *                       Screenshot image paths in the file are resolved relative to this file's parent directory.
+     * @return The controller handle, or nullptr on failure.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaReplayControllerCreate(const char* recording_path);
+
+    /**
+     * @brief Create a record controller that wraps an existing controller and records all operations.
+     *
+     * @param inner The inner controller to forward all operations to. Must not be null.
+     *              The record controller does NOT take ownership of the inner controller.
+     * @param recording_path Path to the recording JSONL file to write.
+     *                       Screenshot images will be saved to a "{stem}-Screenshot" folder
+     *                       in the same directory as this file.
+     *                       The recorded file can be replayed using MaaReplayControllerCreate.
+     * @return The record controller handle, or nullptr on failure.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaRecordControllerCreate(MaaController* inner, const char* recording_path);
 
     /**
      * @brief Create a PlayCover controller for macOS.
@@ -198,7 +260,7 @@ extern "C"
      * @param timeout Timeout in milliseconds. Default is 20000 (20 seconds).
      * @return The control id of the shell action.
      *
-     * @note This is only valid for ADB controllers. If the controller is not an ADB controller, the action will fail.
+     * @note Supported by ADB controllers and custom controllers that implement the shell callback.
      * @see MaaControllerGetShellOutput
      */
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd, int64_t timeout);

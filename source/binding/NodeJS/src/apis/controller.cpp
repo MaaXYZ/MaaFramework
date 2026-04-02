@@ -215,6 +215,13 @@ maajs::ValueType ControllerImpl::post_relative_move(maajs::ValueType self, maajs
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+void ControllerImpl::set_mouse_lock_follow(bool enabled)
+{
+    if (!MaaControllerSetOption(controller, MaaCtrlOption_MouseLockFollow, &enabled, sizeof(enabled))) {
+        throw maajs::MaaError { "Controller set mouse_lock_follow failed" };
+    }
+}
+
 maajs::ValueType ControllerImpl::post_key_down(maajs::ValueType self, maajs::EnvType, int32_t keycode)
 {
     auto id = MaaControllerPostKeyDown(controller, keycode);
@@ -360,6 +367,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_touch_move", ControllerImpl::post_touch_move);
     MAA_BIND_FUNC(proto, "post_touch_up", ControllerImpl::post_touch_up);
     MAA_BIND_FUNC(proto, "post_relative_move", ControllerImpl::post_relative_move);
+    MAA_BIND_SETTER(proto, "mouse_lock_follow", ControllerImpl::set_mouse_lock_follow);
     MAA_BIND_FUNC(proto, "post_key_down", ControllerImpl::post_key_down);
     MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
     MAA_BIND_FUNC(proto, "post_scroll", ControllerImpl::post_scroll);
@@ -522,6 +530,63 @@ maajs::ValueType load_win32_controller(maajs::EnvType env)
     return ctor;
 }
 
+maajs::PromiseType MacOSControllerImpl::find(maajs::EnvType env)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    using Result = std::optional<std::vector<MacOSDevice>>;
+    auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
+        auto lst = MaaToolkitDesktopWindowListCreate();
+        if (!MaaToolkitDesktopWindowFindAll(lst)) {
+            MaaToolkitDesktopWindowListDestroy(lst);
+            return std::nullopt;
+        }
+
+        std::vector<MacOSDevice> result;
+        auto size = MaaToolkitDesktopWindowListSize(lst);
+        result.reserve(size);
+        for (size_t i = 0; i < size; i++) {
+            auto dev = MaaToolkitDesktopWindowListAt(lst, i);
+            result.push_back(
+                std::make_tuple(
+                    reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(dev)),
+                    std::string(MaaToolkitDesktopWindowGetClassName(dev)),
+                    std::string(MaaToolkitDesktopWindowGetWindowName(dev))));
+        }
+        MaaToolkitDesktopWindowListDestroy(lst);
+
+        return result;
+    });
+    worker->Queue();
+    return worker->Promise();
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("MacOSController.find");
+#endif
+}
+
+MacOSControllerImpl* MacOSControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [window_id, screencap_method, input_method] = maajs::UnWrapArgs<MacOSControllerCtorParam, void>(info);
+    auto ctrl = MaaMacOSControllerCreate(window_id, screencap_method, input_method);
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new MacOSControllerImpl(ctrl, true);
+}
+
+void MacOSControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
+{
+    MAA_BIND_FUNC(ctor, "find", find);
+}
+
+maajs::ValueType load_macos_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<MacOSControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->macosControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
 PlayCoverControllerImpl* PlayCoverControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
     auto [address, uuid] = maajs::UnWrapArgs<PlayCoverControllerCtorParam, void>(info);
@@ -546,8 +611,8 @@ maajs::ValueType load_playcover_controller(maajs::EnvType env)
 
 DbgControllerImpl* DbgControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [read_path, write_path, type, config] = maajs::UnWrapArgs<DbgControllerCtorParam, void>(info);
-    auto ctrl = MaaDbgControllerCreate(read_path.c_str(), write_path.c_str(), type, config.c_str());
+    auto [read_path] = maajs::UnWrapArgs<DbgControllerCtorParam, void>(info);
+    auto ctrl = MaaDbgControllerCreate(read_path.c_str());
     if (!ctrl) {
         return nullptr;
     }
@@ -563,6 +628,53 @@ maajs::ValueType load_dbg_controller(maajs::EnvType env)
     maajs::FunctionType ctor;
     maajs::NativeClass<DbgControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
     ExtContext::get(env)->dbgControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
+ReplayControllerImpl* ReplayControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [recording_path] = maajs::UnWrapArgs<ReplayControllerCtorParam, void>(info);
+    auto ctrl = MaaReplayControllerCreate(recording_path.c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new ReplayControllerImpl(ctrl, true);
+}
+
+void ReplayControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+{
+}
+
+maajs::ValueType load_replay_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<ReplayControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->replayControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
+RecordControllerImpl* RecordControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [inner_ctrl, recording_path] = maajs::UnWrapArgs<RecordControllerCtorParam, void>(info);
+    if (!inner_ctrl || !inner_ctrl->controller) {
+        return nullptr;
+    }
+    auto ctrl = MaaRecordControllerCreate(inner_ctrl->controller, recording_path.c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new RecordControllerImpl(ctrl, true);
+}
+
+void RecordControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+{
+}
+
+maajs::ValueType load_record_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<RecordControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->recordControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
 
@@ -742,6 +854,8 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
     context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor, ret_false);
     context->add_bind(info.Env(), "key_up", "CustomKeyUp", 1, actor, ret_false);
     context->add_bind(info.Env(), "scroll", "CustomScroll", 2, actor, ret_false);
+    context->add_bind(info.Env(), "relative_move", "CustomRelativeMove", 2, actor, ret_false);
+    context->add_bind(info.Env(), "shell", "CustomShell", 2, actor, ret_null);
     context->add_bind(info.Env(), "inactive", "CustomInactive", 0, actor, ret_true);
     context->add_bind(info.Env(), "get_info", "CustomGetInfo", 0, actor, ret_null);
 

@@ -7,7 +7,7 @@
 
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/NoWarningCVMat.hpp"
 #include "Utils/EventDispatcher.hpp"
@@ -247,6 +247,8 @@ public: // for Actuator
     bool scroll(ScrollParam p);
     bool shell(const std::string& cmd, std::string& output, int64_t timeout = 20000);
 
+    std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit() const { return control_unit_; }
+
 private:
     bool handle_connect();
     bool handle_click(const ClickParam& param);
@@ -286,6 +288,7 @@ private: // options
     bool set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_image_use_raw_size(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_mouse_lock_follow_option(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     bool need_to_stop_ = false;

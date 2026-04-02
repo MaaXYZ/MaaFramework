@@ -63,6 +63,11 @@ extern "C"
 
         MaaBool (*scroll)(int32_t dx, int32_t dy, void* trans_arg);
 
+        MaaBool (*relative_move)(int32_t dx, int32_t dy, void* trans_arg);
+
+        /// Write result to buffer.
+        MaaBool (*shell)(const char* cmd, int64_t timeout, void* trans_arg, /* out */ MaaStringBuffer* buffer);
+
         MaaBool (*inactive)(void* trans_arg);
 
         /// Write result (JSON string) to buffer. Optional, can be NULL.

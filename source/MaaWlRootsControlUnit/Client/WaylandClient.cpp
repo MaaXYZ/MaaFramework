@@ -50,8 +50,11 @@ bool WaylandClient::open()
 
     if (!prepare_device()) {
         LogError << "Failed to create devices";
+        close();
         return false;
     }
+
+    connected_ = true;
     return true;
 }
 
@@ -176,6 +179,10 @@ bool WaylandClient::process_requests() const
 
 bool WaylandClient::screencap(void** buffer, uint32_t& width, uint32_t& height, uint32_t& format)
 {
+    if (!connected_) {
+        return false;
+    }
+
     std::unique_ptr<zwlr_screencopy_frame_v1> screencopy_frame;
     screencopy_frame.reset(zwlr_screencopy_manager_v1_capture_output(screencopy_manager_.get(), 0, output_.get()));
 
@@ -250,16 +257,21 @@ bool WaylandClient::screencap(void** buffer, uint32_t& width, uint32_t& height, 
 void WaylandClient::close()
 {
     close_buffer();
+    connected_ = false;
     LogInfo << "Closing the wayland socket";
 }
 
 bool WaylandClient::connected() const
 {
-    return display_ != nullptr;
+    return connected_;
 }
 
 bool WaylandClient::pointer(EventPhase phase, int x, int y, int contact)
 {
+    if (!connected_) {
+        return false;
+    }
+
     const uint32_t event_time = WaylandHelper::get_ms();
 
     int btn = BTN_LEFT;
@@ -294,10 +306,32 @@ bool WaylandClient::pointer(EventPhase phase, int x, int y, int contact)
 
 bool WaylandClient::input_key(EventPhase phase, int key)
 {
+    if (!connected_) {
+        return false;
+    }
+
     const uint64_t event_time = WaylandHelper::get_ms();
     if (!switch_keymap(Keymap::Scancode)) {
         LogError << "Failed to switch keymap to scancode";
         return false;
+    }
+    const int depressed_modifier = WaylandHelper::depressed_key_modifiers(key);
+    const int locked_modifier = WaylandHelper::locked_key_modifiers(key);
+    if (depressed_modifier != 0 || locked_modifier != 0) {
+        switch (phase) {
+        case EventPhase::Began:
+            current_depressed_modifiers_ |= depressed_modifier;
+            current_locked_modifiers_ ^= locked_modifier;
+            break;
+        case EventPhase::Moved:
+            break;
+        case EventPhase::Ended:
+            current_depressed_modifiers_ &= ~depressed_modifier;
+            break;
+        default:;
+        }
+        zwp_virtual_keyboard_v1_modifiers(keyboard_.get(), current_depressed_modifiers_, 0, current_locked_modifiers_, 0);
+        return process_requests();
     }
     switch (phase) {
     case EventPhase::Began:
@@ -315,6 +349,10 @@ bool WaylandClient::input_key(EventPhase phase, int key)
 
 bool WaylandClient::input_str(const std::string& str)
 {
+    if (!connected_) {
+        return false;
+    }
+
     if (!switch_keymap(Keymap::Ascii)) {
         LogError << "Failed to switch keymap to ascii";
         return false;
@@ -333,6 +371,10 @@ bool WaylandClient::input_str(const std::string& str)
 
 std::pair<int, int> WaylandClient::screen_size() const
 {
+    if (!connected_) {
+        return { 0, 0 };
+    }
+
     return screen_size_;
 }
 
@@ -349,6 +391,10 @@ bool WaylandClient::check_buffer(int format, int width, int height, int stride) 
 
 bool WaylandClient::create_buffer(int format, int width, int height, int stride)
 {
+    if (!connected_) {
+        return false;
+    }
+
     if (!close_buffer()) {
         LogError << "Failed to close old buffer";
     }
@@ -372,6 +418,13 @@ bool WaylandClient::create_buffer(int format, int width, int height, int stride)
 
 bool WaylandClient::close_buffer()
 {
+    if (!connected_) {
+        if (buffer_) {
+            buffer_.reset(); // Close memfd only
+        }
+        return true;
+    }
+
     if (!buffer_) {
         return true;
     }
@@ -407,6 +460,10 @@ bool WaylandClient::prepare_keymap()
 
 bool WaylandClient::switch_keymap(Keymap new_map)
 {
+    if (!connected_) {
+        return false;
+    }
+
     if (current_keymap_ == new_map) {
         return true;
     }

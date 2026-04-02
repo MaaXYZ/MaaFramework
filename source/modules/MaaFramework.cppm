@@ -101,10 +101,18 @@ export constexpr auto _MaaWin32InputMethod_PostMessageWithCursorPos = MaaWin32In
 export constexpr auto _MaaWin32InputMethod_SendMessageWithWindowPos = MaaWin32InputMethod_SendMessageWithWindowPos;
 export constexpr auto _MaaWin32InputMethod_PostMessageWithWindowPos = MaaWin32InputMethod_PostMessageWithWindowPos;
 
-export using ::MaaDbgControllerType;
-export constexpr auto _MaaDbgControllerType_None = MaaDbgControllerType_None;
-export constexpr auto _MaaDbgControllerType_CarouselImage = MaaDbgControllerType_CarouselImage;
-export constexpr auto _MaaDbgControllerType_ReplayRecording = MaaDbgControllerType_ReplayRecording;
+export using ::MaaMacOSScreencapMethod;
+export constexpr auto _MaaMacOSScreencapMethod_None = MaaMacOSScreencapMethod_None;
+export constexpr auto _MaaMacOSScreencapMethod_ScreenCaptureKit = MaaMacOSScreencapMethod_ScreenCaptureKit;
+
+export using ::MaaMacOSInputMethod;
+export constexpr auto _MaaMacOSInputMethod_None = MaaMacOSInputMethod_None;
+export constexpr auto _MaaMacOSInputMethod_GlobalEvent = MaaMacOSInputMethod_GlobalEvent;
+export constexpr auto _MaaMacOSInputMethod_PostToPid = MaaMacOSInputMethod_PostToPid;
+
+export using ::MaaGamepadType;
+export constexpr auto _MaaGamepadType_Xbox360 = MaaGamepadType_Xbox360;
+export constexpr auto _MaaGamepadType_DualShock4 = MaaGamepadType_DualShock4;
 
 export using ::MaaControllerFeature;
 export constexpr auto _MaaControllerFeature_None = MaaControllerFeature_None;
@@ -143,9 +151,15 @@ export using ::MaaContextWaitFreezes;
 export using ::MaaCustomControllerCallbacks;
 export using ::MaaAdbControllerCreate;
 export using ::MaaWin32ControllerCreate;
+export using ::MaaMacOSControllerCreate;
+export using ::MaaAndroidNativeControllerCreate;
 export using ::MaaCustomControllerCreate;
 export using ::MaaDbgControllerCreate;
+export using ::MaaReplayControllerCreate;
+export using ::MaaRecordControllerCreate;
 export using ::MaaPlayCoverControllerCreate;
+export using ::MaaWlRootsControllerCreate;
+export using ::MaaGamepadControllerCreate;
 export using ::MaaControllerDestroy;
 export using ::MaaControllerAddSink;
 export using ::MaaControllerRemoveSink;
