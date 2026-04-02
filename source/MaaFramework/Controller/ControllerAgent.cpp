@@ -1160,11 +1160,11 @@ bool ControllerAgent::set_image_target_long_side(MaaOptionValue value, MaaOption
 {
     LogDebug;
 
-    if (val_size != sizeof(image_target_long_side_)) {
+    if (val_size != sizeof(int32_t)) {
         LogError << "invalid value size: " << val_size;
         return false;
     }
-    image_target_long_side_ = *reinterpret_cast<int*>(value);
+    image_target_long_side_ = *reinterpret_cast<const int32_t*>(value);
     image_target_short_side_ = 0;
 
     clear_target_image_size();
@@ -1177,12 +1177,12 @@ bool ControllerAgent::set_image_target_short_side(MaaOptionValue value, MaaOptio
 {
     LogDebug;
 
-    if (val_size != sizeof(image_target_short_side_)) {
+    if (val_size != sizeof(int32_t)) {
         LogError << "invalid value size: " << val_size;
         return false;
     }
     image_target_long_side_ = 0;
-    image_target_short_side_ = *reinterpret_cast<int*>(value);
+    image_target_short_side_ = *reinterpret_cast<const int32_t*>(value);
 
     clear_target_image_size();
 
@@ -1198,7 +1198,7 @@ bool ControllerAgent::set_image_use_raw_size(MaaOptionValue value, MaaOptionValu
         LogError << "invalid value size: " << val_size;
         return false;
     }
-    image_use_raw_size_ = *reinterpret_cast<bool*>(value);
+    image_use_raw_size_ = *reinterpret_cast<const bool*>(value);
 
     clear_target_image_size();
 
@@ -1225,7 +1225,7 @@ bool ControllerAgent::set_mouse_lock_follow_option(MaaOptionValue value, MaaOpti
         return false;
     }
 
-    bool enabled = *reinterpret_cast<bool*>(value);
+    bool enabled = *reinterpret_cast<const bool*>(value);
     return win32_unit->set_mouse_lock_follow(enabled);
 }
 
