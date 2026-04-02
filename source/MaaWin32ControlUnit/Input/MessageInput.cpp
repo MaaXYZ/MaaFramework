@@ -797,7 +797,7 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
 
     prepare_mouse_position(x, y);
 
-    HWND target = gesture_target_ ? gesture_target_ : get_active_hwnd();
+    HWND target = (gesture_target_ && IsWindow(gesture_target_)) ? gesture_target_ : get_active_hwnd();
     LPARAM lParam = make_mouse_lparam(target, x, y);
 
     if (!send_or_post_w(target, msg_info.message, msg_info.w_param, lParam)) {
@@ -820,13 +820,13 @@ bool MessageInput::touch_up(int contact)
         return false;
     }
 
-    bool has_gesture = (gesture_target_ != nullptr);
-    HWND target = has_gesture ? gesture_target_ : send_activate();
+    bool reuse_gesture = gesture_target_ && IsWindow(gesture_target_);
+    HWND target = reuse_gesture ? gesture_target_ : send_activate();
     gesture_target_ = nullptr;
 
     OnScopeLeave([this]() { unblock_input(); });
 
-    if (has_gesture) {
+    if (reuse_gesture) {
         bool use_post = (config_.mode == Mode::PostMessage);
         ::MaaNS::CtrlUnitNs::send_activate_message(target, use_post);
     }
