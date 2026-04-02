@@ -1233,19 +1233,19 @@ bool ControllerAgent::set_screenshot_resize_method(MaaOptionValue value, MaaOpti
 {
     LogDebug;
 
-    if (val_size != sizeof(int)) {
+    if (val_size != sizeof(int32_t)) {
         LogError << "invalid value size: " << val_size;
         return false;
     }
 
-    int method = *reinterpret_cast<int*>(value);
+    auto raw = *reinterpret_cast<const int32_t*>(value);
     // valid range: cv::INTER_NEAREST(0) ~ cv::INTER_LANCZOS4(4)
-    if (method < cv::INTER_NEAREST || method > cv::INTER_LANCZOS4) {
-        LogError << "invalid resize method: " << method;
+    if (raw < cv::INTER_NEAREST || raw > cv::INTER_LANCZOS4) {
+        LogError << "invalid resize method: " << raw;
         return false;
     }
 
-    image_resize_method_ = method;
+    image_resize_method_ = raw;
     LogInfo << "image_resize_method_ = " << image_resize_method_;
     return true;
 }
