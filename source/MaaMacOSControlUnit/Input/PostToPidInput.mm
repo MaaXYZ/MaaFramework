@@ -174,7 +174,8 @@ bool PostToPidInput::scroll(int dx, int dy)
         return false;
     }
 
-    CGEventRef event1 = CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, 2, dy, dx);
+    // CGEvent wheel2: 正值向左、负值向右，与协议（正值向右）相反，需取反 dx
+    CGEventRef event1 = CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, 2, dy, -dx);
     if (!event1) {
         LogError << "Failed to create scroll event1";
         return false;

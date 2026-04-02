@@ -190,18 +190,22 @@ bool GlobalEventInput::key_up(int key)
 
 bool GlobalEventInput::scroll(int dx, int dy)
 {
-    // 先激活窗口
     if (!activate_window(pid_)) {
-        LogWarn << "Warning: Failed to activate window, scroll may not work";
+        LogWarn << "Failed to activate window, scroll may not work";
     }
 
-    // 使用当前系统光标位置作为滚动目标点
+    CGPoint location = CGPointZero;
     CGEventRef pos_event = CGEventCreate(nullptr);
-    CGPoint location = CGEventGetLocation(pos_event);
-    CFRelease(pos_event);
+    if (pos_event) {
+        location = CGEventGetLocation(pos_event);
+        CFRelease(pos_event);
+    }
+    else {
+        LogWarn << "Failed to create position event, using default location (0, 0)";
+    }
 
-    // wheel1: 垂直滚动（正值向上，负值向下），wheel2: 水平滚动（正值向左，负值向右）
-    CGEventRef event = CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, 2, dy, dx);
+    // CGEvent wheel2: 正值向左、负值向右，与协议（正值向右）相反，需取反 dx
+    CGEventRef event = CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, 2, dy, -dx);
     if (!event) {
         LogError << "Failed to create scroll wheel event";
         return false;

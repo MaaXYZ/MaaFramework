@@ -53,7 +53,7 @@
     "focus": "Scroll Right Test!",
     "action": "Scroll",
     "target": "bee_recognition",
-    "dx": -360,
+    "dx": 360,
     "next": "key_action"
   },
   "key_action": {
