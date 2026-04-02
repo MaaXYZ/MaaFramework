@@ -21,6 +21,8 @@ public:
     Recognizer(const Recognizer& recognizer);
 
 public:
+    static MaaRecoId generate_reco_id() { return ++s_global_reco_id; }
+
     RecoResult recognize(MAA_RES_NS::Recognition::Type type, const MAA_RES_NS::Recognition::Param& param, const std::string& name);
 
     void prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries);
@@ -56,7 +58,7 @@ private:
     Tasker* tasker_ = nullptr;
     Context& context_;
     cv::Mat image_;
-    const MaaRecoId reco_id_ = ++s_global_reco_id;
+    const MaaRecoId reco_id_ = generate_reco_id();
 
     std::shared_ptr<std::unordered_map<std::string, std::vector<cv::Rect>>> sub_filtered_boxes_;
     std::shared_ptr<std::unordered_map<std::string, cv::Rect>> sub_best_box_;

@@ -109,7 +109,7 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         return { };
     }
 
-    wait_freezes(data.pre_wait_freezes, *reco.box, data.name);
+    wait_freezes(data.pre_wait_freezes, *reco.box, data.name, "pre", data.focus);
     sleep(data.pre_delay);
 
     Actuator actuator(tasker_, *context_);
@@ -125,7 +125,7 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
 
     for (uint i = 0; i < data.repeat; ++i) {
         if (i > 0) {
-            wait_freezes(data.repeat_wait_freezes, *reco.box, data.name);
+            wait_freezes(data.repeat_wait_freezes, *reco.box, data.name, "repeat", data.focus);
             sleep(data.repeat_delay);
         }
 
@@ -145,7 +145,7 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
     notify(result.success ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
 
     if (!context_->need_to_stop()) {
-        wait_freezes(data.post_wait_freezes, *reco.box, data.name);
+        wait_freezes(data.post_wait_freezes, *reco.box, data.name, "post", data.focus);
         sleep(data.post_delay);
     }
 
@@ -199,10 +199,15 @@ void TaskBase::set_task_detail(TaskDetail detail)
     cache.set_task_detail(task_id_, detail);
 }
 
-void TaskBase::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name)
+void TaskBase::wait_freezes(
+    const MAA_RES_NS::WaitFreezesParam& param,
+    const cv::Rect& box,
+    const std::string& name,
+    std::string_view phase,
+    const json::value& focus)
 {
     ActionHelper helper(context_.get());
-    helper.wait_freezes(param, box, name);
+    helper.wait_freezes(param, box, { .name = name, .phase = std::string(phase), .focus = focus });
 }
 
 void TaskBase::sleep(std::chrono::milliseconds ms) const

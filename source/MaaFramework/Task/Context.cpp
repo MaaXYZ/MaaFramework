@@ -187,7 +187,7 @@ bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, 
     }
 
     ActionHelper helper(this);
-    return helper.wait_freezes(param, box);
+    return helper.wait_freezes(param, box, { .phase = "context" });
 }
 
 bool Context::override_pipeline(const json::value& pipeline_override)

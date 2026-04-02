@@ -1,7 +1,9 @@
 #include "ActionHelper.h"
 
 #include "Common/TaskResultTypes.h"
+#include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
+#include "Recognizer.h"
 #include "Task/Context.h"
 #include "Tasker/Tasker.h"
 #include "Vision/TemplateComparator.h"
@@ -14,7 +16,10 @@ ActionHelper::ActionHelper(Context* context)
 {
 }
 
-bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& ref_box, const std::string& name)
+bool ActionHelper::wait_freezes(
+    const MAA_RES_NS::WaitFreezesParam& param,
+    const cv::Rect& ref_box,
+    const WaitFreezesNotifyContext& noti_ctx)
 {
     if (param.time <= std::chrono::milliseconds(0)) {
         return true;
@@ -22,7 +27,7 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
 
     auto roi = get_target_rect(param.target, ref_box);
     if (roi.empty()) {
-        LogError << "failed to get target rect for wait_freezes" << VAR(name);
+        LogError << "failed to get target rect for wait_freezes" << VAR(noti_ctx.name);
         return false;
     }
 
@@ -35,6 +40,23 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
 
     LogTrace << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.timeout) << VAR(param.threshold)
              << VAR(param.method);
+
+    json::value cb_detail {
+        { "task_id", context_ ? context_->task_id() : MaaInvalidId },
+        { "name", noti_ctx.name },
+        { "phase", noti_ctx.phase },
+        { "roi", roi },
+        { "param",
+          {
+              { "time", param.time.count() },
+              { "threshold", param.threshold },
+              { "method", param.method },
+              { "rate_limit", param.rate_limit.count() },
+              { "timeout", param.timeout.count() },
+          } },
+        { "focus", noti_ctx.focus },
+    };
+    notify(MaaMsg_Node_WaitFreezes_Starting, cb_detail);
 
     auto rate_limit = std::min(param.rate_limit, param.time);
 
@@ -55,14 +77,22 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
     const auto start_clock = std::chrono::steady_clock::now();
     auto pre_image_clock = start_clock;
 
+    std::vector<MaaRecoId> reco_ids;
+
+    auto finish = [&](bool success) {
+        cb_detail["reco_ids"] = json::array(reco_ids);
+        cb_detail["elapsed"] = duration_since(start_clock).count();
+        notify(success ? MaaMsg_Node_WaitFreezes_Succeeded : MaaMsg_Node_WaitFreezes_Failed, cb_detail);
+        return success;
+    };
+
     while (true) {
         LogDebug << "sleep_until" << VAR(rate_limit);
         std::this_thread::sleep_until(screencap_clock + rate_limit);
 
-        // timeout < 0 表示无限等待
         if (param.timeout >= std::chrono::milliseconds(0) && duration_since(start_clock) > param.timeout) {
             LogWarn << "Wait freezes timeout" << VAR(duration_since(start_clock)) << VAR(param.timeout);
-            return false;
+            return finish(false);
         }
 
         screencap_clock = std::chrono::steady_clock::now();
@@ -70,11 +100,29 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
 
         if (pre_image.empty() || cur_image.empty()) {
             LogError << "Image is empty" << VAR(pre_image.empty()) << VAR(cur_image.empty());
-            return false;
+            return finish(false);
         }
 
-        std::string draw_name = name.empty() ? "wait_freezes" : std::format("{}_wait_freezes", name);
+        std::string draw_name = noti_ctx.name.empty() ? "wait_freezes" : std::format("{}_wait_freezes", noti_ctx.name);
         TemplateComparator comparator(pre_image, cur_image, { *corrected_roi }, comp_param, draw_name);
+
+        const MaaRecoId reco_id = Recognizer::generate_reco_id();
+        RecoResult reco_result {
+            .reco_id = reco_id,
+            .name = draw_name,
+            .algorithm = "WaitFreezes",
+            .box = comparator.best_result() ? std::make_optional(comparator.best_result()->box) : std::nullopt,
+            .detail = json::value {
+                { "all", json::array(comparator.all_results()) },
+                { "filtered", json::array(comparator.filtered_results()) },
+                { "best", comparator.best_result() ? json::value(*comparator.best_result()) : json::value(nullptr) },
+            },
+            .draws = comparator.draws(),
+        };
+        if (auto* t = tasker()) {
+            t->runtime_cache().set_reco_detail(reco_id, std::move(reco_result));
+        }
+        reco_ids.emplace_back(reco_id);
 
         VisionBase::save_draws(draw_name, comparator.draws());
 
@@ -89,7 +137,7 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
         }
     }
 
-    return true;
+    return finish(true);
 }
 
 cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box)
@@ -187,6 +235,15 @@ cv::Rect ActionHelper::get_rect_from_node(const std::string& node_name) const
 Tasker* ActionHelper::tasker() const
 {
     return context_ ? context_->tasker() : nullptr;
+}
+
+void ActionHelper::notify(std::string_view msg, const json::value& detail)
+{
+    auto* t = tasker();
+    if (!t || !context_) {
+        return;
+    }
+    t->context_notify(context_, msg, detail);
 }
 
 MAA_CTRL_NS::ControllerAgent* ActionHelper::controller()
