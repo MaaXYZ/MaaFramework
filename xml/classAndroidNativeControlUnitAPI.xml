@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="classAndroidNativeControlUnitAPI" kind="class" language="C++" prot="public" abstract="yes">
+  <compounddef id="classAndroidNativeControlUnitAPI" kind="class" language="C++" prot="public">
     <compoundname>AndroidNativeControlUnitAPI</compoundname>
     <basecompoundref refid="classControlUnitAPI" prot="public" virt="non-virtual">ControlUnitAPI</basecompoundref>
     <includes refid="ControlUnitAPI_8h" local="no">ControlUnitAPI.h</includes>
@@ -18,38 +18,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="include/MaaControlUnit/ControlUnitAPI.h" line="92" column="5"/>
-      </memberdef>
-      <memberdef kind="function" id="classAndroidNativeControlUnitAPI_1a12931e89215ff70efc689bd1ce6e7653" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
-        <type>void *</type>
-        <definition>virtual void * AndroidNativeControlUnitAPI::attach_thread</definition>
-        <argsstring>() const =0</argsstring>
-        <name>attach_thread</name>
-        <qualifiedname>AndroidNativeControlUnitAPI::attach_thread</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="94" column="18"/>
-      </memberdef>
-      <memberdef kind="function" id="classAndroidNativeControlUnitAPI_1aa90244a53ac7b83c99181bad58966165" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
-        <type>int</type>
-        <definition>virtual int AndroidNativeControlUnitAPI::detach_thread</definition>
-        <argsstring>(void *env) const =0</argsstring>
-        <name>detach_thread</name>
-        <qualifiedname>AndroidNativeControlUnitAPI::detach_thread</qualifiedname>
-        <param>
-          <type>void *</type>
-          <declname>env</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="95" column="17"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -80,14 +48,12 @@
         <link refid="classControlUnitAPI"/>
       </node>
     </collaborationgraph>
-    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="89" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="90" bodyend="96"/>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="89" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="90" bodyend="93"/>
     <listofallmembers>
-      <member refid="classAndroidNativeControlUnitAPI_1a12931e89215ff70efc689bd1ce6e7653" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>attach_thread</name></member>
       <member refid="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>click</name></member>
       <member refid="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>click_key</name></member>
       <member refid="classControlUnitAPI_1a5bff4217a5cbd6789dca3957b469cd5b" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>connect</name></member>
       <member refid="classControlUnitAPI_1afc899c23f271738b73540eb9efc93fae" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>connected</name></member>
-      <member refid="classAndroidNativeControlUnitAPI_1aa90244a53ac7b83c99181bad58966165" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>detach_thread</name></member>
       <member refid="classControlUnitAPI_1aa1b8f3ae574ca2edcced418f138e110b" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>get_features</name></member>
       <member refid="classControlUnitAPI_1a1bba5cdf24de2b536f4ed436bdda9513" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>get_info</name></member>
       <member refid="classControlUnitAPI_1a95ce12fe9d30787af79adbbb84a45e1b" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>inactive</name></member>

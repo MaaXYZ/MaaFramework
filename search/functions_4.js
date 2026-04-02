@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['get_5ffeatures_0',['get_features',['../classControlUnitAPI.html#aa1b8f3ae574ca2edcced418f138e110b',1,'ControlUnitAPI']]],
-  ['get_5finfo_1',['get_info',['../classControlUnitAPI.html#a1bba5cdf24de2b536f4ed436bdda9513',1,'ControlUnitAPI']]]
+  ['key_5fdown_0',['key_down',['../classControlUnitAPI.html#a395577c785ecade8664430928c6a201e',1,'ControlUnitAPI']]],
+  ['key_5fup_1',['key_up',['../classControlUnitAPI.html#afcdd6f7125786389adef584492f214e5',1,'ControlUnitAPI']]]
 ];

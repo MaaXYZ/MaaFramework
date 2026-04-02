@@ -472,6 +472,8 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3">MaaCtrlOption_ScreenshotTargetShortSide</a> = 2
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105">MaaCtrlOption_ScreenshotUseRawSize</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="MaaDef_8h.html#ac9daa36008267a26662244d2f5570003aac6a4d810461a9730c85dff6574c22bd">MaaCtrlOption_MouseLockFollow</a> = 4
 <br />
  }</td></tr>
 <tr class="memdesc:ac9daa36008267a26662244d2f5570003"><td class="mdescLeft">&#160;</td><td class="mdescRight">Option keys for controller instance options. See <a class="el" href="MaaController_8h.html#ac0247a25f33dfbc7bd3a0183a669aad3">MaaControllerSetOption()</a>.  <a href="MaaDef_8h.html#ac9daa36008267a26662244d2f5570003">More...</a><br /></td></tr>
@@ -652,8 +654,8 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    (<a class="code hl_define" href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~MaaAdbScreencapMethod_RawByNetcat) &amp; (~<a class="code hl_define" href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a>) \</div>
 <div class="line">     &amp; (~MaaAdbScreencapMethod_MinicapStream))</div>
-<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:262</div></div>
-<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:257</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:269</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:264</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2617,6 +2619,9 @@ default value is 4096
 <tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105" name="ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105"></a>MaaCtrlOption_ScreenshotUseRawSize&#160;</td><td class="fielddoc"><p>Screenshot use raw size without scaling. Please note that this option may cause incorrect coordinates on user devices with different resolutions if scaling is not performed.</p>
 <p>value: bool, eg: true; val_size: sizeof(bool) </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003aac6a4d810461a9730c85dff6574c22bd" name="ac9daa36008267a26662244d2f5570003aac6a4d810461a9730c85dff6574c22bd"></a>MaaCtrlOption_MouseLockFollow&#160;</td><td class="fielddoc"><p>Enable or disable mouse-lock-follow mode for Win32 controllers. This is designed for TPS/FPS games that lock the mouse to their window in the background. Only valid for Win32 controllers using message-based input methods.</p>
+<p>value: bool, eg: true; val_size: sizeof(bool) </p>
+</td></tr>
 </table>
 
 </div>
@@ -2644,7 +2649,7 @@ default value is 4096
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Tue Mar 31 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Thu Apr 2 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

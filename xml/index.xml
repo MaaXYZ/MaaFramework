@@ -6,8 +6,6 @@
   </compound>
   <compound refid="classAndroidNativeControlUnitAPI" kind="class"><name>AndroidNativeControlUnitAPI</name>
     <member refid="classAndroidNativeControlUnitAPI_1aef52b927e847aa013d425ceb2d15918c" kind="function"><name>~AndroidNativeControlUnitAPI</name></member>
-    <member refid="classAndroidNativeControlUnitAPI_1a12931e89215ff70efc689bd1ce6e7653" kind="function"><name>attach_thread</name></member>
-    <member refid="classAndroidNativeControlUnitAPI_1aa90244a53ac7b83c99181bad58966165" kind="function"><name>detach_thread</name></member>
   </compound>
   <compound refid="classControlUnitAPI" kind="class"><name>ControlUnitAPI</name>
     <member refid="classControlUnitAPI_1a9c5542a5c81747468050d8610a18e6b0" kind="function"><name>~ControlUnitAPI</name></member>
@@ -156,6 +154,7 @@
   </compound>
   <compound refid="classWin32ControlUnitAPI" kind="class"><name>Win32ControlUnitAPI</name>
     <member refid="classWin32ControlUnitAPI_1a0c919ea1e0bd03379b1459e6e09e425e" kind="function"><name>~Win32ControlUnitAPI</name></member>
+    <member refid="classWin32ControlUnitAPI_1a23c7db44eae91fcecfb87800016ff288" kind="function"><name>set_mouse_lock_follow</name></member>
   </compound>
   <compound refid="namespacestd" kind="namespace"><name>std</name>
   </compound>
@@ -556,6 +555,7 @@
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75" kind="enumvalue"><name>MaaCtrlOption_ScreenshotTargetLongSide</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3" kind="enumvalue"><name>MaaCtrlOption_ScreenshotTargetShortSide</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105" kind="enumvalue"><name>MaaCtrlOption_ScreenshotUseRawSize</name></member>
+    <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003aac6a4d810461a9730c85dff6574c22bd" kind="enumvalue"><name>MaaCtrlOption_MouseLockFollow</name></member>
     <member refid="MaaDef_8h_1a7ce6a82a2484734da58c3c422d19a9b1" kind="enum"><name>MaaTaskerOptionEnum</name></member>
     <member refid="MaaDef_8h_1a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa" kind="enumvalue"><name>MaaTaskerOption_Invalid</name></member>
     <member refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kind="typedef"><name>MaaBool</name></member>

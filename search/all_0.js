@@ -4,6 +4,5 @@ var searchData=
   ['adbcontrolunitapi_2eh_1',['AdbControlUnitAPI.h',['../AdbControlUnitAPI_8h.html',1,'']]],
   ['androidnativecontrolunitapi_2',['AndroidNativeControlUnitAPI',['../classAndroidNativeControlUnitAPI.html',1,'']]],
   ['androidnativecontrolunitapi_2eh_3',['AndroidNativeControlUnitAPI.h',['../AndroidNativeControlUnitAPI_8h.html',1,'']]],
-  ['api_20reference_4',['MaaFramework API Reference',['../index.html',1,'']]],
-  ['attach_5fthread_5',['attach_thread',['../classAndroidNativeControlUnitAPI.html#a12931e89215ff70efc689bd1ce6e7653',1,'AndroidNativeControlUnitAPI']]]
+  ['api_20reference_4',['MaaFramework API Reference',['../index.html',1,'']]]
 ];

@@ -85,6 +85,7 @@ var NAVTREEINDEX1 =
 "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f":[3,0,0,3,4,132,0],
 "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3":[3,0,0,3,4,132,2],
 "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75":[3,0,0,3,4,132,1],
+"MaaDef_8h.html#ac9daa36008267a26662244d2f5570003aac6a4d810461a9730c85dff6574c22bd":[3,0,0,3,4,132,4],
 "MaaDef_8h.html#aca9de8235428dece0d8a5dfec486ae73":[3,0,0,3,4,71],
 "MaaDef_8h.html#acbc161630001bc8f54f7cf136a0493fc":[3,0,0,3,4,47],
 "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38ee":[3,0,0,3,4,128],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "MaaToolkitMacOS_8h.html#ac7333b3798dd3c44bd9a58f1a078aaa6":[3,0,0,4,3,0,1],
 "MaaToolkitMacOS_8h.html#ae471356de642c11ad8be5aacc0c6b6be":[3,0,0,4,3,0,0],
 "MaaToolkitMacOS_8h_source.html":[3,0,0,4,3,0],
-"MaaUtility_8h.html":[3,0,0,3,2,1],
-"MaaUtility_8h.html#a0329e2aed44c80bc9d10f6c1f6a8872f":[3,0,0,3,2,1,0]
+"MaaUtility_8h.html":[3,0,0,3,2,1]
 };

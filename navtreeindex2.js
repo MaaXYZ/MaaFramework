@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"MaaUtility_8h.html#a0329e2aed44c80bc9d10f6c1f6a8872f":[3,0,0,3,2,1,0],
 "MaaUtility_8h_source.html":[3,0,0,3,2,1],
 "MacOSControlUnitAPI_8h.html":[3,0,0,2,8],
 "MacOSControlUnitAPI_8h.html#a40bb2935f288f2b7d78d74fed8cb4810":[3,0,0,2,8,1],
@@ -59,8 +60,6 @@ var NAVTREEINDEX2 =
 "classAdbControlUnitAPI.html#a2debdeaa087d38facc106ba574da6b91":[2,0,0,1],
 "classAdbControlUnitAPI.html#abad3a55acb315f087bdbf2b2a6f8d3bb":[2,0,0,0],
 "classAndroidNativeControlUnitAPI.html":[2,0,1],
-"classAndroidNativeControlUnitAPI.html#a12931e89215ff70efc689bd1ce6e7653":[2,0,1,1],
-"classAndroidNativeControlUnitAPI.html#aa90244a53ac7b83c99181bad58966165":[2,0,1,2],
 "classAndroidNativeControlUnitAPI.html#aef52b927e847aa013d425ceb2d15918c":[2,0,1,0],
 "classControlUnitAPI.html":[2,0,2],
 "classControlUnitAPI.html#a1358bdac52ebc09c52d50588a6b6fa92":[2,0,2,13],
@@ -101,6 +100,7 @@ var NAVTREEINDEX2 =
 "classShellableUnit.html#aa1f70d3f41339f00ab40f2fb95988e6f":[2,0,24,0],
 "classWin32ControlUnitAPI.html":[2,0,25],
 "classWin32ControlUnitAPI.html#a0c919ea1e0bd03379b1459e6e09e425e":[2,0,25,0],
+"classWin32ControlUnitAPI.html#a23c7db44eae91fcecfb87800016ff288":[2,0,25,1],
 "dir_0daaf0002ac5c3ef7d4a81eb57e45b7c.html":[3,0,0,4,3],
 "dir_0debf1eee29073ebb629a4e1dfd2a5f6.html":[3,0,0,3,1],
 "dir_229d1428d76e394aeaec36b75a5d5699.html":[3,0,0,4],
