@@ -64,8 +64,11 @@ private:
     using TrackingClock = std::chrono::steady_clock;
     using TrackingDeadlineTicks = TrackingClock::duration::rep;
 
-    void send_activate();
-    bool send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam);
+    HWND send_activate();
+    bool send_or_post_w(HWND target, UINT message, WPARAM wParam, LPARAM lParam);
+
+    HWND get_active_hwnd();
+    LPARAM make_mouse_lparam(HWND target, int x, int y);
 
     // 在发鼠标消息前把系统状态调整到目标窗口愿意接受的位置。
     LPARAM prepare_mouse_position(int x, int y);
@@ -130,6 +133,7 @@ private:
 
     std::pair<int, int> last_pos_;
     bool last_pos_set_ = false;
+    HWND gesture_target_ = nullptr;
 
     POINT saved_cursor_pos_ = { 0, 0 };
     bool cursor_pos_saved_ = false;

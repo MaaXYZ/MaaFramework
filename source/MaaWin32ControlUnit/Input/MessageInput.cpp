@@ -82,22 +82,29 @@ MessageInput::~MessageInput()
     }
 }
 
-void MessageInput::send_activate()
+HWND MessageInput::send_activate()
 {
+    HWND target = get_active_hwnd();
     bool use_post = (config_.mode == Mode::PostMessage);
-    ::MaaNS::CtrlUnitNs::send_activate_message(hwnd_, use_post);
+    ::MaaNS::CtrlUnitNs::send_activate_message(target, use_post);
+    return target;
 }
 
-bool MessageInput::send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam)
+bool MessageInput::send_or_post_w(HWND target, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    if (!target || !IsWindow(target)) {
+        LogError << "Invalid target window" << VAR(target) << VAR(message);
+        return false;
+    }
+
     bool success = false;
 
     if (config_.mode == Mode::PostMessage) {
-        success = PostMessageW(hwnd_, message, wParam, lParam) != 0;
+        success = PostMessageW(target, message, wParam, lParam) != 0;
     }
     else {
-        SendMessageW(hwnd_, message, wParam, lParam);
-        success = true; // SendMessage 总是返回，除非窗口句柄无效
+        SendMessageW(target, message, wParam, lParam);
+        success = true;
     }
 
     if (!success) {
@@ -106,6 +113,37 @@ bool MessageInput::send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam)
     }
 
     return success;
+}
+
+HWND MessageInput::get_active_hwnd()
+{
+    HWND root = GetAncestor(hwnd_, GA_ROOTOWNER);
+    if (!root) {
+        LogWarn << "GetAncestor returned nullptr, hwnd_ may be invalid" << VAR(hwnd_);
+        return hwnd_;
+    }
+    HWND popup = GetLastActivePopup(root);
+    if (popup && popup != hwnd_ && IsWindowVisible(popup)) {
+        return popup;
+    }
+    return hwnd_;
+}
+
+LPARAM MessageInput::make_mouse_lparam(HWND target, int x, int y)
+{
+    if (target == hwnd_) {
+        return MAKELPARAM(x, y);
+    }
+    POINT pt = { x, y };
+    if (!ClientToScreen(hwnd_, &pt)) {
+        LogError << "ClientToScreen failed in make_mouse_lparam" << VAR(hwnd_) << VAR(GetLastError());
+        return MAKELPARAM(x, y);
+    }
+    if (!ScreenToClient(target, &pt)) {
+        LogError << "ScreenToClient failed in make_mouse_lparam" << VAR(target) << VAR(GetLastError());
+        return MAKELPARAM(x, y);
+    }
+    return MAKELPARAM(pt.x, pt.y);
 }
 
 POINT MessageInput::client_to_screen(int x, int y)
@@ -708,24 +746,27 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    send_activate();
+    HWND target = send_activate();
+    gesture_target_ = target;
 
     check_and_block_input();
 
     save_pos();
 
-    // 准备位置并发送 MOVE 消息
-    LPARAM lParam = prepare_mouse_position(x, y);
+    prepare_mouse_position(x, y);
 
-    if (!send_or_post_w(move_info.message, move_info.w_param, lParam)) {
+    LPARAM lParam = make_mouse_lparam(target, x, y);
+
+    if (!send_or_post_w(target, move_info.message, move_info.w_param, lParam)) {
+        gesture_target_ = nullptr;
         finish_pos();
         return false;
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-    // 发送 DOWN 消息
-    if (!send_or_post_w(down_info.message, down_info.w_param, lParam)) {
+    if (!send_or_post_w(target, down_info.message, down_info.w_param, lParam)) {
+        gesture_target_ = nullptr;
         finish_pos();
         return false;
     }
@@ -754,10 +795,13 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    // 准备位置并发送 MOVE 消息
-    LPARAM lParam = prepare_mouse_position(x, y);
+    prepare_mouse_position(x, y);
 
-    if (!send_or_post_w(msg_info.message, msg_info.w_param, lParam)) {
+    HWND target = (gesture_target_ && IsWindow(gesture_target_)) ? gesture_target_ : get_active_hwnd();
+    LPARAM lParam = make_mouse_lparam(target, x, y);
+
+    if (!send_or_post_w(target, msg_info.message, msg_info.w_param, lParam)) {
+        gesture_target_ = nullptr;
         return false;
     }
 
@@ -776,9 +820,16 @@ bool MessageInput::touch_up(int contact)
         return false;
     }
 
-    send_activate();
+    bool reuse_gesture = gesture_target_ && IsWindow(gesture_target_);
+    HWND target = reuse_gesture ? gesture_target_ : send_activate();
+    gesture_target_ = nullptr;
 
     OnScopeLeave([this]() { unblock_input(); });
+
+    if (reuse_gesture) {
+        bool use_post = (config_.mode == Mode::PostMessage);
+        ::MaaNS::CtrlUnitNs::send_activate_message(target, use_post);
+    }
 
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_up_message(contact, msg_info)) {
@@ -786,9 +837,10 @@ bool MessageInput::touch_up(int contact)
                  << VAR(contact);
         return false;
     }
-
     auto target_pos = get_target_pos();
-    if (!send_or_post_w(msg_info.message, msg_info.w_param, MAKELPARAM(target_pos.first, target_pos.second))) {
+    LPARAM lParam = make_mouse_lparam(target, target_pos.first, target_pos.second);
+
+    if (!send_or_post_w(target, msg_info.message, msg_info.w_param, lParam)) {
         finish_pos();
         return false;
     }
@@ -823,13 +875,12 @@ bool MessageInput::input_text(const std::string& text)
         return false;
     }
 
-    send_activate();
+    HWND target = send_activate();
 
     bool success = true;
 
-    // 文本输入仅发送 WM_CHAR
     for (const auto ch : to_u16(text)) {
-        success &= send_or_post_w(WM_CHAR, static_cast<WPARAM>(ch), 0);
+        success &= send_or_post_w(target, WM_CHAR, static_cast<WPARAM>(ch), 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     return success;
@@ -844,10 +895,10 @@ bool MessageInput::key_down(int key)
         return false;
     }
 
-    send_activate();
+    HWND target = send_activate();
 
     LPARAM lParam = make_keydown_lparam(key);
-    return send_or_post_w(WM_KEYDOWN, static_cast<WPARAM>(key), lParam);
+    return send_or_post_w(target, WM_KEYDOWN, static_cast<WPARAM>(key), lParam);
 }
 
 bool MessageInput::key_up(int key)
@@ -859,10 +910,10 @@ bool MessageInput::key_up(int key)
         return false;
     }
 
-    send_activate();
+    HWND target = send_activate();
 
     LPARAM lParam = make_keyup_lparam(key);
-    return send_or_post_w(WM_KEYUP, static_cast<WPARAM>(key), lParam);
+    return send_or_post_w(target, WM_KEYUP, static_cast<WPARAM>(key), lParam);
 }
 
 bool MessageInput::scroll(int dx, int dy)
@@ -874,7 +925,7 @@ bool MessageInput::scroll(int dx, int dy)
         return false;
     }
 
-    send_activate();
+    HWND target = send_activate();
 
     check_and_block_input();
     OnScopeLeave([this]() { unblock_input(); });
@@ -883,21 +934,19 @@ bool MessageInput::scroll(int dx, int dy)
 
     save_pos();
 
-    // prepare_mouse_position 用于移动光标/窗口（副作用），但 WM_MOUSEWHEEL 的 lParam 需要屏幕坐标
     prepare_mouse_position(target_pos.first, target_pos.second);
     POINT screen_pos = client_to_screen(target_pos.first, target_pos.second);
     LPARAM lParam = MAKELPARAM(screen_pos.x, screen_pos.y);
-
     bool success = true;
 
     if (dy != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dy));
-        success &= send_or_post_w(WM_MOUSEWHEEL, wParam, lParam);
+        success &= send_or_post_w(target, WM_MOUSEWHEEL, wParam, lParam);
     }
 
     if (dx != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dx));
-        success &= send_or_post_w(WM_MOUSEHWHEEL, wParam, lParam);
+        success &= send_or_post_w(target, WM_MOUSEHWHEEL, wParam, lParam);
     }
 
     if (config_.with_window_pos) {
