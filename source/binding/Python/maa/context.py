@@ -752,6 +752,7 @@ class ContextEventSink(EventSink):
                 reco_id=details["reco_id"],
                 name=details["name"],
                 focus=details["focus"],
+                anchor=details.get("anchor"),
             )
             self.on_node_recognition(context, noti_type, detail)
 

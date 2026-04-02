@@ -282,8 +282,8 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
             recognizer.prefetch_batch_ocr(batch_plan->entries);
         }
 
-        RecoResult result =
-            run_recognition(image, pipeline_data, node.anchor ? std::optional<std::string> { node.name } : std::nullopt, ocr_cache);
+        auto anchor_name = node.anchor ? std::optional { node.name } : std::nullopt;
+        RecoResult result = run_recognition(image, pipeline_data, std::move(anchor_name), ocr_cache);
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop";

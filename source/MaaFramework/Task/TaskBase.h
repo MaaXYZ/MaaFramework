@@ -41,7 +41,7 @@ protected:
     RecoResult run_recognition(
         const cv::Mat& image,
         const PipelineData& data,
-        std::optional<std::string> anchor_name,
+        std::optional<std::string> anchor_name = std::nullopt,
         std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_cache = nullptr);
     ActionResult run_action(const RecoResult& reco, const PipelineData& data);
     cv::Mat screencap();
