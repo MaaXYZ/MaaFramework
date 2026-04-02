@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "General/ScopedThreadAttach.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 
@@ -106,10 +105,6 @@ bool AndroidNativeControlUnitMgr::screencap(cv::Mat& image)
 
     if (!connected()) {
         LogError << "controller is not connected";
-        return false;
-    }
-
-    if (const ScopedThreadAttach attach(&*funcs_); !attach.attached()) {
         return false;
     }
 
@@ -336,10 +331,6 @@ bool AndroidNativeControlUnitMgr::validate_contact(int contact)
 
 bool AndroidNativeControlUnitMgr::dispatch_input_message(MethodParam param) const
 {
-    if (const ScopedThreadAttach attach(&*funcs_); !attach.attached()) {
-        return false;
-    }
-
     int ret = funcs_->dispatch_input_message(param);
     if (ret == 0) {
         return true;
@@ -372,24 +363,6 @@ cv::Point AndroidNativeControlUnitMgr::get_touch_up_point(int contact) const
         std::max(0, config_.touch_width / 2),
         std::max(0, config_.touch_height / 2),
     };
-}
-
-void* AndroidNativeControlUnitMgr::attach_thread() const
-{
-    if (!funcs_) {
-        LogError << "library is not loaded";
-        return nullptr;
-    }
-    return funcs_->attach_thread();
-}
-
-int AndroidNativeControlUnitMgr::detach_thread(void* env) const
-{
-    if (!funcs_) {
-        LogError << "library is not loaded";
-        return -1;
-    }
-    return funcs_->detach_thread(env);
 }
 
 MAA_CTRL_UNIT_NS_END

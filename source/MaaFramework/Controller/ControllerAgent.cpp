@@ -9,53 +9,6 @@
 
 MAA_CTRL_NS_BEGIN
 
-namespace
-{
-
-#ifdef __ANDROID__
-class ScopedAndroidNativeThreadAttach
-{
-public:
-    explicit ScopedAndroidNativeThreadAttach(const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>& control_unit)
-        : unit_(std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::AndroidNativeControlUnitAPI>(control_unit))
-    {
-        if (!unit_ || !unit_->connected()) {
-            return;
-        }
-
-        env_ = unit_->attach_thread();
-        attach_failed_ = env_ == nullptr;
-        if (attach_failed_) {
-            LogError << "Android native control unit attach_thread returned nullptr";
-        }
-    }
-
-    ScopedAndroidNativeThreadAttach(const ScopedAndroidNativeThreadAttach&) = delete;
-    ScopedAndroidNativeThreadAttach& operator=(const ScopedAndroidNativeThreadAttach&) = delete;
-
-    ~ScopedAndroidNativeThreadAttach()
-    {
-        if (!unit_ || !env_) {
-            return;
-        }
-
-        int ret = unit_->detach_thread(env_);
-        if (ret != 0) {
-            LogWarn << "Android native control unit detach_thread failed" << VAR(ret);
-        }
-    }
-
-    bool ready() const { return !attach_failed_; }
-
-private:
-    std::shared_ptr<MAA_CTRL_UNIT_NS::AndroidNativeControlUnitAPI> unit_;
-    void* env_ = nullptr;
-    bool attach_failed_ = false;
-};
-#endif
-
-} // namespace
-
 ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit)
     : control_unit_(std::move(control_unit))
 {
@@ -967,13 +920,6 @@ bool ControllerAgent::check_stop()
 bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action action)
 {
     bool ret = false;
-
-#ifdef __ANDROID__
-    const ScopedAndroidNativeThreadAttach attach(control_unit_);
-    if (!attach.ready()) {
-        return false;
-    }
-#endif
 
     bool notify = false;
     {

@@ -85,22 +85,16 @@ struct MethodParam
 
 using GetLockedPixelsSignature = FrameInfo();
 using UnlockPixelsSignature = int(FrameInfo);
-using AttachThreadSignature = void*();
-using DetachThreadSignature = int(void*);
 using DispatchInputMessageSignature = int(MethodParam);
 
 using GetLockedPixelsFunc = boost::function<GetLockedPixelsSignature>;
 using UnlockPixelsFunc = boost::function<UnlockPixelsSignature>;
-using AttachThreadFunc = boost::function<AttachThreadSignature>;
-using DetachThreadFunc = boost::function<DetachThreadSignature>;
 using DispatchInputMessageFunc = boost::function<DispatchInputMessageSignature>;
 
 struct AndroidExternalFunctions
 {
     GetLockedPixelsFunc get_locked_pixels { };
     UnlockPixelsFunc unlock_pixels { };
-    AttachThreadFunc attach_thread { };
-    DetachThreadFunc detach_thread { };
     DispatchInputMessageFunc dispatch_input_message { };
 };
 
@@ -116,8 +110,6 @@ public:
 private:
     static constexpr auto get_locked_pixels_func_name_ = "GetLockedPixels";
     static constexpr auto unlock_pixels_func_name_ = "UnlockPixels";
-    static constexpr auto attach_thread_func_name_ = "AttachThread";
-    static constexpr auto detach_thread_func_name_ = "DetachThread";
     static constexpr auto dispatch_input_message_func_name_ = "DispatchInputMessage";
 };
 
