@@ -220,6 +220,37 @@ bool CustomControlUnitMgr::scroll(int dx, int dy)
     return controller_->scroll(dx, dy, controller_arg_);
 }
 
+bool CustomControlUnitMgr::relative_move(int dx, int dy)
+{
+    if (!controller_ || !controller_->relative_move) {
+        LogError << "controller_ or controller_->relative_move is nullptr";
+        return false;
+    }
+
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->relative_move) << VAR(dx) << VAR(dy);
+    return controller_->relative_move(dx, dy, controller_arg_);
+}
+
+bool CustomControlUnitMgr::shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout)
+{
+    if (!controller_ || !controller_->shell) {
+        LogError << "controller_ or controller_->shell is nullptr";
+        return false;
+    }
+
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->shell) << VAR(cmd) << VAR(timeout.count());
+
+    StringBuffer buffer;
+    bool ret = controller_->shell(cmd.c_str(), timeout.count(), controller_arg_, &buffer);
+    if (!ret) {
+        LogError << "failed to shell" << VAR(ret);
+        return false;
+    }
+    output = buffer.get();
+
+    return true;
+}
+
 bool CustomControlUnitMgr::inactive()
 {
     if (!controller_ || !controller_->inactive) {

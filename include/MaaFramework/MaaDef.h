@@ -210,6 +210,13 @@ enum MaaCtrlOptionEnum
     /// value: bool, eg: true; val_size: sizeof(bool)
     MaaCtrlOption_ScreenshotUseRawSize = 3,
 
+    /// Enable or disable mouse-lock-follow mode for Win32 controllers.
+    /// This is designed for TPS/FPS games that lock the mouse to their window in the background.
+    /// Only valid for Win32 controllers using message-based input methods.
+    ///
+    /// value: bool, eg: true; val_size: sizeof(bool)
+    MaaCtrlOption_MouseLockFollow = 4,
+
     // Deprecated
     // Dump all screenshots and actions
     //
@@ -377,14 +384,36 @@ typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_SendMessageWithWindowPos (1ULL << 7)
 #define MaaWin32InputMethod_PostMessageWithWindowPos (1ULL << 8)
 
-// MaaDbgControllerType:
+// MaaMacOSScreencapMethod:
 /**
- * No bitwise OR, just set it
+ * @brief macOS screencap method
+ *
+ * Select ONE method only.
+ *
+ * | Method          | Description                                    |
+ * |-----------------|------------------------------------------------|
+ * | ScreenCaptureKit| Modern macOS screencap using ScreenCaptureKit  |
  */
-typedef uint64_t MaaDbgControllerType;
-#define MaaDbgControllerType_None 0
-#define MaaDbgControllerType_CarouselImage 1ULL
-#define MaaDbgControllerType_ReplayRecording (1ULL << 1)
+typedef uint64_t MaaMacOSScreencapMethod;
+#define MaaMacOSScreencapMethod_None 0ULL
+#define MaaMacOSScreencapMethod_ScreenCaptureKit 1ULL
+// TODO Core Graphics method?
+
+// MaaMacOSInputMethod:
+/**
+ * @brief macOS input method
+ *
+ * Select ONE method only.
+ *
+ * | Method          | Description                                    |
+ * |-----------------|------------------------------------------------|
+ * | GlobalEvent     | Injects into the global HID event stream via CGEventPost(kCGHIDEventTap), dispatched by the OS to the front window |
+ * | PostToPid       | Directly send to target process using CGEventPostToPid |
+ */
+typedef uint64_t MaaMacOSInputMethod;
+#define MaaMacOSInputMethod_None 0ULL
+#define MaaMacOSInputMethod_GlobalEvent 1ULL
+#define MaaMacOSInputMethod_PostToPid (1ULL << 1)
 
 // MaaGamepadType:
 /**

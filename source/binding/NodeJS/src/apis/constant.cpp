@@ -85,16 +85,6 @@ static maajs::ValueType load_win32_input_method(maajs::EnvType env)
     return obj;
 }
 
-static maajs::ValueType load_dbg_controller_type(maajs::EnvType env)
-{
-    auto obj = maajs::ObjectType::New(env);
-
-    DEM(MaaDbgControllerType, CarouselImage);
-    DEM(MaaDbgControllerType, ReplayRecording);
-
-    return obj;
-}
-
 static maajs::ValueType load_gamepad_type(maajs::EnvType env)
 {
     auto obj = maajs::ObjectType::New(env);
@@ -157,6 +147,25 @@ static maajs::ValueType load_gamepad_contact(maajs::EnvType env)
     return obj;
 }
 
+static maajs::ValueType load_macos_screencap_method(maajs::EnvType env)
+{
+    auto obj = maajs::ObjectType::New(env);
+
+    DEM(MaaMacOSScreencapMethod, ScreenCaptureKit);
+
+    return obj;
+}
+
+static maajs::ValueType load_macos_input_method(maajs::EnvType env)
+{
+    auto obj = maajs::ObjectType::New(env);
+
+    DEM(MaaMacOSInputMethod, GlobalEvent);
+    DEM(MaaMacOSInputMethod, PostToPid);
+
+    return obj;
+}
+
 std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env)
 {
     return {
@@ -165,7 +174,8 @@ std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env)
         { "AdbInputMethod", load_adb_input_method(env) },
         { "Win32ScreencapMethod", load_win32_screencap_method(env) },
         { "Win32InputMethod", load_win32_input_method(env) },
-        { "DbgControllerType", load_dbg_controller_type(env) },
+        { "MacOSScreencapMethod", load_macos_screencap_method(env) },
+        { "MacOSInputMethod", load_macos_input_method(env) },
         { "GamepadType", load_gamepad_type(env) },
         { "GamepadButton", load_gamepad_button(env) },
         { "GamepadContact", load_gamepad_contact(env) },

@@ -1,5 +1,5 @@
 file(GLOB_RECURSE maa_win32_control_unit_src *.h *.hpp *.cpp)
-file(GLOB_RECURSE maa_win32_control_unit_header ${MAA_PRIVATE_INC}/ControlUnit/Win32ControlUnitAPI.h ${MAA_PRIVATE_INC}/ControlUnit/ControlUnitAPI.h)
+file(GLOB_RECURSE maa_win32_control_unit_header ${MAA_PUBLIC_INC}/MaaControlUnit/Win32ControlUnitAPI.h ${MAA_PUBLIC_INC}/MaaControlUnit/ControlUnitAPI.h)
 
 add_library(MaaWin32ControlUnit SHARED ${maa_win32_control_unit_src} ${maa_win32_control_unit_header})
 

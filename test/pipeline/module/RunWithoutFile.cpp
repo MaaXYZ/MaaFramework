@@ -29,11 +29,9 @@ MaaBool my_action(
 
 bool run_without_file(const std::filesystem::path& testset_dir)
 {
-    auto testing_path = testset_dir / "PipelineSmoking" / "Screenshot";
-    auto result_path = testset_dir / "debug";
+    auto screenshot_path = testset_dir / "PipelineSmoking" / "Screenshot";
 
-    auto controller_handle =
-        MaaDbgControllerCreate(testing_path.string().c_str(), result_path.string().c_str(), MaaDbgControllerType_CarouselImage, "{}");
+    auto controller_handle = MaaDbgControllerCreate(screenshot_path.string().c_str());
 
     MaaControllerWait(controller_handle, MaaControllerPostConnection(controller_handle));
 

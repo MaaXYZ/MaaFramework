@@ -1,0 +1,76 @@
+{
+  "test_start": {
+    "focus": "Test Start!",
+    "next": "bee_recognition"
+  },
+  "bee_recognition": {
+    "focus": "Find Bee!",
+    "recognition": "FeatureMatch",
+    "template": "Bee.png",
+    "green_mask": true,
+    "threshold": 0.5,
+    "next": "click_action"
+  },
+  "click_action": {
+    "action": "Click",
+    "target": "bee_recognition",
+    "next": "click_left_action"
+  },
+  "click_left_action": {
+    "action": "Click",
+    "contact": 1,
+    "target": "bee_recognition",
+    "next": "swipe_action"
+  },
+  "swipe_action": {
+    "action": "Swipe",
+    "begin": [
+      100,
+      100
+    ],
+    "end": [
+      620,
+      620
+    ],
+    "duration": 1000,
+    "next": "scroll_down_test"
+  },
+  "scroll_down_test": {
+    "focus": "Scroll Down Test!",
+    "action": "Scroll",
+    "target": "bee_recognition",
+    "dy": -680,
+    "next": "scroll_up_test"
+  },
+  "scroll_up_test": {
+    "focus": "Scroll Up Test!",
+    "action": "Scroll",
+    "target": "bee_recognition",
+    "dy": 340,
+    "next": "scroll_right_test"
+  },
+  "scroll_right_test": {
+    "focus": "Scroll Right Test!",
+    "action": "Scroll",
+    "target": "bee_recognition",
+    "dx": 360,
+    "next": "key_action"
+  },
+  "key_action": {
+    "action": "ClickKey",
+    "key": 7,
+    "next": "activate_inputfield"
+  },
+  "activate_inputfield": {
+    "action": "Click",
+    "target": [
+      300,
+      725
+    ],
+    "next": "input_text_action"
+  },
+  "input_text_action": {
+    "action": "InputText",
+    "input_text": "Hello, MaaFramework!"
+  }
+}

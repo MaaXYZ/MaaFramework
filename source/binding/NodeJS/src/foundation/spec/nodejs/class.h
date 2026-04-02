@@ -23,7 +23,8 @@ struct NativeClass
             try {
                 auto impl = Inherit::ctor(info);
                 if (!impl) {
-                    return info.Env().Null();
+                    std::string what = std::format("maa.{}.ctor: failed to create instance", Inherit::name);
+                    return ThrowTypeError(info.Env(), what);
                 }
 
                 impl->env = info.Env();

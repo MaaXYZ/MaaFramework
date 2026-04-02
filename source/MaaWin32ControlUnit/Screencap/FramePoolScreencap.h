@@ -41,6 +41,8 @@ private:
     void uninit();
     bool check_and_handle_size_changed();
     void try_disable_border();
+    void try_disable_cursor();
+    void try_include_secondary_windows();
 
 private:
     HWND hwnd_ = nullptr;
@@ -57,6 +59,7 @@ private:
 
     // 存储上次的窗口大小，用于检测窗口大小变化
     std::pair<int, int> last_capture_size_ = { 0, 0 };
+    cv::Mat cached_image_;
 };
 
 MAA_CTRL_UNIT_NS_END

@@ -102,6 +102,7 @@ declare global {
             reco_id: number // RecoId
             name: string
             focus: unknown
+            anchor?: string
         }
 
         type TaskerContextActionNotify = {
