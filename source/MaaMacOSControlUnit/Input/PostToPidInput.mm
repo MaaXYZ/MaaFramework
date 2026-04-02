@@ -153,10 +153,40 @@ bool PostToPidInput::key_up(int key)
 
 bool PostToPidInput::scroll(int dx, int dy)
 {
-    std::ignore = dx;
-    std::ignore = dy;
-    LogWarn << "scroll not supported on macOS controller";
-    return false;
+    NSPoint location = NSMakePoint(latest_touch_x_, window_h_ - latest_touch_y_);
+    NSEvent* nsEvent0 = [NSEvent mouseEventWithType:NSEventTypeMouseMoved
+                                           location:location
+                                      modifierFlags:0
+                                          timestamp:[NSDate timeIntervalSinceReferenceDate]
+                                       windowNumber:window_id_
+                                            context:nil
+                                        eventNumber:0
+                                         clickCount:1
+                                           pressure:0];
+    if (!nsEvent0) {
+        LogError << "Failed to create scroll nsEvent0";
+        return false;
+    }
+    [nsEvent0 setValue:@(NSEventTypeScrollWheel) forKey:@"type"];
+    CGEventRef event0 = [nsEvent0 CGEvent];
+    if (!event0) {
+        LogError << "Failed to create scroll event0";
+        return false;
+    }
+
+    // CGEvent wheel2: 正值向左、负值向右，与协议（正值向右）相反，需取反 dx
+    CGEventRef event1 = CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, 2, dy, -dx);
+    if (!event1) {
+        LogError << "Failed to create scroll event1";
+        return false;
+    }
+
+    CGEventPostToPid(pid_, event0);
+    CGEventPostToPid(pid_, event1);
+
+    CFRelease(event1);
+
+    return true;
 }
 
 void PostToPidInput::update_window_info()
@@ -184,26 +214,29 @@ bool PostToPidInput::post_mouse_event(CGEventType type, int x, int y)
                                        eventNumber:0
                                         clickCount:1
                                           pressure:0];
-    if (nsEvent) {
-        CGEventRef cgEvent = [nsEvent CGEvent];
-        if (cgEvent) {
-            CGEventPostToPid(pid_, cgEvent);
-            return true;
-        }
+    if (!nsEvent) {
+        LogError << "Failed to create mouse nsEvent";
+        return false;
     }
-
-    return false;
+    CGEventRef cgEvent = [nsEvent CGEvent];
+    if (!cgEvent) {
+        LogError << "Failed to create mouse cgEvent";
+        return false;
+    }
+    CGEventPostToPid(pid_, cgEvent);
+    return true;
 }
 
 bool PostToPidInput::post_keyboard_event(CGKeyCode key_code, bool key_down)
 {
     CGEventRef event = CGEventCreateKeyboardEvent(nullptr, key_code, key_down);
-    if (event) {
-        CGEventPostToPid(pid_, event);
-        CFRelease(event);
-        return true;
+    if (!event) {
+        LogError << "Failed to create keyboard event";
+        return false;
     }
-    return false;
+    CGEventPostToPid(pid_, event);
+    CFRelease(event);
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END

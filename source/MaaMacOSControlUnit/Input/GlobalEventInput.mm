@@ -190,10 +190,32 @@ bool GlobalEventInput::key_up(int key)
 
 bool GlobalEventInput::scroll(int dx, int dy)
 {
-    std::ignore = dx;
-    std::ignore = dy;
-    LogWarn << "scroll not supported on macOS controller";
-    return false;
+    if (!activate_window(pid_)) {
+        LogWarn << "Failed to activate window, scroll may not work";
+    }
+
+    CGPoint location = CGPointZero;
+    CGEventRef pos_event = CGEventCreate(nullptr);
+    if (pos_event) {
+        location = CGEventGetLocation(pos_event);
+        CFRelease(pos_event);
+    }
+    else {
+        LogWarn << "Failed to create position event, using default location (0, 0)";
+    }
+
+    // CGEvent wheel2: 正值向左、负值向右，与协议（正值向右）相反，需取反 dx
+    CGEventRef event = CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, 2, dy, -dx);
+    if (!event) {
+        LogError << "Failed to create scroll wheel event";
+        return false;
+    }
+
+    CGEventSetLocation(event, location);
+    CGEventPost(kCGHIDEventTap, event);
+    CFRelease(event);
+
+    return true;
 }
 
 bool GlobalEventInput::activate_window(pid_t target_pid)
@@ -240,23 +262,25 @@ void GlobalEventInput::update_window_info()
 bool GlobalEventInput::post_mouse_event(CGEventType type, CGPoint location, CGMouseButton button)
 {
     CGEventRef event = CGEventCreateMouseEvent(nullptr, type, location, button);
-    if (event) {
-        CGEventPost(kCGHIDEventTap, event);
-        CFRelease(event);
-        return true;
+    if (!event) {
+        LogError << "Failed to create mouse event";
+        return false;
     }
-    return false;
+    CGEventPost(kCGHIDEventTap, event);
+    CFRelease(event);
+    return true;
 }
 
 bool GlobalEventInput::post_keyboard_event(CGKeyCode key_code, bool key_down)
 {
     CGEventRef event = CGEventCreateKeyboardEvent(nullptr, key_code, key_down);
-    if (event) {
-        CGEventPost(kCGHIDEventTap, event);
-        CFRelease(event);
-        return true;
+    if (!event) {
+        LogError << "Failed to create keyboard event";
+        return false;
     }
-    return false;
+    CGEventPost(kCGHIDEventTap, event);
+    CFRelease(event);
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END

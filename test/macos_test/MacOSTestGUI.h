@@ -38,6 +38,8 @@ public:
         std::string charactersIgnoringModifiers);
     // 鼠标事件回调
     void handleMouseEvent(MouseEventType type, MouseButton button, double x, double y, uint64_t modifiers);
+    // 滚轮事件回调
+    void handleScrollEvent(double dx, double dy);
 
 private:
     // 键盘布局相关

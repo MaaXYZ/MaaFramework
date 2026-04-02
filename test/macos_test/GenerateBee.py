@@ -5,7 +5,7 @@ from pilmoji import Pilmoji
 from pilmoji.source import AppleEmojiSource
 
 def generate_bee_template():
-    img = Image.new('RGB', (60, 60), (46, 41, 45))
+    img = Image.new('RGB', (60, 60), (243, 243, 243))
 
     font = ImageFont.truetype('/System/Library/Fonts/Apple Color Emoji.ttc', 40)
 

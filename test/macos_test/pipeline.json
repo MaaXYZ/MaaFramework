@@ -32,7 +32,28 @@
       620,
       620
     ],
-    "duration": 2000,
+    "duration": 1000,
+    "next": "scroll_down_test"
+  },
+  "scroll_down_test": {
+    "focus": "Scroll Down Test!",
+    "action": "Scroll",
+    "target": "bee_recognition",
+    "dy": -680,
+    "next": "scroll_up_test"
+  },
+  "scroll_up_test": {
+    "focus": "Scroll Up Test!",
+    "action": "Scroll",
+    "target": "bee_recognition",
+    "dy": 340,
+    "next": "scroll_right_test"
+  },
+  "scroll_right_test": {
+    "focus": "Scroll Right Test!",
+    "action": "Scroll",
+    "target": "bee_recognition",
+    "dx": 360,
     "next": "key_action"
   },
   "key_action": {
