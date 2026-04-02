@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 #include "Base/UnitBase.h"
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/SafeWindows.hpp"
 
@@ -51,6 +51,8 @@ public: // from ControlUnitAPI
     virtual bool key_up(int key) override;
 
     virtual bool scroll(int dx, int dy) override;
+
+    virtual bool set_mouse_lock_follow(bool enabled) override;
 
     virtual bool inactive() override;
 

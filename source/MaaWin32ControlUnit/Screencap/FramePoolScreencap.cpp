@@ -68,8 +68,11 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     }
 
     if (!frame) {
-        LogError << "Failed to get frame after timeout";
-        return std::nullopt;
+        if (cached_image_.empty()) {
+            LogError << "Failed to get frame and no cached image available";
+            return std::nullopt;
+        }
+        return cached_image_.clone();
     }
 
     auto surface = frame.Surface();
@@ -173,7 +176,9 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     cv::Rect client_roi(border_left, border_top, client_width, client_height);
     cv::Mat image = trimmed(client_roi);
 
-    return bgra_to_bgr(image);
+    cv::Mat result = bgra_to_bgr(image);
+    cached_image_ = result.clone();
+    return result;
 }
 
 bool FramePoolScreencap::init()
@@ -301,6 +306,12 @@ bool FramePoolScreencap::init()
 
     // 尝试关闭截图时的黄色边框（Windows 11 及部分 Win10 版本支持）
     try_disable_border();
+
+    // 尝试关闭截图时的鼠标指针（Windows 10 2004 及以上支持）
+    try_disable_cursor();
+
+    // 尝试包含从属窗口（弹窗、工具提示等）
+    try_include_secondary_windows();
 
     try {
         cap_session_.StartCapture();
@@ -453,6 +464,46 @@ void FramePoolScreencap::try_disable_border()
     }
     catch (const winrt::hresult_error& e) {
         LogWarn << "Failed to disable capture border" << VAR(e.code()) << VAR(winrt::to_string(e.message()));
+    }
+}
+
+void FramePoolScreencap::try_disable_cursor()
+{
+    LogFunc;
+
+    using namespace winrt::Windows::Foundation::Metadata;
+
+    if (!ApiInformation::IsPropertyPresent(L"Windows.Graphics.Capture.GraphicsCaptureSession", L"IsCursorCaptureEnabled")) {
+        LogInfo << "IsCursorCaptureEnabled property not supported on this system";
+        return;
+    }
+
+    try {
+        cap_session_.IsCursorCaptureEnabled(false);
+        LogInfo << "Cursor capture disabled successfully";
+    }
+    catch (const winrt::hresult_error& e) {
+        LogWarn << "Failed to disable cursor capture" << VAR(e.code()) << VAR(winrt::to_string(e.message()));
+    }
+}
+
+void FramePoolScreencap::try_include_secondary_windows()
+{
+    LogFunc;
+
+    using namespace winrt::Windows::Foundation::Metadata;
+
+    if (!ApiInformation::IsPropertyPresent(L"Windows.Graphics.Capture.GraphicsCaptureSession", L"IncludeSecondaryWindows")) {
+        LogInfo << "IncludeSecondaryWindows property not supported on this system";
+        return;
+    }
+
+    try {
+        cap_session_.IncludeSecondaryWindows(true);
+        LogInfo << "Secondary windows capture enabled successfully";
+    }
+    catch (const winrt::hresult_error& e) {
+        LogWarn << "Failed to enable secondary windows capture" << VAR(e.code()) << VAR(winrt::to_string(e.message()));
     }
 }
 

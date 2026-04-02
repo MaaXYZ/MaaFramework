@@ -190,6 +190,11 @@ bool Runner::run(const RuntimeParam& param)
         args.emplace_back(socket_id);
         auto os_args = conv_args(args);
 
+        // v2.5.0: set PI_* environment variables in current process (child inherits them)
+        for (const auto& [key, val] : agent_param.env_vars) {
+            boost::this_process::environment()[key] = val;
+        }
+
         LogInfo << "Start Agent" << VAR(agent_param.child_exec) << VAR(os_args) << VAR(agent_param.cwd);
         auto& agent_child = agent_children.emplace_back(agent_param.child_exec, os_args, boost::process::start_dir = agent_param.cwd);
         if (!agent_child.valid()) {

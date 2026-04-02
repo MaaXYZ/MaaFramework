@@ -167,7 +167,6 @@ declare global {
             | 'PostToPid',
             ScreencapOrInputMethods
         >
-        const DbgControllerType: Record<'CarouselImage' | 'ReplayRecording', Uint64>
         const GamepadType: Record<'Xbox360' | 'DualShock4', Uint64>
     }
 }

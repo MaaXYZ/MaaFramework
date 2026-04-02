@@ -46,7 +46,7 @@ from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.buffer import ImageBuffer
-from maa.define import MaaDbgControllerTypeEnum, LoggingLevelEnum
+from maa.define import LoggingLevelEnum
 from maa.context import Context, ContextEventSink
 from maa.event_sink import EventSink
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
@@ -368,8 +368,6 @@ def test_controller_api():
 
     dbg_controller = DbgController(
         install_dir / "test" / "PipelineSmoking" / "Screenshot",
-        install_dir / "test" / "user",
-        MaaDbgControllerTypeEnum.CarouselImage,
     )
     print(f"  controller: {dbg_controller}")
 
@@ -406,9 +404,7 @@ def test_controller_api():
     print(f"  info: {info}")
     assert isinstance(info, dict), "info should be a dict"
     assert "type" in info, "info should contain 'type'"
-    assert info["type"].startswith(
-        "dbg_"
-    ), "dbg controller type should start with 'dbg_'"
+    assert info["type"] == "dbg", "dbg controller type should be 'dbg'"
 
     # 测试输入操作
     dbg_controller.post_click(100, 100).wait()

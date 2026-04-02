@@ -378,6 +378,37 @@ MaaBool CustomScroll(int32_t dx, int32_t dy, void* trans_arg)
     });
 }
 
+MaaBool CustomRelativeMove(int32_t dx, int32_t dy, void* trans_arg)
+{
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto ctx = customCtx->callbacks["relative_move"];
+    return ctx->Call<bool>([&](maajs::FunctionType func) {
+        return func.Call(
+            {
+                maajs::NumberType::New(func.Env(), dx),
+                maajs::NumberType::New(func.Env(), dy),
+            });
+    });
+}
+
+MaaBool CustomShell(const char* cmd, int64_t timeout, void* trans_arg, MaaStringBuffer* buffer)
+{
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto ctx = customCtx->callbacks["shell"];
+    auto result = ctx->Call<std::optional<std::string>>([&](maajs::FunctionType func) {
+        return func.Call(
+            {
+                maajs::StringType::New(func.Env(), cmd),
+                maajs::NumberType::New(func.Env(), static_cast<double>(timeout)),
+            });
+    });
+    if (result) {
+        StringBuffer(buffer, false).set(*result);
+        return true;
+    }
+    return false;
+}
+
 MaaBool CustomInactive(void* trans_arg)
 {
     auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);

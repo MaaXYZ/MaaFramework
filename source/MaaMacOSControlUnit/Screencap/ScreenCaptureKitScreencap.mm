@@ -84,6 +84,7 @@ std::optional<cv::Mat> ScreenCaptureKitScreencap::screencap_window(uint32_t wid)
         config.height = target_window.frame.size.height;
         config.pixelFormat = kCVPixelFormatType_32BGRA;
         config.colorSpaceName = kCGColorSpaceSRGB;
+        config.showsCursor = NO;
 
         if (@available(macOS 14.0, *)) {
             [SCScreenshotManager
@@ -135,6 +136,7 @@ std::optional<cv::Mat> ScreenCaptureKitScreencap::screencap_display()
         config.height = display.height;
         config.pixelFormat = kCVPixelFormatType_32BGRA;
         config.colorSpaceName = kCGColorSpaceSRGB;
+        config.showsCursor = NO;
 
         if (@available(macOS 14.0, *)) {
             [SCScreenshotManager

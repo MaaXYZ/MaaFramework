@@ -125,6 +125,12 @@ class MaaCtrlOptionEnum(IntEnum):
     # value: bool, eg: true; val_size: sizeof(bool)
     ScreenshotUseRawSize = 3
 
+    # Enable or disable mouse-lock-follow mode for Win32 controllers.
+    # This is designed for TPS/FPS games that lock the mouse to their window in the background.
+    # Only valid for Win32 controllers using message-based input methods.
+    # value: bool, eg: true; val_size: sizeof(bool)
+    MouseLockFollow = 4
+
     # Deprecated
     # Dump all screenshots and actions
     # this option will || with MaaGlobalOptionEnum.Recording
@@ -387,9 +393,6 @@ class MaaMacOSInputMethodEnum(IntEnum):
     PostToPid = 1 << 1
 
 # No bitwise OR, just set it
-MaaDbgControllerType = ctypes.c_uint64
-
-# No bitwise OR, just set it
 MaaGamepadType = ctypes.c_uint64
 
 
@@ -482,12 +485,6 @@ class MaaControllerFeatureEnum(IntEnum):
     UseMouseDownAndUpInsteadOfClick = 1
     UseKeyboardDownAndUpInsteadOfClick = 1 << 1
 
-
-class MaaDbgControllerTypeEnum(IntEnum):
-    Null = 0
-
-    CarouselImage = 1
-    ReplayRecording = 1 << 1
 
 
 FUNCTYPE = ctypes.WINFUNCTYPE if (platform.system() == "Windows") else ctypes.CFUNCTYPE
@@ -632,6 +629,19 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ctypes.c_int32,
         ctypes.c_void_p,
     )
+    RelativeMoveFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
+    ShellFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_char_p,
+        ctypes.c_int64,
+        ctypes.c_void_p,
+        MaaStringBufferHandle,
+    )
     InactiveFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_void_p,
@@ -659,6 +669,8 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("key_down", KeyDownFunc),
         ("key_up", KeyUpFunc),
         ("scroll", ScrollFunc),
+        ("relative_move", RelativeMoveFunc),
+        ("shell", ShellFunc),
         ("inactive", InactiveFunc),
         ("get_info", GetInfoFunc),
     ]

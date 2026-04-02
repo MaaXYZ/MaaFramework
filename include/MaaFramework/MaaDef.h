@@ -210,6 +210,13 @@ enum MaaCtrlOptionEnum
     /// value: bool, eg: true; val_size: sizeof(bool)
     MaaCtrlOption_ScreenshotUseRawSize = 3,
 
+    /// Enable or disable mouse-lock-follow mode for Win32 controllers.
+    /// This is designed for TPS/FPS games that lock the mouse to their window in the background.
+    /// Only valid for Win32 controllers using message-based input methods.
+    ///
+    /// value: bool, eg: true; val_size: sizeof(bool)
+    MaaCtrlOption_MouseLockFollow = 4,
+
     // Deprecated
     // Dump all screenshots and actions
     //
@@ -407,15 +414,6 @@ typedef uint64_t MaaMacOSInputMethod;
 #define MaaMacOSInputMethod_None 0ULL
 #define MaaMacOSInputMethod_GlobalEvent 1ULL
 #define MaaMacOSInputMethod_PostToPid (1ULL << 1)
-
-// MaaDbgControllerType:
-/**
- * No bitwise OR, just set it
- */
-typedef uint64_t MaaDbgControllerType;
-#define MaaDbgControllerType_None 0
-#define MaaDbgControllerType_CarouselImage 1ULL
-#define MaaDbgControllerType_ReplayRecording (1ULL << 1)
 
 // MaaGamepadType:
 /**

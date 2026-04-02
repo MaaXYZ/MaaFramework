@@ -20,13 +20,31 @@ MaaController* MaaMacOSControllerCreate(uint32_t, MaaMacOSScreencapMethod, MaaMa
     return nullptr;
 }
 
+MaaController* MaaAndroidNativeControllerCreate(const char*)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
 MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks*, void*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return nullptr;
 }
 
-MaaController* MaaDbgControllerCreate(const char*, const char*, MaaDbgControllerType, const char*)
+MaaController* MaaDbgControllerCreate(const char*)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
+MaaController* MaaReplayControllerCreate(const char*)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
+MaaController* MaaRecordControllerCreate(MaaController*, const char*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return nullptr;

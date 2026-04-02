@@ -4,6 +4,8 @@
 
 #include "MaaUtils/Conf.h"
 
+#include "MaaControlUnit/MaaControlUnitDef.h"
+
 #define MAA_GLOBAL_NS MAA_NS::GlobalNS
 #define MAA_GLOBAL_NS_BEGIN \
     namespace MAA_GLOBAL_NS \
@@ -21,12 +23,6 @@
     namespace MAA_CTRL_NS \
     {
 #define MAA_CTRL_NS_END }
-
-#define MAA_CTRL_UNIT_NS MAA_NS::CtrlUnitNs
-#define MAA_CTRL_UNIT_NS_BEGIN \
-    namespace MAA_CTRL_UNIT_NS \
-    {
-#define MAA_CTRL_UNIT_NS_END }
 
 #define MAA_VISION_NS MAA_NS::VisionNS
 #define MAA_VISION_NS_BEGIN \

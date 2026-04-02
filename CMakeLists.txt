@@ -9,13 +9,18 @@ include(source/MaaUtils/MaaUtils.cmake)
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_MACOS_CONTROLLER "build with macOS controller" ON)
-option(WITH_DBG_CONTROLLER "build with debugging controller" OFF)
+option(WITH_ANDROID_NATIVE_CONTROLLER "build with Android native controller" ON)
 option(WITH_CUSTOM_CONTROLLER "build with custom controller" ON)
 option(WITH_PLAYCOVER_CONTROLLER "build with PlayCover controller for macOS" ON)
 option(WITH_GAMEPAD_CONTROLLER "build with virtual gamepad controller for Windows" ON)
 option(WITH_WLROOTS_CONTROLLER "build with wlroots controller for Linux" ON)
+option(WITH_RECORD_CONTROLLER "build with record controller for recording" ON)
+option(WITH_REPLAY_CONTROLLER "build with replay controller" ON)
+option(WITH_DBG_CONTROLLER "build with debug controller" OFF)
+
 option(WITH_NODEJS_BINDING "build with nodejs binding" OFF)
 option(WITH_QUICKJS_BINDING "build with quickjs binding" OFF)
+
 option(WITH_MAA_AGENT "build with MaaAgent" ON)
 
 option(BUILD_PICLI "build maa picli" ON)
@@ -33,8 +38,8 @@ set(MAA_PUBLIC_INC ${CMAKE_SOURCE_DIR}/include)
 set(MAA_PRIVATE_INC ${CMAKE_SOURCE_DIR}/source/include)
 
 # Disable unavailable options
-if(NOT WITH_DBG_CONTROLLER)
-    message(STATUS "Dbg controller is disabled, disable BUILD_PIPELINE_TESTING")
+if(NOT WITH_REPLAY_CONTROLLER)
+    message(STATUS "Replay controller is disabled, disable BUILD_PIPELINE_TESTING")
     set(BUILD_PIPELINE_TESTING OFF)
 endif()
 
@@ -46,6 +51,11 @@ endif()
 if(WITH_MACOS_CONTROLLER AND NOT APPLE)
     message(STATUS "Not on macOS, disable WITH_MACOS_CONTROLLER")
     set(WITH_MACOS_CONTROLLER OFF)
+endif()
+
+if(WITH_ANDROID_NATIVE_CONTROLLER AND NOT ANDROID)
+    message(STATUS "Not on Android, disable WITH_ANDROID_NATIVE_CONTROLLER")
+    set(WITH_ANDROID_NATIVE_CONTROLLER OFF)
 endif()
 
 if(WITH_GAMEPAD_CONTROLLER AND NOT WIN32)

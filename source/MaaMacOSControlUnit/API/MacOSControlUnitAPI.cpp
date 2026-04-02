@@ -1,4 +1,4 @@
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 
 #include "MaaUtils/Logger.h"
 #include "Manager/MacOSControlUnitMgr.h"

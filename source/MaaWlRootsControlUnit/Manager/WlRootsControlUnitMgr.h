@@ -5,7 +5,7 @@
 #include <string>
 #include <utility>
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
 
 #include "Common/Conf.h"
