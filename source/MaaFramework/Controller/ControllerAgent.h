@@ -310,7 +310,7 @@ private:
     int image_target_height_ = 0;
     int image_raw_width_ = 0;
     int image_raw_height_ = 0;
-    int image_resize_method_ = cv::INTER_AREA;
+    int image_resize_method_ = 3; // cv::INTER_AREA
 
     std::string uuid_cache_;
 
