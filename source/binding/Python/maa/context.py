@@ -619,7 +619,7 @@ class ContextEventSink(EventSink):
         name: str
         phase: str
         roi: Tuple[int, int, int, int]
-        param: JWaitFreezes
+        param: Dict[str, Any]
         reco_ids: list[int]
         elapsed: Optional[int]
         focus: Any
@@ -736,7 +736,7 @@ class ContextEventSink(EventSink):
                 name=details["name"],
                 phase=details["phase"],
                 roi=tuple(details["roi"]),
-                param=JWaitFreezes(**details["param"]),
+                param=details["param"],
                 reco_ids=details.get("reco_ids", []),
                 elapsed=details.get("elapsed"),
                 focus=details["focus"],

@@ -517,13 +517,13 @@ class Tasker:
             Library.framework().MaaTaskerGetWaitFreezesDetail(
                 self._handle,
                 MaaWfId(wf_id),
-                None,
-                None,
-                None,
-                None,
+                name._handle,
+                phase._handle,
+                ctypes.pointer(c_success),
+                ctypes.pointer(c_elapsed_ms),
                 reco_id_list,
                 ctypes.pointer(size),
-                None,
+                roi._handle,
             )
         )
         if not ret:
