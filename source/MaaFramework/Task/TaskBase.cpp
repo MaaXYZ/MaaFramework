@@ -137,15 +137,17 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         LogInfo << "action" << VAR(i) << VAR(data.repeat) << VAR(result);
 
         if (context_->need_to_stop()) {
-            return { };
+            break;
         }
     }
 
     cb_detail["action_details"] = result;
     notify(result.success ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
 
-    wait_freezes(data.post_wait_freezes, *reco.box, data.name);
-    sleep(data.post_delay);
+    if (!context_->need_to_stop()) {
+        wait_freezes(data.post_wait_freezes, *reco.box, data.name);
+        sleep(data.post_delay);
+    }
 
     return result;
 }
