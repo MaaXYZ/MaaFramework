@@ -82,15 +82,21 @@ MessageInput::~MessageInput()
     }
 }
 
-void MessageInput::send_activate()
+HWND MessageInput::send_activate()
 {
     HWND target = get_active_hwnd();
     bool use_post = (config_.mode == Mode::PostMessage);
     ::MaaNS::CtrlUnitNs::send_activate_message(target, use_post);
+    return target;
 }
 
 bool MessageInput::send_or_post_w(HWND target, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    if (!target || !IsWindow(target)) {
+        LogError << "Invalid target window" << VAR(target) << VAR(message);
+        return false;
+    }
+
     bool success = false;
 
     if (config_.mode == Mode::PostMessage) {
@@ -112,6 +118,10 @@ bool MessageInput::send_or_post_w(HWND target, UINT message, WPARAM wParam, LPAR
 HWND MessageInput::get_active_hwnd()
 {
     HWND root = GetAncestor(hwnd_, GA_ROOTOWNER);
+    if (!root) {
+        LogWarn << "GetAncestor returned nullptr, hwnd_ may be invalid" << VAR(hwnd_);
+        return hwnd_;
+    }
     HWND popup = GetLastActivePopup(root);
     if (popup && popup != hwnd_ && IsWindowVisible(popup)) {
         return popup;
@@ -125,8 +135,14 @@ LPARAM MessageInput::make_mouse_lparam(HWND target, int x, int y)
         return MAKELPARAM(x, y);
     }
     POINT pt = { x, y };
-    ClientToScreen(hwnd_, &pt);
-    ScreenToClient(target, &pt);
+    if (!ClientToScreen(hwnd_, &pt)) {
+        LogError << "ClientToScreen failed in make_mouse_lparam" << VAR(hwnd_) << VAR(GetLastError());
+        return MAKELPARAM(x, y);
+    }
+    if (!ScreenToClient(target, &pt)) {
+        LogError << "ScreenToClient failed in make_mouse_lparam" << VAR(target) << VAR(GetLastError());
+        return MAKELPARAM(x, y);
+    }
     return MAKELPARAM(pt.x, pt.y);
 }
 
@@ -730,7 +746,8 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    send_activate();
+    HWND target = send_activate();
+    gesture_target_ = target;
 
     check_and_block_input();
 
@@ -738,10 +755,10 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     prepare_mouse_position(x, y);
 
-    HWND target = get_active_hwnd();
     LPARAM lParam = make_mouse_lparam(target, x, y);
 
     if (!send_or_post_w(target, move_info.message, move_info.w_param, lParam)) {
+        gesture_target_ = nullptr;
         finish_pos();
         return false;
     }
@@ -749,6 +766,7 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     if (!send_or_post_w(target, down_info.message, down_info.w_param, lParam)) {
+        gesture_target_ = nullptr;
         finish_pos();
         return false;
     }
@@ -779,7 +797,7 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
 
     prepare_mouse_position(x, y);
 
-    HWND target = get_active_hwnd();
+    HWND target = gesture_target_ ? gesture_target_ : get_active_hwnd();
     LPARAM lParam = make_mouse_lparam(target, x, y);
 
     if (!send_or_post_w(target, msg_info.message, msg_info.w_param, lParam)) {
@@ -801,9 +819,13 @@ bool MessageInput::touch_up(int contact)
         return false;
     }
 
-    send_activate();
+    HWND target = gesture_target_ ? gesture_target_ : send_activate();
+    gesture_target_ = nullptr;
 
     OnScopeLeave([this]() { unblock_input(); });
+
+    bool use_post = (config_.mode == Mode::PostMessage);
+    ::MaaNS::CtrlUnitNs::send_activate_message(target, use_post);
 
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_up_message(contact, msg_info)) {
@@ -811,8 +833,6 @@ bool MessageInput::touch_up(int contact)
                  << VAR(contact);
         return false;
     }
-
-    HWND target = get_active_hwnd();
     auto target_pos = get_target_pos();
     LPARAM lParam = make_mouse_lparam(target, target_pos.first, target_pos.second);
 
@@ -851,9 +871,8 @@ bool MessageInput::input_text(const std::string& text)
         return false;
     }
 
-    send_activate();
+    HWND target = send_activate();
 
-    HWND target = get_active_hwnd();
     bool success = true;
 
     for (const auto ch : to_u16(text)) {
@@ -872,9 +891,8 @@ bool MessageInput::key_down(int key)
         return false;
     }
 
-    send_activate();
+    HWND target = send_activate();
 
-    HWND target = get_active_hwnd();
     LPARAM lParam = make_keydown_lparam(key);
     return send_or_post_w(target, WM_KEYDOWN, static_cast<WPARAM>(key), lParam);
 }
@@ -888,9 +906,8 @@ bool MessageInput::key_up(int key)
         return false;
     }
 
-    send_activate();
+    HWND target = send_activate();
 
-    HWND target = get_active_hwnd();
     LPARAM lParam = make_keyup_lparam(key);
     return send_or_post_w(target, WM_KEYUP, static_cast<WPARAM>(key), lParam);
 }
@@ -904,7 +921,7 @@ bool MessageInput::scroll(int dx, int dy)
         return false;
     }
 
-    send_activate();
+    HWND target = send_activate();
 
     check_and_block_input();
     OnScopeLeave([this]() { unblock_input(); });
@@ -916,8 +933,6 @@ bool MessageInput::scroll(int dx, int dy)
     prepare_mouse_position(target_pos.first, target_pos.second);
     POINT screen_pos = client_to_screen(target_pos.first, target_pos.second);
     LPARAM lParam = MAKELPARAM(screen_pos.x, screen_pos.y);
-
-    HWND target = get_active_hwnd();
     bool success = true;
 
     if (dy != 0) {
