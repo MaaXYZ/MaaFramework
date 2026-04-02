@@ -107,6 +107,15 @@ bool Runner::run(const RuntimeParam& param)
         return false;
 #endif
     }
+    else if (const auto* p_macos_param = std::get_if<RuntimeParam::MacOSParam>(&param.controller_param)) {
+#if defined(__APPLE__)
+        controller_handle = MaaMacOSControllerCreate(p_macos_param->window_id, p_macos_param->screencap, p_macos_param->input);
+#else
+        std::ignore = p_macos_param;
+        LogError << "MacOS controller is only supported on macOS";
+        return false;
+#endif
+    }
     else if (const auto* p_wlroots_param = std::get_if<RuntimeParam::WlRootsParam>(&param.controller_param)) {
 #if defined(__linux__)
         controller_handle = MaaWlRootsControllerCreate(p_wlroots_param->wlr_socket_path.c_str());
@@ -180,6 +189,11 @@ bool Runner::run(const RuntimeParam& param)
         std::vector<std::string> args = agent_param.child_args;
         args.emplace_back(socket_id);
         auto os_args = conv_args(args);
+
+        // v2.5.0: set PI_* environment variables in current process (child inherits them)
+        for (const auto& [key, val] : agent_param.env_vars) {
+            boost::this_process::environment()[key] = val;
+        }
 
         LogInfo << "Start Agent" << VAR(agent_param.child_exec) << VAR(os_args) << VAR(agent_param.cwd);
         auto& agent_child = agent_children.emplace_back(agent_param.child_exec, os_args, boost::process::start_dir = agent_param.cwd);

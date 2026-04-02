@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "MaaFramework Project Interface V2",
-    "description": "MaaFramework 项目接口配置文件 V2 版本的 JSON Schema",
+    "description": "MaaFramework 项目接口配置文件 V2 版本的 JSON Schema。💡 v2.5.0：Client 启动 agent 子进程时应按文档约定注入 PI_* 环境变量（见 Project Interface 文档 Agent 子进程环境变量 / Agent subprocess environment variables 章节）",
     "type": "object",
     "definitions": {
         "i18nString": {
@@ -403,6 +403,7 @@
                     "enum": [
                         "Adb",
                         "Win32",
+                        "MacOS",
                         "PlayCover",
                         "Gamepad"
                     ]
@@ -510,6 +511,36 @@
                                 "ScreenDC",
                                 "Foreground",
                                 "Background"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "macos": {
+                    "type": "object",
+                    "title": "MacOS 控制器配置",
+                    "description": "MacOS 控制器的具体配置",
+                    "properties": {
+                        "title_regex": {
+                            "type": "string",
+                            "title": "窗口标题正则",
+                            "description": "可选。MacOS 控制器搜索窗口标题使用的正则表达式"
+                        },
+                        "input": {
+                            "type": "string",
+                            "title": "输入控制方式",
+                            "description": "可选。MacOS 控制器的输入控制方式，不提供则使用默认",
+                            "enum": [
+                                "GlobalEvent",
+                                "PostToPid"
+                            ]
+                        },
+                        "screencap": {
+                            "type": "string",
+                            "title": "截图方式",
+                            "description": "可选。MacOS 控制器的截图方式，不提供则使用默认",
+                            "enum": [
+                                "ScreenCaptureKit"
                             ]
                         }
                     },
@@ -635,6 +666,42 @@
             ],
             "additionalProperties": false
         },
+        "groupItem": {
+            "type": "object",
+            "title": "任务分组配置",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "分组唯一标识符",
+                    "description": "用作分组 ID，供 task.group 引用"
+                },
+                "label": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "显示名称",
+                    "description": "用于在用户界面中展示，支持国际化。如果未设置，则显示 name 字段的值"
+                },
+                "description": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "详细描述",
+                    "description": "帮助用户理解该分组的用途。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
+                },
+                "icon": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "图标路径",
+                    "description": "分组图标文件路径，相对于项目根目录"
+                },
+                "default_expand": {
+                    "type": "boolean",
+                    "title": "默认展开",
+                    "description": "💡 v2.4.0 可选。该分组在 Client 中是否默认展开",
+                    "default": true
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "additionalProperties": false
+        },
         "taskItem": {
             "type": "object",
             "title": "任务配置",
@@ -700,6 +767,14 @@
                     "title": "图标路径",
                     "description": "任务图标文件路径，相对于项目根目录"
                 },
+                "group": {
+                    "type": "array",
+                    "title": "所属分组",
+                    "description": "💡 v2.4.0 可选。指定该任务所属的分组列表。数组元素应与顶层 group 配置中的 name 字段对应。若不指定，则表示该任务不属于任何显式分组",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "resource": {
                     "type": "array",
                     "title": "支持的资源包",
@@ -739,7 +814,7 @@
         "agentConfig": {
             "type": "object",
             "title": "代理配置",
-            "description": "包含子进程（AgentServer）的信息",
+            "description": "包含子进程（AgentServer）的信息。💡 v2.5.0：Client 启动该子进程时应向环境注入 PI_INTERFACE_VERSION、PI_CLIENT_*、PI_VERSION、PI_CONTROLLER、PI_RESOURCE 等变量，详见 Project Interface 文档",
             "properties": {
                 "child_exec": {
                     "type": "string",
@@ -770,7 +845,7 @@
         "interface_version": {
             "type": "number",
             "title": "接口版本号",
-            "description": "当前为 2，固定且必须设置。用于标识 ProjectInterface 协议版本",
+            "description": "当前为 2，固定且必须设置。标识 interface.json 的 JSON 结构主版本；与 PI 文档独立演进的语义化版本（如 v2.5.0 的 PI_* 环境变量约定）不同，二者不必对应",
             "const": 2
         },
         "languages": {
@@ -864,7 +939,16 @@
                 "$ref": "#/definitions/resourceItem"
             }
         },
+        "group": {
+            "type": "array",
+            "title": "任务分组配置",
+            "description": "💡 v2.4.0 可选。为一个对象数组，用于声明任务分组及其展示属性",
+            "items": {
+                "$ref": "#/definitions/groupItem"
+            }
+        },
         "agent": {
+            "description": "💡 v2.5.0：启动各子进程时 Client 应注入 PI_* 环境变量，详见 Project Interface 文档",
             "oneOf": [
                 {
                     "$ref": "#/definitions/agentConfig"
@@ -872,7 +956,7 @@
                 {
                     "type": "array",
                     "title": "代理配置数组",
-                    "description": "多个子进程（AgentServer）的配置",
+                    "description": "多个子进程（AgentServer）的配置。💡 v2.5.0：每个子进程启动时均应获得 PI_* 环境变量",
                     "items": {
                         "$ref": "#/definitions/agentConfig"
                     }
@@ -906,7 +990,7 @@
         "import": {
             "type": "array",
             "title": "导入其他 PI 文件",
-            "description": "可选。导入其他 PI 文件的路径数组。文件相对路径为 interface.json 同目录下的相对路径。支持导入这些文件中的 task、option 和 preset（💡 v2.3.0）字段",
+            "description": "可选。导入其他 PI 文件的路径数组。文件相对路径为 interface.json 同目录下的相对路径。支持导入这些文件中的 task、option、preset（💡 v2.3.0）字段",
             "items": {
                 "type": "string"
             }

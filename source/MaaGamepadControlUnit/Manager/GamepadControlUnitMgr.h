@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/SafeWindows.hpp"
 
@@ -13,7 +13,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ViGEmInput;
 class Win32ControlUnitLoader;
 
-class GamepadControlUnitMgr : public Win32ControlUnitAPI
+class GamepadControlUnitMgr : public GamepadControlUnitAPI
 {
 public:
     GamepadControlUnitMgr(HWND hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method);
@@ -49,8 +49,6 @@ public: // from ControlUnitAPI
 
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
-
-    virtual bool scroll(int dx, int dy) override;
 
     virtual bool inactive() override;
 

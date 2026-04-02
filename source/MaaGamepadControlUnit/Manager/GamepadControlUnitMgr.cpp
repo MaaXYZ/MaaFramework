@@ -1,7 +1,7 @@
 #include "GamepadControlUnitMgr.h"
 
-#include "ControlUnit/Win32ControlUnitAPI.h"
 #include "Input/ViGEmInput.h"
+#include "MaaControlUnit/Win32ControlUnitAPI.h"
 #include "MaaUtils/LibraryHolder.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Runtime.h"
@@ -309,12 +309,6 @@ bool GamepadControlUnitMgr::key_up(int key)
     }
 
     return gamepad_input_->release_button(key);
-}
-
-bool GamepadControlUnitMgr::scroll(int dx, int dy)
-{
-    LogError << "scroll not supported for gamepad controller" << VAR(dx) << VAR(dy);
-    return false;
 }
 
 bool GamepadControlUnitMgr::inactive()

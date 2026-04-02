@@ -1,4 +1,4 @@
-#include "ControlUnit/GamepadControlUnitAPI.h"
+#include "MaaControlUnit/GamepadControlUnitAPI.h"
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/SafeWindows.hpp"
@@ -11,7 +11,7 @@ const char* MaaGamepadControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaWin32ControlUnitHandle MaaGamepadControlUnitCreate(void* hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method)
+MaaGamepadControlUnitHandle MaaGamepadControlUnitCreate(void* hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method)
 {
     using namespace MAA_CTRL_UNIT_NS;
 
@@ -23,7 +23,7 @@ MaaWin32ControlUnitHandle MaaGamepadControlUnitCreate(void* hWnd, MaaGamepadType
     return unit_mgr.release();
 }
 
-void MaaGamepadControlUnitDestroy(MaaWin32ControlUnitHandle handle)
+void MaaGamepadControlUnitDestroy(MaaGamepadControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
 

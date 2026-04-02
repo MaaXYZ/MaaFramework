@@ -6,8 +6,20 @@ if(WITH_WIN32_CONTROLLER)
     add_subdirectory(MaaWin32ControlUnit)
 endif()
 
+if(WITH_MACOS_CONTROLLER)
+    add_subdirectory(MaaMacOSControlUnit)
+endif()
+
+if(WITH_ANDROID_NATIVE_CONTROLLER AND ANDROID)
+    add_subdirectory(MaaAndroidNativeControlUnit)
+endif()
+
 if(WITH_DBG_CONTROLLER)
     add_subdirectory(MaaDbgControlUnit)
+endif()
+
+if(WITH_REPLAY_CONTROLLER)
+    add_subdirectory(MaaReplayControlUnit)
 endif()
 
 if(WITH_CUSTOM_CONTROLLER)
@@ -22,6 +34,10 @@ if(WITH_GAMEPAD_CONTROLLER)
     add_subdirectory(MaaGamepadControlUnit)
 endif()
 
+if(WITH_RECORD_CONTROLLER)
+    add_subdirectory(MaaRecordControlUnit)
+endif()
+
 if(WITH_WLROOTS_CONTROLLER)
     add_subdirectory(MaaWlRootsControlUnit)
 endif()
@@ -29,6 +45,8 @@ endif()
 add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)
+
+install(DIRECTORY "${MAA_PUBLIC_INC}/MaaControlUnit" DESTINATION "include")
 
 if(BUILD_PICLI)
     add_subdirectory(MaaPiCli)

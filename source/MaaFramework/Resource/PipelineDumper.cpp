@@ -3,6 +3,7 @@
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/Logger.h"
 #include "PipelineParser.h"
+#include "PipelineTypes.h"
 
 MAA_RES_NS_BEGIN
 
@@ -26,6 +27,9 @@ PipelineV2::JTarget dump_target(const T& target)
 
     case Action::Target::Type::Region:
         return dump_rect(std::get<cv::Rect>(target.param));
+
+    case Action::Target::Type::Anchor:
+        return std::string(PipelineData::kNodeAttr_Anchor) + std::get<std::string>(target.param);
 
     case Action::Target::Type::Invalid:
     default:

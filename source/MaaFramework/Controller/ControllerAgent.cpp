@@ -41,6 +41,8 @@ bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOpt
         return set_image_target_short_side(value, val_size);
     case MaaCtrlOption_ScreenshotUseRawSize:
         return set_image_use_raw_size(value, val_size);
+    case MaaCtrlOption_MouseLockFollow:
+        return set_mouse_lock_follow_option(value, val_size);
 
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
@@ -124,6 +126,13 @@ MaaCtrlId ControllerAgent::post_touch_up(int contact)
 {
     TouchParam p { .contact = contact };
     auto id = post({ .type = Action::Type::touch_up, .param = std::move(p) });
+    return focus_id(id);
+}
+
+MaaCtrlId ControllerAgent::post_relative_move(int dx, int dy)
+{
+    RelativeMoveParam p { .dx = dx, .dy = dy };
+    auto id = post({ .type = Action::Type::relative_move, .param = std::move(p) });
     return focus_id(id);
 }
 
@@ -298,6 +307,12 @@ bool ControllerAgent::touch_move(TouchParam p)
 bool ControllerAgent::touch_up(TouchParam p)
 {
     auto id = post({ .type = Action::Type::touch_up, .param = std::move(p) });
+    return wait(id) == MaaStatus_Succeeded;
+}
+
+bool ControllerAgent::relative_move(RelativeMoveParam p)
+{
+    auto id = post({ .type = Action::Type::relative_move, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 
@@ -690,6 +705,21 @@ bool ControllerAgent::handle_touch_up(const TouchParam& param)
     return ret;
 }
 
+bool ControllerAgent::handle_relative_move(const RelativeMoveParam& param)
+{
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::RelativeMovableUnit>(control_unit_)) {
+        return unit->relative_move(param.dx, param.dy);
+    }
+
+    LogError << "Relative move is not supported for this controller type";
+    return false;
+}
+
 bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
 {
     if (!control_unit_) {
@@ -835,14 +865,17 @@ bool ControllerAgent::handle_scroll(const ScrollParam& param)
         return false;
     }
 
-    // Move to target position before scrolling
     cv::Point point = preproc_touch_point(param.point);
     if (!control_unit_->touch_move(0, point.x, point.y, 0)) {
         LogWarn << "Failed to move to scroll position" << VAR(point);
     }
 
-    bool ret = control_unit_->scroll(param.dx, param.dy);
-    return ret;
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::ScrollableUnit>(control_unit_)) {
+        return unit->scroll(param.dx, param.dy);
+    }
+
+    LogError << "Scroll is not supported for this controller type";
+    return false;
 }
 
 bool ControllerAgent::handle_shell(const ShellParam& param)
@@ -852,16 +885,17 @@ bool ControllerAgent::handle_shell(const ShellParam& param)
         return false;
     }
 
-    auto adb_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>(control_unit_);
-    if (!adb_unit) {
-        LogError << "Shell commands are only supported for ADB controllers. Current controller type does not support shell execution.";
+    std::string output;
+    auto timeout = param.shell_timeout < 0 ? std::chrono::milliseconds::max() : std::chrono::milliseconds(param.shell_timeout);
+
+    auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::ShellableUnit>(control_unit_);
+    if (!unit) {
+        LogError << "Shell is not supported for this controller type";
         return false;
     }
 
-    std::string output;
-    // shell_timeout < 0 表示无限等待
-    auto timeout = param.shell_timeout < 0 ? std::chrono::milliseconds::max() : std::chrono::milliseconds(param.shell_timeout);
-    bool ret = adb_unit->shell(param.cmd, output, timeout);
+    bool ret = unit->shell(param.cmd, output, timeout);
+
     if (ret) {
         std::unique_lock lock(shell_output_mutex_);
         shell_output_ = std::move(output);
@@ -972,6 +1006,10 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
 
     case Action::Type::shell:
         ret = handle_shell(std::get<ShellParam>(action.param));
+        break;
+
+    case Action::Type::relative_move:
+        ret = handle_relative_move(std::get<RelativeMoveParam>(action.param));
         break;
 
     case Action::Type::inactive:
@@ -1163,6 +1201,30 @@ bool ControllerAgent::set_image_use_raw_size(MaaOptionValue value, MaaOptionValu
     clear_target_image_size();
 
     return true;
+}
+
+bool ControllerAgent::set_mouse_lock_follow_option(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogDebug;
+
+    if (val_size != sizeof(bool)) {
+        LogError << "invalid value size: " << val_size;
+        return false;
+    }
+
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    auto win32_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_);
+    if (!win32_unit) {
+        LogError << "Mouse lock follow is only supported for Win32 controllers.";
+        return false;
+    }
+
+    bool enabled = *reinterpret_cast<bool*>(value);
+    return win32_unit->set_mouse_lock_follow(enabled);
 }
 
 MAA_CTRL_NS_END

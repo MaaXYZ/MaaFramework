@@ -40,11 +40,10 @@ from maa.agent.agent_server import AgentServer
 
 from maa.resource import ResourceEventSink
 from maa.controller import ControllerEventSink
-from maa.tasker import TaskerEventSink
+from maa.tasker import Tasker, TaskerEventSink
 from maa.context import Context, ContextEventSink
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
-from maa.toolkit import Toolkit
 from maa.library import Library
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
 
@@ -274,7 +273,7 @@ class MyAction(CustomAction):
         assert isinstance(info, dict), "info should be a dict"
         assert "type" in info, "info should contain 'type'"
         assert isinstance(info["type"], str), "info['type'] should be a str"
-        assert info["type"].startswith("dbg_"), "info['type'] should start with 'dbg_'"
+        assert info["type"] == "replay", "info['type'] should be 'replay'"
         assert (
             "image_count" in info or "record_count" in info
         ), "info should contain at least 'image_count' or 'record_count'"
@@ -295,7 +294,7 @@ class MyAction(CustomAction):
         controller.post_key_up(65).wait()
 
         # 测试滚动操作
-        controller.post_scroll(0, 120).wait()
+        assert not controller.post_scroll(0, 120).wait().succeeded
 
         # 测试应用操作
         controller.post_start_app("aaa")
@@ -381,6 +380,6 @@ class MyCtxSink(ContextEventSink):
 if __name__ == "__main__":
     print(f"AgentServer MaaFw Version: {Library.version()}")
 
-    Toolkit.init_option(install_dir / "bin")
+    Tasker.set_log_dir(install_dir / "bin" / "debug")
 
     main()

@@ -34,7 +34,9 @@
             "display_short_side": 720, // 默认缩放分辨率的短边长度，用于屏幕适配。与long_side二选一
             // "display_long_side": 1080, // 默认缩放分辨率的长边长度，与short_side二选一
             "display_raw": false, // 是否使用原始分辨率进行截图，与缩放分辨率设置互斥
-            "option": ["战斗自动闪避"] // 💡 v2.3.0 控制器级选项。该选项会参与到所有使用该控制器的任务的 pipeline override 中
+            "option": [
+                "战斗自动闪避"
+            ] // 💡 v2.3.0 控制器级选项。该选项会参与到所有使用该控制器的任务的 pipeline override 中
         },
         {
             "name": "Windows",
@@ -50,6 +52,17 @@
                 "mouse": "PostMessageWithCursorPos", // 鼠标控制方式
                 "keyboard": "PostMessageWithCursorPos" // 键盘控制方式
             }
+        },
+        {
+            "name": "macOS",
+            "label": "$macOS端",
+            "description": "通过 macOS 原生 API 连接 macOS 应用程序",
+            "type": "MacOS",
+            "macos": {
+                "title_regex": "关于本机", // 窗口名称正则表达式，用于匹配目标窗口
+                "screencap": "ScreenCaptureKit", // 截图方式
+                "input": "GlobalEvent" // 输入方式
+            }
         }
     ],
     "resource": [
@@ -64,7 +77,9 @@
             "controller": [
                 "Android"
             ], // 指定该资源包支持的控制器类型列表。若不指定，则支持所有控制器。当用户选择某控制器时，只有支持该控制器的资源包才会显示
-            "option": ["战斗划火柴"] // 💡 v2.3.0 资源包级选项。该选项会参与到所有使用该资源包的任务的 pipeline override 中
+            "option": [
+                "战斗划火柴"
+            ] // 💡 v2.3.0 资源包级选项。该选项会参与到所有使用该资源包的任务的 pipeline override 中
         },
         {
             "name": "Bilibili",
@@ -134,7 +149,9 @@
             "type": "select", // 配置项类型。select为下拉选项框，用户从预定义选项中选择
             "label": "$选择作战关卡",
             "description": "选择要刷的关卡", // 配置项详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
-            "resource": ["Official"], // 💡 v2.3.0 仅在选择 Official 资源包时显示该配置项
+            "resource": [
+                "Official"
+            ], // 💡 v2.3.0 仅在选择 Official 资源包时显示该配置项
             "cases": [
                 {
                     "name": "3-9 厄险（百灵百验鸟）",
@@ -349,7 +366,10 @@
             "type": "checkbox",
             "label": "$战斗划火柴",
             "description": "选择要启用的划火柴功能，可多选。多个被选中 case 按 cases 定义顺序合并，与用户勾选顺序无关",
-            "default_case": ["普通划火柴", "蓄力划火柴"], // checkbox 时填字符串数组
+            "default_case": [
+                "普通划火柴",
+                "蓄力划火柴"
+            ], // checkbox 时填字符串数组
             "cases": [
                 {
                     "name": "普通划火柴",
@@ -424,8 +444,14 @@
             "description": "每日例行套餐：荒原 + 心相 + 3-9 + 领奖",
             "icon": "preset_daily.png",
             "task": [
-                { "name": "收取荒原", "enabled": true },
-                { "name": "每日心相（意志解析）", "enabled": true },
+                {
+                    "name": "收取荒原",
+                    "enabled": true
+                },
+                {
+                    "name": "每日心相（意志解析）",
+                    "enabled": true
+                },
                 {
                     "name": "常规作战",
                     "enabled": true,
@@ -433,11 +459,20 @@
                         "作战关卡": "3-9 厄险（百灵百验鸟）",
                         "复现次数": "x3",
                         "刷完全部体力": "No",
-                        "战斗划火柴": ["普通划火柴", "蓄力划火柴"]
+                        "战斗划火柴": [
+                            "普通划火柴",
+                            "蓄力划火柴"
+                        ]
                     }
                 },
-                { "name": "领取奖励", "enabled": true },
-                { "name": "活动：绿湖噩梦 17 艰难（活动已结束）", "enabled": false }
+                {
+                    "name": "领取奖励",
+                    "enabled": true
+                },
+                {
+                    "name": "活动：绿湖噩梦 17 艰难（活动已结束）",
+                    "enabled": false
+                }
             ]
         },
         {
@@ -452,7 +487,11 @@
                         "作战关卡": "4-20 厄险（双头形骨架）",
                         "复现次数": "x4",
                         "刷完全部体力": "Yes",
-                        "战斗划火柴": ["普通划火柴", "蓄力划火柴", "连续划火柴"]
+                        "战斗划火柴": [
+                            "普通划火柴",
+                            "蓄力划火柴",
+                            "连续划火柴"
+                        ]
                     }
                 }
             ]

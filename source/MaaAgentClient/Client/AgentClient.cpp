@@ -203,6 +203,9 @@ bool AgentClient::disconnect()
     LogFunc << VAR(ipc_addr_);
 
     clear_custom_registration();
+    clear_controller_sink();
+    clear_resource_sink();
+    clear_tasker_sink();
 
     if (!connected()) {
         return true;
@@ -448,6 +451,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_controller_post_touch_move(j)) {
+        return true;
+    }
+    else if (handle_controller_post_relative_move(j)) {
         return true;
     }
     else if (handle_controller_post_touch_up(j)) {
@@ -2075,6 +2081,26 @@ bool AgentClient::handle_controller_post_touch_move(const json::value& j)
     }
     MaaCtrlId ctrl_id = controller->post_touch_move(req.contact, req.x, req.y, req.pressure);
     ControllerPostTouchMoveReverseResponse resp {
+        .ctrl_id = ctrl_id,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_post_relative_move(const json::value& j)
+{
+    if (!j.is<ControllerPostRelativeMoveReverseRequest>()) {
+        return false;
+    }
+    const ControllerPostRelativeMoveReverseRequest& req = j.as<ControllerPostRelativeMoveReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    MaaCtrlId ctrl_id = controller->post_relative_move(req.dx, req.dy);
+    ControllerPostRelativeMoveReverseResponse resp {
         .ctrl_id = ctrl_id,
     };
     send(resp);

@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 #include "Base/UnitBase.h"
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/SafeWindows.hpp"
 
@@ -42,6 +42,8 @@ public: // from ControlUnitAPI
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
+    virtual bool relative_move(int dx, int dy) override;
+
     virtual bool click_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
@@ -49,6 +51,8 @@ public: // from ControlUnitAPI
     virtual bool key_up(int key) override;
 
     virtual bool scroll(int dx, int dy) override;
+
+    virtual bool set_mouse_lock_follow(bool enabled) override;
 
     virtual bool inactive() override;
 

@@ -186,10 +186,8 @@ bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, 
         return false;
     }
 
-    ActionHelper helper(tasker_);
-    cv::Rect roi = helper.get_target_rect(param.target, box);
-
-    return helper.wait_freezes(param, roi);
+    ActionHelper helper(this);
+    return helper.wait_freezes(param, box);
 }
 
 bool Context::override_pipeline(const json::value& pipeline_override)
@@ -393,6 +391,16 @@ std::vector<cv::Mat> Context::get_images(const std::vector<std::string>& names)
 bool& Context::need_to_stop()
 {
     return *need_to_stop_;
+}
+
+bool Context::check_hit_count(const PipelineData& data)
+{
+    size_t current_hit = get_hit_count(data.name);
+    if (current_hit >= static_cast<size_t>(data.max_hit)) {
+        LogDebug << "max_hit reached" << VAR(data.name) << VAR(current_hit) << VAR(data.max_hit);
+        return false;
+    }
+    return true;
 }
 
 void Context::increment_hit_count(const std::string& node_name)

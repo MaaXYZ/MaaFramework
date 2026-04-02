@@ -144,11 +144,11 @@ std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(MaaWin32InputMethod m
     case MaaWin32InputMethod_SendMessageWithCursorPos:
         return std::make_shared<MessageInput>(
             hwnd_,
-            MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_cursor_pos = true, .block_input = false });
+            MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_cursor_pos = true, .block_input = true });
     case MaaWin32InputMethod_PostMessageWithCursorPos:
         return std::make_shared<MessageInput>(
             hwnd_,
-            MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_cursor_pos = true, .block_input = false });
+            MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_cursor_pos = true, .block_input = true });
     case MaaWin32InputMethod_SendMessageWithWindowPos:
         return std::make_shared<MessageInput>(
             hwnd_,
@@ -327,6 +327,22 @@ bool Win32ControlUnitMgr::touch_up(int contact)
     return mouse_->touch_up(contact);
 }
 
+bool Win32ControlUnitMgr::relative_move(int dx, int dy)
+{
+    if (!mouse_) {
+        LogError << "mouse_ is null";
+        return false;
+    }
+
+    auto relative_move_input = std::dynamic_pointer_cast<RelativeMoveInput>(mouse_);
+    if (!relative_move_input) {
+        LogError << "relative_move is not supported by the current Win32 input method";
+        return false;
+    }
+
+    return relative_move_input->relative_move(dx, dy);
+}
+
 bool Win32ControlUnitMgr::click_key(int key)
 {
     if (!keyboard_) {
@@ -375,6 +391,22 @@ bool Win32ControlUnitMgr::scroll(int dx, int dy)
     }
 
     return mouse_->scroll(dx, dy);
+}
+
+bool Win32ControlUnitMgr::set_mouse_lock_follow(bool enabled)
+{
+    if (!mouse_) {
+        LogError << "mouse_ is null";
+        return false;
+    }
+
+    auto message_input = std::dynamic_pointer_cast<MessageInput>(mouse_);
+    if (!message_input) {
+        LogError << "Mouse lock follow is only supported by MessageInput-based input methods";
+        return false;
+    }
+
+    return message_input->set_mouse_lock_follow(enabled);
 }
 
 bool Win32ControlUnitMgr::inactive()

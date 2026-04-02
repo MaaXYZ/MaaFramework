@@ -43,8 +43,8 @@ export using ::MaaToolkitDesktopWindowGetHandle;
 export using ::MaaToolkitDesktopWindowGetClassName;
 export using ::MaaToolkitDesktopWindowGetWindowName;
 
-// ProjectInterface/MaaToolkitProjectInterface.h
+// MacOS/MaaToolkitMacOSPermission.h
 
-export using ::MaaToolkitProjectInterfaceRegisterCustomRecognition;
-export using ::MaaToolkitProjectInterfaceRegisterCustomAction;
-export using ::MaaToolkitProjectInterfaceRunCli;
+export using ::MaaToolkitMacOSCheckPermission;
+export using ::MaaToolkitMacOSRequestPermission;
+export using ::MaaToolkitMacOSRevealPermissionSettings;

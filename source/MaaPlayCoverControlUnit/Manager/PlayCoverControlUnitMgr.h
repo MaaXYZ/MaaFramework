@@ -4,7 +4,7 @@
 #include <string>
 #include <utility>
 
-#include "ControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
 
 #include "Common/Conf.h"
@@ -43,8 +43,6 @@ public:
 
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
-
-    virtual bool scroll(int dx, int dy) override;
 
     virtual bool inactive() override;
 

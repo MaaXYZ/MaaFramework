@@ -33,8 +33,8 @@ declare global {
             name: string
             algorithm: string
             hit: boolean
-            box: Rect
-            detail: RecoDetailObject | RecoDetailWithoutDraws[]
+            box: Rect | null
+            detail: RecoDetailObject | RecoDetailWithoutDraws[] | null
         }
 
         type RecoDetail = RecoDetailWithoutDraws & {

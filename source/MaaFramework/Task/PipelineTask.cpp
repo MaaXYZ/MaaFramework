@@ -86,7 +86,7 @@ bool PipelineTask::run()
             save_on_error(node.name);
         }
 
-        if (next.empty() && !jumpback_stack.empty()) {
+        if (next.empty() && !error_handling && !jumpback_stack.empty()) {
             auto top = std::move(jumpback_stack.top());
             LogInfo << "pop jumpback_stack:" << top;
             jumpback_stack.pop();
@@ -150,9 +150,28 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 
     notify(MaaMsg_Node_PipelineNode_Starting, node_cb_detail);
 
+    auto check_timeout_and_sleep = [&](std::chrono::steady_clock::time_point current_clock) {
+        if (pretask.reco_timeout >= std::chrono::milliseconds(0) && duration_since(start_clock) > pretask.reco_timeout) {
+            LogWarn << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout);
+            return false;
+        }
+
+        LogDebug << "sleep_until" << VAR(pretask.rate_limit);
+        std::this_thread::sleep_until(current_clock + pretask.rate_limit);
+        return true;
+    };
+
     while (!context_->need_to_stop()) {
         auto current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
+
+        if (image.empty()) {
+            LogWarn << "screencap failed, skip recognition" << VAR(pretask.name);
+            if (!check_timeout_and_sleep(current_clock)) {
+                break;
+            }
+            continue;
+        }
 
         RecoResult reco = recognize_list(image, next);
 
@@ -162,15 +181,9 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         }
 
         if (!reco.box) {
-            // reco_timeout < 0 表示无限等待，跳过超时检查
-            if (pretask.reco_timeout >= std::chrono::milliseconds(0) && duration_since(start_clock) > pretask.reco_timeout) {
-                LogWarn << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout);
+            if (!check_timeout_and_sleep(current_clock)) {
                 break;
             }
-
-            LogDebug << "sleep_until" << VAR(pretask.rate_limit);
-            std::this_thread::sleep_until(current_clock + pretask.rate_limit);
-
             continue;
         }
 
@@ -282,8 +295,22 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
             recognizer.prefetch_batch_ocr(batch_plan->entries);
         }
 
+        if (!pipeline_data.enabled) {
+            LogDebug << "node disabled" << pipeline_data.name << VAR(pipeline_data.enabled);
+            continue;
+        }
+
+        if (!context_->check_hit_count(pipeline_data)) {
+            continue;
+        }
+
         auto anchor_name = node.anchor ? std::optional { node.name } : std::nullopt;
         RecoResult result = run_recognition(image, pipeline_data, std::move(anchor_name), ocr_cache);
+
+        if (result.box) {
+            LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
+            context_->increment_hit_count(pipeline_data.name);
+        }
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop";
@@ -324,8 +351,7 @@ std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const 
             continue;
         }
 
-        size_t current_hit = context_->get_hit_count(data.name);
-        if (current_hit >= static_cast<size_t>(data.max_hit)) {
+        if (!context_->check_hit_count(data)) {
             continue;
         }
 

@@ -5,7 +5,7 @@
 #include <meojson/json.hpp>
 
 #include "Base/ProcessArgvGenerator.h"
-#include "ControlUnit/AdbControlUnitAPI.h"
+#include "MaaControlUnit/AdbControlUnitAPI.h"
 #include "Screencap/ScreencapHelper.h"
 
 #include "Common/Conf.h"
@@ -98,8 +98,6 @@ public:
 
     virtual bool key_down(int key) = 0;
     virtual bool key_up(int key) = 0;
-
-    virtual bool scroll(int dx, int dy) = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

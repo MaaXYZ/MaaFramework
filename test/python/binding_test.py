@@ -40,13 +40,13 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource, ResourceEventSink
-from maa.controller import DbgController, CustomController, ControllerEventSink
+from maa.controller import DbgController, CustomController, Win32Controller, ControllerEventSink
 from maa.tasker import Tasker, TaskerEventSink
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.buffer import ImageBuffer
-from maa.define import MaaDbgControllerTypeEnum, LoggingLevelEnum
+from maa.define import LoggingLevelEnum
 from maa.context import Context, ContextEventSink
 from maa.event_sink import EventSink
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
@@ -215,7 +215,6 @@ class MyAction(CustomAction):
         controller.post_touch_up(1).wait()
         controller.post_key_down(65).wait()
         controller.post_key_up(65).wait()
-        controller.post_scroll(0, 120).wait()
         controller.post_start_app("aaa")
         controller.post_stop_app("bbb")
         controller.post_inactive().wait()
@@ -369,8 +368,6 @@ def test_controller_api():
 
     dbg_controller = DbgController(
         install_dir / "test" / "PipelineSmoking" / "Screenshot",
-        install_dir / "test" / "user",
-        MaaDbgControllerTypeEnum.CarouselImage,
     )
     print(f"  controller: {dbg_controller}")
 
@@ -407,9 +404,7 @@ def test_controller_api():
     print(f"  info: {info}")
     assert isinstance(info, dict), "info should be a dict"
     assert "type" in info, "info should contain 'type'"
-    assert info["type"].startswith(
-        "dbg_"
-    ), "dbg controller type should start with 'dbg_'"
+    assert info["type"] == "dbg", "dbg controller type should be 'dbg'"
 
     # 测试输入操作
     dbg_controller.post_click(100, 100).wait()
@@ -421,7 +416,9 @@ def test_controller_api():
     dbg_controller.post_touch_down(0, 100, 100, 0).wait()
     dbg_controller.post_touch_move(0, 150, 150, 0).wait()
     dbg_controller.post_touch_up(0).wait()
-    dbg_controller.post_scroll(0, 120).wait()
+    assert not dbg_controller.post_scroll(0, 120).wait().succeeded, (
+        "dbg controller scroll should fail"
+    )
     dbg_controller.post_start_app("com.test.app").wait()
     dbg_controller.post_stop_app("com.test.app").wait()
     dbg_controller.post_inactive().wait()
@@ -745,6 +742,39 @@ def test_toolkit():
     print("  PASS: toolkit")
 
 
+def test_win32_relative_move():
+    print("\n=== test_win32_relative_move ===")
+
+    desktop_windows = Toolkit.find_desktop_windows()
+    if not desktop_windows:
+        print("  SKIP: no desktop windows found")
+        return
+
+    controller = None
+    target_window = None
+    for window in desktop_windows:
+        try:
+            controller = Win32Controller(window.hwnd)
+            target_window = window
+            break
+        except RuntimeError:
+            continue
+
+    if controller is None or target_window is None:
+        print("  SKIP: failed to create Win32 controller")
+        return
+
+    ret = controller.post_connection().wait().succeeded
+    ret &= controller.post_relative_move(0, 0).wait().succeeded
+
+    print(
+        f"  target window: {target_window.window_name[:30] if target_window.window_name else '(no name)'}"
+    )
+    print(f"  ret: {ret}")
+    assert ret, "win32 relative_move should succeed"
+    print("  PASS: win32 relative_move")
+
+
 # ============================================================================
 # 主入口
 # ============================================================================
@@ -771,6 +801,9 @@ if __name__ == "__main__":
 
     # 测试 Toolkit
     test_toolkit()
+
+    # 测试 Win32 relative_move 正路径
+    test_win32_relative_move()
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")

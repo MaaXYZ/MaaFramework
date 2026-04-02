@@ -3,6 +3,7 @@
 #include <ranges>
 #include <unordered_map>
 
+#include "MaaFramework/Utility/MaaUtility.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/StringMisc.hpp"
@@ -61,6 +62,31 @@ MaaGamepadType parse_gamepad_type(const std::string& type)
         return it->second;
     }
     return MaaGamepadType_Xbox360;
+}
+
+MaaMacOSScreencapMethod parse_macos_screencap_method(const std::string& method)
+{
+    static const std::unordered_map<std::string, MaaMacOSScreencapMethod> mapping = {
+        { "ScreenCaptureKit", MaaMacOSScreencapMethod_ScreenCaptureKit },
+    };
+
+    if (auto it = mapping.find(method); it != mapping.end()) {
+        return it->second;
+    }
+    return MaaMacOSScreencapMethod_None;
+}
+
+MaaMacOSInputMethod parse_macos_input_method(const std::string& method)
+{
+    static const std::unordered_map<std::string, MaaMacOSInputMethod> mapping = {
+        { "GlobalEvent", MaaMacOSInputMethod_GlobalEvent },
+        { "PostToPid", MaaMacOSInputMethod_PostToPid },
+    };
+
+    if (auto it = mapping.find(method); it != mapping.end()) {
+        return it->second;
+    }
+    return MaaMacOSInputMethod_None;
 }
 } // namespace
 
@@ -214,6 +240,29 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         runtime.controller_param = std::move(win32);
     } break;
 
+    case InterfaceData::Controller::Type::MacOS: {
+        RuntimeParam::MacOSParam macos;
+
+        macos.window_id = config_.macos.window_id;
+
+        // v2: parse from config, use default if not specified or invalid
+        if (!controller.macos.screencap.empty()) {
+            macos.screencap = parse_macos_screencap_method(controller.macos.screencap);
+        }
+        if (macos.screencap == MaaMacOSScreencapMethod_None) {
+            macos.screencap = MaaMacOSScreencapMethod_ScreenCaptureKit;
+        }
+
+        if (!controller.macos.input.empty()) {
+            macos.input = parse_macos_input_method(controller.macos.input);
+        }
+        if (macos.input == MaaMacOSInputMethod_None) {
+            macos.input = MaaMacOSInputMethod_GlobalEvent;
+        }
+
+        runtime.controller_param = std::move(macos);
+    } break;
+
     case InterfaceData::Controller::Type::PlayCover: {
         RuntimeParam::PlayCoverParam playcover;
 
@@ -276,6 +325,41 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         },
         data_.agent);
 
+    // v2.5.0: prepare PI_* env vars
+    std::unordered_map<std::string, std::string> pi_env;
+    pi_env["PI_INTERFACE_VERSION"] = "v2.5.0";
+    pi_env["PI_CLIENT_NAME"] = "MaaPiCli";
+    pi_env["PI_CLIENT_VERSION"] = MaaVersion();
+    pi_env["PI_CLIENT_LANGUAGE"] = detect_system_language();
+    pi_env["PI_CLIENT_MAAFW_VERSION"] = MaaVersion();
+    if (!data_.version.empty()) {
+        pi_env["PI_VERSION"] = data_.version;
+    }
+
+    // PI_CONTROLLER: serialize selected controller with i18n resolved
+    {
+        json::value ctrl_json = controller.to_json();
+        if (ctrl_json.contains("label")) {
+            ctrl_json["label"] = translate(controller.label);
+        }
+        if (ctrl_json.contains("description")) {
+            ctrl_json["description"] = translate(controller.description);
+        }
+        pi_env["PI_CONTROLLER"] = ctrl_json.dumps();
+    }
+
+    // PI_RESOURCE: serialize selected resource with i18n resolved
+    {
+        json::value res_json = resource_iter->to_json();
+        if (res_json.contains("label")) {
+            res_json["label"] = translate(resource_iter->label);
+        }
+        if (res_json.contains("description")) {
+            res_json["description"] = translate(resource_iter->description);
+        }
+        pi_env["PI_RESOURCE"] = res_json.dumps();
+    }
+
     for (const auto& agent_config : agents) {
         if (agent_config.child_exec.empty()) {
             continue;
@@ -286,11 +370,92 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         agent.child_args = agent_config.child_args;
         agent.identifier = agent_config.identifier;
         agent.cwd = resource_dir_;
+        agent.env_vars = pi_env;
 
         runtime.agent.emplace_back(std::move(agent));
     }
 
     return runtime;
+}
+
+bool Configurator::is_option_applicable(const InterfaceData::Option& opt) const
+{
+    if (!opt.controller.empty() && std::ranges::find(opt.controller, config_.controller.name) == opt.controller.end()) {
+        return false;
+    }
+    if (!opt.resource.empty() && std::ranges::find(opt.resource, config_.resource) == opt.resource.end()) {
+        return false;
+    }
+    return true;
+}
+
+void Configurator::merge_option_overrides(RuntimeParam::Task& runtime_task, const std::vector<Configuration::Option>& config_options) const
+{
+    for (const auto& config_option : config_options) {
+        auto data_option_iter = data_.option.find(config_option.name);
+        if (data_option_iter == data_.option.end()) {
+            LogWarn << "option not found" << VAR(config_option.name);
+            continue;
+        }
+        const auto& data_option = data_option_iter->second;
+
+        if (!is_option_applicable(data_option)) {
+            continue;
+        }
+
+        switch (data_option.type) {
+        case InterfaceData::Option::Type::Select:
+        case InterfaceData::Option::Type::Switch: {
+            auto data_case_iter =
+                std::ranges::find_if(data_option.cases, [&](const auto& data_case) { return data_case.name == config_option.value; });
+            if (data_case_iter == data_option.cases.end()) {
+                LogWarn << "case not found" << VAR(config_option.value);
+                continue;
+            }
+            runtime_task.pipeline_override.emplace(data_case_iter->pipeline_override);
+        } break;
+
+        case InterfaceData::Option::Type::Checkbox: {
+            for (const auto& data_case : data_option.cases) {
+                if (std::ranges::find(config_option.values, data_case.name) != config_option.values.end()) {
+                    runtime_task.pipeline_override.emplace(data_case.pipeline_override);
+                }
+            }
+        } break;
+
+        case InterfaceData::Option::Type::Input: {
+            std::string override_str = data_option.pipeline_override.dumps();
+            for (const auto& input_def : data_option.inputs) {
+                std::string placeholder = "{" + input_def.name + "}";
+                std::string value;
+                if (auto it = config_option.inputs.find(input_def.name); it != config_option.inputs.end()) {
+                    value = it->second;
+                }
+                else {
+                    value = input_def.default_;
+                }
+
+                switch (input_def.pipeline_type) {
+                case InterfaceData::Option::Input::PipelineType::String:
+                    override_str = MaaNS::string_replace_all(override_str, "\"" + placeholder + "\"", "\"" + value + "\"");
+                    override_str = MaaNS::string_replace_all(override_str, placeholder, value);
+                    break;
+                case InterfaceData::Option::Input::PipelineType::Int:
+                case InterfaceData::Option::Input::PipelineType::Bool:
+                    override_str = MaaNS::string_replace_all(override_str, "\"" + placeholder + "\"", value);
+                    override_str = MaaNS::string_replace_all(override_str, placeholder, value);
+                    break;
+                }
+            }
+            if (auto parsed = json::parse(override_str)) {
+                runtime_task.pipeline_override.emplace(parsed->as_object());
+            }
+            else {
+                LogWarn << "Failed to parse pipeline override JSON for input option" << VAR(config_option.name) << VAR(override_str);
+            }
+        } break;
+        }
+    }
 }
 
 std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Configuration::Task& config_task) const
@@ -306,62 +471,15 @@ std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Conf
                                       .entry = data_task.entry,
                                       .pipeline_override = json::array { data_task.pipeline_override } };
 
-    for (const auto& config_option : config_task.option) {
-        auto data_option_iter = data_.option.find(config_option.name);
-        if (data_option_iter == data_.option.end()) {
-            LogWarn << "option not found" << VAR(config_option.name);
-            continue;
-        }
-        const auto& data_option = data_option_iter->second;
-
-        switch (data_option.type) {
-        case InterfaceData::Option::Type::Select:
-        case InterfaceData::Option::Type::Switch: {
-            auto data_case_iter =
-                std::ranges::find_if(data_option.cases, [&](const auto& data_case) { return data_case.name == config_option.value; });
-            if (data_case_iter == data_option.cases.end()) {
-                LogWarn << "case not found" << VAR(config_option.value);
-                continue;
-            }
-            runtime_task.pipeline_override.emplace(data_case_iter->pipeline_override);
-        } break;
-
-        case InterfaceData::Option::Type::Input: {
-            // Replace placeholders in pipeline_override with input values
-            std::string override_str = data_option.pipeline_override.dumps();
-            for (const auto& input_def : data_option.inputs) {
-                std::string placeholder = "{" + input_def.name + "}";
-                std::string value;
-                if (auto it = config_option.inputs.find(input_def.name); it != config_option.inputs.end()) {
-                    value = it->second;
-                }
-                else {
-                    value = input_def.default_;
-                }
-
-                // Replace based on pipeline_type
-                switch (input_def.pipeline_type) {
-                case InterfaceData::Option::Input::PipelineType::String:
-                    override_str = MaaNS::string_replace_all(override_str, "\"" + placeholder + "\"", "\"" + value + "\"");
-                    override_str = MaaNS::string_replace_all(override_str, placeholder, value);
-                    break;
-                case InterfaceData::Option::Input::PipelineType::Int:
-                case InterfaceData::Option::Input::PipelineType::Bool:
-                    // For int/bool, replace the quoted placeholder with unquoted value
-                    override_str = MaaNS::string_replace_all(override_str, "\"" + placeholder + "\"", value);
-                    override_str = MaaNS::string_replace_all(override_str, placeholder, value);
-                    break;
-                }
-            }
-            if (auto parsed = json::parse(override_str)) {
-                runtime_task.pipeline_override.emplace(parsed->as_object());
-            }
-            else {
-                LogWarn << "Failed to parse pipeline override JSON for input option" << VAR(config_option.name) << VAR(override_str);
-            }
-        } break;
-        }
-    }
+    // v2.3.0: merge in priority order (later overrides earlier)
+    // 1. global_option (lowest priority)
+    merge_option_overrides(runtime_task, config_.global_option);
+    // 2. resource.option
+    merge_option_overrides(runtime_task, config_.resource_option);
+    // 3. controller.option
+    merge_option_overrides(runtime_task, config_.controller_option);
+    // 4. task.option (highest priority)
+    merge_option_overrides(runtime_task, config_task.option);
 
     return runtime_task;
 }

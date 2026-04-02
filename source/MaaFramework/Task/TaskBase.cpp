@@ -1,5 +1,8 @@
 #include "TaskBase.h"
 
+#include <thread>
+
+#include "Component/ActionHelper.h"
 #include "Component/Actuator.h"
 #include "Component/Recognizer.h"
 #include "Controller/ControllerAgent.h"
@@ -62,17 +65,6 @@ RecoResult TaskBase::run_recognition(
         return { };
     }
 
-    if (!data.enabled) {
-        LogDebug << "node disabled" << data.name << VAR(data.enabled);
-        return { };
-    }
-
-    size_t current_hit = context_->get_hit_count(data.name);
-    if (current_hit >= static_cast<size_t>(data.max_hit)) {
-        LogDebug << "max_hit reached" << VAR(data.name) << VAR(current_hit) << VAR(data.max_hit);
-        return { };
-    }
-
     Recognizer recognizer(tasker_, *context_, image, std::move(ocr_cache));
 
     json::value cb_detail {
@@ -97,11 +89,6 @@ RecoResult TaskBase::run_recognition(
     cb_detail["reco_details"] = result;
     notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, cb_detail);
 
-    if (result.box) {
-        LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
-        context_->increment_hit_count(data.name);
-    }
-
     return result;
 }
 
@@ -122,6 +109,9 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         return { };
     }
 
+    wait_freezes(data.pre_wait_freezes, *reco.box, data.name);
+    sleep(data.pre_delay);
+
     Actuator actuator(tasker_, *context_);
     json::value cb_detail {
         { "task_id", task_id() },
@@ -131,10 +121,31 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
     };
     notify(MaaMsg_Node_Action_Starting, cb_detail);
 
-    ActionResult result = actuator.run(*reco.box, reco.reco_id, data, entry_);
+    ActionResult result;
+
+    for (uint i = 0; i < data.repeat; ++i) {
+        if (i > 0) {
+            wait_freezes(data.repeat_wait_freezes, *reco.box, data.name);
+            sleep(data.repeat_delay);
+        }
+
+        if (context_->need_to_stop()) {
+            return { };
+        }
+
+        result = actuator.run(*reco.box, reco.reco_id, data, entry_);
+        LogInfo << "action" << VAR(i) << VAR(data.repeat) << VAR(result);
+
+        if (context_->need_to_stop()) {
+            return { };
+        }
+    }
 
     cb_detail["action_details"] = result;
     notify(result.success ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
+
+    wait_freezes(data.post_wait_freezes, *reco.box, data.name);
+    sleep(data.post_delay);
 
     return result;
 }
@@ -184,6 +195,19 @@ void TaskBase::set_task_detail(TaskDetail detail)
 
     auto& cache = tasker_->runtime_cache();
     cache.set_task_detail(task_id_, detail);
+}
+
+void TaskBase::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name)
+{
+    ActionHelper helper(context_.get());
+    helper.wait_freezes(param, box, name);
+}
+
+void TaskBase::sleep(std::chrono::milliseconds ms) const
+{
+    LogDebug << ms;
+
+    std::this_thread::sleep_for(ms);
 }
 
 bool TaskBase::debug_mode() const

@@ -33,7 +33,6 @@ public:
 
     bool screencap(void** buffer, uint32_t& width, uint32_t& height, uint32_t& format);
     bool pointer(EventPhase phase, int x, int y, int contact);
-    bool scroll(int dx, int dy);
     bool input_key(EventPhase phase, int key);
     bool input_str(const std::string& str);
     std::pair<int, int> screen_size() const;
@@ -46,14 +45,17 @@ private:
         Scancode = 2,
     };
 
+    // Init
     bool open();
     bool bind_protocol();
     bool prepare_device();
-    bool process_requests() const;
+    bool prepare_keymap();
+    // Buffer
     bool check_buffer(int format, int width, int height, int stride) const;
     bool create_buffer(int format, int width, int height, int stride);
     bool close_buffer();
-    bool prepare_keymap();
+    // Utils
+    bool process_requests() const;
     bool switch_keymap(Keymap new_map);
 
     std::unique_ptr<wl_display> display_;
@@ -70,6 +72,8 @@ private:
     std::unique_ptr<MemfdBuffer> scancode_keymap_buffer_;
     std::unique_ptr<zwp_virtual_keyboard_v1> keyboard_;
     Keymap current_keymap_ = Keymap::Unknown;
+    int current_depressed_modifiers_ = 0;
+    int current_locked_modifiers_ = 0;
 
     std::pair<int, int> screen_size_ { 0, 0 };
 
@@ -77,6 +81,7 @@ private:
 
     std::filesystem::path socket_path_;
 
+    bool connected_ = false;
     bool capture_waiting_ = false;
     bool capture_successful_ = false;
 

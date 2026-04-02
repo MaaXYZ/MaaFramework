@@ -1,10 +1,25 @@
 #include "loader.h"
 
+#include <filesystem>
+#include <iostream>
+
 #include <MaaFramework/MaaAPI.h>
+#ifdef MAA_JS_WITH_TOOLKIT
 #include <MaaToolkit/MaaToolkitAPI.h>
+#endif
 
 #include "../foundation/spec.h"
 #include "buffer.h"
+
+namespace
+{
+
+[[maybe_unused]] [[noreturn]] void throw_toolkit_unavailable(const char* api)
+{
+    throw maajs::MaaError { std::format("{} is not available in AgentServer builds", api) };
+}
+
+} // namespace
 
 std::string version_from_macro()
 {
@@ -96,9 +111,16 @@ void set_reco_image_cache_limit(size_t value)
 
 void config_init_option(std::string user_path, maajs::OptionalParam<std::string> default_json)
 {
+#ifdef MAA_JS_WITH_TOOLKIT
     if (!MaaToolkitConfigInitOption(user_path.c_str(), default_json.value_or("{}").c_str())) {
         throw maajs::MaaError { "Global config_init_option failed" };
     }
+#else
+    std::ignore = default_json;
+    std::cout << "Warning: Global.config_init_option is deprecated in AgentServer; only set_log_dir is applied." << std::endl;
+    auto log_dir = (std::filesystem::path(user_path) / "debug").string();
+    set_log_dir(log_dir);
+#endif
 }
 
 maajs::ArrayBufferType resize_image(maajs::ArrayBufferType src, int32_t width, int32_t height)
@@ -109,6 +131,60 @@ maajs::ArrayBufferType resize_image(maajs::ArrayBufferType src, int32_t width, i
         throw maajs::MaaError { "Global resize_image failed" };
     }
     return buf.data(src.Env());
+}
+
+#ifdef MAA_JS_WITH_TOOLKIT
+static MaaMacOSPermission macos_parse_permission(std::string perm, const char* func)
+{
+    int32_t value = 0;
+    if (perm == "ScreenCapture") {
+        value = MaaMacOSPermissionScreenCapture;
+    }
+    else if (perm == "Accessibility") {
+        value = MaaMacOSPermissionAccessibility;
+    }
+    else {
+        throw maajs::MaaError { std::format("Global {} failed, invalid perm {}", func, perm) };
+    }
+
+    return value;
+}
+#endif
+
+bool macos_check_permission(std::string perm)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    auto value = macos_parse_permission(perm, "macos_check_permission");
+    return MaaToolkitMacOSCheckPermission(value);
+#else
+    std::ignore = perm;
+    throw_toolkit_unavailable("macos_check_permission");
+#endif
+}
+
+maajs::PromiseType macos_request_permission(maajs::EnvType env, std::string perm)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    auto value = macos_parse_permission(perm, "macos_request_permission");
+    auto worker = new maajs::AsyncWork<bool>(env, [value]() -> bool { return MaaToolkitMacOSRequestPermission(value); });
+    worker->Queue();
+    return worker->Promise();
+#else
+    std::ignore = env;
+    std::ignore = perm;
+    throw_toolkit_unavailable("macos_request_permission");
+#endif
+}
+
+bool macos_reveal_permission_settings(std::string perm)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    auto value = macos_parse_permission(perm, "macos_reveal_permission_settings");
+    return MaaToolkitMacOSRevealPermissionSettings(value);
+#else
+    std::ignore = perm;
+    throw_toolkit_unavailable("macos_reveal_permission_settings");
+#endif
 }
 
 maajs::ObjectType load_global(maajs::EnvType env)
@@ -126,6 +202,9 @@ maajs::ObjectType load_global(maajs::EnvType env)
     MAA_BIND_SETTER(globalObject, "reco_image_cache_limit", set_reco_image_cache_limit);
     MAA_BIND_FUNC(globalObject, "config_init_option", config_init_option);
     MAA_BIND_FUNC(globalObject, "resize_image", resize_image);
+    MAA_BIND_FUNC(globalObject, "macos_check_permission", macos_check_permission);
+    MAA_BIND_FUNC(globalObject, "macos_request_permission", macos_request_permission);
+    MAA_BIND_FUNC(globalObject, "macos_reveal_permission_settings", macos_reveal_permission_settings);
 
     return globalObject;
 }

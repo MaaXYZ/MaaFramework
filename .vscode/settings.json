@@ -9,18 +9,16 @@
             "url": "/tools/pipeline.schema.json"
         },
         {
-            "fileMatch": [
-                "/sample/interface.json",
-                "/sample/interface.jsonc"
-            ],
+            "fileMatch": ["/sample/interface.json", "/sample/interface.jsonc"],
             "url": "/tools/interface.schema.json"
-        },
+        }
     ],
     "[json]": {
         "editor.formatOnSave": true,
         "editor.insertSpaces": true,
         "editor.tabSize": 4,
-        "editor.indentSize": "tabSize"
+        "editor.indentSize": "tabSize",
+        "editor.defaultFormatter": "vscode.json-language-features"
     },
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
@@ -31,11 +29,10 @@
         "editor.autoIndent": "advanced",
         "diffEditor.ignoreTrimWhitespace": false
     },
-    "cpplint.excludes": [
-        "3rdparty",
-        "build",
-        "out"
-    ],
+    "[markdown]": {
+        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+    },
+    "cpplint.excludes": ["3rdparty", "build", "out"],
     "cpplint.filters": [
         "-legal/copyright",
         "-whitespace/line_length",
@@ -54,11 +51,7 @@
         "-runtime/string",
         "-runtime/indentation_namespace"
     ],
-    "python.analysis.extraPaths": [
-        "./source/binding/Python"
-    ],
+    "python.analysis.extraPaths": ["./source/binding/Python"],
     "editor.formatOnSave": true,
-    "clangd.arguments": [
-        "--header-insertion=never"
-    ]
+    "clangd.arguments": ["--header-insertion=never"]
 }

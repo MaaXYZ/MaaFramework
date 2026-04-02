@@ -38,12 +38,12 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource
-from maa.controller import DbgController
+from maa.controller import DbgController, ReplayController
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
-from maa.define import MaaDbgControllerTypeEnum, LoggingLevelEnum
+from maa.define import LoggingLevelEnum
 from maa.context import Context
 from maa.pipeline import (
     JPipelineData,
@@ -203,10 +203,13 @@ class PipelineTestRecognition(CustomRecognition):
         # 9. 测试 anchor 对象格式
         self._test_anchor_object_format(context)
 
-        # 10. 测试 v2 格式
+        # 10. 测试 roi/target 的 anchor 引用
+        self._test_roi_target_anchor(context)
+
+        # 11. 测试 v2 格式
         self._test_v2_format(context)
 
-        # 11. 比较 Context 和 Resource 级别
+        # 12. 比较 Context 和 Resource 级别
         self._test_context_vs_resource(context)
 
     def _test_context_get_node_data(self, context: Context):
@@ -961,6 +964,77 @@ class PipelineTestRecognition(CustomRecognition):
 
         print("    PASS: anchor object format")
 
+    def _test_roi_target_anchor(self, context: Context):
+        print("  Testing roi/target anchor reference...")
+
+        new_ctx = context.clone()
+
+        new_ctx.override_pipeline(
+            {
+                "RoiAnchorTest": {
+                    "recognition": "TemplateMatch",
+                    "template": ["test.png"],
+                    "roi": "[Anchor]MyRoiAnchor",
+                    "roi_offset": [10, 20, 0, 0],
+                },
+                "TargetAnchorClick": {
+                    "action": "Click",
+                    "target": "[Anchor]MyTargetAnchor",
+                    "target_offset": [5, 5, 0, 0],
+                },
+                "TargetAnchorScroll": {
+                    "action": "Scroll",
+                    "target": "[Anchor]ScrollAnchor",
+                    "dx": 0,
+                    "dy": -100,
+                },
+                "TargetAnchorSwipeBegin": {
+                    "action": "Swipe",
+                    "begin": "[Anchor]SwipeBeginAnchor",
+                    "end": [300, 300],
+                },
+            }
+        )
+
+        # roi anchor
+        obj = new_ctx.get_node_object("RoiAnchorTest")
+        assert_eq(
+            obj.recognition.param.roi,
+            "[Anchor]MyRoiAnchor",
+            "roi anchor string",
+        )
+        assert_eq(
+            obj.recognition.param.roi_offset, [10, 20, 0, 0], "roi_offset with anchor"
+        )
+
+        # target anchor (Click)
+        obj = new_ctx.get_node_object("TargetAnchorClick")
+        assert_eq(
+            obj.action.param.target,
+            "[Anchor]MyTargetAnchor",
+            "target anchor string",
+        )
+        assert_eq(
+            obj.action.param.target_offset, [5, 5, 0, 0], "target_offset with anchor"
+        )
+
+        # target anchor (Scroll)
+        obj = new_ctx.get_node_object("TargetAnchorScroll")
+        assert_eq(
+            obj.action.param.target,
+            "[Anchor]ScrollAnchor",
+            "scroll target anchor string",
+        )
+
+        # begin anchor (Swipe)
+        obj = new_ctx.get_node_object("TargetAnchorSwipeBegin")
+        assert_eq(
+            obj.action.param.begin,
+            "[Anchor]SwipeBeginAnchor",
+            "swipe begin anchor string",
+        )
+
+        print("    PASS: roi/target anchor reference")
 
     def _test_v2_format(self, context: Context):
         print("  Testing v2 format parsing...")
@@ -1193,7 +1267,7 @@ def test_negative_roi_and_target(context: Context):
         }
     )
     obj = new_ctx.get_node_object("NegativeRoi2Elem")
-    assert_eq(obj.recognition.param.roi, [-50, -50, 0, 0], "negative roi 2-element")
+    assert_eq(obj.recognition.param.roi, [-50, -50, 1, 1], "negative roi 2-element")
 
     # 测试负数 target 坐标
     new_ctx.override_pipeline(
@@ -1229,7 +1303,7 @@ def test_negative_roi_and_target(context: Context):
         }
     )
     obj = new_ctx.get_node_object("NegativeTarget2Elem")
-    assert_eq(obj.action.param.target, [-50, -50, 0, 0], "negative target 2-element")
+    assert_eq(obj.action.param.target, [-50, -50, 1, 1], "negative target 2-element")
 
     # 测试 Swipe 的负数坐标
     new_ctx.override_pipeline(
@@ -1243,7 +1317,7 @@ def test_negative_roi_and_target(context: Context):
     )
     obj = new_ctx.get_node_object("NegativeSwipe")
     assert_eq(obj.action.param.begin, [-100, -100, 50, 50], "negative swipe begin")
-    assert_eq(obj.action.param.end[0], [-50, -50, 0, 0], "negative swipe end")
+    assert_eq(obj.action.param.end[0], [-50, -50, 1, 1], "negative swipe end")
 
     print("  PASS: negative roi and target")
 
@@ -1258,10 +1332,9 @@ def create_test_pipeline_resource(resource_dir: Path):
     pipeline_dir = resource_dir / "pipeline"
     pipeline_dir.mkdir(parents=True, exist_ok=True)
 
-    # 创建测试 pipeline JSON
     test_pipeline = {
         "TestBasic": {
-            # 使用默认值
+            # 使用默认值，用于 Resource 级别测试
         },
         "TestEntry": {
             "next": ["TestReco"],
@@ -1278,29 +1351,29 @@ def create_test_pipeline_resource(resource_dir: Path):
         json.dump(test_pipeline, f, indent=4)
 
 
-def main():
+
+def pipeline_node_test():
     print(f"MaaFw Version: {Library.version()}")
     Toolkit.init_option(install_dir / "bin")
 
-    # 重置测试状态，避免同一进程多次运行时残留陈旧状态
     PipelineTestRecognition.test_results.clear()
 
-    # 创建临时测试资源目录
     import tempfile
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         test_resource_dir = Path(tmp_dir) / "resource"
         create_test_pipeline_resource(test_resource_dir)
 
-        # 创建 Resource 并加载
         resource = Resource()
+        resource.post_bundle(
+            str(install_dir / "test" / "PipelineSmoking" / "resource")
+        ).wait()
         resource.post_bundle(str(test_resource_dir)).wait()
 
         if not resource.loaded:
             print("Failed to load resource")
             sys.exit(1)
 
-        # 注册自定义识别和动作
         resource.register_custom_recognition(
             "PipelineTestReco", PipelineTestRecognition()
         )
@@ -1311,11 +1384,8 @@ def main():
         test_resource_get_node_object(resource)
         test_resource_node_list(resource)
 
-        # 创建 Controller 和 Tasker 进行 Context 级别测试
         dbg_controller = DbgController(
             install_dir / "test" / "PipelineSmoking" / "Screenshot",
-            install_dir / "test" / "user",
-            MaaDbgControllerTypeEnum.CarouselImage,
         )
         dbg_controller.post_connection().wait()
 
@@ -1326,22 +1396,17 @@ def main():
             print("Failed to init tasker")
             sys.exit(1)
 
-        # 运行任务触发 Context 级别测试
         detail = tasker.post_task("TestEntry", {}).wait().get()
         if not detail:
             print("Pipeline task failed")
             sys.exit(1)
 
-        # 检查 Context 测试结果
         if not PipelineTestRecognition.test_results.get("context_tests"):
             print("Context tests failed")
             sys.exit(1)
 
-        # 额外的 Context 级别测试（在任务外进行）
-        # 这些测试需要通过创建一个简单的任务来获取 Context
         print("\n=== Additional Context-level tests ===")
 
-        # 创建一个新任务来测试更多场景
         class AdditionalTestReco(CustomRecognition):
             def analyze(self, context, argv):
                 test_wait_freezes(context)
@@ -1376,5 +1441,39 @@ def main():
     print("=" * 50)
 
 
+def pipeline_smoking():
+    print("\n" + "=" * 50)
+    print("Running pipeline_smoking test...")
+    print("=" * 50)
+
+    recording_path = install_dir / "test" / "PipelineSmoking" / "MaaRecording.jsonl"
+    resource_dir = install_dir / "test" / "PipelineSmoking" / "resource"
+
+    controller = ReplayController(recording_path)
+    ctrl_job = controller.post_connection()
+
+    resource = Resource()
+    res_job = resource.post_bundle(str(resource_dir))
+
+    ctrl_job.wait()
+    res_job.wait()
+
+    tasker = Tasker()
+    tasker.bind(resource, controller)
+
+    if not tasker.inited:
+        print("Failed to init tasker")
+        sys.exit(1)
+
+    detail = tasker.post_task("Wilderness", {}).wait().get()
+
+    if not detail:
+        print("pipeline_smoking task failed")
+        sys.exit(1)
+
+    print("pipeline_smoking test passed!")
+
+
 if __name__ == "__main__":
-    main()
+    pipeline_node_test()
+    pipeline_smoking()

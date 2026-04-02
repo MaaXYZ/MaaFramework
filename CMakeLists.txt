@@ -2,19 +2,25 @@ cmake_minimum_required(VERSION 3.28)
 
 project(MaaFw)
 
-set(CMAKE_CXX_SCAN_FOR_MODULES  OFF)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 include(source/MaaUtils/MaaUtils.cmake)
 
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
-option(WITH_DBG_CONTROLLER "build with debugging controller" OFF)
+option(WITH_MACOS_CONTROLLER "build with macOS controller" ON)
+option(WITH_ANDROID_NATIVE_CONTROLLER "build with Android native controller" ON)
 option(WITH_CUSTOM_CONTROLLER "build with custom controller" ON)
 option(WITH_PLAYCOVER_CONTROLLER "build with PlayCover controller for macOS" ON)
 option(WITH_GAMEPAD_CONTROLLER "build with virtual gamepad controller for Windows" ON)
 option(WITH_WLROOTS_CONTROLLER "build with wlroots controller for Linux" ON)
+option(WITH_RECORD_CONTROLLER "build with record controller for recording" ON)
+option(WITH_REPLAY_CONTROLLER "build with replay controller" ON)
+option(WITH_DBG_CONTROLLER "build with debug controller" OFF)
+
 option(WITH_NODEJS_BINDING "build with nodejs binding" OFF)
 option(WITH_QUICKJS_BINDING "build with quickjs binding" OFF)
+
 option(WITH_MAA_AGENT "build with MaaAgent" ON)
 
 option(BUILD_PICLI "build maa picli" ON)
@@ -22,6 +28,7 @@ option(BUILD_SAMPLE "build a demo" OFF)
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 option(BUILD_NODE_TEST "build node test" OFF)
+option(BUILD_MACOS_TEST "build macOS test" OFF)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)
 option(ENABLE_HASH_VERSION "enable hash version from git" OFF)
@@ -31,14 +38,24 @@ set(MAA_PUBLIC_INC ${CMAKE_SOURCE_DIR}/include)
 set(MAA_PRIVATE_INC ${CMAKE_SOURCE_DIR}/source/include)
 
 # Disable unavailable options
-if(NOT WITH_DBG_CONTROLLER)
-    message(STATUS "Dbg controller is disabled, disable BUILD_PIPELINE_TESTING")
+if(NOT WITH_REPLAY_CONTROLLER)
+    message(STATUS "Replay controller is disabled, disable BUILD_PIPELINE_TESTING")
     set(BUILD_PIPELINE_TESTING OFF)
 endif()
 
 if(WITH_WIN32_CONTROLLER AND NOT WIN32)
     message(STATUS "Not on Windows, disable WITH_WIN32_CONTROLLER")
     set(WITH_WIN32_CONTROLLER OFF)
+endif()
+
+if(WITH_MACOS_CONTROLLER AND NOT APPLE)
+    message(STATUS "Not on macOS, disable WITH_MACOS_CONTROLLER")
+    set(WITH_MACOS_CONTROLLER OFF)
+endif()
+
+if(WITH_ANDROID_NATIVE_CONTROLLER AND NOT ANDROID)
+    message(STATUS "Not on Android, disable WITH_ANDROID_NATIVE_CONTROLLER")
+    set(WITH_ANDROID_NATIVE_CONTROLLER OFF)
 endif()
 
 if(WITH_GAMEPAD_CONTROLLER AND NOT WIN32)
@@ -79,6 +96,10 @@ endif()
 
 if(BUILD_NODE_TEST)
     add_subdirectory(tools/NodeTest)
+endif()
+
+if(BUILD_MACOS_TEST)
+    add_subdirectory(test/macos_test)
 endif()
 
 maadeps_install(bin)

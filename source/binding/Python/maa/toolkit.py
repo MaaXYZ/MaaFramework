@@ -70,6 +70,16 @@ class Toolkit:
         Returns:
             bool: 是否成功 / Whether successful
         """
+        if Library.is_agent_server():
+            from .tasker import Tasker
+
+            print(
+                "Warning: Toolkit.init_option is deprecated in AgentServer; only set_log_dir is applied."
+            )
+            config = default_config if isinstance(default_config, dict) else {}
+            log_dir = Path(user_path) / "debug" if config.get("logging", True) else ""
+            return Tasker.set_log_dir(log_dir)
+
         Toolkit._set_api_properties()
 
         return bool(
@@ -171,6 +181,57 @@ class Toolkit:
 
         Library.toolkit().MaaToolkitDesktopWindowListDestroy(list_handle)
         return windows
+
+    @staticmethod
+    def macos_check_permission(perm: MaaMacOSPermissionEnum) -> bool:
+        """检查 macOS 权限 / Check macOS permission
+
+        检查应用是否已获得指定的 macOS 系统权限。
+        Check if the application has been granted the specified macOS system permission.
+
+        Args:
+            perm: 权限类型 / Permission type
+
+        Returns:
+            bool: 是否已授权 / Whether permission is granted
+        """
+        Toolkit._set_api_properties()
+
+        return bool(Library.toolkit().MaaToolkitMacOSCheckPermission(perm))
+
+    @staticmethod
+    def macos_request_permission(perm: MaaMacOSPermissionEnum) -> bool:
+        """请求 macOS 权限 / Request macOS permission
+
+        向用户请求指定的 macOS 系统权限。系统可能会弹出授权对话框。
+        Request the specified macOS system permission from user. System may show an authorization dialog.
+
+        Args:
+            perm: 权限类型 / Permission type
+
+        Returns:
+            bool: 是否成功请求（不代表已授权）/ Whether request succeeded (doesn't mean granted)
+        """
+        Toolkit._set_api_properties()
+
+        return bool(Library.toolkit().MaaToolkitMacOSRequestPermission(perm))
+
+    @staticmethod
+    def macos_reveal_permission_settings(perm: MaaMacOSPermissionEnum) -> bool:
+        """打开 macOS 权限设置 / Open macOS permission settings
+
+        打开系统偏好设置中对应权限的设置页面。
+        Open the corresponding permission settings page in System Preferences.
+
+        Args:
+            perm: 权限类型 / Permission type
+
+        Returns:
+            bool: 是否成功打开 / Whether successfully opened
+        """
+        Toolkit._set_api_properties()
+
+        return bool(Library.toolkit().MaaToolkitMacOSRevealPermissionSettings(perm))
 
     ### private ###
 
@@ -293,4 +354,19 @@ class Toolkit:
         Library.toolkit().MaaToolkitDesktopWindowGetWindowName.restype = ctypes.c_char_p
         Library.toolkit().MaaToolkitDesktopWindowGetWindowName.argtypes = [
             MaaToolkitDesktopWindowHandle
+        ]
+
+        Library.toolkit().MaaToolkitMacOSCheckPermission.restype = MaaBool
+        Library.toolkit().MaaToolkitMacOSCheckPermission.argtypes = [
+            MaaMacOSPermission
+        ]
+
+        Library.toolkit().MaaToolkitMacOSRequestPermission.restype = MaaBool
+        Library.toolkit().MaaToolkitMacOSRequestPermission.argtypes = [
+            MaaMacOSPermission
+        ]
+
+        Library.toolkit().MaaToolkitMacOSRevealPermissionSettings.restype = MaaBool
+        Library.toolkit().MaaToolkitMacOSRevealPermissionSettings.argtypes = [
+            MaaMacOSPermission
         ]

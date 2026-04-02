@@ -48,4 +48,12 @@ public:
     virtual void inactive() { }
 };
 
+class RelativeMoveInput : public InputBase
+{
+public:
+    virtual ~RelativeMoveInput() = default;
+
+    virtual bool relative_move(int dx, int dy) = 0;
+};
+
 MAA_CTRL_UNIT_NS_END

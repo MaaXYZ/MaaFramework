@@ -3,12 +3,12 @@
 #include <filesystem>
 
 #include "Base/UnitBase.h"
-#include "ControlUnit/ControlUnitAPI.h"
 #include "General/Activity.h"
 #include "General/AdbCommand.h"
 #include "General/Connection.h"
 #include "General/DeviceInfo.h"
 #include "General/DeviceList.h"
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/Dispatcher.hpp"
 
 #include "Common/Conf.h"
@@ -54,8 +54,6 @@ public: // from ControlUnitAPI
 
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
-
-    virtual bool scroll(int dx, int dy) override;
 
     virtual bool inactive() override;
 
