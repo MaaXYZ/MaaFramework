@@ -304,7 +304,8 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
             continue;
         }
 
-        RecoResult result = run_recognition(image, pipeline_data, ocr_cache);
+        auto anchor_name = node.anchor ? std::optional { node.name } : std::nullopt;
+        RecoResult result = run_recognition(image, pipeline_data, std::move(anchor_name), ocr_cache);
 
         if (result.box) {
             LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
