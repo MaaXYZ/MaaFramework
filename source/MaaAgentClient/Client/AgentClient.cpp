@@ -498,6 +498,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_controller_get_info(j)) {
         return true;
     }
+    else if (handle_controller_set_option(j)) {
+        return true;
+    }
     else if (handle_event_response(j)) {
         return true;
     }
@@ -2387,6 +2390,47 @@ bool AgentClient::handle_controller_get_info(const json::value& j)
     ControllerGetInfoReverseResponse resp {
         .info = std::move(info),
     };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_set_option(const json::value& j)
+{
+    if (!j.is<ControllerSetOptionReverseRequest>()) {
+        return false;
+    }
+    const ControllerSetOptionReverseRequest& req = j.as<ControllerSetOptionReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        ControllerSetOptionReverseResponse resp { .ret = false };
+        send(resp);
+        return true;
+    }
+
+    bool ret = false;
+    MaaCtrlOption key = static_cast<MaaCtrlOption>(req.key);
+    switch (key) {
+    case MaaCtrlOption_ScreenshotTargetLongSide:
+    case MaaCtrlOption_ScreenshotTargetShortSide:
+    case MaaCtrlOption_ScreenshotResizeMethod: {
+        int32_t v = static_cast<int32_t>(req.value.as_integer());
+        ret = controller->set_option(key, &v, sizeof(v));
+        break;
+    }
+    case MaaCtrlOption_ScreenshotUseRawSize:
+    case MaaCtrlOption_MouseLockFollow: {
+        bool v = req.value.as_boolean();
+        ret = controller->set_option(key, &v, sizeof(v));
+        break;
+    }
+    default:
+        LogError << "unknown key" << VAR(req.key);
+        break;
+    }
+
+    ControllerSetOptionReverseResponse resp { .ret = ret };
     send(resp);
     return true;
 }

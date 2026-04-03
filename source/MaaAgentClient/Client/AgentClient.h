@@ -122,6 +122,7 @@ private:
     bool handle_controller_get_uuid(const json::value& j);
     bool handle_controller_get_resolution(const json::value& j);
     bool handle_controller_get_info(const json::value& j);
+    bool handle_controller_set_option(const json::value& j);
 
     bool handle_event_response(const json::value& j);
 

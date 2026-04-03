@@ -14,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
-inline static constexpr int kProtocolVersion = 7;
+inline static constexpr int kProtocolVersion = 8;
 
 struct StartUpRequest
 {
@@ -1565,6 +1565,24 @@ struct ControllerGetInfoReverseResponse
 
     MessageTypePlaceholder _ControllerGetInfoReverseResponse = 1;
     MEO_JSONIZATION(info, _ControllerGetInfoReverseResponse);
+};
+
+struct ControllerSetOptionReverseRequest
+{
+    std::string controller_id;
+    int32_t key = 0;
+    json::value value;
+
+    MessageTypePlaceholder _ControllerSetOptionReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, key, value, _ControllerSetOptionReverseRequest);
+};
+
+struct ControllerSetOptionReverseResponse
+{
+    bool ret = false;
+
+    MessageTypePlaceholder _ControllerSetOptionReverseResponse = 1;
+    MEO_JSONIZATION(ret, _ControllerSetOptionReverseResponse);
 };
 
 struct ImageHeader

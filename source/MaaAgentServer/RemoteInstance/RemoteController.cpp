@@ -14,8 +14,49 @@ RemoteController::RemoteController(Transceiver& server, const std::string& contr
 
 bool RemoteController::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
-    LogError << "Can NOT set option at remote controller" << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
-    return false;
+    LogFunc << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
+
+    if (!value) {
+        LogError << "value is null" << VAR(key);
+        return false;
+    }
+
+    json::value jvalue;
+    switch (key) {
+    case MaaCtrlOption_ScreenshotTargetLongSide:
+    case MaaCtrlOption_ScreenshotTargetShortSide:
+    case MaaCtrlOption_ScreenshotResizeMethod:
+        if (val_size != sizeof(int32_t)) {
+            LogError << "invalid val_size for int32_t option" << VAR(key) << VAR(val_size);
+            return false;
+        }
+        jvalue = *reinterpret_cast<const int32_t*>(value);
+        break;
+
+    case MaaCtrlOption_ScreenshotUseRawSize:
+    case MaaCtrlOption_MouseLockFollow:
+        if (val_size != sizeof(bool)) {
+            LogError << "invalid val_size for bool option" << VAR(key) << VAR(val_size);
+            return false;
+        }
+        jvalue = *reinterpret_cast<const bool*>(value);
+        break;
+
+    default:
+        LogError << "unknown key" << VAR(key);
+        return false;
+    }
+
+    ControllerSetOptionReverseRequest req {
+        .controller_id = controller_id_,
+        .key = key,
+        .value = std::move(jvalue),
+    };
+    auto resp_opt = server_.send_and_recv<ControllerSetOptionReverseResponse>(req);
+    if (!resp_opt) {
+        return false;
+    }
+    return resp_opt->ret;
 }
 
 MaaCtrlId RemoteController::post_connection()
