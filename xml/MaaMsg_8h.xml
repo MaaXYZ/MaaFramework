@@ -47,6 +47,11 @@
       <member refid="group__MaaMsg_1ga464fd50ef2c65727300fa98b8f3fdc01" kind="define"><name>MaaMsg_Node_Action_Succeeded</name></member>
       <member refid="group__MaaMsg_1gac2e7283ec9099d4826efa131aff46a8e" kind="define"><name>MaaMsg_Node_Action_Failed</name></member>
     </sectiondef>
+    <sectiondef kind="user-defined">
+      <member refid="group__MaaMsg_1gabbd49acf07521f4aa8ad3a1c5f6ed8a1" kind="define"><name>MaaMsg_Node_WaitFreezes_Starting</name></member>
+      <member refid="group__MaaMsg_1gadea7b0a37f4fecce7a93ef4b755deb37" kind="define"><name>MaaMsg_Node_WaitFreezes_Succeeded</name></member>
+      <member refid="group__MaaMsg_1gae545a1ad8c417848d8d6a279b8314439" kind="define"><name>MaaMsg_Node_WaitFreezes_Failed</name></member>
+    </sectiondef>
     <briefdescription>
 <para>Contains the callback message definitions. </para>
     </briefdescription>

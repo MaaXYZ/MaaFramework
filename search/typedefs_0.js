@@ -60,7 +60,8 @@ var searchData=
   ['maatoolkitadbdevicelist_57',['MaaToolkitAdbDeviceList',['../MaaToolkitDef_8h.html#a61bc7b4be1b04be75314fe7d088b0bc6',1,'MaaToolkitDef.h']]],
   ['maatoolkitdesktopwindow_58',['MaaToolkitDesktopWindow',['../MaaToolkitDef_8h.html#a5d8743988770806277c247ba9e84040a',1,'MaaToolkitDef.h']]],
   ['maatoolkitdesktopwindowlist_59',['MaaToolkitDesktopWindowList',['../MaaToolkitDef_8h.html#aaf164274a2c0089edb67f33e26719ff0',1,'MaaToolkitDef.h']]],
-  ['maawin32controlunithandle_60',['MaaWin32ControlUnitHandle',['../ControlUnitAPI_8h.html#a65786017771209552b0f1836a58deef0',1,'ControlUnitAPI.h']]],
-  ['maawin32inputmethod_61',['MaaWin32InputMethod',['../MaaDef_8h.html#a29af4457ff72b57b157a1d58d6d28878',1,'MaaDef.h']]],
-  ['maawin32screencapmethod_62',['MaaWin32ScreencapMethod',['../MaaDef_8h.html#a23833339ba6406d680688350d27d37b3',1,'MaaDef.h']]]
+  ['maawfid_60',['MaaWfId',['../MaaDef_8h.html#a3c8f6095f8a7b0b3ad6c971a4f45c333',1,'MaaDef.h']]],
+  ['maawin32controlunithandle_61',['MaaWin32ControlUnitHandle',['../ControlUnitAPI_8h.html#a65786017771209552b0f1836a58deef0',1,'ControlUnitAPI.h']]],
+  ['maawin32inputmethod_62',['MaaWin32InputMethod',['../MaaDef_8h.html#a29af4457ff72b57b157a1d58d6d28878',1,'MaaDef.h']]],
+  ['maawin32screencapmethod_63',['MaaWin32ScreencapMethod',['../MaaDef_8h.html#a23833339ba6406d680688350d27d37b3',1,'MaaDef.h']]]
 ];

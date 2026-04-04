@@ -91,6 +91,7 @@ var MaaDef_8h =
     [ "MaaRecoId", "MaaDef_8h.html#a7519e6a8329a32c8e3058c20ec74cda8", null ],
     [ "MaaActId", "MaaDef_8h.html#ac3229e974a0f5b3508f88d1b2196f526", null ],
     [ "MaaNodeId", "MaaDef_8h.html#aeedbbed1bc17d1ffd80ff719a71cfed5", null ],
+    [ "MaaWfId", "MaaDef_8h.html#a3c8f6095f8a7b0b3ad6c971a4f45c333", null ],
     [ "MaaSinkId", "MaaDef_8h.html#aac4cf6870bfe8fef31ead507dcfb4251", null ],
     [ "MaaStringBuffer", "MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98", null ],
     [ "MaaImageBuffer", "MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259", null ],
@@ -176,7 +177,8 @@ var MaaDef_8h =
       [ "MaaCtrlOption_ScreenshotTargetLongSide", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75", null ],
       [ "MaaCtrlOption_ScreenshotTargetShortSide", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3", null ],
       [ "MaaCtrlOption_ScreenshotUseRawSize", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105", null ],
-      [ "MaaCtrlOption_MouseLockFollow", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003aac6a4d810461a9730c85dff6574c22bd", null ]
+      [ "MaaCtrlOption_MouseLockFollow", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003aac6a4d810461a9730c85dff6574c22bd", null ],
+      [ "MaaCtrlOption_ScreenshotResizeMethod", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003adb1dd8b0b6088d34886dc81f6fef505c", null ]
     ] ],
     [ "MaaTaskerOptionEnum", "MaaDef_8h.html#a7ce6a82a2484734da58c3c422d19a9b1", [
       [ "MaaTaskerOption_Invalid", "MaaDef_8h.html#a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa", null ]

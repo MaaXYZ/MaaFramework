@@ -423,6 +423,7 @@
     <member refid="MaaTasker_8h_1a899a756cf686e880c0691105176c6773" kind="function"><name>MaaTaskerOverridePipeline</name></member>
     <member refid="MaaTasker_8h_1aa0a412e5b5e08fb4f4e11de826700ff7" kind="function"><name>MaaTaskerGetRecognitionDetail</name></member>
     <member refid="MaaTasker_8h_1ad18ddb1160386ad45e2268b5fc655488" kind="function"><name>MaaTaskerGetActionDetail</name></member>
+    <member refid="MaaTasker_8h_1aa3aa69ddfe059def8bfd5510fc1ec90b" kind="function"><name>MaaTaskerGetWaitFreezesDetail</name></member>
     <member refid="MaaTasker_8h_1a2807a557aa5cac9d2bee6281ec22f836" kind="function"><name>MaaTaskerGetNodeDetail</name></member>
     <member refid="MaaTasker_8h_1ae4b85b9172caa12b04648a98e923390d" kind="function"><name>MaaTaskerGetTaskDetail</name></member>
     <member refid="MaaTasker_8h_1a5e00add0d572f3baaf90873443af08ec" kind="function"><name>MaaTaskerGetLatestNode</name></member>
@@ -556,6 +557,7 @@
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3" kind="enumvalue"><name>MaaCtrlOption_ScreenshotTargetShortSide</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105" kind="enumvalue"><name>MaaCtrlOption_ScreenshotUseRawSize</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003aac6a4d810461a9730c85dff6574c22bd" kind="enumvalue"><name>MaaCtrlOption_MouseLockFollow</name></member>
+    <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003adb1dd8b0b6088d34886dc81f6fef505c" kind="enumvalue"><name>MaaCtrlOption_ScreenshotResizeMethod</name></member>
     <member refid="MaaDef_8h_1a7ce6a82a2484734da58c3c422d19a9b1" kind="enum"><name>MaaTaskerOptionEnum</name></member>
     <member refid="MaaDef_8h_1a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa" kind="enumvalue"><name>MaaTaskerOption_Invalid</name></member>
     <member refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kind="typedef"><name>MaaBool</name></member>
@@ -567,6 +569,7 @@
     <member refid="MaaDef_8h_1a7519e6a8329a32c8e3058c20ec74cda8" kind="typedef"><name>MaaRecoId</name></member>
     <member refid="MaaDef_8h_1ac3229e974a0f5b3508f88d1b2196f526" kind="typedef"><name>MaaActId</name></member>
     <member refid="MaaDef_8h_1aeedbbed1bc17d1ffd80ff719a71cfed5" kind="typedef"><name>MaaNodeId</name></member>
+    <member refid="MaaDef_8h_1a3c8f6095f8a7b0b3ad6c971a4f45c333" kind="typedef"><name>MaaWfId</name></member>
     <member refid="MaaDef_8h_1aac4cf6870bfe8fef31ead507dcfb4251" kind="typedef"><name>MaaSinkId</name></member>
     <member refid="MaaDef_8h_1a4010bb63df489fc09efb6ba9a1fc1c98" kind="typedef"><name>MaaStringBuffer</name></member>
     <member refid="MaaDef_8h_1a0a52c8503deca448e71a407cdb14d259" kind="typedef"><name>MaaImageBuffer</name></member>
@@ -631,6 +634,9 @@
     <member refid="group__MaaMsg_1ga5b217e43e0ce9f0a6f80fbb964204e9a" kind="define"><name>MaaMsg_Node_Action_Starting</name></member>
     <member refid="group__MaaMsg_1ga464fd50ef2c65727300fa98b8f3fdc01" kind="define"><name>MaaMsg_Node_Action_Succeeded</name></member>
     <member refid="group__MaaMsg_1gac2e7283ec9099d4826efa131aff46a8e" kind="define"><name>MaaMsg_Node_Action_Failed</name></member>
+    <member refid="group__MaaMsg_1gabbd49acf07521f4aa8ad3a1c5f6ed8a1" kind="define"><name>MaaMsg_Node_WaitFreezes_Starting</name></member>
+    <member refid="group__MaaMsg_1gadea7b0a37f4fecce7a93ef4b755deb37" kind="define"><name>MaaMsg_Node_WaitFreezes_Succeeded</name></member>
+    <member refid="group__MaaMsg_1gae545a1ad8c417848d8d6a279b8314439" kind="define"><name>MaaMsg_Node_WaitFreezes_Failed</name></member>
   </compound>
   <compound refid="MaaPort_8h" kind="file"><name>MaaPort.h</name>
     <member refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kind="define"><name>MAA_CALL</name></member>
@@ -768,6 +774,9 @@
     <member refid="group__MaaMsg_1ga5b217e43e0ce9f0a6f80fbb964204e9a" kind="define"><name>MaaMsg_Node_Action_Starting</name></member>
     <member refid="group__MaaMsg_1ga464fd50ef2c65727300fa98b8f3fdc01" kind="define"><name>MaaMsg_Node_Action_Succeeded</name></member>
     <member refid="group__MaaMsg_1gac2e7283ec9099d4826efa131aff46a8e" kind="define"><name>MaaMsg_Node_Action_Failed</name></member>
+    <member refid="group__MaaMsg_1gabbd49acf07521f4aa8ad3a1c5f6ed8a1" kind="define"><name>MaaMsg_Node_WaitFreezes_Starting</name></member>
+    <member refid="group__MaaMsg_1gadea7b0a37f4fecce7a93ef4b755deb37" kind="define"><name>MaaMsg_Node_WaitFreezes_Succeeded</name></member>
+    <member refid="group__MaaMsg_1gae545a1ad8c417848d8d6a279b8314439" kind="define"><name>MaaMsg_Node_WaitFreezes_Failed</name></member>
   </compound>
   <compound refid="dir_3f6e8cd112d1e824096c35d6249bbf1f" kind="dir"><name>include/MaaToolkit/AdbDevice</name>
   </compound>

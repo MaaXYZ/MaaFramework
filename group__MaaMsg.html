@@ -176,6 +176,15 @@ $(document).ready(function(){initNavTree('group__MaaMsg.html',''); initResizable
 <tr class="memitem:gac2e7283ec9099d4826efa131aff46a8e" id="r_gac2e7283ec9099d4826efa131aff46a8e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#gac2e7283ec9099d4826efa131aff46a8e">MaaMsg_Node_Action_Failed</a>&#160;&#160;&#160;(&quot;Node.Action.Failed&quot;)</td></tr>
 <tr class="memdesc:gac2e7283ec9099d4826efa131aff46a8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for the action of node.  <br /></td></tr>
 <tr class="separator:gac2e7283ec9099d4826efa131aff46a8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabbd49acf07521f4aa8ad3a1c5f6ed8a1" id="r_gabbd49acf07521f4aa8ad3a1c5f6ed8a1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#gabbd49acf07521f4aa8ad3a1c5f6ed8a1">MaaMsg_Node_WaitFreezes_Starting</a>&#160;&#160;&#160;(&quot;Node.WaitFreezes.Starting&quot;)</td></tr>
+<tr class="memdesc:gabbd49acf07521f4aa8ad3a1c5f6ed8a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for wait freezes.  <br /></td></tr>
+<tr class="separator:gabbd49acf07521f4aa8ad3a1c5f6ed8a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadea7b0a37f4fecce7a93ef4b755deb37" id="r_gadea7b0a37f4fecce7a93ef4b755deb37"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#gadea7b0a37f4fecce7a93ef4b755deb37">MaaMsg_Node_WaitFreezes_Succeeded</a>&#160;&#160;&#160;(&quot;Node.WaitFreezes.Succeeded&quot;)</td></tr>
+<tr class="memdesc:gadea7b0a37f4fecce7a93ef4b755deb37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for wait freezes.  <br /></td></tr>
+<tr class="separator:gadea7b0a37f4fecce7a93ef4b755deb37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae545a1ad8c417848d8d6a279b8314439" id="r_gae545a1ad8c417848d8d6a279b8314439"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MaaMsg.html#gae545a1ad8c417848d8d6a279b8314439">MaaMsg_Node_WaitFreezes_Failed</a>&#160;&#160;&#160;(&quot;Node.WaitFreezes.Failed&quot;)</td></tr>
+<tr class="memdesc:gae545a1ad8c417848d8d6a279b8314439"><td class="mdescLeft">&#160;</td><td class="mdescRight">Message for wait freezes.  <br /></td></tr>
+<tr class="separator:gae545a1ad8c417848d8d6a279b8314439"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Macro Definition Documentation</h2>
@@ -638,12 +647,63 @@ $(document).ready(function(){initNavTree('group__MaaMsg.html',''); initResizable
 
 </div>
 </div>
+<a id="gabbd49acf07521f4aa8ad3a1c5f6ed8a1" name="gabbd49acf07521f4aa8ad3a1c5f6ed8a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gabbd49acf07521f4aa8ad3a1c5f6ed8a1">&#9670;&#160;</a></span>MaaMsg_Node_WaitFreezes_Starting</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaMsg_Node_WaitFreezes_Starting&#160;&#160;&#160;(&quot;Node.WaitFreezes.Starting&quot;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Message for wait freezes. </p>
+<p>details_json: { task_id: number, wf_id: number, name: string, phase: string, // "pre" | "post" | "repeat" | "context" roi: [number, number, number, number], param: { time: number, threshold: number, method: number, rate_limit: number, timeout: number, }, reco_ids?: number[], // Succeeded / Failed only elapsed?: number, // Succeeded / Failed only focus: any, } </p>
+
+</div>
+</div>
+<a id="gadea7b0a37f4fecce7a93ef4b755deb37" name="gadea7b0a37f4fecce7a93ef4b755deb37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadea7b0a37f4fecce7a93ef4b755deb37">&#9670;&#160;</a></span>MaaMsg_Node_WaitFreezes_Succeeded</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaMsg_Node_WaitFreezes_Succeeded&#160;&#160;&#160;(&quot;Node.WaitFreezes.Succeeded&quot;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Message for wait freezes. </p>
+<p>details_json: { task_id: number, wf_id: number, name: string, phase: string, // "pre" | "post" | "repeat" | "context" roi: [number, number, number, number], param: { time: number, threshold: number, method: number, rate_limit: number, timeout: number, }, reco_ids?: number[], // Succeeded / Failed only elapsed?: number, // Succeeded / Failed only focus: any, } </p>
+
+</div>
+</div>
+<a id="gae545a1ad8c417848d8d6a279b8314439" name="gae545a1ad8c417848d8d6a279b8314439"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae545a1ad8c417848d8d6a279b8314439">&#9670;&#160;</a></span>MaaMsg_Node_WaitFreezes_Failed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaMsg_Node_WaitFreezes_Failed&#160;&#160;&#160;(&quot;Node.WaitFreezes.Failed&quot;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Message for wait freezes. </p>
+<p>details_json: { task_id: number, wf_id: number, name: string, phase: string, // "pre" | "post" | "repeat" | "context" roi: [number, number, number, number], param: { time: number, threshold: number, method: number, rate_limit: number, timeout: number, }, reco_ids?: number[], // Succeeded / Failed only elapsed?: number, // Succeeded / Failed only focus: any, } </p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Apr 2 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Sat Apr 4 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

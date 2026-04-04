@@ -26,5 +26,8 @@ var group__MaaMsg =
     [ "MaaMsg_Node_Recognition_Failed", "group__MaaMsg.html#ga633065c435e4278004bfc867cdb28e16", null ],
     [ "MaaMsg_Node_Action_Starting", "group__MaaMsg.html#ga5b217e43e0ce9f0a6f80fbb964204e9a", null ],
     [ "MaaMsg_Node_Action_Succeeded", "group__MaaMsg.html#ga464fd50ef2c65727300fa98b8f3fdc01", null ],
-    [ "MaaMsg_Node_Action_Failed", "group__MaaMsg.html#gac2e7283ec9099d4826efa131aff46a8e", null ]
+    [ "MaaMsg_Node_Action_Failed", "group__MaaMsg.html#gac2e7283ec9099d4826efa131aff46a8e", null ],
+    [ "MaaMsg_Node_WaitFreezes_Starting", "group__MaaMsg.html#gabbd49acf07521f4aa8ad3a1c5f6ed8a1", null ],
+    [ "MaaMsg_Node_WaitFreezes_Succeeded", "group__MaaMsg.html#gadea7b0a37f4fecce7a93ef4b755deb37", null ],
+    [ "MaaMsg_Node_WaitFreezes_Failed", "group__MaaMsg.html#gae545a1ad8c417848d8d6a279b8314439", null ]
 ];

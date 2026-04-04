@@ -372,6 +372,47 @@
         <location file="include/MaaFramework/MaaMsg.h" line="171" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="171" bodyend="-1"/>
       </memberdef>
     </sectiondef>
+    <sectiondef kind="user-defined">
+      <memberdef kind="define" id="group__MaaMsg_1gabbd49acf07521f4aa8ad3a1c5f6ed8a1" prot="public" static="no">
+        <name>MaaMsg_Node_WaitFreezes_Starting</name>
+        <initializer>(&quot;Node.WaitFreezes.Starting&quot;)</initializer>
+        <briefdescription>
+<para>Message for wait freezes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>details_json: { task_id: number, wf_id: number, name: string, phase: string, // &quot;pre&quot; | &quot;post&quot; | &quot;repeat&quot; | &quot;context&quot; roi: [number, number, number, number], param: { time: number, threshold: number, method: number, rate_limit: number, timeout: number, }, reco_ids?: number[], // Succeeded / Failed only elapsed?: number, // Succeeded / Failed only focus: any, } </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaMsg.h" line="196" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="196" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__MaaMsg_1gadea7b0a37f4fecce7a93ef4b755deb37" prot="public" static="no">
+        <name>MaaMsg_Node_WaitFreezes_Succeeded</name>
+        <initializer>(&quot;Node.WaitFreezes.Succeeded&quot;)</initializer>
+        <briefdescription>
+<para>Message for wait freezes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>details_json: { task_id: number, wf_id: number, name: string, phase: string, // &quot;pre&quot; | &quot;post&quot; | &quot;repeat&quot; | &quot;context&quot; roi: [number, number, number, number], param: { time: number, threshold: number, method: number, rate_limit: number, timeout: number, }, reco_ids?: number[], // Succeeded / Failed only elapsed?: number, // Succeeded / Failed only focus: any, } </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaMsg.h" line="197" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="197" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__MaaMsg_1gae545a1ad8c417848d8d6a279b8314439" prot="public" static="no">
+        <name>MaaMsg_Node_WaitFreezes_Failed</name>
+        <initializer>(&quot;Node.WaitFreezes.Failed&quot;)</initializer>
+        <briefdescription>
+<para>Message for wait freezes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>details_json: { task_id: number, wf_id: number, name: string, phase: string, // &quot;pre&quot; | &quot;post&quot; | &quot;repeat&quot; | &quot;context&quot; roi: [number, number, number, number], param: { time: number, threshold: number, method: number, rate_limit: number, timeout: number, }, reco_ids?: number[], // Succeeded / Failed only elapsed?: number, // Succeeded / Failed only focus: any, } </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaMsg.h" line="198" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="198" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

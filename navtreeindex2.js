@@ -1,5 +1,8 @@
 var NAVTREEINDEX2 =
 {
+"MaaToolkitMacOS_8h.html#ae471356de642c11ad8be5aacc0c6b6be":[3,0,0,4,3,0,0],
+"MaaToolkitMacOS_8h_source.html":[3,0,0,4,3,0],
+"MaaUtility_8h.html":[3,0,0,3,2,1],
 "MaaUtility_8h.html#a0329e2aed44c80bc9d10f6c1f6a8872f":[3,0,0,3,2,1,0],
 "MaaUtility_8h_source.html":[3,0,0,3,2,1],
 "MacOSControlUnitAPI_8h.html":[3,0,0,2,8],
@@ -146,13 +149,16 @@ var NAVTREEINDEX2 =
 "group__MaaMsg.html#gaa665444413869a6bd5d2df4bcf059d6b":[1,0,12],
 "group__MaaMsg.html#gaacf32fea61ca2750f2966834d8374cb7":[1,0,22],
 "group__MaaMsg.html#gab65345cec2c40588cb4037c50fc73176":[1,0,10],
+"group__MaaMsg.html#gabbd49acf07521f4aa8ad3a1c5f6ed8a1":[1,0,27],
 "group__MaaMsg.html#gabe7fcb3beacfab11cbf22f0fbda4fac4":[1,0,15],
 "group__MaaMsg.html#gac2e7283ec9099d4826efa131aff46a8e":[1,0,26],
 "group__MaaMsg.html#gad2393417af43fa2fcbed8e6683f78c02":[1,0,5],
 "group__MaaMsg.html#gad5d54760f4862350701ad402631d3a12":[1,0,20],
 "group__MaaMsg.html#gad6394a742b4107464d31e5673a6c9066":[1,0,9],
 "group__MaaMsg.html#gad9ef911aefd26bb9185653f5a58ffcf2":[1,0,11],
+"group__MaaMsg.html#gadea7b0a37f4fecce7a93ef4b755deb37":[1,0,28],
 "group__MaaMsg.html#gae3c9293ecd4737cd86ce9be28e376f3b":[1,0,7],
+"group__MaaMsg.html#gae545a1ad8c417848d8d6a279b8314439":[1,0,29],
 "group__MaaMsg.html#gaeb9fbe452c5250939dca05a757a79ac7":[1,0,17],
 "group__MaaMsg.html#gaf95f803bb6d35641ef4a6d6002523e2f":[1,0,18],
 "hierarchy.html":[2,1],
@@ -243,7 +249,5 @@ var NAVTREEINDEX2 =
 "structRecordTouch.html#a1a7da180318019e996f72b523a4c67e1":[2,0,21,3],
 "structRecordTouch.html#a6f37c130125b34b7cb5aee355a7bedbf":[2,0,21,2],
 "structRecordTouch.html#aab5878c1a04647e1f335d8c6f7fe29d7":[2,0,21,0],
-"structRecordTouch.html#ab7ddd20d6d36e614c5780bba3dbb1e57":[2,0,21,4],
-"structRecordTouch.html#ad8e0dd20ce33c3035e78850c37311b3e":[2,0,21,1],
-"topics.html":[1]
+"structRecordTouch.html#ab7ddd20d6d36e614c5780bba3dbb1e57":[2,0,21,4]
 };
