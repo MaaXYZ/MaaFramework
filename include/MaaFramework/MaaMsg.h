@@ -171,4 +171,31 @@
 #define MaaMsg_Node_Action_Failed ("Node.Action.Failed")
 /// @}
 
+/**
+ * @{
+ * @brief Message for wait freezes.
+ *
+ * details_json: {
+ *     task_id: number,
+ *     wf_id: number,
+ *     name: string,
+ *     phase: string,  // "pre" | "post" | "repeat" | "context"
+ *     roi: [number, number, number, number],
+ *     param: {
+ *         time: number,
+ *         threshold: number,
+ *         method: number,
+ *         rate_limit: number,
+ *         timeout: number,
+ *     },
+ *     reco_ids?: number[],  // Succeeded / Failed only
+ *     elapsed?: number,     // Succeeded / Failed only
+ *     focus: any,
+ * }
+ */
+#define MaaMsg_Node_WaitFreezes_Starting ("Node.WaitFreezes.Starting")
+#define MaaMsg_Node_WaitFreezes_Succeeded ("Node.WaitFreezes.Succeeded")
+#define MaaMsg_Node_WaitFreezes_Failed ("Node.WaitFreezes.Failed")
+/// @}
+
 /** @} */

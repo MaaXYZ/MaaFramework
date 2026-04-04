@@ -26,6 +26,9 @@ public:
     std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId uid) const;
     void set_action_detail(MaaActId uid, MAA_TASK_NS::ActionResult);
 
+    std::optional<MAA_TASK_NS::WaitFreezesDetail> get_wf_detail(MaaWfId uid) const;
+    void set_wf_detail(MaaWfId uid, MAA_TASK_NS::WaitFreezesDetail detail);
+
     std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId uid) const;
     void set_node_detail(MaaNodeId uid, MAA_TASK_NS::NodeDetail detail);
 
@@ -53,6 +56,9 @@ private:
 
     std::map<MaaActId, MAA_TASK_NS::ActionResult> action_details_;
     mutable std::shared_mutex action_details_mutex_;
+
+    std::map<MaaWfId, MAA_TASK_NS::WaitFreezesDetail> wf_details_;
+    mutable std::shared_mutex wf_details_mutex_;
 
     std::map<MaaNodeId, MAA_TASK_NS::NodeDetail> node_details_;
     mutable std::shared_mutex node_details_mutex_;

@@ -480,6 +480,65 @@ class Tasker:
             raw_detail=raw_detail,
         )
 
+    def get_wait_freezes_detail(self, wf_id: int) -> Optional[WaitFreezesDetail]:
+        """获取等待画面静止信息 / Get wait freezes info
+
+        Args:
+            wf_id: Wait Freezes ID
+
+        Returns:
+            Optional[WaitFreezesDetail]: 等待画面静止详情 / Wait freezes detail, or None if not exists
+        """
+        name = StringBuffer()
+        c_success = MaaBool()
+        c_elapsed_ms = MaaSize()
+        phase = StringBuffer()
+        roi = RectBuffer()
+
+        size = MaaSize()
+        ret = bool(
+            Library.framework().MaaTaskerGetWaitFreezesDetail(
+                self._handle,
+                MaaWfId(wf_id),
+                name._handle,
+                phase._handle,
+                ctypes.pointer(c_success),
+                ctypes.pointer(c_elapsed_ms),
+                None,
+                ctypes.pointer(size),
+                roi._handle,
+            )
+        )
+        if not ret:
+            return None
+
+        reco_id_list = (MaaRecoId * int(size.value))()
+        ret = bool(
+            Library.framework().MaaTaskerGetWaitFreezesDetail(
+                self._handle,
+                MaaWfId(wf_id),
+                name._handle,
+                phase._handle,
+                ctypes.pointer(c_success),
+                ctypes.pointer(c_elapsed_ms),
+                reco_id_list,
+                ctypes.pointer(size),
+                roi._handle,
+            )
+        )
+        if not ret:
+            return None
+
+        return WaitFreezesDetail(
+            wf_id=wf_id,
+            name=name.get(),
+            phase=phase.get(),
+            success=bool(c_success),
+            elapsed_ms=int(c_elapsed_ms.value),
+            reco_id_list=[int(reco_id_list[i]) for i in range(int(size.value))],
+            roi=roi.get(),
+        )
+
     def get_node_detail(self, node_id: int) -> Optional[NodeDetail]:
         """获取节点信息 / Get node info
 
@@ -922,6 +981,19 @@ class Tasker:
             MaaRectHandle,
             ctypes.POINTER(MaaBool),
             MaaStringBufferHandle,
+        ]
+
+        Library.framework().MaaTaskerGetWaitFreezesDetail.restype = MaaBool
+        Library.framework().MaaTaskerGetWaitFreezesDetail.argtypes = [
+            MaaTaskerHandle,
+            MaaWfId,
+            MaaStringBufferHandle,
+            MaaStringBufferHandle,
+            ctypes.POINTER(MaaBool),
+            ctypes.POINTER(MaaSize),
+            ctypes.POINTER(MaaRecoId),
+            ctypes.POINTER(MaaSize),
+            MaaRectHandle,
         ]
 
         Library.framework().MaaTaskerGetNodeDetail.restype = MaaBool

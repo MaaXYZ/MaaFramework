@@ -448,6 +448,71 @@ MaaBool MaaTaskerGetActionDetail(
     return true;
 }
 
+MaaBool MaaTaskerGetWaitFreezesDetail(
+    const MaaTasker* tasker,
+    MaaWfId wf_id,
+    MaaStringBuffer* node_name,
+    MaaStringBuffer* phase,
+    MaaBool* success,
+    MaaSize* elapsed_ms,
+    MaaRecoId* reco_id_list,
+    MaaSize* reco_id_list_size,
+    MaaRect* roi)
+{
+    if (!tasker) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto result_opt = tasker->get_wf_detail(wf_id);
+    if (!result_opt) {
+        LogError << "failed to get_wf_detail" << VAR(wf_id);
+        return false;
+    }
+
+    auto& result = *result_opt;
+
+    CheckNullAndWarn(node_name)
+    {
+        node_name->set(result.name);
+    }
+    CheckNullAndWarn(phase)
+    {
+        phase->set(result.phase);
+    }
+    CheckNullAndWarn(success)
+    {
+        *success = result.success;
+    }
+    CheckNullAndWarn(elapsed_ms)
+    {
+        *elapsed_ms = static_cast<MaaSize>(result.elapsed_ms);
+    }
+
+    if (reco_id_list_size && *reco_id_list_size == 0) {
+        *reco_id_list_size = result.reco_ids.size();
+    }
+    else if (reco_id_list && reco_id_list_size) {
+        size_t size = std::min(result.reco_ids.size(), static_cast<size_t>(*reco_id_list_size));
+        memcpy(reco_id_list, result.reco_ids.data(), size * sizeof(MaaRecoId));
+        *reco_id_list_size = size;
+    }
+    else {
+        LogError << "failed to get wf detail reco_ids" << VAR(wf_id) << VAR(reco_id_list) << VAR(reco_id_list_size);
+        return false;
+    }
+
+    CheckNullAndWarn(roi)
+    {
+        roi->x = result.roi.x;
+        roi->y = result.roi.y;
+        roi->width = result.roi.width;
+        roi->height = result.roi.height;
+    }
+
+    return true;
+}
+
 MaaBool MaaTaskerGetNodeDetail(
     const MaaTasker* tasker,
     MaaNodeId node_id,

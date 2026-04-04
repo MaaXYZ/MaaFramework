@@ -231,6 +231,11 @@ std::optional<MAA_TASK_NS::ActionResult> Tasker::get_action_result(MaaActId acti
     return runtime_cache().get_action_result(action_id);
 }
 
+std::optional<MAA_TASK_NS::WaitFreezesDetail> Tasker::get_wf_detail(MaaWfId wf_id) const
+{
+    return runtime_cache().get_wf_detail(wf_id);
+}
+
 std::optional<MaaNodeId> Tasker::get_latest_node(const std::string& node_name) const
 {
     return runtime_cache().get_latest_node(node_name);

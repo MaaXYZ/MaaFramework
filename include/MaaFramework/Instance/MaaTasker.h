@@ -121,6 +121,26 @@ extern "C"
         /* out */ MaaStringBuffer* detail_json);
 
     /**
+     * @param[out] node_name
+     * @param[out] phase
+     * @param[out] success
+     * @param[out] elapsed_ms
+     * @param[out] reco_id_list
+     * @param[in, out] reco_id_list_size
+     * @param[out] roi
+     */
+    MAA_FRAMEWORK_API MaaBool MaaTaskerGetWaitFreezesDetail(
+        const MaaTasker* tasker,
+        MaaWfId wf_id,
+        /* out */ MaaStringBuffer* node_name,
+        /* out */ MaaStringBuffer* phase,
+        /* out */ MaaBool* success,
+        /* out */ MaaSize* elapsed_ms,
+        /* out */ MaaRecoId* reco_id_list /**< array */,
+        /* in & out */ MaaSize* reco_id_list_size,
+        /* out */ MaaRect* roi);
+
+    /**
      * @param[out] reco_id
      * @param[out] action_id
      * @param[out] completed

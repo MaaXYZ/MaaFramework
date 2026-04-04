@@ -72,3 +72,4 @@ constexpr int64_t kTaskIdBase = 200'000'000;
 constexpr int64_t kNodeIdBase = 300'000'000;
 constexpr int64_t kRecoIdBase = 400'000'000;
 constexpr int64_t kActIdBase = 500'000'000;
+constexpr int64_t kWfIdBase = 600'000'000;

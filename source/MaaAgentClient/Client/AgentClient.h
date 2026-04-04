@@ -74,6 +74,7 @@ private:
     bool handle_tasker_get_node_detail(const json::value& j);
     bool handle_tasker_get_reco_result(const json::value& j);
     bool handle_tasker_get_action_result(const json::value& j);
+    bool handle_tasker_get_wf_detail(const json::value& j);
     bool handle_tasker_get_latest_node(const json::value& j);
 
     bool handle_resource_post_bundle(const json::value& j);
