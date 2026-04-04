@@ -794,7 +794,7 @@ struct TaskerGetWfDetailReverseResponse
     bool success = false;
     int64_t elapsed_ms = 0;
     std::vector<int64_t> reco_ids;
-    std::array<int32_t, 4> roi {};
+    std::array<int32_t, 4> roi { };
 
     MessageTypePlaceholder _TaskerGetWfDetailReverseResponse = 1;
     MEO_JSONIZATION(has_value, wf_id, name, phase, success, elapsed_ms, reco_ids, roi, _TaskerGetWfDetailReverseResponse);

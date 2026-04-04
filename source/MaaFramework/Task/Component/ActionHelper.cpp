@@ -132,11 +132,12 @@ bool ActionHelper::wait_freezes(
             .name = draw_name,
             .algorithm = "WaitFreezes",
             .box = comparator.best_result() ? std::make_optional(comparator.best_result()->box) : std::nullopt,
-            .detail = json::value {
-                { "all", json::array(comparator.all_results()) },
-                { "filtered", json::array(comparator.filtered_results()) },
-                { "best", comparator.best_result() ? json::value(*comparator.best_result()) : json::value(nullptr) },
-            },
+            .detail =
+                json::value {
+                    { "all", json::array(comparator.all_results()) },
+                    { "filtered", json::array(comparator.filtered_results()) },
+                    { "best", comparator.best_result() ? json::value(*comparator.best_result()) : json::value(nullptr) },
+                },
             .draws = comparator.draws(),
         };
         if (auto* t = tasker()) {

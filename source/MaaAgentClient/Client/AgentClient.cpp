@@ -1353,7 +1353,7 @@ bool AgentClient::handle_tasker_get_wf_detail(const json::value& j)
         return false;
     }
     auto detail_opt = tasker->get_wf_detail(req.wf_id);
-    const auto& detail = detail_opt.value_or(MAA_TASK_NS::WaitFreezesDetail {});
+    const auto& detail = detail_opt.value_or(MAA_TASK_NS::WaitFreezesDetail { });
 
     std::vector<int64_t> reco_ids(detail.reco_ids.begin(), detail.reco_ids.end());
 

@@ -29,12 +29,9 @@ public:
 
     explicit ActionHelper(Context* context);
 
-    bool wait_freezes(
-        const MAA_RES_NS::WaitFreezesParam& param,
-        const cv::Rect& ref_box,
-        const WaitFreezesNotifyContext& noti_ctx = {});
+    bool wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& ref_box, const WaitFreezesNotifyContext& noti_ctx = { });
 
-    cv::Rect get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box = {});
+    cv::Rect get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box = { });
 
 private:
     cv::Rect get_rect_from_node(const std::string& node_name) const;

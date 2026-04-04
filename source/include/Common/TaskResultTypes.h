@@ -57,7 +57,7 @@ struct WaitFreezesDetail
     bool success = false;
     int64_t elapsed_ms = 0;
     std::vector<MaaRecoId> reco_ids;
-    cv::Rect roi {};
+    cv::Rect roi { };
 
     MEO_TOJSON(wf_id, name, phase, success, elapsed_ms, reco_ids, roi);
 };
