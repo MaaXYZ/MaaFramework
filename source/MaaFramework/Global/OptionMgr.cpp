@@ -114,12 +114,12 @@ bool OptionMgr::set_draw_quality(MaaOptionValue value, MaaOptionValueSize val_si
 {
     LogFunc;
 
-    if (val_size != sizeof(int)) {
+    if (val_size != sizeof(int32_t)) {
         LogError << "Invalid value size" << VAR(val_size);
         return false;
     }
 
-    int quality = *reinterpret_cast<const int*>(value);
+    int32_t quality = *reinterpret_cast<const int32_t*>(value);
     if (quality < 0 || quality > 100) {
         LogError << "Invalid quality value, should be in [0, 100]" << VAR(quality);
         return false;

@@ -72,6 +72,7 @@ const myAct: maa.CustomActionCallback = async self => {
     const uuid = ctrl.uuid
     ctrl.screenshot_target_long_side = 1080
     ctrl.screenshot_target_short_side = 720
+    ctrl.screenshot_resize_method = 3 // INTER_AREA
 
     runned = true
 

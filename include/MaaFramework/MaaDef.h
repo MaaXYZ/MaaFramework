@@ -225,6 +225,14 @@ enum MaaCtrlOptionEnum
     //
     // value: bool, eg: true; val_size: sizeof(bool)
     // MaaCtrlOption_Recording = 5,
+
+    /// Set the interpolation method used when resizing screenshots.
+    /// Value corresponds to cv::InterpolationFlags:
+    ///   INTER_NEAREST=0, INTER_LINEAR=1, INTER_CUBIC=2, INTER_AREA=3, INTER_LANCZOS4=4
+    /// Default is INTER_AREA (3).
+    ///
+    /// value: int, eg: 3; val_size: sizeof(int)
+    MaaCtrlOption_ScreenshotResizeMethod = 6,
 };
 
 typedef MaaOption MaaTaskerOption;

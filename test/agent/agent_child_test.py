@@ -304,6 +304,33 @@ class MyAction(CustomAction):
         controller.post_inactive().wait()
 
         # ============================================================
+        # Controller set_option 测试 (通过 RemoteController 远程调用)
+        # ============================================================
+
+        # 测试 set_screenshot_target_long_side
+        result = controller.set_screenshot_target_long_side(1280)
+        print(f"  set_screenshot_target_long_side(1280): {result}")
+        assert result, "set_screenshot_target_long_side should succeed"
+
+        # 测试 set_screenshot_target_short_side
+        result = controller.set_screenshot_target_short_side(720)
+        print(f"  set_screenshot_target_short_side(720): {result}")
+        assert result, "set_screenshot_target_short_side should succeed"
+
+        # 测试 set_screenshot_use_raw_size
+        result = controller.set_screenshot_use_raw_size(False)
+        print(f"  set_screenshot_use_raw_size(False): {result}")
+        assert result, "set_screenshot_use_raw_size should succeed"
+
+        # 测试 set_screenshot_resize_method (INTER_LINEAR=1)
+        result = controller.set_screenshot_resize_method(1)
+        print(f"  set_screenshot_resize_method(1): {result}")
+        assert result, "set_screenshot_resize_method should succeed"
+
+        # 恢复默认值
+        controller.set_screenshot_resize_method(3)
+
+        # ============================================================
         # Tasker API 补充测试 (详情获取)
         # ============================================================
         tasker = context.tasker

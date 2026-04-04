@@ -411,7 +411,7 @@ bool ResourceMgr::set_inference_device(MaaOptionValue value, MaaOptionValueSize 
     }
 
     inference_device_setted_ = false;
-    inference_device_ = *reinterpret_cast<MaaInferenceDevice*>(value);
+    inference_device_ = *reinterpret_cast<const MaaInferenceDevice*>(value);
     LogInfo << VAR(inference_device_);
 
     return true;
@@ -427,7 +427,7 @@ bool ResourceMgr::set_inference_execution_provider(MaaOptionValue value, MaaOpti
     }
 
     inference_device_setted_ = false;
-    inference_ep_ = *reinterpret_cast<MaaInferenceExecutionProvider*>(value);
+    inference_ep_ = *reinterpret_cast<const MaaInferenceExecutionProvider*>(value);
     LogInfo << VAR(inference_ep_);
 
     return true;

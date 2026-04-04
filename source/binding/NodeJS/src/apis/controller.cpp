@@ -132,6 +132,13 @@ void ControllerImpl::set_screenshot_use_raw_size(bool value)
     }
 }
 
+void ControllerImpl::set_screenshot_resize_method(int32_t value)
+{
+    if (!MaaControllerSetOption(controller, MaaCtrlOption_ScreenshotResizeMethod, &value, sizeof(value))) {
+        throw maajs::MaaError { "Controller set screenshot_resize_method failed" };
+    }
+}
+
 maajs::ValueType ControllerImpl::post_connection(maajs::ValueType self, maajs::EnvType)
 {
     auto id = MaaControllerPostConnection(controller);
@@ -355,6 +362,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_SETTER(proto, "screenshot_target_long_side", ControllerImpl::set_screenshot_target_long_side);
     MAA_BIND_SETTER(proto, "screenshot_target_short_side", ControllerImpl::set_screenshot_target_short_side);
     MAA_BIND_SETTER(proto, "screenshot_use_raw_size", ControllerImpl::set_screenshot_use_raw_size);
+    MAA_BIND_SETTER(proto, "screenshot_resize_method", ControllerImpl::set_screenshot_resize_method);
     MAA_BIND_FUNC(proto, "clear_sinks", ControllerImpl::clear_sinks);
     MAA_BIND_FUNC(proto, "post_connection", ControllerImpl::post_connection);
     MAA_BIND_FUNC(proto, "post_click", ControllerImpl::post_click);

@@ -22,7 +22,7 @@ MAA_CTRL_NS_BEGIN
 
 struct ClickParam
 {
-    cv::Point point { };
+    cv::Point point {};
     int contact = 0;
     int pressure = 1;
 
@@ -31,7 +31,7 @@ struct ClickParam
 
 struct LongPressParam
 {
-    cv::Point point { };
+    cv::Point point {};
     uint duration = 0;
     int contact = 0;
     int pressure = 1;
@@ -41,7 +41,7 @@ struct LongPressParam
 
 struct SwipeParam
 {
-    cv::Point begin { };
+    cv::Point begin {};
     std::vector<cv::Point> end;
     std::vector<uint> end_hold;
     std::vector<uint> duration;
@@ -63,7 +63,7 @@ struct MultiSwipeParam
 struct TouchParam
 {
     int contact = 0;
-    cv::Point point { };
+    cv::Point point {};
     int pressure = 0;
 
     MEO_TOJSON(contact, point, pressure);
@@ -108,7 +108,7 @@ struct AppParam
 
 struct ScrollParam
 {
-    cv::Point point { };
+    cv::Point point {};
     int dx = 0;
     int dy = 0;
 
@@ -124,19 +124,8 @@ struct ShellParam
 };
 
 using Param = std::variant<
-    std::monostate,
-    ClickParam,
-    LongPressParam,
-    SwipeParam,
-    MultiSwipeParam,
-    TouchParam,
-    ClickKeyParam,
-    LongPressKeyParam,
-    InputTextParam,
-    AppParam,
-    ScrollParam,
-    ShellParam,
-    RelativeMoveParam>;
+    std::monostate, ClickParam, LongPressParam, SwipeParam, MultiSwipeParam, TouchParam, ClickKeyParam, LongPressKeyParam, InputTextParam,
+    AppParam, ScrollParam, ShellParam, RelativeMoveParam>;
 
 struct Action
 {
@@ -163,7 +152,8 @@ struct Action
         shell,
         relative_move,
         inactive,
-    } type = Type::invalid;
+    } type
+        = Type::invalid;
 
     Param param;
 };
@@ -289,6 +279,7 @@ private: // options
     bool set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_image_use_raw_size(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_mouse_lock_follow_option(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_screenshot_resize_method(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     bool need_to_stop_ = false;
@@ -309,6 +300,7 @@ private:
     int image_target_height_ = 0;
     int image_raw_width_ = 0;
     int image_raw_height_ = 0;
+    int image_resize_method_ = 3; // cv::INTER_AREA
 
     std::string uuid_cache_;
 
