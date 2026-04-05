@@ -34,8 +34,8 @@ option(ENABLE_CCACHE "enable ccache if possible" ON)
 option(ENABLE_HASH_VERSION "enable hash version from git" OFF)
 
 # option(ENABLE_CPP20_MODULES "enable C++20 modules" ON)
-set(MAA_PUBLIC_INC ${CMAKE_SOURCE_DIR}/include)
-set(MAA_PRIVATE_INC ${CMAKE_SOURCE_DIR}/source/include)
+set(MAA_PUBLIC_INC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(MAA_PRIVATE_INC ${CMAKE_CURRENT_SOURCE_DIR}/source/include)
 
 # Disable unavailable options
 if(NOT WITH_REPLAY_CONTROLLER)
@@ -74,7 +74,12 @@ if(WITH_WLROOTS_CONTROLLER AND (NOT LINUX OR ANDROID))
 endif()
 
 if(WITH_MAA_AGENT)
-    find_package(cppzmq REQUIRED)
+    # 检查 cppzmq 是否已由父项目提供，避免重复查找导致目标冲突
+    if(NOT TARGET cppzmq AND NOT TARGET cppzmq-static)
+        find_package(cppzmq REQUIRED)
+    else()
+        message(STATUS "cppzmq target already exists, skipping find_package")
+    endif()
 endif()
 
 add_subdirectory(3rdparty)
