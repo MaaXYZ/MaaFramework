@@ -191,6 +191,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaGFNeuralCloud](https://github.com/PinkMMF/MaaGFNeuralCloud) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/PinkMMF/MaaGFNeuralCloud) ![activity](https://img.shields.io/github/commit-activity/m/PinkMMF/MaaGFNeuralCloud?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/PinkMMF/MaaGFNeuralCloud?style=social)  
     An assistant tool for Girls' Frontline: Project Neural Cloud using MaaFramework.
 
+- [MaaFgo](https://github.com/xlxyvergil/MaaFgo)![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/xlxyvergil/MaaFgo) ![activity](https://img.shields.io/github/commit-activity/m/xlxyvergil/MaaFg?color=%23ff69b4)  
+  FGO Assistant. Featuring image recognition and simulated control for a truly hands-free experience! Powered by MaaFramework.
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
