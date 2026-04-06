@@ -41,6 +41,33 @@ _✨ An automation black-box testing framework based on image recognition ✨_
 > [!NOTE]
 > This document is a machine-translated version of the original Chinese text. In case of any discrepancies, omissions, or ambiguities, [the Chinese version](./README.md) shall prevail.
 
+# ⚠️ Important Disclaimer & Risk Warning
+
+**This is an UNOFFICIAL fork and is NOT the original software.**
+
+This project is a fork of [MaaXYZ/MaaFramework](https://github.com/MaaXYZ/MaaFramework). It has been modified for personal educational and research purposes.
+
+## Key Changes
+
+- Added background clicking functionality by hooking the `GetCursorPos` Windows API.
+
+## 🔴 HIGH RISK WARNING: READ BEFORE USE
+
+- **ACCOUNT BAN RISK**: The use of API hooking techniques is highly intrusive and is strictly monitored by most game anti-cheat systems. **Using this fork will likely lead to an immediate and permanent account ban.**
+- **NO WARRANTY**: This version has not been tested or endorsed by the original MaaFramework team.
+- **USE AT YOUR OWN RISK**: This fork is provided "as-is". The developer of this fork is NOT responsible for any loss of data, account bans, or any other damages resulting from the use of this code.
+
+**It is strongly recommended NOT to use this repository unless you fully understand the underlying code and the associated risks.**
+
+## Official Version
+
+For the latest stable release, official support, or to submit issues, please visit the original repository:
+👉 **[MaaXYZ/MaaFramework](https://github.com/MaaXYZ/MaaFramework)** 👈
+
+---
+
+# Original README content continues below
+
 ## Introduction
 
 **MaaFramework** is a next-generation automation black-box testing framework, completely rewritten and refined based on image recognition technology and the development experience of [MAA](https://github.com/MaaAssistantArknights/MaaAssistantArknights).
