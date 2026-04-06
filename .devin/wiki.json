@@ -1,11 +1,11 @@
 {
   "repo_notes": [
     {
-      "content": "IMPORTANT / 重要语言要求：本项目的目标用户群体主要是中文开发者。请务必使用简体中文（zh-CN / Simplified Chinese）撰写所有 wiki 页面的全部内容，包括但不限于：页面标题、章节标题、正文描述、代码注释说明、架构图标注等。不要使用英文撰写任何正文段落。技术术语（如 Pipeline、Controller、OCR 等）可以保留英文原文，但其解释和上下文描述必须使用中文。This wiki MUST be written entirely in Simplified Chinese (简体中文). All page content, section headings, descriptions, and explanations must be in Chinese. Only technical terms like API names, class names, and code identifiers may remain in English.",
+      "content": "IMPORTANT / 重要语言要求：本项目的目标用户群体主要是中文开发者。请务必使用简体中文（zh-CN / Simplified Chinese）撰写所有 wiki 页面的全部内容，包括但不限于：页面标题、章节标题、正文描述、代码注释说明、架构图标注等。不要使用英文撰写任何正文段落。技术术语（如 Pipeline、Controller、OCR 等）可以保留英文原文，但其解释和上下文描述必须使用中文。This wiki MUST be written entirely in Simplified Chinese (简体中文). All page content, section headings, descriptions, and explanations must be in Chinese. Only technical terms like API names, class names, and code identifiers may remain in English. 当引用或链接本项目的文档时，必须链接到 docs/zh_cn/ 目录下的中文文档，禁止链接 docs/en_us/ 下的英文文档。例如应链接 docs/zh_cn/1.1-快速开始.md 而非 docs/en_us/ 下的对应文件。docs/zh_cn/ is the primary documentation directory; ALWAYS link to docs/zh_cn/ files, NEVER link to docs/en_us/ files.",
       "author": "maintainer"
     },
     {
-      "content": "MaaFramework 是基于图像识别技术的自动化黑盒测试框架，继承 MaaAssistantArknights 项目经验完全重写，强调低代码与高扩展性。项目的核心实现位于 source/ 目录，对外头文件位于 include/ 目录，中文文档位于 docs/zh_cn/ 目录（这是主要文档，请优先参考中文文档）。项目使用 C++20 编写，通过 CMake 构建，支持 Windows、Linux、macOS、Android 多平台。",
+      "content": "MaaFramework 是基于图像识别技术的自动化黑盒测试框架，继承 MaaAssistantArknights 项目经验完全重写，强调低代码与高扩展性。项目的核心实现位于 source/ 目录，对外头文件位于 include/ 目录。文档方面，docs/zh_cn/ 是本项目的主文档目录，docs/en_us/ 仅为翻译副本。生成 wiki 时请始终引用 docs/zh_cn/ 下的文件作为文档来源和链接目标，不要引用 docs/en_us/ 下的任何文件。具体的文档文件对应关系：快速开始 → docs/zh_cn/1.1-快速开始.md，术语解释 → docs/zh_cn/1.2-术语解释.md，集成文档 → docs/zh_cn/2.1-集成文档.md，集成接口一览 → docs/zh_cn/2.2-集成接口一览.md，回调协议 → docs/zh_cn/2.3-回调协议.md，控制方式说明 → docs/zh_cn/2.4-控制方式说明.md，任务流水线协议 → docs/zh_cn/3.1-任务流水线协议.md，PI 协议 → docs/zh_cn/3.2-ProjectInterface协议.md 和 docs/zh_cn/3.3-ProjectInterfaceV2协议.md，构建指南 → docs/zh_cn/4.1-构建指南.md，接口设计 → docs/zh_cn/4.2-标准化接口设计.md，NodeJS 文档 → docs/zh_cn/NodeJS/ 目录。项目使用 C++20 编写，通过 CMake 构建，支持 Windows、Linux、macOS、Android 多平台。",
       "author": "maintainer"
     },
     {
@@ -21,7 +21,7 @@
     {
       "title": "项目概览",
       "purpose": "介绍 MaaFramework 的定位、核心特性、支持平台、项目历史背景（继承自 MaaAssistantArknights），以及整体架构概述。涵盖 README.md 中的项目简介。",
-      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容。Write this page in Simplified Chinese." }]
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
     },
     {
       "title": "快速开始",
@@ -31,7 +31,7 @@
     {
       "title": "核心架构",
       "purpose": "详细说明 MaaFramework 的整体架构设计，包括 Tasker、Resource、Controller、Vision 四大核心模块的职责与交互关系，以及 source/MaaFramework/ 下各子目录的代码组织。",
-      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容。Write this page in Simplified Chinese." }]
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
     },
     {
       "title": "Tasker 与任务调度",
@@ -56,7 +56,7 @@
     {
       "title": "Pipeline 任务流水线协议",
       "purpose": "详细说明 Pipeline 的 JSON 协议格式，包括节点定义、执行逻辑（顺序检测、中断机制）、所有识别类型和动作类型的参数规范。参考 docs/zh_cn/3.1-任务流水线协议.md。",
-      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容。Write this page in Simplified Chinese." }]
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
     },
     {
       "title": "识别算法详解",
@@ -71,7 +71,7 @@
     {
       "title": "控制单元类型",
       "purpose": "概述所有可用的控制单元实现，包括 ADB、Win32、macOS、Android Native、PlayCover、Gamepad、WlRoots、Record/Replay、Debug 等。对应 source/ 下的各 Maa*ControlUnit 目录。",
-      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容。Write this page in Simplified Chinese." }]
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
     },
     {
       "title": "ADB 控制器",
@@ -86,7 +86,7 @@
     {
       "title": "集成指南",
       "purpose": "面向开发者的集成文档，说明如何将 MaaFramework 集成到自己的项目中，包括 C/C++ API 的使用、各语言绑定的安装和调用方式。参考 docs/zh_cn/2.1-集成文档.md 和 docs/zh_cn/2.2-集成接口一览.md。",
-      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容。Write this page in Simplified Chinese." }]
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
     },
     {
       "title": "C/C++ API",
@@ -116,22 +116,22 @@
     {
       "title": "Agent 系统",
       "purpose": "说明 MaaAgent 架构（MaaAgentClient 和 MaaAgentServer），基于 ZeroMQ 的远程/子进程通信机制，以及如何实现自定义的 Agent 扩展。对应 source/MaaAgentClient/ 和 source/MaaAgentServer/。",
-      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容。Write this page in Simplified Chinese." }]
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
     },
     {
       "title": "ProjectInterface 项目接口",
       "purpose": "说明 ProjectInterface（PI）协议，包括 V1 和 V2 版本的格式规范和使用方式，以及 MaaPiCli 命令行工具。参考 docs/zh_cn/3.2-ProjectInterface协议.md 和 docs/zh_cn/3.3-ProjectInterfaceV2协议.md。",
-      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容。Write this page in Simplified Chinese." }]
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
     },
     {
       "title": "MaaToolkit",
       "purpose": "说明 MaaToolkit（source/MaaToolkit/）提供的工具类能力，包括设备查找、PI 配置解析等辅助功能。",
-      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容。Write this page in Simplified Chinese." }]
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
     },
     {
       "title": "构建指南",
       "purpose": "说明如何从源码构建 MaaFramework，包括依赖项、CMake 配置选项（WITH_ADB_CONTROLLER、WITH_WIN32_CONTROLLER、WITH_MAA_AGENT 等）、多平台编译步骤。参考 docs/zh_cn/4.1-构建指南.md 和 CMakeLists.txt。",
-      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容。Write this page in Simplified Chinese." }]
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
     },
     {
       "title": "接口设计规范",
@@ -141,7 +141,7 @@
     {
       "title": "社区生态",
       "purpose": "介绍基于 MaaFramework 构建的社区项目生态，包括通用 GUI（MFAAvalonia、MFW-CFA、MXU）、开发工具（MaaDebugger、VSCode 插件、Pipeline 编辑器）和众多游戏自动化应用。",
-      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容。Write this page in Simplified Chinese." }]
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
     }
   ]
 }
