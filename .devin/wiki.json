@@ -1,0 +1,147 @@
+{
+  "repo_notes": [
+    {
+      "content": "IMPORTANT / 重要语言要求：本项目的目标用户群体主要是中文开发者。请务必使用简体中文（zh-CN / Simplified Chinese）撰写所有 wiki 页面的全部内容，包括但不限于：页面标题、章节标题、正文描述、代码注释说明、架构图标注等。不要使用英文撰写任何正文段落。技术术语（如 Pipeline、Controller、OCR 等）可以保留英文原文，但其解释和上下文描述必须使用中文。This wiki MUST be written entirely in Simplified Chinese (简体中文). All page content, section headings, descriptions, and explanations must be in Chinese. Only technical terms like API names, class names, and code identifiers may remain in English. 当引用或链接本项目的文档时，必须链接到 docs/zh_cn/ 目录下的中文文档，禁止链接 docs/en_us/ 下的英文文档。例如应链接 docs/zh_cn/1.1-快速开始.md 而非 docs/en_us/ 下的对应文件。docs/zh_cn/ is the primary documentation directory; ALWAYS link to docs/zh_cn/ files, NEVER link to docs/en_us/ files.",
+      "author": "maintainer"
+    },
+    {
+      "content": "MaaFramework 是基于图像识别技术的自动化黑盒测试框架，继承 MaaAssistantArknights 项目经验完全重写，强调低代码与高扩展性。项目的核心实现位于 source/ 目录，对外头文件位于 include/ 目录。文档方面，docs/zh_cn/ 是本项目的主文档目录，docs/en_us/ 仅为翻译副本。生成 wiki 时请始终引用 docs/zh_cn/ 下的文件作为文档来源和链接目标，不要引用 docs/en_us/ 下的任何文件。具体的文档文件对应关系：快速开始 → docs/zh_cn/1.1-快速开始.md，术语解释 → docs/zh_cn/1.2-术语解释.md，集成文档 → docs/zh_cn/2.1-集成文档.md，集成接口一览 → docs/zh_cn/2.2-集成接口一览.md，回调协议 → docs/zh_cn/2.3-回调协议.md，控制方式说明 → docs/zh_cn/2.4-控制方式说明.md，任务流水线协议 → docs/zh_cn/3.1-任务流水线协议.md，PI 协议 → docs/zh_cn/3.2-ProjectInterface协议.md 和 docs/zh_cn/3.3-ProjectInterfaceV2协议.md，构建指南 → docs/zh_cn/4.1-构建指南.md，接口设计 → docs/zh_cn/4.2-标准化接口设计.md，NodeJS 文档 → docs/zh_cn/NodeJS/ 目录。项目使用 C++20 编写，通过 CMake 构建，支持 Windows、Linux、macOS、Android 多平台。",
+      "author": "maintainer"
+    },
+    {
+      "content": "该框架的核心工作流是：用户通过 Pipeline（JSON 格式的任务流水线）描述自动化任务，框架按 Pipeline 定义依次执行识别（Recognition）和动作（Action）。识别算法包括 OCR、模板匹配、特征匹配、颜色匹配、神经网络分类/检测等；动作包括点击、滑动、按键、等待、自定义动作等。Controller 负责与目标设备交互（截图、输入），支持 ADB（Android）、Win32（Windows 桌面程序）、macOS 等多种控制方式。",
+      "author": "maintainer"
+    },
+    {
+      "content": "语言绑定方面，本仓库内包含 Python 绑定（source/binding/Python）和 NodeJS 绑定（source/binding/NodeJS）。外部仓库还提供 C#（NuGet）、Go（maa-framework-go）、Rust（maa-framework crate）等绑定。所有绑定均基于 C API（include/MaaFramework/）封装。Agent 系统（MaaAgentClient/MaaAgentServer）基于 ZeroMQ 实现，支持远程/子进程式的 Agent 架构扩展。",
+      "author": "maintainer"
+    }
+  ],
+  "pages": [
+    {
+      "title": "项目概览",
+      "purpose": "介绍 MaaFramework 的定位、核心特性、支持平台、项目历史背景（继承自 MaaAssistantArknights），以及整体架构概述。涵盖 README.md 中的项目简介。",
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
+    },
+    {
+      "title": "快速开始",
+      "purpose": "面向集成开发者的快速入门指南，包括如何安装、配置和运行第一个自动化任务。参考 docs/zh_cn/1.1-快速开始.md 和 docs/zh_cn/1.2-术语解释.md。",
+      "parent": "项目概览"
+    },
+    {
+      "title": "核心架构",
+      "purpose": "详细说明 MaaFramework 的整体架构设计，包括 Tasker、Resource、Controller、Vision 四大核心模块的职责与交互关系，以及 source/MaaFramework/ 下各子目录的代码组织。",
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
+    },
+    {
+      "title": "Tasker 与任务调度",
+      "purpose": "描述 Tasker 模块（source/MaaFramework/Tasker/）的设计，包括任务的创建、提交（post_task）、执行流程，以及任务状态管理和回调机制。",
+      "parent": "核心架构"
+    },
+    {
+      "title": "Resource 资源管理",
+      "purpose": "描述 Resource 模块（source/MaaFramework/Resource/）如何解析和管理 Pipeline JSON、模板图片、ONNX 模型、OCR 模型等资源，以及资源的加载与校验流程。",
+      "parent": "核心架构"
+    },
+    {
+      "title": "Vision 视觉识别系统",
+      "purpose": "深入描述 Vision 模块（source/MaaFramework/Vision/），涵盖所有识别算法的实现：DirectHit、TemplateMatch、FeatureMatch、ColorMatch、OCR、NeuralNetworkClassify、NeuralNetworkDetect 和 Custom 识别器。",
+      "parent": "核心架构"
+    },
+    {
+      "title": "Controller 控制层",
+      "purpose": "描述 Controller 的统一抽象（source/MaaFramework/Controller/）和 ControllerAgent 的设计，以及 LibraryHolder 如何加载和聚合不同平台的控制单元。",
+      "parent": "核心架构"
+    },
+    {
+      "title": "Pipeline 任务流水线协议",
+      "purpose": "详细说明 Pipeline 的 JSON 协议格式，包括节点定义、执行逻辑（顺序检测、中断机制）、所有识别类型和动作类型的参数规范。参考 docs/zh_cn/3.1-任务流水线协议.md。",
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
+    },
+    {
+      "title": "识别算法详解",
+      "purpose": "详细说明 Pipeline 中各识别算法（DirectHit、TemplateMatch、FeatureMatch、ColorMatch、OCR、NeuralNetworkClassify、NeuralNetworkDetect、Custom）的参数配置和使用场景。",
+      "parent": "Pipeline 任务流水线协议"
+    },
+    {
+      "title": "动作与流程控制",
+      "purpose": "详细说明 Pipeline 中各动作类型（DoNothing、Click、Swipe、Key、InputText、StartApp、StopApp、Command、Custom 等）的参数，以及 next、interrupt、timeout、rate_limit 等流程控制机制。",
+      "parent": "Pipeline 任务流水线协议"
+    },
+    {
+      "title": "控制单元类型",
+      "purpose": "概述所有可用的控制单元实现，包括 ADB、Win32、macOS、Android Native、PlayCover、Gamepad、WlRoots、Record/Replay、Debug 等。对应 source/ 下的各 Maa*ControlUnit 目录。",
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
+    },
+    {
+      "title": "ADB 控制器",
+      "purpose": "详细说明 ADB 控制器（source/MaaAdbControlUnit/）的实现，包括截图方式、输入方式（minitouch/maatouch/adb shell input）、连接管理等。",
+      "parent": "控制单元类型"
+    },
+    {
+      "title": "Win32 控制器",
+      "purpose": "详细说明 Win32 桌面程序控制器（source/MaaWin32ControlUnit/）的实现，包括窗口截图、鼠标键盘输入模拟等。参考 docs/zh_cn/2.4-控制方式说明.md。",
+      "parent": "控制单元类型"
+    },
+    {
+      "title": "集成指南",
+      "purpose": "面向开发者的集成文档，说明如何将 MaaFramework 集成到自己的项目中，包括 C/C++ API 的使用、各语言绑定的安装和调用方式。参考 docs/zh_cn/2.1-集成文档.md 和 docs/zh_cn/2.2-集成接口一览.md。",
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
+    },
+    {
+      "title": "C/C++ API",
+      "purpose": "详细说明 C/C++ 头文件接口（include/MaaFramework/），包括 MaaTasker、MaaResource、MaaController、MaaContext 等核心 API 的使用方式和生命周期管理。",
+      "parent": "集成指南"
+    },
+    {
+      "title": "Python 绑定",
+      "purpose": "说明 Python 绑定（source/binding/Python/、PyPI 包 MaaFw）的安装和使用方式，包括 API 映射和示例代码。参考 sample/python/。",
+      "parent": "集成指南"
+    },
+    {
+      "title": "NodeJS 绑定",
+      "purpose": "说明 NodeJS 绑定（source/binding/NodeJS/、npm 包 @maaxyz/maa-node）的安装和使用方式，包括自定义识别/操作的实现。参考 docs/zh_cn/NodeJS/ 下的文档。",
+      "parent": "集成指南"
+    },
+    {
+      "title": "其他语言绑定",
+      "purpose": "概述 C#（Maa.Framework NuGet）、Go（maa-framework-go）、Rust（maa-framework crate）等外部语言绑定的使用方式和仓库链接。",
+      "parent": "集成指南"
+    },
+    {
+      "title": "回调协议",
+      "purpose": "说明 MaaFramework 的回调机制（MaaNotificationCallback），包括回调消息的格式、类型和使用方式。参考 docs/zh_cn/2.3-回调协议.md。",
+      "parent": "集成指南"
+    },
+    {
+      "title": "Agent 系统",
+      "purpose": "说明 MaaAgent 架构（MaaAgentClient 和 MaaAgentServer），基于 ZeroMQ 的远程/子进程通信机制，以及如何实现自定义的 Agent 扩展。对应 source/MaaAgentClient/ 和 source/MaaAgentServer/。",
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
+    },
+    {
+      "title": "ProjectInterface 项目接口",
+      "purpose": "说明 ProjectInterface（PI）协议，包括 V1 和 V2 版本的格式规范和使用方式，以及 MaaPiCli 命令行工具。参考 docs/zh_cn/3.2-ProjectInterface协议.md 和 docs/zh_cn/3.3-ProjectInterfaceV2协议.md。",
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
+    },
+    {
+      "title": "MaaToolkit",
+      "purpose": "说明 MaaToolkit（source/MaaToolkit/）提供的工具类能力，包括设备查找、PI 配置解析等辅助功能。",
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
+    },
+    {
+      "title": "构建指南",
+      "purpose": "说明如何从源码构建 MaaFramework，包括依赖项、CMake 配置选项（WITH_ADB_CONTROLLER、WITH_WIN32_CONTROLLER、WITH_MAA_AGENT 等）、多平台编译步骤。参考 docs/zh_cn/4.1-构建指南.md 和 CMakeLists.txt。",
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
+    },
+    {
+      "title": "接口设计规范",
+      "purpose": "说明 MaaFramework 的标准化接口设计原则和风格约定，面向框架开发者。参考 docs/zh_cn/4.2-标准化接口设计.md。",
+      "parent": "构建指南"
+    },
+    {
+      "title": "社区生态",
+      "purpose": "介绍基于 MaaFramework 构建的社区项目生态，包括通用 GUI（MFAAvalonia、MFW-CFA、MXU）、开发工具（MaaDebugger、VSCode 插件、Pipeline 编辑器）和众多游戏自动化应用。",
+      "page_notes": [{ "content": "请使用简体中文撰写本页面所有内容，引用文档时只链接 docs/zh_cn/ 下的文件，不要链接 docs/en_us/。" }]
+    }
+  ]
+}
