@@ -331,7 +331,9 @@ bool WaylandClient::input_key(EventPhase phase, int key)
         default:;
         }
         zwp_virtual_keyboard_v1_modifiers(keyboard_.get(), current_depressed_modifiers_, 0, current_locked_modifiers_, 0);
-        return process_requests();
+        if (locked_modifier != 0) {
+            return process_requests();
+        }
     }
     switch (phase) {
     case EventPhase::Began:
