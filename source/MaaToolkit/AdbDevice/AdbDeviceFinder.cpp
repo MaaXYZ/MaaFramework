@@ -213,6 +213,7 @@ std::vector<AdbDeviceFinder::Emulator> AdbDeviceFinder::find_emulators() const
     LogFunc;
 
     std::vector<Emulator> result;
+    std::unordered_set<std::filesystem::path> seen_adb_paths;
 
     auto all_processes = list_processes();
 
@@ -238,6 +239,11 @@ std::vector<AdbDeviceFinder::Emulator> AdbDeviceFinder::find_emulators() const
             continue;
         }
 
+        // Deduplicate by adb_path to distinguish multiple instances or installations
+        if (!seen_adb_paths.insert(adb_path).second) {
+            continue;
+        }
+        
         Emulator emulator {
             .name = find_it->first,
             .process_path = *process_path,
