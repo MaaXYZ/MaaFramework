@@ -6,6 +6,8 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 
+#include <vector>
+
 MaaSinkId MaaControllerAddSink(MaaController* ctrl, MaaEventCallback sink, void* trans_arg)
 {
     LogInfo << VAR_VOIDP(ctrl) << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);
@@ -248,6 +250,32 @@ MaaCtrlId MaaControllerPostKeyUp(MaaController* ctrl, int32_t keycode)
     }
 
     return ctrl->post_key_up(keycode);
+}
+
+MaaCtrlId MaaControllerPostSetBackgroundManagedKeys(MaaController* ctrl, const int32_t* keycodes, MaaSize count)
+{
+    LogFunc << VAR_VOIDP(ctrl) << reinterpret_cast<const void*>(keycodes) << VAR(count);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+    if (!keycodes) {
+        LogError << "keycodes is null";
+        return MaaInvalidId;
+    }
+    if (count == 0 || count == MaaNullSize) {
+        LogError << "count is invalid" << VAR(count);
+        return MaaInvalidId;
+    }
+
+    std::vector<int> keys;
+    keys.reserve(static_cast<size_t>(count));
+    for (MaaSize i = 0; i < count; ++i) {
+        keys.emplace_back(keycodes[i]);
+    }
+
+    return ctrl->post_set_background_managed_keys(keys);
 }
 
 MaaCtrlId MaaControllerPostScroll(MaaController* ctrl, int32_t dx, int32_t dy)

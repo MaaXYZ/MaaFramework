@@ -3,6 +3,7 @@
 #include <chrono>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <meojson/json.hpp>
 
@@ -101,6 +102,11 @@ public:
     virtual ~Win32ControlUnitAPI() = default;
 
     virtual bool set_mouse_lock_follow(bool /*enabled*/) { return false; }
+    virtual bool set_background_managed_keys(const std::vector<int>& keycodes) = 0;
+    virtual bool is_background_managed_key(int keycode) const = 0;
+    virtual bool is_background_key_pressed(int keycode) const = 0;
+    virtual bool background_key_down(int keycode) = 0;
+    virtual bool background_key_up(int keycode) = 0;
 };
 
 class MacOSControlUnitAPI
