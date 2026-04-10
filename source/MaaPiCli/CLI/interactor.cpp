@@ -848,9 +848,9 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
         Configuration::Win32Config rt_config;
 
         auto window_handle = MaaToolkitDesktopWindowListAt(list_handle, i);
-        rt_config.hwnd = MaaToolkitDesktopWindowGetHandle(window_handle);
-        rt_config.class_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetClassName(window_handle));
+        rt_config.hwnd = reinterpret_cast<void*>(MaaToolkitDesktopWindowGetHandle(window_handle));
         rt_config.window_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetWindowName(window_handle));
+        rt_config.class_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetWin32ClassName(window_handle));
 
         if (boost::regex_search(rt_config.class_name, *class_regex) && boost::regex_search(rt_config.window_name, *window_regex)) {
             matched_config.emplace_back(std::move(rt_config));
@@ -908,9 +908,9 @@ void Interactor::select_gamepad(const MAA_PROJECT_INTERFACE_NS::InterfaceData::C
             Configuration::GamepadConfig rt_config;
 
             auto window_handle = MaaToolkitDesktopWindowListAt(list_handle, i);
-            rt_config.hwnd = MaaToolkitDesktopWindowGetHandle(window_handle);
-            rt_config.class_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetClassName(window_handle));
+            rt_config.hwnd = reinterpret_cast<void*>(MaaToolkitDesktopWindowGetHandle(window_handle));
             rt_config.window_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetWindowName(window_handle));
+            rt_config.class_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetWin32ClassName(window_handle));
 
             if (boost::regex_search(rt_config.class_name, *class_regex) && boost::regex_search(rt_config.window_name, *window_regex)) {
                 matched_config.emplace_back(std::move(rt_config));
@@ -999,9 +999,7 @@ void Interactor::select_macos(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Con
                 std::string window_name = MaaToolkitDesktopWindowGetWindowName(window_handle);
 
                 if (boost::regex_search(MAA_NS::to_u16(window_name), *title_regex)) {
-                    void* hwnd = MaaToolkitDesktopWindowGetHandle(window_handle);
-                    // On macOS, hwnd is (void*)(uintptr_t)windowID, so extract uint32_t
-                    uint32_t window_id = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(hwnd));
+                    uint32_t window_id = MaaToolkitDesktopWindowGetHandle(window_handle);
                     matched_windows.emplace_back(window_id, window_name);
                 }
             }
@@ -1126,7 +1124,7 @@ void Interactor::select_wlroots_auto_detect()
 
         auto id = MaaToolkitDesktopWindowGetHandle(compositor);
         std::string name = MaaToolkitDesktopWindowGetWindowName(compositor);
-        std::string path = MaaToolkitDesktopWindowGetClassName(compositor);
+        std::string path = MaaToolkitDesktopWindowGetLinuxSocketPath(compositor);
 
         std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n\t\t{}\n\t\t{}\n", i + 1, id, name, path));
     }
@@ -1137,7 +1135,7 @@ void Interactor::select_wlroots_auto_detect()
 
     auto compositor = MaaToolkitDesktopWindowListAt(list_handle, index);
 
-    wlr_config.wlr_socket_path = MaaToolkitDesktopWindowGetClassName(compositor);
+    wlr_config.wlr_socket_path = MaaToolkitDesktopWindowGetLinuxSocketPath(compositor);
 }
 
 void Interactor::select_wlroots_manual_input()

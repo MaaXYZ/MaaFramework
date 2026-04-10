@@ -121,7 +121,7 @@ struct Win32ControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
-using MacOSDevice = std::tuple<uintptr_t, std::string, std::string>;
+using MacOSDevice = std::tuple<uint32_t, std::string, int32_t, std::string, std::string>;
 using MacOSControllerCtorParam = std::tuple<uint32_t, MaaMacOSScreencapMethod, MaaMacOSInputMethod>;
 
 struct MacOSControllerImpl : public ControllerImpl
