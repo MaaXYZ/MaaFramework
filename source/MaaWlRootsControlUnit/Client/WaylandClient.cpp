@@ -1,7 +1,6 @@
 #include "WaylandClient.h"
 
 #include "MemfdBuffer.h"
-#include "WaylandProtocol.h"
 
 #include "MaaUtils/Logger.h"
 
