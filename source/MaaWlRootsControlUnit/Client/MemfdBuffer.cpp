@@ -8,8 +8,6 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-constexpr char kDefaultBufferName[] = "maafw-wl-buffer-{}";
-
 MemfdBuffer::MemfdBuffer(int size)
     : size_(size)
 {
@@ -49,7 +47,8 @@ MemfdBuffer::~MemfdBuffer()
 
 bool MemfdBuffer::create_buffer()
 {
-    const auto name = std::format(kDefaultBufferName, make_uuid());
+    constexpr std::string_view kDefaultBufferName = "maafw-wl-buffer-{}";
+    const std::string name = std::format(kDefaultBufferName, make_uuid());
     fd_ = memfd_create(name.c_str(), 0);
     if (fd_ < 0) {
         LogError << "Failed to create memfd";
