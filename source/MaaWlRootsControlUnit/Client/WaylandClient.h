@@ -68,7 +68,7 @@ private:
     std::unique_ptr<zwlr_screencopy_manager_v1> screencopy_manager_;
     std::unique_ptr<zwlr_virtual_pointer_manager_v1> pointer_manager_;
 
-    // Virtuan pointer object
+    // Virtual pointer object
     std::unique_ptr<zwlr_virtual_pointer_v1> pointer_;
 
     // Virtual keyboard objects
