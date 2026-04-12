@@ -306,6 +306,10 @@ bool WaylandClient::pointer(EventPhase phase, int x, int y, int contact)
 
 bool WaylandClient::scroll(int dx, int dy) const
 {
+    if (!connected_) {
+        return false;
+    }
+
     if (dy != 0) {
         const int step_y = dy / 120;
         for (int i = 0; i < abs(step_y); ++i) {
