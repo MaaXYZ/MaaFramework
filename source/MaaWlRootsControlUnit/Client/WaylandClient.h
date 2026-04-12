@@ -67,9 +67,11 @@ private:
     std::unique_ptr<wl_seat> seat_;
     std::unique_ptr<zwlr_screencopy_manager_v1> screencopy_manager_;
     std::unique_ptr<zwlr_virtual_pointer_manager_v1> pointer_manager_;
+
+    // Virtuan pointer object
     std::unique_ptr<zwlr_virtual_pointer_v1> pointer_;
 
-    // Device objects
+    // Virtual keyboard objects
     std::unique_ptr<zwp_virtual_keyboard_manager_v1> keyboard_manager_;
     std::unique_ptr<MemfdBuffer> ascii_keymap_buffer_;
     std::unique_ptr<MemfdBuffer> scancode_keymap_buffer_;
