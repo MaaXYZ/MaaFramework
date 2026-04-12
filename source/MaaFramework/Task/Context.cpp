@@ -194,6 +194,11 @@ bool Context::override_pipeline(const json::value& pipeline_override)
 {
     LogTrace << VAR(getptr()) << VAR(pipeline_override);
 
+    if ((pipeline_override.is_object() && pipeline_override.as_object().empty())
+        || (pipeline_override.is_array() && pipeline_override.as_array().empty())) {
+        return true;
+    }
+
     if (!tasker_) {
         LogError << "tasker is null";
         return false;
