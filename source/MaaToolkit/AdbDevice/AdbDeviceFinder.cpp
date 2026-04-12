@@ -243,7 +243,7 @@ std::vector<AdbDeviceFinder::Emulator> AdbDeviceFinder::find_emulators() const
         if (!seen_adb_paths.insert(adb_path).second) {
             continue;
         }
-        
+
         Emulator emulator {
             .name = find_it->first,
             .process_path = *process_path,
