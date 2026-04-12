@@ -1,7 +1,6 @@
 #include "WaylandClient.h"
 
 #include "MemfdBuffer.h"
-#include "WaylandProtocol.h"
 
 #include "MaaUtils/Logger.h"
 
@@ -191,6 +190,7 @@ bool WaylandClient::screencap(void** buffer, uint32_t& width, uint32_t& height, 
         LogTrace << "Received new buffer: " << VAR(format) << VAR(w) << VAR(h) << VAR(stride);
         const auto self = static_cast<WaylandClient*>(data);
         if (!self->check_buffer(format, w, h, stride)) {
+            LogDebug << "Buffer format changed, recreating";
             if (!self->create_buffer(format, w, h, stride)) {
                 LogError << "Failed to prepare buffer";
                 return;
