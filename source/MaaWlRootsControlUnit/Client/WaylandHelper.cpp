@@ -31,16 +31,6 @@ DEFAULT_DELETER(zwp_virtual_keyboard_v1, zwp_virtual_keyboard_v1_destroy)
 #undef DEFAULT_DELETER
 
 MAA_CTRL_UNIT_NS_BEGIN
-void WaylandHelper::randname(std::string& name)
-{
-    timespec ts = { };
-    clock_gettime(CLOCK_REALTIME, &ts);
-    long r = ts.tv_nsec;
-    for (int i = 0; i < 6; ++i) {
-        name[i + 16] = 'A' + (r & 15) + (r & 16) * 2;
-        r >>= 5;
-    }
-}
 
 int WaylandHelper::depressed_key_modifiers(int key)
 {

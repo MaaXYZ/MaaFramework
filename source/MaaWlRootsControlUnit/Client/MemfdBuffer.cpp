@@ -1,13 +1,14 @@
 #include "MemfdBuffer.h"
 
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Uuid.h"
 #include "WaylandHelper.h"
 
 #include <sys/mman.h>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-constexpr std::string kDefaultBufferName = "maafw-wl-buffer-XXXXXX";
+constexpr char kDefaultBufferName[] = "maafw-wl-buffer-{}";
 
 MemfdBuffer::MemfdBuffer(int size)
     : size_(size)
@@ -48,8 +49,7 @@ MemfdBuffer::~MemfdBuffer()
 
 bool MemfdBuffer::create_buffer()
 {
-    std::string name = kDefaultBufferName;
-    WaylandHelper::randname(name);
+    const auto name = std::format(kDefaultBufferName, make_uuid());
     fd_ = memfd_create(name.c_str(), 0);
     if (fd_ < 0) {
         LogError << "Failed to create memfd";
