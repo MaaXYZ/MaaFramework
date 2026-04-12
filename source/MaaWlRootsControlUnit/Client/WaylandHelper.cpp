@@ -37,7 +37,7 @@ void WaylandHelper::randname(std::string& name)
     clock_gettime(CLOCK_REALTIME, &ts);
     long r = ts.tv_nsec;
     for (int i = 0; i < 6; ++i) {
-        name[i] = 'A' + (r & 15) + (r & 16) * 2;
+        name[i + 16] = 'A' + (r & 15) + (r & 16) * 2;
         r >>= 5;
     }
 }

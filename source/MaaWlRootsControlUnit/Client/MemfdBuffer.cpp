@@ -5,9 +5,9 @@
 
 #include <sys/mman.h>
 
-#define BUFFER_NAME "maafw-wl-buffer-XXXXXX"
-
 MAA_CTRL_UNIT_NS_BEGIN
+
+constexpr std::string kDefaultBufferName = "maafw-wl-buffer-XXXXXX";
 
 MemfdBuffer::MemfdBuffer(int size)
     : size_(size)
@@ -48,7 +48,7 @@ MemfdBuffer::~MemfdBuffer()
 
 bool MemfdBuffer::create_buffer()
 {
-    std::string name = BUFFER_NAME;
+    std::string name = kDefaultBufferName;
     WaylandHelper::randname(name);
     fd_ = memfd_create(name.c_str(), 0);
     if (fd_ < 0) {
