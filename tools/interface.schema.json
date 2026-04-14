@@ -400,12 +400,14 @@
                 "type": {
                     "type": "string",
                     "title": "控制器类型",
-                    "enum": [
+                        "enum": [
                         "Adb",
                         "Win32",
                         "MacOS",
                         "PlayCover",
                         "Gamepad"
+                        "Gamepad",
+                        "WlRoots"
                     ]
                 },
                 "display_short_side": {
@@ -600,6 +602,19 @@
                                 "PrintWindow",
                                 "ScreenDC"
                             ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "wlroots": {
+                    "type": "object",
+                    "title": "WlRoots 控制器配置",
+                    "description": "WlRoots 控制器的具体配置（仅 Linux）",
+                    "properties": {
+                        "wlr_socket_path": {
+                            "type": "string",
+                            "title": "Wayland Socket 路径",
+                            "description": "可选。Wayland Socket 路径，不提供则使用默认"
                         }
                     },
                     "additionalProperties": false
