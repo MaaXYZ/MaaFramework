@@ -400,12 +400,11 @@
                 "type": {
                     "type": "string",
                     "title": "控制器类型",
-                        "enum": [
+                    "enum": [
                         "Adb",
                         "Win32",
                         "MacOS",
                         "PlayCover",
-                        "Gamepad"
                         "Gamepad",
                         "WlRoots"
                     ]
