@@ -311,7 +311,9 @@ bool WaylandClient::scroll(int dx, int dy) const
     }
 
     if (dy != 0) {
-        const int step_y = dy / 120;
+        // Wayland 的垂直滚动方向与 Maa 对外约定（dy > 0 表示向上滚动）相反，
+        // 这里对 dy 取反以与 Win32 等控制器保持一致行为。
+        const int step_y = -dy / 120;
         for (int i = 0; i < abs(step_y); ++i) {
             zwlr_virtual_pointer_v1_axis_discrete(
                 pointer_.get(),
