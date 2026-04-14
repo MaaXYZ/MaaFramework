@@ -13,7 +13,7 @@
                 "type": {
                     "title": "控制器类型",
                     "type": "string",
-                    "enum": ["Adb", "Win32", "PlayCover"]
+                    "enum": ["Adb", "Win32", "PlayCover", "WlRoots"]
                 }
             }
         },
@@ -49,6 +49,16 @@
                 },
                 "uuid": {
                     "title": "Bundle Identifier",
+                    "type": "string"
+                }
+            }
+        },
+        "wlroots": {
+            "title": "WlRoots配置",
+            "type": "object",
+            "properties": {
+                "wlr_socket_path": {
+                    "title": "Wayland Socket路径",
                     "type": "string"
                 }
             }
