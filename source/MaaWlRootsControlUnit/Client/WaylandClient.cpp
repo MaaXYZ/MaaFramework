@@ -1,7 +1,6 @@
 #include "WaylandClient.h"
 
 #include "MemfdBuffer.h"
-#include "WaylandProtocol.h"
 
 #include "MaaUtils/Logger.h"
 
@@ -191,6 +190,7 @@ bool WaylandClient::screencap(void** buffer, uint32_t& width, uint32_t& height, 
         LogTrace << "Received new buffer: " << VAR(format) << VAR(w) << VAR(h) << VAR(stride);
         const auto self = static_cast<WaylandClient*>(data);
         if (!self->check_buffer(format, w, h, stride)) {
+            LogDebug << "Buffer format changed, recreating";
             if (!self->create_buffer(format, w, h, stride)) {
                 LogError << "Failed to prepare buffer";
                 return;
@@ -304,6 +304,46 @@ bool WaylandClient::pointer(EventPhase phase, int x, int y, int contact)
     return process_requests();
 }
 
+bool WaylandClient::scroll(int dx, int dy) const
+{
+    if (!connected_) {
+        return false;
+    }
+
+    if (dy != 0) {
+        const int step_y = dy / 120;
+        for (int i = 0; i < abs(step_y); ++i) {
+            zwlr_virtual_pointer_v1_axis_discrete(
+                pointer_.get(),
+                WaylandHelper::get_ms(),
+                WL_POINTER_AXIS_VERTICAL_SCROLL,
+                wl_fixed_from_int(step_y >= 0 ? 10 : -10),
+                step_y >= 0 ? 1 : -1);
+            zwlr_virtual_pointer_v1_frame(pointer_.get());
+            if (!process_requests()) {
+                return false;
+            }
+        }
+    }
+
+    if (dx != 0) {
+        const int step_x = dx / 120;
+        for (int i = 0; i < abs(step_x); ++i) {
+            zwlr_virtual_pointer_v1_axis_discrete(
+                pointer_.get(),
+                WaylandHelper::get_ms(),
+                WL_POINTER_AXIS_HORIZONTAL_SCROLL,
+                wl_fixed_from_int(step_x >= 0 ? 10 : -10),
+                step_x >= 0 ? 1 : -1);
+            zwlr_virtual_pointer_v1_frame(pointer_.get());
+            if (!process_requests()) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 bool WaylandClient::input_key(EventPhase phase, int key)
 {
     if (!connected_) {
@@ -331,7 +371,9 @@ bool WaylandClient::input_key(EventPhase phase, int key)
         default:;
         }
         zwp_virtual_keyboard_v1_modifiers(keyboard_.get(), current_depressed_modifiers_, 0, current_locked_modifiers_, 0);
-        return process_requests();
+        if (locked_modifier != 0) {
+            return process_requests();
+        }
     }
     switch (phase) {
     case EventPhase::Began:
