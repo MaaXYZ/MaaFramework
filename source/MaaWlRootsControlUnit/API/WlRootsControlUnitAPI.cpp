@@ -10,7 +10,7 @@ const char* MaaWlRootsControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MaaWlRootsControlUnitCreate(const char* wlr_socket_path)
+MaaWlRootsControlUnitHandle MaaWlRootsControlUnitCreate(const char* wlr_socket_path)
 {
     using namespace MAA_CTRL_UNIT_NS;
 
@@ -25,7 +25,7 @@ MaaControlUnitHandle MaaWlRootsControlUnitCreate(const char* wlr_socket_path)
     return unit_mgr.release();
 }
 
-void MaaWlRootsControlUnitDestroy(MaaControlUnitHandle handle)
+void MaaWlRootsControlUnitDestroy(MaaWlRootsControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
 
