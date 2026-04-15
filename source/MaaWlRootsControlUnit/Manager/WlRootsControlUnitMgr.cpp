@@ -229,6 +229,16 @@ bool WlRootsControlUnitMgr::key_up(int key)
     return client_->input_key(WaylandClient::EventPhase::Ended, key);
 }
 
+bool WlRootsControlUnitMgr::relative_move(int dx, int dy)
+{
+    if (!client_) {
+        LogError << "client_ is nullptr";
+        return false;
+    }
+
+    return client_->relative_move(dx, dy);
+}
+
 bool WlRootsControlUnitMgr::scroll(int dx, int dy)
 {
     if (!client_) {

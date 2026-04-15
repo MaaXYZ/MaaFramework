@@ -15,8 +15,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class WaylandClient;
 
 class WlRootsControlUnitMgr
-    : public ControlUnitAPI
-    , public ScrollableUnit
+    : public WlRootsControlUnitAPI
 {
 public:
     WlRootsControlUnitMgr(std::filesystem::path wlr_socket_path);
@@ -47,6 +46,7 @@ public:
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
 
+    virtual bool relative_move(int dx, int dy) override;
     virtual bool scroll(int dx, int dy) override;
 
     virtual bool inactive() override;

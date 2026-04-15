@@ -304,6 +304,18 @@ bool WaylandClient::pointer(EventPhase phase, int x, int y, int contact)
     return process_requests();
 }
 
+bool WaylandClient::relative_move(int dx, int dy)
+{
+    if (!connected_) {
+        return false;
+    }
+
+    const uint32_t event_time = WaylandHelper::get_ms();
+    zwlr_virtual_pointer_v1_motion(pointer_.get(), event_time, wl_fixed_from_int(dx), wl_fixed_from_int(dy));
+    zwlr_virtual_pointer_v1_frame(pointer_.get());
+    return process_requests();
+}
+
 bool WaylandClient::scroll(int dx, int dy) const
 {
     if (!connected_) {

@@ -159,7 +159,7 @@ private:
 class WlRootsControlUnitLibraryHolder : public LibraryHolder<WlRootsControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(const char* wlr_socket_path);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::WlRootsControlUnitAPI> create_control_unit(const char* wlr_socket_path);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaWlRootsControlUnit");
