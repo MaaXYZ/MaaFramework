@@ -45,9 +45,7 @@ const AdbDeviceFinder::EmulatorConstDataMap& AdbDeviceWin32Finder::get_emulator_
         { "MuMuPlayer12 v5",
           {
               .keyword = "MuMuNxDevice.exe",
-              .adb_candidate_paths = { "..\\..\\..\\nx_device\\12.0\\shell\\adb.exe"_path,
-                                       "..\\..\\..\\nx_main\\adb.exe"_path,
-                                       "adb.exe"_path },
+              .adb_candidate_paths = { "..\\..\\..\\nx_main\\adb.exe"_path, "adb.exe"_path },
           } },
 
         { "MEmuPlayer", { .keyword = "MEmu", .adb_candidate_paths = { "adb.exe"_path }, .adb_common_serials = { "127.0.0.1:21503" } } },
