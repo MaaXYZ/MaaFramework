@@ -12,6 +12,9 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+// 后台受管键守护。与 LegacyEventInput / MessageInput / SeizeInput 不同，
+// 它不是某种输入后端，而是独立于常规 InputBase 链路、在 Win32ControlUnitMgr
+// 里按键码路由短路到的守护器，因此刻意不继承 InputBase。
 class BackgroundManagedKeyInput
 {
 public:
@@ -45,6 +48,7 @@ private:
     static void send_f13_nudge();
 
     void send_activation_hint() const;
+    // 后缀 _locked 约定：调用方必须已持有 mutex_。
     Snapshot snapshot_locked() const;
     void guard_loop();
     bool correct_snapshot(const Snapshot& snapshot);

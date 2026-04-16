@@ -55,13 +55,11 @@ public: // from ControlUnitAPI
     virtual bool scroll(int dx, int dy) override;
 
     virtual bool set_mouse_lock_follow(bool enabled) override;
+    virtual bool set_background_managed_keys_option(const int32_t* keycodes, size_t count) override;
 
     virtual bool inactive() override;
 
     virtual json::object get_info() const override;
-
-public:
-    bool set_background_managed_keys_option(const int32_t* keycodes, size_t count);
 
 private:
     enum class ScreencapMethod

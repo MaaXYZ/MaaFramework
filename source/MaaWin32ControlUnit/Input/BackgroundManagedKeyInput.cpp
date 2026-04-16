@@ -13,11 +13,11 @@ MAA_CTRL_UNIT_NS_BEGIN
 namespace
 {
 
-constexpr auto kGuardInterval = std::chrono::milliseconds(5);
-constexpr auto kApplyTimeout = std::chrono::milliseconds(500);
-constexpr auto kHotkeyWaitTimeout = std::chrono::milliseconds(200);
-constexpr int kManagedHotkeyBase = 2000;
-constexpr int kStopMaxRetries = 10;
+constexpr auto guard_interval = std::chrono::milliseconds(5);
+constexpr auto apply_timeout = std::chrono::milliseconds(500);
+constexpr auto hotkey_wait_timeout = std::chrono::milliseconds(200);
+constexpr int managed_hotkey_base = 2000;
+constexpr int stop_max_retries = 10;
 
 } // namespace
 
@@ -184,7 +184,7 @@ bool BackgroundManagedKeyInput::is_valid_keycode(int keycode)
 
 int BackgroundManagedKeyInput::hotkey_id(int keycode)
 {
-    return kManagedHotkeyBase + keycode;
+    return managed_hotkey_base + keycode;
 }
 
 bool BackgroundManagedKeyInput::is_pressed_now(int keycode)
@@ -261,7 +261,7 @@ void BackgroundManagedKeyInput::guard_loop()
                 guard_cv_.wait(lock, [this] { return stop_thread_ || !managed_keys_.empty() || !release_keys_.empty(); });
             }
             else if (!stop_thread_) {
-                guard_cv_.wait_for(lock, kGuardInterval);
+                guard_cv_.wait_for(lock, guard_interval);
             }
 
             if (stop_thread_ && release_keys_.empty()) {
@@ -270,7 +270,7 @@ void BackgroundManagedKeyInput::guard_loop()
 
             if (stop_thread_) {
                 ++stop_retries;
-                if (stop_retries > kStopMaxRetries) {
+                if (stop_retries > stop_max_retries) {
                     LogWarn << "Exceeded max retries releasing keys on stop, forcing exit" << VAR(release_keys_.size());
                     release_keys_.clear();
                     break;
@@ -343,7 +343,7 @@ bool BackgroundManagedKeyInput::ensure_key_pressed(int keycode)
 
     MSG msg;
     int extra_count = 0;
-    const auto deadline = std::chrono::steady_clock::now() + kHotkeyWaitTimeout;
+    const auto deadline = std::chrono::steady_clock::now() + hotkey_wait_timeout;
     bool got_ours = false;
     while (std::chrono::steady_clock::now() < deadline) {
         while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
@@ -413,7 +413,7 @@ bool BackgroundManagedKeyInput::ensure_key_released(int keycode)
 bool BackgroundManagedKeyInput::wait_until_applied(uint64_t generation)
 {
     std::unique_lock lock(mutex_);
-    const bool applied = applied_cv_.wait_for(lock, kApplyTimeout, [this, generation] { return applied_generation_ >= generation; });
+    const bool applied = applied_cv_.wait_for(lock, apply_timeout, [this, generation] { return applied_generation_ >= generation; });
     if (!applied) {
         LogWarn << "Timed out waiting for background managed key state to apply" << VAR(generation) << VAR(applied_generation_);
     }
