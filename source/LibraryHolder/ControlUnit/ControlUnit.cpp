@@ -328,7 +328,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>
     return std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> WlRootsControlUnitLibraryHolder::create_control_unit(const char* wlr_socket_path)
+std::shared_ptr<MAA_CTRL_UNIT_NS::WlRootsControlUnitAPI> WlRootsControlUnitLibraryHolder::create_control_unit(const char* wlr_socket_path)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -356,7 +356,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> WlRootsControlUnitLibraryHolde
         return nullptr;
     }
 
-    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::WlRootsControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI> MacOSControlUnitLibraryHolder::create_control_unit(
