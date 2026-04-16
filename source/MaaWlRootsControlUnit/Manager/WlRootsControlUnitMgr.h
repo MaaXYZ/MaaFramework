@@ -14,8 +14,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 class WaylandClient;
 
-class WlRootsControlUnitMgr
-    : public WlRootsControlUnitAPI
+class WlRootsControlUnitMgr : public WlRootsControlUnitAPI
 {
 public:
     WlRootsControlUnitMgr(std::filesystem::path wlr_socket_path);
