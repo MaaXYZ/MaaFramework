@@ -2460,6 +2460,14 @@ bool AgentClient::handle_controller_set_option(const json::value& j)
         ret = controller->set_option(key, &v, sizeof(v));
         break;
     }
+    case MaaCtrlOption_BackgroundManagedKeys: {
+        std::vector<int32_t> keys;
+        for (const auto& item : req.value.as_array()) {
+            keys.push_back(static_cast<int32_t>(item.as_integer()));
+        }
+        ret = controller->set_option(key, keys.data(), sizeof(int32_t) * keys.size());
+        break;
+    }
     default:
         LogError << "unknown key" << VAR(req.key);
         break;

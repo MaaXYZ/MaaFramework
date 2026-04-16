@@ -3,8 +3,10 @@
 #include <filesystem>
 #include <ostream>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "Base/UnitBase.h"
+#include "Input/BackgroundManagedKeyInput.h"
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/SafeWindows.hpp"
@@ -58,6 +60,9 @@ public: // from ControlUnitAPI
 
     virtual json::object get_info() const override;
 
+public:
+    bool set_background_managed_keys_option(const int32_t* keycodes, size_t count);
+
 private:
     enum class ScreencapMethod
     {
@@ -86,6 +91,9 @@ private:
     std::shared_ptr<InputBase> mouse_ = nullptr;
     std::shared_ptr<InputBase> keyboard_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
+
+    std::shared_ptr<BackgroundManagedKeyInput> background_keyboard_ = nullptr;
+    std::unordered_set<int> managed_keys_;
 };
 
 MAA_CTRL_UNIT_NS_END

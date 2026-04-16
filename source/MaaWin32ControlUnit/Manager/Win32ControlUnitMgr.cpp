@@ -6,6 +6,7 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Time.hpp"
 
+#include "Input/BackgroundManagedKeyInput.h"
 #include "Input/LegacyEventInput.h"
 #include "Input/MessageInput.h"
 #include "Input/SeizeInput.h"
@@ -30,6 +31,7 @@ Win32ControlUnitMgr::Win32ControlUnitMgr(
     , screencap_method_(screencap_method)
     , mouse_method_(mouse_method)
     , keyboard_method_(keyboard_method)
+    , background_keyboard_(std::make_shared<BackgroundManagedKeyInput>(hWnd))
 {
 }
 
@@ -345,6 +347,14 @@ bool Win32ControlUnitMgr::relative_move(int dx, int dy)
 
 bool Win32ControlUnitMgr::click_key(int key)
 {
+    if (managed_keys_.contains(key)) {
+        if (!background_keyboard_) {
+            LogError << "background_keyboard_ is null";
+            return false;
+        }
+        return background_keyboard_->key_down(key) && background_keyboard_->key_up(key);
+    }
+
     if (!keyboard_) {
         LogError << "keyboard_ is null";
         return false;
@@ -365,6 +375,14 @@ bool Win32ControlUnitMgr::input_text(const std::string& text)
 
 bool Win32ControlUnitMgr::key_down(int key)
 {
+    if (managed_keys_.contains(key)) {
+        if (!background_keyboard_) {
+            LogError << "background_keyboard_ is null";
+            return false;
+        }
+        return background_keyboard_->key_down(key);
+    }
+
     if (!keyboard_) {
         LogError << "keyboard_ is null";
         return false;
@@ -375,6 +393,14 @@ bool Win32ControlUnitMgr::key_down(int key)
 
 bool Win32ControlUnitMgr::key_up(int key)
 {
+    if (managed_keys_.contains(key)) {
+        if (!background_keyboard_) {
+            LogError << "background_keyboard_ is null";
+            return false;
+        }
+        return background_keyboard_->key_up(key);
+    }
+
     if (!keyboard_) {
         LogError << "keyboard_ is null";
         return false;
@@ -409,10 +435,32 @@ bool Win32ControlUnitMgr::set_mouse_lock_follow(bool enabled)
     return message_input->set_mouse_lock_follow(enabled);
 }
 
+bool Win32ControlUnitMgr::set_background_managed_keys_option(const int32_t* keycodes, size_t count)
+{
+    LogFunc << VAR(count);
+
+    if (!background_keyboard_) {
+        LogError << "background_keyboard_ is null";
+        return false;
+    }
+
+    std::vector<int> keys(keycodes, keycodes + count);
+    if (!background_keyboard_->set_managed_keys(keys)) {
+        LogError << "set_managed_keys failed";
+        return false;
+    }
+
+    managed_keys_ = std::unordered_set<int>(keys.begin(), keys.end());
+    return true;
+}
+
 bool Win32ControlUnitMgr::inactive()
 {
     LogFunc;
 
+    if (background_keyboard_) {
+        background_keyboard_->inactive();
+    }
     if (screencap_) {
         screencap_->inactive();
     }
