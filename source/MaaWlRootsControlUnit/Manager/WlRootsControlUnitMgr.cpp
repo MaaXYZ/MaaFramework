@@ -159,6 +159,7 @@ bool WlRootsControlUnitMgr::touch_up(int contact)
         return false;
     }
 
+    // Ended phase only sends button release; WaylandClient ignores x/y. (0,0) is a placeholder.
     return client_->pointer(WaylandClient::EventPhase::Ended, 0, 0, contact);
 }
 
