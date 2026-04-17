@@ -298,7 +298,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         RuntimeParam::WlRootsParam wlroots;
 
         wlroots.wlr_socket_path = config_.wlroots.wlr_socket_path;
-        wlroots.use_win32_vk_code = config_.wlroots.use_win32_vk_code;
+        wlroots.use_win32_vk_code = controller.wlroots.use_win32_vk_code;
 
         runtime.controller_param = std::move(wlroots);
     } break;

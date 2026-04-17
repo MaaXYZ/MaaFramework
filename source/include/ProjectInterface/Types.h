@@ -56,6 +56,13 @@ struct InterfaceData
             MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT gamepad_type, MEO_OPT screencap);
         };
 
+        struct WlRootsConfig
+        {
+            bool use_win32_vk_code = false;
+
+            MEO_JSONIZATION(MEO_OPT use_win32_vk_code);
+        };
+
         enum class Type
         {
             Invalid,
@@ -90,6 +97,7 @@ struct InterfaceData
         MacOSConfig macos;
         PlayCoverConfig playcover;
         GamepadConfig gamepad;
+        WlRootsConfig wlroots;
 
         MEO_JSONIZATION(
             name,
@@ -105,7 +113,8 @@ struct InterfaceData
             MEO_OPT win32,
             MEO_OPT macos,
             MEO_OPT playcover,
-            MEO_OPT gamepad);
+            MEO_OPT gamepad,
+            MEO_OPT wlroots);
     };
 
     struct Resource
@@ -374,9 +383,8 @@ struct Configuration
     struct WlRootsConfig
     {
         std::string wlr_socket_path;
-        bool use_win32_vk_code = false;
 
-        MEO_JSONIZATION(MEO_OPT wlr_socket_path, MEO_OPT use_win32_vk_code);
+        MEO_JSONIZATION(MEO_OPT wlr_socket_path);
     };
 
     struct Option
