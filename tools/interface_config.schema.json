@@ -60,6 +60,10 @@
                 "wlr_socket_path": {
                     "title": "Wayland Socket路径",
                     "type": "string"
+                },
+                "use_win32_vk_code": {
+                    "title": "使用 Win32 VK 键码",
+                    "type": "boolean"
                 }
             }
         },

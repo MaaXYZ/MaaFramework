@@ -614,6 +614,11 @@
                             "type": "string",
                             "title": "Wayland Socket 路径",
                             "description": "可选。Wayland Socket 路径，不提供则使用默认"
+                        },
+                        "use_win32_vk_code": {
+                            "type": "boolean",
+                            "title": "使用 Win32 VK 键码",
+                            "description": "可选。为 true 时按键被视为 Win32 Virtual-Key 码，内部转换为 Linux evdev 码；否则按原始 evdev 码处理。默认 false"
                         }
                     },
                     "additionalProperties": false

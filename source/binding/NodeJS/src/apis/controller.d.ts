@@ -196,13 +196,6 @@ declare global {
              * @returns true if successful, false otherwise
              */
             set mouse_lock_follow(enabled: boolean)
-            /**
-             * Set whether the WlRoots controller interprets key codes as Win32 Virtual-Key codes (VK_*).
-             * When enabled, input key codes are translated to Linux evdev codes internally.
-             * When disabled (default), key codes are passed through as raw evdev codes.
-             * Only valid for WlRoots controllers.
-             */
-            set wlroots_use_win32_vk_code(enabled: boolean)
             post_key_down(keycode: number): Job<CtrlId, Controller>
             post_key_up(keycode: number): Job<CtrlId, Controller>
             /**
@@ -317,7 +310,13 @@ declare global {
         type WlRootsCompositor = [handle: DesktopHandle, class_name: string, window_name: string]
 
         class WlRootsController extends Controller {
-            constructor(wlr_socket_path: string)
+            /**
+             * @param wlr_socket_path Wayland socket path (e.g. "/run/user/1000/wayland-0")
+             * @param use_win32_vk_code When true, key codes passed to click_key / key_down / key_up are
+             *   interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes internally.
+             *   Defaults to false (raw evdev codes).
+             */
+            constructor(wlr_socket_path: string, use_win32_vk_code?: boolean)
 
             static find(): Promise<WlRootsCompositor[] | null>
         }

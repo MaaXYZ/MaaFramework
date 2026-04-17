@@ -119,11 +119,6 @@ class WlRootsControlUnitAPI
 {
 public:
     virtual ~WlRootsControlUnitAPI() = default;
-
-    // When enabled, key codes passed to click_key/key_down/key_up are interpreted as
-    // Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes internally.
-    // When disabled (default), key codes are passed through as raw evdev codes.
-    virtual bool set_use_win32_vk_code(bool /*enabled*/) { return false; }
 };
 
 class CustomControlUnitAPI

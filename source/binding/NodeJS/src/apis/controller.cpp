@@ -229,13 +229,6 @@ void ControllerImpl::set_mouse_lock_follow(bool enabled)
     }
 }
 
-void ControllerImpl::set_wlroots_use_win32_vk_code(bool enabled)
-{
-    if (!MaaControllerSetOption(controller, MaaCtrlOption_WlRootsUseWin32VkCode, &enabled, sizeof(enabled))) {
-        throw maajs::MaaError { "Controller set wlroots_use_win32_vk_code failed" };
-    }
-}
-
 maajs::ValueType ControllerImpl::post_key_down(maajs::ValueType self, maajs::EnvType, int32_t keycode)
 {
     auto id = MaaControllerPostKeyDown(controller, keycode);
@@ -383,7 +376,6 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_touch_up", ControllerImpl::post_touch_up);
     MAA_BIND_FUNC(proto, "post_relative_move", ControllerImpl::post_relative_move);
     MAA_BIND_SETTER(proto, "mouse_lock_follow", ControllerImpl::set_mouse_lock_follow);
-    MAA_BIND_SETTER(proto, "wlroots_use_win32_vk_code", ControllerImpl::set_wlroots_use_win32_vk_code);
     MAA_BIND_FUNC(proto, "post_key_down", ControllerImpl::post_key_down);
     MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
     MAA_BIND_FUNC(proto, "post_scroll", ControllerImpl::post_scroll);
@@ -718,8 +710,8 @@ maajs::ValueType load_gamepad_controller(maajs::EnvType env)
 
 WlRootsControllerImpl* WlRootsControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [wlr_socket_path] = maajs::UnWrapArgs<WlRootsControllerCtorParam, void>(info);
-    auto ctrl = MaaWlRootsControllerCreate(wlr_socket_path.c_str());
+    auto [wlr_socket_path, use_win32_vk_code] = maajs::UnWrapArgs<WlRootsControllerCtorParam, void>(info);
+    auto ctrl = MaaWlRootsControllerCreate(wlr_socket_path.c_str(), use_win32_vk_code.value_or(false));
     if (!ctrl) {
         return nullptr;
     }

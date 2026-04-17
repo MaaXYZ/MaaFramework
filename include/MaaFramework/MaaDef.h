@@ -234,14 +234,6 @@ enum MaaCtrlOptionEnum
     ///
     /// value: int, eg: 3; val_size: sizeof(int)
     MaaCtrlOption_ScreenshotResizeMethod = 6,
-
-    /// Interpret key codes passed to click_key / key_down / key_up as Win32 Virtual-Key
-    /// codes (VK_*) instead of raw Linux evdev codes. Only valid for WlRoots controllers.
-    /// When enabled, the controller translates VK codes to evdev codes internally.
-    /// Default is false (raw evdev codes).
-    ///
-    /// value: bool, eg: true; val_size: sizeof(bool)
-    MaaCtrlOption_WlRootsUseWin32VkCode = 7,
 };
 
 typedef MaaOption MaaTaskerOption;

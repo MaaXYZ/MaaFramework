@@ -64,7 +64,6 @@ struct ControllerImpl : public maajs::NativeClassBase
     maajs::ValueType post_touch_up(maajs::ValueType self, maajs::EnvType env, int32_t contact);
     maajs::ValueType post_relative_move(maajs::ValueType self, maajs::EnvType env, int32_t dx, int32_t dy);
     void set_mouse_lock_follow(bool enabled);
-    void set_wlroots_use_win32_vk_code(bool enabled);
     maajs::ValueType post_key_down(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_key_up(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_scroll(maajs::ValueType self, maajs::EnvType env, int32_t dx, int32_t dy);
@@ -198,7 +197,7 @@ struct GamepadControllerImpl : public ControllerImpl
 };
 
 using WlRootsCompositor = std::tuple<uint64_t, std::string, std::string>;
-using WlRootsControllerCtorParam = std::tuple<std::string>;
+using WlRootsControllerCtorParam = std::tuple<std::string, maajs::OptionalParam<bool>>;
 
 struct WlRootsControllerImpl : public ControllerImpl
 {

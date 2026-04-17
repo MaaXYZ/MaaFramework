@@ -2455,8 +2455,7 @@ bool AgentClient::handle_controller_set_option(const json::value& j)
         break;
     }
     case MaaCtrlOption_ScreenshotUseRawSize:
-    case MaaCtrlOption_MouseLockFollow:
-    case MaaCtrlOption_WlRootsUseWin32VkCode: {
+    case MaaCtrlOption_MouseLockFollow: {
         bool v = req.value.as_boolean();
         ret = controller->set_option(key, &v, sizeof(v));
         break;

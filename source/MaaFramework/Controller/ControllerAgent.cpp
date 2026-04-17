@@ -45,8 +45,6 @@ bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOpt
         return set_mouse_lock_follow_option(value, val_size);
     case MaaCtrlOption_ScreenshotResizeMethod:
         return set_screenshot_resize_method(value, val_size);
-    case MaaCtrlOption_WlRootsUseWin32VkCode:
-        return set_wlroots_use_win32_vk_code_option(value, val_size);
 
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
@@ -1229,30 +1227,6 @@ bool ControllerAgent::set_mouse_lock_follow_option(MaaOptionValue value, MaaOpti
 
     bool enabled = *reinterpret_cast<const bool*>(value);
     return win32_unit->set_mouse_lock_follow(enabled);
-}
-
-bool ControllerAgent::set_wlroots_use_win32_vk_code_option(MaaOptionValue value, MaaOptionValueSize val_size)
-{
-    LogDebug;
-
-    if (val_size != sizeof(bool)) {
-        LogError << "invalid value size: " << val_size;
-        return false;
-    }
-
-    if (!control_unit_) {
-        LogError << "control_unit_ is nullptr";
-        return false;
-    }
-
-    auto wlroots_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::WlRootsControlUnitAPI>(control_unit_);
-    if (!wlroots_unit) {
-        LogError << "WlRootsUseWin32VkCode is only supported for WlRoots controllers.";
-        return false;
-    }
-
-    bool enabled = *reinterpret_cast<const bool*>(value);
-    return wlroots_unit->set_use_win32_vk_code(enabled);
 }
 
 bool ControllerAgent::set_screenshot_resize_method(MaaOptionValue value, MaaOptionValueSize val_size)

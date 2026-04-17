@@ -374,8 +374,9 @@ struct Configuration
     struct WlRootsConfig
     {
         std::string wlr_socket_path;
+        bool use_win32_vk_code = false;
 
-        MEO_JSONIZATION(MEO_OPT wlr_socket_path);
+        MEO_JSONIZATION(MEO_OPT wlr_socket_path, MEO_OPT use_win32_vk_code);
     };
 
     struct Option
@@ -477,6 +478,7 @@ struct RuntimeParam
     struct WlRootsParam
     {
         std::string wlr_socket_path;
+        bool use_win32_vk_code = false;
     };
 
     struct Task

@@ -274,24 +274,6 @@ class Controller:
             self._handle, MaaCtrlOptionEnum.MouseLockFollow, ctypes.byref(c_enabled), ctypes.sizeof(c_enabled)
         )
 
-    def set_wlroots_use_win32_vk_code(self, enabled: bool) -> bool:
-        """设置 WlRoots 控制器是否将按键视为 Win32 VK 键码 / Set whether the WlRoots controller interprets key codes as Win32 Virtual-Key codes
-
-        Args:
-            enabled: 开启后，传入的按键将被视为 Win32 VK 键码并自动转换为 evdev 码；关闭时按原始 evdev 码处理
-                / When enabled, input key codes are interpreted as Win32 Virtual-Key codes and translated to evdev codes; otherwise they are passed through as raw evdev codes
-
-        Returns:
-            bool: 是否设置成功 / Whether the setting was successful
-
-        Note:
-            仅对 WlRoots 控制器有效 / Only valid for WlRoots controllers
-        """
-        c_enabled = ctypes.c_bool(enabled)
-        return Library.framework().MaaControllerSetOption(
-            self._handle, MaaCtrlOptionEnum.WlRootsUseWin32VkCode, ctypes.byref(c_enabled), ctypes.sizeof(c_enabled)
-        )
-
     def post_scroll(self, dx: int, dy: int) -> Job:
         """滚动 / Scroll
 
@@ -1039,11 +1021,16 @@ class WlRootsController(Controller):
     def __init__(
             self,
             wlr_socket_path: str,
+            use_win32_vk_code: bool = False,
     ):
         """创建 WlRoots 控制器 / Create WlRoots controller
 
         Args:
             wlr_socket_path: Wayland Socket 路径 / Wayland Socket Path
+            use_win32_vk_code: 为 True 时按键被视为 Win32 VK 键码并转换为 Linux evdev 码；
+                默认 False，按原始 evdev 码处理
+                / When True, key codes are interpreted as Win32 Virtual-Key codes and translated
+                to Linux evdev codes internally; default False passes raw evdev codes through
 
         Raises:
             RuntimeError: 如果创建失败
@@ -1053,6 +1040,7 @@ class WlRootsController(Controller):
 
         self._handle = Library.framework().MaaWlRootsControllerCreate(
             wlr_socket_path.encode(),
+            MaaBool(use_win32_vk_code),
         )
 
         if not self._handle:
@@ -1062,6 +1050,7 @@ class WlRootsController(Controller):
         Library.framework().MaaWlRootsControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaWlRootsControllerCreate.argtypes = [
             ctypes.c_char_p,
+            MaaBool,
         ]
 
 

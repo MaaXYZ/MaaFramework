@@ -119,11 +119,14 @@ extern "C"
      * @brief Create a wlroots controller for Linux.
      *
      * @param wlr_socket_path The wayland socket path (e.g., "/run/user/1000/wayland-0").
+     * @param use_win32_vk_code If true, key codes passed to click_key / key_down / key_up are
+     *        interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes
+     *        internally. If false, key codes are passed through as raw evdev codes.
      * @return The controller handle, or nullptr on failure.
      *
      * @note This controller is designed for wlroots on Linux.
      */
-    MAA_FRAMEWORK_API MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path);
+    MAA_FRAMEWORK_API MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path, MaaBool use_win32_vk_code);
 
     /**
      * @brief Create a virtual gamepad controller for Windows.

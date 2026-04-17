@@ -12,11 +12,12 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-WlRootsControlUnitMgr::WlRootsControlUnitMgr(std::filesystem::path wlr_socket_path)
+WlRootsControlUnitMgr::WlRootsControlUnitMgr(std::filesystem::path wlr_socket_path, bool use_win32_vk_code)
     : client_(std::make_unique<WaylandClient>())
     , wlr_socket_path_(std::move(wlr_socket_path))
+    , use_win32_vk_code_(use_win32_vk_code)
 {
-    LogFunc << VAR(wlr_socket_path_);
+    LogFunc << VAR(wlr_socket_path_) << VAR(use_win32_vk_code_);
 }
 
 WlRootsControlUnitMgr::~WlRootsControlUnitMgr()
@@ -255,13 +256,6 @@ bool WlRootsControlUnitMgr::stop_app(const std::string& intent)
 
 bool WlRootsControlUnitMgr::inactive()
 {
-    return true;
-}
-
-bool WlRootsControlUnitMgr::set_use_win32_vk_code(bool enabled)
-{
-    LogInfo << VAR(enabled);
-    use_win32_vk_code_ = enabled;
     return true;
 }
 
