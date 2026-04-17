@@ -46,7 +46,7 @@ protected:
         std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_cache = nullptr);
     ActionResult run_action(const RecoResult& reco, const PipelineData& data);
     cv::Mat screencap();
-    MaaNodeId generate_node_id();
+    static MaaNodeId generate_node_id();
     void set_node_detail(MaaNodeId node_id, NodeDetail detail);
     void set_task_detail(TaskDetail detail);
 
