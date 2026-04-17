@@ -394,12 +394,7 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
             res = sub_recognizer.recognize(inline_sub.type, inline_sub.param, inline_sub.sub_name);
         }
 
-        if (res.box.has_value() && !res.name.empty()) {
-            auto& cache = tasker_->runtime_cache();
-            auto sub_node_id = TaskBase::generate_node_id();
-            cache.set_node_detail(sub_node_id, NodeDetail { .node_id = sub_node_id, .name = res.name, .reco_id = res.reco_id });
-            cache.set_latest_node(res.name, sub_node_id);
-        }
+        register_sub_result_in_cache(res);
 
         all_hit &= res.box.has_value();
         sub_results.emplace_back(std::move(res));
@@ -484,14 +479,7 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
         }
 
         has_hit = res.box.has_value();
-
-        if (has_hit && !res.name.empty()) {
-            auto& cache = tasker_->runtime_cache();
-            auto sub_node_id = TaskBase::generate_node_id();
-            cache.set_node_detail(sub_node_id, NodeDetail { .node_id = sub_node_id, .name = res.name, .reco_id = res.reco_id });
-            cache.set_latest_node(res.name, sub_node_id);
-        }
-
+        register_sub_result_in_cache(res);
         sub_results.emplace_back(std::move(res));
 
         if (has_hit) {
@@ -624,6 +612,20 @@ void Recognizer::save_draws(const std::string& node_name, const RecoResult& resu
 {
     std::string name = std::format("{}_{}", node_name, result.reco_id);
     MAA_VISION_NS::VisionBase::save_draws(name, result.draws);
+}
+
+void Recognizer::register_sub_result_in_cache(const RecoResult& res)
+{
+    if (!res.box.has_value() || res.name.empty()) {
+        return;
+    }
+
+    auto& cache = tasker_->runtime_cache();
+    auto sub_node_id = TaskBase::generate_node_id();
+    cache.set_node_detail(
+        sub_node_id,
+        NodeDetail { .node_id = sub_node_id, .name = res.name, .reco_id = res.reco_id, .completed = true });
+    cache.set_latest_node(res.name, sub_node_id);
 }
 
 bool Recognizer::debug_mode() const
