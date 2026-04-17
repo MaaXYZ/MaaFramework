@@ -622,9 +622,7 @@ void Recognizer::register_sub_result_in_cache(const RecoResult& res)
 
     auto& cache = tasker_->runtime_cache();
     auto sub_node_id = TaskBase::generate_node_id();
-    cache.set_node_detail(
-        sub_node_id,
-        NodeDetail { .node_id = sub_node_id, .name = res.name, .reco_id = res.reco_id, .completed = true });
+    cache.set_node_detail(sub_node_id, NodeDetail { .node_id = sub_node_id, .name = res.name, .reco_id = res.reco_id, .completed = true });
     cache.set_latest_node(res.name, sub_node_id);
 }
 

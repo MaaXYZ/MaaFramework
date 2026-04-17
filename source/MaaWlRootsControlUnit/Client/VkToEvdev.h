@@ -20,7 +20,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 //   - VK codes: https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 //   - evdev codes: linux/input-event-codes.h
 inline constexpr auto kVkToEvdevTable = [] {
-    std::array<int, 256> table {};
+    std::array<int, 256> table { };
 
     // 0x08..0x14 control keys
     table[0x08] = KEY_BACKSPACE; // VK_BACK
