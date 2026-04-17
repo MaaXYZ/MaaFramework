@@ -51,9 +51,17 @@ public:
 
     virtual json::object get_info() const override;
 
+    virtual bool set_use_win32_vk_code(bool enabled) override;
+
 private:
+    // Translate the input key (Win32 VK code if use_win32_vk_code_ is set,
+    // otherwise raw evdev code) to the underlying evdev code used by the
+    // virtual keyboard. Returns 0 when translation fails.
+    int translate_key(int key) const;
+
     std::unique_ptr<WaylandClient> client_;
     std::filesystem::path wlr_socket_path_;
+    bool use_win32_vk_code_ = false;
 };
 
 MAA_CTRL_UNIT_NS_END

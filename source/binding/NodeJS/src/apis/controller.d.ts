@@ -196,6 +196,13 @@ declare global {
              * @returns true if successful, false otherwise
              */
             set mouse_lock_follow(enabled: boolean)
+            /**
+             * Set whether the WlRoots controller interprets key codes as Win32 Virtual-Key codes (VK_*).
+             * When enabled, input key codes are translated to Linux evdev codes internally.
+             * When disabled (default), key codes are passed through as raw evdev codes.
+             * Only valid for WlRoots controllers.
+             */
+            set wlroots_use_win32_vk_code(enabled: boolean)
             post_key_down(keycode: number): Job<CtrlId, Controller>
             post_key_up(keycode: number): Job<CtrlId, Controller>
             /**

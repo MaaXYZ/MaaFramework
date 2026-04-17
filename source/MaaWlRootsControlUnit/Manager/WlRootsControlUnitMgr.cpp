@@ -5,6 +5,7 @@
 
 #include <opencv2/imgproc.hpp>
 
+#include "Client/VkToEvdev.h"
 #include "Client/WaylandClient.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
@@ -188,7 +189,13 @@ bool WlRootsControlUnitMgr::key_down(int key)
         return false;
     }
 
-    return client_->input_key(WaylandClient::EventPhase::Began, key);
+    const int evdev_key = translate_key(key);
+    if (evdev_key == 0) {
+        LogError << "Failed to translate key" << VAR(key) << VAR(use_win32_vk_code_);
+        return false;
+    }
+
+    return client_->input_key(WaylandClient::EventPhase::Began, evdev_key);
 }
 
 bool WlRootsControlUnitMgr::key_up(int key)
@@ -198,7 +205,24 @@ bool WlRootsControlUnitMgr::key_up(int key)
         return false;
     }
 
-    return client_->input_key(WaylandClient::EventPhase::Ended, key);
+    const int evdev_key = translate_key(key);
+    if (evdev_key == 0) {
+        LogError << "Failed to translate key" << VAR(key) << VAR(use_win32_vk_code_);
+        return false;
+    }
+
+    return client_->input_key(WaylandClient::EventPhase::Ended, evdev_key);
+}
+
+int WlRootsControlUnitMgr::translate_key(int key) const
+{
+    if (!use_win32_vk_code_) {
+        return key;
+    }
+
+    const int evdev_key = vk_to_evdev(key);
+    LogDebug << "Translating VK to evdev" << VAR(key) << VAR(evdev_key);
+    return evdev_key;
 }
 
 bool WlRootsControlUnitMgr::relative_move(int dx, int dy)
@@ -234,11 +258,19 @@ bool WlRootsControlUnitMgr::inactive()
     return true;
 }
 
+bool WlRootsControlUnitMgr::set_use_win32_vk_code(bool enabled)
+{
+    LogInfo << VAR(enabled);
+    use_win32_vk_code_ = enabled;
+    return true;
+}
+
 json::object WlRootsControlUnitMgr::get_info() const
 {
     json::object info;
     info["type"] = "wlroots";
     info["wlr_socket_path"] = path_to_utf8_string(wlr_socket_path_);
+    info["use_win32_vk_code"] = use_win32_vk_code_;
     return info;
 }
 

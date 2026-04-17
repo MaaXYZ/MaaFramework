@@ -35,6 +35,7 @@ bool RemoteController::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOp
 
     case MaaCtrlOption_ScreenshotUseRawSize:
     case MaaCtrlOption_MouseLockFollow:
+    case MaaCtrlOption_WlRootsUseWin32VkCode:
         if (val_size != sizeof(bool)) {
             LogError << "invalid val_size for bool option" << VAR(key) << VAR(val_size);
             return false;

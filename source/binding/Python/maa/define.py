@@ -145,6 +145,12 @@ class MaaCtrlOptionEnum(IntEnum):
     # default is 3 (INTER_AREA)
     ScreenshotResizeMethod = 6
 
+    # Interpret key codes as Win32 Virtual-Key codes (VK_*) instead of raw Linux
+    # evdev codes. Only valid for WlRoots controllers.
+    # value: bool, eg: true; val_size: sizeof(bool)
+    # default is false (raw evdev codes)
+    WlRootsUseWin32VkCode = 7
+
 
 class MaaInferenceDeviceEnum(IntEnum):
     CPU = -2
