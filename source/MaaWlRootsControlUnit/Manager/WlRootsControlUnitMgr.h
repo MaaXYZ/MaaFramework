@@ -3,7 +3,6 @@
 #include <filesystem>
 #include <memory>
 #include <string>
-#include <utility>
 
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
@@ -55,8 +54,6 @@ public:
 private:
     std::unique_ptr<WaylandClient> client_;
     std::filesystem::path wlr_socket_path_;
-    std::pair<int, int> last_pos_ = { 0, 0 };
-    bool has_clicked_ = false;
 };
 
 MAA_CTRL_UNIT_NS_END

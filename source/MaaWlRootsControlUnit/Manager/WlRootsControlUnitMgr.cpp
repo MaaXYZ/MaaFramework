@@ -2,7 +2,6 @@
 
 #include <filesystem>
 #include <system_error>
-#include <utility>
 
 #include <opencv2/imgproc.hpp>
 
@@ -138,14 +137,7 @@ bool WlRootsControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    if (!client_->pointer(WaylandClient::EventPhase::Began, x, y, contact)) {
-        return false;
-    }
-
-    last_pos_ = { x, y };
-    has_clicked_ = true;
-
-    return true;
+    return client_->pointer(WaylandClient::EventPhase::Began, x, y, contact);
 }
 
 bool WlRootsControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
@@ -157,14 +149,7 @@ bool WlRootsControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    if (!client_->pointer(WaylandClient::EventPhase::Moved, x, y, contact)) {
-        return false;
-    }
-
-    last_pos_ = { x, y };
-    has_clicked_ = true;
-
-    return true;
+    return client_->pointer(WaylandClient::EventPhase::Moved, x, y, contact);
 }
 
 bool WlRootsControlUnitMgr::touch_up(int contact)
@@ -174,21 +159,8 @@ bool WlRootsControlUnitMgr::touch_up(int contact)
         return false;
     }
 
-    std::pair<int, int> up = { 0, 0 };
-    if (has_clicked_) {
-        up = last_pos_;
-    }
-    else {
-        auto [width, height] = client_->screen_size();
-        up = { width / 2, height / 2 };
-    }
-
-    if (!client_->pointer(WaylandClient::EventPhase::Ended, up.first, up.second, contact)) {
-        return false;
-    }
-
-    has_clicked_ = false;
-    return true;
+    // Ended phase only sends button release; WaylandClient ignores x/y. (0,0) is a placeholder.
+    return client_->pointer(WaylandClient::EventPhase::Ended, 0, 0, contact);
 }
 
 bool WlRootsControlUnitMgr::click_key(int key)
