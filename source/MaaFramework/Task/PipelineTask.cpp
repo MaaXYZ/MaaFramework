@@ -358,21 +358,9 @@ std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const 
         collect_ocr_from_reco(ctx, data.name, data.reco_type, data.reco_param);
     }
 
-    if (ctx.plan.node_names.size() < 2) {
-        LogDebug << "batch OCR not needed, eligible OCR nodes < 2" << VAR(ctx.plan.node_names.size());
+    if (ctx.plan.entries.size() < 2) {
+        LogDebug << "batch OCR not needed, eligible OCR nodes < 2" << VAR(ctx.plan.entries.size());
         return std::nullopt;
-    }
-
-    for (const auto& name : ctx.plan.node_names) {
-        auto node_opt = context_->get_pipeline_data(name);
-        if (!node_opt) {
-            continue;
-        }
-        ctx.plan.entries.emplace_back(
-            BatchOCREntry {
-                .name = name,
-                .param = std::get<MAA_VISION_NS::OCRerParam>(node_opt->reco_param),
-            });
     }
 
     LogInfo << "prepared batch OCR plan" << VAR(ctx.plan.node_names) << VAR(ctx.plan.model);
@@ -410,6 +398,7 @@ void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& n
     }
 
     ctx.plan.node_names.emplace(name);
+    ctx.plan.entries.emplace_back(BatchOCREntry { .name = name, .param = param });
 }
 
 void PipelineTask::collect_ocr_from_reco(
