@@ -221,9 +221,7 @@ int WlRootsControlUnitMgr::translate_key(int key) const
         return key;
     }
 
-    const int evdev_key = vk_to_evdev(key);
-    LogDebug << "Translating VK to evdev" << VAR(key) << VAR(evdev_key);
-    return evdev_key;
+    return vk_to_evdev(key);
 }
 
 bool WlRootsControlUnitMgr::relative_move(int dx, int dy)
