@@ -104,8 +104,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [maafw-cli](https://github.com/otowa-kotori/maafw-cli) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/otowa-kotori/maafw-cli) ![activity](https://img.shields.io/github/commit-activity/m/otowa-kotori/maafw-cli?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/otowa-kotori/maafw-cli?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/maafw-cli/)  
     用于AI Agent的 MaaFramework 命令行界面。
 
-- [maaframework-skills](https://github.com/Kutius/maaframework-skills) ![license](https://img.shields.io/github/license/Kutius/maaframework-skills) ![activity](https://img.shields.io/github/commit-activity/m/Kutius/maaframework-skills?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Kutius/maaframework-skills?style=social)
-    Claude Code skill for MaaFramework — structured reference docs for AI-assisted pipeline development.
+- [maaframework-skills](https://github.com/Kutius/maaframework-skills) ![license](https://img.shields.io/github/license/Kutius/maaframework-skills) ![activity](https://img.shields.io/github/commit-activity/m/Kutius/maaframework-skills?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Kutius/maaframework-skills?style=social)  
+    Claude Code skill for MaaFramework — 面向 AI 辅助开发的结构化参考文档。
 
 ### 应用程序
 
