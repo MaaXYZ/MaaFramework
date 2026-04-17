@@ -156,6 +156,9 @@
     <member refid="classWin32ControlUnitAPI_1a0c919ea1e0bd03379b1459e6e09e425e" kind="function"><name>~Win32ControlUnitAPI</name></member>
     <member refid="classWin32ControlUnitAPI_1a23c7db44eae91fcecfb87800016ff288" kind="function"><name>set_mouse_lock_follow</name></member>
   </compound>
+  <compound refid="classWlRootsControlUnitAPI" kind="class"><name>WlRootsControlUnitAPI</name>
+    <member refid="classWlRootsControlUnitAPI_1a11f61ddf28bfa39ca3ce354d0442e640" kind="function"><name>~WlRootsControlUnitAPI</name></member>
+  </compound>
   <compound refid="namespacestd" kind="namespace"><name>std</name>
   </compound>
   <compound refid="MaaAgentClientAPI_8h" kind="file"><name>MaaAgentClientAPI.h</name>
@@ -209,6 +212,7 @@
     <member refid="ControlUnitAPI_8h_1ad717257089675a8dc0e80e574cfe5243" kind="typedef"><name>MaaAdbControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1a65786017771209552b0f1836a58deef0" kind="typedef"><name>MaaWin32ControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1a8adab01abd6e9dcc167b4540f771c73a" kind="typedef"><name>MaaMacOSControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1ac75fa95b67dbddfe829cc6d4389dcce5" kind="typedef"><name>MaaWlRootsControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1ae7686964fb7e1e28b6c43b69902d21bb" kind="typedef"><name>MaaGamepadControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1ae379a64534f66d7fc6fe047476d5563e" kind="typedef"><name>MaaCustomControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1a0e8e5772a651edd77531940be1d0304a" kind="typedef"><name>MaaReplayControlUnitHandle</name></member>
@@ -288,8 +292,8 @@
   </compound>
   <compound refid="WlRootsControlUnitAPI_8h" kind="file"><name>WlRootsControlUnitAPI.h</name>
     <member refid="WlRootsControlUnitAPI_8h_1a51b7f50f15ae18c2ddc41eada366fd2f" kind="function"><name>MaaWlRootsControlUnitGetVersion</name></member>
-    <member refid="WlRootsControlUnitAPI_8h_1a3b8a7677a5a72acdcd4ba45c9e8de55e" kind="function"><name>MaaWlRootsControlUnitCreate</name></member>
-    <member refid="WlRootsControlUnitAPI_8h_1aaf9e709ea798ff0c5911bde3e5bd19e6" kind="function"><name>MaaWlRootsControlUnitDestroy</name></member>
+    <member refid="WlRootsControlUnitAPI_8h_1a52d11ca58af5ad8839c616e820991798" kind="function"><name>MaaWlRootsControlUnitCreate</name></member>
+    <member refid="WlRootsControlUnitAPI_8h_1ac6e1ed8857811dce58bdc59a2d6bc9d8" kind="function"><name>MaaWlRootsControlUnitDestroy</name></member>
   </compound>
   <compound refid="MaaGlobal_8h" kind="file"><name>MaaGlobal.h</name>
     <member refid="MaaGlobal_8h_1ab8a3bdd731560655c4fa049bf5886501" kind="function"><name>MaaGlobalSetOption</name></member>
@@ -326,7 +330,7 @@
     <member refid="MaaController_8h_1ac617f958211e394d69a38e1177d4f996" kind="function"><name>MaaReplayControllerCreate</name></member>
     <member refid="MaaController_8h_1a801ccbca7db84ce9a6f6333183b6cc3c" kind="function"><name>MaaRecordControllerCreate</name></member>
     <member refid="MaaController_8h_1af9b278b0a220ea72ff4ce564a055ff52" kind="function"><name>MaaPlayCoverControllerCreate</name></member>
-    <member refid="MaaController_8h_1a49a0cea456829030f106857728783500" kind="function"><name>MaaWlRootsControllerCreate</name></member>
+    <member refid="MaaController_8h_1a8a7cec67c98e73c2cd12b95708cafd16" kind="function"><name>MaaWlRootsControllerCreate</name></member>
     <member refid="MaaController_8h_1ab979f25e17e04ae8cc2d2a6aa1b2540a" kind="function"><name>MaaGamepadControllerCreate</name></member>
     <member refid="MaaController_8h_1a497982481bf79e89bc457d8a6e5e7bed" kind="function"><name>MaaControllerDestroy</name></member>
     <member refid="MaaController_8h_1aa01ed95af83d12f7bc3d49fdba415419" kind="function"><name>MaaControllerAddSink</name></member>

@@ -136,9 +136,9 @@ Functions</h2></td></tr>
 <tr class="memitem:af9b278b0a220ea72ff4ce564a055ff52" id="r_af9b278b0a220ea72ff4ce564a055ff52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#af9b278b0a220ea72ff4ce564a055ff52">MaaPlayCoverControllerCreate</a> (const char *address, const char *uuid)</td></tr>
 <tr class="memdesc:af9b278b0a220ea72ff4ce564a055ff52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a PlayCover controller for macOS.  <br /></td></tr>
 <tr class="separator:af9b278b0a220ea72ff4ce564a055ff52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49a0cea456829030f106857728783500" id="r_a49a0cea456829030f106857728783500"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a49a0cea456829030f106857728783500">MaaWlRootsControllerCreate</a> (const char *wlr_socket_path)</td></tr>
-<tr class="memdesc:a49a0cea456829030f106857728783500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a wlroots controller for Linux.  <br /></td></tr>
-<tr class="separator:a49a0cea456829030f106857728783500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a7cec67c98e73c2cd12b95708cafd16" id="r_a8a7cec67c98e73c2cd12b95708cafd16"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a8a7cec67c98e73c2cd12b95708cafd16">MaaWlRootsControllerCreate</a> (const char *wlr_socket_path, <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> use_win32_vk_code)</td></tr>
+<tr class="memdesc:a8a7cec67c98e73c2cd12b95708cafd16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a wlroots controller for Linux.  <br /></td></tr>
+<tr class="separator:a8a7cec67c98e73c2cd12b95708cafd16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab979f25e17e04ae8cc2d2a6aa1b2540a" id="r_ab979f25e17e04ae8cc2d2a6aa1b2540a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#ab979f25e17e04ae8cc2d2a6aa1b2540a">MaaGamepadControllerCreate</a> (void *hWnd, <a class="el" href="MaaDef_8h.html#a53a0d2c454370893abfbaf100b48dc0d">MaaGamepadType</a> gamepad_type, <a class="el" href="MaaDef_8h.html#a23833339ba6406d680688350d27d37b3">MaaWin32ScreencapMethod</a> screencap_method)</td></tr>
 <tr class="memdesc:ab979f25e17e04ae8cc2d2a6aa1b2540a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a virtual gamepad controller for Windows.  <br /></td></tr>
 <tr class="separator:ab979f25e17e04ae8cc2d2a6aa1b2540a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -582,8 +582,8 @@ Only single touch is supported (contact must be 0). </dd></dl>
 
 </div>
 </div>
-<a id="a49a0cea456829030f106857728783500" name="a49a0cea456829030f106857728783500"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a49a0cea456829030f106857728783500">&#9670;&#160;</a></span>MaaWlRootsControllerCreate()</h2>
+<a id="a8a7cec67c98e73c2cd12b95708cafd16" name="a8a7cec67c98e73c2cd12b95708cafd16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a7cec67c98e73c2cd12b95708cafd16">&#9670;&#160;</a></span>MaaWlRootsControllerCreate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -592,8 +592,18 @@ Only single touch is supported (contact must be 0). </dd></dl>
           <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> * MaaWlRootsControllerCreate </td>
           <td>(</td>
           <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>wlr_socket_path</em></td><td>)</td>
+          <td class="paramname"><em>wlr_socket_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td>
+          <td class="paramname"><em>use_win32_vk_code</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -602,6 +612,7 @@ Only single touch is supported (contact must be 0). </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">wlr_socket_path</td><td>The wayland socket path (e.g., "/run/user/1000/wayland-0"). </td></tr>
+    <tr><td class="paramname">use_win32_vk_code</td><td>If true, key codes passed to click_key / key_down / key_up are interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes internally. If false, key codes are passed through as raw evdev codes. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1816,7 +1827,7 @@ For other controllers, this is a no-op that always succeeds. </dd></dl>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="dir_0debf1eee29073ebb629a4e1dfd2a5f6.html">Instance</a></li><li class="navelem"><a class="el" href="MaaController_8h.html">MaaController.h</a></li>
-    <li class="footer">Generated on Mon Apr 13 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Fri Apr 17 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

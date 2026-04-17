@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"MaaToolkitMacOS_8h.html#ac7333b3798dd3c44bd9a58f1a078aaa6":[3,0,0,4,3,0,1],
 "MaaToolkitMacOS_8h.html#ae471356de642c11ad8be5aacc0c6b6be":[3,0,0,4,3,0,0],
 "MaaToolkitMacOS_8h_source.html":[3,0,0,4,3,0],
 "MaaUtility_8h.html":[3,0,0,3,2,1],
@@ -54,9 +55,9 @@ var NAVTREEINDEX2 =
 "Win32ControlUnitAPI_8h.html#a959efa07dc2f996b1f4a82081be0cd08":[3,0,0,2,13,1],
 "Win32ControlUnitAPI_8h_source.html":[3,0,0,2,13],
 "WlRootsControlUnitAPI_8h.html":[3,0,0,2,14],
-"WlRootsControlUnitAPI_8h.html#a3b8a7677a5a72acdcd4ba45c9e8de55e":[3,0,0,2,14,1],
 "WlRootsControlUnitAPI_8h.html#a51b7f50f15ae18c2ddc41eada366fd2f":[3,0,0,2,14,0],
-"WlRootsControlUnitAPI_8h.html#aaf9e709ea798ff0c5911bde3e5bd19e6":[3,0,0,2,14,2],
+"WlRootsControlUnitAPI_8h.html#a52d11ca58af5ad8839c616e820991798":[3,0,0,2,14,1],
+"WlRootsControlUnitAPI_8h.html#ac6e1ed8857811dce58bdc59a2d6bc9d8":[3,0,0,2,14,2],
 "WlRootsControlUnitAPI_8h_source.html":[3,0,0,2,14],
 "annotated.html":[2,0],
 "classAdbControlUnitAPI.html":[2,0,0],
@@ -104,6 +105,8 @@ var NAVTREEINDEX2 =
 "classWin32ControlUnitAPI.html":[2,0,25],
 "classWin32ControlUnitAPI.html#a0c919ea1e0bd03379b1459e6e09e425e":[2,0,25,0],
 "classWin32ControlUnitAPI.html#a23c7db44eae91fcecfb87800016ff288":[2,0,25,1],
+"classWlRootsControlUnitAPI.html":[2,0,26],
+"classWlRootsControlUnitAPI.html#a11f61ddf28bfa39ca3ce354d0442e640":[2,0,26,0],
 "dir_0daaf0002ac5c3ef7d4a81eb57e45b7c.html":[3,0,0,4,3],
 "dir_0debf1eee29073ebb629a4e1dfd2a5f6.html":[3,0,0,3,1],
 "dir_229d1428d76e394aeaec36b75a5d5699.html":[3,0,0,4],
@@ -246,8 +249,5 @@ var NAVTREEINDEX2 =
 "structRecordSwipe.html#ac7b2d7cefde74a496e40ee2a4ee9c58f":[2,0,20,0],
 "structRecordSwipe.html#adc7cdcd538df3f14ad10b9aeefcaec38":[2,0,20,3],
 "structRecordTouch.html":[2,0,21],
-"structRecordTouch.html#a1a7da180318019e996f72b523a4c67e1":[2,0,21,3],
-"structRecordTouch.html#a6f37c130125b34b7cb5aee355a7bedbf":[2,0,21,2],
-"structRecordTouch.html#aab5878c1a04647e1f335d8c6f7fe29d7":[2,0,21,0],
-"structRecordTouch.html#ab7ddd20d6d36e614c5780bba3dbb1e57":[2,0,21,4]
+"structRecordTouch.html#a1a7da180318019e996f72b523a4c67e1":[2,0,21,3]
 };

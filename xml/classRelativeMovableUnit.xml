@@ -6,6 +6,7 @@
     <derivedcompoundref refid="classFullControlUnitAPI" prot="public" virt="non-virtual">FullControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classMacOSControlUnitAPI" prot="public" virt="non-virtual">MacOSControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classWin32ControlUnitAPI" prot="public" virt="non-virtual">Win32ControlUnitAPI</derivedcompoundref>
+    <derivedcompoundref refid="classWlRootsControlUnitAPI" prot="public" virt="non-virtual">WlRootsControlUnitAPI</derivedcompoundref>
     <includes refid="ControlUnitAPI_8h" local="no">ControlUnitAPI.h</includes>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="classRelativeMovableUnit_1a4964cbe22bca1df4d12eba776b92d24c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
@@ -75,6 +76,12 @@
       <node id="5">
         <label>Win32ControlUnitAPI</label>
         <link refid="classWin32ControlUnitAPI"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>WlRootsControlUnitAPI</label>
+        <link refid="classWlRootsControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>

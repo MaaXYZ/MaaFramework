@@ -10,7 +10,7 @@ var MaaController_8h =
     [ "MaaReplayControllerCreate", "MaaController_8h.html#ac617f958211e394d69a38e1177d4f996", null ],
     [ "MaaRecordControllerCreate", "MaaController_8h.html#a801ccbca7db84ce9a6f6333183b6cc3c", null ],
     [ "MaaPlayCoverControllerCreate", "MaaController_8h.html#af9b278b0a220ea72ff4ce564a055ff52", null ],
-    [ "MaaWlRootsControllerCreate", "MaaController_8h.html#a49a0cea456829030f106857728783500", null ],
+    [ "MaaWlRootsControllerCreate", "MaaController_8h.html#a8a7cec67c98e73c2cd12b95708cafd16", null ],
     [ "MaaGamepadControllerCreate", "MaaController_8h.html#ab979f25e17e04ae8cc2d2a6aa1b2540a", null ],
     [ "MaaControllerDestroy", "MaaController_8h.html#a497982481bf79e89bc457d8a6e5e7bed", null ],
     [ "MaaControllerAddSink", "MaaController_8h.html#aa01ed95af83d12f7bc3d49fdba415419", null ],

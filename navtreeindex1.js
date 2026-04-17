@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"MaaDef_8h.html#a5aadc42136d91795ddbe892bf392a807":[3,0,0,3,4,64],
 "MaaDef_8h.html#a5ca72cf3815fc88ba7ef8b762bc6ed94":[3,0,0,3,4,81],
 "MaaDef_8h.html#a5d201ca1f58e33b38be2fd7b9f977975":[3,0,0,3,4,17],
 "MaaDef_8h.html#a5d8d307550fff35a2df364eeac7f5191":[3,0,0,3,4,126],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "MaaToolkitDesktopWindow_8h.html#ade2c61c9f119e803d83ec40307e938d9":[3,0,0,4,2,0,4],
 "MaaToolkitDesktopWindow_8h_source.html":[3,0,0,4,2,0],
 "MaaToolkitMacOS_8h.html":[3,0,0,4,3,0],
-"MaaToolkitMacOS_8h.html#a383cc89f8762e8c7e8e5cb0fc7598bbb":[3,0,0,4,3,0,2],
-"MaaToolkitMacOS_8h.html#ac7333b3798dd3c44bd9a58f1a078aaa6":[3,0,0,4,3,0,1]
+"MaaToolkitMacOS_8h.html#a383cc89f8762e8c7e8e5cb0fc7598bbb":[3,0,0,4,3,0,2]
 };

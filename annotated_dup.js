@@ -25,5 +25,6 @@ var annotated_dup =
     [ "RelativeMovableUnit", "classRelativeMovableUnit.html", "classRelativeMovableUnit" ],
     [ "ScrollableUnit", "classScrollableUnit.html", "classScrollableUnit" ],
     [ "ShellableUnit", "classShellableUnit.html", "classShellableUnit" ],
-    [ "Win32ControlUnitAPI", "classWin32ControlUnitAPI.html", "classWin32ControlUnitAPI" ]
+    [ "Win32ControlUnitAPI", "classWin32ControlUnitAPI.html", "classWin32ControlUnitAPI" ],
+    [ "WlRootsControlUnitAPI", "classWlRootsControlUnitAPI.html", "classWlRootsControlUnitAPI" ]
 ];

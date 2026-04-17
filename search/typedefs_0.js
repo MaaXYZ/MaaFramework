@@ -63,5 +63,6 @@ var searchData=
   ['maawfid_60',['MaaWfId',['../MaaDef_8h.html#a3c8f6095f8a7b0b3ad6c971a4f45c333',1,'MaaDef.h']]],
   ['maawin32controlunithandle_61',['MaaWin32ControlUnitHandle',['../ControlUnitAPI_8h.html#a65786017771209552b0f1836a58deef0',1,'ControlUnitAPI.h']]],
   ['maawin32inputmethod_62',['MaaWin32InputMethod',['../MaaDef_8h.html#a29af4457ff72b57b157a1d58d6d28878',1,'MaaDef.h']]],
-  ['maawin32screencapmethod_63',['MaaWin32ScreencapMethod',['../MaaDef_8h.html#a23833339ba6406d680688350d27d37b3',1,'MaaDef.h']]]
+  ['maawin32screencapmethod_63',['MaaWin32ScreencapMethod',['../MaaDef_8h.html#a23833339ba6406d680688350d27d37b3',1,'MaaDef.h']]],
+  ['maawlrootscontrolunithandle_64',['MaaWlRootsControlUnitHandle',['../ControlUnitAPI_8h.html#ac75fa95b67dbddfe829cc6d4389dcce5',1,'ControlUnitAPI.h']]]
 ];

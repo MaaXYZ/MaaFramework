@@ -9,6 +9,7 @@
     <derivedcompoundref refid="classGamepadControlUnitAPI" prot="public" virt="non-virtual">GamepadControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classMacOSControlUnitAPI" prot="public" virt="non-virtual">MacOSControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classWin32ControlUnitAPI" prot="public" virt="non-virtual">Win32ControlUnitAPI</derivedcompoundref>
+    <derivedcompoundref refid="classWlRootsControlUnitAPI" prot="public" virt="non-virtual">WlRootsControlUnitAPI</derivedcompoundref>
     <includes refid="ControlUnitAPI_8h" local="no">ControlUnitAPI.h</includes>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="classControlUnitAPI_1a9c5542a5c81747468050d8610a18e6b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
@@ -422,6 +423,12 @@
       <node id="8">
         <label>Win32ControlUnitAPI</label>
         <link refid="classWin32ControlUnitAPI"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>WlRootsControlUnitAPI</label>
+        <link refid="classWlRootsControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>

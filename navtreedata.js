@@ -53,9 +53,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "AdbControlUnitAPI_8h.html",
-"MaaDef_8h.html#a5ca72cf3815fc88ba7ef8b762bc6ed94",
-"MaaToolkitMacOS_8h.html#ae471356de642c11ad8be5aacc0c6b6be",
-"structRecordTouch.html#ad8e0dd20ce33c3035e78850c37311b3e"
+"MaaDef_8h.html#a5aadc42136d91795ddbe892bf392a807",
+"MaaToolkitMacOS_8h.html#ac7333b3798dd3c44bd9a58f1a078aaa6",
+"structRecordTouch.html#a6f37c130125b34b7cb5aee355a7bedbf"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

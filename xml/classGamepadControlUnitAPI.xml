@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="128" column="13"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="137" column="13"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -48,7 +48,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="125" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="126" bodyend="129"/>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="134" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="135" bodyend="138"/>
     <listofallmembers>
       <member refid="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" prot="public" virt="pure-virtual"><scope>GamepadControlUnitAPI</scope><name>click</name></member>
       <member refid="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" prot="public" virt="pure-virtual"><scope>GamepadControlUnitAPI</scope><name>click_key</name></member>

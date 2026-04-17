@@ -10,5 +10,6 @@ var searchData=
   ['_7erelativemovableunit_7',['~RelativeMovableUnit',['../classRelativeMovableUnit.html#a4964cbe22bca1df4d12eba776b92d24c',1,'RelativeMovableUnit']]],
   ['_7escrollableunit_8',['~ScrollableUnit',['../classScrollableUnit.html#a4ed7de43ab24acb3b1708d5700c37b54',1,'ScrollableUnit']]],
   ['_7eshellableunit_9',['~ShellableUnit',['../classShellableUnit.html#aa1f70d3f41339f00ab40f2fb95988e6f',1,'ShellableUnit']]],
-  ['_7ewin32controlunitapi_10',['~Win32ControlUnitAPI',['../classWin32ControlUnitAPI.html#a0c919ea1e0bd03379b1459e6e09e425e',1,'Win32ControlUnitAPI']]]
+  ['_7ewin32controlunitapi_10',['~Win32ControlUnitAPI',['../classWin32ControlUnitAPI.html#a0c919ea1e0bd03379b1459e6e09e425e',1,'Win32ControlUnitAPI']]],
+  ['_7ewlrootscontrolunitapi_11',['~WlRootsControlUnitAPI',['../classWlRootsControlUnitAPI.html#a11f61ddf28bfa39ca3ce354d0442e640',1,'WlRootsControlUnitAPI']]]
 ];

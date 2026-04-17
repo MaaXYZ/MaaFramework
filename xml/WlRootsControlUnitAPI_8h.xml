@@ -95,14 +95,18 @@
         </inbodydescription>
         <location file="include/MaaControlUnit/WlRootsControlUnitAPI.h" line="11" column="37" declfile="include/MaaControlUnit/WlRootsControlUnitAPI.h" declline="11" declcolumn="37"/>
       </memberdef>
-      <memberdef kind="function" id="WlRootsControlUnitAPI_8h_1a3b8a7677a5a72acdcd4ba45c9e8de55e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> <ref refid="ControlUnitAPI_8h_1afdd4ccae8b5f8fca2fd8f23c9fee6844" kindref="member">MaaControlUnitHandle</ref></type>
-        <definition>MAA_CONTROL_UNIT_API MaaControlUnitHandle MaaWlRootsControlUnitCreate</definition>
-        <argsstring>(const char *wlr_socket_path)</argsstring>
+      <memberdef kind="function" id="WlRootsControlUnitAPI_8h_1a52d11ca58af5ad8839c616e820991798" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> <ref refid="ControlUnitAPI_8h_1ac75fa95b67dbddfe829cc6d4389dcce5" kindref="member">MaaWlRootsControlUnitHandle</ref></type>
+        <definition>MAA_CONTROL_UNIT_API MaaWlRootsControlUnitHandle MaaWlRootsControlUnitCreate</definition>
+        <argsstring>(const char *wlr_socket_path, MaaBool use_win32_vk_code)</argsstring>
         <name>MaaWlRootsControlUnitCreate</name>
         <param>
           <type>const char *</type>
           <declname>wlr_socket_path</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+          <declname>use_win32_vk_code</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -110,15 +114,15 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/WlRootsControlUnitAPI.h" line="13" column="47" declfile="include/MaaControlUnit/WlRootsControlUnitAPI.h" declline="13" declcolumn="47"/>
+        <location file="include/MaaControlUnit/WlRootsControlUnitAPI.h" line="13" column="54" declfile="include/MaaControlUnit/WlRootsControlUnitAPI.h" declline="13" declcolumn="54"/>
       </memberdef>
-      <memberdef kind="function" id="WlRootsControlUnitAPI_8h_1aaf9e709ea798ff0c5911bde3e5bd19e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="WlRootsControlUnitAPI_8h_1ac6e1ed8857811dce58bdc59a2d6bc9d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> void</type>
         <definition>MAA_CONTROL_UNIT_API void MaaWlRootsControlUnitDestroy</definition>
-        <argsstring>(MaaControlUnitHandle handle)</argsstring>
+        <argsstring>(MaaWlRootsControlUnitHandle handle)</argsstring>
         <name>MaaWlRootsControlUnitDestroy</name>
         <param>
-          <type><ref refid="ControlUnitAPI_8h_1afdd4ccae8b5f8fca2fd8f23c9fee6844" kindref="member">MaaControlUnitHandle</ref></type>
+          <type><ref refid="ControlUnitAPI_8h_1ac75fa95b67dbddfe829cc6d4389dcce5" kindref="member">MaaWlRootsControlUnitHandle</ref></type>
           <declname>handle</declname>
         </param>
         <briefdescription>
