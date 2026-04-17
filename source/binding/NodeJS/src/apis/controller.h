@@ -197,7 +197,7 @@ struct GamepadControllerImpl : public ControllerImpl
 };
 
 using WlRootsCompositor = std::tuple<uint64_t, std::string, std::string>;
-using WlRootsControllerCtorParam = std::tuple<std::string>;
+using WlRootsControllerCtorParam = std::tuple<std::string, maajs::OptionalParam<bool>>;
 
 struct WlRootsControllerImpl : public ControllerImpl
 {

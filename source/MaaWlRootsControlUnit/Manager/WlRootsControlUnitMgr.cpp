@@ -5,17 +5,19 @@
 
 #include <opencv2/imgproc.hpp>
 
+#include "Client/VkToEvdev.h"
 #include "Client/WaylandClient.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-WlRootsControlUnitMgr::WlRootsControlUnitMgr(std::filesystem::path wlr_socket_path)
+WlRootsControlUnitMgr::WlRootsControlUnitMgr(std::filesystem::path wlr_socket_path, bool use_win32_vk_code)
     : client_(std::make_unique<WaylandClient>())
     , wlr_socket_path_(std::move(wlr_socket_path))
+    , use_win32_vk_code_(use_win32_vk_code)
 {
-    LogFunc << VAR(wlr_socket_path_);
+    LogFunc << VAR(wlr_socket_path_) << VAR(use_win32_vk_code_);
 }
 
 WlRootsControlUnitMgr::~WlRootsControlUnitMgr()
@@ -188,7 +190,13 @@ bool WlRootsControlUnitMgr::key_down(int key)
         return false;
     }
 
-    return client_->input_key(WaylandClient::EventPhase::Began, key);
+    const int evdev_key = translate_key(key);
+    if (evdev_key == 0) {
+        LogError << "Failed to translate key" << VAR(key) << VAR(use_win32_vk_code_);
+        return false;
+    }
+
+    return client_->input_key(WaylandClient::EventPhase::Began, evdev_key);
 }
 
 bool WlRootsControlUnitMgr::key_up(int key)
@@ -198,7 +206,22 @@ bool WlRootsControlUnitMgr::key_up(int key)
         return false;
     }
 
-    return client_->input_key(WaylandClient::EventPhase::Ended, key);
+    const int evdev_key = translate_key(key);
+    if (evdev_key == 0) {
+        LogError << "Failed to translate key" << VAR(key) << VAR(use_win32_vk_code_);
+        return false;
+    }
+
+    return client_->input_key(WaylandClient::EventPhase::Ended, evdev_key);
+}
+
+int WlRootsControlUnitMgr::translate_key(int key) const
+{
+    if (!use_win32_vk_code_) {
+        return key;
+    }
+
+    return vk_to_evdev(key);
 }
 
 bool WlRootsControlUnitMgr::relative_move(int dx, int dy)
@@ -239,6 +262,7 @@ json::object WlRootsControlUnitMgr::get_info() const
     json::object info;
     info["type"] = "wlroots";
     info["wlr_socket_path"] = path_to_utf8_string(wlr_socket_path_);
+    info["use_win32_vk_code"] = use_win32_vk_code_;
     return info;
 }
 

@@ -710,8 +710,8 @@ maajs::ValueType load_gamepad_controller(maajs::EnvType env)
 
 WlRootsControllerImpl* WlRootsControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [wlr_socket_path] = maajs::UnWrapArgs<WlRootsControllerCtorParam, void>(info);
-    auto ctrl = MaaWlRootsControllerCreate(wlr_socket_path.c_str());
+    auto [wlr_socket_path, use_win32_vk_code] = maajs::UnWrapArgs<WlRootsControllerCtorParam, void>(info);
+    auto ctrl = MaaWlRootsControllerCreate(wlr_socket_path.c_str(), use_win32_vk_code.value_or(false));
     if (!ctrl) {
         return nullptr;
     }

@@ -328,7 +328,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>
     return std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::WlRootsControlUnitAPI> WlRootsControlUnitLibraryHolder::create_control_unit(const char* wlr_socket_path)
+std::shared_ptr<MAA_CTRL_UNIT_NS::WlRootsControlUnitAPI>
+    WlRootsControlUnitLibraryHolder::create_control_unit(const char* wlr_socket_path, MaaBool use_win32_vk_code)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -349,7 +350,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::WlRootsControlUnitAPI> WlRootsControlUnitLibra
         return nullptr;
     }
 
-    auto control_unit_handle = create_control_unit_func(wlr_socket_path);
+    auto control_unit_handle = create_control_unit_func(wlr_socket_path, use_win32_vk_code);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";

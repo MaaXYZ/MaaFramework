@@ -261,9 +261,9 @@ MaaController* MaaGamepadControllerCreate(void* hWnd, MaaGamepadType gamepad_typ
 #endif
 }
 
-MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path)
+MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path, MaaBool use_win32_vk_code)
 {
-    LogFunc << VAR(wlr_socket_path);
+    LogFunc << VAR(wlr_socket_path) << VAR(use_win32_vk_code);
 
 #ifndef __linux__
 
@@ -272,7 +272,7 @@ MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path)
 
 #else
 
-    auto control_unit = MAA_NS::WlRootsControlUnitLibraryHolder::create_control_unit(wlr_socket_path);
+    auto control_unit = MAA_NS::WlRootsControlUnitLibraryHolder::create_control_unit(wlr_socket_path, use_win32_vk_code);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
