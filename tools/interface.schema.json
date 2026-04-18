@@ -618,7 +618,8 @@
                         "use_win32_vk_code": {
                             "type": "boolean",
                             "title": "使用 Win32 VK 键码",
-                            "description": "可选。为 true 时按键被视为 Win32 Virtual-Key 码，内部转换为 Linux evdev 码；否则按原始 evdev 码处理。默认 false"
+                            "description": "可选。为 true 时按键被视为 Win32 Virtual-Key 码，内部转换为 Linux evdev 码；否则按原始 evdev 码处理。默认 false",
+                            "default": false
                         }
                     },
                     "additionalProperties": false
