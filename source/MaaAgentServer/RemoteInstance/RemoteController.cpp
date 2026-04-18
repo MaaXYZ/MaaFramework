@@ -255,6 +255,19 @@ MaaCtrlId RemoteController::post_key_up(int keycode)
     return resp_opt->ctrl_id;
 }
 
+MaaCtrlId RemoteController::post_set_background_managed_keys(const std::vector<int>& keycodes)
+{
+    ControllerPostSetBackgroundManagedKeysReverseRequest req {
+        .controller_id = controller_id_,
+        .keycodes = std::vector<int32_t>(keycodes.begin(), keycodes.end()),
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostSetBackgroundManagedKeysReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
 MaaCtrlId RemoteController::post_scroll(int dx, int dy)
 {
     ControllerPostScrollReverseRequest req {

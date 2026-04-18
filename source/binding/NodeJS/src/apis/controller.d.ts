@@ -198,6 +198,7 @@ declare global {
             set mouse_lock_follow(enabled: boolean)
             post_key_down(keycode: number): Job<CtrlId, Controller>
             post_key_up(keycode: number): Job<CtrlId, Controller>
+            post_set_background_managed_keys(keycodes: number[]): Job<CtrlId, Controller>
             /**
              * Post a scroll action. Supported by Win32, MacOS, and custom controllers that implement scroll.
              * Using multiples of 120 (WHEEL_DELTA) is recommended for best compatibility.

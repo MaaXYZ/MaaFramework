@@ -217,6 +217,25 @@ extern "C"
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyUp(MaaController* ctrl, int32_t keycode);
 
     /**
+     * @brief Declare the managed key domain for Win32 background key holding.
+     *
+     * @param ctrl The controller handle.
+     * @param keycodes The virtual key codes to be managed by the Win32 background key guardian.
+     * @param count Number of items in keycodes. Must be greater than 0.
+     * @return The control id of the action.
+     *
+     * @note Only Win32 controllers support this API. Other controller types will fail.
+     * @note After declaration succeeds, existing KeyDown / KeyUp / ClickKey / LongPressKey actions
+     *       automatically route managed keys through the Win32 background key guardian.
+     * @note Managed keys remain guarded while the controller is idle, until MaaControllerPostInactive
+     *       or stop / queue-drain cleanup releases them.
+     * @note This capability has very low compatibility. It is currently only validated for Endfield
+     *       background WASD, and sends an F13 nudge on managed key press.
+     */
+    MAA_FRAMEWORK_API MaaCtrlId
+        MaaControllerPostSetBackgroundManagedKeys(MaaController* ctrl, const int32_t* keycodes, MaaSize count);
+
+    /**
      * @brief Post a screenshot request to the controller.
      *
      * @param ctrl The controller handle.
@@ -251,6 +270,8 @@ extern "C"
      * @return The control id of the inactive action.
      *
      * @note For Win32 controllers, this restores window position (removes topmost) and unblocks user input.
+     * @note For Win32 controllers, this also releases all background managed keys declared by
+     *       MaaControllerPostSetBackgroundManagedKeys.
      * @note For other controllers, this is a no-op that always succeeds.
      */
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostInactive(MaaController* ctrl);

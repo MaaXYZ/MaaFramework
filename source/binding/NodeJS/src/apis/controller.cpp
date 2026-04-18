@@ -241,6 +241,16 @@ maajs::ValueType ControllerImpl::post_key_up(maajs::ValueType self, maajs::EnvTy
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+maajs::ValueType
+    ControllerImpl::post_set_background_managed_keys(maajs::ValueType self, maajs::EnvType, std::vector<int32_t> keycodes)
+{
+    auto id = MaaControllerPostSetBackgroundManagedKeys(
+        controller,
+        keycodes.empty() ? nullptr : keycodes.data(),
+        static_cast<MaaSize>(keycodes.size()));
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
 maajs::ValueType ControllerImpl::post_scroll(maajs::ValueType self, maajs::EnvType, int32_t dx, int32_t dy)
 {
     auto id = MaaControllerPostScroll(controller, dx, dy);
@@ -378,6 +388,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_SETTER(proto, "mouse_lock_follow", ControllerImpl::set_mouse_lock_follow);
     MAA_BIND_FUNC(proto, "post_key_down", ControllerImpl::post_key_down);
     MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
+    MAA_BIND_FUNC(proto, "post_set_background_managed_keys", ControllerImpl::post_set_background_managed_keys);
     MAA_BIND_FUNC(proto, "post_scroll", ControllerImpl::post_scroll);
     MAA_BIND_FUNC(proto, "post_inactive", ControllerImpl::post_inactive);
     MAA_BIND_FUNC(proto, "post_screencap", ControllerImpl::post_screencap);

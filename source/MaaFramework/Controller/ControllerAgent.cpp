@@ -9,6 +9,16 @@
 
 MAA_CTRL_NS_BEGIN
 
+namespace
+{
+
+bool should_route_background_managed_key(const std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>& win32_unit, int keycode)
+{
+    return win32_unit && win32_unit->connected() && win32_unit->is_background_managed_key(keycode);
+}
+
+} // namespace
+
 ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit)
     : control_unit_(std::move(control_unit))
 {
@@ -152,6 +162,13 @@ MaaCtrlId ControllerAgent::post_key_up(int keycode)
     return focus_id(id);
 }
 
+MaaCtrlId ControllerAgent::post_set_background_managed_keys(const std::vector<int>& keycodes)
+{
+    ManagedKeyParam p { .keycode = keycodes };
+    auto id = post({ .type = Action::Type::set_background_managed_keys, .param = std::move(p) });
+    return focus_id(id);
+}
+
 MaaCtrlId ControllerAgent::post_scroll(int dx, int dy)
 {
     ScrollParam p { .dx = dx, .dy = dy };
@@ -260,9 +277,15 @@ void ControllerAgent::post_stop()
 
     need_to_stop_ = true;
 
-    if (action_runner_ && action_runner_->running()) {
+    if (!action_runner_) {
+        return;
+    }
+
+    if (action_runner_->running()) {
         action_runner_->clear();
     }
+
+    action_runner_->post({ .type = Action::Type::inactive });
 }
 
 bool ControllerAgent::running() const
@@ -722,6 +745,12 @@ bool ControllerAgent::handle_relative_move(const RelativeMoveParam& param)
     return false;
 }
 
+std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
+    ControllerAgent::as_win32_control_unit(const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>& control_unit)
+{
+    return std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit);
+}
+
 bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
 {
     if (!control_unit_) {
@@ -730,10 +759,14 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
     }
 
     bool ret = !param.keycode.empty();
-
+    auto win32_unit = as_win32_control_unit(control_unit_);
     bool use_key_down_up = control_unit_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 
     for (const auto& keycode : param.keycode) {
+        if (should_route_background_managed_key(win32_unit, keycode)) {
+            ret &= handle_managed_click_key(win32_unit, keycode);
+            continue;
+        }
         if (use_key_down_up) {
             ret &= control_unit_->key_down(keycode);
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -755,10 +788,14 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
     }
 
     bool ret = !param.keycode.empty();
-
+    auto win32_unit = as_win32_control_unit(control_unit_);
     bool use_key_down_up = control_unit_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 
     for (const auto& keycode : param.keycode) {
+        if (should_route_background_managed_key(win32_unit, keycode)) {
+            ret &= handle_managed_long_press_key(win32_unit, keycode, param.duration);
+            continue;
+        }
         if (use_key_down_up) {
             ret &= control_unit_->key_down(keycode);
             std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
@@ -836,8 +873,13 @@ bool ControllerAgent::handle_key_down(const ClickKeyParam& param)
     }
 
     bool ret = !param.keycode.empty();
+    auto win32_unit = as_win32_control_unit(control_unit_);
 
     for (const auto& keycode : param.keycode) {
+        if (should_route_background_managed_key(win32_unit, keycode)) {
+            ret &= win32_unit->background_key_down(keycode);
+            continue;
+        }
         ret &= control_unit_->key_down(keycode);
     }
 
@@ -852,11 +894,50 @@ bool ControllerAgent::handle_key_up(const ClickKeyParam& param)
     }
 
     bool ret = !param.keycode.empty();
+    auto win32_unit = as_win32_control_unit(control_unit_);
 
     for (const auto& keycode : param.keycode) {
+        if (should_route_background_managed_key(win32_unit, keycode)) {
+            ret &= win32_unit->background_key_up(keycode);
+            continue;
+        }
         ret &= control_unit_->key_up(keycode);
     }
 
+    return ret;
+}
+
+bool ControllerAgent::handle_set_background_managed_keys(const ManagedKeyParam& param)
+{
+    auto win32_unit = as_win32_control_unit(control_unit_);
+    if (!win32_unit) {
+        LogError << "Background managed keys are only supported for Win32 controllers";
+        return false;
+    }
+
+    return win32_unit->set_background_managed_keys(param.keycode);
+}
+
+bool ControllerAgent::handle_managed_click_key(
+    const std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>& win32_unit,
+    int keycode)
+{
+    win32_unit->background_key_up(keycode);
+    bool ret = win32_unit->background_key_down(keycode);
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    ret &= win32_unit->background_key_up(keycode);
+    return ret;
+}
+
+bool ControllerAgent::handle_managed_long_press_key(
+    const std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>& win32_unit,
+    int keycode,
+    uint duration)
+{
+    win32_unit->background_key_up(keycode);
+    bool ret = win32_unit->background_key_down(keycode);
+    std::this_thread::sleep_for(std::chrono::milliseconds(duration));
+    ret &= win32_unit->background_key_up(keycode);
     return ret;
 }
 
@@ -989,6 +1070,10 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
 
     case Action::Type::key_up:
         ret = handle_key_up(std::get<ClickKeyParam>(action.param));
+        break;
+
+    case Action::Type::set_background_managed_keys:
+        ret = handle_set_background_managed_keys(std::get<ManagedKeyParam>(action.param));
         break;
 
     case Action::Type::screencap:

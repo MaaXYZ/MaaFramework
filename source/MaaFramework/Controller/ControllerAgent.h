@@ -84,6 +84,13 @@ struct ClickKeyParam
     MEO_TOJSON(keycode);
 };
 
+struct ManagedKeyParam
+{
+    std::vector<int> keycode;
+
+    MEO_TOJSON(keycode);
+};
+
 struct LongPressKeyParam
 {
     std::vector<int> keycode;
@@ -131,6 +138,7 @@ using Param = std::variant<
     MultiSwipeParam,
     TouchParam,
     ClickKeyParam,
+    ManagedKeyParam,
     LongPressKeyParam,
     InputTextParam,
     AppParam,
@@ -159,6 +167,7 @@ struct Action
         stop_app,
         key_down,
         key_up,
+        set_background_managed_keys,
         scroll,
         shell,
         relative_move,
@@ -194,6 +203,7 @@ public: // MaaController
 
     virtual MaaCtrlId post_key_down(int keycode) override;
     virtual MaaCtrlId post_key_up(int keycode) override;
+    virtual MaaCtrlId post_set_background_managed_keys(const std::vector<int>& keycodes) override;
 
     virtual MaaCtrlId post_scroll(int dx, int dy) override;
 
@@ -267,9 +277,17 @@ private:
     bool handle_stop_app(const AppParam& param);
     bool handle_key_down(const ClickKeyParam& param);
     bool handle_key_up(const ClickKeyParam& param);
+    bool handle_set_background_managed_keys(const ManagedKeyParam& param);
     bool handle_scroll(const ScrollParam& param);
     bool handle_shell(const ShellParam& param);
     bool handle_inactive();
+    bool handle_managed_click_key(const std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>& win32_unit, int keycode);
+    bool handle_managed_long_press_key(
+        const std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>& win32_unit,
+        int keycode,
+        uint duration);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
+        as_win32_control_unit(const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>& control_unit);
 
     MaaCtrlId post(Action action);
     MaaCtrlId focus_id(MaaCtrlId id);

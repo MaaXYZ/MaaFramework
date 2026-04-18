@@ -172,6 +172,7 @@ export using ::MaaControllerPostSwipe;
 export using ::MaaControllerPostClickKey;
 export using ::MaaControllerPostKeyDown;
 export using ::MaaControllerPostKeyUp;
+export using ::MaaControllerPostSetBackgroundManagedKeys;
 export using ::MaaControllerPostInputText;
 export using ::MaaControllerPostStartApp;
 export using ::MaaControllerPostStopApp;

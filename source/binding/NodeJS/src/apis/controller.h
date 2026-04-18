@@ -4,6 +4,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include <MaaFramework/MaaAPI.h>
 
@@ -66,6 +67,7 @@ struct ControllerImpl : public maajs::NativeClassBase
     void set_mouse_lock_follow(bool enabled);
     maajs::ValueType post_key_down(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_key_up(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
+    maajs::ValueType post_set_background_managed_keys(maajs::ValueType self, maajs::EnvType env, std::vector<int32_t> keycodes);
     maajs::ValueType post_scroll(maajs::ValueType self, maajs::EnvType env, int32_t dx, int32_t dy);
     maajs::ValueType post_inactive(maajs::ValueType self, maajs::EnvType env);
     maajs::ValueType post_screencap(maajs::ValueType self, maajs::EnvType env);
