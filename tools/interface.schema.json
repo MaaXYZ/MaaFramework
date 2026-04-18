@@ -677,6 +677,12 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "hash": {
+                    "type": "string",
+                    "minLength": 1,
+                    "title": "资源 hash",
+                    "description": "资源校验值，通过 MaaResourceGetHash 获取。校验时机为加载 resource.path 后、加载 controller.attach_resource_path 之前"
                 }
             },
             "required": [
