@@ -40,14 +40,22 @@ class DesktopWindow:
     Obtained via Toolkit.find_desktop_windows.
 
     Attributes:
-        hwnd: 窗口句柄 / Window handle
-        class_name: 窗口类名 / Window class name
-        window_name: 窗口标题 / Window title
+        handle: 窗口句柄（uint64）/ Window handle (uint64)
+        window_name: 窗口名称 / Window name
+        win32_class_name: 窗口类名（Win32 专有）/ Window class name (Win32 only)
+        macos_pid: 进程ID（macOS 专有）/ Process ID (macOS only)
+        macos_bundle_id: Bundle ID（macOS 专有）/ Bundle ID (macOS only)
+        macos_application_name: 应用程序名称（macOS 专有）/ Application name (macOS only)
+        linux_socket_path: Wayland socket 路径（Linux 专有）/ Wayland socket path (Linux only)
     """
 
-    hwnd: ctypes.c_void_p
-    class_name: str
+    handle: int
     window_name: str
+    win32_class_name: str
+    macos_pid: int
+    macos_bundle_id: str
+    macos_application_name: str
+    linux_socket_path: str
 
 
 class Toolkit:
@@ -165,19 +173,49 @@ class Toolkit:
             window_handle = Library.toolkit().MaaToolkitDesktopWindowListAt(
                 list_handle, i
             )
-            hwnd = Library.toolkit().MaaToolkitDesktopWindowGetHandle(window_handle)
-            class_name = (
-                Library.toolkit()
-                .MaaToolkitDesktopWindowGetClassName(window_handle)
-                .decode()
+            handle = int(
+                Library.toolkit().MaaToolkitDesktopWindowGetHandle(window_handle)
             )
             window_name = (
                 Library.toolkit()
                 .MaaToolkitDesktopWindowGetWindowName(window_handle)
                 .decode()
             )
+            win32_class_name = (
+                Library.toolkit()
+                .MaaToolkitDesktopWindowGetWin32ClassName(window_handle)
+                .decode()
+            )
+            macos_pid = int(
+                Library.toolkit().MaaToolkitDesktopWindowGetMacOSPID(window_handle)
+            )
+            macos_bundle_id = (
+                Library.toolkit()
+                .MaaToolkitDesktopWindowGetMacOSBundleID(window_handle)
+                .decode()
+            )
+            macos_application_name = (
+                Library.toolkit()
+                .MaaToolkitDesktopWindowGetMacOSApplicationName(window_handle)
+                .decode()
+            )
+            linux_socket_path = (
+                Library.toolkit()
+                .MaaToolkitDesktopWindowGetLinuxSocketPath(window_handle)
+                .decode()
+            )
 
-            windows.append(DesktopWindow(hwnd, class_name, window_name))
+            windows.append(
+                DesktopWindow(
+                    handle,
+                    window_name,
+                    win32_class_name,
+                    macos_pid,
+                    macos_bundle_id,
+                    macos_application_name,
+                    linux_socket_path,
+                )
+            )
 
         Library.toolkit().MaaToolkitDesktopWindowListDestroy(list_handle)
         return windows
@@ -341,18 +379,38 @@ class Toolkit:
             MaaSize,
         ]
 
-        Library.toolkit().MaaToolkitDesktopWindowGetHandle.restype = ctypes.c_void_p
+        Library.toolkit().MaaToolkitDesktopWindowGetHandle.restype = ctypes.c_uint64
         Library.toolkit().MaaToolkitDesktopWindowGetHandle.argtypes = [
-            MaaToolkitDesktopWindowHandle
-        ]
-
-        Library.toolkit().MaaToolkitDesktopWindowGetClassName.restype = ctypes.c_char_p
-        Library.toolkit().MaaToolkitDesktopWindowGetClassName.argtypes = [
             MaaToolkitDesktopWindowHandle
         ]
 
         Library.toolkit().MaaToolkitDesktopWindowGetWindowName.restype = ctypes.c_char_p
         Library.toolkit().MaaToolkitDesktopWindowGetWindowName.argtypes = [
+            MaaToolkitDesktopWindowHandle
+        ]
+
+        Library.toolkit().MaaToolkitDesktopWindowGetWin32ClassName.restype = ctypes.c_char_p
+        Library.toolkit().MaaToolkitDesktopWindowGetWin32ClassName.argtypes = [
+            MaaToolkitDesktopWindowHandle
+        ]
+
+        Library.toolkit().MaaToolkitDesktopWindowGetMacOSPID.restype = ctypes.c_int32
+        Library.toolkit().MaaToolkitDesktopWindowGetMacOSPID.argtypes = [
+            MaaToolkitDesktopWindowHandle
+        ]
+
+        Library.toolkit().MaaToolkitDesktopWindowGetMacOSBundleID.restype = ctypes.c_char_p
+        Library.toolkit().MaaToolkitDesktopWindowGetMacOSBundleID.argtypes = [
+            MaaToolkitDesktopWindowHandle
+        ]
+
+        Library.toolkit().MaaToolkitDesktopWindowGetMacOSApplicationName.restype = ctypes.c_char_p
+        Library.toolkit().MaaToolkitDesktopWindowGetMacOSApplicationName.argtypes = [
+            MaaToolkitDesktopWindowHandle
+        ]
+
+        Library.toolkit().MaaToolkitDesktopWindowGetLinuxSocketPath.restype = ctypes.c_char_p
+        Library.toolkit().MaaToolkitDesktopWindowGetLinuxSocketPath.argtypes = [
             MaaToolkitDesktopWindowHandle
         ]
 
