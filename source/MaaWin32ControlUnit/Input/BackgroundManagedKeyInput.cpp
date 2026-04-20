@@ -47,28 +47,33 @@ BackgroundManagedKeyInput::~BackgroundManagedKeyInput()
 bool BackgroundManagedKeyInput::set_managed_keys(const std::vector<int>& keycodes)
 {
     auto normalized = normalize_keycodes(keycodes);
-    if (normalized.empty()) {
-        LogError << "Background managed keys must not be empty";
-        return false;
-    }
 
     uint64_t generation = 0;
+    bool clear_all = normalized.empty();
     {
         std::lock_guard lock(mutex_);
 
-        if (!thread_started_) {
+        if (!thread_started_ && !clear_all) {
             guard_thread_ = std::thread(&BackgroundManagedKeyInput::guard_loop, this);
             thread_started_ = true;
         }
 
-        for (const int keycode : managed_keys_) {
-            if (!normalized.contains(keycode)) {
+        if (clear_all) {
+            for (const int keycode : managed_keys_) {
                 release_keys_.emplace(keycode);
                 desired_pressed_keys_.erase(keycode);
             }
+            managed_keys_.clear();
         }
-
-        managed_keys_ = std::move(normalized);
+        else {
+            for (const int keycode : managed_keys_) {
+                if (!normalized.contains(keycode)) {
+                    release_keys_.emplace(keycode);
+                    desired_pressed_keys_.erase(keycode);
+                }
+            }
+            managed_keys_ = std::move(normalized);
+        }
         generation = ++desired_generation_;
     }
 
@@ -210,17 +215,6 @@ void BackgroundManagedKeyInput::pump_messages()
     }
 }
 
-void BackgroundManagedKeyInput::send_f13_nudge()
-{
-    std::array<INPUT, 2> inputs {};
-    inputs[0].type = INPUT_KEYBOARD;
-    inputs[0].ki.wVk = VK_F13;
-    inputs[1].type = INPUT_KEYBOARD;
-    inputs[1].ki.wVk = VK_F13;
-    inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
-    SendInput(static_cast<UINT>(inputs.size()), inputs.data(), sizeof(INPUT));
-}
-
 void BackgroundManagedKeyInput::send_activation_hint() const
 {
     send_activate_message(hwnd_, true);
@@ -332,10 +326,6 @@ bool BackgroundManagedKeyInput::ensure_key_pressed(int keycode)
         send_key_event(keycode, false);
         pump_messages();
         const bool pressed = is_pressed_now(keycode);
-        if (pressed) {
-            // Endfield needs the extra nudge whenever the guard really re-presses a managed key.
-            send_f13_nudge();
-        }
         return pressed;
     }
 
@@ -392,10 +382,6 @@ bool BackgroundManagedKeyInput::ensure_key_pressed(int keycode)
     }
 
     const bool pressed = is_pressed_now(keycode);
-    if (pressed) {
-        // Endfield needs the extra nudge whenever the guard really re-presses a managed key.
-        send_f13_nudge();
-    }
     return pressed;
 }
 

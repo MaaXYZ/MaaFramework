@@ -45,7 +45,6 @@ private:
     static bool is_pressed_now(int keycode);
     static void send_key_event(int keycode, bool key_up);
     static void pump_messages();
-    static void send_f13_nudge();
 
     void send_activation_hint() const;
     // 后缀 _locked 约定：调用方必须已持有 mutex_。

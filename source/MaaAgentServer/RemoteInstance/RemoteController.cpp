@@ -43,7 +43,7 @@ bool RemoteController::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOp
         break;
 
     case MaaCtrlOption_BackgroundManagedKeys: {
-        if (val_size == 0 || val_size % sizeof(int32_t) != 0) {
+        if (val_size != 0 && val_size % sizeof(int32_t) != 0) {
             LogError << "invalid val_size for int32_t[] option" << VAR(key) << VAR(val_size);
             return false;
         }

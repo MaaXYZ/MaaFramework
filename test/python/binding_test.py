@@ -775,15 +775,24 @@ def test_background_managed_keys_api():
                 ret
             ), "Win32Controller should support BackgroundManagedKeys before connection"
 
-            # After connection, should fail
+            # After connection, setting non-empty array should succeed
             win32_controller.post_connection().wait()
             ret_post = win32_controller.set_background_managed_keys([0x57, 0x41])
             print(
                 f"  win32_controller set_background_managed_keys (after connection): {ret_post}"
             )
             assert (
-                not ret_post
-            ), "Win32Controller should not support BackgroundManagedKeys after connection"
+                ret_post
+            ), "Win32Controller should support BackgroundManagedKeys after connection"
+
+            # Empty array should clear managed keys
+            ret_clear = win32_controller.set_background_managed_keys([])
+            print(
+                f"  win32_controller set_background_managed_keys (clear with empty): {ret_clear}"
+            )
+            assert (
+                ret_clear
+            ), "Win32Controller should support clearing BackgroundManagedKeys with empty array"
         else:
             print("  SKIP: failed to create Win32 controller")
     else:

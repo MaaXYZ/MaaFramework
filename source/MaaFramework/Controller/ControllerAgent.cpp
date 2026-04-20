@@ -1256,18 +1256,13 @@ bool ControllerAgent::set_background_managed_keys_option(MaaOptionValue value, M
 {
     LogDebug;
 
-    if (val_size == 0 || val_size % sizeof(int32_t) != 0) {
+    if (val_size != 0 && val_size % sizeof(int32_t) != 0) {
         LogError << "invalid value size: " << val_size;
         return false;
     }
 
     if (!control_unit_) {
         LogError << "control_unit_ is nullptr";
-        return false;
-    }
-
-    if (control_unit_->connected()) {
-        LogError << "Background managed keys must be set before connection";
         return false;
     }
 

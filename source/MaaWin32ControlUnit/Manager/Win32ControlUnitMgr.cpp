@@ -352,7 +352,12 @@ bool Win32ControlUnitMgr::click_key(int key)
             LogError << "background_keyboard_ is null";
             return false;
         }
-        return background_keyboard_->key_down(key) && background_keyboard_->key_up(key);
+        const bool key_down_ok = background_keyboard_->key_down(key);
+        const bool key_up_ok = background_keyboard_->key_up(key);
+        if (key_down_ok && !key_up_ok) {
+            LogError << "Managed key" << VAR(key) << "key_down succeeded but key_up failed; key may remain logically pressed";
+        }
+        return key_down_ok && key_up_ok;
     }
 
     if (!keyboard_) {
