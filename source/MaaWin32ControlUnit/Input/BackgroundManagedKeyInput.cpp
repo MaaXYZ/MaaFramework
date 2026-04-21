@@ -175,7 +175,7 @@ std::unordered_set<int> BackgroundManagedKeyInput::normalize_keycodes(const std:
     for (const int keycode : keycodes) {
         if (!is_valid_keycode(keycode)) {
             LogError << "Invalid background managed keycode" << VAR(keycode);
-            return {};
+            return { };
         }
         normalized.emplace(keycode);
     }
@@ -199,7 +199,7 @@ bool BackgroundManagedKeyInput::is_pressed_now(int keycode)
 
 void BackgroundManagedKeyInput::send_key_event(int keycode, bool key_up)
 {
-    INPUT input {};
+    INPUT input { };
     input.type = INPUT_KEYBOARD;
     input.ki.wVk = static_cast<WORD>(keycode);
     input.ki.dwFlags = key_up ? KEYEVENTF_KEYUP : 0;
@@ -365,7 +365,7 @@ bool BackgroundManagedKeyInput::ensure_key_pressed(int keycode)
     }
 
     for (int i = 0; i < extra_count; ++i) {
-        std::array<INPUT, 2> replay {};
+        std::array<INPUT, 2> replay { };
         replay[0].type = INPUT_KEYBOARD;
         replay[0].ki.wVk = static_cast<WORD>(keycode);
         replay[1].type = INPUT_KEYBOARD;

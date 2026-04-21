@@ -231,9 +231,11 @@ void ControllerImpl::set_mouse_lock_follow(bool enabled)
 
 void ControllerImpl::set_background_managed_keys(std::vector<int32_t> keycodes)
 {
-    if (!MaaControllerSetOption(controller, MaaCtrlOption_BackgroundManagedKeys,
-        keycodes.empty() ? nullptr : keycodes.data(),
-        static_cast<MaaSize>(sizeof(int32_t) * keycodes.size()))) {
+    if (!MaaControllerSetOption(
+            controller,
+            MaaCtrlOption_BackgroundManagedKeys,
+            keycodes.empty() ? nullptr : keycodes.data(),
+            static_cast<MaaSize>(sizeof(int32_t) * keycodes.size()))) {
         throw maajs::MaaError { "Controller set background_managed_keys failed" };
     }
 }
