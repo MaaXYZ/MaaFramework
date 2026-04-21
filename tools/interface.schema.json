@@ -405,7 +405,8 @@
                         "Win32",
                         "MacOS",
                         "PlayCover",
-                        "Gamepad"
+                        "Gamepad",
+                        "WlRoots"
                     ]
                 },
                 "display_short_side": {
@@ -603,6 +604,25 @@
                         }
                     },
                     "additionalProperties": false
+                },
+                "wlroots": {
+                    "type": "object",
+                    "title": "WlRoots 控制器配置",
+                    "description": "WlRoots 控制器的具体配置（仅 Linux）",
+                    "properties": {
+                        "wlr_socket_path": {
+                            "type": "string",
+                            "title": "Wayland Socket 路径",
+                            "description": "可选。Wayland Socket 路径，不提供则使用默认"
+                        },
+                        "use_win32_vk_code": {
+                            "type": "boolean",
+                            "title": "使用 Win32 VK 键码",
+                            "description": "可选。为 true 时按键被视为 Win32 Virtual-Key 码，内部转换为 Linux evdev 码；否则按原始 evdev 码处理。默认 false",
+                            "default": false
+                        }
+                    },
+                    "additionalProperties": false
                 }
             },
             "required": [
@@ -658,6 +678,12 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "hash": {
+                    "type": "string",
+                    "minLength": 1,
+                    "title": "资源 hash",
+                    "description": "资源校验值，通过 MaaResourceGetHash 获取。校验时机为加载 resource.path 后、加载 controller.attach_resource_path 之前"
                 }
             },
             "required": [

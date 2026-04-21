@@ -118,7 +118,7 @@ bool Runner::run(const RuntimeParam& param)
     }
     else if (const auto* p_wlroots_param = std::get_if<RuntimeParam::WlRootsParam>(&param.controller_param)) {
 #if defined(__linux__)
-        controller_handle = MaaWlRootsControllerCreate(p_wlroots_param->wlr_socket_path.c_str());
+        controller_handle = MaaWlRootsControllerCreate(p_wlroots_param->wlr_socket_path.c_str(), p_wlroots_param->use_win32_vk_code);
 #else
         std::ignore = p_wlroots_param;
         LogError << "WlRoots controller is only supported on Linux";

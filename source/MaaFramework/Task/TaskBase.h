@@ -34,6 +34,7 @@ public:
     Tasker* tasker() const;
     MaaTaskId task_id() const;
     const std::string& entry() const;
+    static MaaNodeId generate_node_id();
 
 protected:
     MAA_RES_NS::ResourceMgr* resource();
@@ -46,7 +47,6 @@ protected:
         std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_cache = nullptr);
     ActionResult run_action(const RecoResult& reco, const PipelineData& data);
     cv::Mat screencap();
-    MaaNodeId generate_node_id();
     void set_node_detail(MaaNodeId node_id, NodeDetail detail);
     void set_task_detail(TaskDetail detail);
 

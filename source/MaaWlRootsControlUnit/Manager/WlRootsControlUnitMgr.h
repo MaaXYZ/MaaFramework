@@ -3,7 +3,6 @@
 #include <filesystem>
 #include <memory>
 #include <string>
-#include <utility>
 
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
@@ -14,10 +13,10 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 class WaylandClient;
 
-class WlRootsControlUnitMgr : public ControlUnitAPI
+class WlRootsControlUnitMgr : public WlRootsControlUnitAPI
 {
 public:
-    WlRootsControlUnitMgr(std::filesystem::path wlr_socket_path);
+    WlRootsControlUnitMgr(std::filesystem::path wlr_socket_path, bool use_win32_vk_code);
     virtual ~WlRootsControlUnitMgr() override;
 
 public:
@@ -45,15 +44,22 @@ public:
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
 
+    virtual bool relative_move(int dx, int dy) override;
+    virtual bool scroll(int dx, int dy) override;
+
     virtual bool inactive() override;
 
     virtual json::object get_info() const override;
 
 private:
+    // Translate the input key (Win32 VK code if use_win32_vk_code_ is set,
+    // otherwise raw evdev code) to the underlying evdev code used by the
+    // virtual keyboard. Returns 0 when translation fails.
+    int translate_key(int key) const;
+
     std::unique_ptr<WaylandClient> client_;
     std::filesystem::path wlr_socket_path_;
-    std::pair<int, int> last_pos_ = { 0, 0 };
-    bool has_clicked_ = false;
+    const bool use_win32_vk_code_ = false;
 };
 
 MAA_CTRL_UNIT_NS_END

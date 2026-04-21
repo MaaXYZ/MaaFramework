@@ -10,22 +10,22 @@ const char* MaaWlRootsControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MaaWlRootsControlUnitCreate(const char* wlr_socket_path)
+MaaWlRootsControlUnitHandle MaaWlRootsControlUnitCreate(const char* wlr_socket_path, MaaBool use_win32_vk_code)
 {
     using namespace MAA_CTRL_UNIT_NS;
 
-    LogFunc << VAR(wlr_socket_path);
+    LogFunc << VAR(wlr_socket_path) << VAR(use_win32_vk_code);
 
     if (!wlr_socket_path) {
         LogError << "wlr_socket_path is null or empty";
         return nullptr;
     }
 
-    auto unit_mgr = std::make_unique<WlRootsControlUnitMgr>(wlr_socket_path);
+    auto unit_mgr = std::make_unique<WlRootsControlUnitMgr>(wlr_socket_path, use_win32_vk_code);
     return unit_mgr.release();
 }
 
-void MaaWlRootsControlUnitDestroy(MaaControlUnitHandle handle)
+void MaaWlRootsControlUnitDestroy(MaaWlRootsControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
 

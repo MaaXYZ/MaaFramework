@@ -33,6 +33,8 @@ public:
 
     bool screencap(void** buffer, uint32_t& width, uint32_t& height, uint32_t& format);
     bool pointer(EventPhase phase, int x, int y, int contact);
+    bool relative_move(int dx, int dy);
+    bool scroll(int dx, int dy) const;
     bool input_key(EventPhase phase, int key);
     bool input_str(const std::string& str);
     std::pair<int, int> screen_size() const;
@@ -58,6 +60,7 @@ private:
     bool process_requests() const;
     bool switch_keymap(Keymap new_map);
 
+    // Registry objects
     std::unique_ptr<wl_display> display_;
     std::unique_ptr<wl_registry> registry_;
     std::unique_ptr<wl_output> output_;
@@ -65,26 +68,28 @@ private:
     std::unique_ptr<wl_seat> seat_;
     std::unique_ptr<zwlr_screencopy_manager_v1> screencopy_manager_;
     std::unique_ptr<zwlr_virtual_pointer_manager_v1> pointer_manager_;
+
+    // Virtual pointer object
     std::unique_ptr<zwlr_virtual_pointer_v1> pointer_;
 
+    // Virtual keyboard objects
     std::unique_ptr<zwp_virtual_keyboard_manager_v1> keyboard_manager_;
     std::unique_ptr<MemfdBuffer> ascii_keymap_buffer_;
     std::unique_ptr<MemfdBuffer> scancode_keymap_buffer_;
     std::unique_ptr<zwp_virtual_keyboard_v1> keyboard_;
+
+    // Virtual keyboard status
     Keymap current_keymap_ = Keymap::Unknown;
     int current_depressed_modifiers_ = 0;
     int current_locked_modifiers_ = 0;
 
-    std::pair<int, int> screen_size_ { 0, 0 };
-
-    wl_registry_listener registry_listener_ = { };
-
-    std::filesystem::path socket_path_;
-
+    // Capture status
     bool connected_ = false;
     bool capture_waiting_ = false;
     bool capture_successful_ = false;
+    std::pair<int, int> screen_size_ { 0, 0 };
 
+    // Capture objects
     std::unique_ptr<MemfdBuffer> buffer_;
     std::unique_ptr<wl_shm_pool> shm_pool_;
     std::unique_ptr<wl_buffer> buffer_obj_;
@@ -92,6 +97,11 @@ private:
     int buffer_height_ = 0;
     int buffer_format_ = 0;
     int buffer_stride_ = 0;
+
+    // Utils
+    wl_registry_listener registry_listener_ = { };
+
+    std::filesystem::path socket_path_;
 };
 
 MAA_CTRL_UNIT_NS_END
