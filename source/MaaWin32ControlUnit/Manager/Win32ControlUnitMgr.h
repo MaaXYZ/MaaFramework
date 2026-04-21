@@ -3,8 +3,10 @@
 #include <filesystem>
 #include <ostream>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "Base/UnitBase.h"
+#include "Input/BackgroundManagedKeyInput.h"
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/SafeWindows.hpp"
@@ -53,6 +55,7 @@ public: // from ControlUnitAPI
     virtual bool scroll(int dx, int dy) override;
 
     virtual bool set_mouse_lock_follow(bool enabled) override;
+    virtual bool set_background_managed_keys_option(const int32_t* keycodes, size_t count) override;
 
     virtual bool inactive() override;
 
@@ -86,6 +89,9 @@ private:
     std::shared_ptr<InputBase> mouse_ = nullptr;
     std::shared_ptr<InputBase> keyboard_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
+
+    std::shared_ptr<BackgroundManagedKeyInput> background_keyboard_ = nullptr;
+    std::unordered_set<int> managed_keys_;
 };
 
 MAA_CTRL_UNIT_NS_END
