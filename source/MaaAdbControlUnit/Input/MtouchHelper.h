@@ -59,8 +59,10 @@ protected:
     int press_ = 0;
     int orientation_ = 0;
 
+protected:
+    virtual bool request_display_info();
+
 private:
-    bool request_display_info();
     std::shared_ptr<DeviceInfo> device_info_ = std::make_shared<DeviceInfo>();
 };
 
