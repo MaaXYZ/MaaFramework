@@ -2,26 +2,25 @@
 
 #include "AndrowsExtras.h"
 
-#include <array>
 #include <cmath>
 #include <format>
-#include <ranges>
 #include <sstream>
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/NoWarningCV.hpp"
-#include "MaaUtils/Platform.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
 AndrowsExtras::AndrowsExtras(std::filesystem::path agent_path)
-    : agent_path_(std::move(agent_path))
 {
+    agent_path_ = std::move(agent_path);
     // Only register invoke_app_ / adb_shell_input_ into children_ when we actually
     // need the input pathway (agent_path_ non-empty). For screencap-only instances
     // these sub-objects stay idle and should not participate in parse/init/replacement
     // propagation.
     if (!agent_path_.empty()) {
+        invoke_app_ = std::make_shared<InvokeApp>();
+        adb_shell_input_ = std::make_shared<AdbShellInput>();
         children_.emplace_back(invoke_app_);
         children_.emplace_back(adb_shell_input_);
     }
@@ -57,16 +56,7 @@ bool AndrowsExtras::parse(const json::value& config)
               && parse_command("ScreencapEncode", config, kScreencapEncodeArgv, screencap_encode_argv_);
 
     if (ok && !agent_path_.empty()) {
-        static const json::array kDefaultArch = {
-            "x86_64", "x86", "arm64-v8a", "armeabi-v7a", "armeabi",
-        };
-        json::array jarch = config.get("prebuilt", "minitouch", "arch", kDefaultArch);
-        if (!jarch.all<std::string>()) {
-            return false;
-        }
-        arch_list_ = jarch.as<std::vector<std::string>>();
-
-        ok = invoke_app_->parse(config) && MtouchHelper::parse(config) && adb_shell_input_->parse(config);
+        ok = parse_minitouch_config(config);
     }
 
     return ok;
@@ -176,51 +166,6 @@ bool AndrowsExtras::request_display_info()
 
     LogInfo << "Androws: virtual display resolution" << VAR(display_id_) << VAR(display_width_) << VAR(display_height_);
     return true;
-}
-
-MaaControllerFeature AndrowsExtras::get_features() const
-{
-    MaaControllerFeature feat = MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
-    if (adb_shell_input_) {
-        feat |= adb_shell_input_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
-    }
-    return feat;
-}
-
-bool AndrowsExtras::click_key(int key)
-{
-    if (!adb_shell_input_) {
-        LogError << "adb_shell_input_ is nullptr";
-        return false;
-    }
-    return adb_shell_input_->click_key(key);
-}
-
-bool AndrowsExtras::input_text(const std::string& text)
-{
-    if (!adb_shell_input_) {
-        LogError << "adb_shell_input_ is nullptr";
-        return false;
-    }
-    return adb_shell_input_->input_text(text);
-}
-
-bool AndrowsExtras::key_down(int key)
-{
-    if (!adb_shell_input_) {
-        LogError << "adb_shell_input_ is nullptr";
-        return false;
-    }
-    return adb_shell_input_->key_down(key);
-}
-
-bool AndrowsExtras::key_up(int key)
-{
-    if (!adb_shell_input_) {
-        LogError << "adb_shell_input_ is nullptr";
-        return false;
-    }
-    return adb_shell_input_->key_up(key);
 }
 
 void AndrowsExtras::on_app_started(const std::string& intent)
@@ -341,28 +286,7 @@ bool AndrowsExtras::query_event_id()
 
 bool AndrowsExtras::init_minitouch()
 {
-    if (!invoke_app_->init()) {
-        return false;
-    }
-
-    auto archs = invoke_app_->abilist();
-    if (!archs) {
-        return false;
-    }
-
-    auto arch_iter = std::ranges::find_first_of(*archs, arch_list_);
-    if (arch_iter == archs->end()) {
-        LogError << "Androws: no matching arch for minitouch" << VAR(*archs) << VAR(arch_list_);
-        return false;
-    }
-    const std::string& target_arch = *arch_iter;
-
-    const auto bin_path = agent_path_ / path(target_arch) / path("minitouch");
-    if (!invoke_app_->push(bin_path)) {
-        return false;
-    }
-
-    if (!invoke_app_->chmod()) {
+    if (!push_minitouch()) {
         return false;
     }
 
@@ -390,12 +314,6 @@ bool AndrowsExtras::reinvoke_minitouch()
     }
 
     return read_info();
-}
-
-void AndrowsExtras::remove_binary()
-{
-    LogTrace;
-    invoke_app_->remove();
 }
 
 std::optional<std::string> AndrowsExtras::adb_shell(const std::string& cmd)
