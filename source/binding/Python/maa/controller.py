@@ -4,7 +4,7 @@ import numpy
 from abc import abstractmethod
 from ctypes import c_int32
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Sequence, Tuple, Union
 
 from .buffer import ImageBuffer, StringBuffer
 from .event_sink import EventSink, NotificationType
@@ -272,6 +272,15 @@ class Controller:
         c_enabled = ctypes.c_bool(enabled)
         return Library.framework().MaaControllerSetOption(
             self._handle, MaaCtrlOptionEnum.MouseLockFollow, ctypes.byref(c_enabled), ctypes.sizeof(c_enabled)
+        )
+
+    def set_background_managed_keys(self, keys: Sequence[int]) -> bool:
+        key_array = (ctypes.c_int32 * len(keys))(*keys)
+        return Library.framework().MaaControllerSetOption(
+            self._handle,
+            MaaCtrlOptionEnum.BackgroundManagedKeys,
+            key_array,
+            ctypes.sizeof(key_array),
         )
 
     def post_scroll(self, dx: int, dy: int) -> Job:

@@ -2460,6 +2460,27 @@ bool AgentClient::handle_controller_set_option(const json::value& j)
         ret = controller->set_option(key, &v, sizeof(v));
         break;
     }
+    case MaaCtrlOption_BackgroundManagedKeys: {
+        if (!req.value.is_array()) {
+            LogError << "BackgroundManagedKeys value must be an array" << VAR(req.value.type_name());
+            ret = false;
+            break;
+        }
+        std::vector<int32_t> keys;
+        for (const auto& item : req.value.as_array()) {
+            if (!item.is_number()) {
+                LogError << "BackgroundManagedKeys array element must be a number" << VAR(item.type_name());
+                ret = false;
+                break;
+            }
+            keys.push_back(static_cast<int32_t>(item.as_integer()));
+        }
+        if (!ret) {
+            break;
+        }
+        ret = controller->set_option(key, keys.data(), sizeof(int32_t) * keys.size());
+        break;
+    }
     default:
         LogError << "unknown key" << VAR(req.key);
         break;

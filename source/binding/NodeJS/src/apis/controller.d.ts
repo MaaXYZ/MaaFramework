@@ -196,6 +196,7 @@ declare global {
              * @returns true if successful, false otherwise
              */
             set mouse_lock_follow(enabled: boolean)
+            set background_managed_keys(keycodes: number[])
             post_key_down(keycode: number): Job<CtrlId, Controller>
             post_key_up(keycode: number): Job<CtrlId, Controller>
             /**

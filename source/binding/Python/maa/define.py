@@ -145,6 +145,13 @@ class MaaCtrlOptionEnum(IntEnum):
     # default is 3 (INTER_AREA)
     ScreenshotResizeMethod = 6
 
+    # Configure background managed key domain for Win32 controllers.
+    # Must be set before connection. After setting, matching ClickKey / LongPressKey / KeyDown / KeyUp
+    # operations automatically route through the background guardian path.
+    # Only supported by Win32 controllers; other controllers will fail.
+    # value: int32_t array of virtual key codes; val_size: sizeof(int32_t) * count
+    BackgroundManagedKeys = 7
+
 
 class MaaInferenceDeviceEnum(IntEnum):
     CPU = -2

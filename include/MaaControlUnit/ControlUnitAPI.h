@@ -101,6 +101,8 @@ public:
     virtual ~Win32ControlUnitAPI() = default;
 
     virtual bool set_mouse_lock_follow(bool /*enabled*/) { return false; }
+
+    virtual bool set_background_managed_keys_option(const int32_t* /*keycodes*/, size_t /*count*/) { return false; }
 };
 
 class MacOSControlUnitAPI
