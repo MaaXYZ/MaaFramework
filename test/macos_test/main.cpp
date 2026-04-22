@@ -72,7 +72,7 @@ void runMaaTest(const std::string& windowTitle)
     for (size_t i = 0; i < size; ++i) {
         auto w = MaaToolkitDesktopWindowListAt(winlist, i);
         std::string name = MaaToolkitDesktopWindowGetWindowName(w);
-        uint32_t currentWindowID = reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(w));
+        uint32_t currentWindowID = MaaToolkitDesktopWindowGetHandle(w);
 
         if (name.find(windowTitle) != std::string::npos) {
             windowID = currentWindowID;
