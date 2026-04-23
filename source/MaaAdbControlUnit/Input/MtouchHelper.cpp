@@ -72,6 +72,11 @@ bool MtouchHelper::key_up(int key)
 
 bool MtouchHelper::parse_minitouch_config(const json::value& config)
 {
+    if (!invoke_app_ || !adb_shell_input_) {
+        LogError << "invoke_app_ or adb_shell_input_ is nullptr";
+        return false;
+    }
+
     static const json::array kDefaultArch = {
         "x86_64", "x86", "arm64-v8a", "armeabi-v7a", "armeabi",
     };
@@ -83,7 +88,7 @@ bool MtouchHelper::parse_minitouch_config(const json::value& config)
 
     arch_list_ = jarch.as<std::vector<std::string>>();
 
-    return invoke_app_->parse(config) && parse(config) && adb_shell_input_->parse(config);
+    return invoke_app_->parse(config) && MtouchHelper::parse(config) && adb_shell_input_->parse(config);
 }
 
 bool MtouchHelper::push_minitouch()
