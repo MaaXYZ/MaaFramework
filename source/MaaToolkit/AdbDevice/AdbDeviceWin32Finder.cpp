@@ -54,6 +54,8 @@ const AdbDeviceFinder::EmulatorConstDataMap& AdbDeviceWin32Finder::get_emulator_
           { .keyword = "qemu-system",
             .adb_candidate_paths = { "..\\..\\..\\platform-tools\\adb.exe"_path },
             .adb_common_serials = { "emulator-5554", "127.0.0.1:5555" } } },
+
+        { "Androws", { .keyword = "Androws", .adb_candidate_paths = { "adb.exe"_path } } },
     };
 
     return kConstData;
