@@ -151,8 +151,10 @@ HWND MessageInput::find_window_at_point(int x, int y) const
     // 仅对同进程的窗口（如同进程内的弹出菜单或子控件）启用此逻辑，
     // 避免误点击属于无关进程的窗口。
     DWORD our_pid = 0, at_pid = 0;
-    GetWindowThreadProcessId(hwnd_, &our_pid);
-    GetWindowThreadProcessId(at_pos, &at_pid);
+    if (!GetWindowThreadProcessId(hwnd_, &our_pid) || !GetWindowThreadProcessId(at_pos, &at_pid)) {
+        LogWarn << "GetWindowThreadProcessId failed in find_window_at_point" << VAR(GetLastError());
+        return nullptr;
+    }
     if (our_pid != at_pid) {
         return nullptr;
     }
@@ -786,7 +788,7 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
     HWND target;
     if (window_at_pos) {
         target = window_at_pos;
-        LogInfo << "Using window at point instead of active hwnd" << VAR(target);
+        LogInfo << "Using window at point instead of active HWND" << VAR(target);
         // 若目标窗口已处于前台（如刚打开的下拉菜单），则不再发送 WM_ACTIVATE，
         // 避免激活消息导致弹出窗口意外关闭。
         if (target != GetForegroundWindow()) {
