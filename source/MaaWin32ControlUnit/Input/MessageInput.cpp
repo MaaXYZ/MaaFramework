@@ -129,6 +129,37 @@ HWND MessageInput::get_active_hwnd()
     return hwnd_;
 }
 
+HWND MessageInput::find_window_at_point(int x, int y) const
+{
+    if (!hwnd_) {
+        return nullptr;
+    }
+
+    POINT screen_pt = { x, y };
+    if (!ClientToScreen(hwnd_, &screen_pt)) {
+        return nullptr;
+    }
+
+    HWND at_pos = WindowFromPoint(screen_pt);
+    if (!at_pos || at_pos == hwnd_) {
+        return nullptr;
+    }
+    if (!IsWindowVisible(at_pos)) {
+        return nullptr;
+    }
+
+    // 仅对同进程的窗口（如同进程内的弹出菜单或子控件）启用此逻辑，
+    // 避免误点击属于无关进程的窗口。
+    DWORD our_pid = 0, at_pid = 0;
+    GetWindowThreadProcessId(hwnd_, &our_pid);
+    GetWindowThreadProcessId(at_pos, &at_pid);
+    if (our_pid != at_pid) {
+        return nullptr;
+    }
+
+    return at_pos;
+}
+
 LPARAM MessageInput::make_mouse_lparam(HWND target, int x, int y)
 {
     if (target == hwnd_) {
@@ -748,7 +779,24 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    HWND target = send_activate();
+    // 优先使用 WindowFromPoint 查找点击位置处实际存在的窗口（如覆盖在主窗口上方的弹出菜单）。
+    // GetLastActivePopup 仅能感知所有者链中的弹出窗口，无法发现不在所有者链中的同进程覆盖窗口，
+    // 导致后台消息直接发送给主窗口，绕过了上层的弹出窗口。
+    HWND window_at_pos = find_window_at_point(x, y);
+    HWND target;
+    if (window_at_pos) {
+        target = window_at_pos;
+        LogInfo << "Using window at point instead of active hwnd" << VAR(target);
+        // 若目标窗口已处于前台（如刚打开的下拉菜单），则不再发送 WM_ACTIVATE，
+        // 避免激活消息导致弹出窗口意外关闭。
+        if (target != GetForegroundWindow()) {
+            bool use_post = (config_.mode == Mode::PostMessage);
+            ::MaaNS::CtrlUnitNs::send_activate_message(target, use_post);
+        }
+    }
+    else {
+        target = send_activate();
+    }
     gesture_target_ = target;
 
     check_and_block_input();

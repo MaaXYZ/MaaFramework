@@ -68,6 +68,7 @@ private:
     bool send_or_post_w(HWND target, UINT message, WPARAM wParam, LPARAM lParam);
 
     HWND get_active_hwnd();
+    HWND find_window_at_point(int x, int y) const;
     LPARAM make_mouse_lparam(HWND target, int x, int y);
 
     // 在发鼠标消息前把系统状态调整到目标窗口愿意接受的位置。
