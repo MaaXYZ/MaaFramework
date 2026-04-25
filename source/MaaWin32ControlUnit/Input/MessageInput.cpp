@@ -376,29 +376,118 @@ bool MessageInput::move_window_to_align_cursor(int x, int y)
     int new_left = cursor_pos.x - x - border_x;
     int new_top = cursor_pos.y - y - border_y;
 
+    if (!is_window_move_allowed(new_left, new_top, current_rect, "align cursor")) {
+        abort_windowpos_operation("align cursor");
+        return false;
+    }
+
     if (!SetWindowPos(hwnd_, nullptr, new_left, new_top, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS)) {
         LogError << "SetWindowPos failed" << VAR(hwnd_) << VAR(new_left) << VAR(new_top) << VAR(GetLastError());
+        abort_windowpos_operation("align cursor SetWindowPos failed");
         return false;
     }
 
     return true;
 }
 
-LPARAM MessageInput::prepare_mouse_position(int x, int y)
+bool MessageInput::is_window_move_allowed(int new_left, int new_top, const RECT& current_rect, const char* reason)
 {
+    RECT base_rect = window_pos_saved_ ? saved_window_rect_ : current_rect;
+
+    HMONITOR origin_monitor = MonitorFromRect(&base_rect, MONITOR_DEFAULTTONULL);
+    if (!origin_monitor) {
+        LogWarn << "WithWindowPos guard: origin monitor not found" << VAR(reason) << VAR(base_rect.left) << VAR(base_rect.top)
+                << VAR(base_rect.right) << VAR(base_rect.bottom);
+        return false;
+    }
+
+    HMONITOR current_monitor = MonitorFromRect(&current_rect, MONITOR_DEFAULTTONULL);
+    if (!current_monitor || current_monitor != origin_monitor) {
+        LogWarn << "WithWindowPos guard: current window is not on origin monitor" << VAR(reason) << VAR(current_rect.left)
+                << VAR(current_rect.top) << VAR(current_rect.right) << VAR(current_rect.bottom);
+        return false;
+    }
+
+    MONITORINFO origin_info { sizeof(MONITORINFO) };
+    if (!GetMonitorInfoW(origin_monitor, &origin_info)) {
+        LogWarn << "WithWindowPos guard: GetMonitorInfoW failed" << VAR(reason) << VAR(GetLastError());
+        return false;
+    }
+
+    RECT predicted_rect = current_rect;
+    OffsetRect(&predicted_rect, new_left - current_rect.left, new_top - current_rect.top);
+
+    HMONITOR predicted_monitor = MonitorFromRect(&predicted_rect, MONITOR_DEFAULTTONULL);
+    if (!predicted_monitor || predicted_monitor != origin_monitor) {
+        LogWarn << "WithWindowPos guard: predicted window rect moved to another monitor" << VAR(reason) << VAR(new_left) << VAR(new_top)
+                << VAR(predicted_rect.left) << VAR(predicted_rect.top) << VAR(predicted_rect.right) << VAR(predicted_rect.bottom);
+        return false;
+    }
+
+    const RECT& monitor_rect = origin_info.rcMonitor;
+
+    const bool fully_inside = predicted_rect.left >= monitor_rect.left && predicted_rect.top >= monitor_rect.top
+                              && predicted_rect.right <= monitor_rect.right && predicted_rect.bottom <= monitor_rect.bottom;
+
+    if (!fully_inside) {
+        LogWarn << "WithWindowPos guard: predicted window rect would leave origin monitor" << VAR(reason) << VAR(new_left) << VAR(new_top)
+                << VAR(predicted_rect.left) << VAR(predicted_rect.top) << VAR(predicted_rect.right) << VAR(predicted_rect.bottom)
+                << VAR(monitor_rect.left) << VAR(monitor_rect.top) << VAR(monitor_rect.right) << VAR(monitor_rect.bottom);
+        return false;
+    }
+
+    return true;
+}
+
+void MessageInput::abort_windowpos_operation(const char* reason)
+{
+    LogWarn << "WithWindowPos guard: abort operation" << VAR(reason);
+
+    window_pos_invalid_movement_ = true;
+
+    stop_window_tracking();
+
+    pending_mouse_x_ = 0;
+    pending_mouse_y_ = 0;
+    has_pending_mouse_ = false;
+
+    gesture_target_ = nullptr;
+}
+
+void MessageInput::reset_windowpos_guard_state()
+{
+    window_pos_invalid_movement_ = false;
+}
+
+bool MessageInput::prepare_mouse_position(int x, int y)
+{
+    if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
+        LogWarn << "WithWindowPos guard: reject input after invalid movement" << VAR(x) << VAR(y);
+        return false;
+    }
+
     if (config_.with_cursor_pos) {
         // WithCursorPos 模式：移动真实光标到目标位置
         POINT screen_pos = client_to_screen(x, y);
         if (!SetCursorPos(screen_pos.x, screen_pos.y)) {
             LogError << "SetCursorPos failed" << VAR(screen_pos.x) << VAR(screen_pos.y) << VAR(GetLastError());
+            return false;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        return true;
     }
-    else if (config_.with_window_pos) {
+
+    if (config_.with_window_pos) {
         start_window_tracking(x, y);
-        move_window_to_align_cursor(x, y);
+
+        if (!move_window_to_align_cursor(x, y)) {
+            return false;
+        }
+
+        return true;
     }
-    return MAKELPARAM(x, y);
+
+    return true;
 }
 
 // WH_MOUSE_LL 钩子回调：累加硬件鼠标位移 delta 并拦截，由追踪线程按固定帧率批量释放
@@ -525,24 +614,35 @@ void MessageInput::process_pending_mouse_frame()
     int new_left = mx - tx - border_x;
     int new_top = my - ty - border_y;
 
+    if (!is_window_move_allowed(new_left, new_top, rect, "tracking frame")) {
+        abort_windowpos_operation("tracking frame");
+        return;
+    }
+
     // 1. 挂起目标进程，避免它在窗口和光标尚未重新对齐时观测到中间态
     suspend_target_process();
+    OnScopeLeave([this]() { resume_target_process(); });
 
     // 2. 移动窗口（SWP_ASYNCWINDOWPOS 避免阻塞 + SWP_NOSENDCHANGING 跳过同步通知）
-    SetWindowPos(
-        hwnd_,
-        nullptr,
-        new_left,
-        new_top,
-        0,
-        0,
-        SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS);
+    if (!SetWindowPos(
+            hwnd_,
+            nullptr,
+            new_left,
+            new_top,
+            0,
+            0,
+            SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS)) {
+        LogError << "SetWindowPos failed in tracking frame" << VAR(hwnd_) << VAR(new_left) << VAR(new_top) << VAR(GetLastError());
+        abort_windowpos_operation("tracking SetWindowPos failed");
+        return;
+    }
 
     // 3. 释放光标到累积后的真实目标位置
-    SetCursorPos(mx, my);
-
-    // 4. 恢复目标进程（它醒来时看到的窗口和光标已完美对齐）
-    resume_target_process();
+    if (!SetCursorPos(mx, my)) {
+        LogError << "SetCursorPos failed in tracking frame" << VAR(mx) << VAR(my) << VAR(GetLastError());
+        abort_windowpos_operation("tracking SetCursorPos failed");
+        return;
+    }
 }
 
 void MessageInput::tracking_thread_func()
@@ -691,7 +791,7 @@ std::pair<int, int> MessageInput::get_target_pos() const
     }
 
     // 未设置时返回窗口客户区中心
-    RECT rect = { };
+    RECT rect = {};
     if (hwnd_ && GetClientRect(hwnd_, &rect)) {
         return { (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2 };
     }
@@ -734,6 +834,10 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
+    if (config_.with_window_pos) {
+        reset_windowpos_guard_state();
+    }
+
     MouseMessageInfo move_info;
     if (!contact_to_mouse_move_message(contact, move_info)) {
         LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "contact out of range"
@@ -755,13 +859,19 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     save_pos();
 
-    prepare_mouse_position(x, y);
+    if (!prepare_mouse_position(x, y)) {
+        gesture_target_ = nullptr;
+        restore_pos();
+        unblock_input();
+        return false;
+    }
 
     LPARAM lParam = make_mouse_lparam(target, x, y);
 
     if (!send_or_post_w(target, move_info.message, move_info.w_param, lParam)) {
         gesture_target_ = nullptr;
-        finish_pos();
+        restore_pos();
+        unblock_input();
         return false;
     }
 
@@ -769,7 +879,8 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     if (!send_or_post_w(target, down_info.message, down_info.w_param, lParam)) {
         gesture_target_ = nullptr;
-        finish_pos();
+        restore_pos();
+        unblock_input();
         return false;
     }
 
@@ -797,13 +908,20 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    prepare_mouse_position(x, y);
+    if (!prepare_mouse_position(x, y)) {
+        gesture_target_ = nullptr;
+        restore_pos();
+        unblock_input();
+        return false;
+    }
 
     HWND target = (gesture_target_ && IsWindow(gesture_target_)) ? gesture_target_ : get_active_hwnd();
     LPARAM lParam = make_mouse_lparam(target, x, y);
 
     if (!send_or_post_w(target, msg_info.message, msg_info.w_param, lParam)) {
         gesture_target_ = nullptr;
+        restore_pos();
+        unblock_input();
         return false;
     }
 
@@ -819,6 +937,15 @@ bool MessageInput::touch_up(int contact)
 
     if (!hwnd_) {
         LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "hwnd_ is nullptr";
+        return false;
+    }
+
+    if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
+        LogWarn << "WithWindowPos guard: reject touch_up after invalid movement" << VAR(contact);
+
+        gesture_target_ = nullptr;
+        restore_pos();
+        unblock_input();
         return false;
     }
 
@@ -843,7 +970,7 @@ bool MessageInput::touch_up(int contact)
     LPARAM lParam = make_mouse_lparam(target, target_pos.first, target_pos.second);
 
     if (!send_or_post_w(target, msg_info.message, msg_info.w_param, lParam)) {
-        finish_pos();
+        restore_pos();
         return false;
     }
 
@@ -927,6 +1054,10 @@ bool MessageInput::scroll(int dx, int dy)
         return false;
     }
 
+    if (config_.with_window_pos) {
+        reset_windowpos_guard_state();
+    }
+
     HWND target = send_activate();
 
     check_and_block_input();
@@ -936,7 +1067,10 @@ bool MessageInput::scroll(int dx, int dy)
 
     save_pos();
 
-    prepare_mouse_position(target_pos.first, target_pos.second);
+    if (!prepare_mouse_position(target_pos.first, target_pos.second)) {
+        restore_pos();
+        return false;
+    }
     POINT screen_pos = client_to_screen(target_pos.first, target_pos.second);
     LPARAM lParam = MAKELPARAM(screen_pos.x, screen_pos.y);
     bool success = true;
@@ -975,7 +1109,7 @@ bool MessageInput::relative_move(int dx, int dy)
     // 标记：这次 SendInput 产生的 WM_INPUT 不要被 RawInput handler 对冲
     counter_pending_++;
 
-    INPUT input = { };
+    INPUT input = {};
     input.type = INPUT_MOUSE;
     input.mi.dx = dx;
     input.mi.dy = dy;
@@ -1264,7 +1398,7 @@ void MessageInput::process_mouse_lock_follow_frame()
 
 bool MessageInput::create_rawinput_window()
 {
-    WNDCLASSEXW wc = { };
+    WNDCLASSEXW wc = {};
     wc.cbSize = sizeof(wc);
     wc.lpfnWndProc = RawInputWndProc;
     wc.hInstance = GetModuleHandleW(NULL);
@@ -1280,7 +1414,7 @@ bool MessageInput::create_rawinput_window()
     }
 
     // 注册接收鼠标 RawInput（RIDEV_INPUTSINK 确保后台也能收到）
-    RAWINPUTDEVICE rid = { };
+    RAWINPUTDEVICE rid = {};
     rid.usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
     rid.usUsage = 0x02;     // HID_USAGE_GENERIC_MOUSE
     rid.dwFlags = RIDEV_INPUTSINK;
@@ -1302,7 +1436,7 @@ void MessageInput::destroy_rawinput_window()
         return;
     }
 
-    RAWINPUTDEVICE rid = { };
+    RAWINPUTDEVICE rid = {};
     rid.usUsagePage = 0x01;
     rid.usUsage = 0x02;
     rid.dwFlags = RIDEV_REMOVE;
@@ -1321,7 +1455,7 @@ void MessageInput::send_counter_move(int raw_dx, int raw_dy)
 
     counter_pending_++;
 
-    INPUT counter = { };
+    INPUT counter = {};
     counter.type = INPUT_MOUSE;
     counter.mi.dx = -raw_dx;
     counter.mi.dy = -raw_dy;
@@ -1344,7 +1478,7 @@ bool MessageInput::handle_rawinput_message(LPARAM lParam)
         return false;
     }
 
-    RAWINPUT raw = { };
+    RAWINPUT raw = {};
     UINT copied = size;
     if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, &raw, &copied, sizeof(RAWINPUTHEADER)) != size) {
         return false;
