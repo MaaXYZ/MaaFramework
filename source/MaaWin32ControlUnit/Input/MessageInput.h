@@ -78,6 +78,7 @@ private:
     bool is_window_move_allowed(int new_left, int new_top, const RECT& current_rect, const char* reason);
     void abort_windowpos_operation(const char* reason);
     void reset_windowpos_guard_state();
+    bool best_effort_release_mouse(const char* reason);
 
     // helpers for cursor/window position
     POINT client_to_screen(int x, int y);
@@ -120,6 +121,10 @@ private:
     std::atomic_int pending_mouse_y_ = 0;
     std::atomic_bool has_pending_mouse_ = false;
     std::atomic_bool window_pos_invalid_movement_ = false;
+    std::atomic_bool mouse_down_sent_ = false;
+    std::atomic_int mouse_down_contact_ = 0;
+    std::atomic_int last_mouse_x_ = 0;
+    std::atomic_int last_mouse_y_ = 0;
 
     // 目标进程挂起/恢复
     void open_target_process();

@@ -341,6 +341,7 @@ void MessageInput::restore_pos()
 
     if (config_.with_window_pos) {
         restore_window_pos();
+        reset_windowpos_guard_state();
     }
 }
 
@@ -443,6 +444,8 @@ void MessageInput::abort_windowpos_operation(const char* reason)
 {
     LogWarn << "WithWindowPos guard: abort operation" << VAR(reason);
 
+    // 不要在这里直接发送 mouse up：该函数可能由 tracking thread 调用。
+    // best-effort release 交给后续 touch_move/touch_up 的异常路径，避免跨线程清理 gesture 状态。
     window_pos_invalid_movement_ = true;
 
     stop_window_tracking();
@@ -450,8 +453,6 @@ void MessageInput::abort_windowpos_operation(const char* reason)
     pending_mouse_x_ = 0;
     pending_mouse_y_ = 0;
     has_pending_mouse_ = false;
-
-    gesture_target_ = nullptr;
 }
 
 void MessageInput::reset_windowpos_guard_state()
@@ -459,10 +460,51 @@ void MessageInput::reset_windowpos_guard_state()
     window_pos_invalid_movement_ = false;
 }
 
+bool MessageInput::best_effort_release_mouse(const char* reason)
+{
+    const bool should_release = mouse_down_sent_.exchange(false);
+    const int contact = mouse_down_contact_.load();
+    const int x = last_mouse_x_.load();
+    const int y = last_mouse_y_.load();
+
+    OnScopeLeave([this]() {
+        gesture_target_ = nullptr;
+        mouse_down_contact_ = 0;
+        last_mouse_x_ = 0;
+        last_mouse_y_ = 0;
+    });
+
+    if (!should_release) {
+        LogInfo << "WithWindowPos guard: no active mouse down, skip best-effort mouse up" << VAR(reason);
+        return true;
+    }
+
+    HWND target = nullptr;
+    bool reuse_gesture = gesture_target_ && IsWindow(gesture_target_);
+    if (reuse_gesture) {
+        target = gesture_target_;
+        bool use_post = (config_.mode == Mode::PostMessage);
+        ::MaaNS::CtrlUnitNs::send_activate_message(target, use_post);
+    }
+    else {
+        target = send_activate();
+    }
+
+    MouseMessageInfo msg_info;
+    if (!contact_to_mouse_up_message(contact, msg_info)) {
+        LogWarn << "WithWindowPos guard: best-effort mouse up skipped, invalid contact" << VAR(reason) << VAR(contact);
+        return false;
+    }
+
+    LogWarn << "WithWindowPos guard: send best-effort mouse up" << VAR(reason) << VAR(contact) << VAR(x) << VAR(y);
+    LPARAM lParam = make_mouse_lparam(target, x, y);
+    return send_or_post_w(target, msg_info.message, msg_info.w_param, lParam);
+}
+
 bool MessageInput::prepare_mouse_position(int x, int y)
 {
     if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
-        LogWarn << "WithWindowPos guard: reject input after invalid movement" << VAR(x) << VAR(y);
+        LogWarn << "WithWindowPos guard: previous invalid movement, reject input" << VAR(x) << VAR(y);
         return false;
     }
 
@@ -834,8 +876,12 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    if (config_.with_window_pos) {
-        reset_windowpos_guard_state();
+    if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
+        LogWarn << "WithWindowPos guard: previous invalid movement, reject input" << VAR(contact) << VAR(x) << VAR(y);
+        std::ignore = best_effort_release_mouse("touch_down after WithWindowPos abort");
+        restore_pos();
+        unblock_input();
+        return false;
     }
 
     MouseMessageInfo move_info;
@@ -860,6 +906,10 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
     save_pos();
 
     if (!prepare_mouse_position(x, y)) {
+        if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
+            LogWarn << "WithWindowPos guard: previous invalid movement, reject input" << VAR(contact) << VAR(x) << VAR(y);
+            std::ignore = best_effort_release_mouse("touch_down prepare after WithWindowPos abort");
+        }
         gesture_target_ = nullptr;
         restore_pos();
         unblock_input();
@@ -884,6 +934,11 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
+    mouse_down_contact_ = contact;
+    last_mouse_x_ = x;
+    last_mouse_y_ = y;
+    mouse_down_sent_ = true;
+
     last_pos_ = { x, y };
     last_pos_set_ = true;
 
@@ -901,6 +956,14 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
+    if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
+        LogWarn << "WithWindowPos guard: previous invalid movement, reject input" << VAR(contact) << VAR(x) << VAR(y);
+        std::ignore = best_effort_release_mouse("touch_move after WithWindowPos abort");
+        restore_pos();
+        unblock_input();
+        return false;
+    }
+
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_move_message(contact, msg_info)) {
         LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "contact out of range"
@@ -909,6 +972,10 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
     }
 
     if (!prepare_mouse_position(x, y)) {
+        if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
+            LogWarn << "WithWindowPos guard: previous invalid movement, reject input" << VAR(contact) << VAR(x) << VAR(y);
+            std::ignore = best_effort_release_mouse("touch_move prepare after WithWindowPos abort");
+        }
         gesture_target_ = nullptr;
         restore_pos();
         unblock_input();
@@ -923,6 +990,11 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
         restore_pos();
         unblock_input();
         return false;
+    }
+
+    if (mouse_down_sent_.load()) {
+        last_mouse_x_ = x;
+        last_mouse_y_ = y;
     }
 
     last_pos_ = { x, y };
@@ -941,9 +1013,8 @@ bool MessageInput::touch_up(int contact)
     }
 
     if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
-        LogWarn << "WithWindowPos guard: reject touch_up after invalid movement" << VAR(contact);
-
-        gesture_target_ = nullptr;
+        LogWarn << "WithWindowPos guard: touch up after abort" << VAR(contact);
+        std::ignore = best_effort_release_mouse("touch up after WithWindowPos abort");
         restore_pos();
         unblock_input();
         return false;
@@ -952,6 +1023,12 @@ bool MessageInput::touch_up(int contact)
     bool reuse_gesture = gesture_target_ && IsWindow(gesture_target_);
     HWND target = reuse_gesture ? gesture_target_ : send_activate();
     gesture_target_ = nullptr;
+    OnScopeLeave([this]() {
+        mouse_down_sent_ = false;
+        mouse_down_contact_ = 0;
+        last_mouse_x_ = 0;
+        last_mouse_y_ = 0;
+    });
 
     OnScopeLeave([this]() { unblock_input(); });
 
@@ -1054,8 +1131,12 @@ bool MessageInput::scroll(int dx, int dy)
         return false;
     }
 
-    if (config_.with_window_pos) {
-        reset_windowpos_guard_state();
+    if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
+        LogWarn << "WithWindowPos guard: previous invalid movement, reject input" << VAR(dx) << VAR(dy);
+        std::ignore = best_effort_release_mouse("scroll after WithWindowPos abort");
+        restore_pos();
+        unblock_input();
+        return false;
     }
 
     HWND target = send_activate();
@@ -1068,6 +1149,10 @@ bool MessageInput::scroll(int dx, int dy)
     save_pos();
 
     if (!prepare_mouse_position(target_pos.first, target_pos.second)) {
+        if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
+            LogWarn << "WithWindowPos guard: previous invalid movement, reject input" << VAR(dx) << VAR(dy);
+            std::ignore = best_effort_release_mouse("scroll prepare after WithWindowPos abort");
+        }
         restore_pos();
         return false;
     }
