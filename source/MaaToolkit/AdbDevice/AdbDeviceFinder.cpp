@@ -284,6 +284,20 @@ std::vector<AdbDeviceFinder::Emulator> AdbDeviceFinder::find_emulators() const
         result.emplace_back(std::move(emulator));
     }
 
+    // Platform-specific fallback discovery (e.g. registry lookup for elevated-process emulators like Androws).
+    // Merged here so downstream logic in find() treats them uniformly. Deduplicated by adb_path against
+    // process-enumerated entries to avoid connecting to the same adb server twice.
+    for (auto& extra : find_extra_emulators()) {
+        if (extra.adb_path.empty() || !std::filesystem::exists(extra.adb_path)) {
+            LogWarn << "extra emulator has invalid adb_path" << VAR(extra);
+            continue;
+        }
+        if (!seen_adb_paths.insert(extra.adb_path).second) {
+            continue;
+        }
+        result.emplace_back(std::move(extra));
+    }
+
     LogInfo << VAR(result);
 
     return result;
