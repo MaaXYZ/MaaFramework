@@ -193,6 +193,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MaaFgo](https://github.com/xlxyvergil/MaaFgo)![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/xlxyvergil/MaaFgo) ![activity](https://img.shields.io/github/commit-activity/m/xlxyvergil/MaaFgo?color=%23ff69b4)  
     FGO 小助手。使用图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+- [MaaNTE](https://github.com/1bananachicken/MaaNTE)![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)![license](https://img.shields.io/github/license/1bananachicken/MaaNTE)![activity](https://img.shields.io/github/commit-activity/m/1bananachicken/MaaNTE?color=%23ff69b4)![stars](https://img.shields.io/github/stars/1bananachicken/MaaNTE?style=social)
+    异环小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
 
