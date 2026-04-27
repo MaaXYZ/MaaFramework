@@ -176,8 +176,8 @@ private:
     std::atomic<bool> mouse_lock_follow_active_ = false;
     bool tracking_thread_started_for_lock_follow_ = false;
 
-    POINT lock_anchor_cursor_ = {};
-    RECT lock_anchor_window_ = {};
+    POINT lock_anchor_cursor_ = { };
+    RECT lock_anchor_window_ = { };
     int lock_offset_x_ = 0;
     int lock_offset_y_ = 0;
 };

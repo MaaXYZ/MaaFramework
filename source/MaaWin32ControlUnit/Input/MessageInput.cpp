@@ -833,7 +833,7 @@ std::pair<int, int> MessageInput::get_target_pos() const
     }
 
     // 未设置时返回窗口客户区中心
-    RECT rect = {};
+    RECT rect = { };
     if (hwnd_ && GetClientRect(hwnd_, &rect)) {
         return { (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2 };
     }
@@ -1194,7 +1194,7 @@ bool MessageInput::relative_move(int dx, int dy)
     // 标记：这次 SendInput 产生的 WM_INPUT 不要被 RawInput handler 对冲
     counter_pending_++;
 
-    INPUT input = {};
+    INPUT input = { };
     input.type = INPUT_MOUSE;
     input.mi.dx = dx;
     input.mi.dy = dy;
@@ -1483,7 +1483,7 @@ void MessageInput::process_mouse_lock_follow_frame()
 
 bool MessageInput::create_rawinput_window()
 {
-    WNDCLASSEXW wc = {};
+    WNDCLASSEXW wc = { };
     wc.cbSize = sizeof(wc);
     wc.lpfnWndProc = RawInputWndProc;
     wc.hInstance = GetModuleHandleW(NULL);
@@ -1499,7 +1499,7 @@ bool MessageInput::create_rawinput_window()
     }
 
     // 注册接收鼠标 RawInput（RIDEV_INPUTSINK 确保后台也能收到）
-    RAWINPUTDEVICE rid = {};
+    RAWINPUTDEVICE rid = { };
     rid.usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
     rid.usUsage = 0x02;     // HID_USAGE_GENERIC_MOUSE
     rid.dwFlags = RIDEV_INPUTSINK;
@@ -1521,7 +1521,7 @@ void MessageInput::destroy_rawinput_window()
         return;
     }
 
-    RAWINPUTDEVICE rid = {};
+    RAWINPUTDEVICE rid = { };
     rid.usUsagePage = 0x01;
     rid.usUsage = 0x02;
     rid.dwFlags = RIDEV_REMOVE;
@@ -1540,7 +1540,7 @@ void MessageInput::send_counter_move(int raw_dx, int raw_dy)
 
     counter_pending_++;
 
-    INPUT counter = {};
+    INPUT counter = { };
     counter.type = INPUT_MOUSE;
     counter.mi.dx = -raw_dx;
     counter.mi.dy = -raw_dy;
@@ -1563,7 +1563,7 @@ bool MessageInput::handle_rawinput_message(LPARAM lParam)
         return false;
     }
 
-    RAWINPUT raw = {};
+    RAWINPUT raw = { };
     UINT copied = size;
     if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, &raw, &copied, sizeof(RAWINPUTHEADER)) != size) {
         return false;

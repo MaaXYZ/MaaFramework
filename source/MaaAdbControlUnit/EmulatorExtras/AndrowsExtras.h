@@ -25,7 +25,7 @@ class AndrowsExtras
 public:
     // agent_path: path to the minitouch agent directory.
     // Pass empty path (default) when only screencap functionality is needed.
-    explicit AndrowsExtras(std::filesystem::path agent_path = {});
+    explicit AndrowsExtras(std::filesystem::path agent_path = { });
 
     virtual ~AndrowsExtras() override;
 

@@ -40,7 +40,7 @@ bool AndrowsExtras::parse(const json::value& config)
         return false;
     }
 
-    app_package_ = config.get("extras", "androws", "app_package", std::string {});
+    app_package_ = config.get("extras", "androws", "app_package", std::string { });
     LogInfo << VAR(app_package_);
 
     // ADB shell command generator: {ADB} -s {ADB_SERIAL} shell {ANDROWS_SHELL_CMD}
@@ -118,8 +118,12 @@ bool AndrowsExtras::request_display_info()
     }
 
     auto trim = [](std::string_view s) {
-        while (!s.empty() && s.front() == ' ') s.remove_prefix(1);
-        while (!s.empty() && s.back() == ' ') s.remove_suffix(1);
+        while (!s.empty() && s.front() == ' ') {
+            s.remove_prefix(1);
+        }
+        while (!s.empty() && s.back() == ' ') {
+            s.remove_suffix(1);
+        }
         return s;
     };
     // Parse width and height from output (take the last "WxH" pattern to prefer Override size)
