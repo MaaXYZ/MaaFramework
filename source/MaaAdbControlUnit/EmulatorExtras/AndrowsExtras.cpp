@@ -2,6 +2,7 @@
 
 #include "AndrowsExtras.h"
 
+#include <charconv>
 #include <cmath>
 #include <format>
 #include <sstream>
@@ -116,6 +117,11 @@ bool AndrowsExtras::request_display_info()
         return MtouchHelper::request_display_info();
     }
 
+    auto trim = [](std::string_view s) {
+        while (!s.empty() && s.front() == ' ') s.remove_prefix(1);
+        while (!s.empty() && s.back() == ' ') s.remove_suffix(1);
+        return s;
+    };
     // Parse width and height from output (take the last "WxH" pattern to prefer Override size)
     int w = 0;
     int h = 0;
@@ -127,26 +133,16 @@ bool AndrowsExtras::request_display_info()
             continue;
         }
         std::string value_part = line.substr(pos + 1);
-        int tw = 0, th = 0;
         auto xpos = value_part.find('x');
         if (xpos == std::string::npos) {
             continue;
         }
-        try {
-            // trim spaces before parsing
-            std::string ws = value_part.substr(0, xpos);
-            std::string hs = value_part.substr(xpos + 1);
-            // remove leading/trailing spaces
-            auto trim = [](std::string& s) {
-                while (!s.empty() && s.front() == ' ') s.erase(s.begin());
-                while (!s.empty() && s.back() == ' ') s.pop_back();
-            };
-            trim(ws);
-            trim(hs);
-            tw = std::stoi(ws);
-            th = std::stoi(hs);
-        }
-        catch (...) {
+        auto ws = trim(std::string_view(value_part.data(), xpos));
+        auto hs = trim(std::string_view(value_part.data() + xpos + 1, value_part.size() - xpos - 1));
+        int tw = 0, th = 0;
+        auto [p1, ec1] = std::from_chars(ws.data(), ws.data() + ws.size(), tw);
+        auto [p2, ec2] = std::from_chars(hs.data(), hs.data() + hs.size(), th);
+        if (ec1 != std::errc() || ec2 != std::errc()) {
             continue;
         }
         if (tw > 0 && th > 0) {
