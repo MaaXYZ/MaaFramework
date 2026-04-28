@@ -5,13 +5,57 @@
 #include "HwndUtils.hpp"
 #include "MaaUtils/Logger.h"
 
+namespace
+{
+struct MonitorCountEnumContext
+{
+    int count = 0;
+};
+
+BOOL CALLBACK count_intersecting_monitors_proc(HMONITOR, HDC, LPRECT, LPARAM lparam)
+{
+    auto& context = *reinterpret_cast<MonitorCountEnumContext*>(lparam);
+    ++context.count;
+    return TRUE;
+}
+
+bool rect_spans_multiple_monitors(const RECT& rect)
+{
+    if (rect.right <= rect.left || rect.bottom <= rect.top) {
+        return false;
+    }
+
+    MonitorCountEnumContext context { };
+    if (!EnumDisplayMonitors(nullptr, &rect, count_intersecting_monitors_proc, reinterpret_cast<LPARAM>(&context))) {
+        LogWarn << "EnumDisplayMonitors failed" << GetLastError();
+        return false;
+    }
+
+    return context.count > 1;
+}
+} // namespace
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 std::optional<cv::Mat> DesktopDupWindowScreencap::screencap()
 {
     if (!hwnd_) {
         LogError << "hwnd_ is nullptr";
+        last_screencap_info_ = {};
         return std::nullopt;
+    }
+
+    RECT initial_client_rect_screen = get_window_client_rect_screen();
+    if (initial_client_rect_screen.right <= initial_client_rect_screen.left || initial_client_rect_screen.bottom <= initial_client_rect_screen.top) {
+        LogError << "Invalid initial client rect" << VAR(initial_client_rect_screen.left) << VAR(initial_client_rect_screen.top)
+                 << VAR(initial_client_rect_screen.right) << VAR(initial_client_rect_screen.bottom);
+        last_screencap_info_ = {};
+        return std::nullopt;
+    }
+
+    if (rect_spans_multiple_monitors(initial_client_rect_screen)) {
+        LogInfo << "Client rect spans multiple monitors, falling back to screen DC capture";
+        return screencap_from_screen_dc();
     }
 
     // Ensure the window is fully visible on the monitor before screencap
@@ -22,6 +66,7 @@ std::optional<cv::Mat> DesktopDupWindowScreencap::screencap()
     // 调用基类方法获取全屏截图（BGR格式）
     auto opt_img = DesktopDupScreencap::screencap();
     if (!opt_img) {
+        last_screencap_info_ = {};
         return std::nullopt;
     }
     const cv::Mat& img = *opt_img;
@@ -31,14 +76,15 @@ std::optional<cv::Mat> DesktopDupWindowScreencap::screencap()
     if (client_rect_screen.right <= client_rect_screen.left || client_rect_screen.bottom <= client_rect_screen.top) {
         LogError << "Invalid client rect" << VAR(client_rect_screen.left) << VAR(client_rect_screen.top) << VAR(client_rect_screen.right)
                  << VAR(client_rect_screen.bottom);
+        last_screencap_info_ = {};
         return std::nullopt;
     }
 
     // 获取当前输出（显示器）的桌面坐标
     RECT output_desktop = get_output_desktop_coordinates();
     if (output_desktop.right <= output_desktop.left || output_desktop.bottom <= output_desktop.top) {
-        LogError << "Failed to get output desktop coordinates";
-        return std::nullopt;
+        LogWarn << "Failed to get output desktop coordinates, falling back to screen DC capture";
+        return screencap_from_screen_dc();
     }
 
     // 将窗口坐标转换为相对于该显示器的坐标
@@ -49,16 +95,24 @@ std::optional<cv::Mat> DesktopDupWindowScreencap::screencap()
 
     // 检查裁剪区域是否在图像范围内
     if (crop_x < 0 || crop_y < 0 || crop_x + client_width > img.cols || crop_y + client_height > img.rows) {
-        LogError << "Client rect out of bounds" << VAR(crop_x) << VAR(crop_y) << VAR(client_width) << VAR(client_height) << VAR(img.cols)
-                 << VAR(img.rows) << VAR(output_desktop.left) << VAR(output_desktop.top);
-        return std::nullopt;
+        LogWarn << "Client rect out of bounds, falling back to screen DC capture" << VAR(crop_x) << VAR(crop_y) << VAR(client_width)
+                << VAR(client_height) << VAR(img.cols) << VAR(img.rows) << VAR(output_desktop.left) << VAR(output_desktop.top);
+        return screencap_from_screen_dc();
     }
 
     // 裁剪出窗口客户区
     cv::Rect roi(crop_x, crop_y, client_width, client_height);
     cv::Mat cropped = img(roi);
 
+    last_screencap_info_ = {};
     return cropped;
+}
+
+std::optional<cv::Mat> DesktopDupWindowScreencap::screencap_from_screen_dc()
+{
+    auto fallback = screen_dc_fallback_.screencap();
+    last_screencap_info_ = screen_dc_fallback_.last_screencap_info();
+    return fallback;
 }
 
 RECT DesktopDupWindowScreencap::get_window_client_rect_screen() const
@@ -110,4 +164,3 @@ RECT DesktopDupWindowScreencap::get_output_desktop_coordinates() const
 }
 
 MAA_CTRL_UNIT_NS_END
-
