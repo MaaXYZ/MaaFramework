@@ -153,19 +153,30 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     if (border_left + client_width > raw.cols) {
         border_left = raw.cols - client_width;
     }
-    if (client_height > raw.rows) {
-        client_height = raw.rows;
+    if (client_height > raw_height) {
+        client_height = raw_height;
     }
     if (border_top + client_height > raw.rows) {
         border_top = raw.rows - client_height;
     }
 
     cv::Rect client_roi(border_left, border_top, client_width, client_height);
-    cv::Mat image = raw(client_roi);
 
-    cv::Mat result = bgra_to_bgr(image);
-    cached_image_ = result.clone();
-    return result;
+    switch (texture_desc_.Format) {
+    case DXGI_FORMAT_B8G8R8A8_UNORM: {
+        cv::Mat raw(raw_height, raw_width, CV_8UC4, mapped.pData, mapped.RowPitch);
+        cached_image_ = bgra_to_bgr(raw(client_roi));
+        return cached_image_;
+    }
+    case DXGI_FORMAT_R16G16B16A16_FLOAT: {
+        cv::Mat raw(raw_height, raw_width, CV_16FC4, mapped.pData, mapped.RowPitch);
+        cached_image_ = raw(client_roi).clone();
+        return cached_image_;
+    }
+    default:
+        LogError << "Unsupported frame format" << VAR(texture_desc_.Format);
+        return std::nullopt;
+    }
 }
 
 bool FramePoolScreencap::init()
