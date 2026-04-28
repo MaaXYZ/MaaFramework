@@ -19,7 +19,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="112" column="13"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="114" column="13"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -74,7 +74,7 @@
         <link refid="classScrollableUnit"/>
       </node>
     </collaborationgraph>
-    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="106" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="110" bodyend="113"/>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="108" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="112" bodyend="115"/>
     <listofallmembers>
       <member refid="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" prot="public" virt="pure-virtual"><scope>MacOSControlUnitAPI</scope><name>click</name></member>
       <member refid="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" prot="public" virt="pure-virtual"><scope>MacOSControlUnitAPI</scope><name>click_key</name></member>

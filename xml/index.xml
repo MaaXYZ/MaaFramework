@@ -155,6 +155,7 @@
   <compound refid="classWin32ControlUnitAPI" kind="class"><name>Win32ControlUnitAPI</name>
     <member refid="classWin32ControlUnitAPI_1a0c919ea1e0bd03379b1459e6e09e425e" kind="function"><name>~Win32ControlUnitAPI</name></member>
     <member refid="classWin32ControlUnitAPI_1a23c7db44eae91fcecfb87800016ff288" kind="function"><name>set_mouse_lock_follow</name></member>
+    <member refid="classWin32ControlUnitAPI_1a0e52125c2e3d9707510d0d569c92ac51" kind="function"><name>set_background_managed_keys_option</name></member>
   </compound>
   <compound refid="classWlRootsControlUnitAPI" kind="class"><name>WlRootsControlUnitAPI</name>
     <member refid="classWlRootsControlUnitAPI_1a11f61ddf28bfa39ca3ce354d0442e640" kind="function"><name>~WlRootsControlUnitAPI</name></member>
@@ -562,6 +563,7 @@
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105" kind="enumvalue"><name>MaaCtrlOption_ScreenshotUseRawSize</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003aac6a4d810461a9730c85dff6574c22bd" kind="enumvalue"><name>MaaCtrlOption_MouseLockFollow</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003adb1dd8b0b6088d34886dc81f6fef505c" kind="enumvalue"><name>MaaCtrlOption_ScreenshotResizeMethod</name></member>
+    <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003acbaa16432d44e9676b61a9acfce010e1" kind="enumvalue"><name>MaaCtrlOption_BackgroundManagedKeys</name></member>
     <member refid="MaaDef_8h_1a7ce6a82a2484734da58c3c422d19a9b1" kind="enum"><name>MaaTaskerOptionEnum</name></member>
     <member refid="MaaDef_8h_1a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa" kind="enumvalue"><name>MaaTaskerOption_Invalid</name></member>
     <member refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kind="typedef"><name>MaaBool</name></member>

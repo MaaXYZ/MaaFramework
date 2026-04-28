@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"MaaToolkitMacOS_8h.html#a383cc89f8762e8c7e8e5cb0fc7598bbb":[3,0,0,4,3,0,2],
 "MaaToolkitMacOS_8h.html#ac7333b3798dd3c44bd9a58f1a078aaa6":[3,0,0,4,3,0,1],
 "MaaToolkitMacOS_8h.html#ae471356de642c11ad8be5aacc0c6b6be":[3,0,0,4,3,0,0],
 "MaaToolkitMacOS_8h_source.html":[3,0,0,4,3,0],
@@ -104,6 +105,7 @@ var NAVTREEINDEX2 =
 "classShellableUnit.html#aa1f70d3f41339f00ab40f2fb95988e6f":[2,0,24,0],
 "classWin32ControlUnitAPI.html":[2,0,25],
 "classWin32ControlUnitAPI.html#a0c919ea1e0bd03379b1459e6e09e425e":[2,0,25,0],
+"classWin32ControlUnitAPI.html#a0e52125c2e3d9707510d0d569c92ac51":[2,0,25,2],
 "classWin32ControlUnitAPI.html#a23c7db44eae91fcecfb87800016ff288":[2,0,25,1],
 "classWlRootsControlUnitAPI.html":[2,0,26],
 "classWlRootsControlUnitAPI.html#a11f61ddf28bfa39ca3ce354d0442e640":[2,0,26,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX2 =
 "structRecordSwipe.html#aa8e0ab229392ba72368a82f86728f0be":[2,0,20,1],
 "structRecordSwipe.html#aa9600ba192b932e77c943e8445f5b4e5":[2,0,20,2],
 "structRecordSwipe.html#ac7b2d7cefde74a496e40ee2a4ee9c58f":[2,0,20,0],
-"structRecordSwipe.html#adc7cdcd538df3f14ad10b9aeefcaec38":[2,0,20,3],
-"structRecordTouch.html":[2,0,21],
-"structRecordTouch.html#a1a7da180318019e996f72b523a4c67e1":[2,0,21,3]
+"structRecordSwipe.html#adc7cdcd538df3f14ad10b9aeefcaec38":[2,0,20,3]
 };

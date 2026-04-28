@@ -1,5 +1,7 @@
 var NAVTREEINDEX3 =
 {
+"structRecordTouch.html":[2,0,21],
+"structRecordTouch.html#a1a7da180318019e996f72b523a4c67e1":[2,0,21,3],
 "structRecordTouch.html#a6f37c130125b34b7cb5aee355a7bedbf":[2,0,21,2],
 "structRecordTouch.html#aab5878c1a04647e1f335d8c6f7fe29d7":[2,0,21,0],
 "structRecordTouch.html#ab7ddd20d6d36e614c5780bba3dbb1e57":[2,0,21,4],
