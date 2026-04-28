@@ -27,9 +27,10 @@ template <typename Func>
 static int retry_on_eintr(Func&& func)
 {
     int rc;
+    int retries = 0;
     do {
         rc = func();
-    } while (rc < 0 && zmq_errno() == EINTR);
+    } while (rc < 0 && zmq_errno() == EINTR && ++retries < 10);
     return rc;
 }
 
