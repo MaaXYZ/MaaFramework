@@ -23,49 +23,14 @@
 
 MAA_AGENT_NS_BEGIN
 
-static bool is_eintr(const zmq::error_t& e)
-{
-    return e.num() == EINTR;
-}
-
 template <typename Func>
-static auto retry_on_eintr(std::string_view operation, Func&& func)
+static int retry_on_eintr(Func&& func)
 {
-    while (true) {
-        try {
-            return func();
-        }
-        catch (const zmq::error_t& e) {
-            if (!is_eintr(e)) {
-                throw;
-            }
-            LogTrace << "retry after EINTR" << VAR(operation);
-        }
-    }
-}
-
-static zmq::send_result_t send_message(zmq::socket_t& socket, zmq::message_t& msg, zmq::send_flags flags)
-{
-    return retry_on_eintr("send", [&]() { return socket.send(msg, flags); });
-}
-
-static zmq::recv_result_t recv_message(zmq::socket_t& socket, zmq::message_t& msg, zmq::recv_flags flags)
-{
-    return retry_on_eintr("recv", [&]() { return socket.recv(msg, flags); });
-}
-
-static bool poll_item(zmq::pollitem_t& pollitem, std::chrono::milliseconds timeout)
-{
-    try {
-        return zmq::poll(&pollitem, 1, timeout) != 0;
-    }
-    catch (const zmq::error_t& e) {
-        if (!is_eintr(e)) {
-            throw;
-        }
-        LogTrace << "retry after EINTR" << VAR(timeout);
-        return false;
-    }
+    int rc;
+    do {
+        rc = func();
+    } while (rc < 0 && zmq_errno() == EINTR);
+    return rc;
 }
 
 Transceiver::~Transceiver()
@@ -296,7 +261,7 @@ bool Transceiver::alive()
 {
     std::unique_lock lock(socket_mutex_);
     return zmq_sock_.handle() != nullptr
-           && retry_on_eintr("alive", [&]() { return zmq::detail::poll(&zmq_pollitem_send_, 1, 0); });
+           && retry_on_eintr([&] { return zmq_poll(&zmq_pollitem_send_, 1, 0); }) > 0;
 }
 
 void Transceiver::set_timeout(const std::chrono::milliseconds& timeout)
@@ -314,7 +279,8 @@ bool Transceiver::poll(zmq::pollitem_t& pollitem)
         auto remaining_time = timeout_ > elapsed ? timeout_ - elapsed : std::chrono::milliseconds(0);
         auto interval = std::min(remaining_time, std::chrono::milliseconds(1000));
 
-        if (poll_item(pollitem, interval)) {
+        int rc = retry_on_eintr([&] { return zmq_poll(&pollitem, 1, static_cast<long>(interval.count())); });
+        if (rc > 0) {
             return true;
         }
 
@@ -341,8 +307,8 @@ bool Transceiver::send(const json::value& j)
     std::string jstr = j.dumps();
     zmq::message_t msg(jstr.data(), jstr.size());
 
-    bool sent = send_message(zmq_sock_, msg, zmq::send_flags::dontwait).has_value();
-    if (!sent) {
+    int rc = retry_on_eintr([&] { return zmq_msg_send(msg.handle(), zmq_sock_.handle(), ZMQ_DONTWAIT); });
+    if (rc < 0) {
         LogError << "failed to send msg" << VAR(j);
         return false;
     }
@@ -360,8 +326,8 @@ std::optional<json::value> Transceiver::recv()
 
     zmq::message_t msg;
 
-    auto size_opt = recv_message(zmq_sock_, msg, zmq::recv_flags::dontwait);
-    if (!size_opt || *size_opt == 0) {
+    int rc = retry_on_eintr([&] { return zmq_msg_recv(msg.handle(), zmq_sock_.handle(), ZMQ_DONTWAIT); });
+    if (rc <= 0) {
         LogError << "failed to recv msg" << VAR(ipc_addr_);
         return std::nullopt;
     }
@@ -402,16 +368,16 @@ std::string Transceiver::send_image(const cv::Mat& mat)
     }
     std::string jstr = json::value(header).dumps();
     zmq::message_t header_msg(jstr.data(), jstr.size());
-    bool sent = send_message(zmq_sock_, header_msg, zmq::send_flags::dontwait).has_value();
-    if (!sent) {
+    int rc = retry_on_eintr([&] { return zmq_msg_send(header_msg.handle(), zmq_sock_.handle(), ZMQ_DONTWAIT); });
+    if (rc < 0) {
         LogError << "failed to send header" << VAR(header) << VAR(ipc_addr_);
         return { };
     }
 
     // send image data
     zmq::message_t img_msg(mat.data, mat.total() * mat.elemSize());
-    sent = send_message(zmq_sock_, img_msg, zmq::send_flags::none).has_value();
-    if (!sent) {
+    rc = retry_on_eintr([&] { return zmq_msg_send(img_msg.handle(), zmq_sock_.handle(), 0); });
+    if (rc < 0) {
         LogError << "failed to send msg" << VAR(ipc_addr_);
         return { };
     }
@@ -439,16 +405,16 @@ std::string Transceiver::send_image_encoded(const ImageEncodedBuffer& encoded_da
     }
     std::string jstr = json::value(header).dumps();
     zmq::message_t header_msg(jstr.data(), jstr.size());
-    bool sent = send_message(zmq_sock_, header_msg, zmq::send_flags::dontwait).has_value();
-    if (!sent) {
+    int rc = retry_on_eintr([&] { return zmq_msg_send(header_msg.handle(), zmq_sock_.handle(), ZMQ_DONTWAIT); });
+    if (rc < 0) {
         LogError << "failed to send encoded header" << VAR(header) << VAR(ipc_addr_);
         return { };
     }
 
     // send encoded image data
     zmq::message_t img_msg(encoded_data.data(), encoded_data.size());
-    sent = send_message(zmq_sock_, img_msg, zmq::send_flags::none).has_value();
-    if (!sent) {
+    rc = retry_on_eintr([&] { return zmq_msg_send(img_msg.handle(), zmq_sock_.handle(), 0); });
+    if (rc < 0) {
         LogError << "failed to send encoded image data" << VAR(ipc_addr_);
         return { };
     }
@@ -500,8 +466,8 @@ void Transceiver::handle_image(const ImageHeader& header)
     std::unique_lock lock(socket_mutex_);
 
     zmq::message_t msg;
-    auto size_opt = recv_message(zmq_sock_, msg, zmq::recv_flags::none);
-    if (!size_opt || *size_opt == 0) {
+    int rc = retry_on_eintr([&] { return zmq_msg_recv(msg.handle(), zmq_sock_.handle(), 0); });
+    if (rc <= 0) {
         LogError << "failed to recv msg" << VAR(ipc_addr_);
         return;
     }
@@ -522,8 +488,8 @@ void Transceiver::handle_image_encoded(const ImageEncodedHeader& header)
     std::unique_lock lock(socket_mutex_);
 
     zmq::message_t msg;
-    auto size_opt = recv_message(zmq_sock_, msg, zmq::recv_flags::none);
-    if (!size_opt || *size_opt == 0) {
+    int rc = retry_on_eintr([&] { return zmq_msg_recv(msg.handle(), zmq_sock_.handle(), 0); });
+    if (rc <= 0) {
         LogError << "failed to recv encoded image data" << VAR(ipc_addr_);
         return;
     }
