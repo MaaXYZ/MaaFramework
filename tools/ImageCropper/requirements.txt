@@ -1,2 +1,2 @@
-MaaFw~=4.0
+MaaFw
 opencv_python~=4.10
