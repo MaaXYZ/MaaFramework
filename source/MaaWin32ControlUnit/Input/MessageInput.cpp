@@ -63,6 +63,7 @@ MessageInput::MessageInput(HWND hwnd, Config config)
     , config_(config)
 {
     if (config_.with_window_pos) {
+        window_pos_guard_enabled_ = false;
         tracking_thread_ = std::thread(&MessageInput::tracking_thread_func, this);
     }
 }
@@ -393,6 +394,10 @@ bool MessageInput::move_window_to_align_cursor(int x, int y)
 
 bool MessageInput::is_window_move_allowed(int new_left, int new_top, const RECT& current_rect, const char* reason)
 {
+    if (!window_pos_guard_enabled_) {
+        return true;
+    }
+
     RECT base_rect = window_pos_saved_ ? saved_window_rect_ : current_rect;
 
     HMONITOR origin_monitor = MonitorFromRect(&base_rect, MONITOR_DEFAULTTONULL);
