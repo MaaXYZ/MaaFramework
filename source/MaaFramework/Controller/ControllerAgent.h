@@ -290,6 +290,7 @@ private: // options
     bool set_image_use_raw_size(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_mouse_lock_follow_option(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_screenshot_resize_method(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_background_managed_keys_option(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     bool need_to_stop_ = false;

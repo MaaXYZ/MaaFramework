@@ -1,10 +1,14 @@
 #pragma once
+
 #include "Common/Conf.h"
-#include "wayland/virtual-keyboard.h"
-#include "wayland/wlr-screencopy.h"
-#include "wayland/wlr-virtual-pointer.h"
+#include "Protocol/virtual-keyboard.h"
+#include "Protocol/wlr-screencopy.h"
+#include "Protocol/wlr-virtual-pointer.h"
+
 #include <memory>
+
 #include <wayland-client-protocol.h>
+
 #define DEFAULT_DELETER_FDECL(TypeName) \
     namespace std                       \
     {                                   \

@@ -59,10 +59,10 @@ body:
       attributes:
           label: 日志文件 / Log Files
           description: |
-              请上传完整的 maa.log 文件（位于 `<工作目录>/debug/maa.log`）  
-              Please upload the complete maa.log file (located at `<working_dir>/debug/maa.log`)
+              请上传完整的 maafw.log 文件（位于 `<工作目录>/debug/maafw.log`）  
+              Please upload the complete maafw.log file (located at `<working_dir>/debug/maafw.log`)
 
-              💡 若日志过短，请同时上传 `maa.bak.log`；建议对比正常/异常日志时重命名区分
+              💡 若日志过短，请同时上传 `maafw.bak.log`；建议对比正常/异常日志时重命名区分
       validations:
           required: true
 
@@ -139,7 +139,7 @@ body:
               ## 📋 提交清单 / Submission Checklist
 
               ### 所有问题必需 / Required for All Issues
-              - ✅ 完整的 `maa.log` 日志文件  
+              - ✅ 完整的 `maafw.log` 日志文件  
               - ✅ 问题描述（预期 vs 实际）  
               - ✅ MaaFramework 版本号  
 

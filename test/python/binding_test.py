@@ -743,6 +743,64 @@ def test_toolkit():
     print("  PASS: toolkit")
 
 
+def test_background_managed_keys_api():
+    print("\n=== test_background_managed_keys_api ===")
+
+    # Test with DbgController (non-Win32, should fail)
+    dbg_controller = DbgController(
+        install_dir / "test" / "PipelineSmoking" / "Screenshot",
+    )
+    dbg_ret = dbg_controller.set_background_managed_keys([0x57, 0x41])
+    print(f"  dbg_controller set_background_managed_keys: {dbg_ret}")
+    assert not dbg_ret, "DbgController should not support BackgroundManagedKeys"
+
+    # Test with Win32 controller if available
+    desktop_windows = Toolkit.find_desktop_windows()
+    if desktop_windows:
+        win32_controller = None
+        for window in desktop_windows:
+            try:
+                win32_controller = Win32Controller(window.hwnd)
+                break
+            except RuntimeError:
+                continue
+
+        if win32_controller is not None:
+            # Set option before connection
+            ret = win32_controller.set_background_managed_keys([0x57, 0x41])
+            print(
+                f"  win32_controller set_background_managed_keys (before connection): {ret}"
+            )
+            assert (
+                ret
+            ), "Win32Controller should support BackgroundManagedKeys before connection"
+
+            # After connection, setting non-empty array should succeed
+            win32_controller.post_connection().wait()
+            ret_post = win32_controller.set_background_managed_keys([0x57, 0x41])
+            print(
+                f"  win32_controller set_background_managed_keys (after connection): {ret_post}"
+            )
+            assert (
+                ret_post
+            ), "Win32Controller should support BackgroundManagedKeys after connection"
+
+            # Empty array should clear managed keys
+            ret_clear = win32_controller.set_background_managed_keys([])
+            print(
+                f"  win32_controller set_background_managed_keys (clear with empty): {ret_clear}"
+            )
+            assert (
+                ret_clear
+            ), "Win32Controller should support clearing BackgroundManagedKeys with empty array"
+        else:
+            print("  SKIP: failed to create Win32 controller")
+    else:
+        print("  SKIP: no desktop windows found for Win32 test")
+
+    print("  PASS: background managed keys API")
+
+
 def test_win32_relative_move():
     print("\n=== test_win32_relative_move ===")
 
@@ -802,6 +860,9 @@ if __name__ == "__main__":
 
     # 测试 Toolkit
     test_toolkit()
+
+    # 测试 BackgroundManagedKeys 选项
+    test_background_managed_keys_api()
 
     # 测试 Win32 relative_move 正路径
     test_win32_relative_move()

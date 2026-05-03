@@ -133,6 +133,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [maafw-cli](https://github.com/otowa-kotori/maafw-cli) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/otowa-kotori/maafw-cli) ![activity](https://img.shields.io/github/commit-activity/m/otowa-kotori/maafw-cli?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/otowa-kotori/maafw-cli?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/maafw-cli/)  
     A MaaFramework command-line interface (CLI) for AI Agents.
 
+- [maaframework-skills](https://github.com/Kutius/maaframework-skills) ![license](https://img.shields.io/github/license/Kutius/maaframework-skills) ![activity](https://img.shields.io/github/commit-activity/m/Kutius/maaframework-skills?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Kutius/maaframework-skills?style=social)  
+    Claude Code skill for MaaFramework — structured reference docs for AI-assisted pipeline development.
+
 ### Application
 
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
@@ -218,8 +221,11 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaGFNeuralCloud](https://github.com/PinkMMF/MaaGFNeuralCloud) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/PinkMMF/MaaGFNeuralCloud) ![activity](https://img.shields.io/github/commit-activity/m/PinkMMF/MaaGFNeuralCloud?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/PinkMMF/MaaGFNeuralCloud?style=social)  
     An assistant tool for Girls' Frontline: Project Neural Cloud using MaaFramework.
 
-- [MaaFgo](https://github.com/xlxyvergil/MaaFgo)![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/xlxyvergil/MaaFgo) ![activity](https://img.shields.io/github/commit-activity/m/xlxyvergil/MaaFg?color=%23ff69b4)  
+- [MaaFgo](https://github.com/xlxyvergil/MaaFgo)![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/xlxyvergil/MaaFgo) ![activity](https://img.shields.io/github/commit-activity/m/xlxyvergil/MaaFgo?color=%23ff69b4)  
     FGO Assistant. Featuring image recognition and simulated control for a truly hands-free experience! Powered by MaaFramework.
+
+- [MaaNTE](https://github.com/1bananachicken/MaaNTE) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/1bananachicken/MaaNTE) ![activity](https://img.shields.io/github/commit-activity/m/1bananachicken/MaaNTE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/1bananachicken/MaaNTE?style=social)  
+    NTE Assistant. Image recognition + simulation control to free your hands! Powered by MaaFramework!
 
 ## Eco-Building
 

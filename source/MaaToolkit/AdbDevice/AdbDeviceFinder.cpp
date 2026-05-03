@@ -140,6 +140,36 @@ bool request_waydroid_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI
     return true;
 }
 
+bool request_androws_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> control_unit, AdbDevice& device)
+{
+    if (!control_unit) {
+        return false;
+    }
+
+    // Detect via Tencent-specific property; non-empty means this is an Androws device
+    std::string output;
+    bool ret = control_unit->shell("getprop sys.tencent.imei", output);
+    if (!ret) {
+        return false;
+    }
+    // Trim whitespace/newlines
+    while (!output.empty() && (output.back() == '\n' || output.back() == '\r' || output.back() == ' ')) {
+        output.pop_back();
+    }
+    if (output.empty()) {
+        return false;
+    }
+
+    // Just mark the device; AndrowsExtras will dynamically resolve the correct
+    // display ID at runtime using the app package name.
+    device.config["extras"]["androws"]["enable"] = true;
+    device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
+    device.input_methods = MaaAdbInputMethod_EmulatorExtras;
+
+    LogInfo << "Androws detected" << VAR(device);
+    return true;
+}
+
 bool request_avd_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> control_unit, AdbDevice& device)
 {
     if (!control_unit) {
@@ -198,6 +228,8 @@ std::optional<AdbDevice>
 
     if (request_waydroid_config(control_unit, device)) {
     }
+    else if (request_androws_config(control_unit, device)) {
+    }
     else if (request_avd_config(control_unit, device)) {
     }
     // else if (request_xxx_config(control_unit, device)) {
@@ -250,6 +282,20 @@ std::vector<AdbDeviceFinder::Emulator> AdbDeviceFinder::find_emulators() const
             .adb_path = adb_path,
         };
         result.emplace_back(std::move(emulator));
+    }
+
+    // Platform-specific fallback discovery (e.g. registry lookup for elevated-process emulators like Androws).
+    // Merged here so downstream logic in find() treats them uniformly. Deduplicated by adb_path against
+    // process-enumerated entries to avoid connecting to the same adb server twice.
+    for (auto& extra : find_extra_emulators()) {
+        if (extra.adb_path.empty() || !std::filesystem::exists(extra.adb_path)) {
+            LogWarn << "extra emulator has invalid adb_path" << VAR(extra);
+            continue;
+        }
+        if (!seen_adb_paths.insert(extra.adb_path).second) {
+            continue;
+        }
+        result.emplace_back(std::move(extra));
     }
 
     LogInfo << VAR(result);

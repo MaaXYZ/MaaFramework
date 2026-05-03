@@ -330,6 +330,13 @@ class MyAction(CustomAction):
         # 恢复默认值
         controller.set_screenshot_resize_method(3)
 
+        # 测试 set_background_managed_keys (non-Win32, should fail)
+        result = controller.set_background_managed_keys([0x57, 0x41])
+        print(f"  set_background_managed_keys([0x57, 0x41]): {result}")
+        assert (
+            not result
+        ), "set_background_managed_keys should fail for non-Win32 controller"
+
         # ============================================================
         # Tasker API 补充测试 (详情获取)
         # ============================================================

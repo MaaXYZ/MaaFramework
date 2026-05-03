@@ -5,6 +5,7 @@
 #include <unordered_set>
 
 #include "EmulatorExtras/AVDExtras.h"
+#include "EmulatorExtras/AndrowsExtras.h"
 #include "EmulatorExtras/LDPlayerExtras.h"
 #include "EmulatorExtras/MuMuPlayerExtras.h"
 #include "MaaUtils/Logger.h"
@@ -43,6 +44,7 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
 #ifdef _WIN32
         method_set.emplace(ScreencapAgent::Method::MuMuPlayerExtras);
         method_set.emplace(ScreencapAgent::Method::LDPlayerExtras);
+        method_set.emplace(ScreencapAgent::Method::AndrowsExtras);
 #endif
 #ifndef __ANDROID__
         method_set.emplace(ScreencapAgent::Method::AVDExtras);
@@ -91,6 +93,9 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
             break;
         case Method::LDPlayerExtras:
             unit = std::make_shared<LDPlayerExtras>();
+            break;
+        case Method::AndrowsExtras:
+            unit = std::make_shared<AndrowsExtras>();
             break;
 #endif
 #ifndef __ANDROID__

@@ -71,10 +71,14 @@ private:
     LPARAM make_mouse_lparam(HWND target, int x, int y);
 
     // 在发鼠标消息前把系统状态调整到目标窗口愿意接受的位置。
-    LPARAM prepare_mouse_position(int x, int y);
+    bool prepare_mouse_position(int x, int y);
 
     // WithWindowPos 模式：移动窗口使客户区坐标 (x,y) 与当前鼠标位置重合
     bool move_window_to_align_cursor(int x, int y);
+    bool is_window_move_allowed(int new_left, int new_top, const RECT& current_rect, const char* reason);
+    void abort_windowpos_operation(const char* reason);
+    void reset_windowpos_guard_state();
+    bool best_effort_release_mouse(const char* reason);
 
     // helpers for cursor/window position
     POINT client_to_screen(int x, int y);
@@ -116,6 +120,11 @@ private:
     std::atomic_int pending_mouse_x_ = 0;
     std::atomic_int pending_mouse_y_ = 0;
     std::atomic_bool has_pending_mouse_ = false;
+    std::atomic_bool window_pos_invalid_movement_ = false;
+    std::atomic_bool mouse_down_sent_ = false;
+    std::atomic_int mouse_down_contact_ = 0;
+    std::atomic_int last_mouse_x_ = 0;
+    std::atomic_int last_mouse_y_ = 0;
 
     // 目标进程挂起/恢复
     void open_target_process();
