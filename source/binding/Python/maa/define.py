@@ -223,7 +223,7 @@ class MaaAdbScreencapMethodEnum(IntEnum):
     | RawByNetcat           | Fast       | Low           | Lossless |                                   |
     | MinicapDirect         | Fast       | Low           | Lossy    |                                   |
     | MinicapStream         | Very Fast  | Low           | Lossy    |                                   |
-    | EmulatorExtras        | Very Fast  | Low           | Lossless | Emulators only: MuMu 12, LDPlayer 9 |
+    | EmulatorExtras        | Very Fast  | Low           | Lossless | Emulators only: MuMu 12, LDPlayer 9, Androws |
     """
 
     Null = 0
