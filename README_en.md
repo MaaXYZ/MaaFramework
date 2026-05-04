@@ -200,7 +200,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaNTE](https://github.com/1bananachicken/MaaNTE) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/1bananachicken/MaaNTE) ![activity](https://img.shields.io/github/commit-activity/m/1bananachicken/MaaNTE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/1bananachicken/MaaNTE?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
     NTE Assistant. Image recognition + simulation control to free your hands! Powered by MaaFramework!
 - [MALW](https://github.com/lisadnsess/MALostWord) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/lisadnsess/MALostWord) ![activity](https://img.shields.io/github/commit-activity/m/lisadnsess/MALostWord?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/lisadnsess/MALostWord?style=social)
-   Touhou LostWord Assistant. Image recognition + simulation control to free your hands! Powered by MaaFramework!
+  Touhou LostWord Assistant. Image recognition + simulation control to free your hands! Powered by MaaFramework!
 
 ## Eco-Building
 
