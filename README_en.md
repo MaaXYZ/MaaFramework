@@ -51,6 +51,15 @@ This project is a fork of [MaaXYZ/MaaFramework](https://github.com/MaaXYZ/MaaFra
 
 - Added background clicking functionality by hooking the `GetCursorPos` Windows API.
 
+## Usage
+
+This project is designed to be a drop-in replacement for the original MaaFramework. Simply point your build dependency or submodule link to this repository.
+
+Key Features:
+
+Seamless Integration: When the input method is set to SendMessage, the system will automatically perform a Hook-based click override.
+Zero Code Change: No modifications to your existing business logic or framework code are required.
+
 ## 🔴 HIGH RISK WARNING: READ BEFORE USE
 
 - **ACCOUNT BAN RISK**: The use of API hooking techniques is highly intrusive and is strictly monitored by most game anti-cheat systems. **Using this fork will likely lead to an immediate and permanent account ban.**
