@@ -11,7 +11,10 @@ target_link_libraries(MaaWin32ControlUnit PRIVATE d3d11 dxgi dwmapi runtimeobjec
 
 target_compile_definitions(MaaWin32ControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
 
-add_dependencies(MaaWin32ControlUnit MaaUtils)
+add_dependencies(MaaWin32ControlUnit MaaUtils MaaWin32GetCursorPosHook)
+
+add_custom_command(TARGET MaaWin32ControlUnit POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:MaaWin32GetCursorPosHook> $<TARGET_FILE_DIR:MaaWin32ControlUnit>)
 
 install(
     TARGETS MaaWin32ControlUnit

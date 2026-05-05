@@ -3,6 +3,7 @@ if(WITH_ADB_CONTROLLER)
 endif()
 
 if(WITH_WIN32_CONTROLLER)
+    add_subdirectory(MaaWin32GetCursorPosHook)
     add_subdirectory(MaaWin32ControlUnit)
 endif()
 

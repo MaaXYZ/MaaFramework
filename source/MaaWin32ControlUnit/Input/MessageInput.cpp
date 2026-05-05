@@ -1,5 +1,7 @@
 #include "MessageInput.h"
 
+#include "GetCursorPosHook.h"
+
 #include "MaaUtils/LibraryHolder.h"
 
 #include "MaaUtils/Encoding.h"
@@ -328,6 +330,8 @@ void MessageInput::save_pos()
 
 void MessageInput::finish_pos()
 {
+    clear_get_cursor_pos_hook();
+
     if (config_.with_cursor_pos) {
         restore_cursor_pos();
     }
@@ -344,6 +348,14 @@ void MessageInput::restore_pos()
         restore_window_pos();
         reset_windowpos_guard_state();
     }
+}
+
+void MessageInput::clear_get_cursor_pos_hook()
+{
+    if (!get_cursor_pos_hook_) {
+        return;
+    }
+    get_cursor_pos_hook_->clear_pos();
 }
 
 bool MessageInput::move_window_to_align_cursor(int x, int y)
@@ -506,7 +518,7 @@ bool MessageInput::best_effort_release_mouse(const char* reason)
     return send_or_post_w(target, msg_info.message, msg_info.w_param, lParam);
 }
 
-bool MessageInput::prepare_mouse_position(int x, int y)
+bool MessageInput::prepare_mouse_position(HWND target, int x, int y)
 {
     if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
         LogWarn << "WithWindowPos guard: previous invalid movement, reject input" << VAR(x) << VAR(y);
@@ -532,6 +544,14 @@ bool MessageInput::prepare_mouse_position(int x, int y)
         }
 
         return true;
+    }
+
+    if (use_get_cursor_pos_hook()) {
+        if (!get_cursor_pos_hook_) {
+            get_cursor_pos_hook_ = std::make_unique<GetCursorPosHook>();
+        }
+
+        return get_cursor_pos_hook_->set_pos(target, client_to_screen(x, y));
     }
 
     return true;
@@ -910,7 +930,7 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     save_pos();
 
-    if (!prepare_mouse_position(x, y)) {
+    if (!prepare_mouse_position(target, x, y)) {
         if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
             LogWarn << "WithWindowPos guard: previous invalid movement, reject input" << VAR(contact) << VAR(x) << VAR(y);
             std::ignore = best_effort_release_mouse("touch_down prepare after WithWindowPos abort");
@@ -976,7 +996,9 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    if (!prepare_mouse_position(x, y)) {
+    HWND target = (gesture_target_ && IsWindow(gesture_target_)) ? gesture_target_ : get_active_hwnd();
+
+    if (!prepare_mouse_position(target, x, y)) {
         if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
             LogWarn << "WithWindowPos guard: previous invalid movement, reject input" << VAR(contact) << VAR(x) << VAR(y);
             std::ignore = best_effort_release_mouse("touch_move prepare after WithWindowPos abort");
@@ -987,7 +1009,6 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    HWND target = (gesture_target_ && IsWindow(gesture_target_)) ? gesture_target_ : get_active_hwnd();
     LPARAM lParam = make_mouse_lparam(target, x, y);
 
     if (!send_or_post_w(target, msg_info.message, msg_info.w_param, lParam)) {
@@ -1153,7 +1174,7 @@ bool MessageInput::scroll(int dx, int dy)
 
     save_pos();
 
-    if (!prepare_mouse_position(target_pos.first, target_pos.second)) {
+    if (!prepare_mouse_position(target, target_pos.first, target_pos.second)) {
         if (config_.with_window_pos && window_pos_invalid_movement_.load()) {
             LogWarn << "WithWindowPos guard: previous invalid movement, reject input" << VAR(dx) << VAR(dy);
             std::ignore = best_effort_release_mouse("scroll prepare after WithWindowPos abort");

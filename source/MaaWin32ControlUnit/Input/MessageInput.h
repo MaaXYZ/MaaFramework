@@ -8,10 +8,13 @@
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
+#include <memory>
 #include <mutex>
 #include <thread>
 
 MAA_CTRL_UNIT_NS_BEGIN
+
+class GetCursorPosHook;
 
 class MessageInput : public RelativeMoveInput
 {
@@ -75,7 +78,12 @@ private:
     LPARAM make_mouse_lparam(HWND target, int x, int y);
 
     // 在发鼠标消息前把系统状态调整到目标窗口愿意接受的位置。
-    bool prepare_mouse_position(int x, int y);
+    bool prepare_mouse_position(HWND target, int x, int y);
+    bool use_get_cursor_pos_hook() const
+    {
+        return config_.mode == Mode::SendMessage && !config_.with_cursor_pos && !config_.with_window_pos;
+    }
+    void clear_get_cursor_pos_hook();
 
     // WithWindowPos 模式：移动窗口使客户区坐标 (x,y) 与当前鼠标位置重合
     bool move_window_to_align_cursor(int x, int y);
@@ -148,6 +156,7 @@ private:
     std::pair<int, int> last_pos_;
     bool last_pos_set_ = false;
     HWND gesture_target_ = nullptr;
+    std::unique_ptr<GetCursorPosHook> get_cursor_pos_hook_;
 
     POINT saved_cursor_pos_ = { 0, 0 };
     bool cursor_pos_saved_ = false;
