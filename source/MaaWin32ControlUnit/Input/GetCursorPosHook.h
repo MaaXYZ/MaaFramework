@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Common/Conf.h"
 #include "MaaUtils/SafeWindows.hpp"
 
 #include <string>
