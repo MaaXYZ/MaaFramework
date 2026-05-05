@@ -103,7 +103,17 @@ bool GetCursorPosHook::ensure_ready(HWND target)
 bool GetCursorPosHook::open_target_process(DWORD pid)
 {
     if (process_ && pid_ == pid) {
-        return true;
+        DWORD exit_code = 0;
+        // Only reuse the cached handle if the process is still active.
+        if (GetExitCodeProcess(process_, &exit_code) && exit_code == STILL_ACTIVE) {
+            return true;
+        }
+
+        // The cached handle is no longer valid (process exited or query failed).
+        // Close and reset so we will reopen the process below.
+        CloseHandle(process_);
+        process_ = nullptr;
+        pid_ = 0;
     }
 
     if (process_) {
