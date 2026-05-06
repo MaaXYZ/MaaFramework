@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "MaaFramework Project Interface V2",
-    "description": "MaaFramework 项目接口配置文件 V2 版本的 JSON Schema。💡 v2.5.0：Client 启动 agent 子进程时应按文档约定注入 PI_* 环境变量（见 Project Interface 文档 Agent 子进程环境变量 / Agent subprocess environment variables 章节）",
+    "description": "MaaFramework 项目接口配置文件 V2 版本的 JSON Schema。",
     "type": "object",
     "definitions": {
         "i18nString": {
@@ -837,6 +837,38 @@
             ],
             "additionalProperties": false
         },
+        "pretaskConfig": {
+            "type": "object",
+            "title": "预任务配置",
+            "description": "💡 v2.7.0 Controller 启动前执行的自定义程序配置。Client 应在创建或连接 Controller 前运行该程序；若配置 option，则将 option 取值序列化为紧凑 JSON 字符串并追加为最后一个参数",
+            "properties": {
+                "exec": {
+                    "type": "string",
+                    "title": "预任务程序路径",
+                    "description": "要执行的程序路径，可以是系统 PATH 中的可执行文件。CWD 为 interface.json 所在目录"
+                },
+                "args": {
+                    "type": "array",
+                    "title": "预任务参数",
+                    "description": "可选。固定参数数组，按顺序传递给 exec",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "option": {
+                    "type": "array",
+                    "title": "预任务选项配置",
+                    "description": "可选。数组元素应与外层 option 配置中的键名对应。Client 会收集这些 option 的当前取值并序列化为紧凑 JSON 字符串，追加为最后一个参数；该 option 不参与 pipeline_override 合并",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "exec"
+            ],
+            "additionalProperties": false
+        },
         "agentConfig": {
             "type": "object",
             "title": "代理配置",
@@ -972,6 +1004,22 @@
             "items": {
                 "$ref": "#/definitions/groupItem"
             }
+        },
+        "pretask": {
+            "description": "💡 v2.7.0 可选。Controller 启动前执行的预任务配置。若配置 option，Client 应将 option 取值序列化为最后一个参数",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/pretaskConfig"
+                },
+                {
+                    "type": "array",
+                    "title": "预任务配置数组",
+                    "description": "多个预任务配置。Client 应在 Controller 启动前按数组顺序执行",
+                    "items": {
+                        "$ref": "#/definitions/pretaskConfig"
+                    }
+                }
+            ]
         },
         "agent": {
             "description": "💡 v2.5.0：启动各子进程时 Client 应注入 PI_* 环境变量，详见 Project Interface 文档",
