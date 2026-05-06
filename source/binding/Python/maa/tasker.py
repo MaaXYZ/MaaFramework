@@ -645,12 +645,12 @@ class Tasker:
         Returns:
             bool: 是否成功 / Whether successful
         """
-        encoded_path = str(path).encode()
+        encoded_path_bytes = str(path).encode("utf-8")
         return bool(
             Library.framework().MaaGlobalSetOption(
                 MaaOption(MaaGlobalOptionEnum.LogDir),
-                encoded_path,
-                len(encoded_path),
+                encoded_path_bytes,
+                len(encoded_path_bytes),
             )
         )
 
