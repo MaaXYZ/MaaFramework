@@ -855,6 +855,26 @@
                         "type": "string"
                     }
                 },
+                "name": {
+                    "type": "string",
+                    "title": "预任务唯一标识",
+                    "description": "💡 v2.7.2 可选。建议项目内不重复，便于 Client 在配置文件、日志中区分不同预任务；缺省时 Client 可回退到 exec"
+                },
+                "label": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "预任务显示名称",
+                    "description": "💡 v2.7.2 可选。Client UI 中展示的名称，支持国际化字符串。缺省时 Client 可回退到 name 或 exec"
+                },
+                "description": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "预任务详细描述",
+                    "description": "💡 v2.7.2 可选。Client UI 中的提示/Tooltip。支持国际化字符串、文件路径或 URL，内容支持 Markdown"
+                },
+                "icon": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "预任务图标路径",
+                    "description": "💡 v2.7.2 可选。Client UI 中显示的图标路径，相对于 interface.json 所在目录，支持国际化字符串"
+                },
                 "option": {
                     "type": "array",
                     "title": "预任务选项配置",
