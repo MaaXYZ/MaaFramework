@@ -110,7 +110,7 @@ jobs:
 
             - uses: pnpm/action-setup@v4
               with:
-                  version: latest
+                  version: 10
 
             - name: Use Node
               uses: actions/setup-node@v4
@@ -179,7 +179,7 @@ jobs:
 
             - uses: pnpm/action-setup@v4
               with:
-                  version: latest
+                  version: 10
 
             - name: Use Node
               uses: actions/setup-node@v4
@@ -298,7 +298,7 @@ jobs:
 
             - uses: pnpm/action-setup@v4
               with:
-                  version: latest
+                  version: 10
 
             - name: Use Node
               uses: actions/setup-node@v4
@@ -510,7 +510,7 @@ jobs:
 
             - uses: pnpm/action-setup@v4
               with:
-                  version: latest
+                  version: 10
 
             - name: Use Node
               uses: actions/setup-node@v4
