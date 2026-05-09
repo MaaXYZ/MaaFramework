@@ -32,9 +32,14 @@ MaaBool my_action(
 struct ActionFailedCapture
 {
     bool seen = false;
+    MaaTaskId task_id = MaaInvalidId;
     MaaActId action_id = MaaInvalidId;
     std::string name;
     std::string action;
+    int32_t box_x = 0;
+    int32_t box_y = 0;
+    int32_t box_w = 0;
+    int32_t box_h = 0;
     bool success = true;
 };
 
@@ -47,21 +52,29 @@ void capture_action_failed(void* handle, const char* message, const char* detail
     }
 
     auto parsed = json::parse(details_json);
-    if (!parsed || !parsed->contains("action_details")) {
+    if (!parsed || !parsed->contains("task_id") || !parsed->contains("action_details")) {
         return;
     }
 
     const auto& action_details = parsed->at("action_details");
     if (!action_details.contains("action_id") || !action_details.contains("name") || !action_details.contains("action")
-        || !action_details.contains("success")) {
+        || !action_details.contains("box") || !action_details.contains("success")) {
         return;
     }
 
     auto* capture = static_cast<ActionFailedCapture*>(trans_arg);
+    capture->task_id = static_cast<MaaTaskId>(parsed->at("task_id").as_integer());
     capture->seen = true;
     capture->action_id = static_cast<MaaActId>(action_details.at("action_id").as_integer());
     capture->name = action_details.at("name").as_string();
     capture->action = action_details.at("action").as_string();
+    const auto& box = action_details.at("box").as_array();
+    if (box.size() == 4) {
+        capture->box_x = static_cast<int32_t>(box[0].as_integer());
+        capture->box_y = static_cast<int32_t>(box[1].as_integer());
+        capture->box_w = static_cast<int32_t>(box[2].as_integer());
+        capture->box_h = static_cast<int32_t>(box[3].as_integer());
+    }
     capture->success = action_details.at("success").as_boolean();
 }
 
@@ -84,18 +97,19 @@ bool run_without_file(const std::filesystem::path& testset_dir)
         auto sink_id = MaaTaskerAddContextSink(tasker_handle, &capture_action_failed, &capture);
 
         auto box = MaaRectCreate();
-        MaaRectSet(box, 0, 0, 0, 0);
+        MaaRectSet(box, 10, 20, 30, 40);
 
-        auto failed_id = MaaTaskerPostAction(tasker_handle, "Click", "{}", box, "{}");
+        auto failed_id = MaaTaskerPostAction(tasker_handle, "Click", R"({"target":[0,0,0,0]})", box, "{}");
         MaaTaskerWait(tasker_handle, failed_id);
 
         MaaRectDestroy(box);
 
         MaaTaskerRemoveContextSink(tasker_handle, sink_id);
 
-        if (failed_id == MaaInvalidId || !capture.seen || capture.action_id == MaaInvalidId || capture.name.empty()
-            || capture.action != "Click" || capture.success) {
-            std::cout << "Failed to preserve action detail on failed action" << std::endl;
+        if (failed_id == MaaInvalidId || !capture.seen || capture.task_id != failed_id || capture.action_id == MaaInvalidId
+            || capture.name.empty() || capture.action != "Click" || capture.box_x != 10 || capture.box_y != 20 || capture.box_w != 30
+            || capture.box_h != 40 || capture.success) {
+            std::cout << "Failed to preserve or correctly associate action detail on failed action" << std::endl;
             return false;
         }
     }

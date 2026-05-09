@@ -133,14 +133,19 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
                 << VAR(static_cast<int>(pipeline_data.action_type));
 
         auto action_iter = kTypeNameMap.find(pipeline_data.action_type);
-        result = ActionResult {
-            .action_id = action_id_,
-            .name = pipeline_data.name,
-            .action = action_iter == kTypeNameMap.end() ? std::string() : action_iter->second,
-            .box = reco_hit,
-            .success = false,
-            .detail = json::object(),
-        };
+        result.action_id = action_id_;
+        if (result.name.empty()) {
+            result.name = pipeline_data.name;
+        }
+        if (result.action.empty()) {
+            result.action =
+                action_iter == kTypeNameMap.end() ? std::format("<unknown:{}>", static_cast<int>(pipeline_data.action_type))
+                                                  : action_iter->second;
+        }
+        if (result.box.empty()) {
+            result.box = reco_hit;
+        }
+        result.success = false;
     }
 
     tasker_->runtime_cache().set_action_detail(result.action_id, result);
