@@ -83,12 +83,12 @@ jobs:
 
             - uses: pnpm/action-setup@v4
               with:
-                  version: latest
+                  version: 10
 
             - name: Use Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 22
 
             - name: Prepare Node Binding
               shell: bash
@@ -204,12 +204,12 @@ jobs:
 
             - uses: pnpm/action-setup@v4
               with:
-                  version: latest
+                  version: 10
 
             - name: Use Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 22
 
             - name: Prepare Node Binding
               shell: bash
@@ -335,12 +335,12 @@ jobs:
 
             - uses: pnpm/action-setup@v4
               with:
-                  version: latest
+                  version: 10
 
             - name: Use Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 22
 
             - name: Prepare Node Binding
               shell: bash
