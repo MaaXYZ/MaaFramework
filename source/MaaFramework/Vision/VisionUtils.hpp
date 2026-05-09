@@ -50,9 +50,11 @@ inline static void sort_by_radiation_(ResultsVec& results, cv::Point center)
         center = { union_rect.x + union_rect.width / 2, union_rect.y + union_rect.height / 2 };
     }
     std::ranges::sort(results, [&center](const auto& lhs, const auto& rhs) -> bool {
-        double ld = std::hypot(lhs.box.x + lhs.box.width / 2.0 - center.x, lhs.box.y + lhs.box.height / 2.0 - center.y);
-        double rd = std::hypot(rhs.box.x + rhs.box.width / 2.0 - center.x, rhs.box.y + rhs.box.height / 2.0 - center.y);
-        return ld < rd;
+        double ldx = lhs.box.x + lhs.box.width / 2.0 - center.x;
+        double ldy = lhs.box.y + lhs.box.height / 2.0 - center.y;
+        double rdx = rhs.box.x + rhs.box.width / 2.0 - center.x;
+        double rdy = rhs.box.y + rhs.box.height / 2.0 - center.y;
+        return (ldx * ldx + ldy * ldy) < (rdx * rdx + rdy * rdy);
     });
 }
 
