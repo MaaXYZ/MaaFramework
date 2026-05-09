@@ -19,14 +19,15 @@ declare global {
         }
 
         type OrderByMap = {
-            TemplateMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Random'
-            FeatureMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
-            ColorMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
-            OCR: 'Horizontal' | 'Vertical' | 'Area' | 'Length' | 'Random' | 'Expected'
-            NeuralNetworkClassify: 'Horizontal' | 'Vertical' | 'Score' | 'Random' | 'Expected'
+            TemplateMatch: 'Horizontal' | 'Vertical' | 'Radiation' | 'Score' | 'Random'
+            FeatureMatch: 'Horizontal' | 'Vertical' | 'Radiation' | 'Score' | 'Area' | 'Random'
+            ColorMatch: 'Horizontal' | 'Vertical' | 'Radiation' | 'Score' | 'Area' | 'Random'
+            OCR: 'Horizontal' | 'Vertical' | 'Radiation' | 'Area' | 'Length' | 'Random' | 'Expected'
+            NeuralNetworkClassify: 'Horizontal' | 'Vertical' | 'Radiation' | 'Score' | 'Random' | 'Expected'
             NeuralNetworkDetect:
                 | 'Horizontal'
                 | 'Vertical'
+                | 'Radiation'
                 | 'Score'
                 | 'Area'
                 | 'Random'
@@ -48,6 +49,7 @@ declare global {
                 index?: number
                 method?: 10001 | 3 | 5
                 green_mask?: boolean
+                center?: [number, number]
             },
             'template',
             Mode
@@ -64,6 +66,7 @@ declare global {
                 green_mask?: boolean
                 detector?: 'SIFT' | 'KAZE' | 'AKAZE' | 'BRISK' | 'ORB'
                 ratio?: number
+                center?: [number, number]
             },
             'template',
             Mode
@@ -90,6 +93,7 @@ declare global {
                 order_by?: OrderByMap['ColorMatch']
                 index?: number
                 connected?: boolean
+                center?: [number, number]
             }
 
         type RecognitionOCR<Mode> = {
@@ -103,6 +107,7 @@ declare global {
             only_rec?: boolean
             model?: string
             color_filter?: string
+            center?: [number, number]
         }
 
         type RecognitionNeuralNetworkClassify<Mode> = RequiredIfStrict<
@@ -114,6 +119,7 @@ declare global {
                 expected?: MaybeArray<number, Mode>
                 order_by?: OrderByMap['NeuralNetworkClassify']
                 index?: number
+                center?: [number, number]
             },
             'model',
             Mode
@@ -129,6 +135,7 @@ declare global {
                 threshold?: number
                 order_by?: OrderByMap['NeuralNetworkDetect']
                 index?: number
+                center?: [number, number]
             },
             'model',
             Mode

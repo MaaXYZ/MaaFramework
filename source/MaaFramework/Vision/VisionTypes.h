@@ -43,6 +43,7 @@ enum class ResultOrderBy
 {
     Horizontal,
     Vertical,
+    Radiation,
     Score,
     Area,
     Length, // for OCR
@@ -72,6 +73,7 @@ struct TemplateMatcherParam : public RoiTargetParamBase
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
+    cv::Point center { -1, -1 };
 };
 
 struct OCRerParam : public RoiTargetParamBase
@@ -87,6 +89,7 @@ struct OCRerParam : public RoiTargetParamBase
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
+    cv::Point center { -1, -1 };
 };
 
 struct TemplateComparatorParam : public RoiTargetParamBase
@@ -109,6 +112,7 @@ struct NeuralNetworkClassifierParam : public RoiTargetParamBase
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
+    cv::Point center { -1, -1 };
 };
 
 struct NeuralNetworkDetectorParam : public RoiTargetParamBase
@@ -128,6 +132,7 @@ struct NeuralNetworkDetectorParam : public RoiTargetParamBase
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
+    cv::Point center { -1, -1 };
 };
 
 struct ColorMatcherParam : public RoiTargetParamBase
@@ -143,6 +148,7 @@ struct ColorMatcherParam : public RoiTargetParamBase
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
+    cv::Point center { -1, -1 };
 };
 
 struct FeatureMatcherParam : public RoiTargetParamBase
@@ -179,6 +185,7 @@ struct FeatureMatcherParam : public RoiTargetParamBase
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
+    cv::Point center { -1, -1 };
 };
 
 struct RectComparator

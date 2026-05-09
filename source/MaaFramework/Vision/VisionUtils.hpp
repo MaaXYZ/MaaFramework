@@ -33,6 +33,29 @@ inline static void sort_by_vertical_(ResultsVec& results)
     });
 }
 
+// From center outward (inspired by FindText.ahk dir==9)
+// Sorts results by Euclidean distance from a given center point.
+// If center is (-1, -1), computes from the bounding box of all results.
+template <typename ResultsVec>
+inline static void sort_by_radiation_(ResultsVec& results, cv::Point center)
+{
+    if (center.x < 0 || center.y < 0) {
+        if (results.empty()) {
+            return;
+        }
+        cv::Rect union_rect = results.front().box;
+        for (const auto& res : results) {
+            union_rect |= res.box;
+        }
+        center = { union_rect.x + union_rect.width / 2, union_rect.y + union_rect.height / 2 };
+    }
+    std::ranges::sort(results, [&center](const auto& lhs, const auto& rhs) -> bool {
+        double ld = std::hypot(lhs.box.x + lhs.box.width / 2.0 - center.x, lhs.box.y + lhs.box.height / 2.0 - center.y);
+        double rd = std::hypot(rhs.box.x + rhs.box.width / 2.0 - center.x, rhs.box.y + rhs.box.height / 2.0 - center.y);
+        return ld < rd;
+    });
+}
+
 template <typename ResultsVec>
 inline static void sort_by_score_(ResultsVec& results, bool reverse = false)
 {
