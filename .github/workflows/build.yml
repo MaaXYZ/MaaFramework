@@ -115,7 +115,7 @@ jobs:
             - name: Use Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 22
 
             - name: Prepare node_modules
               run: |
@@ -184,7 +184,7 @@ jobs:
             - name: Use Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 22
 
             # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
             - uses: actions/checkout@v4
@@ -303,7 +303,7 @@ jobs:
             - name: Use Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 22
 
             - name: Prepare node_modules
               run: |
@@ -515,7 +515,7 @@ jobs:
             - name: Use Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 22
 
             - name: Build wrapper
               run: |
