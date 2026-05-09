@@ -2,9 +2,11 @@
 
 #include <meojson/json.hpp>
 
+#include <cstring>
 #include <iostream>
 
 #include "MaaFramework/MaaAPI.h"
+#include "MaaFramework/MaaMsg.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4100) // unreferenced formal parameter
@@ -27,6 +29,42 @@ MaaBool my_action(
     const MaaRect* box,
     void* trans_arg);
 
+struct ActionFailedCapture
+{
+    bool seen = false;
+    MaaActId action_id = MaaInvalidId;
+    std::string name;
+    std::string action;
+    bool success = true;
+};
+
+void capture_action_failed(void* handle, const char* message, const char* details_json, void* trans_arg)
+{
+    std::ignore = handle;
+
+    if (!message || std::strcmp(message, MaaMsg_Node_Action_Failed) != 0 || !details_json || !trans_arg) {
+        return;
+    }
+
+    auto parsed = json::parse(details_json);
+    if (!parsed || !parsed->contains("action_details")) {
+        return;
+    }
+
+    const auto& action_details = parsed->at("action_details");
+    if (!action_details.contains("action_id") || !action_details.contains("name") || !action_details.contains("action")
+        || !action_details.contains("success")) {
+        return;
+    }
+
+    auto* capture = static_cast<ActionFailedCapture*>(trans_arg);
+    capture->seen = true;
+    capture->action_id = static_cast<MaaActId>(action_details.at("action_id").as_integer());
+    capture->name = action_details.at("name").as_string();
+    capture->action = action_details.at("action").as_string();
+    capture->success = action_details.at("success").as_boolean();
+}
+
 bool run_without_file(const std::filesystem::path& testset_dir)
 {
     auto screenshot_path = testset_dir / "PipelineSmoking" / "Screenshot";
@@ -40,6 +78,27 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     auto tasker_handle = MaaTaskerCreate();
     MaaTaskerBindResource(tasker_handle, resource_handle);
     MaaTaskerBindController(tasker_handle, controller_handle);
+
+    {
+        ActionFailedCapture capture;
+        auto sink_id = MaaTaskerAddContextSink(tasker_handle, &capture_action_failed, &capture);
+
+        auto box = MaaRectCreate();
+        MaaRectSet(box, 0, 0, 0, 0);
+
+        auto failed_id = MaaTaskerPostAction(tasker_handle, "Click", "{}", box, "{}");
+        MaaTaskerWait(tasker_handle, failed_id);
+
+        MaaRectDestroy(box);
+
+        MaaTaskerRemoveContextSink(tasker_handle, sink_id);
+
+        if (failed_id == MaaInvalidId || !capture.seen || capture.action_id == MaaInvalidId || capture.name.empty()
+            || capture.action != "Click" || capture.success) {
+            std::cout << "Failed to preserve action detail on failed action" << std::endl;
+            return false;
+        }
+    }
 
     {
         auto failed_id = MaaTaskerPostTask(tasker_handle, "_NotExists_", "{}");

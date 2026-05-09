@@ -128,6 +128,21 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         return { };
     }
 
+    if (result.action_id == MaaInvalidId) {
+        LogWarn << "action returned empty result, fill failure detail" << VAR(pipeline_data.name)
+                << VAR(static_cast<int>(pipeline_data.action_type));
+
+        auto action_iter = kTypeNameMap.find(pipeline_data.action_type);
+        result = ActionResult {
+            .action_id = action_id_,
+            .name = pipeline_data.name,
+            .action = action_iter == kTypeNameMap.end() ? std::string() : action_iter->second,
+            .box = reco_hit,
+            .success = false,
+            .detail = json::object(),
+        };
+    }
+
     tasker_->runtime_cache().set_action_detail(result.action_id, result);
 
     return result;
