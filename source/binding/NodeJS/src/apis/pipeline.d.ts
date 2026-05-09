@@ -49,7 +49,7 @@ declare global {
                 index?: number
                 method?: 10001 | 3 | 5
                 green_mask?: boolean
-                center?: [number, number]
+                center?: Point
             },
             'template',
             Mode
@@ -66,7 +66,7 @@ declare global {
                 green_mask?: boolean
                 detector?: 'SIFT' | 'KAZE' | 'AKAZE' | 'BRISK' | 'ORB'
                 ratio?: number
-                center?: [number, number]
+                center?: Point
             },
             'template',
             Mode
@@ -93,7 +93,7 @@ declare global {
                 order_by?: OrderByMap['ColorMatch']
                 index?: number
                 connected?: boolean
-                center?: [number, number]
+                center?: Point
             }
 
         type RecognitionOCR<Mode> = {
@@ -107,7 +107,7 @@ declare global {
             only_rec?: boolean
             model?: string
             color_filter?: string
-            center?: [number, number]
+            center?: Point
         }
 
         type RecognitionNeuralNetworkClassify<Mode> = RequiredIfStrict<
@@ -119,7 +119,7 @@ declare global {
                 expected?: MaybeArray<number, Mode>
                 order_by?: OrderByMap['NeuralNetworkClassify']
                 index?: number
-                center?: [number, number]
+                center?: Point
             },
             'model',
             Mode
@@ -135,7 +135,7 @@ declare global {
                 threshold?: number
                 order_by?: OrderByMap['NeuralNetworkDetect']
                 index?: number
-                center?: [number, number]
+                center?: Point
             },
             'model',
             Mode
