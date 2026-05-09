@@ -1,4 +1,7 @@
 {
+    "pnpm": {
+        "onlyBuiltDependencies": ["esbuild"]
+    },
     "binary": {
         "napi_versions": [
             8
