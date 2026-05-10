@@ -1,6 +1,7 @@
 import ctypes
 import dataclasses
 import json
+from os import fspath
 from pathlib import Path
 from typing import Dict, Optional, Union
 
@@ -645,7 +646,7 @@ class Tasker:
         Returns:
             bool: 是否成功 / Whether successful
         """
-        encoded_path_bytes = str(path).encode("utf-8")
+        encoded_path_bytes = fspath(path).encode("utf-8")
         return bool(
             Library.framework().MaaGlobalSetOption(
                 MaaOption(MaaGlobalOptionEnum.LogDir),
