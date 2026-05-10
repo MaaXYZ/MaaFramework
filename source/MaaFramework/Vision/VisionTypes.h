@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <unordered_map>
@@ -73,7 +74,7 @@ struct TemplateMatcherParam : public RoiTargetParamBase
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
-    cv::Point center { -1, -1 };
+    std::optional<cv::Point> center;
 };
 
 struct OCRerParam : public RoiTargetParamBase
@@ -89,7 +90,7 @@ struct OCRerParam : public RoiTargetParamBase
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
-    cv::Point center { -1, -1 };
+    std::optional<cv::Point> center;
 };
 
 struct TemplateComparatorParam : public RoiTargetParamBase
@@ -112,7 +113,7 @@ struct NeuralNetworkClassifierParam : public RoiTargetParamBase
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
-    cv::Point center { -1, -1 };
+    std::optional<cv::Point> center;
 };
 
 struct NeuralNetworkDetectorParam : public RoiTargetParamBase
@@ -132,7 +133,7 @@ struct NeuralNetworkDetectorParam : public RoiTargetParamBase
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
-    cv::Point center { -1, -1 };
+    std::optional<cv::Point> center;
 };
 
 struct ColorMatcherParam : public RoiTargetParamBase
@@ -148,7 +149,7 @@ struct ColorMatcherParam : public RoiTargetParamBase
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
-    cv::Point center { -1, -1 };
+    std::optional<cv::Point> center;
 };
 
 struct FeatureMatcherParam : public RoiTargetParamBase
@@ -185,7 +186,7 @@ struct FeatureMatcherParam : public RoiTargetParamBase
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
-    cv::Point center { -1, -1 };
+    std::optional<cv::Point> center;
 };
 
 struct RectComparator
