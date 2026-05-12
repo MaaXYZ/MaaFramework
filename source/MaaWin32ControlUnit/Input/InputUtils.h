@@ -53,6 +53,23 @@ inline void ensure_foreground_and_topmost(HWND hwnd)
     }
 }
 
+// 检查鼠标左右按键是否被交换
+inline bool IsMouseButtonSwapped()
+{
+    int is_swapped = GetSystemMetrics(SM_SWAPBUTTON);
+    return is_swapped != 0;
+}
+
+// 获取兼容鼠标左右按键交换后的鼠标按键映射
+inline int GetMappedContact(int original_contact)
+{
+    if (IsMouseButtonSwapped()) {
+        // 左右键交换后，左键为1，右键为0，异或取反即可
+        return original_contact ^ 1;
+    }
+    return original_contact;
+}
+
 // Contact 到 WM_* 消息的转换结果
 struct MouseMessageInfo
 {
@@ -63,7 +80,8 @@ struct MouseMessageInfo
 // 将 contact ID 转换为鼠标按下消息
 inline bool contact_to_mouse_down_message(int contact, MouseMessageInfo& info)
 {
-    switch (contact) {
+    int mapped_contact = GetMappedContact(contact);
+    switch (mapped_contact) {
     case 0:
         info.message = WM_LBUTTONDOWN;
         info.w_param = MK_LBUTTON;
@@ -92,7 +110,8 @@ inline bool contact_to_mouse_down_message(int contact, MouseMessageInfo& info)
 // 将 contact ID 转换为鼠标移动消息
 inline bool contact_to_mouse_move_message(int contact, MouseMessageInfo& info)
 {
-    switch (contact) {
+    int mapped_contact = GetMappedContact(contact);
+    switch (mapped_contact) {
     case 0:
         info.message = WM_MOUSEMOVE;
         info.w_param = MK_LBUTTON;
@@ -121,7 +140,8 @@ inline bool contact_to_mouse_move_message(int contact, MouseMessageInfo& info)
 // 将 contact ID 转换为鼠标抬起消息
 inline bool contact_to_mouse_up_message(int contact, MouseMessageInfo& info)
 {
-    switch (contact) {
+    int mapped_contact = GetMappedContact(contact);
+    switch (mapped_contact) {
     case 0:
         info.message = WM_LBUTTONUP;
         info.w_param = 0;
@@ -157,7 +177,8 @@ struct MouseEventFlags
 // 将 contact ID 转换为 MOUSEEVENTF 按下标志（用于 SendInput/mouse_event）
 inline bool contact_to_mouse_down_flags(int contact, MouseEventFlags& flags_info)
 {
-    switch (contact) {
+    int mapped_contact = GetMappedContact(contact);
+    switch (mapped_contact) {
     case 0:
         flags_info.flags = MOUSEEVENTF_LEFTDOWN;
         flags_info.button_data = 0;
@@ -186,7 +207,8 @@ inline bool contact_to_mouse_down_flags(int contact, MouseEventFlags& flags_info
 // 将 contact ID 转换为 MOUSEEVENTF 抬起标志（用于 SendInput/mouse_event）
 inline bool contact_to_mouse_up_flags(int contact, MouseEventFlags& flags_info)
 {
-    switch (contact) {
+    int mapped_contact = GetMappedContact(contact);
+    switch (mapped_contact) {
     case 0:
         flags_info.flags = MOUSEEVENTF_LEFTUP;
         flags_info.button_data = 0;
