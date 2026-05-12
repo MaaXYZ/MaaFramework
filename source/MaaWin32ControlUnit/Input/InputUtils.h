@@ -56,8 +56,10 @@ inline void ensure_foreground_and_topmost(HWND hwnd)
 // 检查鼠标左右按键是否被交换
 inline bool IsMouseButtonSwapped()
 {
-    int is_swapped = GetSystemMetrics(SM_SWAPBUTTON);
-    return is_swapped != 0;
+    static bool is_swapped = []() {
+        return GetSystemMetrics(SM_SWAPBUTTON) != 0;
+    }();
+    return is_swapped;
 }
 
 // 获取兼容鼠标左右按键交换后的鼠标按键映射
