@@ -64,7 +64,7 @@ inline bool IsMouseButtonSwapped()
 inline int GetMappedContact(int original_contact)
 {
     if (IsMouseButtonSwapped()) {
-        // 左右键交换后，左键为1，右键为0，异或取反即可
+        // 左右键交换后，左键为1，右键为0，异或取反输出即可
         return original_contact ^ 1;
     }
     return original_contact;
