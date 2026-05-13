@@ -3,27 +3,27 @@ name: test
 on:
     push:
         branches:
-            - "main"
+            - 'main'
         paths:
-            - ".github/workflows/test.yml"
-            - "3rdparty/**"
-            - "cmake/**"
-            - "include/**"
-            - "source/**"
-            - "CMakeLists.txt"
-            - "test/**"
+            - '.github/workflows/test.yml'
+            - '3rdparty/**'
+            - 'cmake/**'
+            - 'include/**'
+            - 'source/**'
+            - 'CMakeLists.txt'
+            - 'test/**'
 
     pull_request:
         branches:
-            - "**"
+            - '**'
         paths:
-            - ".github/workflows/test.yml"
-            - "3rdparty/**"
-            - "cmake/**"
-            - "include/**"
-            - "source/**"
-            - "CMakeLists.txt"
-            - "test/**"
+            - '.github/workflows/test.yml'
+            - '3rdparty/**'
+            - 'cmake/**'
+            - 'include/**'
+            - 'source/**'
+            - 'CMakeLists.txt'
+            - 'test/**'
     workflow_dispatch:
 
 concurrency:
@@ -59,7 +59,7 @@ jobs:
               with:
                   minimum-size: 16GB
                   maximum-size: 16GB
-                  disk-root: "D:"
+                  disk-root: 'D:'
 
             - uses: actions/checkout@v4
               with:
@@ -73,7 +73,7 @@ jobs:
             - name: Setup Python
               uses: actions/setup-python@v5.2.0
               with:
-                  python-version: "3.9"
+                  python-version: '3.9'
 
             - name: Bootstrap MaaDeps
               env:
@@ -115,8 +115,8 @@ jobs:
               with:
                   repository: MaaXYZ/MaaPluginDemo
                   tag: ${{ needs.meta.outputs.latest-plugin }}
-                  fileName: "*win-${{ matrix.arch }}*"
-                  out-file-path: "build/download_plugins"
+                  fileName: '*win-${{ matrix.arch }}*'
+                  out-file-path: 'build/download_plugins'
                   extract: true
                   token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -153,19 +153,19 @@ jobs:
               run: |
                   cd test/nodejs
                   pnpm i
-                  npx tsx binding.ts
+                  node binding.ts
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-text_log
-                  path: "install/bin/debug/*.log"
+                  path: 'install/bin/debug/*.log'
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-full
-                  path: "install"
+                  path: 'install'
 
     ubuntu:
         needs: meta
@@ -194,7 +194,7 @@ jobs:
             - name: Setup Python
               uses: actions/setup-python@v5.2.0
               with:
-                  python-version: "3.9"
+                  python-version: '3.9'
 
             - name: Bootstrap MaaDeps
               env:
@@ -242,8 +242,8 @@ jobs:
               with:
                   repository: MaaXYZ/MaaPluginDemo
                   tag: ${{ needs.meta.outputs.latest-plugin }}
-                  fileName: "*linux-${{ matrix.arch }}*"
-                  out-file-path: "build/download_plugins"
+                  fileName: '*linux-${{ matrix.arch }}*'
+                  out-file-path: 'build/download_plugins'
                   extract: true
                   token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -282,19 +282,19 @@ jobs:
               run: |
                   cd test/nodejs
                   pnpm i
-                  npx tsx binding.ts
+                  node binding.ts
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-text_log
-                  path: "install/bin/debug/*.log"
+                  path: 'install/bin/debug/*.log'
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-full
-                  path: "install"
+                  path: 'install'
 
     macos:
         needs: meta
@@ -325,7 +325,7 @@ jobs:
             - name: Setup Python
               uses: actions/setup-python@v5.2.0
               with:
-                  python-version: "3.9"
+                  python-version: '3.9'
 
             - name: Bootstrap MaaDeps
               env:
@@ -375,8 +375,8 @@ jobs:
               with:
                   repository: MaaXYZ/MaaPluginDemo
                   tag: ${{ needs.meta.outputs.latest-plugin }}
-                  fileName: "*macos-${{ matrix.arch }}*"
-                  out-file-path: "build/download_plugins"
+                  fileName: '*macos-${{ matrix.arch }}*'
+                  out-file-path: 'build/download_plugins'
                   extract: true
                   token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -411,16 +411,16 @@ jobs:
               run: |
                   cd test/nodejs
                   pnpm i
-                  npx tsx binding.ts
+                  node binding.ts
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-text_log
-                  path: "install/bin/debug/*.log"
+                  path: 'install/bin/debug/*.log'
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-full
-                  path: "install"
+                  path: 'install'
