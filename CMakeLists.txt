@@ -43,6 +43,13 @@ if(NOT WITH_REPLAY_CONTROLLER)
     set(BUILD_PIPELINE_TESTING OFF)
 endif()
 
+# check options
+if(BUILD_PIPELINE_TESTING AND NOT WITH_DBG_CONTROLLER)
+    message(FATAL_ERROR
+            "BUILD_PIPELINE_TESTING requires WITH_DBG_CONTROLLER because PipelineTesting uses the debug controller. "
+            "Please configure with -DWITH_DBG_CONTROLLER=ON or -DBUILD_PIPELINE_TESTING=OFF.")
+endif()
+
 if(WITH_WIN32_CONTROLLER AND NOT WIN32)
     message(STATUS "Not on Windows, disable WITH_WIN32_CONTROLLER")
     set(WITH_WIN32_CONTROLLER OFF)
