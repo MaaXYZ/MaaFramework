@@ -1,7 +1,6 @@
 {
     "devDependencies": {
         "@tsconfig/node20": "^20.1.4",
-        "@types/node": "^20.17.22",
-        "tsx": "^4.19.3"
+        "@types/node": "^20.17.22"
     }
 }

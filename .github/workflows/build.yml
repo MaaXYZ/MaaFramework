@@ -3,35 +3,35 @@ name: build
 on:
     push:
         tags:
-            - "v*"
+            - 'v*'
         branches:
-            - "main"
+            - 'main'
         paths:
-            - ".github/workflows/build.yml"
-            - "3rdparty/**"
-            - "cmake/**"
-            - "include/**"
-            - "source/**"
-            - "CMakeLists.txt"
-            - "tools/pip_pack/**"
+            - '.github/workflows/build.yml'
+            - '3rdparty/**'
+            - 'cmake/**'
+            - 'include/**'
+            - 'source/**'
+            - 'CMakeLists.txt'
+            - 'tools/pip_pack/**'
 
     pull_request:
         branches:
-            - "**"
+            - '**'
         paths:
-            - ".github/workflows/build.yml"
-            - "3rdparty/**"
-            - "cmake/**"
-            - "include/**"
-            - "source/**"
-            - "CMakeLists.txt"
-            - "tools/pip_pack/**"
+            - '.github/workflows/build.yml'
+            - '3rdparty/**'
+            - 'cmake/**'
+            - 'include/**'
+            - 'source/**'
+            - 'CMakeLists.txt'
+            - 'tools/pip_pack/**'
 
     workflow_dispatch:
         inputs:
             build-config:
                 required: true
-                default: "RelWithDebInfo"
+                default: 'RelWithDebInfo'
                 type: choice
                 options:
                     - Debug
@@ -50,7 +50,6 @@ jobs:
         uses: ./.github/workflows/meta.yml
         with:
             build-config: ${{ inputs.build-config || 'RelWithDebInfo' }}
-
 
     windows:
         needs: meta
@@ -77,7 +76,7 @@ jobs:
               with:
                   minimum-size: 16GB
                   maximum-size: 16GB
-                  disk-root: "D:"
+                  disk-root: 'D:'
 
             - uses: actions/checkout@v4
               with:
@@ -115,7 +114,7 @@ jobs:
             - name: Use Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 24
 
             - name: Prepare node_modules
               run: |
@@ -147,8 +146,8 @@ jobs:
               with:
                   repository: MaaXYZ/MaaPluginDemo
                   tag: ${{ needs.meta.outputs.latest-plugin }}
-                  fileName: "*win-${{ matrix.arch }}*"
-                  out-file-path: "build/download_plugins"
+                  fileName: '*win-${{ matrix.arch }}*'
+                  out-file-path: 'build/download_plugins'
                   extract: true
                   token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -161,7 +160,7 @@ jobs:
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}
-                  path: "install"
+                  path: 'install'
 
     ubuntu:
         needs: meta
@@ -184,7 +183,7 @@ jobs:
             - name: Use Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 24
 
             # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
             - uses: actions/checkout@v4
@@ -243,8 +242,8 @@ jobs:
               with:
                   repository: MaaXYZ/MaaPluginDemo
                   tag: ${{ needs.meta.outputs.latest-plugin }}
-                  fileName: "*linux-${{ matrix.arch }}*"
-                  out-file-path: "build/download_plugins"
+                  fileName: '*linux-${{ matrix.arch }}*'
+                  out-file-path: 'build/download_plugins'
                   extract: true
                   token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -257,7 +256,7 @@ jobs:
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}
-                  path: "install"
+                  path: 'install'
 
     macos:
         needs: meta
@@ -303,7 +302,7 @@ jobs:
             - name: Use Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 24
 
             - name: Prepare node_modules
               run: |
@@ -343,8 +342,8 @@ jobs:
               with:
                   repository: MaaXYZ/MaaPluginDemo
                   tag: ${{ needs.meta.outputs.latest-plugin }}
-                  fileName: "*macos-${{ matrix.arch }}*"
-                  out-file-path: "build/download_plugins"
+                  fileName: '*macos-${{ matrix.arch }}*'
+                  out-file-path: 'build/download_plugins'
                   extract: true
                   token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -357,7 +356,7 @@ jobs:
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}
-                  path: "install"
+                  path: 'install'
 
     android:
         needs: meta
@@ -440,8 +439,8 @@ jobs:
               with:
                   repository: MaaXYZ/MaaPluginDemo
                   tag: ${{ needs.meta.outputs.latest-plugin }}
-                  fileName: "*android-${{ matrix.arch }}*"
-                  out-file-path: "build/download_plugins"
+                  fileName: '*android-${{ matrix.arch }}*'
+                  out-file-path: 'build/download_plugins'
                   extract: true
                   token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -454,7 +453,7 @@ jobs:
               if: always()
               with:
                   name: MAA-android-${{ matrix.arch }}
-                  path: "install"
+                  path: 'install'
 
     nuget_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -476,7 +475,7 @@ jobs:
               if: always()
               with:
                   name: pkgs-nuget
-                  path: "tools/nupkgs/*.nupkg"
+                  path: 'tools/nupkgs/*.nupkg'
 
     pip_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -497,7 +496,7 @@ jobs:
               if: always()
               with:
                   name: pkgs-pip
-                  path: "pip_pack/wheel/*.whl"
+                  path: 'pip_pack/wheel/*.whl'
 
     nodejs_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -515,7 +514,7 @@ jobs:
             - name: Use Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 24
 
             - name: Build wrapper
               run: |
@@ -530,26 +529,16 @@ jobs:
 
                   cd source/binding/NodeJS
                   pnpm i
-                  npx tsx scripts/pack.ts $ASSETS ${{ needs.meta.outputs.tag }}
+                  node scripts/pack.ts $ASSETS ${{ needs.meta.outputs.tag }}
 
             - uses: actions/upload-artifact@v4
               with:
                   name: pkgs-nodejs
-                  path: "source/binding/NodeJS/release"
+                  path: 'source/binding/NodeJS/release'
 
     update_submodule:
         if: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'MaaUtilsUpdated' }}
-        needs:
-            [
-                meta,
-                windows,
-                ubuntu,
-                macos,
-                android,
-                nuget_pack,
-                pip_pack,
-                nodejs_pack,
-            ]
+        needs: [meta, windows, ubuntu, macos, android, nuget_pack, pip_pack, nodejs_pack]
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
@@ -566,26 +555,16 @@ jobs:
               with:
                   rebase: true
                   branch: ${{ github.ref }}
-                  message: "chore: Update Submodule MaaUtils
+                  message: 'chore: Update Submodule MaaUtils
 
                       https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-                      [skip changelog]"
+                      [skip changelog]'
                   github_token: ${{ secrets.GITHUB_TOKEN }}
 
     trigger_release:
         if: ${{ needs.meta.outputs.is-release == 'true' && github.repository_id == '632024122' }}
-        needs:
-            [
-                meta,
-                windows,
-                ubuntu,
-                macos,
-                android,
-                nuget_pack,
-                pip_pack,
-                nodejs_pack,
-            ]
+        needs: [meta, windows, ubuntu, macos, android, nuget_pack, pip_pack, nodejs_pack]
         runs-on: ubuntu-latest
         steps:
             - name: Trigger release workflow
