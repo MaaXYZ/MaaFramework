@@ -60,9 +60,9 @@ std::string dump_order_by(MAA_VISION_NS::ResultOrderBy order_by)
 {
     static const std::unordered_map<MAA_VISION_NS::ResultOrderBy, std::string> order_by_map = {
         { MAA_VISION_NS::ResultOrderBy::Horizontal, "Horizontal" }, { MAA_VISION_NS::ResultOrderBy::Vertical, "Vertical" },
-        { MAA_VISION_NS::ResultOrderBy::Score, "Score" },           { MAA_VISION_NS::ResultOrderBy::Area, "Area" },
-        { MAA_VISION_NS::ResultOrderBy::Length, "Length" },         { MAA_VISION_NS::ResultOrderBy::Random, "Random" },
-        { MAA_VISION_NS::ResultOrderBy::Expected, "Expected" },
+        { MAA_VISION_NS::ResultOrderBy::Radiation, "Radiation" },   { MAA_VISION_NS::ResultOrderBy::Score, "Score" },
+        { MAA_VISION_NS::ResultOrderBy::Area, "Area" },             { MAA_VISION_NS::ResultOrderBy::Length, "Length" },
+        { MAA_VISION_NS::ResultOrderBy::Random, "Random" },         { MAA_VISION_NS::ResultOrderBy::Expected, "Expected" },
     };
     return order_by_map.at(order_by);
 }
@@ -107,6 +107,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .index = p.result_index,
             .method = p.method,
             .green_mask = p.green_mask,
+            .center = p.center,
         };
     } break;
 
@@ -131,6 +132,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .green_mask = p.green_mask,
             .detector = kDetectorNameMap.at(p.detector),
             .ratio = p.ratio,
+            .center = p.center,
         };
     } break;
 
@@ -152,6 +154,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .order_by = dump_order_by(p.order_by),
             .index = p.result_index,
             .connected = p.connected,
+            .center = p.center,
         };
     } break;
 
@@ -177,6 +180,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .only_rec = p.only_rec,
             .model = p.model,
             .color_filter = p.color_filter,
+            .center = p.center,
         };
     } break;
 
@@ -190,6 +194,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .expected = p.expected,
             .order_by = dump_order_by(p.order_by),
             .index = p.result_index,
+            .center = p.center,
         };
     } break;
 
@@ -204,6 +209,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .threshold = p.thresholds,
             .order_by = dump_order_by(p.order_by),
             .index = p.result_index,
+            .center = p.center,
         };
     } break;
 
