@@ -2,12 +2,22 @@
 
 #include <optional>
 
+#include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
 
 #include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
+
+struct ScreencapInfo
+{
+    bool hdr_capture_active = false;
+    bool hdr_preprocessed = false;
+    bool gpu_processed = false;
+    bool display_hdr_active = false;
+    bool display_hdr_compensated = false;
+};
 
 class ScreencapBase
 {
@@ -16,6 +26,7 @@ public:
 
 public:
     virtual std::optional<cv::Mat> screencap() = 0;
+    virtual ScreencapInfo last_screencap_info() const { return {}; }
 
     virtual void inactive() { }
 

@@ -271,14 +271,15 @@ private:
     bool handle_shell(const ShellParam& param);
     bool handle_inactive();
 
-    MaaCtrlId post(Action action);
-    MaaCtrlId focus_id(MaaCtrlId id);
+    MaaCtrlId post(Action action, bool notify = false);
     bool check_stop();
 
 private:
     bool run_action(typename AsyncRunner<Action>::Id id, Action action);
     cv::Point preproc_touch_point(const cv::Point& p);
     bool postproc_screenshot(const cv::Mat& raw);
+    void notify_hdr_screenshot_mode(bool hdr_capture_active, bool gpu_processed, bool hdr_display_compensated);
+    void save_hdr_probe_image(const cv::Mat& image, int probe_index);
     bool calc_target_image_size();
     void clear_target_image_size();
     bool request_uuid();
@@ -293,6 +294,7 @@ private: // options
     bool set_background_managed_keys_option(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
+    mutable std::mutex stop_mutex_;
     bool need_to_stop_ = false;
 
 private:
@@ -303,6 +305,7 @@ private:
     cv::Mat image_;
     mutable std::mutex shell_output_mutex_;
     std::string shell_output_;
+    mutable std::mutex uuid_mutex_;
 
     bool image_use_raw_size_ = false;
     int image_target_long_side_ = 0;
@@ -314,6 +317,11 @@ private:
     int image_resize_method_ = 3; // cv::INTER_AREA
 
     std::string uuid_cache_;
+    bool hdr_screenshot_mode_notified_ = false;
+    bool last_hdr_capture_active_ = false;
+    bool last_hdr_gpu_processed_ = false;
+    bool last_hdr_display_compensated_ = false;
+    int hdr_probe_images_remaining_ = 0;
 
     std::set<AsyncRunner<Action>::Id> focus_ids_;
     std::mutex focus_ids_mutex_;

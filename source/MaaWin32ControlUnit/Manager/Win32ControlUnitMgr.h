@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <string_view>
 #include <ostream>
 #include <unordered_map>
 #include <unordered_set>
@@ -76,8 +77,8 @@ private:
     std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>> build_screencap_units() const;
     bool init_screencap();
     std::shared_ptr<InputBase> make_input(MaaWin32InputMethod method) const;
-
-    std::shared_ptr<ScreencapBase> speed_test(const std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>>& units) const;
+    static std::string_view screencap_method_name(ScreencapMethod method);
+    std::shared_ptr<ScreencapBase> speed_test(const std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>>& units);
 
 private:
     HWND hwnd_ = nullptr;
@@ -89,6 +90,8 @@ private:
     std::shared_ptr<InputBase> mouse_ = nullptr;
     std::shared_ptr<InputBase> keyboard_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
+    ScreencapMethod active_screencap_method_ = ScreencapMethod::UnknownYet;
+    ScreencapInfo last_screencap_info_ {};
 
     std::shared_ptr<BackgroundManagedKeyInput> background_keyboard_ = nullptr;
     std::unordered_set<int> managed_keys_;

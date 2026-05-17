@@ -1,11 +1,204 @@
 #include "ControllerAgent.h"
 
+#include <algorithm>
+#include <array>
+#include <chrono>
+#include <cmath>
+#include <filesystem>
+#include <format>
+#include <limits>
+#include <string_view>
+#include <thread>
+#include <vector>
+
 #include "Global/OptionMgr.h"
 #include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/NoWarningCV.hpp"
+#include "MaaUtils/Time.hpp"
 #include "Resource/ResourceMgr.h"
+
+namespace
+{
+constexpr float kLinearToSrgbThreshold = 0.0031308f;
+constexpr float kInvSrgbGamma = 1.0f / 2.4f;
+constexpr float kHdrDetectEpsilon = 1e-3f;
+constexpr float kMinLuminance = 1e-6f;
+constexpr float kHdrMiddleGray = 0.18f;
+constexpr float kHdrTargetHighlight = 0.85f;
+constexpr float kHdrMinExposure = 1.0f / 32.0f;
+constexpr float kHdrMaxExposure = 4.0f;
+constexpr size_t kHdrTargetSamples = 16384;
+constexpr int kHdrProbeImageCount = 5;
+constexpr std::string_view kHdrScreenshotEnabledMsg = "Controller.Screenshot.HdrCapture.Enabled";
+constexpr std::string_view kHdrDisplayCompensationEnabledMsg = "Controller.Screenshot.HdrDisplayCompensation.Enabled";
+constexpr std::string_view kHdrScreenshotDisabledMsg = "Controller.Screenshot.HdrCapture.Disabled";
+
+struct HdrSceneStats
+{
+    float min_linear = 0.0f;
+    float max_linear = 0.0f;
+    float avg_log_luminance = 0.0f;
+    float highlight_luminance = 0.0f;
+    bool valid = false;
+};
+
+bool is_hdr_rgba_image(const cv::Mat& image)
+{
+    return image.type() == CV_16FC4 || image.type() == CV_32FC4;
+}
+
+bool get_json_bool(const json::object& obj, const std::string& key)
+{
+    auto opt = obj.find(key);
+    return opt.has_value() && opt->is_boolean() && opt->as_boolean();
+}
+
+float tone_map_filmic(float linear)
+{
+    linear = std::max(linear, 0.0f);
+    const float numerator = linear * (2.51f * linear + 0.03f);
+    const float denominator = linear * (2.43f * linear + 0.59f) + 0.14f;
+    if (denominator <= 0.0f) {
+        return 0.0f;
+    }
+    return std::clamp(numerator / denominator, 0.0f, 1.0f);
+}
+
+uint8_t linear_to_srgb_u8(float linear)
+{
+    linear = std::clamp(linear, 0.0f, 1.0f);
+
+    const float srgb = linear <= kLinearToSrgbThreshold ? linear * 12.92f : 1.055f * std::pow(linear, kInvSrgbGamma) - 0.055f;
+    return static_cast<uint8_t>(std::lround(std::clamp(srgb, 0.0f, 1.0f) * 255.0f));
+}
+
+cv::Mat hdr_rgba_to_bgr8(
+    const cv::Mat& hdr_rgba,
+    bool* tone_mapping_applied = nullptr) // 转换HDR RGBA图像到8位BGR图像，并自动应用电影式色调映射
+{
+    if (hdr_rgba.empty()) {
+        if (tone_mapping_applied) {
+            *tone_mapping_applied = false;
+        }
+        return { };
+    }
+
+    cv::Mat rgba32f;
+    if (hdr_rgba.type() == CV_32FC4) {
+        rgba32f = hdr_rgba;
+    }
+    else {
+        hdr_rgba.convertTo(rgba32f, CV_32FC4);
+    }
+
+    const auto analyze_scene = [&]() -> HdrSceneStats {
+        HdrSceneStats stats;
+
+        const double total_pixels = static_cast<double>(rgba32f.rows) * rgba32f.cols;
+        const int stride = std::max(1, static_cast<int>(std::sqrt(total_pixels / static_cast<double>(kHdrTargetSamples))));
+
+        stats.min_linear = std::numeric_limits<float>::max();
+        stats.max_linear = std::numeric_limits<float>::lowest();
+
+        std::vector<float> luminances;
+        luminances.reserve(static_cast<size_t>((rgba32f.rows / stride + 1) * (rgba32f.cols / stride + 1)));
+
+        double log_sum = 0.0;
+        size_t sample_count = 0;
+
+        for (int y = 0; y < rgba32f.rows; y += stride) {
+            const auto* row = rgba32f.ptr<cv::Vec4f>(y);
+            for (int x = 0; x < rgba32f.cols; x += stride) {
+                const cv::Vec4f& pixel = row[x];
+                for (int c = 0; c < 3; ++c) {
+                    stats.min_linear = std::min(stats.min_linear, pixel[c]);
+                    stats.max_linear = std::max(stats.max_linear, pixel[c]);
+                }
+
+                const float r = std::max(pixel[0], 0.0f);
+                const float g = std::max(pixel[1], 0.0f);
+                const float b = std::max(pixel[2], 0.0f);
+                const float luminance = std::max(kMinLuminance, 0.2126f * r + 0.7152f * g + 0.0722f * b);
+
+                luminances.emplace_back(luminance);
+                log_sum += std::log(luminance);
+                ++sample_count;
+            }
+        }
+
+        if (sample_count == 0 || luminances.empty()) {
+            return stats;
+        }
+
+        const size_t highlight_index = static_cast<size_t>(std::floor((luminances.size() - 1) * 0.95));
+        std::nth_element(luminances.begin(), luminances.begin() + highlight_index, luminances.end());
+
+        stats.avg_log_luminance = static_cast<float>(std::exp(log_sum / static_cast<double>(sample_count)));
+        stats.highlight_luminance = luminances[highlight_index];
+        stats.valid = true;
+        return stats;
+    };
+
+    const HdrSceneStats stats = analyze_scene();
+    const bool needs_tone_mapping = stats.valid && (stats.max_linear > 1.0f + kHdrDetectEpsilon || stats.min_linear < -kHdrDetectEpsilon);
+    if (tone_mapping_applied) {
+        *tone_mapping_applied = needs_tone_mapping;
+    }
+    float exposure = 1.0f;
+    if (needs_tone_mapping) {
+        if (stats.avg_log_luminance > kMinLuminance) {
+            exposure = kHdrMiddleGray / stats.avg_log_luminance;
+        }
+        if (stats.highlight_luminance > kMinLuminance) {
+            exposure = std::min(exposure, kHdrTargetHighlight / stats.highlight_luminance);
+        }
+        exposure = std::clamp(exposure, kHdrMinExposure, kHdrMaxExposure);
+
+        static auto last_hdr_log_time = std::chrono::steady_clock::time_point { };
+        const auto now = std::chrono::steady_clock::now();
+        if (last_hdr_log_time == std::chrono::steady_clock::time_point { } || now - last_hdr_log_time > std::chrono::seconds(5)) {
+            last_hdr_log_time = now;
+            LogInfo << "HDR screenshot tone mapping" << VAR(stats.min_linear) << VAR(stats.max_linear) << VAR(stats.avg_log_luminance)
+                    << VAR(stats.highlight_luminance) << VAR(exposure);
+        }
+    }
+
+    cv::Mat bgr8(rgba32f.rows, rgba32f.cols, CV_8UC3);
+
+    cv::parallel_for_(cv::Range(0, rgba32f.rows), [&](const cv::Range& range) {
+        for (int y = range.start; y < range.end; ++y) {
+            const auto* src_row = rgba32f.ptr<cv::Vec4f>(y);
+            auto* dst_row = bgr8.ptr<cv::Vec3b>(y);
+
+            for (int x = 0; x < rgba32f.cols; ++x) {
+                float r = std::max(src_row[x][0], 0.0f);
+                float g = std::max(src_row[x][1], 0.0f);
+                float b = std::max(src_row[x][2], 0.0f);
+
+                if (needs_tone_mapping) {
+                    r *= exposure;
+                    g *= exposure;
+                    b *= exposure;
+
+                    const float luminance = 0.2126f * r + 0.7152f * g + 0.0722f * b;
+                    const float mapped_luminance = tone_map_filmic(luminance);
+                    const float scale = luminance > kMinLuminance ? (mapped_luminance / luminance) : 0.0f;
+
+                    r *= scale;
+                    g *= scale;
+                    b *= scale;
+                }
+
+                dst_row[x] = cv::Vec3b(linear_to_srgb_u8(b), linear_to_srgb_u8(g), linear_to_srgb_u8(r));
+            }
+        }
+    });
+
+    return bgr8;
+}
+} // namespace
 
 MAA_CTRL_NS_BEGIN
 
@@ -56,122 +249,106 @@ bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOpt
 
 MaaCtrlId ControllerAgent::post_connection()
 {
-    auto id = post({ .type = Action::Type::connect });
-    return focus_id(id);
+    return post({ .type = Action::Type::connect }, true);
 }
 
 MaaCtrlId ControllerAgent::post_click(int x, int y, int contact, int pressure)
 {
     ClickParam p { .point = { x, y }, .contact = contact, .pressure = pressure };
-    auto id = post({ .type = Action::Type::click, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::click, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure)
 {
+    const uint safe_duration = static_cast<uint>(std::max(duration, 0));
     SwipeParam p { .begin = { x1, y1 },
                    .end = { { x2, y2 } },
-                   .duration = { static_cast<uint>(duration) },
+                   .duration = { safe_duration },
                    .contact = contact,
                    .pressure = pressure };
-    auto id = post({ .type = Action::Type::swipe, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::swipe, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_click_key(int keycode)
 {
     ClickKeyParam p { .keycode = { keycode } };
-    auto id = post({ .type = Action::Type::click_key, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::click_key, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_input_text(const std::string& text)
 {
     InputTextParam p { .text = text };
-    auto id = post({ .type = Action::Type::input_text, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::input_text, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_start_app(const std::string& intent)
 {
     AppParam p { .package = intent };
-    auto id = post({ .type = Action::Type::start_app, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::start_app, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_stop_app(const std::string& intent)
 {
     AppParam p { .package = intent };
-    auto id = post({ .type = Action::Type::stop_app, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::stop_app, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_screencap()
 {
-    auto id = post({ .type = Action::Type::screencap });
-    return focus_id(id);
+    return post({ .type = Action::Type::screencap }, true);
 }
 
 MaaCtrlId ControllerAgent::post_touch_down(int contact, int x, int y, int pressure)
 {
     TouchParam p { .contact = contact, .point = { x, y }, .pressure = pressure };
-    auto id = post({ .type = Action::Type::touch_down, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::touch_down, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_touch_move(int contact, int x, int y, int pressure)
 {
     TouchParam p { .contact = contact, .point = { x, y }, .pressure = pressure };
-    auto id = post({ .type = Action::Type::touch_move, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::touch_move, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_touch_up(int contact)
 {
     TouchParam p { .contact = contact };
-    auto id = post({ .type = Action::Type::touch_up, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::touch_up, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_relative_move(int dx, int dy)
 {
     RelativeMoveParam p { .dx = dx, .dy = dy };
-    auto id = post({ .type = Action::Type::relative_move, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::relative_move, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_key_down(int keycode)
 {
     ClickKeyParam p { .keycode = { keycode } };
-    auto id = post({ .type = Action::Type::key_down, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::key_down, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_key_up(int keycode)
 {
     ClickKeyParam p { .keycode = { keycode } };
-    auto id = post({ .type = Action::Type::key_up, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::key_up, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_scroll(int dx, int dy)
 {
     ScrollParam p { .dx = dx, .dy = dy };
-    auto id = post({ .type = Action::Type::scroll, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::scroll, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_shell(const std::string& cmd, int64_t timeout)
 {
     ShellParam p { .cmd = cmd, .shell_timeout = timeout };
-    auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
-    return focus_id(id);
+    return post({ .type = Action::Type::shell, .param = std::move(p) }, true);
 }
 
 MaaCtrlId ControllerAgent::post_inactive()
 {
-    auto id = post({ .type = Action::Type::inactive });
-    return focus_id(id);
+    return post({ .type = Action::Type::inactive }, true);
 }
 
 MaaStatus ControllerAgent::status(MaaCtrlId ctrl_id) const
@@ -219,14 +396,23 @@ std::string ControllerAgent::cached_shell_output() const
 
 std::string ControllerAgent::get_uuid()
 {
-    if (uuid_cache_.empty()) {
-        request_uuid();
+    {
+        std::unique_lock lock(uuid_mutex_);
+        if (!uuid_cache_.empty()) {
+            return uuid_cache_;
+        }
     }
+
+    request_uuid();
+
+    std::unique_lock lock(uuid_mutex_);
     return uuid_cache_;
 }
 
 bool ControllerAgent::get_resolution(int32_t& width, int32_t& height) const
 {
+    std::unique_lock lock(image_mutex_);
+
     if (image_raw_width_ == 0 || image_raw_height_ == 0) {
         return false;
     }
@@ -238,6 +424,10 @@ bool ControllerAgent::get_resolution(int32_t& width, int32_t& height) const
 
 json::object ControllerAgent::get_info() const
 {
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return {};
+    }
     return control_unit_->get_info();
 }
 
@@ -260,7 +450,10 @@ void ControllerAgent::post_stop()
 {
     LogFunc;
 
-    need_to_stop_ = true;
+    {
+        std::unique_lock lock(stop_mutex_);
+        need_to_stop_ = true;
+    }
 
     if (action_runner_ && action_runner_->running()) {
         action_runner_->clear();
@@ -400,7 +593,7 @@ bool ControllerAgent::handle_inactive()
     return ret;
 }
 
-MaaCtrlId ControllerAgent::post(Action action)
+MaaCtrlId ControllerAgent::post(Action action, bool notify)
 {
     // LogInfo << VAR(action.type) << VAR(action.param);
 
@@ -411,17 +604,12 @@ MaaCtrlId ControllerAgent::post(Action action)
     if (!action_runner_) {
         return MaaInvalidId;
     }
-    return action_runner_->post(std::move(action));
-}
-
-MaaCtrlId ControllerAgent::focus_id(MaaCtrlId id)
-{
-    if (id == MaaInvalidId) {
-        return id;
-    }
-
     std::unique_lock lock { focus_ids_mutex_ };
-    return *focus_ids_.emplace(id).first;
+    MaaCtrlId id = action_runner_->post(std::move(action));
+    if (notify && id != MaaInvalidId) {
+        focus_ids_.emplace(id);
+    }
+    return id;
 }
 
 bool ControllerAgent::handle_connect()
@@ -434,6 +622,14 @@ bool ControllerAgent::handle_connect()
     bool ret = control_unit_->connect();
 
     request_uuid();
+    {
+        std::unique_lock lock(image_mutex_);
+        hdr_screenshot_mode_notified_ = false;
+        last_hdr_capture_active_ = false;
+        last_hdr_gpu_processed_ = false;
+        last_hdr_display_compensated_ = false;
+        hdr_probe_images_remaining_ = 0;
+    }
 
     return ret;
 }
@@ -508,31 +704,27 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         const uint end_hold = param.end_hold.empty() ? 0 : (i < param.end_hold.size()) ? param.end_hold.at(i) : param.end_hold.back();
 
         if (use_touch_down_up) {
-            constexpr double kInterval = 10; // ms
-            const std::chrono::milliseconds delay(static_cast<int>(kInterval));
-
-            const double total_step = duration / kInterval;
-            const double x_step_len = (end.x - begin.x) / total_step;
-            const double y_step_len = (end.y - begin.y) / total_step;
+            constexpr int kIntervalMs = 10;
+            const std::chrono::milliseconds delay(kIntervalMs);
+            const size_t total_steps = std::max<size_t>(1, static_cast<size_t>(std::ceil(static_cast<double>(duration) / kIntervalMs)));
+            const double x_step_len = static_cast<double>(end.x - begin.x) / static_cast<double>(total_steps);
+            const double y_step_len = static_cast<double>(end.y - begin.y) / static_cast<double>(total_steps);
 
             auto now = std::chrono::steady_clock::now();
 
-            for (int step = 1; step < total_step; ++step) {
-                int mx = static_cast<int>(begin.x + step * x_step_len);
-                int my = static_cast<int>(begin.y + step * y_step_len);
+            for (size_t step = 1; step <= total_steps; ++step) {
+                int mx = end.x;
+                int my = end.y;
+                if (step < total_steps) {
+                    mx = static_cast<int>(std::round(begin.x + step * x_step_len));
+                    my = static_cast<int>(std::round(begin.y + step * y_step_len));
+                }
 
                 std::this_thread::sleep_until(now + delay);
 
                 now = std::chrono::steady_clock::now();
                 ret &= control_unit_->touch_move(param.contact, mx, my, param.pressure);
             }
-
-            std::this_thread::sleep_until(now + delay);
-
-            now = std::chrono::steady_clock::now();
-            ret &= control_unit_->touch_move(param.contact, end.x, end.y, param.pressure);
-
-            std::this_thread::sleep_until(now + delay);
         }
         else {
             ret &= control_unit_->swipe(begin.x, begin.y, end.x, end.y, duration);
@@ -562,29 +754,35 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
         return false;
     }
 
-    constexpr double kInterval = 10; // ms
-    const std::chrono::milliseconds delay(static_cast<int>(kInterval));
+    constexpr int kIntervalMs = 10;
+    const std::chrono::milliseconds delay(kIntervalMs);
 
     struct SegmentOperating
     {
         cv::Point begin { };
         cv::Point end { };
-        double total_step = 0;
-        double x_step_len = 0;
-        double y_step_len = 0;
+        size_t total_steps = 1;
+        double x_step_len = 0.0;
+        double y_step_len = 0.0;
         size_t step_index = 0;
-        uint duration = 0;
         uint end_hold = 0;
     };
 
-    struct CotactOperating
+    struct ContactOperating
     {
         std::vector<SegmentOperating> seg;
         size_t seg_index = 0;
+        uint hold_until = 0;
+        bool started = false;
+        bool finished = false;
+    };
+
+    const auto calc_total_steps = [](uint duration_ms) -> size_t {
+        return std::max<size_t>(1, static_cast<size_t>(std::ceil(static_cast<double>(duration_ms) / kIntervalMs)));
     };
 
     // contact index < end index < op >>
-    std::vector<CotactOperating> operating(param.swipes.size());
+    std::vector<ContactOperating> operating(param.swipes.size());
 
     for (size_t s_i = 0; s_i < param.swipes.size(); ++s_i) {
         const SwipeParam& s = param.swipes.at(s_i);
@@ -598,15 +796,12 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
             SegmentOperating o;
             o.begin = begin;
             o.end = end;
-            o.total_step = duration / kInterval;
-            o.x_step_len = (end.x - begin.x) / o.total_step;
-            o.y_step_len = (end.y - begin.y) / o.total_step;
-            o.step_index = 0;
-            o.duration = duration;
+            o.total_steps = calc_total_steps(duration);
+            o.x_step_len = static_cast<double>(end.x - begin.x) / static_cast<double>(o.total_steps);
+            o.y_step_len = static_cast<double>(end.y - begin.y) / static_cast<double>(o.total_steps);
             o.end_hold = end_hold;
 
             operating.at(s_i).seg.emplace_back(std::move(o));
-            operating.at(s_i).seg_index = 0;
 
             begin = end;
         }
@@ -616,8 +811,8 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
     auto now = starting;
 
     bool ret = !param.swipes.empty();
-    size_t over_count = 0;
-    while (over_count < param.swipes.size()) {
+    size_t finished_count = 0;
+    while (finished_count < param.swipes.size()) {
         uint now_point = static_cast<uint>(std::chrono::duration_cast<std::chrono::milliseconds>(now - starting).count());
 
         for (size_t i = 0; i < param.swipes.size(); ++i) {
@@ -634,33 +829,62 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
             }
             auto& contact_op = operating.at(i);
 
-            if (contact_op.seg_index >= contact_op.seg.size()) {
-                continue; // all segments done
+            if (contact_op.finished) {
+                continue;
             }
-            auto& seg_op = contact_op.seg.at(contact_op.seg_index);
-
-            if (seg_op.step_index == 0) {
+            if (contact_op.seg.empty()) {
+                LogError << "Invalid multi swipe: empty path" << VAR(i);
+                contact_op.finished = true;
+                ++finished_count;
+                ret = false;
+                continue;
+            }
+            if (now_point < contact_op.hold_until) {
+                continue;
+            }
+            if (!contact_op.started) {
                 if (!s.only_hover) {
-                    ret &= control_unit_->touch_down(contact, seg_op.begin.x, seg_op.begin.y, s.pressure);
+                    const auto& first_seg = contact_op.seg.front();
+                    ret &= control_unit_->touch_down(contact, first_seg.begin.x, first_seg.begin.y, s.pressure);
                 }
-                ++seg_op.step_index;
+                contact_op.started = true;
             }
-            else if (seg_op.step_index < seg_op.total_step) {
-                int mx = static_cast<int>(seg_op.begin.x + seg_op.step_index * seg_op.x_step_len);
-                int my = static_cast<int>(seg_op.begin.y + seg_op.step_index * seg_op.y_step_len);
-                ret &= control_unit_->touch_move(contact, mx, my, s.pressure);
-                ++seg_op.step_index;
-            }
-            else if (seg_op.step_index == seg_op.total_step) {
+
+            if (contact_op.seg_index >= contact_op.seg.size()) {
                 if (!s.only_hover) {
                     ret &= control_unit_->touch_up(contact);
                 }
-                ++seg_op.step_index;
-                ++over_count;
-            }
-            else { // step_index > total
-                ++contact_op.seg_index;
+                contact_op.finished = true;
+                ++finished_count;
                 continue;
+            }
+
+            auto& seg_op = contact_op.seg.at(contact_op.seg_index);
+            if (seg_op.step_index < seg_op.total_steps) {
+                ++seg_op.step_index;
+
+                int mx = seg_op.end.x;
+                int my = seg_op.end.y;
+                if (seg_op.step_index < seg_op.total_steps) {
+                    mx = static_cast<int>(std::round(seg_op.begin.x + seg_op.step_index * seg_op.x_step_len));
+                    my = static_cast<int>(std::round(seg_op.begin.y + seg_op.step_index * seg_op.y_step_len));
+                }
+
+                ret &= control_unit_->touch_move(contact, mx, my, s.pressure);
+                if (seg_op.step_index == seg_op.total_steps) {
+                    contact_op.hold_until = now_point + seg_op.end_hold;
+                }
+            }
+            else {
+                ++contact_op.seg_index;
+                contact_op.hold_until = 0;
+                if (contact_op.seg_index >= contact_op.seg.size()) {
+                    if (!s.only_hover) {
+                        ret &= control_unit_->touch_up(contact);
+                    }
+                    contact_op.finished = true;
+                    ++finished_count;
+                }
             }
         }
 
@@ -910,6 +1134,8 @@ bool ControllerAgent::handle_shell(const ShellParam& param)
 
 bool ControllerAgent::check_stop()
 {
+    std::unique_lock lock(stop_mutex_);
+
     if (!need_to_stop_) {
         return true;
     }
@@ -933,18 +1159,23 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         notify = focus_ids_.erase(id) > 0;
     }
 
-    const json::value cb_detail = {
-        { "ctrl_id", id },
-        { "uuid", get_uuid() },
-        { "action", action.type },
-        { "param", action.param },
-        { "info", control_unit_->get_info() },
+    const auto make_cb_detail = [&]() -> json::value {
+        json::object info;
+        if (control_unit_) {
+            info = control_unit_->get_info();
+        }
+
+        return {
+            { "ctrl_id", id },
+            { "uuid", get_uuid() },
+            { "action", action.type },
+            { "param", action.param },
+            { "info", std::move(info) },
+        };
     };
 
-    // LogInfo << cb_detail.to_string();
-
     if (notify) {
-        notifier_.notify(this, MaaMsg_Controller_Action_Starting, cb_detail);
+        notifier_.notify(this, MaaMsg_Controller_Action_Starting, make_cb_detail());
     }
 
     switch (action.type) {
@@ -1025,11 +1256,8 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         ret = false;
     }
 
-    if (ret && notify) {
-        notifier_.notify(this, MaaMsg_Controller_Action_Succeeded, cb_detail);
-    }
-    else if (!ret) {
-        notifier_.notify(this, MaaMsg_Controller_Action_Failed, cb_detail);
+    if (notify) {
+        notifier_.notify(this, ret ? MaaMsg_Controller_Action_Succeeded : MaaMsg_Controller_Action_Failed, make_cb_detail());
     }
 
     return ret;
@@ -1041,16 +1269,33 @@ cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)
         return p;
     }
 
-    if (image_target_width_ == 0 || image_target_height_ == 0) {
-        LogWarn << "Invalid image target size" << VAR(image_target_width_) << VAR(image_target_height_);
+    auto load_scale_info = [this]() {
+        std::unique_lock lock(image_mutex_);
+        return std::array<int, 4> { image_raw_width_, image_raw_height_, image_target_width_, image_target_height_ };
+    };
+
+    auto scale_info = load_scale_info();
+    if (scale_info[2] == 0 || scale_info[3] == 0) {
+        LogWarn << "Invalid image target size" << VAR(scale_info[2]) << VAR(scale_info[3]);
 
         if (!init_scale_info()) {
             return { };
         }
+
+        scale_info = load_scale_info();
     }
 
-    double scale_width = static_cast<double>(image_raw_width_) / image_target_width_;
-    double scale_height = static_cast<double>(image_raw_height_) / image_target_height_;
+    const int raw_width = scale_info[0];
+    const int raw_height = scale_info[1];
+    const int target_width = scale_info[2];
+    const int target_height = scale_info[3];
+    if (raw_width == 0 || raw_height == 0 || target_width == 0 || target_height == 0) {
+        LogError << "Invalid scale info" << VAR(raw_width) << VAR(raw_height) << VAR(target_width) << VAR(target_height);
+        return { };
+    }
+
+    double scale_width = static_cast<double>(raw_width) / target_width;
+    double scale_height = static_cast<double>(raw_height) / target_height;
 
     int proced_x = static_cast<int>(std::round(p.x * scale_width));
     int proced_y = static_cast<int>(std::round(p.y * scale_height));
@@ -1061,26 +1306,172 @@ cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)
 bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
 {
     if (raw.empty()) {
+        std::unique_lock lock(image_mutex_);
         image_ = cv::Mat();
         LogError << "Empty screenshot";
         return false;
     }
 
-    if (raw.cols != image_raw_width_ || raw.rows != image_raw_height_ || image_target_width_ == 0 || image_target_height_ == 0) {
-        LogInfo << "Resolution changed" << VAR(raw.cols) << VAR(raw.rows) << VAR(image_raw_width_) << VAR(image_raw_height_);
+    const json::object control_info = control_unit_ ? control_unit_->get_info() : json::object {};
+    const bool hdr_raw_image = is_hdr_rgba_image(raw);
+    const bool hdr_capture_active = hdr_raw_image || get_json_bool(control_info, "hdr_capture_active");
+    const bool hdr_preprocessed_upstream = !hdr_raw_image && get_json_bool(control_info, "hdr_preprocessed");
+    const bool hdr_gpu_processed = get_json_bool(control_info, "hdr_gpu_processed");
+    const bool hdr_display_compensated = get_json_bool(control_info, "display_hdr_compensated");
+    int target_width = 0;
+    int target_height = 0;
+    int resize_method = cv::INTER_AREA;
+    bool notify_hdr_mode = false;
 
-        image_raw_width_ = raw.cols;
-        image_raw_height_ = raw.rows;
+    {
+        std::unique_lock lock(image_mutex_);
+        if (raw.cols != image_raw_width_ || raw.rows != image_raw_height_ || image_target_width_ == 0 || image_target_height_ == 0) {
+            LogInfo << "Resolution changed" << VAR(raw.cols) << VAR(raw.rows) << VAR(image_raw_width_) << VAR(image_raw_height_);
 
-        if (!calc_target_image_size()) {
+            image_raw_width_ = raw.cols;
+            image_raw_height_ = raw.rows;
+
+            if (!calc_target_image_size()) {
+                image_ = cv::Mat();
+                LogError << "Invalid target image size";
+                return false;
+            }
+        }
+
+        target_width = image_target_width_;
+        target_height = image_target_height_;
+        resize_method = image_resize_method_;
+
+        const bool hdr_mode_changed = !hdr_screenshot_mode_notified_ || last_hdr_capture_active_ != hdr_capture_active
+                                      || last_hdr_gpu_processed_ != hdr_gpu_processed
+                                      || last_hdr_display_compensated_ != hdr_display_compensated;
+        if (hdr_mode_changed) {
+            hdr_screenshot_mode_notified_ = true;
+            last_hdr_capture_active_ = hdr_capture_active;
+            last_hdr_gpu_processed_ = hdr_gpu_processed;
+            last_hdr_display_compensated_ = hdr_display_compensated;
+            hdr_probe_images_remaining_ = (hdr_capture_active || hdr_display_compensated) ? kHdrProbeImageCount : 0;
+            notify_hdr_mode = true;
+        }
+    }
+
+    if (notify_hdr_mode) {
+        notify_hdr_screenshot_mode(hdr_capture_active, hdr_gpu_processed, hdr_display_compensated);
+    }
+
+    cv::Mat processed;
+    if (hdr_capture_active && !hdr_preprocessed_upstream) {
+        // Some OpenCV builds are unstable when resizing CV_16FC4 frames directly.
+        // Tone-map to an 8-bit preview first, then resize in SDR space.
+        cv::Mat hdr_bgr8 = hdr_rgba_to_bgr8(raw);
+        if (hdr_bgr8.empty()) {
+            std::unique_lock lock(image_mutex_);
             image_ = cv::Mat();
-            LogError << "Invalid target image size";
+            return false;
+        }
+
+        if (hdr_bgr8.cols == target_width && hdr_bgr8.rows == target_height) {
+            processed = std::move(hdr_bgr8);
+        }
+        else {
+            cv::resize(hdr_bgr8, processed, { target_width, target_height }, 0, 0, resize_method);
+        }
+    }
+    else {
+        cv::Mat resized;
+        if (raw.cols == target_width && raw.rows == target_height) {
+            resized = raw;
+        }
+        else {
+            cv::resize(raw, resized, { target_width, target_height }, 0, 0, resize_method);
+        }
+
+        if (resized.type() == CV_8UC3) {
+            processed = resized.clone();
+        }
+        else if (resized.type() == CV_8UC4) {
+            cv::cvtColor(resized, processed, cv::COLOR_BGRA2BGR);
+        }
+        else {
+            LogError << "Unsupported screenshot type" << VAR(resized.type());
+            std::unique_lock lock(image_mutex_);
+            image_ = cv::Mat();
             return false;
         }
     }
 
-    cv::resize(raw, image_, { image_target_width_, image_target_height_ }, 0, 0, image_resize_method_);
-    return !image_.empty();
+    int probe_index = 0;
+    {
+        std::unique_lock lock(image_mutex_);
+        image_ = processed;
+
+        if (!processed.empty() && hdr_probe_images_remaining_ > 0) {
+            probe_index = kHdrProbeImageCount - hdr_probe_images_remaining_ + 1;
+            --hdr_probe_images_remaining_;
+        }
+    }
+
+    if (probe_index > 0) {
+        save_hdr_probe_image(processed, probe_index);
+    }
+
+    return !processed.empty();
+}
+
+void ControllerAgent::notify_hdr_screenshot_mode(bool hdr_capture_active, bool gpu_processed, bool hdr_display_compensated)
+{
+    const std::string_view message = hdr_capture_active ? kHdrScreenshotEnabledMsg
+                                                        : (hdr_display_compensated ? kHdrDisplayCompensationEnabledMsg
+                                                                                   : kHdrScreenshotDisabledMsg);
+    const std::string_view content =
+        hdr_capture_active
+            ? (gpu_processed
+                   ? "HDR capture path detected. GPU preprocessing is active before readback, and 5 processed screenshots are being saved under `debug/hdr_probe/`. 检测到 HDR 捕获路径，回传内存前已启用 GPU 预处理，并正在额外保存 5 张处理后的截图到 `debug/hdr_probe/`。"
+                   : "HDR capture path detected. Processed preview is enabled, and 5 processed screenshots are being saved under `debug/hdr_probe/`. 检测到 HDR 捕获路径，已启用处理后的预览，并正在额外保存 5 张处理后的截图到 `debug/hdr_probe/`。")
+            : (hdr_display_compensated
+                   ? "HDR display compensation is active for the current screenshot method, and 5 processed screenshots are being saved under `debug/hdr_probe/`. 当前截图方式已启用 HDR 显示补偿，并正在额外保存 5 张处理后的截图到 `debug/hdr_probe/`。"
+                   : "HDR capture path not detected. Using the legacy SDR screenshot path. 未检测到 HDR 捕获路径，正在使用原有的 SDR 截图路径。");
+
+    const json::value cb_detail = json::object {
+        { "uuid", get_uuid() },
+        { "focus",
+          json::object {
+              { std::string(message),
+                json::object {
+                    { "content", std::string(content) },
+                    { "display", "log" },
+                } },
+          } },
+    };
+
+    notifier_.notify(this, message, cb_detail);
+}
+
+void ControllerAgent::save_hdr_probe_image(const cv::Mat& image, int probe_index)
+{
+    if (image.empty()) {
+        LogWarn << "HDR probe image is empty";
+        return;
+    }
+
+    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
+    const auto probe_dir = std::filesystem::absolute(option.log_dir() / "hdr_probe");
+    std::error_code ec;
+    std::filesystem::create_directories(probe_dir, ec);
+    if (ec) {
+        LogError << "Failed to create HDR probe directory" << VAR(probe_dir) << VAR(ec.message());
+        return;
+    }
+
+    const auto filename = std::format("{}_hdr_probe_{:0>2}.png", format_now_for_filename(), probe_index);
+    const auto filepath = probe_dir / path(filename);
+
+    if (imwrite(filepath, image)) {
+        LogInfo << "Saved HDR probe screenshot" << VAR(probe_index) << VAR(filepath);
+    }
+    else {
+        LogError << "Failed to save HDR probe screenshot" << VAR(probe_index) << VAR(filepath);
+    }
 }
 
 bool ControllerAgent::calc_target_image_size()
@@ -1147,9 +1538,17 @@ bool ControllerAgent::request_uuid()
         return false;
     }
 
-    uuid_cache_.clear();
+    std::string uuid;
+    bool ret = control_unit_->request_uuid(uuid);
 
-    return control_unit_->request_uuid(uuid_cache_);
+    std::unique_lock lock(uuid_mutex_);
+    if (!ret) {
+        uuid_cache_.clear();
+        return false;
+    }
+
+    uuid_cache_ = std::move(uuid);
+    return true;
 }
 
 bool ControllerAgent::init_scale_info()
@@ -1162,13 +1561,23 @@ bool ControllerAgent::set_image_target_long_side(MaaOptionValue value, MaaOption
 {
     LogDebug;
 
+    if (!value) {
+        LogError << "option value is nullptr";
+        return false;
+    }
     if (val_size != sizeof(int32_t)) {
         LogError << "invalid value size: " << val_size;
         return false;
     }
-    image_target_long_side_ = *reinterpret_cast<const int32_t*>(value);
-    image_target_short_side_ = 0;
+    const auto target_long_side = *reinterpret_cast<const int32_t*>(value);
+    if (target_long_side < 0) {
+        LogError << "invalid image target long side: " << target_long_side;
+        return false;
+    }
 
+    std::unique_lock lock(image_mutex_);
+    image_target_long_side_ = target_long_side;
+    image_target_short_side_ = 0;
     clear_target_image_size();
 
     LogInfo << "image_target_width_ = " << image_target_long_side_;
@@ -1179,13 +1588,23 @@ bool ControllerAgent::set_image_target_short_side(MaaOptionValue value, MaaOptio
 {
     LogDebug;
 
+    if (!value) {
+        LogError << "option value is nullptr";
+        return false;
+    }
     if (val_size != sizeof(int32_t)) {
         LogError << "invalid value size: " << val_size;
         return false;
     }
-    image_target_long_side_ = 0;
-    image_target_short_side_ = *reinterpret_cast<const int32_t*>(value);
+    const auto target_short_side = *reinterpret_cast<const int32_t*>(value);
+    if (target_short_side < 0) {
+        LogError << "invalid image target short side: " << target_short_side;
+        return false;
+    }
 
+    std::unique_lock lock(image_mutex_);
+    image_target_long_side_ = 0;
+    image_target_short_side_ = target_short_side;
     clear_target_image_size();
 
     LogInfo << "image_target_height_ = " << image_target_short_side_;
@@ -1196,10 +1615,15 @@ bool ControllerAgent::set_image_use_raw_size(MaaOptionValue value, MaaOptionValu
 {
     LogDebug;
 
+    if (!value) {
+        LogError << "option value is nullptr";
+        return false;
+    }
     if (val_size != sizeof(bool)) {
         LogError << "invalid value size: " << val_size;
         return false;
     }
+    std::unique_lock lock(image_mutex_);
     image_use_raw_size_ = *reinterpret_cast<const bool*>(value);
 
     clear_target_image_size();
@@ -1211,6 +1635,10 @@ bool ControllerAgent::set_mouse_lock_follow_option(MaaOptionValue value, MaaOpti
 {
     LogDebug;
 
+    if (!value) {
+        LogError << "option value is nullptr";
+        return false;
+    }
     if (val_size != sizeof(bool)) {
         LogError << "invalid value size: " << val_size;
         return false;
@@ -1235,6 +1663,10 @@ bool ControllerAgent::set_screenshot_resize_method(MaaOptionValue value, MaaOpti
 {
     LogDebug;
 
+    if (!value) {
+        LogError << "option value is nullptr";
+        return false;
+    }
     if (val_size != sizeof(int32_t)) {
         LogError << "invalid value size: " << val_size;
         return false;
@@ -1247,6 +1679,7 @@ bool ControllerAgent::set_screenshot_resize_method(MaaOptionValue value, MaaOpti
         return false;
     }
 
+    std::unique_lock lock(image_mutex_);
     image_resize_method_ = raw;
     LogInfo << "image_resize_method_ = " << image_resize_method_;
     return true;
@@ -1256,6 +1689,10 @@ bool ControllerAgent::set_background_managed_keys_option(MaaOptionValue value, M
 {
     LogDebug;
 
+    if (val_size > 0 && !value) {
+        LogError << "option value is nullptr";
+        return false;
+    }
     if (val_size != 0 && val_size % sizeof(int32_t) != 0) {
         LogError << "invalid value size: " << val_size;
         return false;
