@@ -57,6 +57,19 @@ bool RemoteController::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOp
         break;
     }
 
+    case MaaCtrlOption_ScreenshotTargetExpand: {
+        if (val_size != sizeof(int32_t) * 2) {
+            LogError << "invalid val_size for expand option" << VAR(key) << VAR(val_size);
+            return false;
+        }
+        auto* dims = reinterpret_cast<const int32_t*>(value);
+        json::array arr;
+        arr.emplace_back(dims[0]);
+        arr.emplace_back(dims[1]);
+        jvalue = std::move(arr);
+        break;
+    }
+
     default:
         LogError << "unknown key" << VAR(key);
         return false;

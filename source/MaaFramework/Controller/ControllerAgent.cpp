@@ -39,6 +39,8 @@ bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOpt
         return set_image_target_long_side(value, val_size);
     case MaaCtrlOption_ScreenshotTargetShortSide:
         return set_image_target_short_side(value, val_size);
+    case MaaCtrlOption_ScreenshotTargetExpand:
+        return set_image_target_expand(value, val_size);
     case MaaCtrlOption_ScreenshotUseRawSize:
         return set_image_use_raw_size(value, val_size);
     case MaaCtrlOption_MouseLockFollow:
@@ -1097,6 +1099,16 @@ bool ControllerAgent::calc_target_image_size()
         return true;
     }
 
+    if (image_target_expand_width_ > 0 && image_target_expand_height_ > 0) {
+        double sx = static_cast<double>(image_target_expand_width_) / image_raw_width_;
+        double sy = static_cast<double>(image_target_expand_height_) / image_raw_height_;
+        double scale = std::max(sx, sy);
+        image_target_width_ = static_cast<int>(std::round(image_raw_width_ * scale));
+        image_target_height_ = static_cast<int>(std::round(image_raw_height_ * scale));
+        LogInfo << "expand" << VAR(scale) << VAR(image_target_width_) << VAR(image_target_height_);
+        return true;
+    }
+
     if (image_target_long_side_ == 0 && image_target_short_side_ == 0) {
         LogError << "Invalid image target size";
         return false;
@@ -1168,6 +1180,8 @@ bool ControllerAgent::set_image_target_long_side(MaaOptionValue value, MaaOption
     }
     image_target_long_side_ = *reinterpret_cast<const int32_t*>(value);
     image_target_short_side_ = 0;
+    image_target_expand_width_ = 0;
+    image_target_expand_height_ = 0;
 
     clear_target_image_size();
 
@@ -1185,10 +1199,36 @@ bool ControllerAgent::set_image_target_short_side(MaaOptionValue value, MaaOptio
     }
     image_target_long_side_ = 0;
     image_target_short_side_ = *reinterpret_cast<const int32_t*>(value);
+    image_target_expand_width_ = 0;
+    image_target_expand_height_ = 0;
 
     clear_target_image_size();
 
     LogInfo << "image_target_height_ = " << image_target_short_side_;
+    return true;
+}
+
+bool ControllerAgent::set_image_target_expand(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogDebug;
+
+    if (val_size != sizeof(int32_t) * 2) {
+        LogError << "invalid value size: " << val_size;
+        return false;
+    }
+    auto* arr = reinterpret_cast<const int32_t*>(value);
+    if (arr[0] <= 0 || arr[1] <= 0) {
+        LogError << "invalid expand size" << VAR(arr[0]) << VAR(arr[1]);
+        return false;
+    }
+    image_target_expand_width_ = arr[0];
+    image_target_expand_height_ = arr[1];
+    image_target_long_side_ = 0;
+    image_target_short_side_ = 0;
+
+    clear_target_image_size();
+
+    LogInfo << VAR(image_target_expand_width_) << VAR(image_target_expand_height_);
     return true;
 }
 

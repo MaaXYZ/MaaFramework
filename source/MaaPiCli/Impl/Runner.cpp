@@ -143,6 +143,10 @@ bool Runner::run(const RuntimeParam& param)
         MaaBool raw = true;
         MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotUseRawSize, &raw, sizeof(raw));
     }
+    else if (param.display_config.expand.has_value()) {
+        int32_t expand[2] = { param.display_config.expand->at(0), param.display_config.expand->at(1) };
+        MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetExpand, expand, sizeof(expand));
+    }
     else if (param.display_config.long_side.has_value()) {
         int long_side = param.display_config.long_side.value();
         MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetLongSide, &long_side, sizeof(long_side));
