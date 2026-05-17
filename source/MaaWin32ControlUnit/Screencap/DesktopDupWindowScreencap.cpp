@@ -110,4 +110,3 @@ RECT DesktopDupWindowScreencap::get_output_desktop_coordinates() const
 }
 
 MAA_CTRL_UNIT_NS_END
-

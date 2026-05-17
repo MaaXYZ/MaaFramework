@@ -107,4 +107,3 @@ std::optional<cv::Mat> ScreenDCScreencap::screencap()
 }
 
 MAA_CTRL_UNIT_NS_END
-
