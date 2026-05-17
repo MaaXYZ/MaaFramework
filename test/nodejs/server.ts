@@ -1,4 +1,4 @@
-import './maa-server'
+import './maa-server.ts'
 
 async function main() {
     console.log('MaaFw Version:', maa.Global)
