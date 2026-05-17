@@ -10,6 +10,7 @@
 #include "Input/LegacyEventInput.h"
 #include "Input/MessageInput.h"
 #include "Input/SeizeInput.h"
+#include "Input/InputUtils.h"
 #include "Screencap/DesktopDupScreencap.h"
 #include "Screencap/DesktopDupWindowScreencap.h"
 #include "Screencap/FramePoolScreencap.h"
@@ -181,6 +182,12 @@ std::shared_ptr<ScreencapBase>
         }
         LogInfo << VAR(method) << VAR(duration);
     };
+
+    // Best-effort foreground recovery before speed test.
+    // Do not fail speed test on recovery failure.
+    if (!units.empty()) {
+        ::MaaNS::CtrlUnitNs::ensure_foreground_and_topmost(hwnd_);
+    }
 
     for (auto& [method, unit] : units) {
         LogInfo << "Warming up" << method;
