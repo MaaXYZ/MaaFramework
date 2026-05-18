@@ -26,6 +26,8 @@ public: // from ScreencapBase
         return inner_.screencap();
     }
 
+    virtual ScreencapInfo last_screencap_info() const override { return inner_.last_screencap_info(); }
+
     virtual void inactive() override
     {
         if (helper_.is_pseudo_minimized()) {

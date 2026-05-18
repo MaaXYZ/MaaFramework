@@ -79,7 +79,9 @@ inline bool ensure_window_on_screen(HWND hwnd)
         return false;
     }
 
-    RECT monitor_rect = mi.rcWork;
+    // Borderless/fullscreen windows are allowed to cover the whole monitor,
+    // including the taskbar area, so use rcMonitor instead of rcWork there.
+    RECT monitor_rect = is_fullscreen(hwnd) ? mi.rcMonitor : mi.rcWork;
     int monitor_w = monitor_rect.right - monitor_rect.left;
     int monitor_h = monitor_rect.bottom - monitor_rect.top;
 

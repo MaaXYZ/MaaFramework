@@ -39,6 +39,8 @@ bool Win32ControlUnitMgr::connect()
 {
     connected_ = false;
     screencap_.reset();
+    active_screencap_method_ = ScreencapMethod::UnknownYet;
+    last_screencap_info_ = {};
 
 #ifndef MAA_WIN32_COMPATIBLE
     // 设置 Per-Monitor DPI Aware V2，确保 GetClientRect/GetWindowRect 等 API 返回物理像素。
@@ -107,6 +109,27 @@ std::unordered_map<Win32ControlUnitMgr::ScreencapMethod, std::shared_ptr<Screenc
     return units;
 }
 
+std::string_view Win32ControlUnitMgr::screencap_method_name(ScreencapMethod method)
+{
+    switch (method) {
+    case ScreencapMethod::GDI:
+        return "GDI";
+    case ScreencapMethod::FramePool:
+        return "FramePool";
+    case ScreencapMethod::DXGI_DesktopDup:
+        return "DXGI_DesktopDup";
+    case ScreencapMethod::DXGI_DesktopDup_Window:
+        return "DXGI_DesktopDup_Window";
+    case ScreencapMethod::PrintWindow:
+        return "PrintWindow";
+    case ScreencapMethod::ScreenDC:
+        return "ScreenDC";
+    case ScreencapMethod::UnknownYet:
+    default:
+        return "UnknownYet";
+    }
+}
+
 bool Win32ControlUnitMgr::init_screencap()
 {
     if (screencap_method_ == MaaWin32ScreencapMethod_None) {
@@ -166,7 +189,7 @@ std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(MaaWin32InputMethod m
 }
 
 std::shared_ptr<ScreencapBase>
-    Win32ControlUnitMgr::speed_test(const std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>>& units) const
+    Win32ControlUnitMgr::speed_test(const std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>>& units)
 {
     LogFunc;
 
@@ -202,6 +225,7 @@ std::shared_ptr<ScreencapBase>
         return nullptr;
     }
 
+    active_screencap_method_ = fastest;
     LogInfo << "The fastest method is" << fastest << VAR(cost);
     return units.at(fastest);
 }
@@ -270,11 +294,25 @@ bool Win32ControlUnitMgr::screencap(cv::Mat& image)
 
     auto opt = screencap_->screencap();
     if (!opt) {
-        LogError << "failed to screencap";
-        return false;
+        LogWarn << "failed to screencap, reinitializing screencap method";
+        if (!init_screencap()) {
+            LogError << "failed to reinitialize screencap method";
+            return false;
+        }
+        if (!screencap_) {
+            LogError << "screencap_ is null after reinitialization";
+            return false;
+        }
+
+        opt = screencap_->screencap();
+        if (!opt) {
+            LogError << "failed to screencap after reinitialization";
+            return false;
+        }
     }
 
     image = std::move(opt).value();
+    last_screencap_info_ = screencap_->last_screencap_info();
 
     return true;
 }
@@ -485,8 +523,15 @@ json::object Win32ControlUnitMgr::get_info() const
     info["type"] = "win32";
     info["hwnd"] = reinterpret_cast<uint64_t>(hwnd_);
     info["screencap_method"] = static_cast<int64_t>(screencap_method_);
+    info["active_screencap_method"] = static_cast<int64_t>(active_screencap_method_);
+    info["active_screencap_method_name"] = screencap_method_name(active_screencap_method_);
     info["mouse_method"] = static_cast<int64_t>(mouse_method_);
     info["keyboard_method"] = static_cast<int64_t>(keyboard_method_);
+    info["hdr_capture_active"] = last_screencap_info_.hdr_capture_active;
+    info["hdr_preprocessed"] = last_screencap_info_.hdr_preprocessed;
+    info["hdr_gpu_processed"] = last_screencap_info_.gpu_processed;
+    info["display_hdr_active"] = last_screencap_info_.display_hdr_active;
+    info["display_hdr_compensated"] = last_screencap_info_.display_hdr_compensated;
     return info;
 }
 
