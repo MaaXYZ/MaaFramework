@@ -12,6 +12,10 @@ std::optional<cv::Mat> GdiScreencap::screencap()
         return std::nullopt;
     }
 
+    // GDI 对 DirectX/OpenGL 渲染的游戏，被遮挡或非前台时往往得到黑屏
+    // （驱动不会为隐藏区域更新窗口 DC）。内部带 fast path 和 5 秒节流。
+    ensure_window_foreground_for_screencap(hwnd_);
+
     HDC hdc = nullptr;
     HDC mem_dc = nullptr;
     HBITMAP bitmap = nullptr;

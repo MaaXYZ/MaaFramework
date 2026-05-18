@@ -12,6 +12,10 @@ std::optional<cv::Mat> ScreenDCScreencap::screencap()
         return std::nullopt;
     }
 
+    // ScreenDC 通过 GetDC(nullptr) + BitBlt 抠屏幕像素，被遮挡 = 截到遮挡物。
+    // 内部带 fast path 和 5 秒节流，不会扰乱用户主动切走时的 UI 操作。
+    ensure_window_foreground_for_screencap(hwnd_);
+
     // Ensure the window is fully visible on the monitor before screencap
     if (!ensure_window_on_screen(hwnd_)) {
         LogWarn << "Failed to ensure window on screen";

@@ -1,8 +1,10 @@
 #pragma once
 
+#include <atomic>
 #include <utility>
 
 #include "Common/Conf.h"
+#include "Input/InputUtils.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/NoWarningCV.hpp"
 #include "MaaUtils/SafeWindows.hpp"
@@ -52,6 +54,46 @@ inline std::pair<int, int> window_size(HWND hwnd)
 inline bool is_fullscreen(HWND hwnd)
 {
     return GetWindowLongPtr(hwnd, GWL_STYLE) & WS_POPUP;
+}
+
+// 把目标窗口拉到 Z 序顶部并尝试激活，专供不支持后台的截图方式
+// (GDI / ScreenDC / DXGI_DesktopDup / DXGI_DesktopDup_Window) 在每次 screencap() 前调用。
+//
+// 行为：
+//   - fast path: 窗口已是前台时仅做一次 GetForegroundWindow 检查 (~0.1us)，命中即返回。
+//   - 节流: 一次实际拉前台后 kForegroundPullCooldownMs 内不再抢前台，给用户切到客户端
+//     UI 操作（如停止任务）的窗口期；冷却结束后若窗口仍未在前台则再拉一次，从而在
+//     长期挂机场景下也能周期性自救。
+//   - 拉前台直接复用输入侧的 ensure_foreground_and_topmost：SetForegroundWindow 被
+//     Windows 前台锁定拒绝时，输入侧已有"再 SetWindowPos(HWND_TOP)"作为兜底。对截图
+//     场景而言，只要 Z 序提升 DWM 就会重新合成正确画面，焦点是否归位无关紧要。
+//   - 与输入侧调用 ensure_foreground_and_topmost 的时机平行：输入侧只在 action 内触发，
+//     无法挽救"识别一直失败、永远走不到 action"的死锁场景，也覆盖不到 connect 时的
+//     speed_test；这里在截图开头补上，两条路径通过 Windows 的真实前台状态自然仲裁。
+inline void ensure_window_foreground_for_screencap(HWND hwnd)
+{
+    // 节流冷却时长，给用户操作客户端 UI（如停止任务）的窗口期。
+    constexpr DWORD kForegroundPullCooldownMs = 5000;
+
+    // 最小化窗口由 FramePool/PrintWindow 各自的 PseudoMinimizeHelper 处理；不支持后台
+    // 的截图方式对最小化窗口本来就截不出有效内容，这里跳过避免对用户状态的额外干扰。
+    // ensure_foreground_and_topmost 内部已有 hwnd 空检查和 fast path，此处不重复。
+    if (!hwnd || IsIconic(hwnd) || GetForegroundWindow() == hwnd) {
+        return;
+    }
+
+    // 节流：使用 GetTickCount（与 ensure_foreground_and_topmost 内部 sleep 计时体系一致；
+    // 49.7 天回绕，但无符号差值在回绕后仍正确）。多 controller 共存时共享同一冷却计时器。
+    static std::atomic<DWORD> s_last_pull_tick { 0 };
+    DWORD now = GetTickCount();
+    DWORD last = s_last_pull_tick.load(std::memory_order_relaxed);
+    if (last != 0 && (now - last) < kForegroundPullCooldownMs) {
+        return;
+    }
+
+    LogInfo << "Pulling window to foreground for screencap" << VAR_VOIDP(hwnd);
+    ensure_foreground_and_topmost(hwnd);
+    s_last_pull_tick.store(now, std::memory_order_relaxed);
 }
 
 // Ensure the window's client area is fully visible on the monitor.

@@ -13,6 +13,10 @@ DesktopDupScreencap::~DesktopDupScreencap()
 
 std::optional<cv::Mat> DesktopDupScreencap::screencap()
 {
+    // DXGI 桌面复制是全屏抓帧，被其它窗口盖住的部分就是盖住的内容。
+    // 内部带 fast path 和 5 秒节流；hwnd_ 为空时函数内部会安全跳过。
+    ensure_window_foreground_for_screencap(hwnd_);
+
     // 初始化 D3D 设备和 DXGI 工厂（只需要初始化一次）
     if (!d3d_device_) {
         if (!init()) {

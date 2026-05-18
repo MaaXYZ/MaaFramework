@@ -14,6 +14,10 @@ std::optional<cv::Mat> DesktopDupWindowScreencap::screencap()
         return std::nullopt;
     }
 
+    // 桌面复制后还要按窗口客户区裁剪，被遮挡 = 裁出来的是遮挡物。
+    // 父类 DesktopDupScreencap::screencap 内部也会再调一次，但 fast path/节流让其幂等。
+    ensure_window_foreground_for_screencap(hwnd_);
+
     // Ensure the window is fully visible on the monitor before screencap
     if (!ensure_window_on_screen(hwnd_)) {
         LogWarn << "Failed to ensure window on screen";
