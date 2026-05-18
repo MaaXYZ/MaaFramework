@@ -43,8 +43,8 @@ private:
         }
 
         auto now = std::chrono::steady_clock::now();
-        if (last_foreground_attempt_ != std::chrono::steady_clock::time_point::min() &&
-            now - last_foreground_attempt_ < kForegroundRecoveryInterval) {
+        if (last_foreground_attempt_ != std::chrono::steady_clock::time_point::min()
+            && now - last_foreground_attempt_ < kForegroundRecoveryInterval) {
             return false;
         }
 
