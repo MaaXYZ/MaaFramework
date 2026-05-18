@@ -37,6 +37,20 @@ inline void ensure_foreground_and_topmost(HWND hwnd)
 
     // 如果窗口不在前台，先将其置顶
     if (hwnd != GetForegroundWindow()) {
+        // 检查当前前台窗口是否是 hwnd 拥有的弹出窗口（如下拉菜单、右键菜单等）。
+        // 若是，则跳过置前操作：强制置前 hwnd 会令弹出窗口失去焦点并自动关闭，
+        // 导致后续点击落在错误的 UI 元素上。
+        HWND fg = GetForegroundWindow();
+        if (fg) {
+            HWND owner = GetWindow(fg, GW_OWNER);
+            while (owner) {
+                if (owner == hwnd) {
+                    return;
+                }
+                owner = GetWindow(owner, GW_OWNER);
+            }
+        }
+
         // 将窗口移到 Z 序顶部
         SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
