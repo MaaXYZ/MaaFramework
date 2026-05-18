@@ -73,24 +73,15 @@ const MaaToolkitDesktopWindow* MaaToolkitDesktopWindowListAt(const MaaToolkitDes
     return &list->at(index);
 }
 
-void* MaaToolkitDesktopWindowGetHandle(const MaaToolkitDesktopWindow* window)
+// 通用字段
+uint64_t MaaToolkitDesktopWindowGetHandle(const MaaToolkitDesktopWindow* window)
 {
     if (!window) {
         LogError << "window is null";
-        return nullptr;
+        return 0;
     }
 
     return window->handle();
-}
-
-const char* MaaToolkitDesktopWindowGetClassName(const MaaToolkitDesktopWindow* window)
-{
-    if (!window) {
-        LogError << "window is null";
-        return "";
-    }
-
-    return window->class_name().c_str();
 }
 
 const char* MaaToolkitDesktopWindowGetWindowName(const MaaToolkitDesktopWindow* window)
@@ -101,4 +92,57 @@ const char* MaaToolkitDesktopWindowGetWindowName(const MaaToolkitDesktopWindow* 
     }
 
     return window->window_name().c_str();
+}
+
+// Win32 专有字段
+const char* MaaToolkitDesktopWindowGetWin32ClassName(const MaaToolkitDesktopWindow* window)
+{
+    if (!window) {
+        LogError << "window is null";
+        return "";
+    }
+
+    return window->win32_class_name().c_str();
+}
+
+// MacOS 专有字段
+int32_t MaaToolkitDesktopWindowGetMacOSPID(const MaaToolkitDesktopWindow* window)
+{
+    if (!window) {
+        LogError << "window is null";
+        return 0;
+    }
+
+    return window->macos_pid();
+}
+
+const char* MaaToolkitDesktopWindowGetMacOSBundleID(const MaaToolkitDesktopWindow* window)
+{
+    if (!window) {
+        LogError << "window is null";
+        return "";
+    }
+
+    return window->macos_bundle_id().c_str();
+}
+
+const char* MaaToolkitDesktopWindowGetMacOSApplicationName(const MaaToolkitDesktopWindow* window)
+{
+    if (!window) {
+        LogError << "window is null";
+        return "";
+    }
+
+    return window->macos_application_name().c_str();
+}
+
+// Linux 专有字段
+const char* MaaToolkitDesktopWindowGetLinuxSocketPath(const MaaToolkitDesktopWindow* window)
+{
+    if (!window) {
+        LogError << "window is null";
+        return "";
+    }
+
+    return window->linux_socket_path().c_str();
 }

@@ -126,11 +126,11 @@ MaaController* create_win32_controller()
 
     for (size_t i = 0; i < size; ++i) {
         auto window_handle = MaaToolkitDesktopWindowListAt(list_handle, i);
-        std::string class_name = MaaToolkitDesktopWindowGetClassName(window_handle);
         std::string window_name = MaaToolkitDesktopWindowGetWindowName(window_handle);
+        std::string class_name = MaaToolkitDesktopWindowGetWin32ClassName(window_handle);
 
         if (window_name.find("二重螺旋") != std::string::npos) {
-            hwnd = MaaToolkitDesktopWindowGetHandle(window_handle);
+            hwnd = reinterpret_cast<void*>(MaaToolkitDesktopWindowGetHandle(window_handle));
             break;
         }
     }
@@ -169,7 +169,7 @@ MaaController* create_macos_controller()
         std::string window_name = MaaToolkitDesktopWindowGetWindowName(window_handle);
 
         if (window_name.find("关于本机") != std::string::npos) {
-            window_id = reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(window_handle));
+            window_id = MaaToolkitDesktopWindowGetHandle(window_handle);
             break;
         }
     }

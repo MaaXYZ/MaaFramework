@@ -47,9 +47,7 @@ std::vector<DesktopWindow> DesktopWindowLinuxFinder::find_all() const
                 continue;
             }
             result.emplace_back(
-                DesktopWindow { .hwnd = reinterpret_cast<void*>(static_cast<uintptr_t>(id)),
-                                .class_name = MAA_NS::to_u16(entry.path().string()),
-                                .window_name = MAA_NS::to_u16(filename.string()) });
+                DesktopWindow { .wayland_id = id, .wayland_socket_name = filename.string(), .wayland_socket_path = entry.path().string() });
 
             wl_display_disconnect(display);
         }

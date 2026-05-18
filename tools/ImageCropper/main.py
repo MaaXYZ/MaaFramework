@@ -98,26 +98,28 @@ def parse_args() -> Controller:
         if len(window_list):
             max_len = 40
             for i, w in enumerate(window_list):
-                c = w.class_name[:max_len - 3] + '...' if len(w.class_name) > max_len else w.class_name
-                print(f"{w.hwnd:>19} {c:>{max_len}} | {i:>3} | {w.window_name}")
+                c = w.win32_class_name[:max_len - 3] + '...' if len(w.win32_class_name) > max_len else w.win32_class_name
+                print(f"{w.handle:>19} {c:>{max_len}} | {i:>3} | {w.window_name}")
             print(str.format("{:->19} {:->{}} | {:->3} | {}", " hWnd", " class name", max_len, "num", "window name"))
         i = int(input("Please select the window (ENTER to pass): "))
         if 0 <= i < len(window_list):
             device_serial = window_list[i].window_name
-            return Win32Controller(hWnd=window_list[i].hwnd,
+            return Win32Controller(hWnd=window_list[i].handle,
                                    screencap_method=win32_screencap_method)
     elif t == 3:
         window_list = Toolkit.find_desktop_windows()
         if len(window_list):
             max_len = 40
             for i, w in enumerate(window_list):
-                c = w.class_name[:max_len - 3] + '...' if len(w.class_name) > max_len else w.class_name
-                print(f"{w.hwnd:>19} {c:>{max_len}} | {i:>3} | {w.window_name}")
-            print(str.format("{:->19} {:->{}} | {:->3} | {}", " hwnd", " class name", max_len, "num", "window name"))
+                # macOS 使用 macos_application_name 作为主要显示名称
+                app_name = w.macos_application_name[:max_len - 3] + '...' if len(w.macos_application_name) > max_len else w.macos_application_name
+                title = w.window_name[:20] + '...' if len(w.window_name) > 20 else w.window_name
+                print(f"{w.handle:>10} {app_name:>{max_len}} | {i:>3} | {title}")
+            print(str.format("{:->10} {:->{}} | {:->3} | {}", " window_id", " application", max_len, "num", "title"))
         i = int(input("Please select the window (ENTER to pass): "))
         if 0 <= i < len(window_list):
             device_serial = window_list[i].window_name
-            return MacOSController(window_id=window_list[i].hwnd,
+            return MacOSController(window_id=window_list[i].handle,
                                    screencap_method=macos_screencap_method)
     return None
 

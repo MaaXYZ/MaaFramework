@@ -17,17 +17,20 @@ extern "C"
     MAA_TOOLKIT_API MaaSize MaaToolkitDesktopWindowListSize(const MaaToolkitDesktopWindowList* list);
     MAA_TOOLKIT_API const MaaToolkitDesktopWindow* MaaToolkitDesktopWindowListAt(const MaaToolkitDesktopWindowList* list, MaaSize index);
 
-    // Win32: HWND
-    // macOS: CGWindowID (SCWindow.windowID), force-cast to void*, NOT NSWindow*
-    MAA_TOOLKIT_API void* MaaToolkitDesktopWindowGetHandle(const MaaToolkitDesktopWindow* window);
-
-    // Win32: window class name
-    // macOS: bundle identifier (SCWindow.owningApplication.bundleIdentifier)
-    MAA_TOOLKIT_API const char* MaaToolkitDesktopWindowGetClassName(const MaaToolkitDesktopWindow* window);
-
-    // Win32: window name
-    // macOS: window title (SCWindow.title)
+    // 通用字段
+    MAA_TOOLKIT_API uint64_t MaaToolkitDesktopWindowGetHandle(const MaaToolkitDesktopWindow* window);
     MAA_TOOLKIT_API const char* MaaToolkitDesktopWindowGetWindowName(const MaaToolkitDesktopWindow* window);
+
+    // Win32 专有字段
+    MAA_TOOLKIT_API const char* MaaToolkitDesktopWindowGetWin32ClassName(const MaaToolkitDesktopWindow* window);
+
+    // MacOS 专有字段
+    MAA_TOOLKIT_API int32_t MaaToolkitDesktopWindowGetMacOSPID(const MaaToolkitDesktopWindow* window);                 // macOS 进程ID
+    MAA_TOOLKIT_API const char* MaaToolkitDesktopWindowGetMacOSBundleID(const MaaToolkitDesktopWindow* window);        // macOS Bundle ID
+    MAA_TOOLKIT_API const char* MaaToolkitDesktopWindowGetMacOSApplicationName(const MaaToolkitDesktopWindow* window); // macOS 应用程序名称
+
+    // Linux 专有字段
+    MAA_TOOLKIT_API const char* MaaToolkitDesktopWindowGetLinuxSocketPath(const MaaToolkitDesktopWindow* window);
 
 #ifdef __cplusplus
 }
