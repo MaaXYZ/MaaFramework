@@ -16,6 +16,7 @@ class MacOSControlUnitAPI;
 class GamepadControlUnitAPI;
 class CustomControlUnitAPI;
 class WlRootsControlUnitAPI;
+class GamescopeControlUnitAPI;
 class FullControlUnitAPI;
 class AndroidNativeControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
@@ -167,6 +168,19 @@ private:
     inline static const std::string version_func_name_ = "MaaWlRootsControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaWlRootsControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaWlRootsControlUnitDestroy";
+};
+
+class GamescopeControlUnitLibraryHolder : public LibraryHolder<GamescopeControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::GamescopeControlUnitAPI>
+        create_control_unit(uint32_t node_id, const char* eis_socket_path, MaaBool use_win32_vk_code);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaGamescopeControlUnit");
+    inline static const std::string version_func_name_ = "MaaGamescopeControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaGamescopeControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaGamescopeControlUnitDestroy";
 };
 
 MAA_NS_END

@@ -51,4 +51,8 @@ if(WITH_WLROOTS_CONTROLLER)
     add_dependencies(LibraryHolder MaaWlRootsControlUnit)
 endif()
 
+if(WITH_GAMESCOPE_CONTROLLER)
+    add_dependencies(LibraryHolder MaaGamescopeControlUnit)
+endif()
+
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${library_holder_src})
