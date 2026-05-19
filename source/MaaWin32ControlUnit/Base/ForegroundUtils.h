@@ -33,4 +33,27 @@ inline void ensure_foreground_and_topmost(HWND hwnd)
     }
 }
 
+inline bool ensure_foreground_with_cooldown(HWND hwnd)
+{
+    constexpr DWORD kForegroundRecoveryInterval = 5000;
+    static DWORD last_foreground_attempt = 0;
+
+    if (!hwnd || !IsWindow(hwnd)) {
+        return false;
+    }
+
+    if (hwnd == GetForegroundWindow()) {
+        return true;
+    }
+
+    DWORD now = GetTickCount();
+    if (last_foreground_attempt != 0 && now - last_foreground_attempt < kForegroundRecoveryInterval) {
+        return false;
+    }
+
+    last_foreground_attempt = now;
+    ensure_foreground_and_topmost(hwnd);
+    return hwnd == GetForegroundWindow();
+}
+
 MAA_CTRL_UNIT_NS_END

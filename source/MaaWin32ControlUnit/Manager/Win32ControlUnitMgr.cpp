@@ -12,7 +12,6 @@
 #include "Input/SeizeInput.h"
 #include "Screencap/DesktopDupScreencap.h"
 #include "Screencap/DesktopDupWindowScreencap.h"
-#include "Screencap/ForegroundScreencap.h"
 #include "Screencap/FramePoolScreencap.h"
 #include "Screencap/FramePoolWithPseudoMinimizeScreencap.h"
 #include "Screencap/GdiScreencap.h"
@@ -98,14 +97,12 @@ std::unordered_map<Win32ControlUnitMgr::ScreencapMethod, std::shared_ptr<Screenc
         return std::make_shared<DesktopDupScreencap>(hwnd_);
     });
     add(MaaWin32ScreencapMethod_DXGI_DesktopDup_Window, ScreencapMethod::DXGI_DesktopDup_Window, [this] {
-        return std::make_shared<ForegroundScreencap>(hwnd_, std::make_shared<DesktopDupWindowScreencap>(hwnd_));
+        return std::make_shared<DesktopDupWindowScreencap>(hwnd_);
     });
     add(MaaWin32ScreencapMethod_PrintWindow, ScreencapMethod::PrintWindow, [this] {
         return std::make_shared<PrintWindowWithPseudoMinimizeScreencap>(hwnd_);
     });
-    add(MaaWin32ScreencapMethod_ScreenDC, ScreencapMethod::ScreenDC, [this] {
-        return std::make_shared<ForegroundScreencap>(hwnd_, std::make_shared<ScreenDCScreencap>(hwnd_));
-    });
+    add(MaaWin32ScreencapMethod_ScreenDC, ScreencapMethod::ScreenDC, [this] { return std::make_shared<ScreenDCScreencap>(hwnd_); });
 
     return units;
 }

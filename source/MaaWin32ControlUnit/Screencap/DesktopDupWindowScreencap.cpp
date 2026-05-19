@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "Base/ForegroundUtils.h"
 #include "HwndUtils.hpp"
 #include "MaaUtils/Logger.h"
 
@@ -11,6 +12,10 @@ std::optional<cv::Mat> DesktopDupWindowScreencap::screencap()
 {
     if (!hwnd_) {
         LogError << "hwnd_ is nullptr";
+        return std::nullopt;
+    }
+
+    if (!ensure_foreground_with_cooldown(hwnd_)) {
         return std::nullopt;
     }
 
