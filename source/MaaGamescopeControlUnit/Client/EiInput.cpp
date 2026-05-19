@@ -175,6 +175,11 @@ void EiInput::handle_event(struct ei_event* event)
         }
         connected_ = false;
         break;
+    case EI_EVENT_SYNC:
+        if (device_) {
+            ei_device_frame(device_, ei_now(ei_));
+        }
+        break;
     default:
         LogTrace << "Unhandled ei event" << VAR(ei_event_get_type(event));
         break;
