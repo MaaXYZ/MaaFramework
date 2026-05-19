@@ -14,7 +14,7 @@ std::optional<cv::Mat> ScreenDCScreencap::screencap()
     }
 
     if (!ensure_foreground_with_cooldown(hwnd_)) {
-        return std::nullopt;
+        LogWarn << "Failed to ensure foreground window before screencap";
     }
 
     // Ensure the window is fully visible on the monitor before screencap
