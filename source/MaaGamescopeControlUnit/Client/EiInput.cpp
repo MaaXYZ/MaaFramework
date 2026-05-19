@@ -232,7 +232,8 @@ bool EiInput::relative_move(int dx, int dy)
 
 bool EiInput::scroll(int dx, int dy)
 {
-    return send([dx, dy](struct ei_device* d) { ei_device_scroll_delta(d, static_cast<double>(dx), static_cast<double>(dy)); });
+    // 对 dy 取反，在行为上和 Win32 保持一致
+    return send([dx, dy](struct ei_device* d) { ei_device_scroll_delta(d, static_cast<double>(dx), static_cast<double>(-dy)); });
 }
 
 MAA_CTRL_UNIT_NS_END
