@@ -38,8 +38,10 @@ static constexpr bool kGamepadSupported = false;
 
 #if defined(__linux__)
 static constexpr bool kWlRootsSupported = true;
+static constexpr bool kGamescopeSupported = true;
 #else
 static constexpr bool kWlRootsSupported = false;
+static constexpr bool kGamescopeSupported = false;
 #endif
 
 // return [1, size]
@@ -59,7 +61,7 @@ std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
 
         if (std::cin.eof()) {
             s_eof = true;
-            return { };
+            return {};
         }
 
         if (buffer.empty()) {
@@ -100,7 +102,7 @@ int input(size_t size, std::string_view prompt = "Please input")
     while (true) {
         auto values = input_multi_impl(size, prompt);
         if (s_eof) {
-            return { };
+            return {};
         }
         if (values.size() != 1) {
             fail();
@@ -147,7 +149,7 @@ bool is_running_as_admin()
     BOOL is_member = FALSE;
 
     // CheckTokenMembership(nullptr, ...) checks the current effective token (UAC-aware).
-    BYTE sid_buffer[SECURITY_MAX_SID_SIZE] = { };
+    BYTE sid_buffer[SECURITY_MAX_SID_SIZE] = {};
     DWORD sid_size = sizeof(sid_buffer);
     PSID admin_sid = sid_buffer;
 
@@ -373,6 +375,13 @@ void Interactor::print_config() const
         }
         if (!kWlRootsSupported) {
             std::cout << "\t\t(WLRoots is only available on Linux)\n";
+        }
+    } break;
+    case InterfaceData::Controller::Type::Gamescope: {
+        const auto& gc = config_.configuration().gamescope;
+        std::cout << MAA_NS::utf8_to_crt(std::format("\t\tNode ID: {}\n\t\tEIS socket: {}\n", gc.node_id, gc.eis_socket_path));
+        if (!kGamescopeSupported) {
+            std::cout << "\t\t(Gamescope is only available on Linux)\n";
         }
     } break;
     default:
@@ -690,6 +699,26 @@ void Interactor::select_controller()
         }
         config_.configuration().controller.type = InterfaceData::Controller::Type::Gamepad;
         select_gamepad(controller.gamepad);
+        break;
+    case InterfaceData::Controller::Type::Gamescope:
+        if (!kGamescopeSupported) {
+            std::cout << "\nGamescope controller is only available on Linux.\n";
+            bool has_other_controllers = std::ranges::any_of(all_controllers, [](const auto& ctrl) {
+                return ctrl.type != InterfaceData::Controller::Type::Gamescope;
+            });
+            if (has_other_controllers) {
+                std::cout << "Please select another controller.\n\n";
+                mpause();
+                select_controller();
+            }
+            else {
+                std::cout << "No other controllers available.\n\n";
+                mpause();
+            }
+            return;
+        }
+        config_.configuration().controller.type = InterfaceData::Controller::Type::Gamescope;
+        select_gamescope();
         break;
     default:
         LogError << "Unknown controller type" << VAR(controller.type);
@@ -1147,6 +1176,41 @@ void Interactor::select_wlroots_manual_input()
     std::string socket_path;
     std::getline(std::cin, socket_path);
     config_.configuration().wlroots.wlr_socket_path = socket_path;
+    std::cout << "\n";
+}
+
+void Interactor::select_gamescope()
+{
+    std::cout << "### Configure Gamescope Controller ###\n\n";
+
+    auto& gc = config_.configuration().gamescope;
+
+    // Ask for PipeWire node ID
+    std::cout << "Please input PipeWire node ID for gamescope output: ";
+    std::cin.sync();
+    std::string buffer;
+    std::getline(std::cin, buffer);
+
+    if (std::cin.eof()) {
+        s_eof = true;
+        return;
+    }
+
+    gc.node_id = buffer.empty() ? 0 : static_cast<uint32_t>(std::stoul(buffer));
+    std::cout << "\n";
+
+    // Ask for EIS socket path
+    std::string default_eis = gc.eis_socket_path.empty() ? "/run/user/1000/wayland-0" : gc.eis_socket_path;
+    std::cout << "Please input EIS socket path [" << default_eis << "]: ";
+    std::cin.sync();
+    std::getline(std::cin, buffer);
+
+    if (std::cin.eof()) {
+        s_eof = true;
+        return;
+    }
+
+    gc.eis_socket_path = buffer.empty() ? default_eis : buffer;
     std::cout << "\n";
 }
 
@@ -1752,6 +1816,33 @@ bool Interactor::check_validity()
         }
     }
 
+    if (config_.configuration().controller.type == InterfaceData::Controller::Type::Gamescope) {
+        if (!kGamescopeSupported) {
+            LogError << "Gamescope controller is only available on Linux";
+            return false;
+        }
+
+        auto& gc = config_.configuration().gamescope;
+        if (gc.node_id == 0) {
+            auto& name = config_.configuration().controller.name;
+            auto controller_iter =
+                std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
+
+            if (controller_iter != config_.interface_data().controller.end()) {
+                select_gamescope();
+            }
+        }
+
+        if (gc.node_id == 0) {
+            LogError << "Gamescope PipeWire node ID is not set";
+            return false;
+        }
+        if (gc.eis_socket_path.empty()) {
+            LogError << "Gamescope EIS socket path is empty";
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -1877,7 +1968,7 @@ std::string Interactor::get_display_name(const std::string& name, const std::str
 std::string Interactor::read_text_content(const std::string& text) const
 {
     if (text.empty()) {
-        return { };
+        return {};
     }
 
     // 先翻译文本（如果以 $ 开头）

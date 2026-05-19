@@ -303,6 +303,16 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         runtime.controller_param = std::move(wlroots);
     } break;
 
+    case InterfaceData::Controller::Type::Gamescope: {
+        RuntimeParam::GamescopeParam gamescope;
+
+        gamescope.node_id = config_.gamescope.node_id;
+        gamescope.eis_socket_path = config_.gamescope.eis_socket_path;
+        gamescope.use_win32_vk_code = controller.gamescope.use_win32_vk_code;
+
+        runtime.controller_param = std::move(gamescope);
+    } break;
+
     default: {
         LogError << "Unknown controller type" << VAR(controller.type);
         return std::nullopt;

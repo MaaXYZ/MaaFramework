@@ -125,6 +125,18 @@ bool Runner::run(const RuntimeParam& param)
         return false;
 #endif
     }
+    else if (const auto* p_gamescope_param = std::get_if<RuntimeParam::GamescopeParam>(&param.controller_param)) {
+#if defined(__linux__)
+        controller_handle = MaaGamescopeControllerCreate(
+            p_gamescope_param->node_id,
+            p_gamescope_param->eis_socket_path.c_str(),
+            p_gamescope_param->use_win32_vk_code);
+#else
+        std::ignore = p_gamescope_param;
+        LogError << "Gamescope controller is only supported on Linux";
+        return false;
+#endif
+    }
     else {
         LogError << "Unknown controller type";
         return false;

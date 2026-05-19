@@ -30,6 +30,7 @@ private:
     void select_wlroots();
     void select_wlroots_auto_detect();
     void select_wlroots_manual_input();
+    void select_gamescope();
 
     void select_resource();
     void add_task();
