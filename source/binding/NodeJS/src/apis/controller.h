@@ -22,9 +22,9 @@ struct ImageJobImpl : public JobImpl
 
 struct ControllerImpl : public maajs::NativeClassBase
 {
-    MaaController* controller { };
+    MaaController* controller {};
     bool own = false;
-    std::map<MaaSinkId, maajs::CallbackContext*> sinks { };
+    std::map<MaaSinkId, maajs::CallbackContext*> sinks {};
 
     ControllerImpl() = default;
     ControllerImpl(MaaController* ctrl, bool own);
@@ -209,6 +209,18 @@ struct WlRootsControllerImpl : public ControllerImpl
     constexpr static char name[] = "WlRootsController";
 
     static WlRootsControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
+using GamescopeControllerCtorParam = std::tuple<uint32_t, std::string, bool>;
+
+struct GamescopeControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    constexpr static char name[] = "GamescopeController";
+
+    static GamescopeControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 

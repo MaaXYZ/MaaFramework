@@ -322,6 +322,24 @@ declare global {
             static find(): Promise<WlRootsCompositor[] | null>
         }
 
+        /**
+         * Gamescope controller for Linux (Gamescope compositor / Steam Deck).
+         * Uses Ei (Emulated Input) for input injection and PipeWire for screencap.
+         *
+         * @param node_id The PipeWire node ID for screencap.
+         * @param eis_socket_path The EIS socket path for emulated input injection.
+         * @param use_win32_vk_code When true, key codes passed to click_key / key_down / key_up are
+         *   interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes internally.
+         *   When false, key codes are treated as raw evdev codes.
+         */
+        class GamescopeController extends Controller {
+            constructor(
+                node_id: number,
+                eis_socket_path: string,
+                use_win32_vk_code: boolean,
+            )
+        }
+
         interface CustomControllerActor {
             connect?(): maa.MaybePromise<boolean>
             // connected?(): maa.MaybePromise<boolean>

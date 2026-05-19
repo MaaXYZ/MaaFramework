@@ -95,6 +95,7 @@ struct ExtContext : public maajs::NativeClassBase
     maajs::FunctionRefType recordControllerCtor;
     maajs::FunctionRefType gamepadControllerCtor;
     maajs::FunctionRefType wlrootsControllerCtor;
+    maajs::FunctionRefType gamescopeControllerCtor;
     maajs::FunctionRefType customControllerCtor;
     maajs::FunctionRefType taskJobCtor;
     maajs::FunctionRefType taskerCtor;
@@ -122,6 +123,7 @@ struct ExtContext : public maajs::NativeClassBase
         marker(recordControllerCtor.Value());
         marker(gamepadControllerCtor.Value());
         marker(wlrootsControllerCtor.Value());
+        marker(gamescopeControllerCtor.Value());
         marker(customControllerCtor.Value());
         marker(taskJobCtor.Value());
         marker(taskerCtor.Value());
@@ -144,7 +146,7 @@ struct ExtContext : public maajs::NativeClassBase
 #ifdef MAA_JS_IMPL_IS_NODEJS
         auto ptr = env.GetInstanceData<ExtContext>();
         if (!ptr) {
-            ptr = new ExtContext { };
+            ptr = new ExtContext {};
             env.SetInstanceData(ptr);
         }
         return ptr;
