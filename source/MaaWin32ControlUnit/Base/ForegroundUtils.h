@@ -48,7 +48,7 @@ inline bool ensure_foreground_with_cooldown(HWND hwnd)
 
     DWORD now = GetTickCount();
     if (last_foreground_attempt != 0 && now - last_foreground_attempt < kForegroundRecoveryInterval) {
-        return false;
+        return true;
     }
 
     last_foreground_attempt = now;
