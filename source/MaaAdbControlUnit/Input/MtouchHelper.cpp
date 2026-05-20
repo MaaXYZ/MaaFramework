@@ -6,12 +6,127 @@
 #include <ranges>
 
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
 std::string MtouchHelper::type_name() const
 {
     return typeid(this).name();
+}
+
+std::pair<int, int> MtouchHelper::screen_to_touch(int x, int y)
+{
+    return screen_to_touch_impl(x, y);
+}
+
+std::pair<int, int> MtouchHelper::screen_to_touch(double x, double y)
+{
+    return screen_to_touch_impl(x, y);
+}
+
+MaaControllerFeature MtouchHelper::get_features() const
+{
+    MaaControllerFeature feat = MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+    if (adb_shell_input_) {
+        feat |= adb_shell_input_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+    }
+    return feat;
+}
+
+bool MtouchHelper::click_key(int key)
+{
+    if (!adb_shell_input_) {
+        LogError << "adb_shell_input_ is nullptr";
+        return false;
+    }
+    return adb_shell_input_->click_key(key);
+}
+
+bool MtouchHelper::input_text(const std::string& text)
+{
+    if (!adb_shell_input_) {
+        LogError << "adb_shell_input_ is nullptr";
+        return false;
+    }
+    return adb_shell_input_->input_text(text);
+}
+
+bool MtouchHelper::key_down(int key)
+{
+    if (!adb_shell_input_) {
+        LogError << "adb_shell_input_ is nullptr";
+        return false;
+    }
+    return adb_shell_input_->key_down(key);
+}
+
+bool MtouchHelper::key_up(int key)
+{
+    if (!adb_shell_input_) {
+        LogError << "adb_shell_input_ is nullptr";
+        return false;
+    }
+    return adb_shell_input_->key_up(key);
+}
+
+bool MtouchHelper::parse_minitouch_config(const json::value& config)
+{
+    if (!invoke_app_ || !adb_shell_input_) {
+        LogError << "invoke_app_ or adb_shell_input_ is nullptr";
+        return false;
+    }
+
+    static const json::array kDefaultArch = {
+        "x86_64", "x86", "arm64-v8a", "armeabi-v7a", "armeabi",
+    };
+    json::array jarch = config.get("prebuilt", "minitouch", "arch", kDefaultArch);
+
+    if (!jarch.all<std::string>()) {
+        return false;
+    }
+
+    arch_list_ = jarch.as<std::vector<std::string>>();
+
+    return invoke_app_->parse(config) && MtouchHelper::parse(config) && adb_shell_input_->parse(config);
+}
+
+bool MtouchHelper::push_minitouch()
+{
+    if (!invoke_app_->init()) {
+        return false;
+    }
+
+    auto archs = invoke_app_->abilist();
+    if (!archs) {
+        return false;
+    }
+
+    auto arch_iter = std::ranges::find_first_of(*archs, arch_list_);
+    if (arch_iter == archs->end()) {
+        LogError << "no matching arch for minitouch" << VAR(*archs) << VAR(arch_list_);
+        return false;
+    }
+    const std::string& target_arch = *arch_iter;
+
+    const auto bin_path = agent_path_ / path(target_arch) / path("minitouch");
+    if (!invoke_app_->push(bin_path)) {
+        return false;
+    }
+
+    if (!invoke_app_->chmod()) {
+        return false;
+    }
+
+    return true;
+}
+
+void MtouchHelper::remove_binary()
+{
+    LogTrace;
+    if (invoke_app_) {
+        invoke_app_->remove();
+    }
 }
 
 bool MtouchHelper::read_info()

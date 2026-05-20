@@ -4,7 +4,7 @@ IFS=$'\n\t'
 
 version="$1"
 
-curl -fsSL -O https://raw.githubusercontent.com/MaaAssistantArknights/design/main/logo/maa-logo_128x128.png
+curl -fsSL -O https://raw.githubusercontent.com/MaaAssistantArknights/design/main/v2/icons/maa-logo_128x128.png
 for nuspec in Maa.Framework.Runtime*.nuspec; do
     # extract RID from filename:
     #     Maa.Framework.Runtime.<rid>.nuspec -> <rid> Maa.Framework.Runtime.<rid>

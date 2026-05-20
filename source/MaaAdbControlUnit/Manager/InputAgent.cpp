@@ -4,6 +4,7 @@
 #include <ranges>
 #include <unordered_set>
 
+#include "EmulatorExtras/AndrowsExtras.h"
 #include "EmulatorExtras/MuMuPlayerExtras.h"
 #include "Input/AdbShellInput.h"
 #include "Input/MaatouchInput.h"
@@ -18,6 +19,7 @@ InputAgent::InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& a
     if (methods & MaaAdbInputMethod_EmulatorExtras) {
 #ifdef _WIN32
         method_vector.emplace_back(InputAgent::Method::MuMuPlayerExtras);
+        method_vector.emplace_back(InputAgent::Method::AndrowsExtras);
 #else
         LogWarn << "EmulatorExtras is not supported on this platform";
 #endif
@@ -63,6 +65,15 @@ InputAgent::InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& a
         case Method::MuMuPlayerExtras:
             unit = std::make_shared<MuMuPlayerExtras>();
             break;
+
+        case Method::AndrowsExtras: {
+            auto minitouch_path = agent_path / "minitouch";
+            if (!std::filesystem::exists(minitouch_path)) {
+                LogWarn << "minitouch path not exists" << VAR(minitouch_path);
+                break;
+            }
+            unit = std::make_shared<AndrowsExtras>(minitouch_path);
+        } break;
 #endif
 
         default:

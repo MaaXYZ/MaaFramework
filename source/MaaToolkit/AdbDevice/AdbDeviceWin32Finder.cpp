@@ -5,6 +5,7 @@
 
 #include "MaaUtils/IOStream/ChildPipeIOStream.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/SafeWindows.hpp"
 #include "MaaUtils/StringMisc.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
@@ -54,6 +55,8 @@ const AdbDeviceFinder::EmulatorConstDataMap& AdbDeviceWin32Finder::get_emulator_
           { .keyword = "qemu-system",
             .adb_candidate_paths = { "..\\..\\..\\platform-tools\\adb.exe"_path },
             .adb_common_serials = { "emulator-5554", "127.0.0.1:5555" } } },
+
+        { "Androws", { .keyword = "Androws", .adb_candidate_paths = { "adb.exe"_path } } },
     };
 
     return kConstData;
@@ -257,6 +260,104 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_ld_devices(const Emulator& emu
     }
 
     return result;
+}
+
+std::vector<AdbDeviceFinder::Emulator> AdbDeviceWin32Finder::find_extra_emulators() const
+{
+    LogFunc;
+
+    std::vector<Emulator> result;
+
+    if (auto androws_adb = find_androws_adb_path_from_registry()) {
+        Emulator emulator {
+            .name = "Androws",
+            .process_path = { },
+            .adb_path = *androws_adb,
+        };
+        LogInfo << "Androws found via registry" << VAR(emulator);
+        result.emplace_back(std::move(emulator));
+    }
+
+    return result;
+}
+
+namespace
+{
+// Read a REG_SZ value from an opened registry key into a std::wstring. Returns nullopt on any failure.
+std::optional<std::wstring> read_reg_sz(HKEY key, const wchar_t* value_name)
+{
+    DWORD type = 0;
+    DWORD size = 0;
+    LONG ret = RegQueryValueExW(key, value_name, nullptr, &type, nullptr, &size);
+    if (ret != ERROR_SUCCESS || type != REG_SZ || size == 0) {
+        return std::nullopt;
+    }
+
+    // size is in bytes, may or may not include the trailing null.
+    std::vector<BYTE> data(size);
+    ret = RegQueryValueExW(key, value_name, nullptr, &type, data.data(), &size);
+    if (ret != ERROR_SUCCESS || type != REG_SZ || size == 0) {
+        return std::nullopt;
+    }
+
+    // Length in wchar_t; drop trailing nulls if present.
+    size_t len = size / sizeof(wchar_t);
+    auto* wbuf = reinterpret_cast<const wchar_t*>(data.data());
+    while (len > 0 && wbuf[len - 1] == L'\0') {
+        --len;
+    }
+    if (len == 0) {
+        return std::nullopt;
+    }
+    return std::wstring(wbuf, len);
+}
+}
+
+std::optional<std::filesystem::path> AdbDeviceWin32Finder::find_androws_adb_path_from_registry()
+{
+    HKEY install_key = nullptr;
+    OnScopeLeave([&]() {
+        if (install_key) {
+            RegCloseKey(install_key);
+        }
+    });
+
+    // Silent miss: treat "not installed" as normal; do not log at warn/error.
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Tencent\\Androws", 0, KEY_READ, &install_key) != ERROR_SUCCESS) {
+        return std::nullopt;
+    }
+
+    auto install_path = read_reg_sz(install_key, L"InstallPath");
+    if (!install_path) {
+        LogWarn << "Androws registry key exists but InstallPath is missing or invalid";
+        return std::nullopt;
+    }
+
+    HKEY app_key = nullptr;
+    OnScopeLeave([&]() {
+        if (app_key) {
+            RegCloseKey(app_key);
+        }
+    });
+
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Tencent\\Androws\\Androws", 0, KEY_READ, &app_key) != ERROR_SUCCESS) {
+        LogWarn << "Androws InstallPath present but sub key 'Androws' missing";
+        return std::nullopt;
+    }
+
+    auto version = read_reg_sz(app_key, L"Version");
+    if (!version) {
+        LogWarn << "Androws sub key exists but Version is missing or invalid";
+        return std::nullopt;
+    }
+
+    std::filesystem::path adb_path = std::filesystem::path(*install_path) / L"Application" / *version / L"adb.exe";
+    if (!std::filesystem::exists(adb_path)) {
+        LogWarn << "Androws resolved adb.exe does not exist" << VAR(adb_path);
+        return std::nullopt;
+    }
+
+    return std::filesystem::canonical(adb_path);
 }
 
 MAA_TOOLKIT_NS_END

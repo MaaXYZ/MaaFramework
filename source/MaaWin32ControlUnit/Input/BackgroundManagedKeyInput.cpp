@@ -202,6 +202,7 @@ void BackgroundManagedKeyInput::send_key_event(int keycode, bool key_up)
     INPUT input { };
     input.type = INPUT_KEYBOARD;
     input.ki.wVk = static_cast<WORD>(keycode);
+    input.ki.wScan = static_cast<WORD>(MapVirtualKeyW(static_cast<UINT>(keycode), MAPVK_VK_TO_VSC));
     input.ki.dwFlags = key_up ? KEYEVENTF_KEYUP : 0;
     SendInput(1, &input, sizeof(INPUT));
 }

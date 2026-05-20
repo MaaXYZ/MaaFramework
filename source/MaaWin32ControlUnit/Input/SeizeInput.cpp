@@ -237,6 +237,7 @@ bool SeizeInput::key_down(int key)
 
     inputs[0].type = INPUT_KEYBOARD;
     inputs[0].ki.wVk = static_cast<WORD>(key);
+    inputs[0].ki.wScan = static_cast<WORD>(MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC));
 
     SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
 
@@ -256,6 +257,7 @@ bool SeizeInput::key_up(int key)
 
     inputs[0].type = INPUT_KEYBOARD;
     inputs[0].ki.wVk = static_cast<WORD>(key);
+    inputs[0].ki.wScan = static_cast<WORD>(MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC));
     inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
 
     SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));

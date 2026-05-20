@@ -1,5 +1,5 @@
 import { join } from 'path'
-import './maa-client'
+import './maa-client.ts'
 
 import * as fs from 'fs/promises'
 

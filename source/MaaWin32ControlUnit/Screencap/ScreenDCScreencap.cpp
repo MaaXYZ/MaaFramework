@@ -1,5 +1,6 @@
 #include "ScreenDCScreencap.h"
 
+#include "Base/ForegroundUtils.h"
 #include "HwndUtils.hpp"
 #include "MaaUtils/Logger.h"
 
@@ -10,6 +11,10 @@ std::optional<cv::Mat> ScreenDCScreencap::screencap()
     if (!hwnd_) {
         LogError << "hwnd_ is nullptr";
         return std::nullopt;
+    }
+
+    if (!ensure_foreground_with_cooldown(hwnd_)) {
+        LogWarn << "Failed to ensure foreground window before screencap";
     }
 
     // Ensure the window is fully visible on the monitor before screencap
@@ -107,4 +112,3 @@ std::optional<cv::Mat> ScreenDCScreencap::screencap()
 }
 
 MAA_CTRL_UNIT_NS_END
-
