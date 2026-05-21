@@ -137,7 +137,7 @@ extern "C"
      * @return The controller handle, or nullptr on failure.
      *
      * @note This controller is designed for Gamescope on Linux.
-     * @note Requires libpipewire >= 0.3.50 and libei >= 1.0.
+     * @note Requires libpipewire >= 0.3.50 and libei >= 1.6.
      */
     MAA_FRAMEWORK_API MaaController* MaaGamescopeControllerCreate(uint32_t node_id, const char* eis_socket_path, MaaBool use_win32_vk_code);
 
