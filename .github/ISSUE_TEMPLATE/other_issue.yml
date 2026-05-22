@@ -34,6 +34,12 @@ body:
       id: additional
       attributes:
           label: 其他信息 / Additional Information
-          description: 日志、截图等 / Logs, screenshots, etc.
+          description: | 
+            日志、截图或其他有助于排查问题的信息  
+            Logs, screenshots, or other descriptions that may help solve the problem.  
+            请详细描述运行环境以及复现方法和您期望的行为  
+            Please describe the runtime environment, the method of reproduction, and the expected behavior in detail.  
+            如果不认真填写此项，此issue可能会被直接关闭  
+            If this field is not filled in seriously, this issue may be closed directly.  
       validations:
           required: false
