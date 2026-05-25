@@ -198,6 +198,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
     异环小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 - [MALW](https://github.com/lisadnsess/MALostWord) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/lisadnsess/MALostWord) ![activity](https://img.shields.io/github/commit-activity/m/lisadnsess/MALostWord?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/lisadnsess/MALostWord?style=social)  
     东方归言录小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+- [AUTO-MAS](https://github.com/AUTO-MAS-Project/AUTO-MAS) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/AUTO-MAS-Project/AUTO-MAS) ![activity](https://img.shields.io/github/commit-activity/m/AUTO-MAS-Project/AUTO-MAS?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/AUTO-MAS-Project/AUTO-MAS?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?rid=AUTO_MAS) [![website](https://img.shields.io/badge/https://doc.auto--mas.top-%234285F4)](https://doc.auto-mas.top)
+
+  多脚本多配置统一管理与自动化工具，你的脚本管家。内置 MaaFramework 组件，拓展脚本能力边界！
 
 ## 生态共建
 
