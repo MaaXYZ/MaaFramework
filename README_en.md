@@ -51,7 +51,8 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 > [!TIP]
 > Visit our [website](https://maafw.com/) for a better documentation experience.  
-> Can't find the relevant documents? Try asking [AI](https://deepwiki.com/MaaXYZ/MaaFramework) ！
+> Can't find the relevant documents? Try asking [AI](https://deepwiki.com/MaaXYZ/MaaFramework) !  
+> Discover more community-contributed skills, pipelines, customs, and experiences on [MaaHub](https://hub.maafw.com).
 
 - [Quick Start](docs/en_us/1.1-QuickStarted.md) & [Terms](docs/en_us/1.2-ExplanationOfTerms.md)
 - [Integration](docs/en_us/2.1-Integration.md) & [API](docs/en_us/2.2-IntegratedInterfaceOverview.md)
