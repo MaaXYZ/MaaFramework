@@ -150,7 +150,7 @@ declare global {
 
             set screenshot_target_long_side(value: number)
             set screenshot_target_short_side(value: number)
-            set_screenshot_target_expand(width: number, height: number): void
+            set screenshot_target_expand(value: [number, number])
             set screenshot_use_raw_size(value: boolean)
             set screenshot_resize_method(value: number)
 

@@ -125,9 +125,9 @@ void ControllerImpl::set_screenshot_target_short_side(int32_t value)
     }
 }
 
-void ControllerImpl::set_screenshot_target_expand(int32_t width, int32_t height)
+void ControllerImpl::set_screenshot_target_expand(std::tuple<int32_t, int32_t> value)
 {
-    int32_t arr[2] = { width, height };
+    int32_t arr[2] = { std::get<0>(value), std::get<1>(value) };
     if (!MaaControllerSetOption(controller, MaaCtrlOption_ScreenshotTargetExpand, arr, sizeof(arr))) {
         throw maajs::MaaError { "Controller set screenshot_target_expand failed" };
     }
@@ -380,7 +380,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "remove_sink", ControllerImpl::remove_sink);
     MAA_BIND_SETTER(proto, "screenshot_target_long_side", ControllerImpl::set_screenshot_target_long_side);
     MAA_BIND_SETTER(proto, "screenshot_target_short_side", ControllerImpl::set_screenshot_target_short_side);
-    MAA_BIND_FUNC(proto, "set_screenshot_target_expand", ControllerImpl::set_screenshot_target_expand);
+    MAA_BIND_SETTER(proto, "screenshot_target_expand", ControllerImpl::set_screenshot_target_expand);
     MAA_BIND_SETTER(proto, "screenshot_use_raw_size", ControllerImpl::set_screenshot_use_raw_size);
     MAA_BIND_SETTER(proto, "screenshot_resize_method", ControllerImpl::set_screenshot_resize_method);
     MAA_BIND_FUNC(proto, "clear_sinks", ControllerImpl::clear_sinks);

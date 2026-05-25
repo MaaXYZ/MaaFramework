@@ -35,7 +35,7 @@ struct ControllerImpl : public maajs::NativeClassBase
     void clear_sinks();
     void set_screenshot_target_long_side(int32_t value);
     void set_screenshot_target_short_side(int32_t value);
-    void set_screenshot_target_expand(int32_t width, int32_t height);
+    void set_screenshot_target_expand(std::tuple<int32_t, int32_t> value);
     void set_screenshot_use_raw_size(bool value);
     void set_screenshot_resize_method(int32_t value);
     maajs::ValueType post_connection(maajs::ValueType self, maajs::EnvType env);
