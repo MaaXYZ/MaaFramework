@@ -89,7 +89,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
      Visual reading and construction Pipeline, [fully functional](https://github.com/kqcoxn/MaaPipelineEditor?tab=readme-ov-file#%E4%BA%AE%E7%82%B9), extremely lightweight cross-platform, progressive [local function extension](https://mpe.codax.site/docs/guide/server/deploy.html), seamless compatibility between old and new projects.
 
 - [MaaInspector](https://github.com/TanyaShue/MaaInspector) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaInspector?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaInspector?style=social)  
-    A visual editor based on vue-flow — a simple and user-friendly MaaFramework Pipeline Editor that integrates node preview, editing, and debugging all in one.
+    A visual editor based on vue-flow — a simple and user-friendly MaaFramework Pipeline Editor that integrates node preview, editing, 和 debugging all in one.
 
 - [MaaLogAnalyzer](https://github.com/MaaXYZ/MaaLogAnalyzer) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MAALogAnalyzer) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MAALogAnalyzer?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MAALogAnalyzer?style=social) [![vscode](https://img.shields.io/badge/VSCode-0f81c2?style=plastic&logo=data:image/svg+xml)](https://marketplace.visualstudio.com/items?itemName=Windsland52.maa-log-analyzer) [![website](https://img.shields.io/badge/https://mla.maafw.com-%234285F4)](https://mla.maafw.com/)  
     MaaFramework log analysis tool, providing user-friendly, multi-perspective visual analysis of task execution processes.
@@ -199,8 +199,12 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [MaaNTE](https://github.com/1bananachicken/MaaNTE) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/1bananachicken/MaaNTE) ![activity](https://img.shields.io/github/commit-activity/m/1bananachicken/MaaNTE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/1bananachicken/MaaNTE?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
     NTE Assistant. Image recognition + simulation control to free your hands! Powered by MaaFramework!
+
 - [MALW](https://github.com/lisadnsess/MALostWord) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/lisadnsess/MALostWord) ![activity](https://img.shields.io/github/commit-activity/m/lisadnsess/MALostWord?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/lisadnsess/MALostWord?style=social)  
     Touhou LostWord Assistant. Image recognition + simulation control to free your hands! Powered by MaaFramework!
+
+- [AUTO-MAS](https://github.com/AUTO-MAS-Project/AUTO-MAS) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/AUTO-MAS-Project/AUTO-MAS) ![activity](https://img.shields.io/github/commit-activity/m/AUTO-MAS-Project/AUTO-MAS?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/AUTO-MAS-Project/AUTO-MAS?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?rid=AUTO_MAS) [![website](https://img.shields.io/badge/https://doc.auto--mas.top-%234285F4)](https://doc.auto-mas.top)  
+    A unified management and automation tool for multiple configurations—your script butler. Integrated with MaaFramework components to expand the boundaries of scripting capabilities!
 
 ## Eco-Building
 
