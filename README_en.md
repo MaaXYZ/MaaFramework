@@ -206,6 +206,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [AUTO-MAS](https://github.com/AUTO-MAS-Project/AUTO-MAS) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/AUTO-MAS-Project/AUTO-MAS) ![activity](https://img.shields.io/github/commit-activity/m/AUTO-MAS-Project/AUTO-MAS?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/AUTO-MAS-Project/AUTO-MAS?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://doc.auto--mas.top-%234285F4)](https://doc.auto-mas.top)  
     A unified management and automation tool for multiple configurations—your script butler. Integrated with MaaFramework components to expand the boundaries of scripting capabilities!
 
+- [MR3A](https://github.com/originalsage/MR3A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/originalsage/MR3A) ![activity](https://img.shields.io/github/commit-activity/m/originalsage/MR3A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/originalsage/MR3A?style=social)  
+    A Ninja Must Die 3 Assistant. Image technology + simulation control, freeing your hands! Powered by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
