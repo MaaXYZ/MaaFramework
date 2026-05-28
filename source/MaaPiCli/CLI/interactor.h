@@ -1,16 +1,30 @@
 #pragma once
 
+#include <optional>
+
 #include "ProjectInterface/Configurator.h"
+#include "ProjectInterface/Types.h"
+
+#include "task_config.h"
 
 class Interactor
 {
 public:
     explicit Interactor(std::filesystem::path user_path);
 
-    bool load(const std::filesystem::path& resource_path);
+    bool load(const std::filesystem::path& resource_path, bool interactive = true);
+    void apply_task_config(const TaskConfig& task_cfg);
+    void list_task() const;
+    bool generate_pi_config(
+        const std::string& controller_name,
+        const std::string& adb_filter,
+        const std::string& resource_name,
+        bool force,
+        bool default_only = false);
+    bool generate_task_config(bool force, const std::string& output_path = {}, bool default_only = false) const;
     void print_config() const;
     void interact();
-    bool run();
+    bool run(int progress_level = 1);
 
 private:
     void interact_for_first_time_use();
@@ -68,6 +82,37 @@ private:
 
     // 查找当前配置中选中的 Controller 定义
     const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller* find_current_controller() const;
+
+    // generate-config pi 内部辅助：
+    // 根据 controller_name / adb_filter 推断并设置 cfg.controller
+    // 返回 false 表示指定的 controller 不存在
+    bool resolve_controller(const std::string& controller_name, const std::string& adb_filter);
+
+    // generate-config pi 内部辅助：
+    // 根据 resource_name 设置 cfg.resource；为空时取第一个
+    // 返回 false 表示指定的 resource 不存在
+    bool resolve_resource(const std::string& resource_name);
+
+    // generate-config pi 内部辅助：
+    // 探测 ADB 设备，取第一个 name/path/address 含 filter 的写入 cfg.adb
+    // filter 为空时取第一个设备；找不到匹配时返回 false
+    bool find_and_set_adb_device(const std::string& filter);
+
+    // generate-config pi 内部辅助：
+    // 用匹配当前 resource/controller 的任务非交互式填充 cfg.task
+    // default_only=true 时只填充 default_check=true 的任务
+    void fill_default_tasks(bool default_only = false);
+
+    // 返回满足过滤条件的任务指针列表（指向 interface_data().task 元素）
+    // default_only=true：仅保留 default_check==true 的任务
+    // filter_env=true：按当前 cfg.resource / cfg.controller.name 过滤
+    std::vector<const MAA_PROJECT_INTERFACE_NS::InterfaceData::Task*> filter_tasks(bool default_only, bool filter_env) const;
+
+    // 解析单个 option 的默认值：
+    // 优先使用 default_case；无默认值时 Select/Switch 取第一个 case，Input 取各字段 default_，
+    // Checkbox 无默认时留空（不强制勾选第一项）
+    // 找不到 option 或无有效默认值时返回 nullopt
+    std::optional<MAA_PROJECT_INTERFACE_NS::Configuration::Option> resolve_option_default(const std::string& option_name) const;
 
     enum class ElevationResult
     {
