@@ -2,6 +2,7 @@
 
 #include <format>
 #include <iostream>
+#include <optional>
 
 #include <meojson/json.hpp>
 
@@ -15,6 +16,7 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/ScopeLeave.hpp"
+#include "ProgressSink.h"
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 
@@ -34,7 +36,7 @@ std::vector<std::string> conv_args(const std::vector<std::string>& args)
 }
 #endif
 
-RuntimeParam::AdbParam reconfig_adb(const RuntimeParam::AdbParam& raw)
+std::optional<RuntimeParam::AdbParam> reconfig_adb(const RuntimeParam::AdbParam& raw)
 {
     auto list_handle = MaaToolkitAdbDeviceListCreate();
     OnScopeLeave([&]() { MaaToolkitAdbDeviceListDestroy(list_handle); });
@@ -67,16 +69,23 @@ RuntimeParam::AdbParam reconfig_adb(const RuntimeParam::AdbParam& raw)
         return new_param;
     }
 
-    return raw;
+    LogError << "ADB device not found" << VAR(raw.name) << VAR(raw.adb_path);
+    std::cerr << std::format("Failed to find ADB device: name={}, adb_path={}\n", raw.name, raw.adb_path);
+    return std::nullopt;
 }
 
-bool Runner::run(const RuntimeParam& param)
+bool Runner::run(const RuntimeParam& param, int progress_level)
 {
     MaaTasker* tasker_handle = MaaTaskerCreate();
 
     MaaController* controller_handle = nullptr;
     if (const auto* p_adb_param = std::get_if<RuntimeParam::AdbParam>(&param.controller_param)) {
-        RuntimeParam::AdbParam adb_param = reconfig_adb(*p_adb_param);
+        auto opt_adb_param = reconfig_adb(*p_adb_param);
+        if (!opt_adb_param) {
+            MaaTaskerDestroy(tasker_handle);
+            return false;
+        }
+        RuntimeParam::AdbParam adb_param = *opt_adb_param;
         controller_handle = MaaAdbControllerCreate(
             adb_param.adb_path.c_str(),
             adb_param.address.c_str(),
@@ -137,6 +146,12 @@ bool Runner::run(const RuntimeParam& param)
         MaaResourceDestroy(resource_handle);
         MaaControllerDestroy(controller_handle);
     });
+
+    std::unordered_map<std::string, std::string> task_names;
+    for (const auto& task : param.task) {
+        task_names.emplace(task.entry, task.name);
+    }
+    ProgressSink progress_sink(tasker_handle, progress_level, std::move(task_names));
 
     // 设置分辨率选项
     if (param.display_config.raw) {
