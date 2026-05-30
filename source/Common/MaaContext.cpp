@@ -75,6 +75,64 @@ MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const
     return context->run_recognition(entry, ov_opt->as_object(), mat);
 }
 
+int64_t MaaContextRunRecognitionList(
+    MaaContext* context,
+    const char* entries_json,
+    const char* pipeline_override,
+    const MaaImageBuffer* image)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(entries_json) << VAR(pipeline_override);
+
+    if (!context || !image) {
+        LogError << "handle is null";
+        return -1;
+    }
+
+    if (!entries_json) {
+        LogError << "entries_json is null";
+        return -1;
+    }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
+        return -1;
+    }
+
+    auto entries_opt = json::parse(entries_json);
+    if (!entries_opt || !entries_opt->is_array()) {
+        LogError << "failed to parse entries as array" << VAR(entries_json);
+        return -1;
+    }
+
+    std::vector<std::string> entries;
+    entries.reserve(entries_opt->as_array().size());
+    for (const auto& v : entries_opt->as_array()) {
+        if (!v.is_string()) {
+            LogError << "entries must be an array of strings" << VAR(entries_json);
+            return -1;
+        }
+        entries.emplace_back(v.as_string());
+    }
+
+    auto ov_opt = json::parse(pipeline_override);
+    if (!ov_opt) {
+        LogError << "failed to parse" << VAR(pipeline_override);
+        return -1;
+    }
+    if (!ov_opt->is_object()) {
+        LogError << "json is not object" << VAR(pipeline_override);
+        return -1;
+    }
+
+    const auto& mat = image->get();
+    if (mat.empty()) {
+        LogError << "empty image";
+        return -1;
+    }
+
+    return context->run_recognition_list(entries, ov_opt->as_object(), mat);
+}
+
 MaaActId
     MaaContextRunAction(MaaContext* context, const char* entry, const char* pipeline_override, const MaaRect* box, const char* reco_detail)
 {

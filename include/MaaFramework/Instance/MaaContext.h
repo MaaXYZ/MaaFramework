@@ -24,6 +24,24 @@ extern "C"
     MAA_FRAMEWORK_API MaaRecoId
         MaaContextRunRecognition(MaaContext* context, const char* entry, const char* pipeline_override, const MaaImageBuffer* image);
 
+    /**
+     * @brief Recognize a list of entries against a single given frame, in parallel.
+     *
+     * The framework runs the recognition of every entry concurrently against the same image,
+     * then returns the index of the highest-priority (lowest-index) entry that hit. Per-node
+     * recognition callbacks are NOT emitted. No subsequent action or next is executed.
+     *
+     * @param entries_json JSON array of entry (node) names, ordered by priority.
+     * @param pipeline_override pipeline override json (use "{}" for none).
+     * @param image Image to recognize. Must not be NULL or empty.
+     * @return The index into @p entries_json of the first hit, or -1 if none hit / on error.
+     */
+    MAA_FRAMEWORK_API int64_t MaaContextRunRecognitionList(
+        MaaContext* context,
+        const char* entries_json,
+        const char* pipeline_override,
+        const MaaImageBuffer* image);
+
     MAA_FRAMEWORK_API MaaActId MaaContextRunAction(
         MaaContext* context,
         const char* entry,

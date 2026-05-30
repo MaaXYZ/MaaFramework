@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <mutex>
 
 #include "Common/Conf.h"
 
@@ -51,6 +52,8 @@ private:
     fastdeploy::RuntimeOption det_option_;
     fastdeploy::RuntimeOption rec_option_;
 
+    // 保护下列模型缓存的懒加载写入，使其可被并行识别安全访问。
+    std::mutex models_mutex_;
     std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::DBDetector>> deters_;
     std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::Recognizer>> recers_;
     std::unordered_map<std::string, std::shared_ptr<fastdeploy::pipeline::PPOCRv4>> ocrers_;

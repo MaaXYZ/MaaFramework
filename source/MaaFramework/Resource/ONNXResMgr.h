@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <memory>
+#include <mutex>
 #include <optional>
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
@@ -41,6 +42,8 @@ private:
     Ort::SessionOptions options_;
     Ort::MemoryInfo memory_info_;
 
+    // 保护 classifiers_/detectors_ 的懒加载，使其可被并行识别安全调用。
+    std::mutex models_mutex_;
     std::unordered_map<std::string, std::shared_ptr<Ort::Session>> classifiers_;
     std::unordered_map<std::string, std::shared_ptr<Ort::Session>> detectors_;
 };

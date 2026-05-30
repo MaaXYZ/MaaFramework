@@ -95,6 +95,7 @@ void OCRResMgr::clear()
     LogFunc;
 
     roots_.clear();
+    std::lock_guard lock(models_mutex_);
     deters_.clear();
     recers_.clear();
     ocrers_.clear();
@@ -102,6 +103,8 @@ void OCRResMgr::clear()
 
 std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::deter(const std::string& name)
 {
+    std::lock_guard lock(models_mutex_);
+
     if (auto iter = deters_.find(name); iter != deters_.end()) {
         return iter->second;
     }
@@ -116,6 +119,8 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::deter(const std:
 
 std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::recer(const std::string& name)
 {
+    std::lock_guard lock(models_mutex_);
+
     if (auto iter = recers_.find(name); iter != recers_.end()) {
         return iter->second;
     }
@@ -130,6 +135,8 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::recer(const std:
 
 std::shared_ptr<fastdeploy::pipeline::PPOCRv4> OCRResMgr::ocrer(const std::string& name)
 {
+    std::lock_guard lock(models_mutex_);
+
     if (auto iter = ocrers_.find(name); iter != ocrers_.end()) {
         return iter->second;
     }

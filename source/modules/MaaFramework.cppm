@@ -131,6 +131,7 @@ export using ::MaaCustomActionCallback;
 
 export using ::MaaContextRunTask;
 export using ::MaaContextRunRecognition;
+export using ::MaaContextRunRecognitionList;
 export using ::MaaContextRunAction;
 export using ::MaaContextRunRecognitionDirect;
 export using ::MaaContextRunActionDirect;

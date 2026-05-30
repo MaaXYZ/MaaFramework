@@ -261,6 +261,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_context_run_recognition(j)) {
         return true;
     }
+    else if (handle_context_run_recognition_list(j)) {
+        return true;
+    }
     else if (handle_context_run_action(j)) {
         return true;
     }
@@ -557,6 +560,33 @@ bool AgentClient::handle_context_run_recognition(const json::value& j)
 
     ContextRunRecognitionReverseResponse resp {
         .reco_id = reco_id,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_context_run_recognition_list(const json::value& j)
+{
+    if (!j.is<ContextRunRecognitionListReverseRequest>()) {
+        return false;
+    }
+
+    const ContextRunRecognitionListReverseRequest& req = j.as<ContextRunRecognitionListReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+
+    int64_t hit_index = -1;
+    if (context) {
+        hit_index = context->run_recognition_list(req.entries, req.pipeline_override, get_image_cache(req.image));
+    }
+    else {
+        LogError << "context not found" << VAR(req.context_id);
+    }
+
+    ContextRunRecognitionListReverseResponse resp {
+        .hit_index = hit_index,
     };
     send(resp);
 

@@ -14,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
-inline static constexpr int kProtocolVersion = 7;
+inline static constexpr int kProtocolVersion = 8;
 
 struct StartUpRequest
 {
@@ -201,6 +201,26 @@ struct ContextRunRecognitionReverseResponse
 
     MessageTypePlaceholder _ContextRunRecognitionReverseResponse = 1;
     MEO_JSONIZATION(reco_id, _ContextRunRecognitionReverseResponse);
+};
+
+struct ContextRunRecognitionListReverseRequest
+{
+    std::string context_id;
+    std::vector<std::string> entries;
+    json::value pipeline_override;
+    std::string image;
+
+    MessageTypePlaceholder _ContextRunRecognitionListReverseRequest = 1;
+    MEO_JSONIZATION(context_id, entries, pipeline_override, image, _ContextRunRecognitionListReverseRequest);
+};
+
+struct ContextRunRecognitionListReverseResponse
+{
+    // 最高优先级（最小下标）命中的 entry 下标，未命中为 -1
+    int64_t hit_index = -1;
+
+    MessageTypePlaceholder _ContextRunRecognitionListReverseResponse = 1;
+    MEO_JSONIZATION(hit_index, _ContextRunRecognitionListReverseResponse);
 };
 
 struct ContextRunActionReverseRequest

@@ -29,6 +29,7 @@ bool TemplateResMgr::load_file(const std::filesystem::path& path)
     }
 
     auto name = path_to_utf8_string(path.filename());
+    std::lock_guard lock(image_cache_mutex_);
     image_cache_[name] = { std::move(image) };
     return true;
 }
@@ -38,11 +39,15 @@ void TemplateResMgr::clear()
     LogFunc;
 
     roots_.clear();
+    std::lock_guard lock(image_cache_mutex_);
     image_cache_.clear();
 }
 
 std::vector<cv::Mat> TemplateResMgr::get_image(const std::string& name)
 {
+    // 持锁覆盖整个查找+懒加载+写入，使其可被并行识别安全调用。
+    std::lock_guard lock(image_cache_mutex_);
+
     if (auto iter = image_cache_.find(name); iter != image_cache_.end()) {
         return iter->second;
     }
@@ -57,6 +62,7 @@ std::vector<cv::Mat> TemplateResMgr::get_image(const std::string& name)
 
 void TemplateResMgr::set_image(const std::string& name, const cv::Mat& image)
 {
+    std::lock_guard lock(image_cache_mutex_);
     image_cache_[name] = { image };
 }
 

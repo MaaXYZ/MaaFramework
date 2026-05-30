@@ -41,6 +41,7 @@ private: // Transceiver
 private:
     bool handle_context_run_task(const json::value& j);
     bool handle_context_run_recognition(const json::value& j);
+    bool handle_context_run_recognition_list(const json::value& j);
     bool handle_context_run_action(const json::value& j);
     bool handle_context_run_recognition_direct(const json::value& j);
     bool handle_context_run_action_direct(const json::value& j);

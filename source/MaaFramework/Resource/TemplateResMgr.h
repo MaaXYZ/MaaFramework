@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <mutex>
 #include <unordered_map>
 
 #include "Common/Conf.h"
@@ -26,6 +27,8 @@ private:
 
     std::vector<std::filesystem::path> roots_ = { "" }; // for filepath without prefix
 
+    // 保护 image_cache_ 的懒加载写入，使其可被并行识别安全访问。
+    std::mutex image_cache_mutex_;
     std::unordered_map<std::string, std::vector<cv::Mat>> image_cache_;
 };
 

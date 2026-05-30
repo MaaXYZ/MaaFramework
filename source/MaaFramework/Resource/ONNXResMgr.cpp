@@ -133,6 +133,8 @@ void ONNXResMgr::clear()
 {
     LogFunc;
 
+    std::lock_guard lock(models_mutex_);
+
     classifier_roots_.clear();
     detector_roots_.clear();
     classifiers_.clear();
@@ -141,6 +143,8 @@ void ONNXResMgr::clear()
 
 std::shared_ptr<Ort::Session> ONNXResMgr::classifier(const std::string& name)
 {
+    std::lock_guard lock(models_mutex_);
+
     if (auto iter = classifiers_.find(name); iter != classifiers_.end()) {
         return iter->second;
     }
@@ -155,6 +159,8 @@ std::shared_ptr<Ort::Session> ONNXResMgr::classifier(const std::string& name)
 
 std::shared_ptr<Ort::Session> ONNXResMgr::detector(const std::string& name)
 {
+    std::lock_guard lock(models_mutex_);
+
     if (auto iter = detectors_.find(name); iter != detectors_.end()) {
         return iter->second;
     }

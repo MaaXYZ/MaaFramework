@@ -1,9 +1,15 @@
 #include "Context.h"
 
+#include <atomic>
+#include <future>
+#include <limits>
+#include <thread>
+
 #include <meojson/json.hpp>
 
 #include "ActionTask.h"
 #include "Component/ActionHelper.h"
+#include "Component/Recognizer.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Uuid.h"
 #include "PipelineTask.h"
@@ -105,6 +111,133 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::value& 
         return MaaInvalidId;
     }
     return subtask.run_impl();
+}
+
+int64_t Context::run_recognition_list(const std::vector<std::string>& entries, const json::value& pipeline_override, const cv::Mat& image_in)
+{
+    LogFunc << VAR(getptr()) << VAR(entries) << VAR(pipeline_override);
+
+    if (entries.empty()) {
+        return -1;
+    }
+    if (!tasker_) {
+        LogError << "tasker is null";
+        return -1;
+    }
+
+    // 用一个 clone 承载可选的 override，识别期间只读，供多线程共享。
+    auto work_ctx = make_clone();
+    if (!pipeline_override.empty() && !work_ctx->override_pipeline(pipeline_override)) {
+        LogError << "failed to override_pipeline" << VAR(pipeline_override);
+        return -1;
+    }
+
+    // 与 run_recognition 一致：画面由调用方传入，所有 entry 共用同一画面，本函数不负责抓取。
+    const cv::Mat& image = image_in;
+    if (image.empty()) {
+        LogError << "empty image";
+        return -1;
+    }
+
+    const size_t count = entries.size();
+
+    // 预取每个 entry 的 pipeline 数据并按"识别类型是否会触发 Agent 回调"分流（串行，开销很小）：
+    //   - Custom 识别在主进程里会经由 reco_agent 反向 IPC 调用 Agent，必须串行跑在当前 IPC 处理线程上，
+    //     绝不能塞进 worker 线程（多线程同时占用同一 socket + 嵌套 send/recv 会冲垮协议）。
+    //   - 其余纯本地识别（TemplateMatch/OCR/ColorMatch/And/Or 等）无副作用，可安全并行。
+    // 注意：若 And/Or 的子识别引用了 Custom 节点，同样会触发回调；实时任务当前不存在该用法，故只判顶层类型。
+    std::vector<PipelineData> datas(count);
+    std::vector<size_t> parallel_indices; // 升序，非 Custom
+    std::vector<size_t> custom_indices;    // 升序，Custom
+    for (size_t i = 0; i < count; ++i) {
+        auto data_opt = work_ctx->get_pipeline_data(entries[i]);
+        if (!data_opt) {
+            LogWarn << "node not found, skip" << VAR(entries[i]);
+            continue;
+        }
+        if (!data_opt->enabled) {
+            continue;
+        }
+        datas[i] = std::move(*data_opt);
+        if (datas[i].reco_type == MAA_RES_NS::Recognition::Type::Custom) {
+            custom_indices.emplace_back(i);
+        }
+        else {
+            parallel_indices.emplace_back(i);
+        }
+    }
+
+    // best 记录已命中的最小 entry 下标，保留 next 列表"下标即优先级"的语义。
+    std::atomic<int64_t> best { std::numeric_limits<int64_t>::max() };
+
+    // 直接走 Recognizer，绕过 RecognitionTask 的逐节点回调（避免并发回调竞态与日志洪泛）。
+    // 与 TaskBase::run_recognition 一致：node 级 inverse 需在此翻转命中结果。
+    auto recognize_hit = [&](size_t i) -> bool {
+        Recognizer recognizer(tasker_, *work_ctx, image);
+        RecoResult res = recognizer.recognize(datas[i].reco_type, datas[i].reco_param, datas[i].name);
+        bool hit = res.box.has_value();
+        if (datas[i].inverse) {
+            hit = !hit;
+        }
+        return hit;
+    };
+
+    // 并行阶段：只跑非 Custom 节点。parallel_indices 升序，故 worker 跨步遍历到的下标也升序，
+    // 一旦当前下标已高于已命中的 best，后续都不可能成为更高优先级命中，直接 break 提前退出。
+    const size_t parallel_count = parallel_indices.size();
+    const unsigned hardware_threads = std::max(1U, std::thread::hardware_concurrency());
+    const size_t worker_count = std::min(parallel_count, static_cast<size_t>(hardware_threads));
+
+    auto worker = [&](size_t start) {
+        for (size_t k = start; k < parallel_count; k += worker_count) {
+            const size_t i = parallel_indices[k];
+            if (static_cast<int64_t>(i) > best.load(std::memory_order_relaxed)) {
+                break;
+            }
+            if (!recognize_hit(i)) {
+                continue;
+            }
+            int64_t prev = best.load(std::memory_order_relaxed);
+            while (static_cast<int64_t>(i) < prev
+                   && !best.compare_exchange_weak(prev, static_cast<int64_t>(i), std::memory_order_relaxed)) {
+            }
+            break;
+        }
+    };
+
+    if (worker_count <= 1) {
+        if (worker_count == 1) {
+            worker(0);
+        }
+    }
+    else {
+        std::vector<std::future<void>> futures;
+        futures.reserve(worker_count - 1);
+        for (size_t w = 1; w < worker_count; ++w) {
+            futures.emplace_back(std::async(std::launch::async, worker, w));
+        }
+        worker(0);
+        for (auto& f : futures) {
+            f.get();
+        }
+    }
+
+    // 串行阶段：Custom 节点按下标升序逐个跑，只在其优先级高于已命中 best 时才识别；
+    // 命中即为剩余范围内的最高优先级，直接收敛。
+    for (size_t i : custom_indices) {
+        if (static_cast<int64_t>(i) >= best.load(std::memory_order_relaxed)) {
+            break;
+        }
+        if (recognize_hit(i)) {
+            best.store(static_cast<int64_t>(i), std::memory_order_relaxed);
+            break;
+        }
+    }
+
+    const int64_t hit = best.load(std::memory_order_relaxed);
+    const int64_t hit_index = hit == std::numeric_limits<int64_t>::max() ? -1 : hit;
+    LogTrace << VAR(getptr()) << VAR(hit_index) << VAR(count);
+    return hit_index;
 }
 
 MaaActId

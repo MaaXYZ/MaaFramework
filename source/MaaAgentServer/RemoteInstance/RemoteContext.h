@@ -19,6 +19,8 @@ public:
 
     virtual MaaTaskId run_task(const std::string& entry, const json::value& pipeline_override) override;
     virtual MaaRecoId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) override;
+    virtual int64_t
+        run_recognition_list(const std::vector<std::string>& entries, const json::value& pipeline_override, const cv::Mat& image) override;
     virtual MaaActId
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
             override;

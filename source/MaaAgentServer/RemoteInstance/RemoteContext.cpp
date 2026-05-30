@@ -43,6 +43,22 @@ MaaRecoId RemoteContext::run_recognition(const std::string& entry, const json::v
     return resp_opt->reco_id;
 }
 
+int64_t RemoteContext::run_recognition_list(const std::vector<std::string>& entries, const json::value& pipeline_override, const cv::Mat& image)
+{
+    ContextRunRecognitionListReverseRequest req {
+        .context_id = context_id_,
+        .entries = entries,
+        .pipeline_override = pipeline_override,
+        .image = server_.send_image(image),
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextRunRecognitionListReverseResponse>(req);
+    if (!resp_opt) {
+        return -1;
+    }
+    return resp_opt->hit_index;
+}
+
 MaaActId RemoteContext::run_action(
     const std::string& entry,
     const json::value& pipeline_override,
