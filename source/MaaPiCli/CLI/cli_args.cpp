@@ -2,6 +2,12 @@
 
 #include <iostream>
 
+// On non-Windows platforms, avoid deprecated std::wstring_convert (C++17) which
+// triggers -Werror with Clang/libc++. The wcsrtombs fallback works fine on Linux.
+// On Windows, keep codecvt for reliable UTF-8 <-> UTF-16 conversion.
+#ifndef _WIN32
+#define CLI11_HAS_CODECVT 0
+#endif
 #include <CLI/CLI11.hpp>
 
 ParseResult parse_args(int argc, char** argv)
