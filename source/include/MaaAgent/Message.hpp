@@ -216,11 +216,11 @@ struct ContextRunRecognitionListReverseRequest
 
 struct ContextRunRecognitionListReverseResponse
 {
-    // 最高优先级（最小下标）命中的 entry 下标，未命中为 -1
-    int64_t hit_index = -1;
+    // 与请求 entries 等长、按下标对齐的 reco_id 数组，被跳过的 entry 为 MaaInvalidId
+    std::vector<int64_t> reco_ids;
 
     MessageTypePlaceholder _ContextRunRecognitionListReverseResponse = 1;
-    MEO_JSONIZATION(hit_index, _ContextRunRecognitionListReverseResponse);
+    MEO_JSONIZATION(reco_ids, _ContextRunRecognitionListReverseResponse);
 };
 
 struct ContextRunActionReverseRequest

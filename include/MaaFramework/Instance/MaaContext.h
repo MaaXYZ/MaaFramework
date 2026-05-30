@@ -27,20 +27,26 @@ extern "C"
     /**
      * @brief Recognize a list of entries against a single given frame, in parallel.
      *
-     * The framework runs the recognition of every entry concurrently against the same image,
-     * then returns the index of the highest-priority (lowest-index) entry that hit. Per-node
-     * recognition callbacks are NOT emitted. No subsequent action or next is executed.
+     * The framework runs the recognition of EVERY entry concurrently against the same image and
+     * waits for ALL of them to finish before returning. Per-node recognition callbacks are NOT
+     * emitted. No subsequent action or next is executed.
      *
-     * @param entries_json JSON array of entry (node) names, ordered by priority.
+     * @param entries_json JSON array of entry (node) names.
      * @param pipeline_override pipeline override json (use "{}" for none).
      * @param image Image to recognize. Must not be NULL or empty.
-     * @return The index into @p entries_json of the first hit, or -1 if none hit / on error.
+     * @param reco_ids Output array, caller-allocated, with at least as many elements as entries
+     *                 in @p entries_json. On success each element receives the MaaRecoId of the
+     *                 corresponding entry (aligned by index), or MaaInvalidId if that entry was
+     *                 skipped (node not found / disabled). Query each id for its recognition
+     *                 detail (hit / box / ...) via MaaTasker.
+     * @return true on success, false on error.
      */
-    MAA_FRAMEWORK_API int64_t MaaContextRunRecognitionList(
+    MAA_FRAMEWORK_API MaaBool MaaContextRunRecognitionList(
         MaaContext* context,
         const char* entries_json,
         const char* pipeline_override,
-        const MaaImageBuffer* image);
+        const MaaImageBuffer* image,
+        /* out */ MaaRecoId* reco_ids);
 
     MAA_FRAMEWORK_API MaaActId MaaContextRunAction(
         MaaContext* context,

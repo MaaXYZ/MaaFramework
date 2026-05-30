@@ -577,16 +577,16 @@ bool AgentClient::handle_context_run_recognition_list(const json::value& j)
 
     MaaContext* context = query_context(req.context_id);
 
-    int64_t hit_index = -1;
+    std::vector<MaaRecoId> reco_ids;
     if (context) {
-        hit_index = context->run_recognition_list(req.entries, req.pipeline_override, get_image_cache(req.image));
+        reco_ids = context->run_recognition_list(req.entries, req.pipeline_override, get_image_cache(req.image));
     }
     else {
         LogError << "context not found" << VAR(req.context_id);
     }
 
     ContextRunRecognitionListReverseResponse resp {
-        .hit_index = hit_index,
+        .reco_ids = std::move(reco_ids),
     };
     send(resp);
 

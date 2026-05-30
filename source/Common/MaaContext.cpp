@@ -75,33 +75,39 @@ MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const
     return context->run_recognition(entry, ov_opt->as_object(), mat);
 }
 
-int64_t MaaContextRunRecognitionList(
+MaaBool MaaContextRunRecognitionList(
     MaaContext* context,
     const char* entries_json,
     const char* pipeline_override,
-    const MaaImageBuffer* image)
+    const MaaImageBuffer* image,
+    MaaRecoId* reco_ids)
 {
     LogFunc << VAR_VOIDP(context) << VAR(entries_json) << VAR(pipeline_override);
 
     if (!context || !image) {
         LogError << "handle is null";
-        return -1;
+        return false;
     }
 
     if (!entries_json) {
         LogError << "entries_json is null";
-        return -1;
+        return false;
     }
 
     if (!pipeline_override) {
         LogError << "pipeline_override is null";
-        return -1;
+        return false;
+    }
+
+    if (!reco_ids) {
+        LogError << "reco_ids is null";
+        return false;
     }
 
     auto entries_opt = json::parse(entries_json);
     if (!entries_opt || !entries_opt->is_array()) {
         LogError << "failed to parse entries as array" << VAR(entries_json);
-        return -1;
+        return false;
     }
 
     std::vector<std::string> entries;
@@ -109,7 +115,7 @@ int64_t MaaContextRunRecognitionList(
     for (const auto& v : entries_opt->as_array()) {
         if (!v.is_string()) {
             LogError << "entries must be an array of strings" << VAR(entries_json);
-            return -1;
+            return false;
         }
         entries.emplace_back(v.as_string());
     }
@@ -117,20 +123,27 @@ int64_t MaaContextRunRecognitionList(
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
         LogError << "failed to parse" << VAR(pipeline_override);
-        return -1;
+        return false;
     }
     if (!ov_opt->is_object()) {
         LogError << "json is not object" << VAR(pipeline_override);
-        return -1;
+        return false;
     }
 
     const auto& mat = image->get();
     if (mat.empty()) {
         LogError << "empty image";
-        return -1;
+        return false;
     }
 
-    return context->run_recognition_list(entries, ov_opt->as_object(), mat);
+    auto ids = context->run_recognition_list(entries, ov_opt->as_object(), mat);
+
+    // 输出数组由调用方按 entries 数量预分配；按下标对齐写入，缺失部分填 MaaInvalidId。
+    for (size_t i = 0; i < entries.size(); ++i) {
+        reco_ids[i] = i < ids.size() ? ids[i] : MaaInvalidId;
+    }
+
+    return true;
 }
 
 MaaActId

@@ -166,9 +166,10 @@ public:
     virtual MaaTaskId run_task(const std::string& entry, const json::value& pipeline_override) = 0;
     virtual MaaRecoId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) = 0;
 
-    // 对一组 entry 在同一帧画面上并行识别，返回最高优先级（最小下标）命中的下标，未命中返回 -1。
-    // image 为空时由实现侧自行抓取一帧；并行调度在实现侧完成；不发送每节点的识别回调。
-    virtual int64_t
+    // 对一组 entry 在同一帧画面上并行识别，全部识别完成后再返回；
+    // 返回与 entries 等长、按下标对齐的 reco_id 数组（被跳过的 entry 为 MaaInvalidId）。
+    // 并行调度在实现侧完成；不发送每节点的识别回调。
+    virtual std::vector<MaaRecoId>
         run_recognition_list(const std::vector<std::string>& entries, const json::value& pipeline_override, const cv::Mat& image) = 0;
     virtual MaaActId
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
