@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <meojson/json.hpp>
+#include <unordered_set>
 
 #include "Common/Conf.h"
 #include "Common/MaaTypes.h"
@@ -40,6 +41,31 @@ private:
     RecoResult and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndParam>& param, const std::string& name);
     RecoResult or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrParam>& param, const std::string& name);
     RecoResult custom_recognize(const MAA_VISION_NS::CustomRecognitionParam& param, const std::string& name);
+
+    struct AndBranchResult
+    {
+        bool hit = false;
+        std::vector<RecoResult> sub_results;
+    };
+
+    RecoResult run_sub_recognition(const MAA_RES_NS::Recognition::SubRecognition& sub_reco, const std::string& combinator_name);
+    AndBranchResult match_and_branch(const std::vector<MAA_RES_NS::Recognition::SubRecognition>& all_of, size_t index);
+    std::vector<cv::Rect> get_candidate_boxes_for_and_branch(
+        const std::vector<MAA_RES_NS::Recognition::SubRecognition>& all_of,
+        size_t index,
+        const RecoResult& result) const;
+    bool later_sub_recognitions_use_roi_target(
+        const std::vector<MAA_RES_NS::Recognition::SubRecognition>& all_of,
+        size_t index,
+        const std::string& target_name) const;
+    bool sub_recognition_uses_roi_target(
+        const MAA_RES_NS::Recognition::SubRecognition& sub_reco,
+        const std::string& target_name,
+        std::unordered_set<std::string>& visited_nodes) const;
+    bool recognition_param_uses_roi_target(
+        const MAA_RES_NS::Recognition::Param& param,
+        const std::string& target_name,
+        std::unordered_set<std::string>& visited_nodes) const;
 
     template <typename Analyzer>
     RecoResult build_result(const std::string& name, const std::string& algorithm, Analyzer&& analyzer);

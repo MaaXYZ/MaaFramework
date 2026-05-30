@@ -13,6 +13,8 @@
 #include "Vision/TemplateMatcher.h"
 #include "Vision/VisionUtils.hpp"
 
+#include <type_traits>
+
 MAA_TASK_NS_BEGIN
 
 Recognizer::Recognizer(Tasker* tasker, Context& context, const cv::Mat& image_, std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_batch_cache)
@@ -359,6 +361,205 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
         CustomRecognition(image_, rois.front(), param, resource()->custom_recognition(param.name), context_, name));
 }
 
+RecoResult Recognizer::run_sub_recognition(const MAA_RES_NS::Recognition::SubRecognition& sub_reco, const std::string& combinator_name)
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    Recognizer sub_recognizer(*this);
+
+    if (auto* node_name = std::get_if<std::string>(&sub_reco)) {
+        auto node_opt = context_.get_pipeline_data(*node_name);
+        if (!node_opt) {
+            LogError << combinator_name << "failed to get pipeline data for node" << VAR(*node_name);
+            return { };
+        }
+        LogDebug << combinator_name << "run node reference" << VAR(*node_name);
+        return sub_recognizer.recognize(node_opt->reco_type, node_opt->reco_param, *node_name);
+    }
+
+    const auto& inline_sub = std::get<InlineSubRecognition>(sub_reco);
+    LogDebug << combinator_name << "run inline sub recognition" << VAR(inline_sub.type) << VAR(inline_sub.sub_name);
+    return sub_recognizer.recognize(inline_sub.type, inline_sub.param, inline_sub.sub_name);
+}
+
+Recognizer::AndBranchResult Recognizer::match_and_branch(const std::vector<MAA_RES_NS::Recognition::SubRecognition>& all_of, size_t index)
+{
+    if (index >= all_of.size()) {
+        return { .hit = true };
+    }
+
+    RecoResult result = run_sub_recognition(all_of[index], "And:");
+    register_sub_result_in_cache(result);
+
+    if (!result.box) {
+        LogDebug << "And: sub recognition failed";
+        return {
+            .hit = false,
+            .sub_results = { std::move(result) },
+        };
+    }
+
+    auto sub_filtered_boxes_snapshot = *sub_filtered_boxes_;
+    auto sub_best_box_snapshot = *sub_best_box_;
+
+    AndBranchResult first_failed_branch;
+    bool has_failed_branch = false;
+
+    for (const cv::Rect& candidate_box : get_candidate_boxes_for_and_branch(all_of, index, result)) {
+        *sub_filtered_boxes_ = sub_filtered_boxes_snapshot;
+        *sub_best_box_ = sub_best_box_snapshot;
+
+        RecoResult branch_result = result;
+        branch_result.box = candidate_box;
+        if (!branch_result.name.empty()) {
+            sub_filtered_boxes_->insert_or_assign(branch_result.name, std::vector<cv::Rect> { candidate_box });
+            sub_best_box_->insert_or_assign(branch_result.name, candidate_box);
+        }
+
+        AndBranchResult tail_result = match_and_branch(all_of, index + 1);
+        std::vector<RecoResult> branch_results;
+        branch_results.reserve(tail_result.sub_results.size() + 1);
+        branch_results.emplace_back(std::move(branch_result));
+        branch_results.insert(
+            branch_results.end(),
+            std::make_move_iterator(tail_result.sub_results.begin()),
+            std::make_move_iterator(tail_result.sub_results.end()));
+
+        if (tail_result.hit) {
+            return {
+                .hit = true,
+                .sub_results = std::move(branch_results),
+            };
+        }
+
+        if (!has_failed_branch) {
+            first_failed_branch = {
+                .hit = false,
+                .sub_results = std::move(branch_results),
+            };
+            has_failed_branch = true;
+        }
+    }
+
+    *sub_filtered_boxes_ = std::move(sub_filtered_boxes_snapshot);
+    *sub_best_box_ = std::move(sub_best_box_snapshot);
+
+    if (has_failed_branch) {
+        return first_failed_branch;
+    }
+
+    return {
+        .hit = false,
+        .sub_results = { std::move(result) },
+    };
+}
+
+std::vector<cv::Rect> Recognizer::get_candidate_boxes_for_and_branch(
+    const std::vector<MAA_RES_NS::Recognition::SubRecognition>& all_of,
+    size_t index,
+    const RecoResult& result) const
+{
+    if (!result.box) {
+        return { };
+    }
+
+    if (result.name.empty() || !later_sub_recognitions_use_roi_target(all_of, index + 1, result.name)) {
+        return { *result.box };
+    }
+
+    auto it = sub_filtered_boxes_->find(result.name);
+    if (it == sub_filtered_boxes_->end() || it->second.empty()) {
+        return { *result.box };
+    }
+
+    return it->second;
+}
+
+bool Recognizer::later_sub_recognitions_use_roi_target(
+    const std::vector<MAA_RES_NS::Recognition::SubRecognition>& all_of,
+    size_t index,
+    const std::string& target_name) const
+{
+    for (size_t i = index; i < all_of.size(); ++i) {
+        std::unordered_set<std::string> visited_nodes;
+        if (sub_recognition_uses_roi_target(all_of[i], target_name, visited_nodes)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Recognizer::sub_recognition_uses_roi_target(
+    const MAA_RES_NS::Recognition::SubRecognition& sub_reco,
+    const std::string& target_name,
+    std::unordered_set<std::string>& visited_nodes) const
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    if (auto* node_name = std::get_if<std::string>(&sub_reco)) {
+        if (!visited_nodes.emplace(*node_name).second) {
+            return false;
+        }
+
+        auto node_opt = context_.get_pipeline_data(*node_name);
+        if (!node_opt) {
+            return false;
+        }
+        return recognition_param_uses_roi_target(node_opt->reco_param, target_name, visited_nodes);
+    }
+
+    const auto& inline_sub = std::get<InlineSubRecognition>(sub_reco);
+    return recognition_param_uses_roi_target(inline_sub.param, target_name, visited_nodes);
+}
+
+bool Recognizer::recognition_param_uses_roi_target(
+    const MAA_RES_NS::Recognition::Param& param,
+    const std::string& target_name,
+    std::unordered_set<std::string>& visited_nodes) const
+{
+    auto target_uses_name = [&target_name](const MAA_VISION_NS::Target& target) {
+        if (target.type != MAA_VISION_NS::Target::Type::PreTask) {
+            return false;
+        }
+        auto* name = std::get_if<std::string>(&target.param);
+        return name && *name == target_name;
+    };
+
+    return std::visit(
+        [&](const auto& value) -> bool {
+            using T = std::decay_t<decltype(value)>;
+            if constexpr (std::is_same_v<T, std::shared_ptr<MAA_RES_NS::Recognition::AndParam>>) {
+                if (!value) {
+                    return false;
+                }
+                for (const auto& sub : value->all_of) {
+                    if (sub_recognition_uses_roi_target(sub, target_name, visited_nodes)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            else if constexpr (std::is_same_v<T, std::shared_ptr<MAA_RES_NS::Recognition::OrParam>>) {
+                if (!value) {
+                    return false;
+                }
+                for (const auto& sub : value->any_of) {
+                    if (sub_recognition_uses_roi_target(sub, target_name, visited_nodes)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            else if constexpr (requires { value.roi_target; }) {
+                return target_uses_name(value.roi_target);
+            }
+            else {
+                return false;
+            }
+        },
+        param);
+}
+
 RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndParam>& param, const std::string& name)
 {
     using namespace MAA_RES_NS::Recognition;
@@ -370,40 +571,9 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
 
     LogDebug << "And recognition" << VAR(name) << VAR(param->all_of.size()) << VAR(param->box_index);
 
-    std::vector<RecoResult> sub_results;
-    bool all_hit = true;
-
-    for (const auto& sub_reco : param->all_of) {
-        Recognizer sub_recognizer(*this);
-        RecoResult res;
-
-        if (auto* node_name = std::get_if<std::string>(&sub_reco)) {
-            // Resolve node name to get recognition params
-            auto node_opt = context_.get_pipeline_data(*node_name);
-            if (!node_opt) {
-                LogError << "And: failed to get pipeline data for node" << VAR(*node_name);
-                all_hit = false;
-                break;
-            }
-            LogDebug << "And: run node reference" << VAR(*node_name);
-            res = sub_recognizer.recognize(node_opt->reco_type, node_opt->reco_param, *node_name);
-        }
-        else {
-            const auto& inline_sub = std::get<InlineSubRecognition>(sub_reco);
-            LogDebug << "And: run inline sub recognition" << VAR(inline_sub.type) << VAR(inline_sub.sub_name);
-            res = sub_recognizer.recognize(inline_sub.type, inline_sub.param, inline_sub.sub_name);
-        }
-
-        register_sub_result_in_cache(res);
-
-        all_hit &= res.box.has_value();
-        sub_results.emplace_back(std::move(res));
-
-        if (!all_hit) {
-            LogDebug << "And: sub recognition failed";
-            break;
-        }
-    }
+    AndBranchResult branch_result = match_and_branch(param->all_of, 0);
+    bool all_hit = branch_result.hit;
+    std::vector<RecoResult> sub_results = std::move(branch_result.sub_results);
 
     std::vector<ImageEncodedBuffer> all_draws;
     for (auto& sub : sub_results) {
@@ -459,24 +629,7 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
     bool has_hit = false;
 
     for (const auto& sub_reco : param->any_of) {
-        Recognizer sub_recognizer(*this);
-        RecoResult res;
-
-        if (auto* node_name = std::get_if<std::string>(&sub_reco)) {
-            // Resolve node name to get recognition params
-            auto node_opt = context_.get_pipeline_data(*node_name);
-            if (!node_opt) {
-                LogError << "Or: failed to get pipeline data for node" << VAR(*node_name);
-                continue;
-            }
-            LogDebug << "Or: run node reference" << VAR(*node_name);
-            res = sub_recognizer.recognize(node_opt->reco_type, node_opt->reco_param, *node_name);
-        }
-        else {
-            const auto& inline_sub = std::get<InlineSubRecognition>(sub_reco);
-            LogDebug << "Or: run inline sub recognition" << VAR(inline_sub.type) << VAR(inline_sub.sub_name);
-            res = sub_recognizer.recognize(inline_sub.type, inline_sub.param, inline_sub.sub_name);
-        }
+        RecoResult res = run_sub_recognition(sub_reco, "Or:");
 
         has_hit = res.box.has_value();
         register_sub_result_in_cache(res);
