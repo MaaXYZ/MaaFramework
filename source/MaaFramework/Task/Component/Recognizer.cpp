@@ -23,6 +23,7 @@ Recognizer::Recognizer(Tasker* tasker, Context& context, const cv::Mat& image_, 
     , image_(image_)
     , sub_filtered_boxes_(std::make_shared<typename decltype(sub_filtered_boxes_)::element_type>())
     , sub_best_box_(std::make_shared<typename decltype(sub_best_box_)::element_type>())
+    , pending_sub_results_(std::make_shared<typename decltype(pending_sub_results_)::element_type>())
     , ocr_batch_cache_(std::move(ocr_batch_cache))
 {
 }
@@ -34,6 +35,8 @@ Recognizer::Recognizer(const Recognizer& recognizer)
     // do not copy reco_id_
     , sub_filtered_boxes_(recognizer.sub_filtered_boxes_)
     , sub_best_box_(recognizer.sub_best_box_)
+    , pending_sub_results_(recognizer.pending_sub_results_)
+    , cache_sub_results_(recognizer.cache_sub_results_)
     , ocr_batch_cache_(recognizer.ocr_batch_cache_)
 {
 }
@@ -103,8 +106,12 @@ RecoResult Recognizer::recognize(MAA_RES_NS::Recognition::Type type, const MAA_R
     }
 
     LogInfo << "reco" << VAR(result);
-    auto& rt_cache = tasker_->runtime_cache();
-    rt_cache.set_reco_detail(result.reco_id, result);
+
+    // 投机执行（And 候选分支匹配）期间不立即落盘，待分支整体命中后由 flush_pending_sub_results 统一提交，
+    // 否则失败分支的 reco_detail 会残留在 runtime cache 中造成泄漏
+    if (cache_sub_results_) {
+        tasker_->runtime_cache().set_reco_detail(result.reco_id, result);
+    }
 
     save_draws(name, result);
 
@@ -388,17 +395,19 @@ Recognizer::AndBranchResult Recognizer::match_and_branch(const std::vector<MAA_R
         return { .hit = true };
     }
 
+    const size_t pending_snapshot = pending_sub_results_->size();
     RecoResult result = run_sub_recognition(all_of[index], "And:");
-    register_sub_result_in_cache(result);
 
     if (!result.box) {
         LogDebug << "And: sub recognition failed";
+        pending_sub_results_->resize(pending_snapshot);
         return {
             .hit = false,
             .sub_results = { std::move(result) },
         };
     }
 
+    const size_t pending_after_result = pending_sub_results_->size();
     auto sub_filtered_boxes_snapshot = *sub_filtered_boxes_;
     auto sub_best_box_snapshot = *sub_best_box_;
 
@@ -406,6 +415,7 @@ Recognizer::AndBranchResult Recognizer::match_and_branch(const std::vector<MAA_R
     bool has_failed_branch = false;
 
     for (const cv::Rect& candidate_box : get_candidate_boxes_for_and_branch(all_of, index, result)) {
+        pending_sub_results_->resize(pending_after_result);
         *sub_filtered_boxes_ = sub_filtered_boxes_snapshot;
         *sub_best_box_ = sub_best_box_snapshot;
 
@@ -415,6 +425,7 @@ Recognizer::AndBranchResult Recognizer::match_and_branch(const std::vector<MAA_R
             sub_filtered_boxes_->insert_or_assign(branch_result.name, std::vector<cv::Rect> { candidate_box });
             sub_best_box_->insert_or_assign(branch_result.name, candidate_box);
         }
+        register_sub_result_in_cache(branch_result);
 
         AndBranchResult tail_result = match_and_branch(all_of, index + 1);
         std::vector<RecoResult> branch_results;
@@ -443,6 +454,7 @@ Recognizer::AndBranchResult Recognizer::match_and_branch(const std::vector<MAA_R
 
     *sub_filtered_boxes_ = std::move(sub_filtered_boxes_snapshot);
     *sub_best_box_ = std::move(sub_best_box_snapshot);
+    pending_sub_results_->resize(pending_snapshot);
 
     if (has_failed_branch) {
         return first_failed_branch;
@@ -571,7 +583,12 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
 
     LogDebug << "And recognition" << VAR(name) << VAR(param->all_of.size()) << VAR(param->box_index);
 
+    const bool should_commit_sub_results = cache_sub_results_;
+    const size_t pending_snapshot = pending_sub_results_->size();
+    cache_sub_results_ = false;
     AndBranchResult branch_result = match_and_branch(param->all_of, 0);
+    cache_sub_results_ = should_commit_sub_results;
+
     bool all_hit = branch_result.hit;
     std::vector<RecoResult> sub_results = std::move(branch_result.sub_results);
 
@@ -590,6 +607,7 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
 
     if (!all_hit) {
         LogDebug << "And recognition failed" << VAR(name);
+        pending_sub_results_->resize(pending_snapshot);
         sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> { });
         sub_best_box_->insert_or_assign(name, cv::Rect { });
         return result;
@@ -598,6 +616,7 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
     if (static_cast<int>(sub_results.size()) <= param->box_index) {
         LogError << "all hit, but box_index is out of range" << VAR(name) << VAR(sub_results.size()) << VAR(param->box_index);
         result.box = std::nullopt;
+        pending_sub_results_->resize(pending_snapshot);
         sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> { });
         sub_best_box_->insert_or_assign(name, cv::Rect { });
         return result;
@@ -609,6 +628,10 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
     // 按理说这里要从 sub 取的，但是太麻烦而且是 corner case，先不管了，后面有需要再加
     sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> { final_box });
     sub_best_box_->insert_or_assign(name, final_box);
+
+    if (should_commit_sub_results) {
+        flush_pending_sub_results(pending_snapshot);
+    }
 
     return result;
 }
@@ -773,10 +796,37 @@ void Recognizer::register_sub_result_in_cache(const RecoResult& res)
         return;
     }
 
+    if (!cache_sub_results_) {
+        pending_sub_results_->emplace_back(res);
+        return;
+    }
+
+    // 非投机路径：reco_detail 已由 recognize() 写入，这里仅登记节点信息
+    commit_sub_node_detail(res);
+}
+
+void Recognizer::commit_sub_node_detail(const RecoResult& res)
+{
     auto& cache = tasker_->runtime_cache();
     auto sub_node_id = TaskBase::generate_node_id();
     cache.set_node_detail(sub_node_id, NodeDetail { .node_id = sub_node_id, .name = res.name, .reco_id = res.reco_id, .completed = true });
     cache.set_latest_node(res.name, sub_node_id);
+}
+
+void Recognizer::flush_pending_sub_results(size_t begin)
+{
+    if (begin >= pending_sub_results_->size()) {
+        return;
+    }
+
+    auto& cache = tasker_->runtime_cache();
+    for (size_t i = begin; i < pending_sub_results_->size(); ++i) {
+        const RecoResult& res = (*pending_sub_results_)[i];
+        // 投机阶段 recognize() 跳过了 reco_detail 写入，命中提交时在此补写
+        cache.set_reco_detail(res.reco_id, res);
+        commit_sub_node_detail(res);
+    }
+    pending_sub_results_->resize(begin);
 }
 
 bool Recognizer::debug_mode() const

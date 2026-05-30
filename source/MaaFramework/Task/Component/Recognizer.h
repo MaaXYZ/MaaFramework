@@ -74,6 +74,8 @@ private:
     std::vector<cv::Rect> get_rois_from_pretask(const std::string& name, bool use_best);
     void save_draws(const std::string& node_name, const RecoResult& result) const;
     void register_sub_result_in_cache(const RecoResult& res);
+    void commit_sub_node_detail(const RecoResult& res);
+    void flush_pending_sub_results(size_t begin);
 
 private:
     bool debug_mode() const;
@@ -89,6 +91,8 @@ private:
 
     std::shared_ptr<std::unordered_map<std::string, std::vector<cv::Rect>>> sub_filtered_boxes_;
     std::shared_ptr<std::unordered_map<std::string, cv::Rect>> sub_best_box_;
+    std::shared_ptr<std::vector<RecoResult>> pending_sub_results_;
+    bool cache_sub_results_ = true;
 
     std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_batch_cache_;
 };
