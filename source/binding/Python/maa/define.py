@@ -2,7 +2,7 @@ import ctypes
 import platform
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Callable, List, Tuple, Union, Dict, Optional
+from typing import Callable, Iterator, List, Tuple, Union, Dict, Optional
 
 import numpy
 from strenum import StrEnum  # For Python 3.9/3.10
@@ -750,11 +750,11 @@ class Point:
 
         raise TypeError(f"Cannot add {type(other).__name__} to Point")
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[int]:
         yield self.x
         yield self.y
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int) -> int:
         return list(self)[key]
 
 
@@ -789,13 +789,13 @@ class Rect:
 
         raise TypeError(f"Cannot add {type(other).__name__} to Rect")
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[int]:
         yield self.x
         yield self.y
         yield self.w
         yield self.h
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int) -> int:
         return list(self)[key]
 
 
@@ -1137,7 +1137,13 @@ class TaskDetail:
     def nodes(self) -> List[NodeDetail]:
         if self._nodes is None:
             if self._node_detail_func is not None:
-                self._nodes = [self._node_detail_func(nid) for nid in self.node_id_list]
+                nodes = []
+                for nid in self.node_id_list:
+                    node = self._node_detail_func(nid)
+                    if node is None:
+                        raise RuntimeError(f"Failed to get node detail: {nid}")
+                    nodes.append(node)
+                self._nodes = nodes
             else:
                 self._nodes = []
         return self._nodes
