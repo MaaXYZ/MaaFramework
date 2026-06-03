@@ -1,3 +1,6 @@
+# python -m pip install maafw
+# 要安装的包不是 `maa` ，是 `maafw` 不要装错了！
+# Package to install is `maafw` not `maa`, don't install the wrong one!
 import sys
 
 from maa.agent.agent_server import AgentServer
