@@ -49,7 +49,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 > [!TIP]
 > 访问我们的 [官网](https://maafw.com/) 以获得更优秀的文档阅读体验。  
-> 找不到相关文档？试试问 [AI](https://deepwiki.com/MaaXYZ/MaaFramework) ！
+> 找不到相关文档？试试问 [AI](https://deepwiki.com/MaaXYZ/MaaFramework) ！  
+> 在 [MaaHub](https://hub.maafw.com) 发现更多由社区提供的技能、流水线、自定义模块与经验。
 
 - [快速开始](docs/zh_cn/1.1-快速开始.md) & [术语解释](docs/zh_cn/1.2-术语解释.md)
 - [代码集成](docs/zh_cn/2.1-集成文档.md) & [API](docs/zh_cn/2.2-集成接口一览.md)
