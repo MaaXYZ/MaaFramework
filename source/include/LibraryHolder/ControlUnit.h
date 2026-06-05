@@ -16,6 +16,7 @@ class MacOSControlUnitAPI;
 class GamepadControlUnitAPI;
 class CustomControlUnitAPI;
 class WlRootsControlUnitAPI;
+class KWinControlUnitAPI;
 class FullControlUnitAPI;
 class AndroidNativeControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
@@ -167,6 +168,19 @@ private:
     inline static const std::string version_func_name_ = "MaaWlRootsControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaWlRootsControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaWlRootsControlUnitDestroy";
+};
+
+class KWinControlUnitLibraryHolder : public LibraryHolder<KWinControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::KWinControlUnitAPI>
+        create_control_unit(const char* device_node, int screen_width, int screen_height);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaKWinControlUnit");
+    inline static const std::string version_func_name_ = "MaaKWinControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaKWinControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaKWinControlUnitDestroy";
 };
 
 MAA_NS_END

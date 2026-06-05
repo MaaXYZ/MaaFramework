@@ -42,6 +42,10 @@ if(WITH_WLROOTS_CONTROLLER)
     add_subdirectory(MaaWlRootsControlUnit)
 endif()
 
+if(WITH_KWIN_CONTROLLER)
+    add_subdirectory(MaaKWinControlUnit)
+endif()
+
 add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)
