@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD033 MD041 -->
 <p align="center">
-  <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_512x512.png" width="256" height="256" />
+  <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/v1/icons/maa-logo_512x512.png" width="256" height="256" />
 </p>
 
 <div align="center">
@@ -49,7 +49,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 > [!TIP]
 > 访问我们的 [官网](https://maafw.com/) 以获得更优秀的文档阅读体验。  
-> 找不到相关文档？试试问 [AI](https://deepwiki.com/MaaXYZ/MaaFramework) ！
+> 找不到相关文档？试试问 [AI](https://deepwiki.com/MaaXYZ/MaaFramework) ！  
+> 在 [MaaHub](https://hub.maafw.com) 发现更多由社区提供的技能、流水线、自定义模块与经验。
 
 - [快速开始](docs/zh_cn/1.1-快速开始.md) & [术语解释](docs/zh_cn/1.2-术语解释.md)
 - [代码集成](docs/zh_cn/2.1-集成文档.md) & [API](docs/zh_cn/2.2-集成接口一览.md)
@@ -194,10 +195,17 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaFgo](https://github.com/xlxyvergil/MaaFgo)![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/xlxyvergil/MaaFgo) ![activity](https://img.shields.io/github/commit-activity/m/xlxyvergil/MaaFgo?color=%23ff69b4)  
     FGO 小助手。使用图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MaaNTE](https://github.com/1bananachicken/MaaNTE) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/1bananachicken/MaaNTE) ![activity](https://img.shields.io/github/commit-activity/m/1bananachicken/MaaNTE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/1bananachicken/MaaNTE?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
+- [MaaNTE](https://github.com/1bananachicken/MaaNTE) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/1bananachicken/MaaNTE) ![activity](https://img.shields.io/github/commit-activity/m/1bananachicken/MaaNTE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/1bananachicken/MaaNTE?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://maante.org-%234285F4)](https://maante.org)  
     异环小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
 - [MALW](https://github.com/lisadnsess/MALostWord) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/lisadnsess/MALostWord) ![activity](https://img.shields.io/github/commit-activity/m/lisadnsess/MALostWord?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/lisadnsess/MALostWord?style=social)  
     东方归言录小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
+- [AUTO-MAS](https://github.com/AUTO-MAS-Project/AUTO-MAS) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/AUTO-MAS-Project/AUTO-MAS) ![activity](https://img.shields.io/github/commit-activity/m/AUTO-MAS-Project/AUTO-MAS?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/AUTO-MAS-Project/AUTO-MAS?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://doc.auto--mas.top-%234285F4)](https://doc.auto-mas.top)  
+  多脚本多配置统一管理与自动化工具，你的脚本管家。内置 MaaFramework 组件，拓展脚本能力边界！
+
+- [MR3A](https://github.com/originalsage/MR3A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/originalsage/MR3A) ![activity](https://img.shields.io/github/commit-activity/m/originalsage/MR3A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/originalsage/MR3A?style=social)  
+  忍者必须死3 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
 

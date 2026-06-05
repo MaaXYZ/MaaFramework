@@ -1,8 +1,6 @@
 #pragma once
 
-#include <chrono>
-#include <thread>
-
+#include "Base/ForegroundUtils.h"
 #include "Common/Conf.h"
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/SafeWindows.hpp"

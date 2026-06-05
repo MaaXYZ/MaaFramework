@@ -216,7 +216,6 @@ void MessageInput::restore_window_pos()
     if (!SetWindowPos(hwnd_, nullptr, left, top, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE)) {
         LogError << "SetWindowPos failed during restore" << VAR(hwnd_) << VAR(GetLastError());
     }
-    window_pos_saved_ = false;
 }
 
 void MessageInput::start_window_tracking(int x, int y)
@@ -828,6 +827,7 @@ void MessageInput::inactive()
     }
 
     restore_pos();
+    window_pos_saved_ = false;
     unblock_input();
 }
 

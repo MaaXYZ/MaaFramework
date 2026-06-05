@@ -472,7 +472,8 @@ def test_tasker_api(resource: Resource, controller: DbgController):
     # 测试全局选项 (静态方法)
     Tasker.set_save_draw(True)
     Tasker.set_stdout_level(LoggingLevelEnum.All)
-    Tasker.set_log_dir("debug")
+    log_dir = install_dir / "bin" / "debug" / "新建文件夹"
+    assert Tasker.set_log_dir(log_dir)
     Tasker.set_debug_mode(True)
     Tasker.set_save_on_error(True)
     Tasker.set_draw_quality(85)
