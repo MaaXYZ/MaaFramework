@@ -93,18 +93,22 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     MaaTaskerBindController(tasker_handle, controller_handle);
 
     {
+        auto no_controller_tasker_handle = MaaTaskerCreate();
+        MaaTaskerBindResource(no_controller_tasker_handle, resource_handle);
+
         ActionFailedCapture capture;
-        auto sink_id = MaaTaskerAddContextSink(tasker_handle, &capture_action_failed, &capture);
+        auto sink_id = MaaTaskerAddContextSink(no_controller_tasker_handle, &capture_action_failed, &capture);
 
         auto box = MaaRectCreate();
         MaaRectSet(box, 10, 20, 30, 40);
 
-        auto failed_id = MaaTaskerPostAction(tasker_handle, "Click", R"({"target":[0,0,0,0]})", box, "{}");
-        MaaTaskerWait(tasker_handle, failed_id);
+        auto failed_id = MaaTaskerPostAction(no_controller_tasker_handle, "Click", R"({"target":[1,2,3,4]})", box, "{}");
+        MaaTaskerWait(no_controller_tasker_handle, failed_id);
 
         MaaRectDestroy(box);
 
-        MaaTaskerRemoveContextSink(tasker_handle, sink_id);
+        MaaTaskerRemoveContextSink(no_controller_tasker_handle, sink_id);
+        MaaTaskerDestroy(no_controller_tasker_handle);
 
         if (failed_id == MaaInvalidId || !capture.seen || capture.task_id != failed_id || capture.action_id == MaaInvalidId
             || capture.name.empty() || capture.action != "Click" || capture.box_x != 10 || capture.box_y != 20 || capture.box_w != 30
