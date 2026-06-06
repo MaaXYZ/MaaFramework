@@ -201,13 +201,14 @@ jobs:
                     fi
 
                     # 3. Inject dedicated ARM64 official Ports source
-                    cat <<EOF | sudo tee /etc/apt/sources.list.d/ubuntu-arm64.sources
-                    Types: deb
-                    URIs: http://ports.ubuntu.com/ubuntu-ports
-                    Suites: noble noble-updates noble-security
-                    Components: main universe restricted multiverse
-                    Architectures: arm64
-                    EOF
+                    # NOTE: heredoc (cat <<EOF) is NOT used here because YAML indentation
+                    # would break bash's EOF detection (bash requires EOF at column 0).
+                    # Multi-line echo is 100% safe in YAML block scalars.
+                    sudo sh -c 'echo "Types: deb" > /etc/apt/sources.list.d/ubuntu-arm64.sources'
+                    sudo sh -c 'echo "URIs: http://ports.ubuntu.com/ubuntu-ports" >> /etc/apt/sources.list.d/ubuntu-arm64.sources'
+                    sudo sh -c 'echo "Suites: noble noble-updates noble-security" >> /etc/apt/sources.list.d/ubuntu-arm64.sources'
+                    sudo sh -c 'echo "Components: main universe restricted multiverse" >> /etc/apt/sources.list.d/ubuntu-arm64.sources'
+                    sudo sh -c 'echo "Architectures: arm64" >> /etc/apt/sources.list.d/ubuntu-arm64.sources'
 
                     # 4. Update (no 404 since sources are pinned per-arch)
                     sudo apt-get update
