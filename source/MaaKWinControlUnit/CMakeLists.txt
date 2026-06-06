@@ -11,21 +11,33 @@ set(maa_kwin_control_unit_src
 )
 
 # Determine whether full implementation is possible
-set(MAA_KWIN_HAS_FULL_IMPL FALSE)
+# Use absolute library paths (NO_CMAKE_FIND_ROOT_PATH) to bypass the cross-compilation
+# sysroot sandbox, since -l flags would be resolved inside the sysroot where PipeWire
+# and D-Bus are not installed.
+set(PIPEWIRE_ABS_LIB)
+set(DBUS_ABS_LIB)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT ANDROID)
     find_package(PkgConfig QUIET)
     if(PkgConfig_FOUND)
         pkg_check_modules(PIPEWIRE QUIET libpipewire-0.3)
-        pkg_check_modules(DBUS1 QUIET dbus-1)
+        pkg_check_modules(DBUS QUIET dbus-1)
     endif()
-    if(PIPEWIRE_FOUND AND DBUS1_FOUND)
-        set(MAA_KWIN_HAS_FULL_IMPL TRUE)
+    if(PIPEWIRE_FOUND AND DBUS_FOUND)
+        # Search for absolute paths on the HOST filesystem, NOT inside the sysroot
+        find_library(PIPEWIRE_ABS_LIB
+            NAMES pipewire-0.3
+            PATHS ${PIPEWIRE_LIBRARY_DIRS} /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu
+            NO_CMAKE_FIND_ROOT_PATH)
+        find_library(DBUS_ABS_LIB
+            NAMES dbus-1
+            PATHS ${DBUS_LIBRARY_DIRS} /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu
+            NO_CMAKE_FIND_ROOT_PATH)
     endif()
 endif()
 
-if(MAA_KWIN_HAS_FULL_IMPL)
-    message(STATUS "MaaKWinControlUnit: full implementation (PipeWire + D-Bus found)")
+if(PIPEWIRE_ABS_LIB AND DBUS_ABS_LIB)
+    message(STATUS "MaaKWinControlUnit: full implementation (absolute paths: ${PIPEWIRE_ABS_LIB}, ${DBUS_ABS_LIB})")
 
     list(APPEND maa_kwin_control_unit_src
         ${CMAKE_CURRENT_SOURCE_DIR}/Input/UInputController.cpp
@@ -42,10 +54,12 @@ if(MAA_KWIN_HAS_FULL_IMPL)
 
     target_include_directories(MaaKWinControlUnit
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC}
-        ${PIPEWIRE_INCLUDE_DIRS} ${DBUS1_INCLUDE_DIRS})
+        ${PIPEWIRE_INCLUDE_DIRS} ${DBUS_INCLUDE_DIRS})
 
+    # Link with absolute paths — CMake will embed the full path in the linker command
+    # instead of generating -l flags, so the linker bypasses the sysroot entirely.
     target_link_libraries(MaaKWinControlUnit PRIVATE MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS} Boost::system
-        ${PIPEWIRE_LIBRARIES} ${DBUS1_LIBRARIES})
+        ${PIPEWIRE_ABS_LIB} ${DBUS_ABS_LIB})
 
     target_compile_definitions(MaaKWinControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
 
@@ -93,7 +107,7 @@ if(MAA_KWIN_HAS_FULL_IMPL)
 
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_kwin_control_unit_src} ${maa_kwin_control_unit_header})
 else()
-    message(STATUS "MaaKWinControlUnit: stub build (PipeWire/D-Bus not available on this platform)")
+    message(STATUS "MaaKWinControlUnit: stub build (absolute PipeWire/D-Bus libraries not found on this platform)")
 
     add_library(MaaKWinControlUnit SHARED ${maa_kwin_control_unit_src})
 
