@@ -343,7 +343,7 @@ int UInputController::maa_to_linux_keycode(int key_code)
     }
     // ASCII digit mapping
     if (key_code >= '0' && key_code <= '9') {
-        return KEY_1 + (key_code - '1');
+        return KEY_0 + (key_code - '0');
     }
     // Common ASCII / control character mappings
     switch (key_code) {

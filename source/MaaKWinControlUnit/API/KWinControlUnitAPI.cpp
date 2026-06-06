@@ -18,7 +18,7 @@ MaaKWinControlUnitHandle MaaKWinControlUnitCreate(const char* device_node, int s
 
     LogFunc << VAR(device_node) << VAR(screen_width) << VAR(screen_height);
 
-    if (!device_node) {
+    if (!device_node || device_node[0] == '\0') {
         LogError << "device_node is null or empty";
         return nullptr;
     }

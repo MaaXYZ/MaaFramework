@@ -1047,9 +1047,9 @@ bool PipeWireScreencap::process_frame(const struct spa_buffer* spa_buf, cv::Mat&
         }
         else if (data.type == SPA_DATA_DmaBuf) {
             // DMABuf cannot be directly mapped via mmap; silently drop the frame
-            // and return true to indicate "no error, but skip this frame".
+            // and return false to let pw_on_stream_process skip this frame.
             LogWarn << "DMABUF buffer type received, dropping frame (EGL import not supported)";
-            return true;
+            return false;
         }
         else {
             LogError << "Unsupported buffer type: " << data.type;
