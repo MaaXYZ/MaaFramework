@@ -98,9 +98,9 @@ else()
     add_library(MaaKWinControlUnit SHARED ${maa_kwin_control_unit_src})
 
     target_include_directories(MaaKWinControlUnit
-        PRIVATE ${MAA_PUBLIC_INC})
+        PRIVATE ${MAA_PUBLIC_INC} ${OpenCV_INCLUDE_DIRS})
 
-    target_link_libraries(MaaKWinControlUnit PRIVATE MaaUtils HeaderOnlyLibraries)
+    target_link_libraries(MaaKWinControlUnit PRIVATE MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS})
 
     target_compile_definitions(MaaKWinControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
 

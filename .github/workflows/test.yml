@@ -179,7 +179,7 @@ jobs:
             - name: Install dep
               run: |
                   sudo apt-get update -y
-                  sudo apt-get install -y ninja-build cmake ccache
+                  sudo apt-get install -y ninja-build cmake ccache libpipewire-0.3-dev libdbus-1-dev
 
             # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
             - uses: actions/checkout@v4
