@@ -175,6 +175,12 @@ jobs:
               run: |
                   sudo apt-get update -y
                   sudo apt-get install -y ninja-build cmake ccache libpipewire-0.3-dev libdbus-1-dev
+                  if [[ '${{ matrix.arch }}' == 'aarch64' ]]; then
+                    sudo dpkg --add-architecture arm64
+                    sudo apt-get update
+                    sudo apt-get install -y libpipewire-0.3-dev:arm64 libdbus-1-dev:arm64
+                    echo "PKG_CONFIG_LIBDIR=/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/share/pkgconfig" >> "$GITHUB_ENV"
+                  fi
 
             - uses: pnpm/action-setup@v4
               with:
