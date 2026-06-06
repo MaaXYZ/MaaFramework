@@ -202,12 +202,12 @@ jobs:
 
                     # 3. Inject dedicated ARM64 official Ports source
                     cat <<EOF | sudo tee /etc/apt/sources.list.d/ubuntu-arm64.sources
-Types: deb
-URIs: http://ports.ubuntu.com/ubuntu-ports
-Suites: noble noble-updates noble-security
-Components: main universe restricted multiverse
-Architectures: arm64
-EOF
+                    Types: deb
+                    URIs: http://ports.ubuntu.com/ubuntu-ports
+                    Suites: noble noble-updates noble-security
+                    Components: main universe restricted multiverse
+                    Architectures: arm64
+                    EOF
 
                     # 4. Update (no 404 since sources are pinned per-arch)
                     sudo apt-get update
