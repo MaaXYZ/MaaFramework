@@ -11,15 +11,10 @@ set(maa_kwin_control_unit_src
 )
 
 # Determine whether full implementation is possible
-# Use absolute library paths (NO_CMAKE_FIND_ROOT_PATH) to bypass the cross-compilation
-# sysroot sandbox, since -l flags would be resolved inside the sysroot where PipeWire
-# and D-Bus are not installed.
-#
-# Architecture detection is handled via PKG_CONFIG_LIBDIR. In CI, for aarch64
-# cross-compilation, the variable is set to /usr/lib/aarch64-linux-gnu/pkgconfig
-# so pkg_check_modules populates PIPEWIRE_LIBRARY_DIRS / DBUS_LIBRARY_DIRS with
-# the correct architecture-specific path. For x86_64 native builds, the default
-# pkg-config search path is used.
+# Libraries are found inside the sysroot via default CMAKE_FIND_ROOT_PATH behavior.
+# In CI, for aarch64 cross-compilation, the ARM64 .deb packages are downloaded and
+# extracted directly into the x-tools sysroot under <sysroot>/usr/lib/, so CMake
+# finds them naturally. For x86_64 native builds, pkg-config finds the system libs.
 set(PIPEWIRE_ABS_LIB)
 set(DBUS_ABS_LIB)
 
@@ -30,17 +25,15 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT ANDROID)
         pkg_check_modules(DBUS QUIET dbus-1)
     endif()
     if(PIPEWIRE_FOUND AND DBUS_FOUND)
-        # Search for absolute paths on the HOST filesystem, NOT inside the sysroot.
-        # PKG_CONFIG_LIBDIR (set in CI for cross-compilation) ensures the LIBRARY_DIRS
-        # points to the correct architecture path (e.g. /usr/lib/aarch64-linux-gnu).
+        # Search inside the sysroot (default CMAKE_FIND_ROOT_PATH behavior). In CI,
+        # the ARM64 .deb packages are extracted and injected directly into the x-tools
+        # sysroot, so the libraries are found naturally under <sysroot>/usr/lib/.
         find_library(PIPEWIRE_ABS_LIB
             NAMES pipewire-0.3
-            PATHS ${PIPEWIRE_LIBRARY_DIRS}
-            NO_CMAKE_FIND_ROOT_PATH)
+            PATHS ${PIPEWIRE_LIBRARY_DIRS} /usr/lib)
         find_library(DBUS_ABS_LIB
             NAMES dbus-1
-            PATHS ${DBUS_LIBRARY_DIRS}
-            NO_CMAKE_FIND_ROOT_PATH)
+            PATHS ${DBUS_LIBRARY_DIRS} /usr/lib)
     endif()
 endif()
 
