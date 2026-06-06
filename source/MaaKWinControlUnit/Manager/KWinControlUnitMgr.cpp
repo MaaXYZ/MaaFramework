@@ -1,3 +1,5 @@
+#if defined(__linux__) && !defined(__ANDROID__)
+
 #include "KWinControlUnitMgr.h"
 
 #include <filesystem>
@@ -181,20 +183,22 @@ bool KWinControlUnitMgr::input_text(const std::string& text)
 
 bool KWinControlUnitMgr::key_down(int key)
 {
-    // TODO: Implement keyboard key down via uinput
-    std::ignore = key;
+    if (!input_) {
+        LogError << "input_ is nullptr";
+        return false;
+    }
 
-    LogError << "key_down not yet implemented for KWin control unit";
-    return false;
+    return input_->key_down(key);
 }
 
 bool KWinControlUnitMgr::key_up(int key)
 {
-    // TODO: Implement keyboard key up via uinput
-    std::ignore = key;
+    if (!input_) {
+        LogError << "input_ is nullptr";
+        return false;
+    }
 
-    LogError << "key_up not yet implemented for KWin control unit";
-    return false;
+    return input_->key_up(key);
 }
 
 bool KWinControlUnitMgr::relative_move(int dx, int dy)
@@ -233,3 +237,5 @@ json::object KWinControlUnitMgr::get_info() const
 }
 
 MAA_CTRL_UNIT_NS_END
+
+#endif // __linux__ && !__ANDROID__

@@ -1,5 +1,7 @@
 #pragma once
 
+#if defined(__linux__) && !defined(__ANDROID__)
+
 #include <atomic>
 #include <chrono>
 #include <cstdint>
@@ -35,6 +37,9 @@ public:
     bool scroll(int dx, int dy);
     bool relative_move(int dx, int dy);
 
+    bool key_down(int key_code);
+    bool key_up(int key_code);
+
     std::pair<int, int> screen_size() const;
 
 private:
@@ -51,10 +56,11 @@ private:
     // Send BTN_LEFT=0 + SYN
     bool send_pointer_up();
 
+    static int maa_to_linux_keycode(int key_code);
     static uint64_t now_ms();
 
     int fd_ = -1;
-    bool connected_ = false;
+    std::atomic<bool> connected_{ false };
 
     int screen_width_ = 0;
     int screen_height_ = 0;
@@ -68,3 +74,5 @@ private:
 };
 
 MAA_CTRL_UNIT_NS_END
+
+#endif // __linux__ && !__ANDROID__

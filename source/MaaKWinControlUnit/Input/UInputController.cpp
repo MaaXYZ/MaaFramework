@@ -1,3 +1,5 @@
+#if defined(__linux__) && !defined(__ANDROID__)
+
 #include "UInputController.h"
 
 #include <cerrno>
@@ -283,9 +285,87 @@ bool UInputController::relative_move(int dx, int dy)
     return true;
 }
 
+bool UInputController::key_down(int key_code)
+{
+    LogDebug << VAR(key_code);
+
+    std::unique_lock<std::mutex> lock(mutex_);
+
+    if (!connected_) {
+        LogError << "Not connected";
+        return false;
+    }
+
+    int linux_key = maa_to_linux_keycode(key_code);
+    if (!emit_key(linux_key, 1)) {
+        return false;
+    }
+    if (!emit_syn()) {
+        return false;
+    }
+    return true;
+}
+
+bool UInputController::key_up(int key_code)
+{
+    LogDebug << VAR(key_code);
+
+    std::unique_lock<std::mutex> lock(mutex_);
+
+    if (!connected_) {
+        LogError << "Not connected";
+        return false;
+    }
+
+    int linux_key = maa_to_linux_keycode(key_code);
+    if (!emit_key(linux_key, 0)) {
+        return false;
+    }
+    if (!emit_syn()) {
+        return false;
+    }
+    return true;
+}
+
 std::pair<int, int> UInputController::screen_size() const
 {
     return { screen_width_, screen_height_ };
+}
+
+int UInputController::maa_to_linux_keycode(int key_code)
+{
+    // ASCII letter mapping
+    if (key_code >= 'A' && key_code <= 'Z') {
+        return KEY_A + (key_code - 'A');
+    }
+    if (key_code >= 'a' && key_code <= 'z') {
+        return KEY_A + (key_code - 'a');
+    }
+    // ASCII digit mapping
+    if (key_code >= '0' && key_code <= '9') {
+        return KEY_1 + (key_code - '1');
+    }
+    // Common ASCII / control character mappings
+    switch (key_code) {
+        case '\r':
+        case '\n': return KEY_ENTER;
+        case '\b': return KEY_BACKSPACE;
+        case '\t': return KEY_TAB;
+        case 27:   return KEY_ESC;
+        case ' ':  return KEY_SPACE;
+        case '-':  return KEY_MINUS;
+        case '=':  return KEY_EQUAL;
+        case '[':  return KEY_LEFTBRACE;
+        case ']':  return KEY_RIGHTBRACE;
+        case '\\': return KEY_BACKSLASH;
+        case ';':  return KEY_SEMICOLON;
+        case '\'': return KEY_APOSTROPHE;
+        case '`':  return KEY_GRAVE;
+        case ',':  return KEY_COMMA;
+        case '.':  return KEY_DOT;
+        case '/':  return KEY_SLASH;
+        default:   return key_code; // pass through as raw Linux keycode
+    }
 }
 
 bool UInputController::create_device()
@@ -322,14 +402,76 @@ bool UInputController::create_device()
         return false;
     }
 
-    // Register ONLY BTN_LEFT — this is a single-button absolute pointer (tablet).
-    // No BTN_TOUCH, no BTN_TOOL_FINGER, no BTN_RIGHT/MIDDLE.
-    // This ensures udev identifies it as ID_INPUT_TABLET, not ID_INPUT_TOUCHPAD.
+    // Register BTN_LEFT for pointer click support
     if (ioctl(fd_, UI_SET_KEYBIT, BTN_LEFT) < 0) {
         LogError << "Failed to set BTN_LEFT" << VAR(errno) << VAR(std::strerror(errno));
         ::close(fd_);
         fd_ = -1;
         return false;
+    }
+
+    // Register alphabet keys (KEY_A .. KEY_Z)
+    for (int k = KEY_A; k <= KEY_Z; ++k) {
+        ioctl(fd_, UI_SET_KEYBIT, k);
+    }
+
+    // Register digit keys (KEY_1 .. KEY_0)
+    for (int k = KEY_1; k <= KEY_0; ++k) {
+        ioctl(fd_, UI_SET_KEYBIT, k);
+    }
+
+    // Register common additional keys
+    const int kCommonKeys[] = {
+        KEY_ENTER,
+        KEY_BACKSPACE,
+        KEY_TAB,
+        KEY_ESC,
+        KEY_SPACE,
+        KEY_MINUS,
+        KEY_EQUAL,
+        KEY_LEFTBRACE,
+        KEY_RIGHTBRACE,
+        KEY_BACKSLASH,
+        KEY_SEMICOLON,
+        KEY_APOSTROPHE,
+        KEY_GRAVE,
+        KEY_COMMA,
+        KEY_DOT,
+        KEY_SLASH,
+        KEY_LEFTSHIFT,
+        KEY_LEFTCTRL,
+        KEY_LEFTALT,
+        KEY_LEFTMETA,
+        KEY_RIGHTSHIFT,
+        KEY_RIGHTCTRL,
+        KEY_RIGHTALT,
+        KEY_RIGHTMETA,
+        KEY_CAPSLOCK,
+        KEY_F1,
+        KEY_F2,
+        KEY_F3,
+        KEY_F4,
+        KEY_F5,
+        KEY_F6,
+        KEY_F7,
+        KEY_F8,
+        KEY_F9,
+        KEY_F10,
+        KEY_F11,
+        KEY_F12,
+        KEY_UP,
+        KEY_DOWN,
+        KEY_LEFT,
+        KEY_RIGHT,
+        KEY_HOME,
+        KEY_END,
+        KEY_PAGEUP,
+        KEY_PAGEDOWN,
+        KEY_INSERT,
+        KEY_DELETE,
+    };
+    for (int k : kCommonKeys) {
+        ioctl(fd_, UI_SET_KEYBIT, k);
     }
 
     // Register ONLY ABS_X and ABS_Y — absolute positioning axes.
@@ -364,7 +506,7 @@ bool UInputController::create_device()
     // Configure the uinput device using the traditional uinput_user_dev struct.
     struct uinput_user_dev udev;
     std::memset(&udev, 0, sizeof(udev));
-    std::strncpy(udev.name, "MaaFramework KWin Virtual Pointer", sizeof(udev.name) - 1);
+    std::strncpy(udev.name, "MaaFramework KWin Virtual Input", sizeof(udev.name) - 1);
     udev.id.bustype = BUS_USB;
     udev.id.vendor = 0x1234;
     udev.id.product = 0x5678;
@@ -526,3 +668,5 @@ uint64_t UInputController::now_ms()
 }
 
 MAA_CTRL_UNIT_NS_END
+
+#endif // __linux__ && !__ANDROID__

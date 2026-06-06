@@ -1,3 +1,5 @@
+#if defined(__linux__) && !defined(__ANDROID__)
+
 #include "PipeWireScreencap.h"
 
 #include <cerrno>
@@ -12,7 +14,6 @@
 #include <pipewire/pipewire.h>
 #include <pipewire/stream.h>
 #include <pipewire/thread-loop.h>
-#include <pipewire/data-loop.h>
 #include <spa/param/video/raw.h>
 #include <spa/param/video/format-utils.h>
 #include <spa/param/buffers.h>
@@ -20,7 +21,6 @@
 #include <spa/pod/iter.h>
 
 #include <chrono>
-#include <thread>
 
 #include <opencv2/imgproc.hpp>
 
@@ -290,19 +290,17 @@ void PipeWireScreencap::close_internal()
 
     delete stream_events_;
     stream_events_ = nullptr;
-    delete core_events_;
-    core_events_ = nullptr;
 
     // Reset all state
     connected_ = false;
     open_attempted_ = false;
-    stream_params_received_ = false;
     frame_available_ = false;
     frame_width_ = 0;
     frame_height_ = 0;
     pipewire_node_id_ = 0;
     pipewire_fd_ = -1;
     dbus_session_handle_.clear();
+    dbus_connection_ = nullptr;
 
     {
         std::lock_guard<std::mutex> lock(frame_mutex_);
@@ -477,14 +475,17 @@ bool PipeWireScreencap::dbus_open_pipewire_remote(DBusConnection* conn)
 // ---------------------------------------------------------------------------
 bool PipeWireScreencap::dbus_create_session()
 {
-    DBusError err;
-    dbus_error_init(&err);
-    DBusConnection* conn = dbus_bus_get(DBUS_BUS_SESSION, &err);
-    if (!conn) {
-        LogError << "Failed to connect to session bus:" << err.message;
-        dbus_error_free(&err);
-        return false;
+    if (!dbus_connection_) {
+        DBusError err;
+        dbus_error_init(&err);
+        dbus_connection_ = dbus_bus_get(DBUS_BUS_SESSION, &err);
+        if (!dbus_connection_) {
+            LogError << "Failed to connect to session bus:" << err.message;
+            dbus_error_free(&err);
+            return false;
+        }
     }
+    DBusConnection* conn = dbus_connection_;
 
     DBusMessage* msg = dbus_message_new_method_call(
         kPortalBusName, kPortalPath, kPortalInterface, "CreateSession");
@@ -554,14 +555,11 @@ bool PipeWireScreencap::dbus_create_session()
 // ---------------------------------------------------------------------------
 bool PipeWireScreencap::dbus_select_sources()
 {
-    DBusError err;
-    dbus_error_init(&err);
-    DBusConnection* conn = dbus_bus_get(DBUS_BUS_SESSION, &err);
-    if (!conn) {
-        LogError << "Failed to connect to session bus:" << err.message;
-        dbus_error_free(&err);
+    if (!dbus_connection_) {
+        LogError << "D-Bus connection not established (CreateSession must be called first)";
         return false;
     }
+    DBusConnection* conn = dbus_connection_;
 
     DBusMessage* msg = dbus_message_new_method_call(
         kPortalBusName, kPortalPath, kPortalInterface, "SelectSources");
@@ -627,14 +625,11 @@ bool PipeWireScreencap::dbus_select_sources()
 // ---------------------------------------------------------------------------
 bool PipeWireScreencap::dbus_start_stream()
 {
-    DBusError err;
-    dbus_error_init(&err);
-    DBusConnection* conn = dbus_bus_get(DBUS_BUS_SESSION, &err);
-    if (!conn) {
-        LogError << "Failed to connect to session bus:" << err.message;
-        dbus_error_free(&err);
+    if (!dbus_connection_) {
+        LogError << "D-Bus connection not established (CreateSession must be called first)";
         return false;
     }
+    DBusConnection* conn = dbus_connection_;
 
     DBusMessage* msg = dbus_message_new_method_call(
         kPortalBusName, kPortalPath, kPortalInterface, "Start");
@@ -678,6 +673,7 @@ bool PipeWireScreencap::dbus_start_stream()
     }
 
     // Add match rule so the D-Bus daemon delivers the Response signal
+    DBusError err;
     dbus_error_init(&err);
     std::string match_rule = "type='signal',interface='" + std::string(kPortalRequestInterface)
         + "',path='" + start_request_path + "'";
@@ -1050,8 +1046,10 @@ bool PipeWireScreencap::process_frame(const struct spa_buffer* spa_buf, cv::Mat&
             }
         }
         else if (data.type == SPA_DATA_DmaBuf) {
-            LogError << "DMABUF not supported (need EGL import)";
-            return false;
+            // DMABuf cannot be directly mapped via mmap; silently drop the frame
+            // and return true to indicate "no error, but skip this frame".
+            LogWarn << "DMABUF buffer type received, dropping frame (EGL import not supported)";
+            return true;
         }
         else {
             LogError << "Unsupported buffer type: " << data.type;
@@ -1136,3 +1134,5 @@ int PipeWireScreencap::infer_dimension_from_stride(uint32_t stride, size_t /*dat
 }
 
 MAA_CTRL_UNIT_NS_END
+
+#endif // __linux__ && !__ANDROID__

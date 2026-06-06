@@ -1,5 +1,7 @@
 #pragma once
 
+#if defined(__linux__) && !defined(__ANDROID__)
+
 #include <atomic>
 #include <condition_variable>
 #include <cstdint>
@@ -22,7 +24,6 @@ struct spa_buffer;
 struct spa_pod;
 
 /* Events structs (only used as pointers, full definition in their respective headers) */
-struct pw_core_events;
 struct pw_stream_events;
 
 /* Forward-declare D-Bus types (only used as pointers in method signatures) */
@@ -95,6 +96,7 @@ private:
     int screen_height_ = 0;
 
     /* D-Bus state */
+    DBusConnection* dbus_connection_ = nullptr;
     std::string dbus_session_handle_;
     uint32_t pipewire_node_id_ = 0;
     int pipewire_fd_ = -1;
@@ -110,17 +112,11 @@ private:
     struct spa_hook stream_hook_;
 
     /* Heap-allocated event vtables (must outlive the listener) */
-    struct pw_core_events* core_events_ = nullptr;
     struct pw_stream_events* stream_events_ = nullptr;
 
     /* Negotiated frame dimensions (set by param_changed callback) */
     int frame_width_ = 0;
     int frame_height_ = 0;
-
-    /* Synchronisation: stream parameters received */
-    std::mutex stream_mutex_;
-    std::condition_variable stream_cv_;
-    bool stream_params_received_ = false;
 
     /* Latest frame data (protected by frame_mutex_) */
     std::mutex frame_mutex_;
@@ -130,3 +126,5 @@ private:
 };
 
 MAA_CTRL_UNIT_NS_END
+
+#endif // __linux__ && !__ANDROID__
