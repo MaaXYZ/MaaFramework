@@ -10,6 +10,8 @@
 
 #include <spa/utils/hook.h>
 
+#include <pipewire/stream.h>
+
 #include <opencv2/core.hpp>
 
 #include "Common/Conf.h"
@@ -22,9 +24,6 @@ struct pw_core;
 struct pw_stream;
 struct spa_buffer;
 struct spa_pod;
-
-/* Events structs (only used as pointers, full definition in their respective headers) */
-struct pw_stream_events;
 
 /* Forward-declare D-Bus types (only used as pointers in method signatures) */
 struct DBusConnection;
@@ -121,6 +120,9 @@ private:
     /* Negotiated frame dimensions (set by param_changed callback) */
     int frame_width_ = 0;
     int frame_height_ = 0;
+
+    /* DMABUF warning (log only once to avoid flooding) */
+    bool dmabuf_warned_ = false;
 
     /* Latest frame data (protected by frame_mutex_) */
     std::mutex frame_mutex_;

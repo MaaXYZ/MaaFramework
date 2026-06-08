@@ -296,6 +296,7 @@ void PipeWireScreencap::close_internal()
     connected_ = false;
     open_attempted_ = false;
     frame_available_ = false;
+    dmabuf_warned_ = false;
     frame_width_ = 0;
     frame_height_ = 0;
     pipewire_node_id_ = 0;
@@ -1057,9 +1058,18 @@ bool PipeWireScreencap::process_frame(const struct spa_buffer* spa_buf, cv::Mat&
             }
         }
         else if (data.type == SPA_DATA_DmaBuf) {
-            // DMABuf cannot be directly mapped via mmap; silently drop the frame
-            // and return false to let pw_on_stream_process skip this frame.
-            LogWarn << "DMABUF buffer type received, dropping frame (EGL import not supported)";
+            // DMABuf cannot be directly mapped via mmap; if a valid frame is
+            // already cached, skip silently and keep the last good frame.
+            {
+                std::lock_guard<std::mutex> lock(frame_mutex_);
+                if (!latest_frame_.empty()) {
+                    return false;
+                }
+            }
+            if (!dmabuf_warned_) {
+                dmabuf_warned_ = true;
+                LogWarn << "DMABUF buffer type received, dropping frame (EGL import not supported)";
+            }
             return false;
         }
         else {
