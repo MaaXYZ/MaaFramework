@@ -78,9 +78,10 @@ private:
     bool pw_create_stream();
     bool pw_connect_stream(uint32_t node_id);
 
-    /* ---- PipeWire callbacks (static, dispatched via pw_stream_events) ---- */
+    /* ---- PipeWire callbacks (static) ---- */
     static void pw_on_core_error(void* data, uint32_t id, int seq, int res, const char* message);
-    static void pw_on_stream_state_changed(void* data, int old_state, int new_state, const char* error);
+    static void pw_on_stream_state_changed(void* data, enum pw_stream_state old_state,
+                                           enum pw_stream_state new_state, const char* error);
     static void pw_on_stream_param_changed(void* data, uint32_t id, const struct spa_pod* param);
     static void pw_on_stream_process(void* data);
 
@@ -107,6 +108,9 @@ private:
     ::pw_context* pw_context_ = nullptr;
     ::pw_core* pw_core_ = nullptr;
     ::pw_stream* pw_stream_ = nullptr;
+
+    /* PipeWire core hook (must outlive pw_core_add_listener) */
+    struct spa_hook core_hook_;
 
     /* PipeWire stream hook (embedded, must outlive pw_stream_add_listener) */
     struct spa_hook stream_hook_;

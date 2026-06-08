@@ -138,7 +138,9 @@ extern "C"
      *
      * @note This controller is designed for KWin (pure Wayland) on Linux.
      * @note Input is simulated via /dev/uinput (kernel-level virtual touchscreen).
-     * @note Screencap is not yet implemented (requires PipeWire / xdg-desktop-portal).
+     * @note Screencap is implemented via PipeWire / xdg-desktop-portal (KDE/KWin).
+     *       Captures the foreground monitor in fullscreen mode.
+     * @note Requires user authorization via the screen sharing dialog (xdg-desktop-portal).
      * @note Requires write permission to /dev/uinput (typically via the "input" group).
      * @note Only single touch is supported (contact must be 0).
      */

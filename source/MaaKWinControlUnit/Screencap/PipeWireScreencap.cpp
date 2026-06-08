@@ -273,6 +273,7 @@ void PipeWireScreencap::close_internal()
     }
 
     if (pw_core_) {
+        spa_hook_remove(&core_hook_);
         pw_core_disconnect(pw_core_);
         pw_core_ = nullptr;
     }
@@ -300,7 +301,10 @@ void PipeWireScreencap::close_internal()
     pipewire_node_id_ = 0;
     pipewire_fd_ = -1;
     dbus_session_handle_.clear();
-    dbus_connection_ = nullptr;
+    if (dbus_connection_) {
+        dbus_connection_unref(dbus_connection_);
+        dbus_connection_ = nullptr;
+    }
 
     {
         std::lock_guard<std::mutex> lock(frame_mutex_);
@@ -830,6 +834,13 @@ bool PipeWireScreencap::pw_init()
     // pw_context_connect_fd takes ownership of pipewire_fd_
     pipewire_fd_ = -1;
 
+    // Register core event listener for error detection (e.g. EPIPE on disconnect).
+    static const struct pw_core_events core_events = {
+        .version = PW_VERSION_CORE_EVENTS,
+        .error = pw_on_core_error,
+    };
+    pw_core_add_listener(pw_core_, &core_hook_, &core_events, this);
+
     return true;
 }
 
@@ -855,8 +866,7 @@ bool PipeWireScreencap::pw_create_stream()
     stream_events_ = new struct pw_stream_events();
     spa_zero(*stream_events_);
     stream_events_->version = PW_VERSION_STREAM_EVENTS;
-    stream_events_->state_changed = reinterpret_cast<decltype(stream_events_->state_changed)>(
-        pw_on_stream_state_changed);
+    stream_events_->state_changed = pw_on_stream_state_changed;
     stream_events_->param_changed = pw_on_stream_param_changed;
     stream_events_->process = pw_on_stream_process;
     pw_stream_add_listener(pw_stream_, &stream_hook_, stream_events_, this);
@@ -916,7 +926,8 @@ void PipeWireScreencap::pw_on_core_error(void* data, uint32_t id, int seq, int r
     }
 }
 
-void PipeWireScreencap::pw_on_stream_state_changed(void* data, int old_state, int new_state, const char* error)
+void PipeWireScreencap::pw_on_stream_state_changed(void* data, enum pw_stream_state old_state,
+                                                   enum pw_stream_state new_state, const char* error)
 {
     auto* self = static_cast<PipeWireScreencap*>(data);
     (void)self;
@@ -925,7 +936,7 @@ void PipeWireScreencap::pw_on_stream_state_changed(void* data, int old_state, in
     if (new_state < 0) {
         LogError << "Stream error: " << (error ? error : "(unknown)");
     }
-    else if (new_state == 3 /* PW_STREAM_STATE_STREAMING */ && error) {
+    else if (new_state == PW_STREAM_STATE_STREAMING && error) {
         LogWarn << "Stream error: " << error;
     }
 }
