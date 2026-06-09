@@ -25,6 +25,28 @@ inline void send_activate_message(HWND hwnd, bool use_post = false)
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
+// 检查鼠标左右按键是否被交换
+inline bool IsMouseButtonSwapped()
+{
+    return GetSystemMetrics(SM_SWAPBUTTON) != 0;
+}
+
+// 获取兼容鼠标左右按键交换后的鼠标按键映射
+inline int GetMappedContact(int original_contact)
+{
+    if (!IsMouseButtonSwapped()) {
+        return original_contact;
+    }
+    switch (original_contact) {
+    case 0:
+        return 1;
+    case 1:
+        return 0;
+    default:
+        return original_contact;
+    }
+}
+
 // Contact 到 WM_* 消息的转换结果
 struct MouseMessageInfo
 {
@@ -35,7 +57,8 @@ struct MouseMessageInfo
 // 将 contact ID 转换为鼠标按下消息
 inline bool contact_to_mouse_down_message(int contact, MouseMessageInfo& info)
 {
-    switch (contact) {
+    int mapped_contact = GetMappedContact(contact);
+    switch (mapped_contact) {
     case 0:
         info.message = WM_LBUTTONDOWN;
         info.w_param = MK_LBUTTON;
@@ -64,7 +87,8 @@ inline bool contact_to_mouse_down_message(int contact, MouseMessageInfo& info)
 // 将 contact ID 转换为鼠标移动消息
 inline bool contact_to_mouse_move_message(int contact, MouseMessageInfo& info)
 {
-    switch (contact) {
+    int mapped_contact = GetMappedContact(contact);
+    switch (mapped_contact) {
     case 0:
         info.message = WM_MOUSEMOVE;
         info.w_param = MK_LBUTTON;
@@ -93,7 +117,8 @@ inline bool contact_to_mouse_move_message(int contact, MouseMessageInfo& info)
 // 将 contact ID 转换为鼠标抬起消息
 inline bool contact_to_mouse_up_message(int contact, MouseMessageInfo& info)
 {
-    switch (contact) {
+    int mapped_contact = GetMappedContact(contact);
+    switch (mapped_contact) {
     case 0:
         info.message = WM_LBUTTONUP;
         info.w_param = 0;
