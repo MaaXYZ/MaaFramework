@@ -110,7 +110,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [maaframework-skills](https://github.com/Kutius/maaframework-skills) ![license](https://img.shields.io/github/license/Kutius/maaframework-skills) ![activity](https://img.shields.io/github/commit-activity/m/Kutius/maaframework-skills?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Kutius/maaframework-skills?style=social)  
     Claude Code skill for MaaFramework — structured reference docs for AI-assisted pipeline development.
 
-- [MaaOWM](https://github.com/sunyink/MaaOWM) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![pip](https://img.shields.io/badge/pip-3775A9?logo=pypi&logoColor=white) [![Rich](https://img.shields.io/badge/dep-rich-af00ff?logo=python&logoColor=white)](https://github.com/Textualize/rich) [![MaaFw](https://img.shields.io/badge/PyPI-MaaFw-3775A9?logo=pypi&logoColor=white)](https://pypi.org/project/MaaFw) ![license](https://img.shields.io/github/license/sunyink/MaaOWM) ![activity](https://img.shields.io/github/commit-activity/m/sunyink/MaaOWM?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/sunyink/MaaOWM?style=social)  
+- [MaaOWM](https://github.com/sunyink/MaaOWM) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/sunyink/MaaOWM) ![activity](https://img.shields.io/github/commit-activity/m/sunyink/MaaOWM?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/sunyink/MaaOWM?style=social)  
     A MaaFramework multi-resource-pack development tool. Mount: merges base+mod into a full-field workspace; Unmount: diffs out a minimal mod delta.
 
 ### Application

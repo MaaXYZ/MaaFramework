@@ -108,7 +108,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [maaframework-skills](https://github.com/Kutius/maaframework-skills) ![license](https://img.shields.io/github/license/Kutius/maaframework-skills) ![activity](https://img.shields.io/github/commit-activity/m/Kutius/maaframework-skills?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Kutius/maaframework-skills?style=social)  
     Claude Code skill for MaaFramework — 面向 AI 辅助开发的结构化参考文档。
 
-- [MaaOWM](https://github.com/sunyink/MaaOWM) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![pip](https://img.shields.io/badge/pip-3775A9?logo=pypi&logoColor=white) [![Rich](https://img.shields.io/badge/dep-rich-af00ff?logo=python&logoColor=white)](https://github.com/Textualize/rich) [![MaaFw](https://img.shields.io/badge/PyPI-MaaFw-3775A9?logo=pypi&logoColor=white)](https://pypi.org/project/MaaFw) ![license](https://img.shields.io/github/license/sunyink/MaaOWM) ![activity](https://img.shields.io/github/commit-activity/m/sunyink/MaaOWM?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/sunyink/MaaOWM?style=social)  
+- [MaaOWM](https://github.com/sunyink/MaaOWM) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/sunyink/MaaOWM) ![activity](https://img.shields.io/github/commit-activity/m/sunyink/MaaOWM?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/sunyink/MaaOWM?style=social)  
     MaaFramework 多资源包开发工具。挂载: base+mod 合并成全字段工作区; 卸载: diff 出最小化 mod 增量。
 
 ### 应用程序
