@@ -1,6 +1,7 @@
 #include "WlRootsControlUnitMgr.h"
 
 #include <filesystem>
+#include <optional>
 #include <system_error>
 
 #include <opencv2/imgproc.hpp>
@@ -93,24 +94,41 @@ bool WlRootsControlUnitMgr::screencap(cv::Mat& image)
         LogError << "Failed to screencap";
         return false;
     }
-    int cvt_mode = cv::COLOR_RGBA2BGR;
+    std::optional<int> cvt_mode;
+    int cv_format = -1;
     switch (format) { // TODO: Other possible format?
     case WL_SHM_FORMAT_XBGR8888:
     case WL_SHM_FORMAT_ABGR8888:
         cvt_mode = cv::COLOR_RGBA2BGR;
+        cv_format = CV_8UC4;
         break;
     case WL_SHM_FORMAT_ARGB8888:
     case WL_SHM_FORMAT_XRGB8888:
         cvt_mode = cv::COLOR_BGRA2BGR;
+        cv_format = CV_8UC4;
+        break;
+    case WL_SHM_FORMAT_RGB888:
+        // no need to cvtColor
+        cvt_mode = {};
+        cv_format = CV_8UC3;
+        break;
+    case WL_SHM_FORMAT_BGR888:
+        cvt_mode = cv::COLOR_RGB2BGR;
+        cv_format = CV_8UC3;
         break;
     default:
-        LogWarn << "Unsupported color format" << VAR(format) << "Using RGBA2BGR";
+        LogError << "Unsupported wl_shm_format" << VAR(format);
+        return false;
     }
-    LogDebug << "Converting buffer" << VAR(format) << VAR(cvt_mode);
 
-    const cv::Mat raw(height, width, CV_8UC4, buffer);
+    const cv::Mat raw(height, width, cv_format, buffer);
+    if (cvt_mode.has_value()) {
+        LogDebug << "Converting buffer" << VAR(format) << VAR(cvt_mode.value());
+        cv::cvtColor(raw, image, cvt_mode.value());
+    } else {
+        raw.copyTo(image);
+    }
 
-    cv::cvtColor(raw, image, cvt_mode);
     return true;
 }
 
