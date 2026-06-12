@@ -1,6 +1,7 @@
 #if defined(__linux__) && !defined(__ANDROID__)
 
 #include "UInputController.h"
+#include "AsciiToEvdev.h"
 
 #include <cerrno>
 #include <cstring>
