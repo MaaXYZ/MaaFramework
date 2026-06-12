@@ -109,7 +109,7 @@ bool WlRootsControlUnitMgr::screencap(cv::Mat& image)
         break;
     case WL_SHM_FORMAT_RGB888:
         // no need to cvtColor
-        cvt_mode = {};
+        cvt_mode = { };
         cv_format = CV_8UC3;
         break;
     case WL_SHM_FORMAT_BGR888:
@@ -125,7 +125,8 @@ bool WlRootsControlUnitMgr::screencap(cv::Mat& image)
     if (cvt_mode.has_value()) {
         LogDebug << "Converting buffer" << VAR(format) << VAR(cvt_mode.value());
         cv::cvtColor(raw, image, cvt_mode.value());
-    } else {
+    }
+    else {
         raw.copyTo(image);
     }
 
