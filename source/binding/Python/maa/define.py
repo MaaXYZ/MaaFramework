@@ -1,11 +1,129 @@
 import ctypes
 import platform
+from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Callable, Iterator, List, Tuple, Union, Dict, Optional
+from typing import Any, Callable, Optional, Union
 
 import numpy
 from strenum import StrEnum  # For Python 3.9/3.10
+
+__all__ = [
+    # Primitive ctypes aliases
+    "MaaBool",
+    "MaaSize",
+    "MaaNullSize",
+    "MaaId",
+    "MaaCtrlId",
+    "MaaResId",
+    "MaaTaskId",
+    "MaaRecoId",
+    "MaaActId",
+    "MaaNodeId",
+    "MaaWfId",
+    "MaaSinkId",
+    "MaaInvalidId",
+    "MaaStatus",
+    "MaaLoggingLevel",
+    "MaaOptionValueSize",
+    "MaaOptionValue",
+    "MaaOption",
+    "MaaGlobalOption",
+    "MaaCtrlOption",
+    "MaaResOption",
+    # Handle aliases
+    "MaaStringBufferHandle",
+    "MaaImageBufferHandle",
+    "MaaRectHandle",
+    "MaaStringListBufferHandle",
+    "MaaImageListBufferHandle",
+    "MaaResourceHandle",
+    "MaaControllerHandle",
+    "MaaTaskerHandle",
+    "MaaContextHandle",
+    "MaaAgentClientHandle",
+    "MaaToolkitAdbDeviceListHandle",
+    "MaaToolkitAdbDeviceHandle",
+    "MaaToolkitDesktopWindowListHandle",
+    "MaaToolkitDesktopWindowHandle",
+    "MaaMacOSPermission",
+    # Bitmask / method aliases
+    "MaaAdbScreencapMethod",
+    "MaaAdbInputMethod",
+    "MaaWin32ScreencapMethod",
+    "MaaWin32InputMethod",
+    "MaaMacOSScreencapMethod",
+    "MaaMacOSInputMethod",
+    "MaaGamepadType",
+    "MaaControllerFeature",
+    # FFI callback factories
+    "FUNCTYPE",
+    "MaaEventCallback",
+    "MaaCustomRecognitionCallback",
+    "MaaCustomActionCallback",
+    "MaaCustomControllerCallbacks",
+    # Enums
+    "MaaStatusEnum",
+    "MaaGlobalOptionEnum",
+    "MaaCtrlOptionEnum",
+    "MaaInferenceDeviceEnum",
+    "MaaInferenceExecutionProviderEnum",
+    "MaaResOptionEnum",
+    "MaaAdbScreencapMethodEnum",
+    "MaaAdbInputMethodEnum",
+    "MaaWin32ScreencapMethodEnum",
+    "MaaWin32InputMethodEnum",
+    "MaaMacOSScreencapMethodEnum",
+    "MaaMacOSInputMethodEnum",
+    "MaaGamepadTypeEnum",
+    "MaaGamepadButtonEnum",
+    "MaaGamepadContactEnum",
+    "MaaControllerFeatureEnum",
+    "MaaMacOSPermissionEnum",
+    "AlgorithmEnum",
+    "ActionEnum",
+    "LoggingLevelEnum",
+    # Core types
+    "Status",
+    "Point",
+    "Rect",
+    "PointType",
+    "RectType",
+    # Recognition / action results
+    "BoxAndScoreResult",
+    "TemplateMatchResult",
+    "BoxAndCountResult",
+    "FeatureMatchResult",
+    "ColorMatchResult",
+    "OCRResult",
+    "NeuralNetworkResult",
+    "NeuralNetworkClassifyResult",
+    "NeuralNetworkDetectResult",
+    "CustomRecognitionResult",
+    "AndRecognitionResult",
+    "OrRecognitionResult",
+    "RecognitionResult",
+    "RecognitionDetail",
+    "ClickActionResult",
+    "LongPressActionResult",
+    "SwipeActionResult",
+    "MultiSwipeActionResult",
+    "ClickKeyActionResult",
+    "LongPressKeyActionResult",
+    "InputTextActionResult",
+    "AppActionResult",
+    "ScrollActionResult",
+    "TouchActionResult",
+    "ShellActionResult",
+    "ActionResult",
+    "ActionDetail",
+    "WaitFreezesDetail",
+    "NodeDetail",
+    "TaskDetail",
+    # Result lookup maps
+    "AlgorithmResultDict",
+    "ActionResultDict",
+]
 
 MaaBool = ctypes.c_uint8
 MaaSize = ctypes.c_size_t
@@ -113,16 +231,19 @@ class MaaGlobalOptionEnum(IntEnum):
 class MaaCtrlOptionEnum(IntEnum):
     Invalid = 0
 
-    # Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.
+    # Only one of long and short side can be set, and the other is automatically scaled according to
+    # the aspect ratio.
     # value: int, eg: 1920; val_size: sizeof(int)
     ScreenshotTargetLongSide = 1
 
-    # Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.
+    # Only one of long and short side can be set, and the other is automatically scaled according to
+    # the aspect ratio.
     # value: int, eg: 1080; val_size: sizeof(int)
     ScreenshotTargetShortSide = 2
 
     # Screenshot use raw size without scaling.
-    # Please note that this option may cause incorrect coordinates on user devices with different resolutions if scaling is not performed.
+    # Please note that this option may cause incorrect coordinates on user devices with different
+    # resolutions if scaling is not performed.
     # value: bool, eg: true; val_size: sizeof(bool)
     ScreenshotUseRawSize = 3
 
@@ -146,7 +267,8 @@ class MaaCtrlOptionEnum(IntEnum):
     ScreenshotResizeMethod = 6
 
     # Configure background managed key domain for Win32 controllers.
-    # Must be set before connection. After setting, matching ClickKey / LongPressKey / KeyDown / KeyUp
+    # Must be set before connection. After setting, matching
+    # ClickKey / LongPressKey / KeyDown / KeyUp
     # operations automatically route through the background guardian path.
     # Only supported by Win32 controllers; other controllers will fail.
     # value: int32_t array of virtual key codes; val_size: sizeof(int32_t) * count
@@ -173,8 +295,10 @@ class MaaInferenceExecutionProviderEnum(IntEnum):
 
     # MaaResOption_InferenceDevice will be used to set coreml_flag,
     # Reference to
-    # https://github.com/microsoft/onnxruntime/blob/main/include/onnxruntime/core/providers/coreml/coreml_provider_factory.h
-    # But you need to pay attention to the onnxruntime version we use, the latest flag may not be supported.
+    # https://github.com/microsoft/onnxruntime/blob/main/include/onnxruntime/core/providers/coreml/coreml_provider_facto
+    # ry.h
+    # But you need to pay attention to the onnxruntime version we use, the latest flag may not be
+    # supported.
     CoreML = 3
 
     # MaaResOption_InferenceDevice will be used to set NVIDIA GPU ID
@@ -291,14 +415,14 @@ class MaaWin32ScreencapMethodEnum(IntEnum):
 
     Different applications use different rendering methods, there is no universal solution.
 
-    | Method                  | Speed     | Compatibility | Require Admin | Background Support | Notes                            |
-    |-------------------------|-----------|---------------|---------------|--------------------|----------------------------------|
-    | GDI                     | Fast      | Medium        | No            | No                 |                                  |
-    | FramePool               | Very Fast | Medium        | No            | Yes                | Requires Windows 10 1903+        |
-    | DXGI_DesktopDup         | Very Fast | Low           | No            | No                 | Desktop duplication (full screen)|
-    | DXGI_DesktopDup_Window  | Very Fast | Low           | No            | No                 | Desktop duplication then crop    |
-    | PrintWindow             | Medium    | Medium        | No            | Yes                |                                  |
-    | ScreenDC                | Fast      | High          | No            | No                 |                                  |
+    | Method                 | Speed     | Compat | Admin | Bg | Notes                           |
+    |------------------------|-----------|--------|-------|----|---------------------------------|
+    | GDI                    | Fast      | Medium | No    | No |                                 |
+    | FramePool              | Very Fast | Medium | No    | Yes| Requires Windows 10 1903+       |
+    | DXGI_DesktopDup        | Very Fast | Low    | No    | No | Desktop duplication (fullscreen)|
+    | DXGI_DesktopDup_Window | Very Fast | Low    | No    | No | Desktop duplication then crop   |
+    | PrintWindow            | Medium    | Medium | No    | Yes|                                 |
+    | ScreenDC               | Fast      | High   | No    | No |                                 |
 
     Note: FramePool and PrintWindow support pseudo-minimize. Other methods still fail
     when the target window is minimized.
@@ -330,17 +454,17 @@ class MaaWin32InputMethodEnum(IntEnum):
 
     Different applications process input differently, there is no universal solution.
 
-    | Method                       | Compatibility | Require Admin | Seize Mouse  | Background Support | Notes                                                       |
-    |------------------------------|---------------|---------------|--------------|--------------------|------------------------------------------------------------- |
-    | Seize                        | High          | No            | Yes          | No                 |                                                             |
-    | SendMessage                  | Medium        | Maybe         | No           | Yes                |                                                             |
-    | PostMessage                  | Medium        | Maybe         | No           | Yes                |                                                             |
-    | LegacyEvent                  | Low           | No            | Yes          | No                 |                                                             |
-    | PostThreadMessage            | Low           | Maybe         | No           | Yes                |                                                             |
-    | SendMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Moves cursor to target position, then restores              |
-    | PostMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Moves cursor to target position, then restores              |
-    | SendMessageWithWindowPos     | Medium        | Maybe         | No           | Yes                | Moves window to align target with cursor, then restores     |
-    | PostMessageWithWindowPos     | Medium        | Maybe         | No           | Yes                | Moves window to align target with cursor, then restores     |
+    | Method                   | Compat | Admin | Seize Mouse | Bg | Notes                                 |
+    |--------------------------|--------|-------|-------------|----|---------------------------------------|
+    | Seize                    | High   | No    | Yes         | No |                                       |
+    | SendMessage              | Medium | Maybe | No          | Yes|                                       |
+    | PostMessage              | Medium | Maybe | No          | Yes|                                       |
+    | LegacyEvent              | Low    | No    | Yes         | No |                                       |
+    | PostThreadMessage        | Low    | Maybe | No          | Yes|                                       |
+    | SendMessageWithCursorPos | Medium | Maybe | Briefly     | Yes| Moves cursor to target, then restores |
+    | PostMessageWithCursorPos | Medium | Maybe | Briefly     | Yes| Moves cursor to target, then restores |
+    | SendMessageWithWindowPos | Medium | Maybe | No          | Yes| Moves window to align w/ cursor, rest.|
+    | PostMessageWithWindowPos | Medium | Maybe | No          | Yes| Moves window to align w/ cursor, rest.|
 
     Note:
     - Admin rights mainly depend on the target application's privilege level.
@@ -406,6 +530,7 @@ class MaaMacOSInputMethodEnum(IntEnum):
 
     GlobalEvent = 1
     PostToPid = 1 << 1
+
 
 # No bitwise OR, just set it
 MaaGamepadType = ctypes.c_uint64
@@ -501,12 +626,9 @@ class MaaControllerFeatureEnum(IntEnum):
     UseKeyboardDownAndUpInsteadOfClick = 1 << 1
 
 
-
 FUNCTYPE = ctypes.WINFUNCTYPE if (platform.system() == "Windows") else ctypes.CFUNCTYPE
 
-MaaEventCallback = FUNCTYPE(
-    None, ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p
-)
+MaaEventCallback = FUNCTYPE(None, ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p)
 
 MaaCustomRecognitionCallback = FUNCTYPE(
     MaaBool,  # return value
@@ -542,9 +664,11 @@ MaaToolkitDesktopWindowHandle = ctypes.c_void_p
 
 MaaMacOSPermission = ctypes.c_int32
 
+
 class MaaMacOSPermissionEnum(IntEnum):
     ScreenCapture = 1
     Accessibility = 2
+
 
 MaaAgentClientHandle = ctypes.c_void_p
 
@@ -732,23 +856,17 @@ class Point:
         self,
         other: Union[
             "Point",
-            Tuple[int, int],
-            List[int],
+            tuple[int, int],
+            list[int],
         ],
-    ):
-        if (
-            isinstance(other, Point)
-            or isinstance(other, tuple)
-            or (isinstance(other, list) and len(other) == 2)
-        ):
-            x1, y1 = self
-            x2, y2 = other
-            return Point(
-                x1 + x2,
-                y1 + y2,
-            )
-
-        raise TypeError(f"Cannot add {type(other).__name__} to Point")
+    ) -> "Point":
+        values = list(other)
+        if len(values) != 2:
+            raise TypeError(f"Cannot add {type(other).__name__} to Point")
+        return Point(
+            self.x + values[0],
+            self.y + values[1],
+        )
 
     def __iter__(self) -> Iterator[int]:
         yield self.x
@@ -769,25 +887,19 @@ class Rect:
         self,
         other: Union[
             "Rect",
-            Tuple[int, int, int, int],
-            List[int],
+            tuple[int, int, int, int],
+            list[int],
         ],
-    ):
-        if (
-            isinstance(other, Rect)
-            or isinstance(other, tuple)
-            or (isinstance(other, list) and len(other) == 4)
-        ):
-            x1, y1, w1, h1 = self
-            x2, y2, w2, h2 = other
-            return Rect(
-                x1 + x2,
-                y1 + y2,
-                w1 + w2,
-                h1 + h2,
-            )
-
-        raise TypeError(f"Cannot add {type(other).__name__} to Rect")
+    ) -> "Rect":
+        values = list(other)
+        if len(values) != 4:
+            raise TypeError(f"Cannot add {type(other).__name__} to Rect")
+        return Rect(
+            self.x + values[0],
+            self.y + values[1],
+            self.w + values[2],
+            self.h + values[3],
+        )
 
     def __iter__(self) -> Iterator[int]:
         yield self.x
@@ -801,16 +913,16 @@ class Rect:
 
 PointType = Union[
     Point,
-    List[int],
+    list[int],
     numpy.ndarray,
-    Tuple[int, int],
+    tuple[int, int],
 ]
 
 RectType = Union[
     Rect,
-    List[int],
+    list[int],
     numpy.ndarray,
-    Tuple[int, int, int, int],
+    tuple[int, int, int, int],
 ]
 
 
@@ -889,21 +1001,21 @@ NeuralNetworkDetectResult = NeuralNetworkResult
 @dataclass
 class CustomRecognitionResult:
     box: Rect
-    detail: Union[str, Dict]
+    detail: Union[str, dict[str, Any]]
 
 
 @dataclass
 class AndRecognitionResult:
     """And 算法识别结果，包含所有子识别的完整详情"""
 
-    sub_results: List["RecognitionDetail"]
+    sub_results: list["RecognitionDetail"]
 
 
 @dataclass
 class OrRecognitionResult:
     """Or 算法识别结果，包含已执行子识别的完整详情"""
 
-    sub_results: List["RecognitionDetail"]
+    sub_results: list["RecognitionDetail"]
 
 
 RecognitionResult = Union[
@@ -940,13 +1052,13 @@ class RecognitionDetail:
     hit: bool
     box: Optional[Rect]
 
-    all_results: List[RecognitionResult]
-    filtered_results: List[RecognitionResult]
+    all_results: list[RecognitionResult]
+    filtered_results: list[RecognitionResult]
     best_result: Optional[RecognitionResult]
 
-    raw_detail: Dict
+    raw_detail: dict[str, Any]
     raw_image: numpy.ndarray  # only valid in debug mode
-    draw_images: List[numpy.ndarray]  # only valid in debug mode
+    draw_images: list[numpy.ndarray]  # only valid in debug mode
 
 
 @dataclass
@@ -967,9 +1079,9 @@ class LongPressActionResult:
 @dataclass
 class SwipeActionResult:
     begin: Point
-    end: List[Point]
-    end_hold: List[int]
-    duration: List[int]
+    end: list[Point]
+    end_hold: list[int]
+    duration: list[int]
     only_hover: bool
     starting: int
     contact: int
@@ -978,17 +1090,17 @@ class SwipeActionResult:
 
 @dataclass
 class MultiSwipeActionResult:
-    swipes: List[SwipeActionResult]
+    swipes: list[SwipeActionResult]
 
 
 @dataclass
 class ClickKeyActionResult:
-    keycode: List[int]
+    keycode: list[int]
 
 
 @dataclass
 class LongPressKeyActionResult:
-    keycode: List[int]
+    keycode: list[int]
     duration: int
 
 
@@ -1071,7 +1183,7 @@ class ActionDetail:
     box: Rect
     success: bool
     result: Optional[ActionResult]
-    raw_detail: Dict
+    raw_detail: dict[str, Any]
 
 
 @dataclass
@@ -1081,7 +1193,7 @@ class WaitFreezesDetail:
     phase: str
     success: bool
     elapsed_ms: int
-    reco_id_list: List[int]
+    reco_id_list: list[int]
     roi: Rect
 
 
@@ -1122,7 +1234,7 @@ class TaskDetail:
         self,
         task_id: int,
         entry: str,
-        node_id_list: List[int],
+        node_id_list: list[int],
         status: "Status",
         node_detail_func: Optional[Callable[[int], Optional["NodeDetail"]]] = None,
     ):
@@ -1131,13 +1243,13 @@ class TaskDetail:
         self.node_id_list = node_id_list
         self.status = status
         self._node_detail_func = node_detail_func
-        self._nodes: Optional[List[NodeDetail]] = None
+        self._nodes: Optional[list[NodeDetail]] = None
 
     @property
-    def nodes(self) -> List[NodeDetail]:
+    def nodes(self) -> list[NodeDetail]:
         if self._nodes is None:
             if self._node_detail_func is not None:
-                nodes = []
+                nodes: list[NodeDetail] = []
                 for nid in self.node_id_list:
                     node = self._node_detail_func(nid)
                     if node is None:

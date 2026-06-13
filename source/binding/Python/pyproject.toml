@@ -14,3 +14,34 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["maa"]
+
+[tool.ruff]
+target-version = "py39"
+# 120 (not maa-project's 100): the binding's docstrings are bilingual
+# (Chinese/English) and several enums document methods as markdown tables,
+# both of which legitimately exceed 100 columns.
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+# `maa/define.py` is an intentional aggregation hub consumed via
+# `from .define import *` across the package. F403/F405 only describe that
+# wildcard-import pattern (not correctness bugs); the public surface is
+# documented via `__all__` in define.py. Converting to explicit imports is a
+# possible follow-up if a lint-pure style is desired.
+[tool.ruff.lint.per-file-ignores]
+"maa/*.py" = ["F403", "F405"]
+"maa/agent/*.py" = ["F403", "F405"]
+
+[tool.pyright]
+include = ["maa"]
+pythonVersion = "3.9"
+typeCheckingMode = "strict"
+reportMissingTypeStubs = "none"
+# The buffer/job/handle objects expose `_handle` (and a few `_gen_*` helpers)
+# that are private to external users (hence the underscore) but accessed across
+# tightly-coupled modules within the package by design. pyright's
+# reportPrivateUsage can't model package-private access, so it produces false
+# positives for this intentional internal FFI coupling.
+reportPrivateUsage = "none"
