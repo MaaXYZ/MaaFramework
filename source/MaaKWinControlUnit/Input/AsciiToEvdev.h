@@ -1,5 +1,7 @@
 #pragma once
 
+#if defined(__linux__) && !defined(__ANDROID__)
+
 #include <linux/input-event-codes.h>
 
 #include <array>
@@ -78,10 +80,15 @@ inline constexpr auto kAsciiToEvdevTable = [] {
 // Returns the evdev key code for a given ASCII code, or origin value if no mapping exists.
 inline int ascii_to_evdev(int ascii)
 {
-    if (ascii < 32 || ascii >= static_cast<int>(kAsciiToEvdevTable.size())) {
-        return kAsciiToEvdevTable[ascii];
+    if (ascii >= 0 && ascii < static_cast<int>(kAsciiToEvdevTable.size())) {
+        int mapped = kAsciiToEvdevTable[ascii];
+        if (mapped != 0) {
+            return mapped;
+        }
     }
     return ascii;
 }
 
 MAA_CTRL_UNIT_NS_END
+
+#endif

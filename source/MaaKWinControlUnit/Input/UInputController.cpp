@@ -158,8 +158,14 @@ bool UInputController::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    // contact is ignored — we are a single-pointer absolute mouse
-    return send_pointer_down(x, y);
+    int btn_code = BTN_LEFT;
+    if (contact == 1) {
+        btn_code = BTN_RIGHT;
+    } else if (contact == 2) {
+        btn_code = BTN_MIDDLE;
+    }
+
+    return send_pointer_down(x, y, btn_code);
 }
 
 bool UInputController::touch_move(int contact, int x, int y, int pressure)
@@ -197,7 +203,14 @@ bool UInputController::touch_up(int contact)
         return false;
     }
 
-    return send_pointer_up();
+    int btn_code = BTN_LEFT;
+    if (contact == 1) {
+        btn_code = BTN_RIGHT;
+    } else if (contact == 2) {
+        btn_code = BTN_MIDDLE;
+    }
+
+    return send_pointer_up(btn_code);
 }
 
 bool UInputController::scroll(int dx, int dy)
@@ -335,38 +348,7 @@ std::pair<int, int> UInputController::screen_size() const
 
 int UInputController::maa_to_linux_keycode(int key_code)
 {
-    // ASCII letter mapping
-    if (key_code >= 'A' && key_code <= 'Z') {
-        return KEY_A + (key_code - 'A');
-    }
-    if (key_code >= 'a' && key_code <= 'z') {
-        return KEY_A + (key_code - 'a');
-    }
-    // ASCII digit mapping
-    if (key_code >= '0' && key_code <= '9') {
-        return KEY_0 + (key_code - '0');
-    }
-    // Common ASCII / control character mappings
-    switch (key_code) {
-        case '\r':
-        case '\n': return KEY_ENTER;
-        case '\b': return KEY_BACKSPACE;
-        case '\t': return KEY_TAB;
-        case 27:   return KEY_ESC;
-        case ' ':  return KEY_SPACE;
-        case '-':  return KEY_MINUS;
-        case '=':  return KEY_EQUAL;
-        case '[':  return KEY_LEFTBRACE;
-        case ']':  return KEY_RIGHTBRACE;
-        case '\\': return KEY_BACKSLASH;
-        case ';':  return KEY_SEMICOLON;
-        case '\'': return KEY_APOSTROPHE;
-        case '`':  return KEY_GRAVE;
-        case ',':  return KEY_COMMA;
-        case '.':  return KEY_DOT;
-        case '/':  return KEY_SLASH;
-        default:   return key_code; // pass through as raw Linux keycode
-    }
+    return ascii_to_evdev(key_code);
 }
 
 bool UInputController::create_device()
@@ -610,7 +592,7 @@ bool UInputController::emit_syn()
     return true;
 }
 
-bool UInputController::send_pointer_down(int x, int y)
+bool UInputController::send_pointer_down(int x, int y, int btn_code)
 {
     // Move to absolute position first
     if (!emit_abs(ABS_X, x)) {
@@ -619,8 +601,8 @@ bool UInputController::send_pointer_down(int x, int y)
     if (!emit_abs(ABS_Y, y)) {
         return false;
     }
-    // Press the left button
-    if (!emit_key(BTN_LEFT, 1)) {
+    // Press the specified button
+    if (!emit_key(btn_code, 1)) {
         return false;
     }
     if (!emit_syn()) {
@@ -647,10 +629,10 @@ bool UInputController::send_pointer_move(int x, int y)
     return true;
 }
 
-bool UInputController::send_pointer_up()
+bool UInputController::send_pointer_up(int btn_code)
 {
-    // Release the left button
-    if (!emit_key(BTN_LEFT, 0)) {
+    // Release the specified button
+    if (!emit_key(btn_code, 0)) {
         return false;
     }
     if (!emit_syn()) {

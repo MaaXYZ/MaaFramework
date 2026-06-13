@@ -6,6 +6,7 @@
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
+#include <linux/input.h>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -49,12 +50,12 @@ private:
     bool emit_key(int code, int value);
     bool emit_syn();
 
-    // Send absolute position + BTN_LEFT=1 + SYN
-    bool send_pointer_down(int x, int y);
+    // Send absolute position + btn_code=1 + SYN
+    bool send_pointer_down(int x, int y, int btn_code = BTN_LEFT);
     // Send absolute position + SYN (button state unchanged)
     bool send_pointer_move(int x, int y);
-    // Send BTN_LEFT=0 + SYN
-    bool send_pointer_up();
+    // Send btn_code=0 + SYN
+    bool send_pointer_up(int btn_code = BTN_LEFT);
 
     static int maa_to_linux_keycode(int key_code);
     static uint64_t now_ms();
