@@ -55,7 +55,6 @@ private:
     // Send btn_code=0 + SYN
     bool send_pointer_up(int btn_code = BTN_LEFT);
 
-    static int maa_to_linux_keycode(int key_code);
     static uint64_t now_ms();
 
     int fd_ = -1;

@@ -1,5 +1,4 @@
 #include "UInputController.h"
-#include "AsciiToEvdev.h"
 
 #include <cerrno>
 #include <fcntl.h>
@@ -305,8 +304,7 @@ bool UInputController::key_down(int key_code)
         return false;
     }
 
-    int linux_key = maa_to_linux_keycode(key_code);
-    if (!emit_key(linux_key, 1)) {
+    if (!emit_key(key_code, 1)) {
         return false;
     }
     if (!emit_syn()) {
@@ -326,8 +324,7 @@ bool UInputController::key_up(int key_code)
         return false;
     }
 
-    int linux_key = maa_to_linux_keycode(key_code);
-    if (!emit_key(linux_key, 0)) {
+    if (!emit_key(key_code, 0)) {
         return false;
     }
     if (!emit_syn()) {
@@ -339,11 +336,6 @@ bool UInputController::key_up(int key_code)
 std::pair<int, int> UInputController::screen_size() const
 {
     return { screen_width_, screen_height_ };
-}
-
-int UInputController::maa_to_linux_keycode(int key_code)
-{
-    return ascii_to_evdev(key_code);
 }
 
 bool UInputController::create_device()
