@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     printf("Version     : %s\n\n", MaaKWinControlUnitGetVersion());
 
     /* 1. Create */
-    MaaKWinControlUnitHandle handle = MaaKWinControlUnitCreate(device_node, width, height);
+    MaaKWinControlUnitHandle handle = MaaKWinControlUnitCreate(device_node, width, height, false);
     if (!handle) {
         fprintf(stderr, "FAIL: MaaKWinControlUnitCreate returned NULL\n");
         return 1;
