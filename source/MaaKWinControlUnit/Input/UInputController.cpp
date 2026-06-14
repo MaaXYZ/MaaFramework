@@ -634,11 +634,11 @@ bool UInputController::send_pointer_up(int btn_code)
     return true;
 }
 
-uint64_t UInputController::now_ms()
+inline uint64_t UInputController::now_ms()
 {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(
-               std::chrono::steady_clock::now().time_since_epoch())
-        .count();
+    timespec ts = { 0 };
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return static_cast<uint64_t>(ts.tv_sec) * UINT64_C(1000) + static_cast<uint64_t>(ts.tv_nsec) / UINT64_C(1'000'000);
 }
 
 MAA_CTRL_UNIT_NS_END
