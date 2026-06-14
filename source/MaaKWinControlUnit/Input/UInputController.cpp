@@ -447,7 +447,7 @@ bool UInputController::create_device()
     // Configure the uinput device using the traditional uinput_user_dev struct.
     uinput_user_dev udev = { };
     std::strncpy(udev.name, "MaaFramework KWin Virtual Input", sizeof(udev.name) - 1);
-    udev.id.bustype = BUS_USB;
+    udev.id.bustype = BUS_VIRTUAL;
     udev.id.vendor = 0x3255;
     udev.id.product = 0x7999;
     udev.id.version = 1;
