@@ -285,7 +285,7 @@ MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path, MaaBool u
 
 MaaController* MaaKWinControllerCreate(const char* device_node, int screen_width, int screen_height, MaaBool use_win32_vk_code)
 {
-    LogFunc << VAR(device_node) << VAR(screen_width) << VAR(screen_height);
+    LogFunc << VAR(device_node) << VAR(screen_width) << VAR(screen_height) << VAR(use_win32_vk_code);
 
 #ifndef __linux__
 
