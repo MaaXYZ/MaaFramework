@@ -2,8 +2,6 @@
 
 #include "MaaControlUnit/KWinControlUnitAPI.h"
 
-#if defined(__linux__) && !defined(__ANDROID__)
-
 #include "Manager/KWinControlUnitMgr.h"
 #include "MaaUtils/Logger.h"
 
@@ -79,31 +77,3 @@ void MaaKWinControlUnitDestroy(MaaKWinControlUnitHandle handle)
 
     delete handle;
 }
-
-#else // !(__linux__ && !__ANDROID__) — stub implementation for unsupported platforms
-
-const char* MaaKWinControlUnitGetVersion()
-{
-    return MAA_VERSION;
-}
-
-MaaKWinControlUnitHandle MaaKWinControlUnitCreate(const char* /*device_node*/, int /*screen_width*/, int /*screen_height*/)
-{
-    return nullptr;
-}
-
-MaaBool MaaKWinControlUnitConnect(MaaKWinControlUnitHandle /*handle*/)
-{
-    return false;
-}
-
-MaaBool MaaKWinControlUnitTestScreencap(MaaKWinControlUnitHandle /*handle*/)
-{
-    return false;
-}
-
-void MaaKWinControlUnitDestroy(MaaKWinControlUnitHandle /*handle*/)
-{
-}
-
-#endif // __linux__ && !__ANDROID__

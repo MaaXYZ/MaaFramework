@@ -1,5 +1,3 @@
-#if defined(__linux__) && !defined(__ANDROID__)
-
 #include "PipeWireScreencap.h"
 
 #include <cerrno>
@@ -1155,5 +1153,3 @@ int PipeWireScreencap::infer_dimension_from_stride(uint32_t stride, size_t /*dat
 }
 
 MAA_CTRL_UNIT_NS_END
-
-#endif // __linux__ && !__ANDROID__

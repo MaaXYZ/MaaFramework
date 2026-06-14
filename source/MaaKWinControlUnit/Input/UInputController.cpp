@@ -1,5 +1,3 @@
-#if defined(__linux__) && !defined(__ANDROID__)
-
 #include "UInputController.h"
 #include "AsciiToEvdev.h"
 
@@ -651,5 +649,3 @@ uint64_t UInputController::now_ms()
 }
 
 MAA_CTRL_UNIT_NS_END
-
-#endif // __linux__ && !__ANDROID__

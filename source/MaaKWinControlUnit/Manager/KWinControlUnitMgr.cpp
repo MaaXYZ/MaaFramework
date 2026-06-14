@@ -1,5 +1,3 @@
-#if defined(__linux__) && !defined(__ANDROID__)
-
 #include "KWinControlUnitMgr.h"
 
 #include <filesystem>
@@ -237,5 +235,3 @@ json::object KWinControlUnitMgr::get_info() const
 }
 
 MAA_CTRL_UNIT_NS_END
-
-#endif // __linux__ && !__ANDROID__
