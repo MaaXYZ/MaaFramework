@@ -17,8 +17,9 @@
  * Defaults: /dev/uinput
  */
 
-#include "MaaControlUnit/KWinControlUnitAPI.h"
 #include "MaaControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/KWinControlUnitAPI.h"
+#include "thread"
 
 #include <cstdio>
 #include <cstdlib>
@@ -188,7 +189,11 @@ static void test_raw_passthrough()
 
 static void test_single_key(MAA_CTRL_UNIT_NS::ControlUnitAPI* ctrl, int key, const char* label)
 {
-    bool ok = ctrl->key_down(key) && ctrl->key_up(key);
+    const bool down_ok = ctrl->key_down(key);
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    const bool up_ok = ctrl->key_up(key);
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    const bool ok = down_ok && up_ok;
     TEST(ok, "key_down/key_up %s", label);
 }
 
@@ -205,11 +210,13 @@ static void test_key_sequence(MAA_CTRL_UNIT_NS::ControlUnitAPI* ctrl,
             fprintf(stderr, "    FAIL at char '%c' (0x%02x) during key_down\n", *p, *p);
             break;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         if (!ctrl->key_up(static_cast<int>(*p))) {
             ok = false;
             fprintf(stderr, "    FAIL at char '%c' (0x%02x) during key_up\n", *p, *p);
             break;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     TEST(ok, "Type sequence \"%s\"", label);
 }
@@ -284,6 +291,8 @@ int main(int argc, char** argv)
     }
     printf("  [PASS] handle cast to ControlUnitAPI\n");
 
+    printf("Preparing for send key events...");
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     // --- Single letter keys ---
     printf("\n  -- Single letter keys --\n");
     test_single_key(ctrl, 'A', "'A'");
