@@ -283,7 +283,7 @@ MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path, MaaBool u
 #endif
 }
 
-MaaController* MaaKWinControllerCreate(const char* device_node, int screen_width, int screen_height)
+MaaController* MaaKWinControllerCreate(const char* device_node, int screen_width, int screen_height, MaaBool use_win32_vk_code)
 {
     LogFunc << VAR(device_node) << VAR(screen_width) << VAR(screen_height);
 
@@ -304,7 +304,8 @@ MaaController* MaaKWinControllerCreate(const char* device_node, int screen_width
         return nullptr;
     }
 
-    auto control_unit = MAA_NS::KWinControlUnitLibraryHolder::create_control_unit(device_node, screen_width, screen_height);
+    auto control_unit =
+        MAA_NS::KWinControlUnitLibraryHolder::create_control_unit(device_node, screen_width, screen_height, use_win32_vk_code);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";

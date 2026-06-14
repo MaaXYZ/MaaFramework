@@ -396,7 +396,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI> MacOSControlUnitLibraryHo
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::KWinControlUnitAPI>
-    KWinControlUnitLibraryHolder::create_control_unit(const char* device_node, int screen_width, int screen_height)
+    KWinControlUnitLibraryHolder::create_control_unit(const char* device_node, int screen_width, int screen_height, bool use_win32_vk_code)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -417,7 +417,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::KWinControlUnitAPI>
         return nullptr;
     }
 
-    auto control_unit_handle = create_control_unit_func(device_node, screen_width, screen_height);
+    auto control_unit_handle = create_control_unit_func(device_node, screen_width, screen_height, use_win32_vk_code);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";

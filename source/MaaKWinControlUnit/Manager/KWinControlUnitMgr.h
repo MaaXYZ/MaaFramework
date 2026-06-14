@@ -17,7 +17,7 @@ class PipeWireScreencap;
 class KWinControlUnitMgr : public KWinControlUnitAPI
 {
 public:
-    KWinControlUnitMgr(std::filesystem::path device_node, int screen_width, int screen_height);
+    KWinControlUnitMgr(std::filesystem::path device_node, int screen_width, int screen_height, bool use_win32_vk_code);
     virtual ~KWinControlUnitMgr() override;
 
 public:
@@ -53,11 +53,14 @@ public:
     virtual json::object get_info() const override;
 
 private:
+    int translate_key(int key) const;
+
     std::unique_ptr<UInputController> input_;
     std::shared_ptr<PipeWireScreencap> m_screencap_;
     std::filesystem::path device_node_;
     int screen_width_ = 0;
     int screen_height_ = 0;
+    const bool use_win32_vk_code_ = false;
 };
 
 MAA_CTRL_UNIT_NS_END

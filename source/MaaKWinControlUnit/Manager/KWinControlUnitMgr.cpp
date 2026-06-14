@@ -4,18 +4,20 @@
 #include <system_error>
 
 #include "Input/UInputController.h"
-#include "Screencap/PipeWireScreencap.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
+#include "Screencap/PipeWireScreencap.h"
+#include "Utils/VkToEvdev.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-KWinControlUnitMgr::KWinControlUnitMgr(std::filesystem::path device_node, int screen_width, int screen_height)
+KWinControlUnitMgr::KWinControlUnitMgr(std::filesystem::path device_node, int screen_width, int screen_height, bool use_win32_vk_code)
     : input_(std::make_unique<UInputController>())
     , m_screencap_(std::make_shared<PipeWireScreencap>())
     , device_node_(std::move(device_node))
     , screen_width_(screen_width)
     , screen_height_(screen_height)
+    , use_win32_vk_code_(use_win32_vk_code)
 {
     LogFunc << VAR(device_node_) << VAR(screen_width_) << VAR(screen_height_);
     m_screencap_->set_screen_size(screen_width_, screen_height_);
@@ -184,7 +186,13 @@ bool KWinControlUnitMgr::key_down(int key)
         return false;
     }
 
-    return input_->key_down(key);
+    const int evdev_key = translate_key(key);
+    if (evdev_key == 0) {
+        LogError << "Failed to translate key" << VAR(key) << VAR(use_win32_vk_code_);
+        return false;
+    }
+
+    return input_->key_down(evdev_key);
 }
 
 bool KWinControlUnitMgr::key_up(int key)
@@ -194,7 +202,13 @@ bool KWinControlUnitMgr::key_up(int key)
         return false;
     }
 
-    return input_->key_up(key);
+    const int evdev_key = translate_key(key);
+    if (evdev_key == 0) {
+        LogError << "Failed to translate key" << VAR(key) << VAR(use_win32_vk_code_);
+        return false;
+    }
+
+    return input_->key_up(evdev_key);
 }
 
 bool KWinControlUnitMgr::relative_move(int dx, int dy)
@@ -225,11 +239,21 @@ bool KWinControlUnitMgr::inactive()
 json::object KWinControlUnitMgr::get_info() const
 {
     json::object info;
-    info["type"] = "kwin";
+    info["type"] = "KWin";
     info["device_node"] = path_to_utf8_string(device_node_);
     info["screen_width"] = screen_width_;
     info["screen_height"] = screen_height_;
+    info["use_win32_vk_code"] = use_win32_vk_code_;
     return info;
+}
+
+int KWinControlUnitMgr::translate_key(int key) const
+{
+    if (!use_win32_vk_code_) {
+        return key;
+    }
+
+    return vk_to_evdev(key);
 }
 
 MAA_CTRL_UNIT_NS_END

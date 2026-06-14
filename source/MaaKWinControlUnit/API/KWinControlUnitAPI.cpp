@@ -10,7 +10,7 @@ const char* MaaKWinControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaKWinControlUnitHandle MaaKWinControlUnitCreate(const char* device_node, int screen_width, int screen_height)
+MaaKWinControlUnitHandle MaaKWinControlUnitCreate(const char* device_node, int screen_width, int screen_height, MaaBool use_win32_vk_code)
 {
     using namespace MAA_CTRL_UNIT_NS;
 
@@ -22,11 +22,11 @@ MaaKWinControlUnitHandle MaaKWinControlUnitCreate(const char* device_node, int s
     }
 
     if (screen_width <= 0 || screen_height <= 0) {
-        LogError << "Invalid screen dimensions" << VAR(screen_width) << VAR(screen_height);
+        LogError << "Invalid screen dimensions" << VAR(screen_width) << VAR(screen_height) << VAR(use_win32_vk_code);
         return nullptr;
     }
 
-    auto unit_mgr = std::make_unique<KWinControlUnitMgr>(device_node, screen_width, screen_height);
+    auto unit_mgr = std::make_unique<KWinControlUnitMgr>(device_node, screen_width, screen_height, use_win32_vk_code);
     return unit_mgr.release();
 }
 
