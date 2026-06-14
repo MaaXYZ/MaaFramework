@@ -2,14 +2,11 @@
 #include "AsciiToEvdev.h"
 
 #include <cerrno>
-#include <cstring>
 #include <fcntl.h>
 #include <linux/input.h>
 #include <linux/uinput.h>
 #include <unistd.h>
 
-#include <algorithm>
-#include <cmath>
 
 #include "MaaUtils/Logger.h"
 
@@ -485,8 +482,7 @@ bool UInputController::create_device()
     }
 
     // Configure the uinput device using the traditional uinput_user_dev struct.
-    struct uinput_user_dev udev;
-    std::memset(&udev, 0, sizeof(udev));
+    uinput_user_dev udev = { };
     std::strncpy(udev.name, "MaaFramework KWin Virtual Input", sizeof(udev.name) - 1);
     udev.id.bustype = BUS_USB;
     udev.id.vendor = 0x1234;
@@ -547,8 +543,7 @@ bool UInputController::destroy_device()
 
 bool UInputController::emit_abs(int code, int value)
 {
-    struct input_event ev;
-    std::memset(&ev, 0, sizeof(ev));
+    input_event ev = { };
     ev.type = EV_ABS;
     ev.code = code;
     ev.value = value;
@@ -562,8 +557,7 @@ bool UInputController::emit_abs(int code, int value)
 
 bool UInputController::emit_key(int code, int value)
 {
-    struct input_event ev;
-    std::memset(&ev, 0, sizeof(ev));
+    input_event ev = { };
     ev.type = EV_KEY;
     ev.code = code;
     ev.value = value;
@@ -577,8 +571,7 @@ bool UInputController::emit_key(int code, int value)
 
 bool UInputController::emit_syn()
 {
-    struct input_event ev;
-    std::memset(&ev, 0, sizeof(ev));
+    input_event ev = { };
     ev.type = EV_SYN;
     ev.code = SYN_REPORT;
     ev.value = 0;

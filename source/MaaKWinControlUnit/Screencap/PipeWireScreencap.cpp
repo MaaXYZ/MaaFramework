@@ -1,8 +1,6 @@
 #include "PipeWireScreencap.h"
 
 #include <cerrno>
-#include <cstdint>
-#include <cstring>
 #include <string>
 
 #include <sys/mman.h>
@@ -959,7 +957,7 @@ void PipeWireScreencap::pw_on_stream_param_changed(void* data, uint32_t id, cons
             if (prop->key == SPA_FORMAT_VIDEO_size) {
                 const struct spa_pod* val = &prop->value;
                 if (spa_pod_is_rectangle(val)) {
-                    struct spa_rectangle* rect = (struct spa_rectangle*)SPA_POD_BODY(val);
+                    struct spa_rectangle* rect = static_cast<struct spa_rectangle*>(SPA_POD_BODY(val));
                     if (rect->width > 0 && rect->height > 0) {
                         width = rect->width;
                         height = rect->height;
@@ -978,14 +976,16 @@ void PipeWireScreencap::pw_on_stream_param_changed(void* data, uint32_t id, cons
         struct spa_pod_builder b = SPA_POD_BUILDER_INIT(pod_buffer, sizeof(pod_buffer));
         const struct spa_pod* buf_params[1];
 
-        buf_params[0] = (const struct spa_pod*)spa_pod_builder_add_object(&b,
+        buf_params[0] = static_cast<spa_pod*>(spa_pod_builder_add_object(
+            &b,
             SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
             SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(
                 kPWBufferCountDefault, kPWBufferCountMin, kPWBufferCountMax),
             SPA_PARAM_BUFFERS_blocks,  SPA_POD_Int(kPWBufferBlocks),
             SPA_PARAM_BUFFERS_size,    SPA_POD_Int(static_cast<int32_t>(width * height * kBytesPerPixel)),
             SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(static_cast<int32_t>(width * kBytesPerPixel)),
-            SPA_PARAM_BUFFERS_align,   SPA_POD_Int(kPWBufferAlign));
+            SPA_PARAM_BUFFERS_align,
+            SPA_POD_Int(kPWBufferAlign)));
 
         if (pw_stream_update_params(self->pw_stream_, buf_params, 1) < 0) {
             LogError << "pw_stream_update_params failed";

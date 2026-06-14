@@ -3,8 +3,6 @@
 #include <filesystem>
 #include <system_error>
 
-#include <opencv2/imgproc.hpp>
-
 #include "Input/UInputController.h"
 #include "Screencap/PipeWireScreencap.h"
 #include "MaaUtils/Logger.h"

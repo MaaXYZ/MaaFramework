@@ -2,7 +2,6 @@
 
 #include <atomic>
 #include <condition_variable>
-#include <cstdint>
 #include <mutex>
 #include <string>
 
@@ -100,20 +99,20 @@ private:
     int pipewire_fd_ = -1;
 
     /* PipeWire objects */
-    struct pw_thread_loop* pw_thread_loop_ = nullptr;
-    struct pw_loop* pw_loop_ = nullptr;
-    ::pw_context* pw_context_ = nullptr;
-    ::pw_core* pw_core_ = nullptr;
-    ::pw_stream* pw_stream_ = nullptr;
+    pw_thread_loop* pw_thread_loop_ = nullptr;
+    pw_loop* pw_loop_ = nullptr;
+    pw_context* pw_context_ = nullptr;
+    pw_core* pw_core_ = nullptr;
+    pw_stream* pw_stream_ = nullptr;
 
     /* PipeWire core hook (must outlive pw_core_add_listener) */
-    struct spa_hook core_hook_;
+    spa_hook core_hook_ = { };
 
     /* PipeWire stream hook (embedded, must outlive pw_stream_add_listener) */
-    struct spa_hook stream_hook_;
+    spa_hook stream_hook_ = { };
 
     /* Heap-allocated event vtables (must outlive the listener) */
-    struct pw_stream_events* stream_events_ = nullptr;
+    pw_stream_events* stream_events_ = nullptr;
 
     /* Negotiated frame dimensions (set by param_changed callback) */
     int frame_width_ = 0;
