@@ -7,6 +7,7 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "Screencap/PipeWireScreencap.h"
+#include "Utils/AsciiToEvdev.h"
 #include "Utils/VkToEvdev.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -172,11 +173,12 @@ bool KWinControlUnitMgr::click_key(int key)
 
 bool KWinControlUnitMgr::input_text(const std::string& text)
 {
-    // TODO: Implement keyboard text input via uinput
-    std::ignore = text;
+    if (!input_) {
+        LogError << "input_ is nullptr";
+        return false;
+    }
 
-    LogError << "input_text not yet implemented for KWin control unit";
-    return false;
+    return input_->input_text(text);
 }
 
 bool KWinControlUnitMgr::key_down(int key)

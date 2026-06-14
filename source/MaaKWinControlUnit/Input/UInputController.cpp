@@ -6,8 +6,8 @@
 #include <linux/uinput.h>
 #include <unistd.h>
 
-
 #include "MaaUtils/Logger.h"
+#include "Utils/AsciiToEvdev.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -155,7 +155,8 @@ bool UInputController::touch_down(int contact, int x, int y, int pressure)
     int btn_code = BTN_LEFT;
     if (contact == 1) {
         btn_code = BTN_RIGHT;
-    } else if (contact == 2) {
+    }
+    else if (contact == 2) {
         btn_code = BTN_MIDDLE;
     }
 
@@ -200,11 +201,40 @@ bool UInputController::touch_up(int contact)
     int btn_code = BTN_LEFT;
     if (contact == 1) {
         btn_code = BTN_RIGHT;
-    } else if (contact == 2) {
+    }
+    else if (contact == 2) {
         btn_code = BTN_MIDDLE;
     }
 
     return send_pointer_up(btn_code);
+}
+
+bool UInputController::input_text(const std::string& str)
+{
+    LogDebug << VAR(str);
+
+    for (const auto ch : str) {
+        auto [key, need_shift] = ascii_to_evdev(ch);
+        if (need_shift) {
+            if (!key_down(KEY_LEFTSHIFT)) {
+                return false;
+            }
+        }
+        if (!key_down(key)) {
+            return false;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        if (!key_up(key)) {
+            return false;
+        }
+        if (need_shift) {
+            if (!key_up(KEY_LEFTSHIFT)) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 bool UInputController::scroll(int dx, int dy)
@@ -392,53 +422,12 @@ bool UInputController::create_device()
 
     // Register common additional keys
     const int kCommonKeys[] = {
-        KEY_ENTER,
-        KEY_BACKSPACE,
-        KEY_TAB,
-        KEY_ESC,
-        KEY_SPACE,
-        KEY_MINUS,
-        KEY_EQUAL,
-        KEY_LEFTBRACE,
-        KEY_RIGHTBRACE,
-        KEY_BACKSLASH,
-        KEY_SEMICOLON,
-        KEY_APOSTROPHE,
-        KEY_GRAVE,
-        KEY_COMMA,
-        KEY_DOT,
-        KEY_SLASH,
-        KEY_LEFTSHIFT,
-        KEY_LEFTCTRL,
-        KEY_LEFTALT,
-        KEY_LEFTMETA,
-        KEY_RIGHTSHIFT,
-        KEY_RIGHTCTRL,
-        KEY_RIGHTALT,
-        KEY_RIGHTMETA,
-        KEY_CAPSLOCK,
-        KEY_F1,
-        KEY_F2,
-        KEY_F3,
-        KEY_F4,
-        KEY_F5,
-        KEY_F6,
-        KEY_F7,
-        KEY_F8,
-        KEY_F9,
-        KEY_F10,
-        KEY_F11,
-        KEY_F12,
-        KEY_UP,
-        KEY_DOWN,
-        KEY_LEFT,
-        KEY_RIGHT,
-        KEY_HOME,
-        KEY_END,
-        KEY_PAGEUP,
-        KEY_PAGEDOWN,
-        KEY_INSERT,
-        KEY_DELETE,
+        KEY_ENTER,      KEY_BACKSPACE, KEY_TAB,       KEY_ESC,        KEY_SPACE,      KEY_MINUS,     KEY_EQUAL,    KEY_LEFTBRACE,
+        KEY_RIGHTBRACE, KEY_BACKSLASH, KEY_SEMICOLON, KEY_APOSTROPHE, KEY_GRAVE,      KEY_COMMA,     KEY_DOT,      KEY_SLASH,
+        KEY_LEFTSHIFT,  KEY_LEFTCTRL,  KEY_LEFTALT,   KEY_LEFTMETA,   KEY_RIGHTSHIFT, KEY_RIGHTCTRL, KEY_RIGHTALT, KEY_RIGHTMETA,
+        KEY_CAPSLOCK,   KEY_F1,        KEY_F2,        KEY_F3,         KEY_F4,         KEY_F5,        KEY_F6,       KEY_F7,
+        KEY_F8,         KEY_F9,        KEY_F10,       KEY_F11,        KEY_F12,        KEY_UP,        KEY_DOWN,     KEY_LEFT,
+        KEY_RIGHT,      KEY_HOME,      KEY_END,       KEY_PAGEUP,     KEY_PAGEDOWN,   KEY_INSERT,    KEY_DELETE,
     };
     for (int k : kCommonKeys) {
         ioctl(fd_, UI_SET_KEYBIT, k);
@@ -477,8 +466,8 @@ bool UInputController::create_device()
     uinput_user_dev udev = { };
     std::strncpy(udev.name, "MaaFramework KWin Virtual Input", sizeof(udev.name) - 1);
     udev.id.bustype = BUS_USB;
-    udev.id.vendor = 0x1234;
-    udev.id.product = 0x5678;
+    udev.id.vendor = 0x3255;
+    udev.id.product = 0x7999;
     udev.id.version = 1;
 
     // Set ABS min/max for the two absolute axes we registered.

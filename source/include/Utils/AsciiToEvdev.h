@@ -10,83 +10,52 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-inline constexpr auto kAsciiToEvdevTable = [] {
-    std::array<int, 128> table { };
-    // ASCII Letter
-#define ASCII_LOWER_UPPER_CASE(ascii, evdev)                                                                                               \
-    table[ascii] = evdev;                                                                                                                  \
-    table[ascii + 32] = evdev;
+#define FLAG_UPPERCASE 0x80000000
 
-    ASCII_LOWER_UPPER_CASE('A', KEY_A)
-    ASCII_LOWER_UPPER_CASE('B', KEY_B)
-    ASCII_LOWER_UPPER_CASE('C', KEY_C)
-    ASCII_LOWER_UPPER_CASE('D', KEY_D)
-    ASCII_LOWER_UPPER_CASE('E', KEY_E)
-    ASCII_LOWER_UPPER_CASE('F', KEY_F)
-    ASCII_LOWER_UPPER_CASE('G', KEY_G)
-    ASCII_LOWER_UPPER_CASE('H', KEY_H)
-    ASCII_LOWER_UPPER_CASE('I', KEY_I)
-    ASCII_LOWER_UPPER_CASE('J', KEY_J)
-    ASCII_LOWER_UPPER_CASE('K', KEY_K)
-    ASCII_LOWER_UPPER_CASE('L', KEY_L)
-    ASCII_LOWER_UPPER_CASE('M', KEY_M)
-    ASCII_LOWER_UPPER_CASE('N', KEY_N)
-    ASCII_LOWER_UPPER_CASE('O', KEY_O)
-    ASCII_LOWER_UPPER_CASE('P', KEY_P)
-    ASCII_LOWER_UPPER_CASE('Q', KEY_Q)
-    ASCII_LOWER_UPPER_CASE('R', KEY_R)
-    ASCII_LOWER_UPPER_CASE('S', KEY_S)
-    ASCII_LOWER_UPPER_CASE('T', KEY_T)
-    ASCII_LOWER_UPPER_CASE('U', KEY_U)
-    ASCII_LOWER_UPPER_CASE('V', KEY_V)
-    ASCII_LOWER_UPPER_CASE('W', KEY_W)
-    ASCII_LOWER_UPPER_CASE('X', KEY_X)
-    ASCII_LOWER_UPPER_CASE('Y', KEY_Y)
-    ASCII_LOWER_UPPER_CASE('Z', KEY_Z)
+static const int64_t ascii2keycode_map[128] = {
+    // 00 - 0f
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, KEY_TAB, KEY_ENTER, -1, -1, -1, -1, -1,
 
-#undef ASCII_LOWER_UPPER_CASE
-    // ASCII digit
-    table['0'] = KEY_0;
-    table['1'] = KEY_1;
-    table['2'] = KEY_2;
-    table['3'] = KEY_3;
-    table['4'] = KEY_4;
-    table['5'] = KEY_5;
-    table['6'] = KEY_6;
-    table['7'] = KEY_7;
-    table['8'] = KEY_8;
-    table['9'] = KEY_9;
-    // Common ASCII / control character mappings
-    table['\r'] = KEY_ENTER;
-    table['\n'] = KEY_ENTER;
-    table['\b'] = KEY_BACKSPACE;
-    table['\t'] = KEY_TAB;
-    table[27] = KEY_ESC;
-    table[' '] = KEY_SPACE;
-    table['-'] = KEY_MINUS;
-    table['='] = KEY_EQUAL;
-    table['['] = KEY_LEFTBRACE;
-    table[']'] = KEY_RIGHTBRACE;
-    table['\\'] = KEY_BACKSLASH;
-    table[';'] = KEY_SEMICOLON;
-    table['\''] = KEY_APOSTROPHE;
-    table['`'] = KEY_GRAVE;
-    table[','] = KEY_COMMA;
-    table['.'] = KEY_DOT;
-    table['/'] = KEY_SLASH;
-    return table;
-}();
+    // 10 - 1f
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+
+    // 20 - 2f
+    KEY_SPACE, KEY_1 | FLAG_UPPERCASE, KEY_APOSTROPHE | FLAG_UPPERCASE, KEY_3 | FLAG_UPPERCASE, KEY_4 | FLAG_UPPERCASE,
+    KEY_5 | FLAG_UPPERCASE, KEY_7 | FLAG_UPPERCASE, KEY_APOSTROPHE, KEY_9 | FLAG_UPPERCASE, KEY_0 | FLAG_UPPERCASE, KEY_8 | FLAG_UPPERCASE,
+    KEY_EQUAL | FLAG_UPPERCASE, KEY_COMMA, KEY_MINUS, KEY_DOT, KEY_SLASH,
+
+    // 30 - 3f
+    KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_SEMICOLON | FLAG_UPPERCASE, KEY_SEMICOLON,
+    KEY_COMMA | FLAG_UPPERCASE, KEY_EQUAL, KEY_DOT | FLAG_UPPERCASE, KEY_SLASH | FLAG_UPPERCASE,
+
+    // 40 - 4f
+    KEY_2 | FLAG_UPPERCASE, KEY_A | FLAG_UPPERCASE, KEY_B | FLAG_UPPERCASE, KEY_C | FLAG_UPPERCASE, KEY_D | FLAG_UPPERCASE,
+    KEY_E | FLAG_UPPERCASE, KEY_F | FLAG_UPPERCASE, KEY_G | FLAG_UPPERCASE, KEY_H | FLAG_UPPERCASE, KEY_I | FLAG_UPPERCASE,
+    KEY_J | FLAG_UPPERCASE, KEY_K | FLAG_UPPERCASE, KEY_L | FLAG_UPPERCASE, KEY_M | FLAG_UPPERCASE, KEY_N | FLAG_UPPERCASE,
+    KEY_O | FLAG_UPPERCASE,
+
+    // 50 - 5f
+    KEY_P | FLAG_UPPERCASE, KEY_Q | FLAG_UPPERCASE, KEY_R | FLAG_UPPERCASE, KEY_S | FLAG_UPPERCASE, KEY_T | FLAG_UPPERCASE,
+    KEY_U | FLAG_UPPERCASE, KEY_V | FLAG_UPPERCASE, KEY_W | FLAG_UPPERCASE, KEY_X | FLAG_UPPERCASE, KEY_Y | FLAG_UPPERCASE,
+    KEY_Z | FLAG_UPPERCASE, KEY_LEFTBRACE, KEY_BACKSLASH, KEY_RIGHTBRACE, KEY_6 | FLAG_UPPERCASE, KEY_MINUS | FLAG_UPPERCASE,
+
+    // 60 - 6f
+    KEY_GRAVE, KEY_A, KEY_B, KEY_C, KEY_D, KEY_E, KEY_F, KEY_G, KEY_H, KEY_I, KEY_J, KEY_K, KEY_L, KEY_M, KEY_N, KEY_O,
+
+    // 70 - 7f
+    KEY_P, KEY_Q, KEY_R, KEY_S, KEY_T, KEY_U, KEY_V, KEY_W, KEY_X, KEY_Y, KEY_Z, KEY_LEFTBRACE | FLAG_UPPERCASE,
+    KEY_BACKSLASH | FLAG_UPPERCASE, KEY_RIGHTBRACE | FLAG_UPPERCASE, KEY_GRAVE | FLAG_UPPERCASE, -1
+};
 
 // Returns the evdev key code for a given ASCII code, or origin value if no mapping exists.
-inline int ascii_to_evdev(int ascii)
+inline std::pair<int, bool> ascii_to_evdev(const int ascii)
 {
-    if (ascii >= 0 && ascii < static_cast<int>(kAsciiToEvdevTable.size())) {
-        int mapped = kAsciiToEvdevTable[ascii];
-        if (mapped != 0) {
-            return mapped;
-        }
+    int kdef = ascii2keycode_map[ascii];
+    if (kdef == -1) {
+        return { 0, false };
     }
-    return ascii;
+
+    return { kdef, kdef & FLAG_UPPERCASE };
 }
 
 MAA_CTRL_UNIT_NS_END

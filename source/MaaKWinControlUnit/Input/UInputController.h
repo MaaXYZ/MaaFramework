@@ -32,6 +32,7 @@ public:
     bool touch_down(int contact, int x, int y, int pressure);
     bool touch_move(int contact, int x, int y, int pressure);
     bool touch_up(int contact);
+    bool input_text(const std::string& str);
 
     bool scroll(int dx, int dy);
     bool relative_move(int dx, int dy);
