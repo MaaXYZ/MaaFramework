@@ -129,6 +129,24 @@ extern "C"
     MAA_FRAMEWORK_API MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path, MaaBool use_win32_vk_code);
 
     /**
+     * @brief Create a KWin (pure Wayland) controller for Linux.
+     *
+     * @param device_node The uinput device node path (e.g., "/dev/uinput").
+     * @param screen_width The screen width in pixels.
+     * @param screen_height The screen height in pixels.
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note This controller is designed for KWin (pure Wayland) on Linux.
+     * @note Input is simulated via /dev/uinput (kernel-level virtual touchscreen).
+     * @note Screencap is implemented via PipeWire / xdg-desktop-portal (KDE/KWin).
+     *       Captures the foreground monitor in fullscreen mode.
+     * @note Requires user authorization via the screen sharing dialog (xdg-desktop-portal).
+     * @note Requires write permission to /dev/uinput (typically via the "input" group).
+     * @note Only single touch is supported (contact must be 0).
+     */
+    MAA_FRAMEWORK_API MaaController* MaaKWinControllerCreate(const char* device_node, int screen_width, int screen_height);
+
+    /**
      * @brief Create a virtual gamepad controller for Windows.
      *
      * @param hWnd Window handle for screencap (optional, can be nullptr if screencap not needed).

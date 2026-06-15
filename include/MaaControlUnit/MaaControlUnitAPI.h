@@ -16,3 +16,4 @@
 #include "ReplayControlUnitAPI.h"
 #include "Win32ControlUnitAPI.h"
 #include "WlRootsControlUnitAPI.h"
+#include "KWinControlUnitAPI.h"

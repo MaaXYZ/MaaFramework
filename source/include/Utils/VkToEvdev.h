@@ -1,5 +1,7 @@
 #pragma once
 
+#if defined(__linux__) && !defined(__ANDROID__)
+
 #include <linux/input-event-codes.h>
 
 #include <array>
@@ -201,3 +203,5 @@ inline int vk_to_evdev(int vk)
 }
 
 MAA_CTRL_UNIT_NS_END
+
+#endif

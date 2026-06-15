@@ -283,6 +283,39 @@ MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path, MaaBool u
 #endif
 }
 
+MaaController* MaaKWinControllerCreate(const char* device_node, int screen_width, int screen_height, MaaBool use_win32_vk_code)
+{
+    LogFunc << VAR(device_node) << VAR(screen_width) << VAR(screen_height) << VAR(use_win32_vk_code);
+
+#ifndef __linux__
+
+    LogError << "This API " << __FUNCTION__ << " is only available on Linux";
+    return nullptr;
+
+#else
+
+    if (!device_node) {
+        LogError << "device_node is null";
+        return nullptr;
+    }
+
+    if (screen_width <= 0 || screen_height <= 0) {
+        LogError << "Invalid screen dimensions" << VAR(screen_width) << VAR(screen_height);
+        return nullptr;
+    }
+
+    auto control_unit =
+        MAA_NS::KWinControlUnitLibraryHolder::create_control_unit(device_node, screen_width, screen_height, use_win32_vk_code);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+#endif
+}
+
 void MaaControllerDestroy(MaaController* ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
