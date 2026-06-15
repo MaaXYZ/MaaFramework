@@ -1,0 +1,185 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="KWinControlUnitAPI_8h" kind="file" language="C++">
+    <compoundname>KWinControlUnitAPI.h</compoundname>
+    <includes refid="ControlUnitAPI_8h" local="yes">MaaControlUnit/ControlUnitAPI.h</includes>
+    <includes refid="MaaDef_8h" local="yes">MaaFramework/MaaDef.h</includes>
+    <includedby refid="MaaControlUnitAPI_8h" local="yes">include/MaaControlUnit/MaaControlUnitAPI.h</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>MaaControlUnit/ControlUnitAPI.h</label>
+        <link refid="ControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>include/MaaControlUnit/KWinControlUnitAPI.h</label>
+        <link refid="KWinControlUnitAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>MaaControlUnit/MaaControlUnitDef.h</label>
+        <link refid="MaaControlUnitDef_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>MaaFramework/MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="3">
+        <label>chrono</label>
+      </node>
+      <node id="6">
+        <label>meojson/json.hpp</label>
+      </node>
+      <node id="7">
+        <label>opencv2/core/mat.hpp</label>
+      </node>
+      <node id="11">
+        <label>stdint.h</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="5">
+        <label>utility</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>include/MaaControlUnit/KWinControlUnitAPI.h</label>
+        <link refid="KWinControlUnitAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
+        <link refid="MaaControlUnitAPI_8h"/>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="KWinControlUnitAPI_8h_1a34ef84a47540c42f3f1c602f197e0dc5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> const char *</type>
+        <definition>MAA_CONTROL_UNIT_API const char * MaaKWinControlUnitGetVersion</definition>
+        <argsstring>()</argsstring>
+        <name>MaaKWinControlUnitGetVersion</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/KWinControlUnitAPI.h" line="11" column="37" declfile="include/MaaControlUnit/KWinControlUnitAPI.h" declline="11" declcolumn="37"/>
+      </memberdef>
+      <memberdef kind="function" id="KWinControlUnitAPI_8h_1a81e8959b3623313bb31129ef2f6955f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> <ref refid="ControlUnitAPI_8h_1a56588b0f3df22c34f8d2e588d59f7a6a" kindref="member">MaaKWinControlUnitHandle</ref></type>
+        <definition>MAA_CONTROL_UNIT_API MaaKWinControlUnitHandle MaaKWinControlUnitCreate</definition>
+        <argsstring>(const char *device_node, int screen_width, int screen_height, MaaBool use_win32_vk_code)</argsstring>
+        <name>MaaKWinControlUnitCreate</name>
+        <param>
+          <type>const char *</type>
+          <declname>device_node</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>screen_width</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>screen_height</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+          <declname>use_win32_vk_code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/KWinControlUnitAPI.h" line="14" column="9" declfile="include/MaaControlUnit/KWinControlUnitAPI.h" declline="14" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="KWinControlUnitAPI_8h_1a1593a0bce3cd6eea67dd7e7f75fa5da5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_CONTROL_UNIT_API MaaBool MaaKWinControlUnitConnect</definition>
+        <argsstring>(MaaKWinControlUnitHandle handle)</argsstring>
+        <name>MaaKWinControlUnitConnect</name>
+        <param>
+          <type><ref refid="ControlUnitAPI_8h_1a56588b0f3df22c34f8d2e588d59f7a6a" kindref="member">MaaKWinControlUnitHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/KWinControlUnitAPI.h" line="16" column="34" declfile="include/MaaControlUnit/KWinControlUnitAPI.h" declline="16" declcolumn="34"/>
+      </memberdef>
+      <memberdef kind="function" id="KWinControlUnitAPI_8h_1a0b867cfc6bd08ff3c8cc7209cdfd6837" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_CONTROL_UNIT_API MaaBool MaaKWinControlUnitTestScreencap</definition>
+        <argsstring>(MaaKWinControlUnitHandle handle)</argsstring>
+        <name>MaaKWinControlUnitTestScreencap</name>
+        <param>
+          <type><ref refid="ControlUnitAPI_8h_1a56588b0f3df22c34f8d2e588d59f7a6a" kindref="member">MaaKWinControlUnitHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/KWinControlUnitAPI.h" line="18" column="34" declfile="include/MaaControlUnit/KWinControlUnitAPI.h" declline="18" declcolumn="34"/>
+      </memberdef>
+      <memberdef kind="function" id="KWinControlUnitAPI_8h_1a6bb78b2eff942c8ff7b8da1352062c2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> void</type>
+        <definition>MAA_CONTROL_UNIT_API void MaaKWinControlUnitDestroy</definition>
+        <argsstring>(MaaKWinControlUnitHandle handle)</argsstring>
+        <name>MaaKWinControlUnitDestroy</name>
+        <param>
+          <type><ref refid="ControlUnitAPI_8h_1a56588b0f3df22c34f8d2e588d59f7a6a" kindref="member">MaaKWinControlUnitHandle</ref></type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/KWinControlUnitAPI.h" line="20" column="31" declfile="include/MaaControlUnit/KWinControlUnitAPI.h" declline="20" declcolumn="31"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/KWinControlUnitAPI.h"/>
+  </compounddef>
+</doxygen>

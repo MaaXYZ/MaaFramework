@@ -1,10 +1,21 @@
 var NAVTREEINDEX3 =
 {
-"structRecordTouch.html":[2,0,21],
-"structRecordTouch.html#a1a7da180318019e996f72b523a4c67e1":[2,0,21,3],
-"structRecordTouch.html#a6f37c130125b34b7cb5aee355a7bedbf":[2,0,21,2],
-"structRecordTouch.html#aab5878c1a04647e1f335d8c6f7fe29d7":[2,0,21,0],
-"structRecordTouch.html#ab7ddd20d6d36e614c5780bba3dbb1e57":[2,0,21,4],
-"structRecordTouch.html#ad8e0dd20ce33c3035e78850c37311b3e":[2,0,21,1],
+"structRecordShell.html#ac93a15b1825d477d7a032fd594fb0b6b":[2,0,20,3],
+"structRecordShell.html#ad809e771fbc6c0887129cb7f7f814a06":[2,0,20,0],
+"structRecordShell.html#afbf65a924a7025a24b26be64da6cb962":[2,0,20,2],
+"structRecordSwipe.html":[2,0,21],
+"structRecordSwipe.html#a0a76db2885efe33a7743bcf1c803f5be":[2,0,21,4],
+"structRecordSwipe.html#a3b5dae0e938b03499bbed3e2e10cf275":[2,0,21,5],
+"structRecordSwipe.html#aa7076a3c4c07cde535c4bb79ffae4b73":[2,0,21,6],
+"structRecordSwipe.html#aa8e0ab229392ba72368a82f86728f0be":[2,0,21,1],
+"structRecordSwipe.html#aa9600ba192b932e77c943e8445f5b4e5":[2,0,21,2],
+"structRecordSwipe.html#ac7b2d7cefde74a496e40ee2a4ee9c58f":[2,0,21,0],
+"structRecordSwipe.html#adc7cdcd538df3f14ad10b9aeefcaec38":[2,0,21,3],
+"structRecordTouch.html":[2,0,22],
+"structRecordTouch.html#a1a7da180318019e996f72b523a4c67e1":[2,0,22,3],
+"structRecordTouch.html#a6f37c130125b34b7cb5aee355a7bedbf":[2,0,22,2],
+"structRecordTouch.html#aab5878c1a04647e1f335d8c6f7fe29d7":[2,0,22,0],
+"structRecordTouch.html#ab7ddd20d6d36e614c5780bba3dbb1e57":[2,0,22,4],
+"structRecordTouch.html#ad8e0dd20ce33c3035e78850c37311b3e":[2,0,22,1],
 "topics.html":[1]
 };

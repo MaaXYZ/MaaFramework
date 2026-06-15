@@ -37,6 +37,9 @@
   <compound refid="classGamepadControlUnitAPI" kind="class"><name>GamepadControlUnitAPI</name>
     <member refid="classGamepadControlUnitAPI_1ac3b2653203c9ca157a70b11aac8db99b" kind="function"><name>~GamepadControlUnitAPI</name></member>
   </compound>
+  <compound refid="classKWinControlUnitAPI" kind="class"><name>KWinControlUnitAPI</name>
+    <member refid="classKWinControlUnitAPI_1a389ab6c486a3e34f238a2a84c190733c" kind="function"><name>~KWinControlUnitAPI</name></member>
+  </compound>
   <compound refid="structMaaCustomControllerCallbacks" kind="struct"><name>MaaCustomControllerCallbacks</name>
     <member refid="structMaaCustomControllerCallbacks_1a74d6aa4b9e6fc074f4d97d6ebe3be6ad" kind="variable"><name>connect</name></member>
     <member refid="structMaaCustomControllerCallbacks_1a5294cb3629297bc3449019222b445a79" kind="variable"><name>connected</name></member>
@@ -214,6 +217,7 @@
     <member refid="ControlUnitAPI_8h_1a65786017771209552b0f1836a58deef0" kind="typedef"><name>MaaWin32ControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1a8adab01abd6e9dcc167b4540f771c73a" kind="typedef"><name>MaaMacOSControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1ac75fa95b67dbddfe829cc6d4389dcce5" kind="typedef"><name>MaaWlRootsControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1a56588b0f3df22c34f8d2e588d59f7a6a" kind="typedef"><name>MaaKWinControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1ae7686964fb7e1e28b6c43b69902d21bb" kind="typedef"><name>MaaGamepadControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1ae379a64534f66d7fc6fe047476d5563e" kind="typedef"><name>MaaCustomControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1a0e8e5772a651edd77531940be1d0304a" kind="typedef"><name>MaaReplayControlUnitHandle</name></member>
@@ -235,6 +239,13 @@
     <member refid="GamepadControlUnitAPI_8h_1ab9bcf7b6bf623919015fadac32b9cc8d" kind="function"><name>MaaGamepadControlUnitGetVersion</name></member>
     <member refid="GamepadControlUnitAPI_8h_1ad3e9a885b37a409655923b92ca9be65f" kind="function"><name>MaaGamepadControlUnitCreate</name></member>
     <member refid="GamepadControlUnitAPI_8h_1a657109c85fb7ec8d750a244d125ab9d3" kind="function"><name>MaaGamepadControlUnitDestroy</name></member>
+  </compound>
+  <compound refid="KWinControlUnitAPI_8h" kind="file"><name>KWinControlUnitAPI.h</name>
+    <member refid="KWinControlUnitAPI_8h_1a34ef84a47540c42f3f1c602f197e0dc5" kind="function"><name>MaaKWinControlUnitGetVersion</name></member>
+    <member refid="KWinControlUnitAPI_8h_1a81e8959b3623313bb31129ef2f6955f7" kind="function"><name>MaaKWinControlUnitCreate</name></member>
+    <member refid="KWinControlUnitAPI_8h_1a1593a0bce3cd6eea67dd7e7f75fa5da5" kind="function"><name>MaaKWinControlUnitConnect</name></member>
+    <member refid="KWinControlUnitAPI_8h_1a0b867cfc6bd08ff3c8cc7209cdfd6837" kind="function"><name>MaaKWinControlUnitTestScreencap</name></member>
+    <member refid="KWinControlUnitAPI_8h_1a6bb78b2eff942c8ff7b8da1352062c2f" kind="function"><name>MaaKWinControlUnitDestroy</name></member>
   </compound>
   <compound refid="MaaControlUnitAPI_8h" kind="file"><name>MaaControlUnitAPI.h</name>
   </compound>
@@ -332,6 +343,7 @@
     <member refid="MaaController_8h_1a801ccbca7db84ce9a6f6333183b6cc3c" kind="function"><name>MaaRecordControllerCreate</name></member>
     <member refid="MaaController_8h_1af9b278b0a220ea72ff4ce564a055ff52" kind="function"><name>MaaPlayCoverControllerCreate</name></member>
     <member refid="MaaController_8h_1a8a7cec67c98e73c2cd12b95708cafd16" kind="function"><name>MaaWlRootsControllerCreate</name></member>
+    <member refid="MaaController_8h_1aecbc98da716d7485a42b17167338b7c7" kind="function"><name>MaaKWinControllerCreate</name></member>
     <member refid="MaaController_8h_1ab979f25e17e04ae8cc2d2a6aa1b2540a" kind="function"><name>MaaGamepadControllerCreate</name></member>
     <member refid="MaaController_8h_1a497982481bf79e89bc457d8a6e5e7bed" kind="function"><name>MaaControllerDestroy</name></member>
     <member refid="MaaController_8h_1aa01ed95af83d12f7bc3d49fdba415419" kind="function"><name>MaaControllerAddSink</name></member>

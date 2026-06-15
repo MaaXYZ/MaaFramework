@@ -8,6 +8,7 @@
     <innerfile refid="CustomControlUnitAPI_8h">CustomControlUnitAPI.h</innerfile>
     <innerfile refid="DbgControlUnitAPI_8h">DbgControlUnitAPI.h</innerfile>
     <innerfile refid="GamepadControlUnitAPI_8h">GamepadControlUnitAPI.h</innerfile>
+    <innerfile refid="KWinControlUnitAPI_8h">KWinControlUnitAPI.h</innerfile>
     <innerfile refid="MaaControlUnitAPI_8h">MaaControlUnitAPI.h</innerfile>
     <innerfile refid="MaaControlUnitDef_8h">MaaControlUnitDef.h</innerfile>
     <innerfile refid="MacOSControlUnitAPI_8h">MacOSControlUnitAPI.h</innerfile>

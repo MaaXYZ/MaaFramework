@@ -4,6 +4,7 @@
     <compoundname>ScrollableUnit</compoundname>
     <derivedcompoundref refid="classCustomControlUnitAPI" prot="public" virt="non-virtual">CustomControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classFullControlUnitAPI" prot="public" virt="non-virtual">FullControlUnitAPI</derivedcompoundref>
+    <derivedcompoundref refid="classKWinControlUnitAPI" prot="public" virt="non-virtual">KWinControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classMacOSControlUnitAPI" prot="public" virt="non-virtual">MacOSControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classWin32ControlUnitAPI" prot="public" virt="non-virtual">Win32ControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classWlRootsControlUnitAPI" prot="public" virt="non-virtual">WlRootsControlUnitAPI</derivedcompoundref>
@@ -64,6 +65,12 @@
         </childnode>
       </node>
       <node id="4">
+        <label>KWinControlUnitAPI</label>
+        <link refid="classKWinControlUnitAPI"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
         <label>MacOSControlUnitAPI</label>
         <link refid="classMacOSControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">
@@ -73,13 +80,13 @@
         <label>ScrollableUnit</label>
         <link refid="classScrollableUnit"/>
       </node>
-      <node id="5">
+      <node id="6">
         <label>Win32ControlUnitAPI</label>
         <link refid="classWin32ControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>WlRootsControlUnitAPI</label>
         <link refid="classWlRootsControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">

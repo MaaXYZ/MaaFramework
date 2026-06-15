@@ -35,6 +35,9 @@
     <loc>https://maafw.com/GamepadControlUnitAPI_8h_source.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/KWinControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/MaaControlUnitAPI_8h_source.html</loc>
   </url>
   <url>
@@ -144,6 +147,9 @@
   </url>
   <url>
     <loc>https://maafw.com/GamepadControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/KWinControlUnitAPI_8h.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/MaaControlUnitAPI_8h.html</loc>
@@ -264,6 +270,12 @@
   </url>
   <url>
     <loc>https://maafw.com/classGamepadControlUnitAPI-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classKWinControlUnitAPI.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classKWinControlUnitAPI-members.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/structMaaCustomControllerCallbacks.html</loc>

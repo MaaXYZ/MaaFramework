@@ -6,6 +6,7 @@ var hierarchy =
       [ "CustomControlUnitAPI", "classCustomControlUnitAPI.html", null ],
       [ "FullControlUnitAPI", "classFullControlUnitAPI.html", null ],
       [ "GamepadControlUnitAPI", "classGamepadControlUnitAPI.html", null ],
+      [ "KWinControlUnitAPI", "classKWinControlUnitAPI.html", null ],
       [ "MacOSControlUnitAPI", "classMacOSControlUnitAPI.html", null ],
       [ "Win32ControlUnitAPI", "classWin32ControlUnitAPI.html", null ],
       [ "WlRootsControlUnitAPI", "classWlRootsControlUnitAPI.html", null ]
@@ -28,6 +29,7 @@ var hierarchy =
     [ "RelativeMovableUnit", "classRelativeMovableUnit.html", [
       [ "CustomControlUnitAPI", "classCustomControlUnitAPI.html", null ],
       [ "FullControlUnitAPI", "classFullControlUnitAPI.html", null ],
+      [ "KWinControlUnitAPI", "classKWinControlUnitAPI.html", null ],
       [ "MacOSControlUnitAPI", "classMacOSControlUnitAPI.html", null ],
       [ "Win32ControlUnitAPI", "classWin32ControlUnitAPI.html", null ],
       [ "WlRootsControlUnitAPI", "classWlRootsControlUnitAPI.html", null ]
@@ -35,6 +37,7 @@ var hierarchy =
     [ "ScrollableUnit", "classScrollableUnit.html", [
       [ "CustomControlUnitAPI", "classCustomControlUnitAPI.html", null ],
       [ "FullControlUnitAPI", "classFullControlUnitAPI.html", null ],
+      [ "KWinControlUnitAPI", "classKWinControlUnitAPI.html", null ],
       [ "MacOSControlUnitAPI", "classMacOSControlUnitAPI.html", null ],
       [ "Win32ControlUnitAPI", "classWin32ControlUnitAPI.html", null ],
       [ "WlRootsControlUnitAPI", "classWlRootsControlUnitAPI.html", null ]

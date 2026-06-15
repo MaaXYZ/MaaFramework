@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['win32controlunitapi_2eh_0',['Win32ControlUnitAPI.h',['../Win32ControlUnitAPI_8h.html',1,'']]],
-  ['wlrootscontrolunitapi_2eh_1',['WlRootsControlUnitAPI.h',['../WlRootsControlUnitAPI_8h.html',1,'']]]
+  ['recordcontrolunitapi_2eh_0',['RecordControlUnitAPI.h',['../RecordControlUnitAPI_8h.html',1,'']]],
+  ['recordtypes_2eh_1',['RecordTypes.h',['../RecordTypes_8h.html',1,'']]],
+  ['replaycontrolunitapi_2eh_2',['ReplayControlUnitAPI.h',['../ReplayControlUnitAPI_8h.html',1,'']]]
 ];

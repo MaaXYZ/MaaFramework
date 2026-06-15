@@ -6,6 +6,7 @@ var dir_4b181761ecfce2f2bb55ba5b96618c4b =
     [ "CustomControlUnitAPI.h", "CustomControlUnitAPI_8h.html", "CustomControlUnitAPI_8h" ],
     [ "DbgControlUnitAPI.h", "DbgControlUnitAPI_8h.html", "DbgControlUnitAPI_8h" ],
     [ "GamepadControlUnitAPI.h", "GamepadControlUnitAPI_8h.html", "GamepadControlUnitAPI_8h" ],
+    [ "KWinControlUnitAPI.h", "KWinControlUnitAPI_8h.html", "KWinControlUnitAPI_8h" ],
     [ "MaaControlUnitAPI.h", "MaaControlUnitAPI_8h.html", null ],
     [ "MaaControlUnitDef.h", "MaaControlUnitDef_8h.html", "MaaControlUnitDef_8h" ],
     [ "MacOSControlUnitAPI.h", "MacOSControlUnitAPI_8h.html", "MacOSControlUnitAPI_8h" ],

@@ -10,6 +10,7 @@
     <includes refid="CustomControlUnitAPI_8h" local="yes">CustomControlUnitAPI.h</includes>
     <includes refid="DbgControlUnitAPI_8h" local="yes">DbgControlUnitAPI.h</includes>
     <includes refid="GamepadControlUnitAPI_8h" local="yes">GamepadControlUnitAPI.h</includes>
+    <includes refid="KWinControlUnitAPI_8h" local="yes">KWinControlUnitAPI.h</includes>
     <includes refid="MacOSControlUnitAPI_8h" local="yes">MacOSControlUnitAPI.h</includes>
     <includes refid="PlayCoverControlUnitAPI_8h" local="yes">PlayCoverControlUnitAPI.h</includes>
     <includes refid="RecordControlUnitAPI_8h" local="yes">RecordControlUnitAPI.h</includes>
@@ -87,6 +88,14 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
+      <node id="22">
+        <label>KWinControlUnitAPI.h</label>
+        <link refid="KWinControlUnitAPI_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
       <node id="1">
         <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
         <link refid="MaaControlUnitAPI_8h"/>
@@ -118,6 +127,8 @@
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>MaaControlUnitDef.h</label>
@@ -125,7 +136,7 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="22">
+      <node id="23">
         <label>MacOSControlUnitAPI.h</label>
         <link refid="MacOSControlUnitAPI_8h"/>
         <childnode refid="15" relation="include">
@@ -137,7 +148,7 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="23">
+      <node id="24">
         <label>PlayCoverControlUnitAPI.h</label>
         <link refid="PlayCoverControlUnitAPI_8h"/>
         <childnode refid="4" relation="include">
@@ -145,7 +156,7 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="24">
+      <node id="25">
         <label>RecordControlUnitAPI.h</label>
         <link refid="RecordControlUnitAPI_8h"/>
         <childnode refid="4" relation="include">
@@ -165,13 +176,13 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="25">
+      <node id="26">
         <label>ReplayControlUnitAPI.h</label>
         <link refid="ReplayControlUnitAPI_8h"/>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="26">
+      <node id="27">
         <label>Win32ControlUnitAPI.h</label>
         <link refid="Win32ControlUnitAPI_8h"/>
         <childnode refid="15" relation="include">
@@ -183,7 +194,7 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="27">
+      <node id="28">
         <label>WlRootsControlUnitAPI.h</label>
         <link refid="WlRootsControlUnitAPI_8h"/>
         <childnode refid="4" relation="include">

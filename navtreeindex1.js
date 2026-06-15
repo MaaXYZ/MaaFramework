@@ -1,5 +1,14 @@
 var NAVTREEINDEX1 =
 {
+"MaaDef_8h.html#a528a2bcf79894972c5827c112bf55691":[3,0,0,3,4,58],
+"MaaDef_8h.html#a53a0d2c454370893abfbaf100b48dc0d":[3,0,0,3,4,118],
+"MaaDef_8h.html#a54494f426182d7a0b0d7ac5caca2620d":[3,0,0,3,4,44],
+"MaaDef_8h.html#a55c4f433547d52de1c93c3d01d58aed7":[3,0,0,3,4,9],
+"MaaDef_8h.html#a56de1c099cca8d34e038b77a644b949f":[3,0,0,3,4,36],
+"MaaDef_8h.html#a56ff604006917171af8e4b4974db28ef":[3,0,0,3,4,105],
+"MaaDef_8h.html#a572fba9d73a204b8a4aa05f7d478fbd2":[3,0,0,3,4,76],
+"MaaDef_8h.html#a586ad29ada2c999ae75b77ad6baeedb9":[3,0,0,3,4,45],
+"MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2":[3,0,0,3,4,7],
 "MaaDef_8h.html#a5aadc42136d91795ddbe892bf392a807":[3,0,0,3,4,64],
 "MaaDef_8h.html#a5ca72cf3815fc88ba7ef8b762bc6ed94":[3,0,0,3,4,81],
 "MaaDef_8h.html#a5d201ca1f58e33b38be2fd7b9f977975":[3,0,0,3,4,17],
@@ -240,14 +249,5 @@ var NAVTREEINDEX1 =
 "MaaToolkitDef_8h.html#acdcb49d9222ccceaeedb28b7fcdd8fe8":[3,0,0,4,5,4],
 "MaaToolkitDef_8h_source.html":[3,0,0,4,5],
 "MaaToolkitDesktopWindow_8h.html":[3,0,0,4,2,0],
-"MaaToolkitDesktopWindow_8h.html#a00a365a2f75f6f572f6ce0c11bd6a92f":[3,0,0,4,2,0,5],
-"MaaToolkitDesktopWindow_8h.html#a2967397bb0a2cb9bb49ef1b49656bde7":[3,0,0,4,2,0,2],
-"MaaToolkitDesktopWindow_8h.html#a9630496646deb94ccf5976877ce12e92":[3,0,0,4,2,0,3],
-"MaaToolkitDesktopWindow_8h.html#a9ec7e382179fd165bbc4dd7726c058ee":[3,0,0,4,2,0,1],
-"MaaToolkitDesktopWindow_8h.html#aa02e7ddc8a0142b2d2dbaf42d0cd0926":[3,0,0,4,2,0,0],
-"MaaToolkitDesktopWindow_8h.html#aaa1d8918fd09a42fdd9fadf562200040":[3,0,0,4,2,0,6],
-"MaaToolkitDesktopWindow_8h.html#ad41c0d4f44b0ea74def23a1bdf82811c":[3,0,0,4,2,0,7],
-"MaaToolkitDesktopWindow_8h.html#ade2c61c9f119e803d83ec40307e938d9":[3,0,0,4,2,0,4],
-"MaaToolkitDesktopWindow_8h_source.html":[3,0,0,4,2,0],
-"MaaToolkitMacOS_8h.html":[3,0,0,4,3,0]
+"MaaToolkitDesktopWindow_8h.html#a00a365a2f75f6f572f6ce0c11bd6a92f":[3,0,0,4,2,0,5]
 };
