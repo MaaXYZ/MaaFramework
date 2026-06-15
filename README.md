@@ -111,6 +111,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaOWM](https://github.com/sunyink/MaaOWM) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/sunyink/MaaOWM) ![activity](https://img.shields.io/github/commit-activity/m/sunyink/MaaOWM?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/sunyink/MaaOWM?style=social)  
     MaaFramework 多资源包开发工具。挂载: base+mod 合并成全字段工作区; 卸载: diff 出最小化 mod 增量。
 
+- [create-maa-project](https://github.com/Windsland52/create-maa-project) ![TypeScript](https://img.shields.io/badge/TypeScript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/create-maa-project) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/create-maa-project?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/create-maa-project?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/create-maa-project) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/create-maa-project/)  
+    MaaFW 项目脚手架 CLI & MCP Server，交互式创建与增量维护 Pipeline / Agent 项目
+
 ### 应用程序
 
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
