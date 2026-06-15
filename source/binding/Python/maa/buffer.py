@@ -1,6 +1,6 @@
 import copy
 import ctypes
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import numpy
 
@@ -56,9 +56,7 @@ class StringBuffer:
         """
         if isinstance(value, str):
             value = value.encode()
-        return bool(
-            Library.framework().MaaStringBufferSetEx(self._handle, value, len(value))
-        )
+        return bool(Library.framework().MaaStringBufferSetEx(self._handle, value, len(value)))
 
     @property
     def empty(self) -> bool:
@@ -144,21 +142,21 @@ class StringListBuffer:
         if self._handle and self._own:
             Library.framework().MaaStringListBufferDestroy(self._handle)
 
-    def get(self) -> List[str]:
+    def get(self) -> list[str]:
         """获取字符串列表 / Get string list
 
         Returns:
             List[str]: 字符串列表 / String list
         """
         count = Library.framework().MaaStringListBufferSize(self._handle)
-        result = []
+        result: list[str] = []
         for i in range(count):
             buff = Library.framework().MaaStringListBufferAt(self._handle, i)
             s = StringBuffer(buff).get()
             result.append(s)
         return result
 
-    def set(self, value: List[str]) -> bool:
+    def set(self, value: list[str]) -> bool:
         """设置字符串列表 / Set string list
 
         Args:
@@ -184,9 +182,7 @@ class StringListBuffer:
         """
         buff = StringBuffer()
         buff.set(value)
-        return bool(
-            Library.framework().MaaStringListBufferAppend(self._handle, buff._handle)
-        )
+        return bool(Library.framework().MaaStringListBufferAppend(self._handle, buff._handle))
 
     def remove(self, index: int) -> bool:
         """移除指定索引的字符串 / Remove string at index
@@ -215,30 +211,20 @@ class StringListBuffer:
             return
         StringListBuffer._api_properties_initialized = True
 
-        Library.framework().MaaStringListBufferCreate.restype = (
-            MaaStringListBufferHandle
-        )
+        Library.framework().MaaStringListBufferCreate.restype = MaaStringListBufferHandle
         Library.framework().MaaStringListBufferCreate.argtypes = []
 
         Library.framework().MaaStringListBufferDestroy.restype = None
-        Library.framework().MaaStringListBufferDestroy.argtypes = [
-            MaaStringListBufferHandle
-        ]
+        Library.framework().MaaStringListBufferDestroy.argtypes = [MaaStringListBufferHandle]
 
         Library.framework().MaaStringListBufferIsEmpty.restype = MaaBool
-        Library.framework().MaaStringListBufferIsEmpty.argtypes = [
-            MaaStringListBufferHandle
-        ]
+        Library.framework().MaaStringListBufferIsEmpty.argtypes = [MaaStringListBufferHandle]
 
         Library.framework().MaaStringListBufferClear.restype = MaaBool
-        Library.framework().MaaStringListBufferClear.argtypes = [
-            MaaStringListBufferHandle
-        ]
+        Library.framework().MaaStringListBufferClear.argtypes = [MaaStringListBufferHandle]
 
         Library.framework().MaaStringListBufferSize.restype = MaaSize
-        Library.framework().MaaStringListBufferSize.argtypes = [
-            MaaStringListBufferHandle
-        ]
+        Library.framework().MaaStringListBufferSize.argtypes = [MaaStringListBufferHandle]
 
         Library.framework().MaaStringListBufferAt.restype = MaaStringBufferHandle
         Library.framework().MaaStringListBufferAt.argtypes = [
@@ -290,7 +276,8 @@ class ImageBuffer:
         """获取图像数据 / Get image data
 
         Returns:
-            numpy.ndarray: BGR 格式图像，形状为 (height, width, channels) / BGR format image with shape (height, width, channels)
+            numpy.ndarray: BGR 格式图像，形状为 (height, width, channels)
+            BGR format image with shape (height, width, channels)
         """
         buff = Library.framework().MaaImageBufferGetRawData(self._handle)
         if not buff:
@@ -300,16 +287,15 @@ class ImageBuffer:
         h = Library.framework().MaaImageBufferHeight(self._handle)
         c = Library.framework().MaaImageBufferChannels(self._handle)
         return copy.deepcopy(
-            numpy.ctypeslib.as_array(
-                ctypes.cast(buff, ctypes.POINTER(ctypes.c_uint8)), shape=(h, w, c)
-            )
+            numpy.ctypeslib.as_array(ctypes.cast(buff, ctypes.POINTER(ctypes.c_uint8)), shape=(h, w, c))
         )
 
     def set(self, value: numpy.ndarray) -> bool:
         """设置图像数据 / Set image data
 
         Args:
-            value: BGR 格式图像，形状为 (height, width, channels) / BGR format image with shape (height, width, channels)
+            value: BGR 格式图像，形状为 (height, width, channels)
+            BGR format image with shape (height, width, channels)
 
         Returns:
             bool: 是否成功 / Whether successful
@@ -317,11 +303,11 @@ class ImageBuffer:
         Raises:
             TypeError: 如果 value 不是 numpy.ndarray
         """
-        if not isinstance(value, numpy.ndarray):
+        if not isinstance(value, numpy.ndarray):  # pyright: ignore[reportUnnecessaryIsInstance]
             raise TypeError("value must be a numpy.ndarray")
 
         # 确保数组是 C-contiguous 的，避免切片视图导致的内存不连续问题
-        if not value.flags['C_CONTIGUOUS']:
+        if not value.flags["C_CONTIGUOUS"]:
             value = numpy.ascontiguousarray(value)
 
         return bool(
@@ -344,9 +330,7 @@ class ImageBuffer:
         Returns:
             bool: 是否成功 / Whether successful
         """
-        return bool(
-            Library.framework().MaaImageBufferResize(self._handle, width, height)
-        )
+        return bool(Library.framework().MaaImageBufferResize(self._handle, width, height))
 
     @property
     def empty(self) -> bool:
@@ -444,21 +428,21 @@ class ImageListBuffer:
         if self._handle and self._own:
             Library.framework().MaaImageListBufferDestroy(self._handle)
 
-    def get(self) -> List[numpy.ndarray]:
+    def get(self) -> list[numpy.ndarray]:
         """获取图像列表 / Get image list
 
         Returns:
             List[numpy.ndarray]: 图像列表 / Image list
         """
         count = Library.framework().MaaImageListBufferSize(self._handle)
-        result = []
+        result: list[numpy.ndarray] = []
         for i in range(count):
             buff = Library.framework().MaaImageListBufferAt(self._handle, i)
             img = ImageBuffer(buff).get()
             result.append(img)
         return result
 
-    def set(self, value: List[numpy.ndarray]) -> bool:
+    def set(self, value: list[numpy.ndarray]) -> bool:
         """设置图像列表 / Set image list
 
         Args:
@@ -484,9 +468,7 @@ class ImageListBuffer:
         """
         buff = ImageBuffer()
         buff.set(value)
-        return bool(
-            Library.framework().MaaImageListBufferAppend(self._handle, buff._handle)
-        )
+        return bool(Library.framework().MaaImageListBufferAppend(self._handle, buff._handle))
 
     def remove(self, index: int) -> bool:
         """移除指定索引的图像 / Remove image at index
@@ -519,19 +501,13 @@ class ImageListBuffer:
         Library.framework().MaaImageListBufferCreate.argtypes = []
 
         Library.framework().MaaImageListBufferDestroy.restype = None
-        Library.framework().MaaImageListBufferDestroy.argtypes = [
-            MaaImageListBufferHandle
-        ]
+        Library.framework().MaaImageListBufferDestroy.argtypes = [MaaImageListBufferHandle]
 
         Library.framework().MaaImageListBufferIsEmpty.restype = MaaBool
-        Library.framework().MaaImageListBufferIsEmpty.argtypes = [
-            MaaImageListBufferHandle
-        ]
+        Library.framework().MaaImageListBufferIsEmpty.argtypes = [MaaImageListBufferHandle]
 
         Library.framework().MaaImageListBufferClear.restype = MaaBool
-        Library.framework().MaaImageListBufferClear.argtypes = [
-            MaaImageListBufferHandle
-        ]
+        Library.framework().MaaImageListBufferClear.argtypes = [MaaImageListBufferHandle]
 
         Library.framework().MaaImageListBufferSize.restype = MaaSize
         Library.framework().MaaImageListBufferSize.argtypes = [MaaImageListBufferHandle]
@@ -599,7 +575,8 @@ class RectBuffer:
         """设置矩形数据 / Set rectangle data
 
         Args:
-            value: 矩形数据，可以是 Rect、tuple、list 或 numpy.ndarray / Rectangle data, can be Rect, tuple, list, or numpy.ndarray
+            value: 矩形数据，可以是 Rect、tuple、list 或 numpy.ndarray
+            Rectangle data, can be Rect, tuple, list, or numpy.ndarray
 
         Returns:
             bool: 是否成功 / Whether successful
@@ -608,7 +585,7 @@ class RectBuffer:
             ValueError: 如果数据格式不正确
             TypeError: 如果类型不支持
         """
-        if isinstance(value, numpy.ndarray):
+        if isinstance(value, numpy.ndarray):  # pyright: ignore[reportUnnecessaryIsInstance]
             if value.ndim != 1:
                 raise ValueError("value must be a 1D array")
             if value.shape[0] != 4:
@@ -619,16 +596,12 @@ class RectBuffer:
             if len(value) != 4:
                 raise ValueError("value must have 4 elements")
             value = numpy.array(value, dtype=numpy.int32)
-        elif isinstance(value, Rect):
+        elif isinstance(value, Rect):  # pyright: ignore[reportUnnecessaryIsInstance]
             pass
         else:
             raise TypeError("value must be a Rect, numpy.ndarray, tuple or list")
 
-        return bool(
-            Library.framework().MaaRectSet(
-                self._handle, value[0], value[1], value[2], value[3]
-            )
-        )
+        return bool(Library.framework().MaaRectSet(self._handle, value[0], value[1], value[2], value[3]))
 
     _api_properties_initialized: bool = False
 

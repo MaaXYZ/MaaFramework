@@ -1,6 +1,7 @@
 import ctypes
-from dataclasses import dataclass
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import Any, Union
 
 from .buffer import RectBuffer
 from .context import Context
@@ -22,7 +23,7 @@ class CustomAction(ABC):
                 return True
     """
 
-    _handle: MaaCustomActionCallback
+    _handle: Any
 
     def __init__(self):
         self._handle = self._c_run_agent
@@ -70,12 +71,13 @@ class CustomAction(ABC):
             argv: 动作参数 / Action arguments
 
         Returns:
-            Union[RunResult, bool]: 执行结果，可返回 RunResult 或 bool / Execution result, can return RunResult or bool
+            Union[RunResult, bool]: 执行结果，可返回 RunResult 或 bool
+            Execution result, can return RunResult or bool
         """
         raise NotImplementedError
 
     @property
-    def c_handle(self) -> MaaCustomActionCallback:
+    def c_handle(self) -> Any:
         return self._handle
 
     @property
@@ -87,9 +89,9 @@ class CustomAction(ABC):
     def _c_run_agent(
         c_context: MaaContextHandle,
         c_task_id: MaaTaskId,
-        c_node_name: ctypes.c_char_p,
-        c_custom_action_name: ctypes.c_char_p,
-        c_custom_action_param: ctypes.c_char_p,
+        c_node_name: bytes,
+        c_custom_action_name: bytes,
+        c_custom_action_param: bytes,
         c_reco_id: MaaRecoId,
         c_box: MaaRectHandle,
         c_transparent_arg: ctypes.c_void_p,
@@ -110,7 +112,7 @@ class CustomAction(ABC):
 
         box = RectBuffer(c_box).get()
 
-        result: Union[CustomAction.RunResult, bool] = self.run(
+        result: Union[CustomAction.RunResult, bool, None] = self.run(
             context,
             CustomAction.RunArg(
                 task_detail=task_detail,
@@ -125,11 +127,11 @@ class CustomAction(ABC):
         if isinstance(result, CustomAction.RunResult):
             return int(result.success)
 
-        elif isinstance(result, bool):
+        elif isinstance(result, bool):  # pyright: ignore[reportUnnecessaryIsInstance]
             return int(result)
 
         elif result is None:
             return int(True)
 
         else:
-            raise TypeError(f"Invalid return type: {result!r}")
+            raise TypeError(f"Invalid return type: {result!r}")  # pyright: ignore[reportUnreachable]

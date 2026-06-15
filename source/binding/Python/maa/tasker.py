@@ -1,19 +1,23 @@
 import ctypes
 import dataclasses
 import json
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 import numpy
 
-from .define import *
-from .library import Library
-from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
-from .job import Job, JobWithResult, TaskJob
-from .event_sink import EventSink, NotificationType
-from .resource import Resource
+from .buffer import ImageBuffer, ImageListBuffer, RectBuffer, StringBuffer
 from .controller import Controller
-from .pipeline import JRecognitionParam, JActionParam, JRecognitionType, JActionType
+from .define import *
+from .event_sink import EventSink, NotificationType
+from .job import Job, TaskJob
+from .library import Library
+from .pipeline import JActionParam, JActionType, JRecognitionParam, JRecognitionType
+from .resource import Resource
+
+if TYPE_CHECKING:
+    from .context import ContextEventSink
 
 
 class Tasker:
@@ -65,12 +69,8 @@ class Tasker:
         self._resource_holder = resource
         self._controller_holder = controller
 
-        return bool(
-            Library.framework().MaaTaskerBindResource(self._handle, resource._handle)
-        ) and bool(
-            Library.framework().MaaTaskerBindController(
-                self._handle, controller._handle
-            )
+        return bool(Library.framework().MaaTaskerBindResource(self._handle, resource._handle)) and bool(
+            Library.framework().MaaTaskerBindController(self._handle, controller._handle)
         )
 
     @property
@@ -114,7 +114,7 @@ class Tasker:
         """
         return bool(Library.framework().MaaTaskerInited(self._handle))
 
-    def post_task(self, entry: str, pipeline_override: Dict = {}) -> TaskJob:
+    def post_task(self, entry: str, pipeline_override: Optional[dict[str, Any]] = None) -> TaskJob:
         """异步执行任务 / Asynchronously execute task
 
         这是一个异步操作，会立即返回一个 TaskJob 对象
@@ -125,9 +125,14 @@ class Tasker:
             pipeline_override: 用于覆盖的 json / JSON for overriding
 
         Returns:
-            TaskJob: 任务作业对象，可通过 status/wait 查询状态，通过 get() 获取结果，通过 override_pipeline() 动态修改 pipeline
-                / Task job object, can query status via status/wait, get result via get(), modify pipeline via override_pipeline()
+            TaskJob: 任务作业对象，可通过 status/wait 查询状态，通过 get() 获取结果，通过 override_pipeline() 动态修改
+            pipeline
+
+                Task job object, can query status via status/wait, get result via get(), modify
+                pipeline via override_pipeline()
         """
+        if pipeline_override is None:
+            pipeline_override = {}
         taskid = Library.framework().MaaTaskerPostTask(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
@@ -165,7 +170,7 @@ class Tasker:
         self,
         action_type: JActionType,
         action_param: JActionParam,
-        box: Rect = Rect(0, 0, 0, 0),
+        box: RectType = (0, 0, 0, 0),
         reco_detail: str = "",
     ) -> TaskJob:
         """异步执行操作 / Asynchronously execute action
@@ -181,9 +186,7 @@ class Tasker:
         """
         rect_buffer = RectBuffer()
         rect_buffer.set(box)
-        action_param_json = json.dumps(
-            dataclasses.asdict(action_param), ensure_ascii=False
-        )
+        action_param_json = json.dumps(dataclasses.asdict(action_param), ensure_ascii=False)
         taskid = Library.framework().MaaTaskerPostAction(
             self._handle,
             action_type.encode(),
@@ -208,7 +211,8 @@ class Tasker:
         这是一个异步操作，会立即返回一个 Job 对象
         停止操作会中断当前运行的任务，并停止资源加载和控制器操作
         This is an asynchronous operation that immediately returns a Job object
-        The stop operation will interrupt the currently running task and stop resource loading and controller operations
+        The stop operation will interrupt the currently running task and stop resource loading and
+        controller operations
 
         Returns:
             Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
@@ -255,7 +259,7 @@ class Tasker:
         """
         return bool(Library.framework().MaaTaskerClearCache(self._handle))
 
-    def override_pipeline(self, task_id: int, pipeline_override: Dict) -> bool:
+    def override_pipeline(self, task_id: int, pipeline_override: dict[str, Any]) -> bool:
         """覆盖指定任务的 pipeline / Override pipeline for specified task
 
         在任务执行期间动态修改 pipeline 配置
@@ -273,7 +277,7 @@ class Tasker:
             json.dumps(pipeline_override, ensure_ascii=False).encode(),
         )
 
-    _sink_holder: Dict[int, "EventSink"] = {}
+    _sink_holder: dict[int, "EventSink"] = {}
 
     def add_sink(self, sink: "TaskerEventSink") -> Optional[int]:
         """添加实例事件监听器 / Add instance event listener
@@ -284,11 +288,7 @@ class Tasker:
         Returns:
             Optional[int]: 监听器 id，失败返回 None / Listener id, or None if failed
         """
-        sink_id = int(
-            Library.framework().MaaTaskerAddSink(
-                self._handle, *EventSink._gen_c_param(sink)
-            )
-        )
+        sink_id = int(Library.framework().MaaTaskerAddSink(self._handle, *EventSink._gen_c_param(sink)))
         if sink_id == MaaInvalidId:
             return None
 
@@ -317,11 +317,7 @@ class Tasker:
         Returns:
             Optional[int]: 监听器 id，失败返回 None / Listener id, or None if failed
         """
-        sink_id = int(
-            Library.framework().MaaTaskerAddContextSink(
-                self._handle, *EventSink._gen_c_param(sink)
-            )
-        )
+        sink_id = int(Library.framework().MaaTaskerAddContextSink(self._handle, *EventSink._gen_c_param(sink)))
         if sink_id == MaaInvalidId:
             return None
 
@@ -344,7 +340,7 @@ class Tasker:
     ### private ###
 
     @staticmethod
-    def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
+    def _gen_post_param(entry: str, pipeline_override: dict[str, Any]) -> tuple[bytes, bytes]:
         pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
 
         return (
@@ -383,7 +379,8 @@ class Tasker:
             reco_id: 识别号 / Recognition id
 
         Returns:
-            Optional[RecognitionDetail]: 识别详情，如果不存在则返回 None / Recognition detail, or None if not exists
+            Optional[RecognitionDetail]: 识别详情，如果不存在则返回 None
+            Recognition detail, or None if not exists
         """
         name = StringBuffer()
         algorithm = StringBuffer()  # type: ignore
@@ -567,16 +564,8 @@ class Tasker:
         if not ret:
             return None
 
-        recognition = (
-            self.get_recognition_detail(int(c_reco_id.value))
-            if c_reco_id.value != 0
-            else None
-        )
-        action = (
-            self.get_action_detail(int(c_action_id.value))
-            if c_action_id.value != 0
-            else None
-        )
+        recognition = self.get_recognition_detail(int(c_reco_id.value)) if c_reco_id.value != 0 else None
+        action = self.get_action_detail(int(c_action_id.value)) if c_action_id.value != 0 else None
 
         return NodeDetail(
             node_id=node_id,
@@ -706,7 +695,8 @@ class Tasker:
         """设置是否启用调试模式 / Set whether to enable debug mode
 
         调试模式下, RecoDetail 将可以获取到 raw/draws; 所有任务都会被视为 focus 而产生回调
-        In debug mode, RecoDetail can retrieve raw/draws; all tasks are treated as focus and produce callbacks
+        In debug mode, RecoDetail can retrieve raw/draws; all tasks are treated as focus and produce
+        callbacks
 
         Args:
             debug_mode: 是否启用调试模式 / Whether to enable debug mode
@@ -725,7 +715,8 @@ class Tasker:
 
     @staticmethod
     def set_save_on_error(save_on_error: bool) -> bool:
-        """设置是否在错误时保存截图到日志路径/on_error中 / Set whether to save screenshot on error to log path/on_error
+        """设置是否在错误时保存截图到日志路径/on_error中
+        Set whether to save screenshot on error to log path/on_error
 
         Args:
             save_on_error: 是否保存 / Whether to save
@@ -785,7 +776,8 @@ class Tasker:
         """加载插件 / Load plugin
 
         可以使用完整路径或仅使用名称, 仅使用名称时会在系统目录和当前目录中搜索. 也可以递归搜索目录中的插件
-        Can use full path or name only. When using name only, will search in system directory and current directory. Can also recursively search for plugins in a directory
+        Can use full path or name only. When using name only, will search in system directory and
+        current directory. Can also recursively search for plugins in a directory
 
         Args:
             path: 插件库路径或名称 / Plugin library path or name
@@ -802,7 +794,9 @@ class Tasker:
 
     _api_properties_initialized: bool = False
 
-    def _parse_recognition_raw_detail(self, algorithm: str, raw_detail):
+    def _parse_recognition_raw_detail(
+        self, algorithm: str, raw_detail: Any
+    ) -> tuple[list[RecognitionResult], list[RecognitionResult], Optional[RecognitionResult]]:
         if not raw_detail:
             return [], [], None
 
@@ -811,13 +805,15 @@ class Tasker:
         except ValueError:
             return [], [], None
 
-        ResultType = AlgorithmResultDict.get(algorithm_enum)
-        if not ResultType:
+        # The result class is selected dynamically from a dict of classes;
+        # construction is reflective over JSON, so treat it as Any.
+        result_cls: Any = AlgorithmResultDict.get(algorithm_enum)
+        if not result_cls:
             return [], [], None
 
         # And/Or 的 detail 是子识别结果数组，递归获取完整的 RecognitionDetail
         if algorithm_enum in (AlgorithmEnum.And, AlgorithmEnum.Or):
-            sub_results = []
+            sub_results: list[RecognitionDetail] = []
             for sub in raw_detail:
                 reco_id = sub.get("reco_id")
                 if not reco_id:
@@ -825,11 +821,11 @@ class Tasker:
                 sub_detail = self.get_recognition_detail(reco_id)
                 if sub_detail:
                     sub_results.append(sub_detail)
-            result = ResultType(sub_results=sub_results)
+            result = result_cls(sub_results=sub_results)
             return [result], [result], result
 
-        all_results: List[RecognitionResult] = []
-        filtered_results: List[RecognitionResult] = []
+        all_results: list[RecognitionResult] = []
+        filtered_results: list[RecognitionResult] = []
         best_result: Optional[RecognitionResult] = None
 
         raw_all_results = raw_detail.get("all", [])
@@ -837,18 +833,16 @@ class Tasker:
         raw_best_result = raw_detail.get("best", None)
 
         for raw_result in raw_all_results:
-            all_results.append(ResultType(**raw_result))
+            all_results.append(result_cls(**raw_result))
         for raw_result in raw_filtered_results:
-            filtered_results.append(ResultType(**raw_result))
+            filtered_results.append(result_cls(**raw_result))
         if raw_best_result:
-            best_result = ResultType(**raw_best_result)
+            best_result = result_cls(**raw_best_result)
 
         return all_results, filtered_results, best_result
 
     @staticmethod
-    def _parse_action_raw_detail(
-        action: str, raw_detail: Dict
-    ) -> Optional[ActionResult]:
+    def _parse_action_raw_detail(action: str, raw_detail: Any) -> Optional[ActionResult]:
         if not raw_detail:
             return None
 
@@ -857,14 +851,14 @@ class Tasker:
         except ValueError:
             return None
 
-        ResultType = ActionResultDict.get(action_enum)
-        if not ResultType:
+        result_cls: Any = ActionResultDict.get(action_enum)
+        if not result_cls:
             return None
 
         try:
             # cv::Point 在 JSON 中是数组 [x, y]，不需要转换
             # 直接使用 raw_detail 创建结果对象
-            return ResultType(**raw_detail)
+            return result_cls(**raw_detail)
         except (TypeError, KeyError):
             # 如果解析失败，返回 None
             return None
@@ -1069,7 +1063,6 @@ class Tasker:
 
 
 class TaskerEventSink(EventSink):
-
     @dataclass
     class TaskerTaskDetail:
         task_id: int
@@ -1077,16 +1070,13 @@ class TaskerEventSink(EventSink):
         uuid: str
         hash: str
 
-    def on_tasker_task(
-        self, tasker: Tasker, noti_type: NotificationType, detail: TaskerTaskDetail
-    ):
+    def on_tasker_task(self, tasker: Tasker, noti_type: NotificationType, detail: TaskerTaskDetail) -> None:
         pass
 
-    def on_raw_notification(self, tasker: Tasker, msg: str, details: dict):
+    def on_raw_notification(self, tasker: Tasker, msg: str, details: dict[str, Any]) -> None:
         pass
 
-    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
-
+    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict[str, Any]) -> None:
         tasker = Tasker(handle=handle)
         self.on_raw_notification(tasker, msg, details)
 

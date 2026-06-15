@@ -2,7 +2,7 @@ import ctypes
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Union, Optional, Any
+from typing import Any, Optional, Union
 
 from .define import *
 from .library import Library
@@ -29,7 +29,7 @@ class AdbDevice:
     address: str
     screencap_methods: int
     input_methods: int
-    config: Dict[str, Any]
+    config: dict[str, Any]
 
 
 @dataclass
@@ -60,7 +60,7 @@ class Toolkit:
     ### public ###
 
     @staticmethod
-    def init_option(user_path: Union[str, Path], default_config: Dict = {}) -> bool:
+    def init_option(user_path: Union[str, Path], default_config: Optional[dict[str, Any]] = None) -> bool:
         """从 user_path 中加载全局配置 / Load global config from user_path
 
         Args:
@@ -70,13 +70,13 @@ class Toolkit:
         Returns:
             bool: 是否成功 / Whether successful
         """
+        if default_config is None:
+            default_config = {}
         if Library.is_agent_server():
             from .tasker import Tasker
 
-            print(
-                "Warning: Toolkit.init_option is deprecated in AgentServer; only set_log_dir is applied."
-            )
-            config = default_config if isinstance(default_config, dict) else {}
+            print("Warning: Toolkit.init_option is deprecated in AgentServer; only set_log_dir is applied.")
+            config = default_config
             log_dir = Path(user_path) / "debug" if config.get("logging", True) else ""
             return Tasker.set_log_dir(log_dir)
 
@@ -90,9 +90,7 @@ class Toolkit:
         )
 
     @staticmethod
-    def find_adb_devices(
-        specified_adb: Optional[Union[str, Path]] = None
-    ) -> List[AdbDevice]:
+    def find_adb_devices(specified_adb: Optional[Union[str, Path]] = None) -> list[AdbDevice]:
         """搜索所有已知安卓模拟器 / Search all known Android emulators
 
         Args:
@@ -106,47 +104,31 @@ class Toolkit:
         list_handle = Library.toolkit().MaaToolkitAdbDeviceListCreate()
 
         if specified_adb:
-            Library.toolkit().MaaToolkitAdbDeviceFindSpecified(
-                str(specified_adb).encode(), list_handle
-            )
+            Library.toolkit().MaaToolkitAdbDeviceFindSpecified(str(specified_adb).encode(), list_handle)
         else:
             Library.toolkit().MaaToolkitAdbDeviceFind(list_handle)
 
         count = Library.toolkit().MaaToolkitAdbDeviceListSize(list_handle)
 
-        devices = []
+        devices: list[AdbDevice] = []
         for i in range(count):
             device_handle = Library.toolkit().MaaToolkitAdbDeviceListAt(list_handle, i)
 
             name = Library.toolkit().MaaToolkitAdbDeviceGetName(device_handle).decode()
-            adb_path = Path(
-                Library.toolkit().MaaToolkitAdbDeviceGetAdbPath(device_handle).decode()
-            )
-            address = (
-                Library.toolkit().MaaToolkitAdbDeviceGetAddress(device_handle).decode()
-            )
-            screencap_methods = int(
-                Library.toolkit().MaaToolkitAdbDeviceGetScreencapMethods(device_handle)
-            )
-            input_methods = int(
-                Library.toolkit().MaaToolkitAdbDeviceGetInputMethods(device_handle)
-            )
-            config = json.loads(
-                Library.toolkit().MaaToolkitAdbDeviceGetConfig(device_handle).decode()
-            )
+            adb_path = Path(Library.toolkit().MaaToolkitAdbDeviceGetAdbPath(device_handle).decode())
+            address = Library.toolkit().MaaToolkitAdbDeviceGetAddress(device_handle).decode()
+            screencap_methods = int(Library.toolkit().MaaToolkitAdbDeviceGetScreencapMethods(device_handle))
+            input_methods = int(Library.toolkit().MaaToolkitAdbDeviceGetInputMethods(device_handle))
+            config = json.loads(Library.toolkit().MaaToolkitAdbDeviceGetConfig(device_handle).decode())
 
-            devices.append(
-                AdbDevice(
-                    name, adb_path, address, screencap_methods, input_methods, config
-                )
-            )
+            devices.append(AdbDevice(name, adb_path, address, screencap_methods, input_methods, config))
 
         Library.toolkit().MaaToolkitAdbDeviceListDestroy(list_handle)
 
         return devices
 
     @staticmethod
-    def find_desktop_windows() -> List[DesktopWindow]:
+    def find_desktop_windows() -> list[DesktopWindow]:
         """查询所有窗口信息 / Query all window info
 
         Returns:
@@ -160,22 +142,12 @@ class Toolkit:
 
         count = Library.toolkit().MaaToolkitDesktopWindowListSize(list_handle)
 
-        windows = []
+        windows: list[DesktopWindow] = []
         for i in range(count):
-            window_handle = Library.toolkit().MaaToolkitDesktopWindowListAt(
-                list_handle, i
-            )
+            window_handle = Library.toolkit().MaaToolkitDesktopWindowListAt(list_handle, i)
             hwnd = Library.toolkit().MaaToolkitDesktopWindowGetHandle(window_handle)
-            class_name = (
-                Library.toolkit()
-                .MaaToolkitDesktopWindowGetClassName(window_handle)
-                .decode()
-            )
-            window_name = (
-                Library.toolkit()
-                .MaaToolkitDesktopWindowGetWindowName(window_handle)
-                .decode()
-            )
+            class_name = Library.toolkit().MaaToolkitDesktopWindowGetClassName(window_handle).decode()
+            window_name = Library.toolkit().MaaToolkitDesktopWindowGetWindowName(window_handle).decode()
 
             windows.append(DesktopWindow(hwnd, class_name, window_name))
 
@@ -204,7 +176,8 @@ class Toolkit:
         """请求 macOS 权限 / Request macOS permission
 
         向用户请求指定的 macOS 系统权限。系统可能会弹出授权对话框。
-        Request the specified macOS system permission from user. System may show an authorization dialog.
+        Request the specified macOS system permission from user. System may show an authorization
+        dialog.
 
         Args:
             perm: 权限类型 / Permission type
@@ -249,20 +222,14 @@ class Toolkit:
             ctypes.c_char_p,
         ]
 
-        Library.toolkit().MaaToolkitAdbDeviceListCreate.restype = (
-            MaaToolkitAdbDeviceListHandle
-        )
+        Library.toolkit().MaaToolkitAdbDeviceListCreate.restype = MaaToolkitAdbDeviceListHandle
         Library.toolkit().MaaToolkitAdbDeviceListCreate.argtypes = []
 
         Library.toolkit().MaaToolkitAdbDeviceListDestroy.restype = None
-        Library.toolkit().MaaToolkitAdbDeviceListDestroy.argtypes = [
-            MaaToolkitAdbDeviceListHandle
-        ]
+        Library.toolkit().MaaToolkitAdbDeviceListDestroy.argtypes = [MaaToolkitAdbDeviceListHandle]
 
         Library.toolkit().MaaToolkitAdbDeviceFind.restype = MaaBool
-        Library.toolkit().MaaToolkitAdbDeviceFind.argtypes = [
-            MaaToolkitAdbDeviceListHandle
-        ]
+        Library.toolkit().MaaToolkitAdbDeviceFind.argtypes = [MaaToolkitAdbDeviceListHandle]
 
         Library.toolkit().MaaToolkitAdbDeviceFindSpecified.restype = MaaBool
         Library.toolkit().MaaToolkitAdbDeviceFindSpecified.argtypes = [
@@ -271,9 +238,7 @@ class Toolkit:
         ]
 
         Library.toolkit().MaaToolkitAdbDeviceListSize.restype = MaaSize
-        Library.toolkit().MaaToolkitAdbDeviceListSize.argtypes = [
-            MaaToolkitAdbDeviceListHandle
-        ]
+        Library.toolkit().MaaToolkitAdbDeviceListSize.argtypes = [MaaToolkitAdbDeviceListHandle]
 
         Library.toolkit().MaaToolkitAdbDeviceListAt.restype = MaaToolkitAdbDeviceHandle
         Library.toolkit().MaaToolkitAdbDeviceListAt.argtypes = [
@@ -282,91 +247,55 @@ class Toolkit:
         ]
 
         Library.toolkit().MaaToolkitAdbDeviceGetName.restype = ctypes.c_char_p
-        Library.toolkit().MaaToolkitAdbDeviceGetName.argtypes = [
-            MaaToolkitAdbDeviceHandle
-        ]
+        Library.toolkit().MaaToolkitAdbDeviceGetName.argtypes = [MaaToolkitAdbDeviceHandle]
 
         Library.toolkit().MaaToolkitAdbDeviceGetAdbPath.restype = ctypes.c_char_p
-        Library.toolkit().MaaToolkitAdbDeviceGetAdbPath.argtypes = [
-            MaaToolkitAdbDeviceHandle
-        ]
+        Library.toolkit().MaaToolkitAdbDeviceGetAdbPath.argtypes = [MaaToolkitAdbDeviceHandle]
 
         Library.toolkit().MaaToolkitAdbDeviceGetAddress.restype = ctypes.c_char_p
-        Library.toolkit().MaaToolkitAdbDeviceGetAddress.argtypes = [
-            MaaToolkitAdbDeviceHandle
-        ]
+        Library.toolkit().MaaToolkitAdbDeviceGetAddress.argtypes = [MaaToolkitAdbDeviceHandle]
 
-        Library.toolkit().MaaToolkitAdbDeviceGetScreencapMethods.restype = (
-            MaaAdbScreencapMethod
-        )
-        Library.toolkit().MaaToolkitAdbDeviceGetScreencapMethods.argtypes = [
-            MaaToolkitAdbDeviceHandle
-        ]
+        Library.toolkit().MaaToolkitAdbDeviceGetScreencapMethods.restype = MaaAdbScreencapMethod
+        Library.toolkit().MaaToolkitAdbDeviceGetScreencapMethods.argtypes = [MaaToolkitAdbDeviceHandle]
 
         Library.toolkit().MaaToolkitAdbDeviceGetInputMethods.restype = MaaAdbInputMethod
-        Library.toolkit().MaaToolkitAdbDeviceGetInputMethods.argtypes = [
-            MaaToolkitAdbDeviceHandle
-        ]
+        Library.toolkit().MaaToolkitAdbDeviceGetInputMethods.argtypes = [MaaToolkitAdbDeviceHandle]
 
         Library.toolkit().MaaToolkitAdbDeviceGetConfig.restype = ctypes.c_char_p
-        Library.toolkit().MaaToolkitAdbDeviceGetConfig.argtypes = [
-            MaaToolkitAdbDeviceHandle
-        ]
+        Library.toolkit().MaaToolkitAdbDeviceGetConfig.argtypes = [MaaToolkitAdbDeviceHandle]
 
-        Library.toolkit().MaaToolkitDesktopWindowListCreate.restype = (
-            MaaToolkitDesktopWindowListHandle
-        )
+        Library.toolkit().MaaToolkitDesktopWindowListCreate.restype = MaaToolkitDesktopWindowListHandle
         Library.toolkit().MaaToolkitDesktopWindowListCreate.argtypes = []
 
         Library.toolkit().MaaToolkitDesktopWindowListDestroy.restype = None
-        Library.toolkit().MaaToolkitDesktopWindowListDestroy.argtypes = [
-            MaaToolkitDesktopWindowListHandle
-        ]
+        Library.toolkit().MaaToolkitDesktopWindowListDestroy.argtypes = [MaaToolkitDesktopWindowListHandle]
 
         Library.toolkit().MaaToolkitDesktopWindowFindAll.restype = MaaBool
-        Library.toolkit().MaaToolkitDesktopWindowFindAll.argtypes = [
-            MaaToolkitDesktopWindowListHandle
-        ]
+        Library.toolkit().MaaToolkitDesktopWindowFindAll.argtypes = [MaaToolkitDesktopWindowListHandle]
 
         Library.toolkit().MaaToolkitDesktopWindowListSize.restype = MaaSize
-        Library.toolkit().MaaToolkitDesktopWindowListSize.argtypes = [
-            MaaToolkitDesktopWindowListHandle
-        ]
+        Library.toolkit().MaaToolkitDesktopWindowListSize.argtypes = [MaaToolkitDesktopWindowListHandle]
 
-        Library.toolkit().MaaToolkitDesktopWindowListAt.restype = (
-            MaaToolkitDesktopWindowHandle
-        )
+        Library.toolkit().MaaToolkitDesktopWindowListAt.restype = MaaToolkitDesktopWindowHandle
         Library.toolkit().MaaToolkitDesktopWindowListAt.argtypes = [
             MaaToolkitDesktopWindowListHandle,
             MaaSize,
         ]
 
         Library.toolkit().MaaToolkitDesktopWindowGetHandle.restype = ctypes.c_void_p
-        Library.toolkit().MaaToolkitDesktopWindowGetHandle.argtypes = [
-            MaaToolkitDesktopWindowHandle
-        ]
+        Library.toolkit().MaaToolkitDesktopWindowGetHandle.argtypes = [MaaToolkitDesktopWindowHandle]
 
         Library.toolkit().MaaToolkitDesktopWindowGetClassName.restype = ctypes.c_char_p
-        Library.toolkit().MaaToolkitDesktopWindowGetClassName.argtypes = [
-            MaaToolkitDesktopWindowHandle
-        ]
+        Library.toolkit().MaaToolkitDesktopWindowGetClassName.argtypes = [MaaToolkitDesktopWindowHandle]
 
         Library.toolkit().MaaToolkitDesktopWindowGetWindowName.restype = ctypes.c_char_p
-        Library.toolkit().MaaToolkitDesktopWindowGetWindowName.argtypes = [
-            MaaToolkitDesktopWindowHandle
-        ]
+        Library.toolkit().MaaToolkitDesktopWindowGetWindowName.argtypes = [MaaToolkitDesktopWindowHandle]
 
         Library.toolkit().MaaToolkitMacOSCheckPermission.restype = MaaBool
-        Library.toolkit().MaaToolkitMacOSCheckPermission.argtypes = [
-            MaaMacOSPermission
-        ]
+        Library.toolkit().MaaToolkitMacOSCheckPermission.argtypes = [MaaMacOSPermission]
 
         Library.toolkit().MaaToolkitMacOSRequestPermission.restype = MaaBool
-        Library.toolkit().MaaToolkitMacOSRequestPermission.argtypes = [
-            MaaMacOSPermission
-        ]
+        Library.toolkit().MaaToolkitMacOSRequestPermission.argtypes = [MaaMacOSPermission]
 
         Library.toolkit().MaaToolkitMacOSRevealPermissionSettings.restype = MaaBool
-        Library.toolkit().MaaToolkitMacOSRevealPermissionSettings.argtypes = [
-            MaaMacOSPermission
-        ]
+        Library.toolkit().MaaToolkitMacOSRevealPermissionSettings.argtypes = [MaaMacOSPermission]

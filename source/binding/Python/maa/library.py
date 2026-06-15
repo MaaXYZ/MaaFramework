@@ -19,10 +19,15 @@ class Library:
     _toolkit: Optional[ctypes.CDLL] = None
     _agent_client: Optional[ctypes.CDLL] = None
     _agent_server: Optional[ctypes.CDLL] = None
-    _lib_type = None
+    _lib_type: Optional[type[ctypes.CDLL]] = None
+
+    framework_libpath: Optional[pathlib.Path] = None
+    toolkit_libpath: Optional[pathlib.Path] = None
+    agent_client_libpath: Optional[pathlib.Path] = None
+    agent_server_libpath: Optional[pathlib.Path] = None
 
     @classmethod
-    def open(cls, path: pathlib.Path, agent_server: bool = False):
+    def open(cls, path: pathlib.Path, agent_server: bool = False) -> None:
         """打开并加载库 / Open and load libraries
 
         Args:
@@ -44,49 +49,46 @@ class Library:
 
         cls._is_agent_server = agent_server
 
-        if not cls.is_agent_server():
-            framework_library = {
-                WINDOWS: "MaaFramework.dll",
-                MACOS: "libMaaFramework.dylib",
-                LINUX: "libMaaFramework.so",
-            }
-            agent_client_library = {
-                WINDOWS: "MaaAgentClient.dll",
-                MACOS: "libMaaAgentClient.dylib",
-                LINUX: "libMaaAgentClient.so",
-            }
-        else:
-            agent_server_library = {
-                WINDOWS: "MaaAgentServer.dll",
-                MACOS: "libMaaAgentServer.dylib",
-                LINUX: "libMaaAgentServer.so",
-            }
-
         platform_type = platform.system().lower()
-
-        if platform_type == WINDOWS:
-            cls._lib_type = ctypes.WinDLL
-        else:
-            cls._lib_type = ctypes.CDLL
-
-        if cls._lib_type is None:
-            raise
+        cls._lib_type = ctypes.WinDLL if platform_type == WINDOWS else ctypes.CDLL
 
         if not cls.is_agent_server():
-            toolkit_library = {
-                WINDOWS: "MaaToolkit.dll",
-                MACOS: "libMaaToolkit.dylib",
-                LINUX: "libMaaToolkit.so",
-            }
-
-            cls.framework_libpath = path / framework_library[platform_type]
-            cls.agent_client_libpath = path / agent_client_library[platform_type]
-            cls.toolkit_libpath = path / toolkit_library[platform_type]
+            cls.framework_libpath = (
+                path
+                / {
+                    WINDOWS: "MaaFramework.dll",
+                    MACOS: "libMaaFramework.dylib",
+                    LINUX: "libMaaFramework.so",
+                }[platform_type]
+            )
+            cls.agent_client_libpath = (
+                path
+                / {
+                    WINDOWS: "MaaAgentClient.dll",
+                    MACOS: "libMaaAgentClient.dylib",
+                    LINUX: "libMaaAgentClient.so",
+                }[platform_type]
+            )
+            cls.toolkit_libpath = (
+                path
+                / {
+                    WINDOWS: "MaaToolkit.dll",
+                    MACOS: "libMaaToolkit.dylib",
+                    LINUX: "libMaaToolkit.so",
+                }[platform_type]
+            )
         else:
-            cls.agent_server_libpath = path / agent_server_library[platform_type]
+            cls.agent_server_libpath = (
+                path
+                / {
+                    WINDOWS: "MaaAgentServer.dll",
+                    MACOS: "libMaaAgentServer.dylib",
+                    LINUX: "libMaaAgentServer.so",
+                }[platform_type]
+            )
 
     @classmethod
-    def framework(cls) -> Union["ctypes.CDLL", "ctypes.WinDLL"]:
+    def framework(cls) -> ctypes.CDLL:
         """获取 MaaFramework 库 / Get MaaFramework library
 
         Returns:
@@ -99,15 +101,12 @@ class Library:
             if not cls._framework:
                 cls._framework = cls._lib_type(str(cls.framework_libpath))
 
-            if cls._framework is None:
-                raise RuntimeError("Library._framework is None!")
-
             return cls._framework
         else:
             return cls.agent_server()
 
     @classmethod
-    def toolkit(cls) -> Union["ctypes.CDLL", "ctypes.WinDLL"]:
+    def toolkit(cls) -> ctypes.CDLL:
         """获取 MaaToolkit 库 / Get MaaToolkit library
 
         Returns:
@@ -128,7 +127,7 @@ class Library:
         return cls._toolkit
 
     @classmethod
-    def agent_client(cls) -> Union["ctypes.CDLL", "ctypes.WinDLL"]:
+    def agent_client(cls) -> ctypes.CDLL:
         """获取 MaaAgentClient 库 / Get MaaAgentClient library
 
         Returns:
@@ -149,11 +148,12 @@ class Library:
         return cls._agent_client
 
     @classmethod
-    def agent_server(cls) -> Union["ctypes.CDLL", "ctypes.WinDLL"]:
+    def agent_server(cls) -> ctypes.CDLL:
         """获取 MaaAgentServer 库 / Get MaaAgentServer library
 
         Returns:
-            (ctypes.CDLL | ctypes.WinDLL): MaaAgentServer 动态库对象 / MaaAgentServer dynamic library object
+            (ctypes.CDLL | ctypes.WinDLL): MaaAgentServer 动态库对象
+            MaaAgentServer dynamic library object
 
         Raises:
             ValueError: 如果不在 AgentServer 模式下调用
@@ -192,7 +192,7 @@ class Library:
     _api_properties_initialized: bool = False
 
     @classmethod
-    def _set_api_properties(cls):
+    def _set_api_properties(cls) -> None:
         if cls._api_properties_initialized:
             return
 

@@ -1,24 +1,28 @@
 import ctypes
-import pathlib
 import json
-from typing import Optional, Union, List, Dict
-from dataclasses import dataclass, field
+import pathlib
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 
 import numpy
 
-from .event_sink import EventSink, NotificationType
+from .buffer import ImageBuffer, StringBuffer, StringListBuffer
 from .define import *
+from .event_sink import EventSink, NotificationType
 from .job import Job
 from .library import Library
-from .buffer import StringBuffer, StringListBuffer, ImageBuffer
 from .pipeline import (
+    JActionParam,
+    JActionType,
     JPipelineData,
     JPipelineParser,
-    JRecognitionType,
     JRecognitionParam,
-    JActionType,
-    JActionParam,
+    JRecognitionType,
 )
+
+if TYPE_CHECKING:
+    from .custom_action import CustomAction
+    from .custom_recognition import CustomRecognition
 
 
 class Resource:
@@ -52,8 +56,8 @@ class Resource:
         if not self._handle:
             raise RuntimeError("Failed to create resource.")
 
-        self._custom_action_holder = {}
-        self._custom_recognition_holder = {}
+        self._custom_action_holder: dict[str, CustomAction] = {}
+        self._custom_recognition_holder: dict[str, CustomRecognition] = {}
 
     def __del__(self):
         if self._handle and self._own:
@@ -71,9 +75,7 @@ class Resource:
         Returns:
             Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
         """
-        res_id = Library.framework().MaaResourcePostBundle(
-            self._handle, str(path).encode()
-        )
+        res_id = Library.framework().MaaResourcePostBundle(self._handle, str(path).encode())
         return Job(res_id, self._status, self._wait)
 
     def post_ocr_model(self, path: Union[pathlib.Path, str]) -> Job:
@@ -88,9 +90,7 @@ class Resource:
         Returns:
             Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
         """
-        res_id = Library.framework().MaaResourcePostOcrModel(
-            self._handle, str(path).encode()
-        )
+        res_id = Library.framework().MaaResourcePostOcrModel(self._handle, str(path).encode())
         return Job(res_id, self._status, self._wait)
 
     def post_pipeline(self, path: Union[pathlib.Path, str]) -> Job:
@@ -108,9 +108,7 @@ class Resource:
         Returns:
             Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
         """
-        res_id = Library.framework().MaaResourcePostPipeline(
-            self._handle, str(path).encode()
-        )
+        res_id = Library.framework().MaaResourcePostPipeline(self._handle, str(path).encode())
         return Job(res_id, self._status, self._wait)
 
     def post_image(self, path: Union[pathlib.Path, str]) -> Job:
@@ -128,12 +126,10 @@ class Resource:
         Returns:
             Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
         """
-        res_id = Library.framework().MaaResourcePostImage(
-            self._handle, str(path).encode()
-        )
+        res_id = Library.framework().MaaResourcePostImage(self._handle, str(path).encode())
         return Job(res_id, self._status, self._wait)
 
-    def override_pipeline(self, pipeline_override: Dict) -> bool:
+    def override_pipeline(self, pipeline_override: dict[str, Any]) -> bool:
         """覆盖 pipeline / Override pipeline_override
 
         Args:
@@ -151,7 +147,7 @@ class Resource:
             )
         )
 
-    def override_next(self, name: str, next_list: List[str]) -> bool:
+    def override_next(self, name: str, next_list: list[str]) -> bool:
         """覆盖任务的 next 列表 / Override the next list of task
 
         注意：此方法会直接设置 next 列表，即使节点不存在也会创建
@@ -167,11 +163,7 @@ class Resource:
         list_buffer = StringListBuffer()
         list_buffer.set(next_list)
 
-        return bool(
-            Library.framework().MaaResourceOverrideNext(
-                self._handle, name.encode(), list_buffer._handle
-            )
-        )
+        return bool(Library.framework().MaaResourceOverrideNext(self._handle, name.encode(), list_buffer._handle))
 
     def override_image(self, image_name: str, image: numpy.ndarray) -> bool:
         """覆盖图片 / Override the image corresponding to image_name
@@ -187,12 +179,10 @@ class Resource:
         image_buffer.set(image)
 
         return bool(
-            Library.framework().MaaResourceOverrideImage(
-                self._handle, image_name.encode(), image_buffer._handle
-            )
+            Library.framework().MaaResourceOverrideImage(self._handle, image_name.encode(), image_buffer._handle)
         )
 
-    def get_node_data(self, name: str) -> Optional[Dict]:
+    def get_node_data(self, name: str) -> Optional[dict[str, Any]]:
         """获取任务当前的定义 / Get the current definition of task
 
         Args:
@@ -202,9 +192,7 @@ class Resource:
             Optional[Dict]: 任务定义字典，如果不存在则返回 None / Task definition dict, or None if not exists
         """
         string_buffer = StringBuffer()
-        if not Library.framework().MaaResourceGetNodeData(
-            self._handle, name.encode(), string_buffer._handle
-        ):
+        if not Library.framework().MaaResourceGetNodeData(self._handle, name.encode(), string_buffer._handle):
             return None
         data = string_buffer.get()
         if not data:
@@ -222,7 +210,8 @@ class Resource:
             name: 任务名 / Task name
 
         Returns:
-            Optional[JPipelineData]: 任务定义对象，如果不存在则返回 None / Task definition object, or None if not exists
+            Optional[JPipelineData]: 任务定义对象，如果不存在则返回 None
+            Task definition object, or None if not exists
         """
         node_data = self.get_node_data(name)
 
@@ -231,16 +220,15 @@ class Resource:
 
         return JPipelineParser.parse_pipeline_data(node_data)
 
-    def get_default_recognition_param(
-        self, reco_type: JRecognitionType
-    ) -> Optional[JRecognitionParam]:
+    def get_default_recognition_param(self, reco_type: JRecognitionType) -> Optional[JRecognitionParam]:
         """获取指定识别类型的默认参数 / Get default parameters for specified recognition type
 
         Args:
             reco_type: 识别类型 / Recognition type
 
         Returns:
-            Optional[JRecognitionParam]: 默认参数对象，如果不存在则返回 None / Default parameter object, or None if not exists
+            Optional[JRecognitionParam]: 默认参数对象，如果不存在则返回 None
+            Default parameter object, or None if not exists
         """
         string_buffer = StringBuffer()
         if not Library.framework().MaaResourceGetDefaultRecognitionParam(
@@ -258,16 +246,15 @@ class Resource:
         except (json.JSONDecodeError, ValueError):
             return None
 
-    def get_default_action_param(
-        self, action_type: JActionType
-    ) -> Optional[JActionParam]:
+    def get_default_action_param(self, action_type: JActionType) -> Optional[JActionParam]:
         """获取指定动作类型的默认参数 / Get default parameters for specified action type
 
         Args:
             action_type: 动作类型 / Action type
 
         Returns:
-            Optional[JActionParam]: 默认参数对象，如果不存在则返回 None / Default parameter object, or None if not exists
+            Optional[JActionParam]: 默认参数对象，如果不存在则返回 None
+            Default parameter object, or None if not exists
         """
         string_buffer = StringBuffer()
         if not Library.framework().MaaResourceGetDefaultActionParam(
@@ -311,9 +298,7 @@ class Resource:
         Returns:
             bool: 是否成功 / Whether successful
         """
-        return self.set_inference(
-            MaaInferenceExecutionProviderEnum.CPU, MaaInferenceDeviceEnum.CPU
-        )
+        return self.set_inference(MaaInferenceExecutionProviderEnum.CPU, MaaInferenceDeviceEnum.CPU)
 
     def use_directml(self, device_id: int = MaaInferenceDeviceEnum.Auto) -> bool:
         """使用 DirectML 进行推理 / Use DirectML for inference
@@ -343,9 +328,7 @@ class Resource:
         Returns:
             bool: 是否成功 / Whether successful
         """
-        return self.set_inference(
-            MaaInferenceExecutionProviderEnum.Auto, MaaInferenceDeviceEnum.Auto
-        )
+        return self.set_inference(MaaInferenceExecutionProviderEnum.Auto, MaaInferenceDeviceEnum.Auto)
 
     # not implemented
     # def use_cuda(self, nvidia_gpu_id: int) -> bool:
@@ -371,24 +354,29 @@ class Resource:
         """
         return self.use_auto_ep()
 
-    def custom_recognition(self, name: str):
+    def custom_recognition(self, name: str) -> Callable[[type["CustomRecognition"]], type["CustomRecognition"]]:
         """自定义识别器装饰器 / Custom recognition decorator
 
         Args:
-            name: 识别器名称，需与 Pipeline 中的 custom_recognition 字段匹配 / Recognition name, should match the custom_recognition field in Pipeline
+            name: 识别器名称，需与 Pipeline 中的 custom_recognition 字段匹配
+            Recognition name, should match the custom_recognition field in Pipeline
 
         Returns:
             装饰器函数 / Decorator function
         """
 
-        def wrapper_recognition(recognition):
+        def wrapper_recognition(
+            recognition: type["CustomRecognition"],
+        ) -> type["CustomRecognition"]:
             self.register_custom_recognition(name=name, recognition=recognition())
             return recognition
 
         return wrapper_recognition
 
     def register_custom_recognition(
-        self, name: str, recognition: "CustomRecognition"  # type: ignore
+        self,
+        name: str,
+        recognition: "CustomRecognition",
     ) -> bool:
         """注册自定义识别器 / Register a custom recognizer
 
@@ -443,23 +431,24 @@ class Resource:
             )
         )
 
-    def custom_action(self, name: str):
+    def custom_action(self, name: str) -> Callable[[type["CustomAction"]], type["CustomAction"]]:
         """自定义动作装饰器 / Custom action decorator
 
         Args:
-            name: 动作名称，需与 Pipeline 中的 custom_action 字段匹配 / Action name, should match the custom_action field in Pipeline
+            name: 动作名称，需与 Pipeline 中的 custom_action 字段匹配
+            Action name, should match the custom_action field in Pipeline
 
         Returns:
             装饰器函数 / Decorator function
         """
 
-        def wrapper_action(action):
+        def wrapper_action(action: type["CustomAction"]) -> type["CustomAction"]:
             self.register_custom_action(name=name, action=action())
             return action
 
         return wrapper_action
 
-    def register_custom_action(self, name: str, action: "CustomAction") -> bool:  # type: ignore
+    def register_custom_action(self, name: str, action: "CustomAction") -> bool:
         """注册自定义操作 / Register a custom action
 
         Args:
@@ -539,9 +528,7 @@ class Resource:
             RuntimeError: 如果获取失败
         """
         buffer = StringListBuffer()
-        if not Library.framework().MaaResourceGetCustomRecognitionList(
-            self._handle, buffer._handle
-        ):
+        if not Library.framework().MaaResourceGetCustomRecognitionList(self._handle, buffer._handle):
             raise RuntimeError("Failed to get custom recognition list.")
         return buffer.get()
 
@@ -556,9 +543,7 @@ class Resource:
             RuntimeError: 如果获取失败
         """
         buffer = StringListBuffer()
-        if not Library.framework().MaaResourceGetCustomActionList(
-            self._handle, buffer._handle
-        ):
+        if not Library.framework().MaaResourceGetCustomActionList(self._handle, buffer._handle):
             raise RuntimeError("Failed to get custom action list.")
         return buffer.get()
 
@@ -577,7 +562,7 @@ class Resource:
             raise RuntimeError("Failed to get hash.")
         return buffer.get()
 
-    _sink_holder: Dict[int, "ResourceEventSink"] = {}
+    _sink_holder: dict[int, "ResourceEventSink"] = {}
 
     def add_sink(self, sink: "ResourceEventSink") -> Optional[int]:
         """添加资源事件监听器 / Add resource event listener
@@ -588,11 +573,7 @@ class Resource:
         Returns:
             Optional[int]: 监听器 id，失败返回 None / Listener id, or None if failed
         """
-        sink_id = int(
-            Library.framework().MaaResourceAddSink(
-                self._handle, *EventSink._gen_c_param(sink)
-            )
-        )
+        sink_id = int(Library.framework().MaaResourceAddSink(self._handle, *EventSink._gen_c_param(sink)))
         if sink_id == MaaInvalidId:
             return None
 
@@ -824,7 +805,6 @@ class Resource:
 
 
 class ResourceEventSink(EventSink):
-
     @dataclass
     class ResourceLoadingDetail:
         res_id: int
@@ -840,11 +820,10 @@ class ResourceEventSink(EventSink):
     ):
         pass
 
-    def on_raw_notification(self, resource: Resource, msg: str, details: dict):
+    def on_raw_notification(self, resource: Resource, msg: str, details: dict[str, Any]) -> None:
         pass
 
-    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
-
+    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict[str, Any]) -> None:
         resource = Resource(handle=handle)
         self.on_raw_notification(resource, msg, details)
 

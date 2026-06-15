@@ -1,14 +1,18 @@
+import ctypes
 import json
 import os
-import numpy
 from abc import abstractmethod
+from collections.abc import Sequence
 from ctypes import c_int32
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional, Sequence, Tuple, Union
+from typing import Any, Optional, Union
+
+import numpy
 
 from .buffer import ImageBuffer, StringBuffer
-from .event_sink import EventSink, NotificationType
 from .define import *
+from .event_sink import EventSink, NotificationType
 from .job import Job, JobWithResult
 from .library import Library
 
@@ -68,15 +72,15 @@ class Controller:
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键) / Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left, 1:right, 2:middle)
+            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
+            1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
             Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
         """
-        ctrl_id = Library.framework().MaaControllerPostClickV2(
-            self._handle, x, y, contact, pressure
-        )
+        ctrl_id = Library.framework().MaaControllerPostClickV2(self._handle, x, y, contact, pressure)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_swipe(
@@ -97,7 +101,9 @@ class Controller:
             x2: 终点 x 坐标 / End x coordinate
             y2: 终点 y 坐标 / End y coordinate
             duration: 滑动时长(毫秒) / Swipe duration in milliseconds
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键) / Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left, 1:right, 2:middle)
+            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
+            1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -159,23 +165,20 @@ class Controller:
         Returns:
             Job: 作业对象 / Job object
         """
-        ctrl_id = Library.framework().MaaControllerPostInputText(
-            self._handle, text.encode()
-        )
+        ctrl_id = Library.framework().MaaControllerPostInputText(self._handle, text.encode())
         return self._gen_ctrl_job(ctrl_id)
 
     def post_start_app(self, intent: str) -> Job:
         """启动应用 / Start app
 
         Args:
-            intent: 目标应用 (Adb 控制器: package name 或 activity) / Target app (Adb controller: package name or activity)
+            intent: 目标应用 (Adb 控制器: package name 或 activity)
+            Target app (Adb controller: package name or activity)
 
         Returns:
             Job: 作业对象 / Job object
         """
-        ctrl_id = Library.framework().MaaControllerPostStartApp(
-            self._handle, intent.encode()
-        )
+        ctrl_id = Library.framework().MaaControllerPostStartApp(self._handle, intent.encode())
         return self._gen_ctrl_job(ctrl_id)
 
     def post_stop_app(self, intent: str) -> Job:
@@ -187,54 +190,50 @@ class Controller:
         Returns:
             Job: 作业对象 / Job object
         """
-        ctrl_id = Library.framework().MaaControllerPostStopApp(
-            self._handle, intent.encode()
-        )
+        ctrl_id = Library.framework().MaaControllerPostStopApp(self._handle, intent.encode())
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_touch_down(
-        self, x: int, y: int, contact: int = 0, pressure: int = 1
-    ) -> Job:
+    def post_touch_down(self, x: int, y: int, contact: int = 0, pressure: int = 1) -> Job:
         """按下 / Touch down
 
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键) / Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left, 1:right, 2:middle)
+            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
+            1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
             Job: 作业对象 / Job object
         """
-        ctrl_id = Library.framework().MaaControllerPostTouchDown(
-            self._handle, contact, x, y, pressure
-        )
+        ctrl_id = Library.framework().MaaControllerPostTouchDown(self._handle, contact, x, y, pressure)
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_touch_move(
-        self, x: int, y: int, contact: int = 0, pressure: int = 1
-    ) -> Job:
+    def post_touch_move(self, x: int, y: int, contact: int = 0, pressure: int = 1) -> Job:
         """移动 / Move
 
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键) / Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left, 1:right, 2:middle)
+            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
+            1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
             Job: 作业对象 / Job object
         """
-        ctrl_id = Library.framework().MaaControllerPostTouchMove(
-            self._handle, contact, x, y, pressure
-        )
+        ctrl_id = Library.framework().MaaControllerPostTouchMove(self._handle, contact, x, y, pressure)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_touch_up(self, contact: int = 0) -> Job:
         """抬起 / Touch up
 
         Args:
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键) / Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left, 1:right, 2:middle)
+            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
+            1:right, 2:middle)
 
         Returns:
             Job: 作业对象 / Job object
@@ -243,7 +242,8 @@ class Controller:
         return self._gen_ctrl_job(ctrl_id)
 
     def post_relative_move(self, dx: int, dy: int) -> Job:
-        """异步执行一次相对位移 (当前仅 Win32 controller 支持) / Asynchronously execute a relative movement (Currently only supported by Win32 controller)
+        """异步执行一次相对位移 (当前仅 Win32 controller 支持)
+        Asynchronously execute a relative movement (Currently only supported by Win32 controller)
 
         Args:
             dx: x 方向移动偏移 / x axis offset
@@ -252,9 +252,7 @@ class Controller:
         Returns:
             Job: 作业对象 / Job object
         """
-        ctrl_id = Library.framework().MaaControllerPostRelativeMove(
-            self._handle, dx, dy
-        )
+        ctrl_id = Library.framework().MaaControllerPostRelativeMove(self._handle, dx, dy)
         return self._gen_ctrl_job(ctrl_id)
 
     def set_mouse_lock_follow(self, enabled: bool) -> bool:
@@ -271,7 +269,10 @@ class Controller:
         """
         c_enabled = ctypes.c_bool(enabled)
         return Library.framework().MaaControllerSetOption(
-            self._handle, MaaCtrlOptionEnum.MouseLockFollow, ctypes.byref(c_enabled), ctypes.sizeof(c_enabled)
+            self._handle,
+            MaaCtrlOptionEnum.MouseLockFollow,
+            ctypes.byref(c_enabled),
+            ctypes.sizeof(c_enabled),
         )
 
     def set_background_managed_keys(self, keys: Sequence[int]) -> bool:
@@ -287,20 +288,22 @@ class Controller:
         """滚动 / Scroll
 
         Args:
-            dx: 水平滚动距离，正值向右滚动，负值向左滚动 / Horizontal scroll distance, positive for right, negative for left
+            dx: 水平滚动距离，正值向右滚动，负值向左滚动
+            Horizontal scroll distance, positive for right, negative for left
             dy: 垂直滚动距离，正值向上滚动，负值向下滚动 / Vertical scroll distance, positive for up, negative for down
 
         Returns:
             Job: 作业对象 / Job object
 
         Note:
-            Win32 控制器和实现了 scroll 的自定义控制器支持滚动操作 / Win32 controllers and custom controllers that implement scroll support this operation
+            Win32 控制器和实现了 scroll 的自定义控制器支持滚动操作
+            Win32 controllers and custom controllers that implement scroll support this operation
             建议使用 120 的整数倍（WHEEL_DELTA）以获得最佳兼容性 / Using multiples of 120 (WHEEL_DELTA) is recommended
         """
         ctrl_id = Library.framework().MaaControllerPostScroll(self._handle, dx, dy)
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_screencap(self) -> JobWithResult:
+    def post_screencap(self) -> JobWithResult[numpy.ndarray]:
         """截图 / Screenshot
 
         Returns:
@@ -328,30 +331,28 @@ class Controller:
             返回的图像是经过缩放的，尺寸根据截图目标尺寸设置（长边/短边）而定，可能与设备原始分辨率不同。
             使用 resolution 属性可获取设备的原始（未缩放）分辨率。
 
-            The returned image is scaled according to the screenshot target size settings (long side / short side).
+            The returned image is scaled according to the screenshot target size settings (long side
+            short side).
             The image dimensions may differ from the raw device resolution.
             Use the resolution property to get the raw (unscaled) device resolution.
         """
         image_buffer = ImageBuffer()
-        if not Library.framework().MaaControllerCachedImage(
-            self._handle, image_buffer._handle
-        ):
+        if not Library.framework().MaaControllerCachedImage(self._handle, image_buffer._handle):
             raise RuntimeError("Failed to get cached image.")
         return image_buffer.get()
 
-    def post_shell(self, cmd: str, timeout: int = 20000) -> JobWithResult:
+    def post_shell(self, cmd: str, timeout: int = 20000) -> JobWithResult[str]:
         """执行 shell 命令 (仅 ADB 控制器) / Execute shell command (ADB only)
 
         Args:
             cmd: shell 命令 / shell command
-            timeout: 超时时间（毫秒），默认 20000，设置为 -1 表示无限等待 / Timeout in milliseconds, default 20000, set to -1 for infinite wait
+            timeout: 超时时间（毫秒），默认 20000，设置为 -1 表示无限等待
+            Timeout in milliseconds, default 20000, set to -1 for infinite wait
 
         Returns:
             JobWithResult: 作业对象，可通过 result 获取命令输出 / Job object, can get output via result
         """
-        ctrl_id = Library.framework().MaaControllerPostShell(
-            self._handle, cmd.encode("utf-8"), timeout
-        )
+        ctrl_id = Library.framework().MaaControllerPostShell(self._handle, cmd.encode("utf-8"), timeout)
         return JobWithResult(
             ctrl_id,
             self._status,
@@ -365,7 +366,8 @@ class Controller:
         对于 Win32 控制器，这会恢复窗口位置（取消置顶）并解除输入阻断。
         对于其他控制器，这是一个空操作，总是成功。
 
-        For Win32 controllers, this restores window position (removes topmost) and unblocks user input.
+        For Win32 controllers, this restores window position (removes topmost) and unblocks user
+        input.
         For other controllers, this is a no-op that always succeeds.
 
         Returns:
@@ -385,9 +387,7 @@ class Controller:
             RuntimeError: 如果获取失败
         """
         string_buffer = StringBuffer()
-        if not Library.framework().MaaControllerGetShellOutput(
-            self._handle, string_buffer._handle
-        ):
+        if not Library.framework().MaaControllerGetShellOutput(self._handle, string_buffer._handle):
             raise RuntimeError("Failed to get shell output.")
         return string_buffer.get()
 
@@ -416,24 +416,23 @@ class Controller:
         return buffer.get()
 
     @property
-    def info(self) -> Dict[str, Any]:
+    def info(self) -> dict[str, Any]:
         """获取控制器信息 / Get controller information
 
         Returns:
-            Dict[str, Any]: 控制器信息，包含类型、构造参数等 / Controller information including type, constructor parameters, etc.
+            Dict[str, Any]: 控制器信息，包含类型、构造参数等
+            Controller information including type, constructor parameters, etc.
 
         Raises:
             RuntimeError: 如果获取失败
         """
         buffer = StringBuffer()
-        if not Library.framework().MaaControllerGetInfo(
-            self._handle, buffer._handle
-        ):
+        if not Library.framework().MaaControllerGetInfo(self._handle, buffer._handle):
             raise RuntimeError("Failed to get controller info.")
         return json.loads(buffer.get())
 
     @property
-    def resolution(self) -> Tuple[int, int]:
+    def resolution(self) -> tuple[int, int]:
         """获取设备原始（未缩放）分辨率 / Get the raw (unscaled) device resolution
 
         Returns:
@@ -445,15 +444,15 @@ class Controller:
             需要在首次截图后才能获取到有效值，否则返回 (0, 0)。
 
             This returns the actual device screen resolution before any scaling.
-            The screenshot obtained via cached_image is scaled according to the screenshot target size settings,
+            The screenshot obtained via cached_image is scaled according to the screenshot target
+            size settings,
             so its dimensions may differ from this raw resolution.
-            Valid values are only available after the first screenshot is taken, otherwise returns (0, 0).
+            Valid values are only available after the first screenshot is taken, otherwise returns
+            (0, 0).
         """
         width = ctypes.c_int32()
         height = ctypes.c_int32()
-        if not Library.framework().MaaControllerGetResolution(
-            self._handle, ctypes.byref(width), ctypes.byref(height)
-        ):
+        if not Library.framework().MaaControllerGetResolution(self._handle, ctypes.byref(width), ctypes.byref(height)):
             return (0, 0)
         return (width.value, height.value)
 
@@ -539,7 +538,7 @@ class Controller:
             )
         )
 
-    _sink_holder: Dict[int, "ControllerEventSink"] = {}
+    _sink_holder: dict[int, "ControllerEventSink"] = {}
 
     def add_sink(self, sink: "ControllerEventSink") -> Optional[int]:
         """添加控制器事件监听器 / Add controller event listener
@@ -550,11 +549,7 @@ class Controller:
         Returns:
             Optional[int]: 监听器 id，失败返回 None / Listener id, or None if failed
         """
-        sink_id = int(
-            Library.framework().MaaControllerAddSink(
-                self._handle, *EventSink._gen_c_param(sink)
-            )
-        )
+        sink_id = int(Library.framework().MaaControllerAddSink(self._handle, *EventSink._gen_c_param(sink)))
         if sink_id == MaaInvalidId:
             return None
 
@@ -812,7 +807,7 @@ class AdbController(Controller):
         address: str,
         screencap_methods: int = MaaAdbScreencapMethodEnum.Default,
         input_methods: int = MaaAdbInputMethodEnum.Default,
-        config: Dict[str, Any] = {},
+        config: Optional[dict[str, Any]] = None,
         agent_path: Union[str, Path] = AGENT_BINARY_PATH,
     ):
         """创建 Adb 控制器 / Create Adb controller
@@ -828,6 +823,8 @@ class AdbController(Controller):
         Raises:
             RuntimeError: 如果创建失败
         """
+        if config is None:
+            config = {}
         super().__init__()
         self._set_adb_api_properties()
 
@@ -844,7 +841,6 @@ class AdbController(Controller):
             raise RuntimeError("Failed to create ADB controller.")
 
     def _set_adb_api_properties(self):
-
         Library.framework().MaaAdbControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaAdbControllerCreate.argtypes = [
             ctypes.c_char_p,
@@ -945,7 +941,7 @@ class AndroidNativeController(Controller):
 
     def __init__(
         self,
-        config: Dict[str, Any],
+        config: dict[str, Any],
     ):
         """创建 Android Native 控制器 / Create Android native controller
 
@@ -1028,9 +1024,9 @@ class WlRootsController(Controller):
     """
 
     def __init__(
-            self,
-            wlr_socket_path: str,
-            use_win32_vk_code: bool = False,
+        self,
+        wlr_socket_path: str,
+        use_win32_vk_code: bool = False,
     ):
         """创建 WlRoots 控制器 / Create WlRoots controller
 
@@ -1064,7 +1060,9 @@ class WlRootsController(Controller):
 
 
 class DbgController(Controller):
-    """调试控制器，轮播图片截图，基本输入操作直接返回成功 / Debug controller that cycles through images from a directory"""
+    """调试控制器，轮播图片截图，基本输入操作直接返回成功
+
+    Debug controller that cycles through images from a directory"""
 
     def __init__(
         self,
@@ -1074,7 +1072,9 @@ class DbgController(Controller):
 
         Args:
             read_path: 图片目录（或单个图片文件）路径。连接时加载所有图片，截图时轮播。
-                        / Path to a directory of images (or a single image file). Images are loaded on connect and cycled on screencap.
+
+                        Path to a directory of images (or a single image file). Images are loaded on
+                        connect and cycled on screencap.
 
         Raises:
             RuntimeError: 如果创建失败
@@ -1107,7 +1107,9 @@ class ReplayController(Controller):
 
         Args:
             recording_path: 录制 JSONL 文件路径，由 RecordController 写入。截图路径基于该文件所在目录解析。
-                            / Path to the recording JSONL file written by RecordController. Screenshot paths are resolved relative to this file's parent directory.
+
+                            Path to the recording JSONL file written by RecordController. Screenshot
+                            paths are resolved relative to this file's parent directory.
 
         Raises:
             RuntimeError: 如果创建失败
@@ -1130,7 +1132,8 @@ class ReplayController(Controller):
 
 
 class RecordController(Controller):
-    """录制控制器，包装现有控制器并记录所有操作 / Record controller that wraps an existing controller and records all operations"""
+    """录制控制器，包装现有控制器并记录所有操作
+    Record controller that wraps an existing controller and records all operations"""
 
     def __init__(
         self,
@@ -1142,7 +1145,9 @@ class RecordController(Controller):
         Args:
             inner: 被包装的内部控制器 / The inner controller to wrap
             recording_path: 录制 JSONL 文件输出路径。截图会保存到同目录下的 "{stem}-Screenshot" 文件夹。
-                            / Path to the recording JSONL file to write. Screenshots are saved to a "{stem}-Screenshot" folder in the same directory.
+
+                            Path to the recording JSONL file to write. Screenshots are saved to a
+                            "{stem}-Screenshot" folder in the same directory.
 
         Raises:
             RuntimeError: 如果创建失败
@@ -1171,7 +1176,8 @@ class GamepadController(Controller):
     """虚拟手柄控制器 (仅 Windows) / Virtual gamepad controller (Windows only)
 
     通过 ViGEm 模拟 Xbox 360 或 DualShock 4 手柄，用于控制需要手柄输入的游戏。
-    Emulates Xbox 360 or DualShock 4 gamepad via ViGEm for controlling games that require gamepad input.
+    Emulates Xbox 360 or DualShock 4 gamepad via ViGEm for controlling games that require gamepad
+    input.
 
     需要安装 ViGEm Bus Driver: https://github.com/ViGEm/ViGEmBus/releases
     Requires ViGEm Bus Driver: https://github.com/ViGEm/ViGEmBus/releases
@@ -1194,9 +1200,12 @@ class GamepadController(Controller):
         """创建虚拟手柄控制器 / Create virtual gamepad controller
 
         Args:
-            hWnd: 窗口句柄，用于截图 (可为 None，不需要截图时) / Window handle for screencap (can be None if screencap not needed)
-            gamepad_type: 手柄类型 (MaaGamepadTypeEnum.Xbox360 或 MaaGamepadTypeEnum.DualShock4) / Gamepad type
-            screencap_method: 截图方式 (当 hWnd 不为 None 时使用) / Screencap method (used when hWnd is not None)
+            hWnd: 窗口句柄，用于截图 (可为 None，不需要截图时)
+            Window handle for screencap (can be None if screencap not needed)
+            gamepad_type: 手柄类型 (MaaGamepadTypeEnum.Xbox360 或 MaaGamepadTypeEnum.DualShock4)
+            Gamepad type
+            screencap_method: 截图方式 (当 hWnd 不为 None 时使用)
+            Screencap method (used when hWnd is not None)
 
         Raises:
             RuntimeError: 如果创建失败
@@ -1223,7 +1232,6 @@ class GamepadController(Controller):
 
 
 class CustomController(Controller):
-
     _callbacks: MaaCustomControllerCallbacks
 
     def __init__(self):
@@ -1263,7 +1271,7 @@ class CustomController(Controller):
             raise RuntimeError("Failed to create Custom controller.")
 
     @property
-    def c_handle(self) -> ctypes.POINTER(MaaCustomControllerCallbacks):
+    def c_handle(self) -> Any:
         return ctypes.pointer(self._callbacks)
 
     @property
@@ -1274,7 +1282,13 @@ class CustomController(Controller):
     def connect(self) -> bool:
         raise NotImplementedError
 
-    def connected(self) -> bool:
+    # Intentionally shadows Controller.connected (a @property) with a method:
+    # the C callback (MaaCustomControllerCallbacks.ConnectedFunc) invokes
+    # `self.connected()`, so it must be callable. `connected()` is a public
+    # override point (see test/python/binding_test.py), so it cannot be renamed
+    # without breaking the API. The method-overrides-property clash is inherent
+    # to this design, not a defect to fix.
+    def connected(self) -> bool:  # pyright: ignore[reportIncompatibleMethodOverride]
         """检查是否已连接（可选实现，默认返回 True）"""
         return True
 
@@ -1361,7 +1375,7 @@ class CustomController(Controller):
         """设置控制器为不活跃状态（可选实现，默认返回 True）"""
         return True
 
-    def get_custom_info(self) -> Dict[str, Any]:
+    def get_custom_info(self) -> dict[str, Any]:
         """获取自定义控制器的额外信息（可选实现，默认返回空字典）
 
         Get custom controller's extra info (optional, returns empty dict by default)
@@ -1437,7 +1451,7 @@ class CustomController(Controller):
     @staticmethod
     @MaaCustomControllerCallbacks.StartAppFunc
     def _c_start_app_agent(
-        c_intent: ctypes.c_char_p,
+        c_intent: bytes,
         trans_arg: ctypes.c_void_p,
     ) -> int:
         if not trans_arg:
@@ -1453,7 +1467,7 @@ class CustomController(Controller):
     @staticmethod
     @MaaCustomControllerCallbacks.StopAppFunc
     def _c_stop_app_agent(
-        c_intent: ctypes.c_char_p,
+        c_intent: bytes,
         trans_arg: ctypes.c_void_p,
     ) -> int:
         if not trans_arg:
@@ -1522,9 +1536,7 @@ class CustomController(Controller):
             ctypes.py_object,
         ).value
 
-        return int(
-            self.swipe(int(c_x1), int(c_y1), int(c_x2), int(c_y2), int(c_duration))
-        )
+        return int(self.swipe(int(c_x1), int(c_y1), int(c_x2), int(c_y2), int(c_duration)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.TouchDownFunc
@@ -1631,7 +1643,7 @@ class CustomController(Controller):
     @staticmethod
     @MaaCustomControllerCallbacks.InputTextFunc
     def _c_input_text_agent(
-        c_text: ctypes.c_char_p,
+        c_text: bytes,
         trans_arg: ctypes.c_void_p,
     ) -> int:
         if not trans_arg:
@@ -1681,7 +1693,7 @@ class CustomController(Controller):
     @staticmethod
     @MaaCustomControllerCallbacks.ShellFunc
     def _c_shell_agent(
-        c_cmd: ctypes.c_char_p,
+        c_cmd: bytes,
         c_timeout: ctypes.c_int64,
         trans_arg: ctypes.c_void_p,
         c_buffer: MaaStringBufferHandle,
@@ -1746,14 +1758,13 @@ class CustomController(Controller):
 
 
 class ControllerEventSink(EventSink):
-
     @dataclass
     class ControllerActionDetail:
         ctrl_id: int
         uuid: str
         action: str
-        param: dict
-        info: dict
+        param: dict[str, Any]
+        info: dict[str, Any]
 
     def on_controller_action(
         self,
@@ -1763,11 +1774,10 @@ class ControllerEventSink(EventSink):
     ):
         pass
 
-    def on_raw_notification(self, controller: Controller, msg: str, details: dict):
+    def on_raw_notification(self, controller: Controller, msg: str, details: dict[str, Any]) -> None:
         pass
 
-    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
-
+    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict[str, Any]) -> None:
         controller = Controller(handle=handle)
         self.on_raw_notification(controller, msg, details)
 
