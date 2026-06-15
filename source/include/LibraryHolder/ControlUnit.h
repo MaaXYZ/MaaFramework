@@ -174,7 +174,7 @@ class KWinControlUnitLibraryHolder : public LibraryHolder<KWinControlUnitLibrary
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::KWinControlUnitAPI>
-    create_control_unit(const char* device_node, int screen_width, int screen_height, bool use_win32_vk_code);
+        create_control_unit(const char* device_node, int screen_width, int screen_height, bool use_win32_vk_code);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaKWinControlUnit");

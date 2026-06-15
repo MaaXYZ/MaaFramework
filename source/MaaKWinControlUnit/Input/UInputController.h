@@ -59,7 +59,7 @@ private:
     static uint64_t now_ms();
 
     int fd_ = -1;
-    std::atomic<bool> connected_{ false };
+    std::atomic<bool> connected_ { false };
 
     int screen_width_ = 0;
     int screen_height_ = 0;

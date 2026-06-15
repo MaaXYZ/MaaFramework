@@ -2,8 +2,8 @@
 
 #include "MaaControlUnit/KWinControlUnitAPI.h"
 
-#include "Manager/KWinControlUnitMgr.h"
 #include "MaaUtils/Logger.h"
+#include "Manager/KWinControlUnitMgr.h"
 
 const char* MaaKWinControlUnitGetVersion()
 {

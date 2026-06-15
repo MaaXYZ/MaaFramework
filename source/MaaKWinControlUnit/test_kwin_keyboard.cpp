@@ -32,17 +32,16 @@
 static int s_passed = 0;
 static int s_failed = 0;
 
-#define TEST(cond, fmt, ...)                                                       \
-    do {                                                                           \
-        if (!(cond)) {                                                             \
-            fprintf(stderr, "  \033[31mFAIL\033[0m: " fmt "\n" __VA_OPT__(, )      \
-                    __VA_ARGS__);                                                  \
-            ++s_failed;                                                            \
-        } else {                                                                   \
-            printf("  \033[32mPASS\033[0m: " fmt "\n" __VA_OPT__(, )              \
-                   __VA_ARGS__);                                                   \
-            ++s_passed;                                                            \
-        }                                                                          \
+#define TEST(cond, fmt, ...)                                                                \
+    do {                                                                                    \
+        if (!(cond)) {                                                                      \
+            fprintf(stderr, "  \033[31mFAIL\033[0m: " fmt "\n" __VA_OPT__(, ) __VA_ARGS__); \
+            ++s_failed;                                                                     \
+        }                                                                                   \
+        else {                                                                              \
+            printf("  \033[32mPASS\033[0m: " fmt "\n" __VA_OPT__(, ) __VA_ARGS__);          \
+            ++s_passed;                                                                     \
+        }                                                                                   \
     } while (0)
 
 // ─── Phase 2: uinput integration helpers ───
@@ -57,8 +56,7 @@ static void test_single_key(MAA_CTRL_UNIT_NS::ControlUnitAPI* ctrl, int key, con
     TEST(ok, "key_down/key_up %s", label);
 }
 
-static void test_key_sequence(MAA_CTRL_UNIT_NS::ControlUnitAPI* ctrl,
-                              const char* sequence, const char* label)
+static void test_key_sequence(MAA_CTRL_UNIT_NS::ControlUnitAPI* ctrl, const char* sequence, const char* label)
 {
     printf("\n  -- %s --\n", label);
     printf("    Typing: \"%s\"\n", sequence);
@@ -105,15 +103,13 @@ int main(int argc, char** argv)
         MaaKWinControlUnitDestroy(handle);
         // Phase 2 failures may be environmental — still report Phase 1 results
         printf("\n  Phase 2 SKIPPED (no /dev/uinput access)\n");
-        printf("\n=== Summary: %d passed, %d failed (Phase 2 skipped) ===\n",
-               s_passed, s_failed);
+        printf("\n=== Summary: %d passed, %d failed (Phase 2 skipped) ===\n", s_passed, s_failed);
         return s_failed > 0 ? 1 : 0;
     }
     printf("  [PASS] MaaKWinControlUnitConnect\n");
 
     // Cast to ControlUnitAPI to access key_down/key_up virtual methods
-    MAA_CTRL_UNIT_NS::ControlUnitAPI* ctrl =
-        static_cast<MAA_CTRL_UNIT_NS::ControlUnitAPI*>(handle);
+    MAA_CTRL_UNIT_NS::ControlUnitAPI* ctrl = static_cast<MAA_CTRL_UNIT_NS::ControlUnitAPI*>(handle);
     if (!ctrl) {
         fprintf(stderr, "FAIL: handle cast to ControlUnitAPI failed\n");
         MaaKWinControlUnitDestroy(handle);

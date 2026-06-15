@@ -10,9 +10,9 @@
 #include <pipewire/pipewire.h>
 #include <pipewire/stream.h>
 #include <pipewire/thread-loop.h>
-#include <spa/param/video/raw.h>
-#include <spa/param/video/format-utils.h>
 #include <spa/param/buffers.h>
+#include <spa/param/video/format-utils.h>
+#include <spa/param/video/raw.h>
 #include <spa/pod/builder.h>
 #include <spa/pod/iter.h>
 
@@ -70,9 +70,13 @@ static constexpr int kBytesPerPixel = 4;
 // in @p response. If @p extract_key is non-null, extracts the corresponding
 // string value from the results dict into @p out_value.
 // ---------------------------------------------------------------------------
-static bool dbus_wait_for_signal(DBusConnection* conn, const std::string& request_path,
-                                 uint32_t& response, const char* extract_key,
-                                 std::string& out_value, int timeout_sec = kStartResponseTimeoutSec)
+static bool dbus_wait_for_signal(
+    DBusConnection* conn,
+    const std::string& request_path,
+    uint32_t& response,
+    const char* extract_key,
+    std::string& out_value,
+    int timeout_sec = kStartResponseTimeoutSec)
 {
     auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(timeout_sec);
 
@@ -161,8 +165,7 @@ static bool dbus_wait_for_signal(DBusConnection* conn, const std::string& reques
 // Uses DBusPendingCall (not send_with_reply_and_block) to avoid consuming
 // unrelated messages during the internal read loop.
 // ---------------------------------------------------------------------------
-static DBusMessage* dbus_call_pending(DBusConnection* conn, const char* method_name,
-                                      DBusMessage* msg, int timeout_ms = kDBusCallTimeoutMs)
+static DBusMessage* dbus_call_pending(DBusConnection* conn, const char* method_name, DBusMessage* msg, int timeout_ms = kDBusCallTimeoutMs)
 {
     DBusPendingCall* pending = nullptr;
     if (!dbus_connection_send_with_reply(conn, msg, &pending, timeout_ms)) {
@@ -375,8 +378,7 @@ bool PipeWireScreencap::screencap(cv::Mat& image)
     // Subsequent calls return the cached frame immediately without waiting.
     std::unique_lock<std::mutex> lock(frame_mutex_);
     if (latest_frame_.empty()) {
-        if (!frame_cv_.wait_for(lock, std::chrono::seconds(2),
-                                [this]() { return !latest_frame_.empty(); })) {
+        if (!frame_cv_.wait_for(lock, std::chrono::seconds(2), [this]() { return !latest_frame_.empty(); })) {
             LogError << "Timeout waiting for first PipeWire frame";
             return false;
         }
@@ -393,8 +395,7 @@ bool PipeWireScreencap::screencap(cv::Mat& image)
 bool PipeWireScreencap::dbus_open_pipewire_remote(DBusConnection* conn)
 {
     // OpenPipeWireRemote(session_handle, a{sv}) -> (h)
-    DBusMessage* msg = dbus_message_new_method_call(
-        kPortalBusName, kPortalPath, kPortalInterface, "OpenPipeWireRemote");
+    DBusMessage* msg = dbus_message_new_method_call(kPortalBusName, kPortalPath, kPortalInterface, "OpenPipeWireRemote");
     if (!msg) {
         LogError << "Failed to create OpenPipeWireRemote message";
         return false;
@@ -444,9 +445,7 @@ bool PipeWireScreencap::dbus_open_pipewire_remote(DBusConnection* conn)
     dbus_error_init(&err);
 
     int raw_fd = -1;
-    if (!dbus_message_get_args(reply, &err,
-                               DBUS_TYPE_UNIX_FD, &raw_fd,
-                               DBUS_TYPE_INVALID)) {
+    if (!dbus_message_get_args(reply, &err, DBUS_TYPE_UNIX_FD, &raw_fd, DBUS_TYPE_INVALID)) {
         LogError << "OpenPipeWireRemote: no FD in reply: " << (err.message ? err.message : "");
         dbus_error_free(&err);
         dbus_message_unref(reply);
@@ -488,8 +487,7 @@ bool PipeWireScreencap::dbus_create_session()
     }
     DBusConnection* conn = dbus_connection_;
 
-    DBusMessage* msg = dbus_message_new_method_call(
-        kPortalBusName, kPortalPath, kPortalInterface, "CreateSession");
+    DBusMessage* msg = dbus_message_new_method_call(kPortalBusName, kPortalPath, kPortalInterface, "CreateSession");
     if (!msg) {
         LogError << "Failed to create CreateSession message";
         return false;
@@ -511,11 +509,12 @@ bool PipeWireScreencap::dbus_create_session()
     // Parse reply: (o request_path)
     DBusMessageIter args;
     std::string create_request_path;
-    if (dbus_message_iter_init(reply, &args) &&
-        dbus_message_iter_get_arg_type(&args) == DBUS_TYPE_OBJECT_PATH) {
+    if (dbus_message_iter_init(reply, &args) && dbus_message_iter_get_arg_type(&args) == DBUS_TYPE_OBJECT_PATH) {
         const char* p = nullptr;
         dbus_message_iter_get_basic(&args, &p);
-        if (p) create_request_path = p;
+        if (p) {
+            create_request_path = p;
+        }
     }
 
     if (create_request_path.empty()) {
@@ -527,8 +526,7 @@ bool PipeWireScreencap::dbus_create_session()
     // Wait for Response signal with session_handle
     uint32_t response_code = 0;
     std::string session_handle;
-    if (!dbus_wait_for_signal(conn, create_request_path, response_code,
-                              "session_handle", session_handle)) {
+    if (!dbus_wait_for_signal(conn, create_request_path, response_code, "session_handle", session_handle)) {
         LogError << "CreateSession: no response signal";
         dbus_message_unref(reply);
         return false;
@@ -562,8 +560,7 @@ bool PipeWireScreencap::dbus_select_sources()
     }
     DBusConnection* conn = dbus_connection_;
 
-    DBusMessage* msg = dbus_message_new_method_call(
-        kPortalBusName, kPortalPath, kPortalInterface, "SelectSources");
+    DBusMessage* msg = dbus_message_new_method_call(kPortalBusName, kPortalPath, kPortalInterface, "SelectSources");
     if (!msg) {
         LogError << "Failed to create SelectSources message";
         return false;
@@ -577,7 +574,7 @@ bool PipeWireScreencap::dbus_select_sources()
 
     dbus_message_iter_open_container(&iter, DBUS_TYPE_ARRAY, "{sv}", &dict);
     dbus_append_dict_entry_string(&dict, "handle_token", "maa_select");
-    dbus_append_dict_entry_uint32(&dict, "types", 1);   // MONITOR
+    dbus_append_dict_entry_uint32(&dict, "types", 1); // MONITOR
     dbus_append_dict_entry_bool(&dict, "multiple", false);
     dbus_message_iter_close_container(&iter, &dict);
 
@@ -589,11 +586,12 @@ bool PipeWireScreencap::dbus_select_sources()
 
     DBusMessageIter args;
     std::string select_request_path;
-    if (dbus_message_iter_init(reply, &args) &&
-        dbus_message_iter_get_arg_type(&args) == DBUS_TYPE_OBJECT_PATH) {
+    if (dbus_message_iter_init(reply, &args) && dbus_message_iter_get_arg_type(&args) == DBUS_TYPE_OBJECT_PATH) {
         const char* p = nullptr;
         dbus_message_iter_get_basic(&args, &p);
-        if (p) select_request_path = p;
+        if (p) {
+            select_request_path = p;
+        }
     }
 
     if (select_request_path.empty()) {
@@ -632,8 +630,7 @@ bool PipeWireScreencap::dbus_start_stream()
     }
     DBusConnection* conn = dbus_connection_;
 
-    DBusMessage* msg = dbus_message_new_method_call(
-        kPortalBusName, kPortalPath, kPortalInterface, "Start");
+    DBusMessage* msg = dbus_message_new_method_call(kPortalBusName, kPortalPath, kPortalInterface, "Start");
     if (!msg) {
         LogError << "Failed to create Start message";
         return false;
@@ -660,11 +657,12 @@ bool PipeWireScreencap::dbus_start_stream()
 
     DBusMessageIter args;
     std::string start_request_path;
-    if (dbus_message_iter_init(reply, &args) &&
-        dbus_message_iter_get_arg_type(&args) == DBUS_TYPE_OBJECT_PATH) {
+    if (dbus_message_iter_init(reply, &args) && dbus_message_iter_get_arg_type(&args) == DBUS_TYPE_OBJECT_PATH) {
         const char* p = nullptr;
         dbus_message_iter_get_basic(&args, &p);
-        if (p) start_request_path = p;
+        if (p) {
+            start_request_path = p;
+        }
     }
 
     if (start_request_path.empty()) {
@@ -676,8 +674,7 @@ bool PipeWireScreencap::dbus_start_stream()
     // Add match rule so the D-Bus daemon delivers the Response signal
     DBusError err;
     dbus_error_init(&err);
-    std::string match_rule = "type='signal',interface='" + std::string(kPortalRequestInterface)
-        + "',path='" + start_request_path + "'";
+    std::string match_rule = "type='signal',interface='" + std::string(kPortalRequestInterface) + "',path='" + start_request_path + "'";
     dbus_bus_add_match(conn, match_rule.c_str(), &err);
     if (dbus_error_is_set(&err)) {
         dbus_error_free(&err);
@@ -696,9 +693,8 @@ bool PipeWireScreencap::dbus_start_stream()
 
             DBusMessage* sig_msg = nullptr;
             while ((sig_msg = dbus_connection_pop_message(conn)) != nullptr) {
-                if (dbus_message_is_signal(sig_msg, kPortalRequestInterface, "Response") &&
-                    start_request_path == dbus_message_get_path(sig_msg)) {
-
+                if (dbus_message_is_signal(sig_msg, kPortalRequestInterface, "Response")
+                    && start_request_path == dbus_message_get_path(sig_msg)) {
                     DBusMessageIter sig_args;
                     dbus_message_iter_init(sig_msg, &sig_args);
 
@@ -723,9 +719,7 @@ bool PipeWireScreencap::dbus_start_stream()
                             DBusMessageIter value;
                             dbus_message_iter_recurse(&entry, &value);
 
-                            if (key && strcmp(key, "streams") == 0 &&
-                                dbus_message_iter_get_arg_type(&value) == DBUS_TYPE_ARRAY) {
-
+                            if (key && strcmp(key, "streams") == 0 && dbus_message_iter_get_arg_type(&value) == DBUS_TYPE_ARRAY) {
                                 DBusMessageIter streams_array;
                                 dbus_message_iter_recurse(&value, &streams_array);
 
@@ -843,18 +837,17 @@ bool PipeWireScreencap::pw_init()
 
 bool PipeWireScreencap::pw_create_stream()
 {
-    struct pw_properties* props = pw_properties_new(
-        PW_KEY_MEDIA_TYPE, "Video",
-        PW_KEY_MEDIA_CATEGORY, "Capture",
-        PW_KEY_MEDIA_ROLE, "Screen",
-        nullptr);
+    struct pw_properties* props =
+        pw_properties_new(PW_KEY_MEDIA_TYPE, "Video", PW_KEY_MEDIA_CATEGORY, "Capture", PW_KEY_MEDIA_ROLE, "Screen", nullptr);
 
     // Use pw_stream_new (not pw_stream_new_simple) to avoid exception
     // unwinding ABI incompatibility between clang/libc++ and PipeWire's glibc.
     pw_stream_ = pw_stream_new(pw_core_, "MaaFramework Screencap", props);
     if (!pw_stream_) {
         LogError << "Failed to create PipeWire stream: " << strerror(errno);
-        if (props) pw_properties_free(props);
+        if (props) {
+            pw_properties_free(props);
+        }
         return false;
     }
 
@@ -884,10 +877,8 @@ bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
     const struct spa_pod* params[1];
     params[0] = spa_format_video_raw_build(&b, SPA_PARAM_EnumFormat, &video_info);
 
-    constexpr auto stream_flags = static_cast<enum pw_stream_flags>(
-        PW_STREAM_FLAG_AUTOCONNECT
-        | PW_STREAM_FLAG_DONT_RECONNECT
-        | PW_STREAM_FLAG_MAP_BUFFERS);
+    constexpr auto stream_flags =
+        static_cast<enum pw_stream_flags>(PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_DONT_RECONNECT | PW_STREAM_FLAG_MAP_BUFFERS);
 
     // Start the bg thread BEFORE pw_stream_connect
     if (pw_thread_loop_start(pw_thread_loop_) < 0) {
@@ -896,8 +887,7 @@ bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
     }
 
     pw_thread_loop_lock(pw_thread_loop_);
-    int ret = pw_stream_connect(pw_stream_, PW_DIRECTION_INPUT, node_id,
-                                stream_flags, params, 1);
+    int ret = pw_stream_connect(pw_stream_, PW_DIRECTION_INPUT, node_id, stream_flags, params, 1);
     pw_thread_loop_unlock(pw_thread_loop_);
 
     if (ret < 0) {
@@ -915,16 +905,18 @@ bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
 void PipeWireScreencap::pw_on_core_error(void* data, uint32_t id, int seq, int res, const char* message)
 {
     auto* self = static_cast<PipeWireScreencap*>(data);
-    LogError << "PipeWire core error: id=" << id << " seq=" << seq
-             << " res=" << res << " msg=" << (message ? message : "");
+    LogError << "PipeWire core error: id=" << id << " seq=" << seq << " res=" << res << " msg=" << (message ? message : "");
 
     if (id == PW_ID_CORE && res == -EPIPE) {
         self->connected_ = false;
     }
 }
 
-void PipeWireScreencap::pw_on_stream_state_changed(void* data, enum pw_stream_state old_state,
-                                                   enum pw_stream_state new_state, const char* error)
+void PipeWireScreencap::pw_on_stream_state_changed(
+    void* data,
+    enum pw_stream_state old_state,
+    enum pw_stream_state new_state,
+    const char* error)
 {
     auto* self = static_cast<PipeWireScreencap*>(data);
     (void)self;
@@ -953,7 +945,8 @@ void PipeWireScreencap::pw_on_stream_param_changed(void* data, uint32_t id, cons
 
     if (param) {
         const struct spa_pod_prop* prop;
-        SPA_POD_OBJECT_FOREACH((struct spa_pod_object*)param, prop) {
+        SPA_POD_OBJECT_FOREACH((struct spa_pod_object*)param, prop)
+        {
             if (prop->key == SPA_FORMAT_VIDEO_size) {
                 const struct spa_pod* val = &prop->value;
                 if (spa_pod_is_rectangle(val)) {
@@ -978,12 +971,16 @@ void PipeWireScreencap::pw_on_stream_param_changed(void* data, uint32_t id, cons
 
         buf_params[0] = static_cast<spa_pod*>(spa_pod_builder_add_object(
             &b,
-            SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
-            SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(
-                kPWBufferCountDefault, kPWBufferCountMin, kPWBufferCountMax),
-            SPA_PARAM_BUFFERS_blocks,  SPA_POD_Int(kPWBufferBlocks),
-            SPA_PARAM_BUFFERS_size,    SPA_POD_Int(static_cast<int32_t>(width * height * kBytesPerPixel)),
-            SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(static_cast<int32_t>(width * kBytesPerPixel)),
+            SPA_TYPE_OBJECT_ParamBuffers,
+            SPA_PARAM_Buffers,
+            SPA_PARAM_BUFFERS_buffers,
+            SPA_POD_CHOICE_RANGE_Int(kPWBufferCountDefault, kPWBufferCountMin, kPWBufferCountMax),
+            SPA_PARAM_BUFFERS_blocks,
+            SPA_POD_Int(kPWBufferBlocks),
+            SPA_PARAM_BUFFERS_size,
+            SPA_POD_Int(static_cast<int32_t>(width * height * kBytesPerPixel)),
+            SPA_PARAM_BUFFERS_stride,
+            SPA_POD_Int(static_cast<int32_t>(width * kBytesPerPixel)),
             SPA_PARAM_BUFFERS_align,
             SPA_POD_Int(kPWBufferAlign)));
 

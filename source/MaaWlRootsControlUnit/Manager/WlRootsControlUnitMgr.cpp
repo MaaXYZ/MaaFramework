@@ -6,10 +6,10 @@
 
 #include <opencv2/imgproc.hpp>
 
-#include "Utils/VkToEvdev.h"
 #include "Client/WaylandClient.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
+#include "Utils/VkToEvdev.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

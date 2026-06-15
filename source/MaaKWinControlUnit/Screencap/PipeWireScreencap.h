@@ -76,8 +76,7 @@ private:
 
     /* ---- PipeWire callbacks (static) ---- */
     static void pw_on_core_error(void* data, uint32_t id, int seq, int res, const char* message);
-    static void pw_on_stream_state_changed(void* data, enum pw_stream_state old_state,
-                                           enum pw_stream_state new_state, const char* error);
+    static void pw_on_stream_state_changed(void* data, enum pw_stream_state old_state, enum pw_stream_state new_state, const char* error);
     static void pw_on_stream_param_changed(void* data, uint32_t id, const struct spa_pod* param);
     static void pw_on_stream_process(void* data);
 
@@ -86,7 +85,7 @@ private:
     int infer_dimension_from_stride(uint32_t stride, size_t data_size) const;
 
     /* ---- Internal state ---- */
-    std::atomic<bool> connected_{ false };
+    std::atomic<bool> connected_ { false };
     bool open_attempted_ = false;
 
     int screen_width_ = 0;
