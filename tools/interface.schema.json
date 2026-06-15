@@ -406,7 +406,8 @@
                         "MacOS",
                         "PlayCover",
                         "Gamepad",
-                        "WlRoots"
+                        "WlRoots",
+                        "Gamescope"
                     ]
                 },
                 "display_short_side": {
@@ -614,6 +615,30 @@
                             "type": "string",
                             "title": "Wayland Socket 路径",
                             "description": "可选。Wayland Socket 路径，不提供则使用默认"
+                        },
+                        "use_win32_vk_code": {
+                            "type": "boolean",
+                            "title": "使用 Win32 VK 键码",
+                            "description": "可选。为 true 时按键被视为 Win32 Virtual-Key 码，内部转换为 Linux evdev 码；否则按原始 evdev 码处理。默认 false",
+                            "default": false
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "gamescope": {
+                    "type": "object",
+                    "title": "Gamescope 控制器配置",
+                    "description": "Gamescope 控制器的具体配置（仅 Linux）",
+                    "properties": {
+                        "node_id": {
+                            "type": "string",
+                            "title": "PipeWire Node ID",
+                            "description": "可选。PipeWire Node ID，用于指定 Gamescope 控制器的 PipeWire 节点"
+                        },
+                        "eis_socket_path": {
+                            "type": "string",
+                            "title": "EIS Socket 路径",
+                            "description": "可选。Gamescope EIS Socket 路径，用于连接 Gamescope 的 EIS 以实现输入控制"
                         },
                         "use_win32_vk_code": {
                             "type": "boolean",

@@ -21,6 +21,7 @@ __all__ = [
     "Win32Controller",
     "GamepadController",
     "WlRootsController",
+    "GamescopeController",
     "AndroidNativeController",
     "CustomController",
 ]
@@ -1058,6 +1059,54 @@ class WlRootsController(Controller):
     def _set_wlroots_api_properties(self):
         Library.framework().MaaWlRootsControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaWlRootsControllerCreate.argtypes = [
+            ctypes.c_char_p,
+            MaaBool,
+        ]
+
+
+class GamescopeController(Controller):
+    """Gamescope 控制器 / Gamescope controller
+
+    用于在 Linux 上控制 Gamescope 微合成器中运行的应用
+    For controlling apps running in Gamescope microcompositor on Linux
+    """
+
+    def __init__(
+            self,
+            node_id: int,
+            eis_socket_path: str,
+            use_win32_vk_code: bool = False,
+    ):
+        """创建 Gamescope 控制器 / Create Gamescope controller
+
+        Args:
+            node_id: PipeWire node ID for the gamescope output stream
+            eis_socket_path: EIS socket path for libei input emulation
+                (path determined by gamescope environment, typically under $XDG_RUNTIME_DIR)
+            use_win32_vk_code: 为 True 时按键被视为 Win32 VK 键码并转换为 Linux evdev 码；
+                默认 False，按原始 evdev 码处理
+                / When True, key codes are interpreted as Win32 Virtual-Key codes and translated
+                to Linux evdev codes internally; default False passes raw evdev codes through
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._set_gamescope_api_properties()
+
+        self._handle = Library.framework().MaaGamescopeControllerCreate(
+            ctypes.c_uint32(node_id),
+            eis_socket_path.encode(),
+            MaaBool(use_win32_vk_code),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create Gamescope controller.")
+
+    def _set_gamescope_api_properties(self):
+        Library.framework().MaaGamescopeControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaGamescopeControllerCreate.argtypes = [
+            ctypes.c_uint32,
             ctypes.c_char_p,
             MaaBool,
         ]

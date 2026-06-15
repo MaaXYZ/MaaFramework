@@ -63,6 +63,13 @@ struct InterfaceData
             MEO_JSONIZATION(MEO_OPT use_win32_vk_code);
         };
 
+        struct GamescopeConfig
+        {
+            bool use_win32_vk_code = false;
+
+            MEO_JSONIZATION(MEO_OPT use_win32_vk_code);
+        };
+
         enum class Type
         {
             Invalid,
@@ -72,6 +79,7 @@ struct InterfaceData
             PlayCover,
             Gamepad,
             WlRoots,
+            Gamescope,
         };
 
         std::string name;
@@ -98,6 +106,7 @@ struct InterfaceData
         PlayCoverConfig playcover;
         GamepadConfig gamepad;
         WlRootsConfig wlroots;
+        GamescopeConfig gamescope;
 
         MEO_JSONIZATION(
             name,
@@ -114,7 +123,8 @@ struct InterfaceData
             MEO_OPT macos,
             MEO_OPT playcover,
             MEO_OPT gamepad,
-            MEO_OPT wlroots);
+            MEO_OPT wlroots,
+            MEO_OPT gamescope);
     };
 
     struct Resource
@@ -387,6 +397,14 @@ struct Configuration
         MEO_JSONIZATION(MEO_OPT wlr_socket_path);
     };
 
+    struct GamescopeConfig
+    {
+        uint32_t node_id = 0;
+        std::string eis_socket_path;
+
+        MEO_JSONIZATION(MEO_OPT node_id, MEO_OPT eis_socket_path);
+    };
+
     struct Option
     {
         std::string name;
@@ -412,6 +430,7 @@ struct Configuration
     PlayCoverConfig playcover;
     GamepadConfig gamepad;
     WlRootsConfig wlroots;
+    GamescopeConfig gamescope;
     std::string resource;
     std::vector<Task> task;
 
@@ -427,6 +446,7 @@ struct Configuration
         MEO_OPT playcover,
         MEO_OPT gamepad,
         MEO_OPT wlroots,
+        MEO_OPT gamescope,
         resource,
         task,
         MEO_OPT global_option,
@@ -489,6 +509,13 @@ struct RuntimeParam
         bool use_win32_vk_code = false;
     };
 
+    struct GamescopeParam
+    {
+        uint32_t node_id = 0;
+        std::string eis_socket_path;
+        bool use_win32_vk_code = false;
+    };
+
     struct Task
     {
         std::string name;
@@ -505,7 +532,8 @@ struct RuntimeParam
         std::unordered_map<std::string, std::string> env_vars; // v2.5.0: PI_* env vars
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param, MacOSParam, PlayCoverParam, GamepadParam, WlRootsParam> controller_param;
+    std::variant<std::monostate, AdbParam, Win32Param, MacOSParam, PlayCoverParam, GamepadParam, WlRootsParam, GamescopeParam>
+        controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;

@@ -6,8 +6,8 @@
 
 #include <opencv2/imgproc.hpp>
 
-#include "Client/VkToEvdev.h"
 #include "Client/WaylandClient.h"
+#include "Common/VkToEvdev.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 

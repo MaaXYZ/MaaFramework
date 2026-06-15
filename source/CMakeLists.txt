@@ -42,6 +42,10 @@ if(WITH_WLROOTS_CONTROLLER)
     add_subdirectory(MaaWlRootsControlUnit)
 endif()
 
+if(WITH_GAMESCOPE_CONTROLLER)
+    add_subdirectory(MaaGamescopeControlUnit)
+endif()
+
 add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)

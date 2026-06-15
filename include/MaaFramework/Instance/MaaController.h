@@ -129,6 +129,19 @@ extern "C"
     MAA_FRAMEWORK_API MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path, MaaBool use_win32_vk_code);
 
     /**
+     * @brief Create a Gamescope controller for Linux.
+     *
+     * @param node_id PipeWire node ID for the gamescope output stream.
+     * @param eis_socket_path EIS socket path for libei keyboard/mouse emulation.
+     * @param use_win32_vk_code If true, key codes are Win32 VK codes translated to evdev internally.
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note This controller is designed for Gamescope on Linux.
+     * @note Requires libpipewire >= 0.3.50 and libei >= 1.6.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaGamescopeControllerCreate(uint32_t node_id, const char* eis_socket_path, MaaBool use_win32_vk_code);
+
+    /**
      * @brief Create a virtual gamepad controller for Windows.
      *
      * @param hWnd Window handle for screencap (optional, can be nullptr if screencap not needed).

@@ -777,6 +777,28 @@ maajs::ValueType load_wlroots_controller(maajs::EnvType env)
     return ctor;
 }
 
+GamescopeControllerImpl* GamescopeControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [node_id, eis_socket_path, use_win32_vk_code] = maajs::UnWrapArgs<GamescopeControllerCtorParam, void>(info);
+    auto ctrl = MaaGamescopeControllerCreate(node_id, eis_socket_path.c_str(), use_win32_vk_code);
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new GamescopeControllerImpl(ctrl, true);
+}
+
+void GamescopeControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+{
+}
+
+maajs::ValueType load_gamescope_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<GamescopeControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->gamescopeControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
 CustomControllerContext::~CustomControllerContext()
 {
     for (const auto& [_, ctx] : callbacks) {

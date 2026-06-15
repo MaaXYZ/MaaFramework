@@ -160,6 +160,7 @@ export using ::MaaReplayControllerCreate;
 export using ::MaaRecordControllerCreate;
 export using ::MaaPlayCoverControllerCreate;
 export using ::MaaWlRootsControllerCreate;
+export using ::MaaGamescopeControllerCreate;
 export using ::MaaGamepadControllerCreate;
 export using ::MaaControllerDestroy;
 export using ::MaaControllerAddSink;
