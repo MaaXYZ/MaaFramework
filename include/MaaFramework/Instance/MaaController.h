@@ -134,6 +134,9 @@ extern "C"
      * @param device_node The uinput device node path (e.g., "/dev/uinput").
      * @param screen_width The screen width in pixels.
      * @param screen_height The screen height in pixels.
+     * @param use_win32_vk_code If true, key codes passed to click_key / key_down / key_up are
+     *        interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes
+     *        internally. If false, key codes are passed through as raw evdev codes.
      * @return The controller handle, or nullptr on failure.
      *
      * @note This controller is designed for KWin (pure Wayland) on Linux.
@@ -144,7 +147,8 @@ extern "C"
      * @note Requires write permission to /dev/uinput (typically via the "input" group).
      * @note Only single touch is supported (contact must be 0).
      */
-    MAA_FRAMEWORK_API MaaController* MaaKWinControllerCreate(const char* device_node, int screen_width, int screen_height);
+    MAA_FRAMEWORK_API MaaController*
+        MaaKWinControllerCreate(const char* device_node, int screen_width, int screen_height, MaaBool use_win32_vk_code);
 
     /**
      * @brief Create a virtual gamepad controller for Windows.
