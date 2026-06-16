@@ -262,7 +262,7 @@ var searchData=
   ['maainferenceexecutionprovider_5fdirectml_259',['MaaInferenceExecutionProvider_DirectML',['../MaaDef_8h.html#a07c99fb673242274e529810067429535afc6b391b560f1e7d421ca2c6e26c693b',1,'MaaDef.h']]],
   ['maainferenceexecutionproviderenum_260',['MaaInferenceExecutionProviderEnum',['../MaaDef_8h.html#a07c99fb673242274e529810067429535',1,'MaaDef.h']]],
   ['maainvalidid_261',['MaaInvalidId',['../MaaDef_8h.html#a1b93c853d770a6723301f135d9e9e3bc',1,'MaaDef.h']]],
-  ['maakwincontrollercreate_262',['MaaKWinControllerCreate',['../MaaController_8h.html#aecbc98da716d7485a42b17167338b7c7',1,'MaaController.h']]],
+  ['maakwincontrollercreate_262',['MaaKWinControllerCreate',['../MaaController_8h.html#a8251284b9739632a57db4145894df73c',1,'MaaController.h']]],
   ['maakwincontrolunitconnect_263',['MaaKWinControlUnitConnect',['../KWinControlUnitAPI_8h.html#a1593a0bce3cd6eea67dd7e7f75fa5da5',1,'KWinControlUnitAPI.h']]],
   ['maakwincontrolunitcreate_264',['MaaKWinControlUnitCreate',['../KWinControlUnitAPI_8h.html#a81e8959b3623313bb31129ef2f6955f7',1,'KWinControlUnitAPI.h']]],
   ['maakwincontrolunitdestroy_265',['MaaKWinControlUnitDestroy',['../KWinControlUnitAPI_8h.html#a6bb78b2eff942c8ff7b8da1352062c2f',1,'KWinControlUnitAPI.h']]],

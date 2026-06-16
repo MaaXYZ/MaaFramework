@@ -121,7 +121,7 @@ var searchData=
   ['maaimagelistbufferisempty_118',['MaaImageListBufferIsEmpty',['../MaaBuffer_8h.html#a7ce8c531e32d570b8c135c291fce9069',1,'MaaBuffer.h']]],
   ['maaimagelistbufferremove_119',['MaaImageListBufferRemove',['../MaaBuffer_8h.html#ab0c5beb1f17b944dd1d5ae1a2e9c55fe',1,'MaaBuffer.h']]],
   ['maaimagelistbuffersize_120',['MaaImageListBufferSize',['../MaaBuffer_8h.html#a8ecfbee12a38ae81af4736a9b7122a44',1,'MaaBuffer.h']]],
-  ['maakwincontrollercreate_121',['MaaKWinControllerCreate',['../MaaController_8h.html#aecbc98da716d7485a42b17167338b7c7',1,'MaaController.h']]],
+  ['maakwincontrollercreate_121',['MaaKWinControllerCreate',['../MaaController_8h.html#a8251284b9739632a57db4145894df73c',1,'MaaController.h']]],
   ['maakwincontrolunitconnect_122',['MaaKWinControlUnitConnect',['../KWinControlUnitAPI_8h.html#a1593a0bce3cd6eea67dd7e7f75fa5da5',1,'KWinControlUnitAPI.h']]],
   ['maakwincontrolunitcreate_123',['MaaKWinControlUnitCreate',['../KWinControlUnitAPI_8h.html#a81e8959b3623313bb31129ef2f6955f7',1,'KWinControlUnitAPI.h']]],
   ['maakwincontrolunitdestroy_124',['MaaKWinControlUnitDestroy',['../KWinControlUnitAPI_8h.html#a6bb78b2eff942c8ff7b8da1352062c2f',1,'KWinControlUnitAPI.h']]],

@@ -343,7 +343,7 @@
     <member refid="MaaController_8h_1a801ccbca7db84ce9a6f6333183b6cc3c" kind="function"><name>MaaRecordControllerCreate</name></member>
     <member refid="MaaController_8h_1af9b278b0a220ea72ff4ce564a055ff52" kind="function"><name>MaaPlayCoverControllerCreate</name></member>
     <member refid="MaaController_8h_1a8a7cec67c98e73c2cd12b95708cafd16" kind="function"><name>MaaWlRootsControllerCreate</name></member>
-    <member refid="MaaController_8h_1aecbc98da716d7485a42b17167338b7c7" kind="function"><name>MaaKWinControllerCreate</name></member>
+    <member refid="MaaController_8h_1a8251284b9739632a57db4145894df73c" kind="function"><name>MaaKWinControllerCreate</name></member>
     <member refid="MaaController_8h_1ab979f25e17e04ae8cc2d2a6aa1b2540a" kind="function"><name>MaaGamepadControllerCreate</name></member>
     <member refid="MaaController_8h_1a497982481bf79e89bc457d8a6e5e7bed" kind="function"><name>MaaControllerDestroy</name></member>
     <member refid="MaaController_8h_1aa01ed95af83d12f7bc3d49fdba415419" kind="function"><name>MaaControllerAddSink</name></member>

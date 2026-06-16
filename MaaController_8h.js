@@ -11,7 +11,7 @@ var MaaController_8h =
     [ "MaaRecordControllerCreate", "MaaController_8h.html#a801ccbca7db84ce9a6f6333183b6cc3c", null ],
     [ "MaaPlayCoverControllerCreate", "MaaController_8h.html#af9b278b0a220ea72ff4ce564a055ff52", null ],
     [ "MaaWlRootsControllerCreate", "MaaController_8h.html#a8a7cec67c98e73c2cd12b95708cafd16", null ],
-    [ "MaaKWinControllerCreate", "MaaController_8h.html#aecbc98da716d7485a42b17167338b7c7", null ],
+    [ "MaaKWinControllerCreate", "MaaController_8h.html#a8251284b9739632a57db4145894df73c", null ],
     [ "MaaGamepadControllerCreate", "MaaController_8h.html#ab979f25e17e04ae8cc2d2a6aa1b2540a", null ],
     [ "MaaControllerDestroy", "MaaController_8h.html#a497982481bf79e89bc457d8a6e5e7bed", null ],
     [ "MaaControllerAddSink", "MaaController_8h.html#aa01ed95af83d12f7bc3d49fdba415419", null ],
