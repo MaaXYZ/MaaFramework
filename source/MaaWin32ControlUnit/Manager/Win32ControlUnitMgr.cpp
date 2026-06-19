@@ -280,10 +280,9 @@ bool Win32ControlUnitMgr::start_app(const std::string& intent)
                     CloseHandle(sei.hProcess);
                 }
                 return true;
-            } else {
-                LogError << "ShellExecuteExW failed, error:" << GetLastError();
-                return false;
             }
+            LogError << "ShellExecuteExW failed, error:" << GetLastError();
+            return false;
         }
         LogError << "CreateProcessW failed, error:" << err;
         return false;
