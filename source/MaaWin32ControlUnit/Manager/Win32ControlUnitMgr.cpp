@@ -266,7 +266,26 @@ bool Win32ControlUnitMgr::start_app(const std::string& intent)
     ZeroMemory(&pi, sizeof(pi));
 
     if (!CreateProcessW(nullptr, cmd.data(), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi)) {
-        LogError << "CreateProcessW failed, error:" << GetLastError();
+        DWORD err = GetLastError();
+        if (err == ERROR_ELEVATION_REQUIRED) {
+            LogInfo << "Elevation required. Falling back to ShellExecuteExW...";
+            SHELLEXECUTEINFOW sei = { sizeof(sei) };
+            sei.fMask = SEE_MASK_NOCLOSEPROCESS;
+            sei.lpVerb = L"runas";
+            sei.lpFile = cmd.c_str();
+            sei.nShow = SW_SHOWNORMAL;
+            if (ShellExecuteExW(&sei)) {
+                LogInfo << "ShellExecuteExW succeeded.";
+                if (sei.hProcess) {
+                    CloseHandle(sei.hProcess);
+                }
+                return true;
+            } else {
+                LogError << "ShellExecuteExW failed, error:" << GetLastError();
+                return false;
+            }
+        }
+        LogError << "CreateProcessW failed, error:" << err;
         return false;
     }
 
