@@ -255,10 +255,36 @@ bool Win32ControlUnitMgr::start_app(const std::string& intent)
 
 bool Win32ControlUnitMgr::stop_app(const std::string& intent)
 {
-    // TODO
+    LogFunc << VAR(intent);
     std::ignore = intent;
 
-    return false;
+    if (!hwnd_ || !IsWindow(hwnd_)) {
+        LogError << "hwnd_ is invalid";
+        return false;
+    }
+
+    DWORD processId = 0;
+    GetWindowThreadProcessId(hwnd_, &processId);
+    if (processId == 0) {
+        LogError << "GetWindowThreadProcessId failed, error:" << GetLastError();
+        return false;
+    }
+
+    HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, processId);
+    if (!hProcess) {
+        LogError << "OpenProcess failed, error:" << GetLastError();
+        return false;
+    }
+
+    if (!TerminateProcess(hProcess, 0)) {
+        LogError << "TerminateProcess failed, error:" << GetLastError();
+        CloseHandle(hProcess);
+        return false;
+    }
+
+    CloseHandle(hProcess);
+    LogInfo << "Process" << processId << "terminated successfully";
+    return true;
 }
 
 bool Win32ControlUnitMgr::screencap(cv::Mat& image)
