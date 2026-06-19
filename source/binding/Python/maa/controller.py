@@ -23,6 +23,7 @@ __all__ = [
     "RecordController",
     "PlayCoverController",
     "Win32Controller",
+    "KWinController",
     "GamepadController",
     "WlRootsController",
     "AndroidNativeController",
@@ -1055,6 +1056,57 @@ class WlRootsController(Controller):
         Library.framework().MaaWlRootsControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaWlRootsControllerCreate.argtypes = [
             ctypes.c_char_p,
+            MaaBool,
+        ]
+
+
+class KWinController(Controller):
+    """KWin 控制器 (Linux Wayland) / KWin controller (Linux Wayland)
+
+    通过 PipeWire / xdg-desktop-portal 截图，通过 /dev/uinput 模拟输入。
+    Screencap via PipeWire / xdg-desktop-portal, input via /dev/uinput.
+    """
+
+    def __init__(
+        self,
+        device_node: str,
+        screen_width: int,
+        screen_height: int,
+        use_win32_vk_code: bool = False,
+    ):
+        """创建 KWin 控制器 / Create KWin controller
+
+        Args:
+            device_node: uinput 设备节点路径 (如 "/dev/uinput") / uinput device node path
+            screen_width: 屏幕宽度（像素） / Screen width in pixels
+            screen_height: 屏幕高度（像素） / Screen height in pixels
+            use_win32_vk_code: 为 True 时按键被视为 Win32 VK 键码并转换为 Linux evdev 码；
+                默认 False，按原始 evdev 码处理
+                / When True, key codes are interpreted as Win32 Virtual-Key codes and translated
+                to Linux evdev codes internally; default False passes raw evdev codes through
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._set_kwin_api_properties()
+
+        self._handle = Library.framework().MaaKWinControllerCreate(
+            device_node.encode(),
+            screen_width,
+            screen_height,
+            MaaBool(use_win32_vk_code),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create KWin controller.")
+
+    def _set_kwin_api_properties(self):
+        Library.framework().MaaKWinControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaKWinControllerCreate.argtypes = [
+            ctypes.c_char_p,
+            ctypes.c_int32,
+            ctypes.c_int32,
             MaaBool,
         ]
 
