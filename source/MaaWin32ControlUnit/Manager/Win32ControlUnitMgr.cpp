@@ -250,10 +250,30 @@ MaaControllerFeature Win32ControlUnitMgr::get_features() const
 
 bool Win32ControlUnitMgr::start_app(const std::string& intent)
 {
-    // TODO
-    std::ignore = intent;
+    LogFunc << VAR(intent);
 
-    return false;
+    if (intent.empty()) {
+        LogError << "intent is empty";
+        return false;
+    }
+
+    std::wstring cmd = MAA_NS::to_u16(intent);
+
+    STARTUPINFOW si;
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+
+    if (!CreateProcessW(nullptr, cmd.data(), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi)) {
+        LogError << "CreateProcessW failed, error:" << GetLastError();
+        return false;
+    }
+
+    LogInfo << "CreateProcessW succeeded, PID:" << pi.dwProcessId;
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    return true;
 }
 
 bool Win32ControlUnitMgr::stop_app(const std::string& intent)
