@@ -5,6 +5,9 @@
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Time.hpp"
+#include "MaaUtils/Encoding.h"
+
+#include <tlhelp32.h>
 
 #include "Input/BackgroundManagedKeyInput.h"
 #include "Input/LegacyEventInput.h"
@@ -256,35 +259,69 @@ bool Win32ControlUnitMgr::start_app(const std::string& intent)
 bool Win32ControlUnitMgr::stop_app(const std::string& intent)
 {
     LogFunc << VAR(intent);
-    std::ignore = intent;
 
-    if (!hwnd_ || !IsWindow(hwnd_)) {
-        LogError << "hwnd_ is invalid";
-        return false;
-    }
+    if (intent.empty()) {
+        if (!hwnd_ || !IsWindow(hwnd_)) {
+            LogError << "hwnd_ is invalid and intent is empty";
+            return false;
+        }
 
-    DWORD processId = 0;
-    GetWindowThreadProcessId(hwnd_, &processId);
-    if (processId == 0) {
-        LogError << "GetWindowThreadProcessId failed, error:" << GetLastError();
-        return false;
-    }
+        DWORD processId = 0;
+        GetWindowThreadProcessId(hwnd_, &processId);
+        if (processId == 0) {
+            LogError << "GetWindowThreadProcessId failed, error:" << GetLastError();
+            return false;
+        }
 
-    HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, processId);
-    if (!hProcess) {
-        LogError << "OpenProcess failed, error:" << GetLastError();
-        return false;
-    }
+        HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, processId);
+        if (!hProcess) {
+            LogError << "OpenProcess failed, error:" << GetLastError();
+            return false;
+        }
 
-    if (!TerminateProcess(hProcess, 0)) {
-        LogError << "TerminateProcess failed, error:" << GetLastError();
+        if (!TerminateProcess(hProcess, 0)) {
+            LogError << "TerminateProcess failed, error:" << GetLastError();
+            CloseHandle(hProcess);
+            return false;
+        }
+
         CloseHandle(hProcess);
+        LogInfo << "Process" << processId << "terminated successfully by hwnd";
+        return true;
+    }
+
+    std::wstring target_exe = MAA_NS::to_u16(intent);
+    HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnap == INVALID_HANDLE_VALUE) {
+        LogError << "CreateToolhelp32Snapshot failed, error:" << GetLastError();
         return false;
     }
 
-    CloseHandle(hProcess);
-    LogInfo << "Process" << processId << "terminated successfully";
-    return true;
+    PROCESSENTRY32W pe;
+    pe.dwSize = sizeof(pe);
+    bool terminated_any = false;
+
+    if (Process32FirstW(hSnap, &pe)) {
+        do {
+            if (target_exe == pe.szExeFile) {
+                HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe.th32ProcessID);
+                if (hProcess) {
+                    if (TerminateProcess(hProcess, 0)) {
+                        LogInfo << "Process" << pe.th32ProcessID << "terminated successfully by intent matching";
+                        terminated_any = true;
+                    } else {
+                        LogError << "TerminateProcess failed for PID" << pe.th32ProcessID << "error:" << GetLastError();
+                    }
+                    CloseHandle(hProcess);
+                } else {
+                    LogError << "OpenProcess failed for PID" << pe.th32ProcessID << "error:" << GetLastError();
+                }
+            }
+        } while (Process32NextW(hSnap, &pe));
+    }
+    CloseHandle(hSnap);
+
+    return terminated_any;
 }
 
 bool Win32ControlUnitMgr::screencap(cv::Mat& image)
