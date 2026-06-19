@@ -269,10 +269,33 @@ bool Win32ControlUnitMgr::start_app(const std::string& intent)
         DWORD err = GetLastError();
         if (err == ERROR_ELEVATION_REQUIRED) {
             LogInfo << "Elevation required. Falling back to ShellExecuteExW...";
+            std::wstring file = cmd;
+            std::wstring args;
+            if (!cmd.empty()) {
+                if (cmd[0] == L'\"') {
+                    auto pos = cmd.find(L'\"', 1);
+                    if (pos != std::wstring::npos) {
+                        file = cmd.substr(1, pos - 1);
+                        if (pos + 1 < cmd.length()) {
+                            args = cmd.substr(pos + 1);
+                            args.erase(0, args.find_first_not_of(L" \t"));
+                        }
+                    }
+                } else {
+                    auto pos = cmd.find(L' ');
+                    if (pos != std::wstring::npos) {
+                        file = cmd.substr(0, pos);
+                        args = cmd.substr(pos + 1);
+                        args.erase(0, args.find_first_not_of(L" \t"));
+                    }
+                }
+            }
+
             SHELLEXECUTEINFOW sei = { sizeof(sei) };
             sei.fMask = SEE_MASK_NOCLOSEPROCESS;
             sei.lpVerb = L"runas";
-            sei.lpFile = cmd.c_str();
+            sei.lpFile = file.c_str();
+            sei.lpParameters = args.empty() ? nullptr : args.c_str();
             sei.nShow = SW_SHOWNORMAL;
             if (ShellExecuteExW(&sei)) {
                 LogInfo << "ShellExecuteExW succeeded.";
