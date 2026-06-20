@@ -884,31 +884,31 @@ if __name__ == "__main__":
     print(f"MaaFw Version: {Library.version()}")
 
     Toolkit.init_option(install_dir / "bin")
-    #
-    # # 测试各模块 API
-    # resource = test_resource_api()
-    # controller = test_controller_api()
-    # test_buffer_api()
-    # tasker = test_tasker_api(resource, controller)
-    #
-    # # 验证自定义识别和动作被调用
-    # if not analyzed or not runned:
-    #     print("FAIL: custom recognition or action not called")
-    #     raise RuntimeError("custom recognition or action not called")
-    #
-    # # 测试 CustomController
-    # test_custom_controller()
-    #
-    # # 测试 Toolkit
-    # test_toolkit()
-    #
-    # # 测试 BackgroundManagedKeys 选项
-    # test_background_managed_keys_api()
-    #
-    # # 测试 Win32 relative_move 正路径
-    # test_win32_relative_move()
 
-    # 测试 KWinController 创建
+    # 测试各模块 API
+    resource = test_resource_api()
+    controller = test_controller_api()
+    test_buffer_api()
+    tasker = test_tasker_api(resource, controller)
+
+    # 验证自定义识别和动作被调用
+    if not analyzed or not runned:
+        print("FAIL: custom recognition or action not called")
+        raise RuntimeError("custom recognition or action not called")
+
+    # 测试 CustomController
+    test_custom_controller()
+
+    # 测试 Toolkit
+    test_toolkit()
+
+    # 测试 BackgroundManagedKeys 选项
+    test_background_managed_keys_api()
+
+    # 测试 Win32 relative_move 正路径
+    test_win32_relative_move()
+
+    测试 KWinController 创建
     test_kwin_controller_create()
 
     print("\n" + "=" * 50)
