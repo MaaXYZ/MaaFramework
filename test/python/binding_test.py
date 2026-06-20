@@ -40,7 +40,7 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource, ResourceEventSink
-from maa.controller import DbgController, CustomController, Win32Controller, ControllerEventSink
+from maa.controller import DbgController, CustomController, Win32Controller, KWinController, ControllerEventSink
 from maa.tasker import Tasker, TaskerEventSink
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
@@ -835,6 +835,40 @@ def test_win32_relative_move():
     print("  PASS: win32 relative_move")
 
 
+def test_kwin_controller_create():
+    print("\n=== test_kwin_controller_create ===")
+
+    # KWinController 仅在 Linux 上可用，且需要 MaaKWinControllerCreate API 存在
+    try:
+        controller = KWinController(
+            device_node="/dev/uinput",
+            screen_width=1920,
+            screen_height=1080,
+            use_win32_vk_code=False,
+        )
+        print(f"  KWinController created: {controller}")
+
+        # 检查连接前状态
+        print(f"  connected: {controller.connected}")
+        print(f"  uuid: {controller.uuid}")
+        print(f"  info: {controller.info}")
+
+        # 验证 info 中的类型
+        info = controller.info
+        assert isinstance(info, dict), "info should be a dict"
+        assert "type" in info, "info should contain 'type'"
+        assert info["type"] == "KWin", "KWin controller type should be 'KWin'"
+
+        # 测试 post_inactive (空操作，应总是成功)
+        controller.post_inactive().wait()
+
+        print("  PASS: KWinController creation")
+
+    except RuntimeError as e:
+        # KWin 控制器创建可能因 API 缺失或缺少 /dev/uinput 权限等环境问题失败
+        print(f"  SKIP: KWinController not available in this environment ({e})")
+
+
 # ============================================================================
 # 主入口
 # ============================================================================
@@ -867,6 +901,9 @@ if __name__ == "__main__":
 
     # 测试 Win32 relative_move 正路径
     test_win32_relative_move()
+
+    # 测试 KWinController 创建
+    test_kwin_controller_create()
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")
