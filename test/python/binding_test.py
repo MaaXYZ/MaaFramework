@@ -902,7 +902,7 @@ if __name__ == "__main__":
     # 测试 Win32 relative_move 正路径
     test_win32_relative_move()
 
-    测试 KWinController 创建
+    # 测试 KWinController 创建
     test_kwin_controller_create()
 
     print("\n" + "=" * 50)
