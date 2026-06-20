@@ -864,14 +864,8 @@ def test_kwin_controller_create():
 
         print("  PASS: KWinController creation")
 
-    except AttributeError as e:
-        if "MaaKWinControllerCreate" in str(e):
-            print("  SKIP: MaaKWinControllerCreate not available in this build")
-        else:
-            raise
-
     except RuntimeError as e:
-        # KWin 控制器创建可能因缺少 /dev/uinput 权限等环境问题失败
+        # KWin 控制器创建可能因 API 缺失或缺少 /dev/uinput 权限等环境问题失败
         print(f"  SKIP: KWinController not available in this environment ({e})")
 
 

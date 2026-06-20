@@ -1091,8 +1091,13 @@ class KWinController(Controller):
         super().__init__()
         self._set_kwin_api_properties()
 
+        if not hasattr(Library.framework(), "MaaKWinControllerCreate"):
+            raise RuntimeError(
+                "MaaKWinControllerCreate API is not available in the current build."
+            )
+
         self._handle = Library.framework().MaaKWinControllerCreate(
-            device_node.encode(),
+            os.fsencode(os.fspath(device_node)),
             screen_width,
             screen_height,
             MaaBool(use_win32_vk_code),
