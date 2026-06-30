@@ -227,12 +227,28 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
         raw = MAA_VISION_NS::normalize_rect(raw, image.cols, image.rows);
     }
 
-    int x = std::clamp(raw.x + target.offset.x, 0, image.cols);
-    int y = std::clamp(raw.y + target.offset.y, 0, image.rows);
-    int width = std::clamp(raw.width + target.offset.width, 0, image.cols - x);
-    int height = std::clamp(raw.height + target.offset.height, 0, image.rows - y);
+    raw.x += target.offset.x;
+    raw.y += target.offset.y;
+    raw.width += target.offset.width;
+    raw.height += target.offset.height;
 
-    return cv::Rect(x, y, width, height);
+    // 对所有 target 类型，offset 引入的负宽高按 ROI 语义取绝对值并反向调整位置
+    // 注：不直接调 normalize_rect，因为它的负 x/y 语义（从右/下边缘算起）对 offset 不适用
+    if (raw.width < 0) {
+        raw.x += raw.width;
+        raw.width = -raw.width;
+    }
+    if (raw.height < 0) {
+        raw.y += raw.height;
+        raw.height = -raw.height;
+    }
+
+    raw.x = std::clamp(raw.x, 0, image.cols);
+    raw.y = std::clamp(raw.y, 0, image.rows);
+    raw.width = std::clamp(raw.width, 0, image.cols - raw.x);
+    raw.height = std::clamp(raw.height, 0, image.rows - raw.y);
+
+    return raw;
 }
 
 cv::Rect ActionHelper::get_rect_from_node(const std::string& node_name) const
