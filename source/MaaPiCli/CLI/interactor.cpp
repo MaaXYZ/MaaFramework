@@ -4,10 +4,16 @@
 #include <format>
 #include <fstream>
 #include <functional>
+#include <iostream>
+#include <optional>
 #include <ranges>
+#include <sstream>
+#include <unordered_map>
 #include <unordered_set>
 
 #include <boost/regex.hpp>
+
+#include <tomlplusplus/toml.hpp>
 
 #if defined(_WIN32)
 #include "MaaUtils/SafeWindows.hpp"
@@ -59,7 +65,7 @@ std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
 
         if (std::cin.eof()) {
             s_eof = true;
-            return { };
+            return {};
         }
 
         if (buffer.empty()) {
@@ -100,7 +106,7 @@ int input(size_t size, std::string_view prompt = "Please input")
     while (true) {
         auto values = input_multi_impl(size, prompt);
         if (s_eof) {
-            return { };
+            return {};
         }
         if (values.size() != 1) {
             fail();
@@ -147,7 +153,7 @@ bool is_running_as_admin()
     BOOL is_member = FALSE;
 
     // CheckTokenMembership(nullptr, ...) checks the current effective token (UAC-aware).
-    BYTE sid_buffer[SECURITY_MAX_SID_SIZE] = { };
+    BYTE sid_buffer[SECURITY_MAX_SID_SIZE] = {};
     DWORD sid_size = sizeof(sid_buffer);
     PSID admin_sid = sid_buffer;
 
@@ -213,22 +219,660 @@ Interactor::Interactor(std::filesystem::path user_path)
     LogDebug << VAR(user_path_);
 }
 
-bool Interactor::load(const std::filesystem::path& resource_path)
+bool Interactor::load(const std::filesystem::path& resource_path, bool interactive)
 {
     LogFunc << VAR(resource_path);
 
     if (!config_.load(resource_path, user_path_)) {
-        mpause();
+        if (interactive) {
+            mpause();
+        }
         return false;
     }
 
     if (!config_.check_configuration()) {
         std::cout << "### The interface has changed and incompatible configurations have been "
                      "deleted. ###\n\n";
-        mpause();
+        if (interactive) {
+            mpause();
+        }
     }
 
     return true;
+}
+
+void Interactor::apply_task_config(const TaskConfig& task_cfg)
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    auto& cfg = config_.configuration();
+
+    // Build per-task, per-option lookup from maa_pi_config:
+    // saved_opts[task_name][option_name] = Option
+    std::unordered_map<std::string, std::unordered_map<std::string, Configuration::Option>> saved_opts;
+    for (const auto& saved_task : cfg.task) {
+        auto& opt_map = saved_opts[saved_task.name];
+        for (const auto& opt : saved_task.option) {
+            opt_map.emplace(opt.name, opt);
+        }
+    }
+
+    // Replace task list with task-config's order/selection.
+    cfg.task.clear();
+    for (const auto& tc_task : task_cfg.task) {
+        // Build a quick lookup of options explicitly provided in task-config.
+        std::unordered_map<std::string, Configuration::Option> tc_opts;
+        for (const auto& opt : tc_task.option) {
+            tc_opts.emplace(opt.name, opt);
+        }
+
+        // Determine the full option list for this task from interface data.
+        const auto& all_data_tasks = config_.interface_data().task;
+        auto data_it = std::ranges::find(all_data_tasks, tc_task.name, std::mem_fn(&InterfaceData::Task::name));
+
+        Configuration::Task resolved_task;
+        resolved_task.name = tc_task.name;
+
+        if (data_it == all_data_tasks.end()) {
+            // task-config 中的任务名在 interface.json 中找不到：打印 warning 但继续保留，
+            // 让后续 check_validity / 执行阶段按既有逻辑处理（与交互式编辑行为一致）。
+            LogWarn << "Task in task-config not found in interface.json" << VAR(tc_task.name);
+            std::cerr << "Warning: task '" << tc_task.name << "' in task-config not found in interface.json, "
+                      << "options (if any) will be ignored.\n";
+            // 即使找不到，仍保留显式提供的 options（与 saved 行为对齐），避免静默丢数据
+            for (const auto& opt : tc_task.option) {
+                resolved_task.option.emplace_back(opt);
+            }
+            cfg.task.emplace_back(std::move(resolved_task));
+            continue;
+        }
+
+        auto saved_it = saved_opts.find(tc_task.name);
+        const auto* saved_task_opts = saved_it != saved_opts.end() ? &saved_it->second : nullptr;
+
+        for (const auto& opt_name : data_it->option) {
+            if (auto it = tc_opts.find(opt_name); it != tc_opts.end()) {
+                // 1. task-config explicitly set this option
+                resolved_task.option.emplace_back(it->second);
+                continue;
+            }
+            if (saved_task_opts) {
+                if (auto it = saved_task_opts->find(opt_name); it != saved_task_opts->end()) {
+                    // 2. fall back to saved value from maa_pi_config
+                    resolved_task.option.emplace_back(it->second);
+                    continue;
+                }
+            }
+            // 3. fall back to interface default
+            if (auto def = resolve_option_default(opt_name)) {
+                resolved_task.option.emplace_back(std::move(*def));
+            }
+        }
+
+        // 对 task-config 中显式提供、但当前 task 在 interface 中未声明的 option 名给出 warning
+        for (const auto& tc_opt : tc_task.option) {
+            if (std::ranges::find(data_it->option, tc_opt.name) == data_it->option.end()) {
+                LogWarn << "Option in task-config not declared for this task" << VAR(tc_task.name) << VAR(tc_opt.name);
+                std::cerr << "Warning: option '" << tc_opt.name << "' in task-config is not declared by task '" << tc_task.name
+                          << "' in interface.json, ignored.\n";
+            }
+        }
+
+        cfg.task.emplace_back(std::move(resolved_task));
+    }
+
+    for (const auto& override_opt : task_cfg.global_option) {
+        auto it = std::ranges::find(cfg.global_option, override_opt.name, std::mem_fn(&Configuration::Option::name));
+        if (it != cfg.global_option.end()) {
+            *it = override_opt;
+        }
+        else {
+            cfg.global_option.emplace_back(override_opt);
+        }
+    }
+}
+
+bool Interactor::resolve_controller(const std::string& controller_name, const std::string& adb_filter)
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& controllers = config_.interface_data().controller;
+    auto& cfg = config_.configuration();
+
+    if (!controller_name.empty()) {
+        auto it = std::ranges::find(controllers, controller_name, std::mem_fn(&InterfaceData::Controller::name));
+        if (it == controllers.end()) {
+            std::cerr << "Error: Controller '" << MAA_NS::utf8_to_crt(controller_name) << "' not found in interface.json\n";
+            std::cerr << "Available controllers:";
+            for (const auto& c : controllers) {
+                std::cerr << " " << MAA_NS::utf8_to_crt(c.name);
+            }
+            std::cerr << "\n";
+            return false;
+        }
+        // 显式指定了 controller，但又传了 --adb-controller 且类型不是 Adb：filter 将被忽略
+        if (!adb_filter.empty() && it->type != InterfaceData::Controller::Type::Adb) {
+            LogWarn << "--adb-controller ignored: selected controller is not Adb" << VAR(controller_name);
+            std::cerr << "Warning: --adb-controller is only valid for Adb controller, "
+                      << "selected controller '" << MAA_NS::utf8_to_crt(controller_name) << "' is not Adb, filter ignored.\n";
+        }
+        cfg.controller.name = it->name;
+        cfg.controller.type = it->type;
+        return true;
+    }
+
+    if (!adb_filter.empty()) {
+        // --adb-controller implies Adb type; prefer the first Adb controller
+        auto it = std::ranges::find(controllers, InterfaceData::Controller::Type::Adb, std::mem_fn(&InterfaceData::Controller::type));
+        if (it != controllers.end()) {
+            cfg.controller.name = it->name;
+            cfg.controller.type = it->type;
+            return true;
+        }
+        // 找不到 Adb controller：与 --adb-controller 的语义冲突，明确告知 filter 将被忽略，
+        // 并继续回落到 first controller（保持向后兼容的行为）。
+        LogWarn << "--adb-controller specified but no Adb controller in interface.json, falling back to first controller";
+        if (!controllers.empty()) {
+            std::cerr << "Warning: --adb-controller specified but no Adb controller in interface.json, "
+                      << "falling back to '" << controllers.front().name << "' (filter ignored).\n";
+        }
+        else {
+            std::cerr << "Warning: --adb-controller specified but interface.json declares no controller.\n";
+        }
+    }
+
+    if (!controllers.empty()) {
+        cfg.controller.name = controllers.front().name;
+        cfg.controller.type = controllers.front().type;
+    }
+    return true;
+}
+
+bool Interactor::find_and_set_adb_device(const std::string& filter)
+{
+    auto list_handle = MaaToolkitAdbDeviceListCreate();
+    OnScopeLeave([&]() { MaaToolkitAdbDeviceListDestroy(list_handle); });
+    MaaToolkitAdbDeviceFind(list_handle);
+
+    size_t size = MaaToolkitAdbDeviceListSize(list_handle);
+    for (size_t i = 0; i < size; ++i) {
+        auto device_handle = MaaToolkitAdbDeviceListAt(list_handle, i);
+        std::string name = MaaToolkitAdbDeviceGetName(device_handle);
+        std::string path = MaaToolkitAdbDeviceGetAdbPath(device_handle);
+        std::string addr = MaaToolkitAdbDeviceGetAddress(device_handle);
+
+        bool matched = filter.empty() || name.find(filter) != std::string::npos || path.find(filter) != std::string::npos
+                       || addr.find(filter) != std::string::npos;
+        if (!matched) {
+            continue;
+        }
+
+        auto& adb = config_.configuration().adb;
+        adb.name = std::move(name);
+        adb.adb_path = std::move(path);
+        adb.address = std::move(addr);
+        return true;
+    }
+
+    if (filter.empty()) {
+        std::cerr << "Warning: No ADB devices detected. adb config left empty.\n";
+        return true;
+    }
+
+    std::cerr << "Error: No ADB device matching '" << filter
+              << "' found.\n"
+                 "Make sure the device is connected (try: adb connect "
+              << filter << ").\n";
+    return false;
+}
+
+std::optional<MAA_PROJECT_INTERFACE_NS::Configuration::Option> Interactor::resolve_option_default(const std::string& option_name) const
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& data = config_.interface_data();
+    auto opt_it = data.option.find(option_name);
+    if (opt_it == data.option.end()) {
+        return std::nullopt;
+    }
+    const auto& opt = opt_it->second;
+
+    Configuration::Option config_opt;
+    config_opt.name = option_name;
+
+    bool has_value = std::visit(
+        [&](const auto& dc) -> bool {
+            using T = std::decay_t<decltype(dc)>;
+            if constexpr (std::is_same_v<T, std::string>) {
+                if (!dc.empty()) {
+                    config_opt.value = dc;
+                    return true;
+                }
+            }
+            else if constexpr (std::is_same_v<T, std::vector<std::string>>) {
+                if (!dc.empty()) {
+                    config_opt.values = dc;
+                    return true;
+                }
+            }
+            return false;
+        },
+        opt.default_case);
+
+    if (!has_value) {
+        switch (opt.type) {
+        case InterfaceData::Option::Type::Select:
+        case InterfaceData::Option::Type::Switch:
+            if (!opt.cases.empty()) {
+                config_opt.value = opt.cases.front().name;
+                has_value = true;
+            }
+            break;
+        case InterfaceData::Option::Type::Checkbox:
+            // checkbox has no default when empty (do not force-select the first item)
+            break;
+        case InterfaceData::Option::Type::Input:
+            for (const auto& input_def : opt.inputs) {
+                config_opt.inputs[input_def.name] = input_def.default_;
+            }
+            has_value = !opt.inputs.empty();
+            break;
+        }
+    }
+
+    if (!has_value) {
+        return std::nullopt;
+    }
+    return config_opt;
+}
+
+std::vector<const MAA_PROJECT_INTERFACE_NS::InterfaceData::Task*> Interactor::filter_tasks(bool default_only, bool filter_env) const
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& data = config_.interface_data();
+    const auto& cfg = config_.configuration();
+
+    std::vector<const InterfaceData::Task*> result;
+    for (const auto& task : data.task) {
+        if (default_only && !task.default_check) {
+            continue;
+        }
+        if (filter_env) {
+            if (!task.resource.empty() && std::ranges::find(task.resource, cfg.resource) == task.resource.end()) {
+                continue;
+            }
+            if (!task.controller.empty() && std::ranges::find(task.controller, cfg.controller.name) == task.controller.end()) {
+                continue;
+            }
+        }
+        result.push_back(&task);
+    }
+    return result;
+}
+
+void Interactor::fill_default_tasks(bool default_only)
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& data = config_.interface_data();
+    auto& cfg = config_.configuration();
+
+    for (const auto* task_ptr : filter_tasks(default_only, true)) {
+        const auto& task = *task_ptr;
+
+        Configuration::Task config_task;
+        config_task.name = task.name;
+
+        for (const auto& option_name : task.option) {
+            auto opt_it = data.option.find(option_name);
+            if (opt_it == data.option.end()) {
+                continue;
+            }
+            const auto& opt = opt_it->second;
+
+            if (!opt.controller.empty() && std::ranges::find(opt.controller, cfg.controller.name) == opt.controller.end()) {
+                continue;
+            }
+            if (!opt.resource.empty() && std::ranges::find(opt.resource, cfg.resource) == opt.resource.end()) {
+                continue;
+            }
+
+            auto config_opt = resolve_option_default(option_name);
+            if (config_opt) {
+                config_task.option.emplace_back(std::move(*config_opt));
+            }
+        }
+
+        cfg.task.emplace_back(std::move(config_task));
+        std::cout << "Added task: " << MAA_NS::utf8_to_crt(get_display_name(task.name, task.label)) << "\n";
+    }
+
+    if (!cfg.task.empty()) {
+        std::cout << "\n";
+    }
+}
+
+bool Interactor::resolve_resource(const std::string& resource_name)
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& resources = config_.interface_data().resource;
+    auto& cfg = config_.configuration();
+
+    if (!resource_name.empty()) {
+        auto it = std::ranges::find(resources, resource_name, std::mem_fn(&InterfaceData::Resource::name));
+        if (it == resources.end()) {
+            std::cerr << "Error: Resource '" << MAA_NS::utf8_to_crt(resource_name) << "' not found in interface.json\n";
+            std::cerr << "Available resources:";
+            for (const auto& r : resources) {
+                std::cerr << " " << MAA_NS::utf8_to_crt(r.name);
+            }
+            std::cerr << "\n";
+            return false;
+        }
+        cfg.resource = it->name;
+        return true;
+    }
+
+    if (!resources.empty()) {
+        cfg.resource = resources.front().name;
+    }
+    return true;
+}
+
+bool Interactor::generate_pi_config(
+    const std::string& controller_name,
+    const std::string& adb_filter,
+    const std::string& resource_name,
+    bool force,
+    bool default_only)
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto config_path = user_path_ / "config" / "maa_pi_config.json";
+    if (!force && std::filesystem::exists(config_path)) {
+        std::cerr << "Error: " << config_path.string() << " already exists. Use --force to overwrite.\n";
+        return false;
+    }
+
+    auto& cfg = config_.configuration();
+
+    if (!resolve_controller(controller_name, adb_filter)) {
+        return false;
+    }
+
+    if (!resolve_resource(resource_name)) {
+        return false;
+    }
+
+    if (cfg.controller.type == InterfaceData::Controller::Type::Adb) {
+        if (!find_and_set_adb_device(adb_filter)) {
+            return false;
+        }
+    }
+    else if (!adb_filter.empty()) {
+        std::cerr << "Warning: --adb-controller is only valid for Adb controller type, ignored.\n";
+    }
+
+    // Always repopulate tasks from defaults; do not carry over stale config
+    cfg.task.clear();
+    fill_default_tasks(default_only);
+
+    config_.save(user_path_);
+
+    std::cout << "Generated config/maa_pi_config.json"
+              << " (controller: " << MAA_NS::utf8_to_crt(cfg.controller.name);
+    if (!cfg.adb.address.empty()) {
+        std::cout << ", adb: " << MAA_NS::utf8_to_crt(cfg.adb.address);
+    }
+    if (!cfg.resource.empty()) {
+        std::cout << ", resource: " << MAA_NS::utf8_to_crt(cfg.resource);
+    }
+    std::cout << ")\n";
+    return true;
+}
+
+bool Interactor::generate_task_config(bool force, const std::string& output_path, bool default_only) const
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    static constexpr const char* kDefaultFileName = "sample_task_config.toml";
+    // output_path 来自 CLI argv，已在 main 入口统一转为 UTF-8，此处直接用 MAA_NS::path
+    const std::filesystem::path target = output_path.empty() ? std::filesystem::path(kDefaultFileName) : MAA_NS::path(output_path);
+    const std::string target_display = MAA_NS::utf8_to_crt(MAA_NS::path_to_utf8_string(target));
+
+    if (!force && std::filesystem::exists(target)) {
+        std::cerr << "Error: " << target_display << " already exists. Use --force to overwrite.\n";
+        return false;
+    }
+
+    const auto& data = config_.interface_data();
+
+    // Build a toml inline table node for one option entry
+    auto make_option_node = [&](const Configuration::Option& opt) -> toml::table {
+        toml::table tbl;
+        tbl.emplace("name", opt.name);
+        if (!opt.value.empty()) {
+            tbl.emplace("value", opt.value);
+        }
+        else if (!opt.values.empty()) {
+            toml::array arr;
+            for (const auto& v : opt.values) {
+                arr.push_back(v);
+            }
+            tbl.emplace("values", std::move(arr));
+        }
+        else if (!opt.inputs.empty()) {
+            toml::table inputs_tbl;
+            for (const auto& [k, v] : opt.inputs) {
+                inputs_tbl.emplace(k, v);
+            }
+            tbl.emplace("inputs", std::move(inputs_tbl));
+        }
+        tbl.is_inline(true);
+        return tbl;
+    };
+
+    toml::table root;
+
+    toml::array task_arr;
+    size_t written = 0;
+    for (const auto* task_ptr : filter_tasks(default_only, false)) {
+        const auto& task = *task_ptr;
+        toml::table task_tbl;
+        task_tbl.emplace("name", task.name);
+
+        toml::array opt_arr;
+        for (const auto& option_name : task.option) {
+            auto resolved = resolve_option_default(option_name);
+            if (resolved) {
+                opt_arr.push_back(make_option_node(*resolved));
+            }
+        }
+        if (!opt_arr.empty()) {
+            task_tbl.emplace("option", std::move(opt_arr));
+        }
+
+        task_arr.push_back(std::move(task_tbl));
+        ++written;
+    }
+    root.emplace("task", std::move(task_arr));
+
+    if (!data.global_option.empty()) {
+        toml::array global_arr;
+        for (const auto& option_name : data.global_option) {
+            auto resolved = resolve_option_default(option_name);
+            if (resolved) {
+                global_arr.push_back(make_option_node(*resolved));
+            }
+        }
+        if (!global_arr.empty()) {
+            root.emplace("global_option", std::move(global_arr));
+        }
+    }
+
+    std::ofstream ofs(target);
+    if (!ofs.is_open()) {
+        std::cerr << "Error: Failed to create " << target_display << "\n";
+        return false;
+    }
+
+    ofs << "# Sample task config file for MaaPiCli\n"
+           "# Use with: MaaPiCli run --task-config "
+        << target_display
+        << "\n"
+           "#\n"
+           "# This file specifies which tasks to run and any temporary option overrides.\n"
+           "# Device/controller/resource configuration comes from maa_pi_config.json\n"
+           "# (loaded via -d or --config).\n"
+           "#\n"
+           "# Generated from interface.json - edit as needed.\n"
+           "\n";
+    ofs << toml::default_formatter { root };
+
+    std::cout << "Generated: " << target_display << " (" << written << " tasks)\n";
+    return true;
+}
+
+void Interactor::list_task() const
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& data = config_.interface_data();
+
+    std::cout << "### Available Controllers ###\n\n";
+    for (const auto& ctrl : data.controller) {
+        std::string display_name = get_display_name(ctrl.name, ctrl.label);
+        std::string type_str;
+        switch (ctrl.type) {
+        case InterfaceData::Controller::Type::Adb:
+            type_str = "Adb";
+            break;
+        case InterfaceData::Controller::Type::Win32:
+            type_str = "Win32";
+            break;
+        case InterfaceData::Controller::Type::MacOS:
+            type_str = "MacOS";
+            break;
+        case InterfaceData::Controller::Type::PlayCover:
+            type_str = "PlayCover";
+            break;
+        case InterfaceData::Controller::Type::Gamepad:
+            type_str = "Gamepad";
+            break;
+        case InterfaceData::Controller::Type::WlRoots:
+            type_str = "WlRoots";
+            break;
+        default:
+            type_str = "Unknown";
+            break;
+        }
+
+        std::cout << MAA_NS::utf8_to_crt(std::format("  - {} [{}]\n", display_name, type_str));
+        if (!ctrl.description.empty()) {
+            std::string desc = read_text_content(ctrl.description);
+            std::cout << MAA_NS::utf8_to_crt(std::format("    {}\n", desc));
+        }
+    }
+    std::cout << "\n";
+
+    std::cout << "### Available Tasks ###\n\n";
+    for (const auto& task : data.task) {
+        std::string display_name = get_display_name(task.name, task.label);
+        std::cout << MAA_NS::utf8_to_crt(std::format("  - {}\n", display_name));
+        if (!task.description.empty()) {
+            std::string desc = read_text_content(task.description);
+            std::cout << MAA_NS::utf8_to_crt(std::format("    {}\n", desc));
+        }
+
+        for (const auto& opt_name : task.option) {
+            auto opt_it = data.option.find(opt_name);
+            if (opt_it == data.option.end()) {
+                continue;
+            }
+            const auto& opt = opt_it->second;
+            std::string opt_display = get_display_name(opt_name, opt.label);
+
+            std::string type_str;
+            switch (opt.type) {
+            case InterfaceData::Option::Type::Select:
+                type_str = "select";
+                break;
+            case InterfaceData::Option::Type::Switch:
+                type_str = "switch";
+                break;
+            case InterfaceData::Option::Type::Checkbox:
+                type_str = "checkbox";
+                break;
+            case InterfaceData::Option::Type::Input:
+                type_str = "input";
+                break;
+            }
+
+            std::cout << MAA_NS::utf8_to_crt(std::format("    Option: {} ({})\n", opt_display, type_str));
+
+            if (opt.type == InterfaceData::Option::Type::Input) {
+                for (const auto& input_def : opt.inputs) {
+                    std::string input_display = get_display_name(input_def.name, input_def.label);
+                    std::string default_val = input_def.default_.empty() ? "" : std::format(" [default: {}]", input_def.default_);
+                    std::cout << MAA_NS::utf8_to_crt(std::format("      - {}{}\n", input_display, default_val));
+                }
+            }
+            else {
+                for (const auto& case_item : opt.cases) {
+                    std::string case_display = get_display_name(case_item.name, case_item.label);
+                    std::cout << MAA_NS::utf8_to_crt(std::format("      - {}\n", case_display));
+                }
+            }
+        }
+    }
+    std::cout << "\n";
+
+    if (!data.global_option.empty()) {
+        std::cout << "### Global Options ###\n\n";
+        for (const auto& opt_name : data.global_option) {
+            auto opt_it = data.option.find(opt_name);
+            if (opt_it == data.option.end()) {
+                continue;
+            }
+            const auto& opt = opt_it->second;
+            std::string opt_display = get_display_name(opt_name, opt.label);
+
+            std::string type_str;
+            switch (opt.type) {
+            case InterfaceData::Option::Type::Select:
+                type_str = "select";
+                break;
+            case InterfaceData::Option::Type::Switch:
+                type_str = "switch";
+                break;
+            case InterfaceData::Option::Type::Checkbox:
+                type_str = "checkbox";
+                break;
+            case InterfaceData::Option::Type::Input:
+                type_str = "input";
+                break;
+            }
+
+            std::cout << MAA_NS::utf8_to_crt(std::format("  - {} ({})\n", opt_display, type_str));
+
+            if (opt.type == InterfaceData::Option::Type::Input) {
+                for (const auto& input_def : opt.inputs) {
+                    std::string input_display = get_display_name(input_def.name, input_def.label);
+                    std::string default_val = input_def.default_.empty() ? "" : std::format(" [default: {}]", input_def.default_);
+                    std::cout << MAA_NS::utf8_to_crt(std::format("    - {}{}\n", input_display, default_val));
+                }
+            }
+            else {
+                for (const auto& case_item : opt.cases) {
+                    std::string case_display = get_display_name(case_item.name, case_item.label);
+                    std::cout << MAA_NS::utf8_to_crt(std::format("    - {}\n", case_display));
+                }
+            }
+        }
+        std::cout << "\n";
+    }
 }
 
 void Interactor::interact()
@@ -283,7 +927,7 @@ Interactor::ElevationResult Interactor::check_and_elevate_if_needed()
 #endif
 }
 
-bool Interactor::run()
+bool Interactor::run(int progress_level)
 {
     auto elevation_result = check_and_elevate_if_needed();
     if (elevation_result == ElevationResult::Failed) {
@@ -305,7 +949,7 @@ bool Interactor::run()
         return false;
     }
 
-    bool ret = MAA_PROJECT_INTERFACE_NS::Runner::run(runtime.value());
+    bool ret = MAA_PROJECT_INTERFACE_NS::Runner::run(runtime.value(), progress_level);
 
     if (!ret) {
         std::cout << "### Failed to run tasks ###\n\n";
@@ -447,10 +1091,8 @@ void Interactor::interact_for_first_time_use()
         process_level_options(ctrl_it->option, config_.configuration().controller_option, "Controller");
     }
 
-    // Auto-add tasks with default_check=true
     add_default_tasks();
 
-    // If no default tasks were added, let user select manually
     if (config_.configuration().task.empty()) {
         add_task();
     }
@@ -462,7 +1104,6 @@ void Interactor::welcome() const
 
     const auto& data = config_.interface_data();
 
-    // 显示标题或项目名称
     if (!data.title.empty()) {
         std::cout << MAA_NS::utf8_to_crt(config_.translate(data.title)) << "\n\n";
     }
@@ -477,30 +1118,25 @@ void Interactor::welcome() const
         }
     }
 
-    // 显示欢迎信息
     if (!data.welcome.empty()) {
         std::string welcome_text = read_text_content(data.welcome);
         std::cout << MAA_NS::utf8_to_crt(welcome_text) << "\n\n";
     }
 
-    // 显示项目描述
     if (!data.description.empty()) {
         std::string desc_text = read_text_content(data.description);
         std::cout << "Description: " << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
     }
 
-    // 显示 GitHub 地址
     if (!data.github.empty()) {
         std::cout << "GitHub: " << MAA_NS::utf8_to_crt(data.github) << "\n\n";
     }
 
-    // 显示联系方式
     if (!data.contact.empty()) {
         std::string contact_text = read_text_content(data.contact);
         std::cout << "Contact: " << MAA_NS::utf8_to_crt(contact_text) << "\n\n";
     }
 
-    // 显示许可证信息
     if (!data.license.empty()) {
         std::string license_text = read_text_content(data.license);
         std::cout << "License: " << MAA_NS::utf8_to_crt(license_text) << "\n\n";
@@ -631,7 +1267,6 @@ void Interactor::select_controller()
     case InterfaceData::Controller::Type::PlayCover:
         if (!kPlayCoverSupported) {
             std::cout << "\nPlayCover controller is only available on macOS.\n";
-            // Check if there are other controllers available
             bool has_other_controllers = std::ranges::any_of(all_controllers, [](const auto& ctrl) {
                 return ctrl.type != InterfaceData::Controller::Type::PlayCover;
             });
@@ -652,7 +1287,6 @@ void Interactor::select_controller()
     case InterfaceData::Controller::Type::WlRoots:
         if (!kWlRootsSupported) {
             std::cout << "\nWlRoots controller is only available on Linux.\n";
-            // Check if there are other controllers available
             bool has_other_controllers = std::ranges::any_of(all_controllers, [](const auto& ctrl) {
                 return ctrl.type != InterfaceData::Controller::Type::WlRoots;
             });
@@ -673,7 +1307,6 @@ void Interactor::select_controller()
     case InterfaceData::Controller::Type::Gamepad:
         if (!kGamepadSupported) {
             std::cout << "\nGamepad controller is only available on Windows.\n";
-            // Check if there are other controllers available
             bool has_other_controllers = std::ranges::any_of(all_controllers, [](const auto& ctrl) {
                 return ctrl.type != InterfaceData::Controller::Type::Gamepad;
             });
@@ -782,15 +1415,12 @@ void Interactor::select_playcover(const MAA_PROJECT_INTERFACE_NS::InterfaceData:
 
     auto& pc = config_.configuration().playcover;
 
-    // Use uuid from interface.json if available
     if (!playcover_config.uuid.empty() && pc.uuid.empty()) {
         pc.uuid = playcover_config.uuid;
     }
 
-    // Default address if not configured
     std::string default_address = pc.address.empty() ? "127.0.0.1:1717" : pc.address;
 
-    // Ask for address (use default if empty input)
     std::cout << "PlayTools service address (host:port) [" << default_address << "]: ";
     std::cin.sync();
     std::string buffer;
@@ -950,7 +1580,6 @@ void Interactor::select_gamepad(const MAA_PROJECT_INTERFACE_NS::InterfaceData::C
         }
     }
 
-    // Select gamepad type
     std::cout << "\n### Select Gamepad Type ###\n\n";
     std::cout << "\t1. Xbox 360\n";
     std::cout << "\t2. DualShock 4 (PS4)\n";
@@ -970,7 +1599,6 @@ void Interactor::select_macos(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Con
 
     auto& mac = config_.configuration().macos;
 
-    // Select window using title_regex
     std::string title_regex_str = macos_config.title_regex;
     if (title_regex_str.empty()) {
         std::cout << "Title regex: ";
@@ -1041,21 +1669,17 @@ void Interactor::select_macos(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Con
         return;
     }
 
-    // Use screencap_method from interface.json if available
     if (!macos_config.screencap.empty() && mac.screencap.empty()) {
         mac.screencap = macos_config.screencap;
     }
 
-    // Use input_method from interface.json if available
     if (!macos_config.input.empty() && mac.input.empty()) {
         mac.input = macos_config.input;
     }
 
-    // Default values
     std::string default_screencap = mac.screencap.empty() ? "ScreenCaptureKit" : mac.screencap;
     std::string default_input = mac.input.empty() ? "GlobalEvent" : mac.input;
 
-    // Ask for screencap_method
     std::cout << "Screencap method [" << default_screencap << "]: ";
     std::cin.sync();
     std::string buffer;
@@ -1068,7 +1692,6 @@ void Interactor::select_macos(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Con
 
     mac.screencap = buffer.empty() ? default_screencap : buffer;
 
-    // Ask for input_method
     std::cout << "Input method [" << default_input << "]: ";
     std::cin.sync();
     std::getline(std::cin, buffer);
@@ -1162,10 +1785,8 @@ void Interactor::select_resource()
         return;
     }
 
-    // Filter resources by current controller
     std::vector<const InterfaceData::Resource*> available_resources;
     for (const auto& res : all_resources) {
-        // If controller list is empty, resource supports all controllers
         if (res.controller.empty() || std::ranges::find(res.controller, current_controller) != res.controller.end()) {
             available_resources.push_back(&res);
         }
@@ -1203,30 +1824,16 @@ void Interactor::add_task()
 {
     using namespace MAA_PROJECT_INTERFACE_NS;
 
-    const auto& all_data_tasks = config_.interface_data().task;
-    const auto& current_resource = config_.configuration().resource;
-    const auto& current_controller = config_.configuration().controller.name;
-
-    if (all_data_tasks.empty()) {
+    if (config_.interface_data().task.empty()) {
         LogError << "Task is empty";
         return;
     }
 
-    // Filter tasks by current resource and controller
-    std::vector<const InterfaceData::Task*> available_tasks;
-    for (const auto& task : all_data_tasks) {
-        // If resource list is empty, task supports all resources
-        if (!task.resource.empty() && std::ranges::find(task.resource, current_resource) == task.resource.end()) {
-            continue;
-        }
-        // If controller list is empty, task supports all controllers
-        if (!task.controller.empty() && std::ranges::find(task.controller, current_controller) == task.controller.end()) {
-            continue;
-        }
-        available_tasks.push_back(&task);
-    }
+    auto available_tasks = filter_tasks(false, true);
 
     if (available_tasks.empty()) {
+        const auto& current_resource = config_.configuration().resource;
+        const auto& current_controller = config_.configuration().controller.name;
         LogError << "No task available for resource" << VAR(current_resource) << "and controller" << VAR(current_controller);
         return;
     }
@@ -1268,29 +1875,10 @@ void Interactor::add_default_tasks()
 {
     using namespace MAA_PROJECT_INTERFACE_NS;
 
-    const auto& all_data_tasks = config_.interface_data().task;
-    const auto& current_resource = config_.configuration().resource;
-    const auto& current_controller = config_.configuration().controller.name;
-
-    for (const auto& task : all_data_tasks) {
-        // Skip tasks without default_check
-        if (!task.default_check) {
-            continue;
-        }
-
-        // Check if task supports current resource
-        if (!task.resource.empty() && std::ranges::find(task.resource, current_resource) == task.resource.end()) {
-            continue;
-        }
-
-        // Check if task supports current controller
-        if (!task.controller.empty() && std::ranges::find(task.controller, current_controller) == task.controller.end()) {
-            continue;
-        }
-
+    for (const auto* task_ptr : filter_tasks(true, true)) {
+        const auto& task = *task_ptr;
         std::string task_display_name = get_display_name(task.name, task.label);
 
-        // Process options for this task
         std::vector<Configuration::Option> config_options;
         bool all_options_ok = true;
         for (const auto& option_name : task.option) {
@@ -1375,7 +1963,7 @@ bool Interactor::process_option(
     } break;
 
     case InterfaceData::Option::Type::Switch: {
-        // Switch 类型必须有恰好两个 cases
+        // Switch type must have exactly two cases
         if (opt.cases.size() < 2) {
             LogError << "Switch option must have at least 2 cases" << VAR(option_name) << VAR(opt.cases.size());
             return false;
@@ -1418,7 +2006,6 @@ bool Interactor::process_option(
             }
         }
 
-        // Find matching Yes/No case
         auto find_case = [&](bool find_yes) -> const InterfaceData::Option::Case* {
             for (const auto& case_item : opt.cases) {
                 bool is_yes_case = yes_names.contains(case_item.name);
@@ -1739,8 +2326,7 @@ bool Interactor::check_validity()
             return false;
         }
 
-        // Gamepad hwnd is optional (for screencap), so no validation needed
-        // But we need to select gamepad type if not configured
+        // hwnd is optional for screencap; only ensure gamepad type is configured
         if (config_.configuration().gamepad.gamepad_type.empty()) {
             auto& name = config_.configuration().controller.name;
             auto controller_iter =
@@ -1877,7 +2463,7 @@ std::string Interactor::get_display_name(const std::string& name, const std::str
 std::string Interactor::read_text_content(const std::string& text) const
 {
     if (text.empty()) {
-        return { };
+        return {};
     }
 
     // 先翻译文本（如果以 $ 开头）
