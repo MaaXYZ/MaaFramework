@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "MaaFramework Project Interface V2",
-    "description": "MaaFramework 项目接口配置文件 V2 版本的 JSON Schema。💡 v2.5.0：Client 启动 agent 子进程时应按文档约定注入 PI_* 环境变量（见 Project Interface 文档 Agent 子进程环境变量 / Agent subprocess environment variables 章节）",
+    "description": "MaaFramework 项目接口配置文件 V2 版本的 JSON Schema。",
     "type": "object",
     "definitions": {
         "i18nString": {
@@ -837,6 +837,58 @@
             ],
             "additionalProperties": false
         },
+        "pretaskConfig": {
+            "type": "object",
+            "title": "预任务配置",
+            "description": "💡 v2.7.0 Controller 启动前执行的自定义程序配置。Client 应在创建或连接 Controller 前运行该程序；若配置 option，则将 option 取值序列化为紧凑 JSON 字符串并追加为最后一个参数",
+            "properties": {
+                "exec": {
+                    "type": "string",
+                    "title": "预任务程序路径",
+                    "description": "要执行的程序路径，可以是系统 PATH 中的可执行文件。CWD 为 interface.json 所在目录"
+                },
+                "args": {
+                    "type": "array",
+                    "title": "预任务参数",
+                    "description": "可选。固定参数数组，按顺序传递给 exec",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string",
+                    "title": "预任务唯一标识",
+                    "description": "可选。建议项目内不重复，便于 Client 在配置文件、日志中区分不同预任务；缺省时 Client 可回退到 exec"
+                },
+                "label": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "预任务显示名称",
+                    "description": "可选。Client UI 中展示的名称，支持国际化字符串。缺省时 Client 可回退到 name 或 exec"
+                },
+                "description": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "预任务详细描述",
+                    "description": "可选。Client UI 中的提示/Tooltip。支持国际化字符串、文件路径或 URL，内容支持 Markdown"
+                },
+                "icon": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "预任务图标路径",
+                    "description": "可选。Client UI 中显示的图标路径，相对于 interface.json 所在目录，支持国际化字符串"
+                },
+                "option": {
+                    "type": "array",
+                    "title": "预任务选项配置",
+                    "description": "可选。数组元素应与外层 option 配置中的键名对应。Client 会收集这些 option 的当前取值并序列化为紧凑 JSON 字符串，追加为最后一个参数；该 option 不参与 pipeline_override 合并",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "exec"
+            ],
+            "additionalProperties": false
+        },
         "agentConfig": {
             "type": "object",
             "title": "代理配置",
@@ -973,6 +1025,22 @@
                 "$ref": "#/definitions/groupItem"
             }
         },
+        "pretask": {
+            "description": "💡 v2.7.0 可选。Controller 启动前执行的预任务配置。若配置 option，Client 应将 option 取值序列化为最后一个参数",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/pretaskConfig"
+                },
+                {
+                    "type": "array",
+                    "title": "预任务配置数组",
+                    "description": "多个预任务配置。Client 应在 Controller 启动前按数组顺序执行",
+                    "items": {
+                        "$ref": "#/definitions/pretaskConfig"
+                    }
+                }
+            ]
+        },
         "agent": {
             "description": "💡 v2.5.0：启动各子进程时 Client 应注入 PI_* 环境变量，详见 Project Interface 文档",
             "oneOf": [
@@ -1016,7 +1084,7 @@
         "import": {
             "type": "array",
             "title": "导入其他 PI 文件",
-            "description": "可选。导入其他 PI 文件的路径数组。文件相对路径为 interface.json 同目录下的相对路径。支持导入这些文件中的 task、option、preset（💡 v2.3.0）字段",
+            "description": "可选。导入其他 PI 文件的路径数组。文件相对路径为 interface.json 同目录下的相对路径。支持导入这些文件中的 task、option、preset（💡 v2.3.0）、pretask（💡 v2.7.0）字段",
             "items": {
                 "type": "string"
             }
