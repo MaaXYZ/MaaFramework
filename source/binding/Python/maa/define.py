@@ -274,6 +274,14 @@ class MaaCtrlOptionEnum(IntEnum):
     # value: int32_t array of virtual key codes; val_size: sizeof(int32_t) * count
     BackgroundManagedKeys = 7
 
+    # Scale screenshot to fit a reference (width, height) using Unity Canvas
+    # Scaler "Expand" semantics: scale = max(W / raw_width, H / raw_height),
+    # applied uniformly so the source aspect ratio is preserved and both
+    # output dimensions are >= the reference (W, H).
+    # Mutually exclusive with ScreenshotTargetLongSide / ScreenshotTargetShortSide.
+    # value: int32_t[2] = (width, height); val_size: sizeof(int32_t) * 2
+    ScreenshotTargetExpand = 8
+
 
 class MaaInferenceDeviceEnum(IntEnum):
     CPU = -2

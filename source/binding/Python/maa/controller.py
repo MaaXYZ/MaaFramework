@@ -495,6 +495,30 @@ class Controller:
             )
         )
 
+    def set_screenshot_target_expand(self, width: int, height: int) -> bool:
+        """以 Unity Canvas Scaler 的 Expand 语义按参考分辨率缩放截图 /
+        Scale screenshot to reference (width, height) using Unity Expand semantics
+
+        scale = max(width / raw_width, height / raw_height)，保持源宽高比，
+        输出两边均 >= 参考。与长/短边模式互斥。
+
+        Args:
+            width: 参考宽 / Reference width
+            height: 参考高 / Reference height
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        arr = (ctypes.c_int32 * 2)(width, height)
+        return bool(
+            Library.framework().MaaControllerSetOption(
+                self._handle,
+                MaaOption(MaaCtrlOptionEnum.ScreenshotTargetExpand),
+                arr,
+                ctypes.sizeof(arr),
+            )
+        )
+
     def set_screenshot_use_raw_size(self, enable: bool) -> bool:
         """设置截图不缩放 / Set screenshot use raw size without scaling
 
