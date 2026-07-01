@@ -161,6 +161,7 @@ export using ::MaaRecordControllerCreate;
 export using ::MaaPlayCoverControllerCreate;
 export using ::MaaWlRootsControllerCreate;
 export using ::MaaGamepadControllerCreate;
+export using ::MaaKWinControllerCreate;
 export using ::MaaControllerDestroy;
 export using ::MaaControllerAddSink;
 export using ::MaaControllerRemoveSink;
