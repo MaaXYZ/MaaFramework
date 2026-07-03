@@ -764,6 +764,28 @@ maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
 #endif
 }
 
+KWinControllerImpl* KWinControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [device_node, screen_width, screen_height, use_win32_vk_code] =
+        maajs::UnWrapArgs<KWinControllerCtorParam, void>(info);
+    auto ctrl = MaaKWinControllerCreate(
+        device_node.c_str(), screen_width, screen_height, use_win32_vk_code.value_or(false));
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new KWinControllerImpl(ctrl, true);
+}
+
+void KWinControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType) {}
+
+maajs::ValueType load_kwin_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<KWinControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->kwinControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
 void WlRootsControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
 {
     MAA_BIND_FUNC(ctor, "find", find);

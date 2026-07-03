@@ -322,6 +322,23 @@ declare global {
             static find(): Promise<WlRootsCompositor[] | null>
         }
 
+        class KWinController extends Controller {
+            /**
+             * @param device_node uinput device path (e.g. "/dev/uinput")
+             * @param screen_width Screen width in pixels
+             * @param screen_height Screen height in pixels
+             * @param use_win32_vk_code When true, key codes passed to click_key / key_down / key_up are
+             *   interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes internally.
+             *   Defaults to false (raw evdev codes).
+             */
+            constructor(
+                device_node: string,
+                screen_width: number,
+                screen_height: number,
+                use_win32_vk_code?: boolean,
+            )
+        }
+
         interface CustomControllerActor {
             connect?(): maa.MaybePromise<boolean>
             // connected?(): maa.MaybePromise<boolean>

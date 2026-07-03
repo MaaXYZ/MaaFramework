@@ -212,6 +212,18 @@ struct WlRootsControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+using KWinControllerCtorParam = std::tuple<std::string, int, int, maajs::OptionalParam<bool>>;
+
+struct KWinControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    constexpr static char name[] = "KWinController";
+
+    static KWinControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
 struct CustomControllerContext
 {
     std::map<std::string, maajs::CallbackContext*> callbacks;
