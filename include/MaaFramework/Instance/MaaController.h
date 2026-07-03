@@ -142,7 +142,7 @@ extern "C"
      *        internally. If false, key codes are passed through as raw evdev codes.
      * @return The controller handle, or nullptr on failure.
      *
-     * @note Dependencies: pipewire (1.0+), xdg-desktop-portal-kde.
+     * @note Dependencies: pipewire (1.0+), xdg-desktop-portal.
      * @note Screencap is implemented via PipeWire / xdg-desktop-portal.
      * @note Input is simulated via /dev/uinput (kernel-level virtual input devices).
      * @note Requires user authorization via the screen sharing dialog (xdg-desktop-portal).
