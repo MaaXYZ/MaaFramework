@@ -7,6 +7,7 @@
 #include "MaaUtils/Time.hpp"
 
 #include "Input/BackgroundManagedKeyInput.h"
+#include "Input/InterceptionInput.h"
 #include "Input/LegacyEventInput.h"
 #include "Input/MessageInput.h"
 #include "Input/SeizeInput.h"
@@ -39,6 +40,8 @@ bool Win32ControlUnitMgr::connect()
 {
     connected_ = false;
     screencap_.reset();
+    mouse_.reset();
+    keyboard_.reset();
 
 #ifndef MAA_WIN32_COMPATIBLE
     // 设置 Per-Monitor DPI Aware V2，确保 GetClientRect/GetWindowRect 等 API 返回物理像素。
@@ -159,6 +162,8 @@ std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(MaaWin32InputMethod m
         return std::make_shared<MessageInput>(
             hwnd_,
             MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_window_pos = true, .block_input = false });
+    case MaaWin32InputMethod_Interception:
+        return std::make_shared<InterceptionInput>(hwnd_);
     default:
         LogError << "Unknown input method: " << static_cast<int>(method);
         return nullptr;

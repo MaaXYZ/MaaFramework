@@ -465,6 +465,7 @@ class MaaWin32InputMethodEnum(IntEnum):
     | PostMessageWithCursorPos | Medium | Maybe | Briefly     | Yes| Moves cursor to target, then restores |
     | SendMessageWithWindowPos | Medium | Maybe | No          | Yes| Moves window to align w/ cursor, rest.|
     | PostMessageWithWindowPos | Medium | Maybe | No          | Yes| Moves window to align w/ cursor, rest.|
+    | Interception             | Medium | Yes   | No          | No | Driver-level input injection via Interception driver |
 
     Note:
     - Admin rights mainly depend on the target application's privilege level.
@@ -486,6 +487,7 @@ class MaaWin32InputMethodEnum(IntEnum):
     PostMessageWithCursorPos = 1 << 6
     SendMessageWithWindowPos = 1 << 7
     PostMessageWithWindowPos = 1 << 8
+    Interception = 1 << 9
 
 
 MaaMacOSScreencapMethod = ctypes.c_uint64
