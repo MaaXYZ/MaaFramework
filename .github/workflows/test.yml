@@ -339,7 +339,7 @@ jobs:
             matrix:
                 arch: [aarch64]
             fail-fast: false
-        runs-on: macos-latest
+        runs-on: macos-15
 
         steps:
             - uses: actions/checkout@v4

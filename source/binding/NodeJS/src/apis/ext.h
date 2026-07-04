@@ -95,6 +95,7 @@ struct ExtContext : public maajs::NativeClassBase
     maajs::FunctionRefType recordControllerCtor;
     maajs::FunctionRefType gamepadControllerCtor;
     maajs::FunctionRefType wlrootsControllerCtor;
+    maajs::FunctionRefType kwinControllerCtor;
     maajs::FunctionRefType customControllerCtor;
     maajs::FunctionRefType taskJobCtor;
     maajs::FunctionRefType taskerCtor;
@@ -122,6 +123,7 @@ struct ExtContext : public maajs::NativeClassBase
         marker(recordControllerCtor.Value());
         marker(gamepadControllerCtor.Value());
         marker(wlrootsControllerCtor.Value());
+        marker(kwinControllerCtor.Value());
         marker(customControllerCtor.Value());
         marker(taskJobCtor.Value());
         marker(taskerCtor.Value());
