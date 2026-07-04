@@ -129,7 +129,10 @@ extern "C"
     MAA_FRAMEWORK_API MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path, MaaBool use_win32_vk_code);
 
     /**
-     * @brief Create a KWin (pure Wayland) controller for Linux.
+     * @brief Create a KWin / Linux Wayland controller via PipeWire and /dev/uinput.
+     *
+     * Despite the name "KWin", this controller works with any Wayland compositor that
+     * implements the XDG Screencast Portal and kernel has uinput support (e.g., GNOME).
      *
      * @param device_node The uinput device node path (e.g., "/dev/uinput").
      * @param screen_width The screen width in pixels.
@@ -139,13 +142,13 @@ extern "C"
      *        internally. If false, key codes are passed through as raw evdev codes.
      * @return The controller handle, or nullptr on failure.
      *
-     * @note This controller is designed for KWin (pure Wayland) on Linux.
-     * @note Input is simulated via /dev/uinput (kernel-level virtual touchscreen).
-     * @note Screencap is implemented via PipeWire / xdg-desktop-portal (KDE/KWin).
-     *       Captures the foreground monitor in fullscreen mode.
+     * @note Dependencies: pipewire (1.0+), xdg-desktop-portal.
+     * @note Screencap is implemented via PipeWire / xdg-desktop-portal.
+     * @note Input is simulated via /dev/uinput (kernel-level virtual input devices).
      * @note Requires user authorization via the screen sharing dialog (xdg-desktop-portal).
      * @note Requires write permission to /dev/uinput (typically via the "input" group).
-     * @note Only single touch is supported (contact must be 0).
+     *       It is recommended to configure a udev rule:
+     *       KERNEL=="uinput", MODE="0660", GROUP="input".
      */
     MAA_FRAMEWORK_API MaaController*
         MaaKWinControllerCreate(const char* device_node, int screen_width, int screen_height, MaaBool use_win32_vk_code);
