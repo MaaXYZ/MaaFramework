@@ -1,7 +1,5 @@
 #include "AdbDeviceFinder.h"
 
-#include <algorithm>
-#include <cctype>
 #include <filesystem>
 #include <ranges>
 #include <unordered_set>
@@ -10,6 +8,7 @@
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/IOStream/BoostIO.hpp"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/StringMisc.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
 
@@ -114,25 +113,6 @@ std::vector<std::string> AdbDeviceFinder::find_serials_by_adb_command(const std:
     return devices;
 }
 
-static void trim_inplace(std::string& s)
-{
-    while (!s.empty() && std::isspace(static_cast<unsigned char>(s.back()))) {
-        s.pop_back();
-    }
-
-    auto it = std::ranges::find_if(s, [](unsigned char c) {
-        return !std::isspace(c);
-    });
-    s.erase(s.begin(), it);
-}
-
-static void lowercase_inplace(std::string& s)
-{
-    std::ranges::transform(s, s.begin(), [](unsigned char c) {
-        return static_cast<char>(std::tolower(c));
-    });
-}
-
 bool request_waydroid_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> control_unit, AdbDevice& device)
 {
     if (!control_unit) {
@@ -144,8 +124,10 @@ bool request_waydroid_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI
     if (!ret) {
         return false;
     }
-    trim_inplace(output);
-    lowercase_inplace(output);
+
+    string_trim_(output);
+    tolowers_(output);
+
     if (output.find("waydroid") == std::string::npos) {
         return false;
     }
@@ -175,7 +157,9 @@ bool request_androws_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>
     if (!ret) {
         return false;
     }
-    trim_inplace(output);
+
+    string_trim_(output);
+
     if (output.empty()) {
         return false;
     }
@@ -204,8 +188,10 @@ bool request_avd_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> con
     if (!control_unit->shell("getprop ro.product.model", output)) {
         return false;
     }
-    trim_inplace(output);
-    lowercase_inplace(output);
+
+    string_trim_(output);
+    tolowers_(output);
+
     if (!output.starts_with("android sdk") && !output.starts_with("sdk_")) {
         return false;
     }
@@ -227,43 +213,40 @@ bool request_vivo_orientation_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbContro
         return false;
     }
 
-    trim_inplace(brand);
-    lowercase_inplace(brand);
+    string_trim_(brand);
+    tolowers_(brand);
 
     std::string manufacturer;
     if (control_unit->shell("getprop ro.product.manufacturer", manufacturer)) {
-        trim_inplace(manufacturer);
-        lowercase_inplace(manufacturer);
+        string_trim_(manufacturer);
+        tolowers_(manufacturer);
     }
 
     std::string model;
     if (control_unit->shell("getprop ro.product.model", model)) {
-        trim_inplace(model);
-        lowercase_inplace(model);
+        string_trim_(model);
+        tolowers_(model);
     }
 
-    const bool is_vivo_device =
-        brand.find("vivo") != std::string::npos
-        || manufacturer.find("vivo") != std::string::npos
-        || model.find("vivo") != std::string::npos
-        || model.find("iqoo") != std::string::npos;
+    const bool is_vivo_device = brand.find("vivo") != std::string::npos || manufacturer.find("vivo") != std::string::npos
+                                || model.find("vivo") != std::string::npos || model.find("iqoo") != std::string::npos;
 
     if (!is_vivo_device) {
         return false;
     }
 
-    // 如果 SurfaceOrientation 存在，说明默认 Orientation 命令仍可用。
-    // 为了缩小影响范围，这种情况下不覆盖默认命令。
+    // If SurfaceOrientation exists, the default Orientation command should still work.
+    // In this case, do not override the default command to minimize the impact scope.
     std::string surface_orientation;
     if (control_unit->shell("dumpsys input | grep -m 1 SurfaceOrientation", surface_orientation)) {
-        trim_inplace(surface_orientation);
+        string_trim_(surface_orientation);
         if (!surface_orientation.empty()) {
             return false;
         }
     }
 
-    // 部分 vivo / iQOO 设备 dumpsys input 中没有 SurfaceOrientation，
-    // 但 Viewport INTERNAL 中包含 orientation=0/1/2/3。
+    // Some vivo / iQOO devices do not have SurfaceOrientation in dumpsys input,
+    // but Viewport INTERNAL contains orientation=0/1/2/3.
     std::string viewport;
     if (!control_unit->shell("dumpsys input | grep -m 1 'Viewport INTERNAL'", viewport)) {
         return false;
@@ -325,14 +308,12 @@ std::optional<AdbDevice>
     }
     else if (request_avd_config(control_unit, device)) {
     }
+    else if (request_vivo_orientation_config(control_unit, device)) {
+    }
     // else if (request_xxx_config(control_unit, device)) {
     // }
     else {
     }
-
-    // Orientation 命令兼容属于附加配置，不参与上面的互斥设备类型判断。
-    // 只在特定 vivo / iQOO 设备上覆盖 command.Orientation，避免修改全局默认解析。
-    request_vivo_orientation_config(control_unit, device);
 
     return device;
 }
