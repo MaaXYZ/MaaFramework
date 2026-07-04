@@ -8,6 +8,7 @@
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/IOStream/BoostIO.hpp"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/StringMisc.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
 
@@ -123,6 +124,10 @@ bool request_waydroid_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI
     if (!ret) {
         return false;
     }
+
+    string_trim_(output);
+    tolowers_(output);
+
     if (output.find("waydroid") == std::string::npos) {
         return false;
     }
@@ -152,10 +157,9 @@ bool request_androws_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>
     if (!ret) {
         return false;
     }
-    // Trim whitespace/newlines
-    while (!output.empty() && (output.back() == '\n' || output.back() == '\r' || output.back() == ' ')) {
-        output.pop_back();
-    }
+
+    string_trim_(output);
+
     if (output.empty()) {
         return false;
     }
@@ -184,13 +188,85 @@ bool request_avd_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> con
     if (!control_unit->shell("getprop ro.product.model", output)) {
         return false;
     }
-    if (!output.starts_with("Android SDK") && !output.starts_with("sdk_")) {
+
+    string_trim_(output);
+    tolowers_(output);
+
+    if (!output.starts_with("android sdk") && !output.starts_with("sdk_")) {
         return false;
     }
 
     device.config["extras"]["avd"]["enable"] = true;
 
     LogInfo << "AVDExtras enabled for" << VAR(device);
+    return true;
+}
+
+bool request_vivo_orientation_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> control_unit, AdbDevice& device)
+{
+    if (!control_unit) {
+        return false;
+    }
+
+    std::string brand;
+    if (!control_unit->shell("getprop ro.product.brand", brand)) {
+        return false;
+    }
+
+    string_trim_(brand);
+    tolowers_(brand);
+
+    std::string manufacturer;
+    if (control_unit->shell("getprop ro.product.manufacturer", manufacturer)) {
+        string_trim_(manufacturer);
+        tolowers_(manufacturer);
+    }
+
+    std::string model;
+    if (control_unit->shell("getprop ro.product.model", model)) {
+        string_trim_(model);
+        tolowers_(model);
+    }
+
+    const bool is_vivo_device = brand.find("vivo") != std::string::npos || manufacturer.find("vivo") != std::string::npos
+                                || model.find("vivo") != std::string::npos || model.find("iqoo") != std::string::npos;
+
+    if (!is_vivo_device) {
+        return false;
+    }
+
+    // If SurfaceOrientation exists, the default Orientation command should still work.
+    // In this case, do not override the default command to minimize the impact scope.
+    std::string surface_orientation;
+    if (control_unit->shell("dumpsys input | grep -m 1 SurfaceOrientation", surface_orientation)) {
+        string_trim_(surface_orientation);
+        if (!surface_orientation.empty()) {
+            return false;
+        }
+    }
+
+    // Some vivo / iQOO devices do not have SurfaceOrientation in dumpsys input,
+    // but Viewport INTERNAL contains orientation=0/1/2/3.
+    std::string viewport;
+    if (!control_unit->shell("dumpsys input | grep -m 1 'Viewport INTERNAL'", viewport)) {
+        return false;
+    }
+
+    if (viewport.find("orientation=") == std::string::npos) {
+        return false;
+    }
+
+    auto& command = device.config["command"];
+
+    command["Orientation"] = json::array {
+        "{ADB}",
+        "-s",
+        "{ADB_SERIAL}",
+        "shell",
+        "dumpsys input | sed -n 's/.*Viewport INTERNAL.*orientation=\\([0-3]\\).*/\\1/p' | tail -n 1",
+    };
+
+    LogInfo << "vivo orientation config enabled" << VAR(device);
     return true;
 }
 
@@ -231,6 +307,8 @@ std::optional<AdbDevice>
     else if (request_androws_config(control_unit, device)) {
     }
     else if (request_avd_config(control_unit, device)) {
+    }
+    else if (request_vivo_orientation_config(control_unit, device)) {
     }
     // else if (request_xxx_config(control_unit, device)) {
     // }
