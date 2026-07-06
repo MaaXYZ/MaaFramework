@@ -264,7 +264,7 @@
                         "hotkeys": {
                             "type": "array",
                             "title": "快捷键配置",
-                            "description": "定义用户可捕获的快捷键字段；输出为 ClickKey 可用的虚拟按键码",
+                            "description": "定义用户可捕获的快捷键字段；持久化值为人类可读字符串，pipeline_override 替换时映射为虚拟按键码整数",
                             "items": {
                                 "$ref": "#/definitions/hotkeyItem"
                             }
@@ -272,7 +272,7 @@
                         "pipeline_override": {
                             "$ref": "#/definitions/pipelineOverride",
                             "title": "Pipeline 覆盖模板",
-                            "description": "支持使用 {名称} 格式引用快捷键字段的值，替换结果应为整数数组"
+                            "description": "支持使用 {名称}、{名称}.primary、{名称}.modifier1 等占位符引用快捷键字段，替换结果为整数（虚拟按键码）"
                         }
                     },
                     "required": [
