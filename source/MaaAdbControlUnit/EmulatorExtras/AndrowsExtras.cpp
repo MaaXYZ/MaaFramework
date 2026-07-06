@@ -2,15 +2,112 @@
 
 #include "AndrowsExtras.h"
 
+#include <array>
 #include <charconv>
 #include <cmath>
 #include <format>
 #include <sstream>
+#include <string_view>
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/NoWarningCV.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
+
+namespace
+{
+
+struct DisplayViewportInfo
+{
+    int width = 0;
+    int height = 0;
+    int orientation = 0;
+};
+
+std::string_view trim(std::string_view s)
+{
+    while (!s.empty() && s.front() == ' ') {
+        s.remove_prefix(1);
+    }
+    while (!s.empty() && s.back() == ' ') {
+        s.remove_suffix(1);
+    }
+    return s;
+}
+
+std::optional<int> parse_int(std::string_view s)
+{
+    s = trim(s);
+    if (s.empty()) {
+        return std::nullopt;
+    }
+
+    int value = 0;
+    auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), value);
+    if (ec != std::errc() || ptr == s.data()) {
+        return std::nullopt;
+    }
+    return value;
+}
+
+std::optional<DisplayViewportInfo> parse_display_viewport_info(std::string_view output)
+{
+    constexpr std::string_view kOrientation = "orientation=";
+    auto orientation_pos = output.find(kOrientation);
+    if (orientation_pos == std::string_view::npos) {
+        return std::nullopt;
+    }
+
+    auto orientation = parse_int(output.substr(orientation_pos + kOrientation.size(), 1));
+    if (!orientation || *orientation < 0 || *orientation > 3) {
+        return std::nullopt;
+    }
+
+    constexpr std::string_view kLogicalFrame = "logicalFrame=[";
+    auto frame_begin = output.find(kLogicalFrame);
+    if (frame_begin == std::string_view::npos) {
+        return std::nullopt;
+    }
+    frame_begin += kLogicalFrame.size();
+
+    auto frame_end = output.find(']', frame_begin);
+    if (frame_end == std::string_view::npos) {
+        return std::nullopt;
+    }
+
+    std::string_view frame = output.substr(frame_begin, frame_end - frame_begin);
+    std::array<int, 4> values = { 0, 0, 0, 0 };
+    for (int i = 0; i != 4; ++i) {
+        auto comma = frame.find(',');
+        std::string_view part = i == 3 ? frame : frame.substr(0, comma);
+        auto value = parse_int(part);
+        if (!value) {
+            return std::nullopt;
+        }
+
+        values[i] = *value;
+        if (i != 3) {
+            if (comma == std::string_view::npos) {
+                return std::nullopt;
+            }
+            frame.remove_prefix(comma + 1);
+        }
+    }
+
+    int width = values[2] - values[0];
+    int height = values[3] - values[1];
+    if (width <= 0 || height <= 0) {
+        return std::nullopt;
+    }
+
+    return DisplayViewportInfo {
+        .width = width,
+        .height = height,
+        .orientation = *orientation,
+    };
+}
+
+} // namespace
 
 AndrowsExtras::AndrowsExtras(std::filesystem::path agent_path)
 {
@@ -109,6 +206,22 @@ bool AndrowsExtras::request_display_info()
         return false;
     }
 
+    auto viewport_output = adb_shell(std::format("dumpsys input | grep -E 'Viewport .*displayId={},' | head -1", display_id_));
+    if (viewport_output && !viewport_output->empty()) {
+        auto viewport_info = parse_display_viewport_info(*viewport_output);
+        if (viewport_info) {
+            display_width_ = viewport_info->width;
+            display_height_ = viewport_info->height;
+            orientation_ = viewport_info->orientation;
+
+            LogInfo << "Androws: virtual display viewport" << VAR(display_id_) << VAR(display_width_) << VAR(display_height_)
+                    << VAR(viewport_info->orientation) << VAR(orientation_);
+            return true;
+        }
+
+        LogWarn << "Androws: failed to parse input viewport output" << VAR(*viewport_output);
+    }
+
     // Query virtual display resolution: wm size -d {display_id}
     // Output format: "Physical size: 1280x720" (may also have "Override size: ...")
     auto output = adb_shell(std::format("wm size -d {}", display_id_));
@@ -162,9 +275,10 @@ bool AndrowsExtras::request_display_info()
 
     display_width_ = w;
     display_height_ = h;
-    orientation_ = 0; // Androws virtual display has no rotation
+    orientation_ = 0;
 
-    LogInfo << "Androws: virtual display resolution" << VAR(display_id_) << VAR(display_width_) << VAR(display_height_);
+    LogInfo << "Androws: virtual display resolution" << VAR(display_id_) << VAR(display_width_) << VAR(display_height_)
+            << VAR(orientation_);
     return true;
 }
 
@@ -230,8 +344,12 @@ bool AndrowsExtras::query_display_id()
     }
 
     if (!display_output || display_output->empty()) {
-        LogWarn << "Androws: failed to get display ID by package, falling back to second display";
-        display_output = adb_shell("dumpsys display | grep -o 'mDisplayId=[0-9]*' | head -2 | tail -1 | grep -o '[0-9]*'");
+        if (!app_package_.empty()) {
+            LogWarn << "Androws: failed to get display ID by package, falling back to resumed display";
+        }
+        display_output = adb_shell(
+            "dumpsys activity activities | grep -A30 'ResumedActivity:' "
+            "| grep -o 'displayId=[0-9]*' | head -1 | grep -o '[0-9]*'");
     }
 
     if (!display_output || display_output->empty()) {
