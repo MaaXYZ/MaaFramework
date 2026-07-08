@@ -264,7 +264,7 @@
                         "hotkeys": {
                             "type": "array",
                             "title": "快捷键配置",
-                            "description": "定义用户可捕获的快捷键字段；输出为 ClickKey 可用的虚拟按键码",
+                            "description": "定义用户可捕获的快捷键字段；持久化值为人类可读字符串，pipeline_override 替换时映射为虚拟按键码整数",
                             "items": {
                                 "$ref": "#/definitions/hotkeyItem"
                             }
@@ -272,7 +272,7 @@
                         "pipeline_override": {
                             "$ref": "#/definitions/pipelineOverride",
                             "title": "Pipeline 覆盖模板",
-                            "description": "支持使用 {名称} 格式引用快捷键字段的值，替换结果应为整数数组"
+                            "description": "支持使用 {名称}、{名称}.primary、{名称}.modifier1 等占位符引用快捷键字段，替换结果为整数（虚拟按键码）"
                         }
                     },
                     "required": [
@@ -1023,6 +1023,58 @@
             ],
             "additionalProperties": false
         },
+        "execTaskConfig": {
+            "type": "object",
+            "title": "外部程序任务配置",
+            "description": "💡 v2.9.0 可执行的外部程序任务配置。Client 应在合适的时机运行该程序，执行时机由 Client 决定（例如作为可勾选、可排序的任务项调度）；若配置 option，则将 option 取值序列化为紧凑 JSON 字符串并追加为最后一个参数",
+            "properties": {
+                "exec": {
+                    "type": "string",
+                    "title": "程序路径",
+                    "description": "要执行的程序路径，可以是系统 PATH 中的可执行文件。CWD 为 interface.json 所在目录"
+                },
+                "args": {
+                    "type": "array",
+                    "title": "程序参数",
+                    "description": "可选。固定参数数组，按顺序传递给 exec",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string",
+                    "title": "唯一标识",
+                    "description": "可选。建议项目内不重复，便于 Client 在配置文件、日志中区分不同外部程序任务；缺省时 Client 可回退到 exec"
+                },
+                "label": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "显示名称",
+                    "description": "可选。Client UI 中展示的名称，支持国际化字符串。缺省时 Client 可回退到 name 或 exec"
+                },
+                "description": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "详细描述",
+                    "description": "可选。Client UI 中的提示/Tooltip。支持国际化字符串、文件路径或 URL，内容支持 Markdown"
+                },
+                "icon": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "图标路径",
+                    "description": "可选。Client UI 中显示的图标路径，相对于 interface.json 所在目录，支持国际化字符串"
+                },
+                "option": {
+                    "type": "array",
+                    "title": "选项配置",
+                    "description": "可选。数组元素应与外层 option 配置中的键名对应。Client 会收集这些 option 的当前取值并序列化为紧凑 JSON 字符串，追加为最后一个参数；该 option 不参与 pipeline_override 合并",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "exec"
+            ],
+            "additionalProperties": false
+        },
         "agentConfig": {
             "type": "object",
             "title": "代理配置",
@@ -1175,6 +1227,22 @@
                 }
             ]
         },
+        "exec_task": {
+            "description": "💡 v2.9.0 可选。可执行的外部程序任务配置。执行时机由 Client 决定；若配置 option，Client 应将 option 取值序列化为最后一个参数",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/execTaskConfig"
+                },
+                {
+                    "type": "array",
+                    "title": "外部程序任务配置数组",
+                    "description": "多个外部程序任务配置，Client 按数组顺序合并为有序列表",
+                    "items": {
+                        "$ref": "#/definitions/execTaskConfig"
+                    }
+                }
+            ]
+        },
         "agent": {
             "description": "💡 v2.5.0：启动各子进程时 Client 应注入 PI_* 环境变量，详见 Project Interface 文档",
             "oneOf": [
@@ -1226,7 +1294,7 @@
         "import": {
             "type": "array",
             "title": "导入其他 PI 文件",
-            "description": "可选。导入其他 PI 文件的路径数组。文件相对路径为 interface.json 同目录下的相对路径。支持导入这些文件中的 task、option、preset（💡 v2.3.0）、group（💡 v2.4.0）、pretask（💡 v2.7.0）、global_option 与 setting（💡 v2.8.0）字段",
+            "description": "可选。导入其他 PI 文件的路径数组。文件相对路径为 interface.json 同目录下的相对路径。支持导入这些文件中的 task、option、preset（💡 v2.3.0）、group（💡 v2.4.0）、pretask（💡 v2.7.0）、global_option 与 setting（💡 v2.8.0）、exec_task（💡 v2.9.0）字段",
             "items": {
                 "type": "string"
             }
