@@ -216,6 +216,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [Maa_Kes](https://github.com/miaojiuqing/Maa_Kes) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/miaojiuqing/Maa_Kes) ![activity](https://img.shields.io/github/commit-activity/m/miaojiuqing/Maa_Kes?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/miaojiuqing/Maa_Kes.svg?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge&rid=MaaKes&os=windows&arch=x64&channel=stable)  
     卡厄思梦境小助手。基于 MaaFramework 开发。使用图像识别+模拟控制技术，PC 端与模拟器端同步支持，解放双手！由 MaaFramework 强力驱动！
 
+- [MAK](https://github.com/Hollow-YK/MaaAssistantKedrgame) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Hollow-YK/MaaAssistantKedrgame) ![activity](https://img.shields.io/github/commit-activity/m/Hollow-YK/MaaAssistantKedrgame?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Hollow-YK/MaaAssistantKedrgame.svg?style=social) [![website](https://img.shields.io/badge/https://hollow--yk.github.io/MaaAssistantKedrgame/-%234285F4)](https://hollow-yk.github.io/MaaAssistantKedrgame/)  
+    《雪松》小助手！由MaaFramework强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。
