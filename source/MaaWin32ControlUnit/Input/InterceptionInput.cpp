@@ -167,14 +167,13 @@ bool query_hardware_id(int index, std::wstring& hardware_id)
 
 std::optional<int> find_mouse_device_index()
 {
-    std::optional<int> found;
     for (int index = kMouseDeviceStart; index <= kMouseDeviceEnd; ++index) {
         std::wstring hardware_id;
         if (query_hardware_id(index, hardware_id)) {
-            found = index;
+            return index;
         }
     }
-    return found;
+    return std::nullopt;
 }
 
 std::optional<int> find_keyboard_device_index()
@@ -565,7 +564,7 @@ bool InterceptionInput::send_button(int contact, bool button_down)
              << VAR_VOIDP(hwnd_);
 
     MouseStroke stroke;
-    stroke.flags = kMouseMoveAbsolute;
+    stroke.flags = kMouseMoveRelative;
     stroke.button_flags = button_flag;
     return send_mouse_stroke(stroke);
 }
