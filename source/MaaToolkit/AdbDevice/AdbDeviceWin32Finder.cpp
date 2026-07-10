@@ -131,7 +131,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     }
     else {
         LogError << "Invalid MuMuManager info format" << VAR(output);
-        return {};
+        return { };
     }
 
     bool need_adb = info.empty() || std::ranges::any_of(info, [](const MumuInfo& i) { return i.adb_host_ip.empty(); });
@@ -154,7 +154,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         auto adb_jopt = json::parse(adb_output);
         if (!adb_jopt || !adb_jopt->is_object()) {
             LogError << "Parse MuMuManager adb failed" << VAR(adb_output);
-            return {};
+            return { };
         }
         jadb = std::move(*adb_jopt);
     }
