@@ -106,10 +106,8 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     {
         std::string index;
         std::string name;
-        std::string adb_host_ip;
-        int adb_port;
 
-        MEO_JSONIZATION(index, name, adb_host_ip, adb_port);
+        MEO_JSONIZATION(index, name);
     };
 
     json::value& jinfo = *jopt;
@@ -134,6 +132,20 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         return { };
     }
 
+    static const std::vector<std::string> mumu_adb_args = { "adb", "--vmindex", "all" };
+    ChildPipeIOStream adb_ios(mumu_mgr_path, mumu_adb_args);
+    std::string adb_output = adb_ios.read();
+    LogDebug << VAR(mumu_mgr_path) << VAR(mumu_adb_args) << VAR(adb_output);
+
+    auto adb_jopt = json::parse(adb_output);
+    if (!adb_jopt || !adb_jopt->is_object()) {
+        LogError << "Parse MuMuManager adb failed" << VAR(adb_output);
+        return {};
+    }
+
+    json::value& jadb = *adb_jopt;
+    bool adb_single = jadb.contains("adb_host");
+
     std::filesystem::path dir;
     if (emulator.name == "MuMuPlayer12 v5") {
         // MuMuPlayer12 v5: C:\Program Files\Netease\MuMuPlayer-12.0\nx_device\12.0\shell\MuMuNxDevice.exe
@@ -146,10 +158,25 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
 
     std::vector<AdbDevice> result;
     for (const MumuInfo& i : info) {
+        std::string adb_host;
+        int adb_port = 0;
+        if (adb_single) {
+            adb_host = jadb.get("adb_host", std::string {});
+            adb_port = jadb.get("adb_port", 0);
+        }
+        else if (jadb.contains(i.index)) {
+            adb_host = jadb[i.index].get("adb_host", std::string {});
+            adb_port = jadb[i.index].get("adb_port", 0);
+        }
+        else {
+            continue;
+        }
+        if (adb_host.empty()) continue;
+
         AdbDevice device;
         device.name = std::format("{}-{}", i.name, emulator.name);
         device.adb_path = emulator.adb_path;
-        device.serial = std::format("{}:{}", i.adb_host_ip, i.adb_port);
+        device.serial = std::format("{}:{}", adb_host, adb_port);
 
         device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
         device.input_methods = MaaAdbInputMethod_Default;
