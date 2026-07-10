@@ -107,7 +107,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         std::string index;
         std::string name;
         std::string adb_host_ip;
-        int adb_port = 0;
+        int adb_port;
 
         MEO_JSONIZATION(index, name, MEO_OPT adb_host_ip, MEO_OPT adb_port);
     };
