@@ -132,19 +132,6 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         return { };
     }
 
-    static const std::vector<std::string> mumu_adb_args = { "adb", "--vmindex", "all" };
-    ChildPipeIOStream adb_ios(mumu_mgr_path, mumu_adb_args);
-    std::string adb_output = adb_ios.read();
-    LogDebug << VAR(mumu_mgr_path) << VAR(mumu_adb_args) << VAR(adb_output);
-
-    auto adb_jopt = json::parse(adb_output);
-    if (!adb_jopt || !adb_jopt->is_object()) {
-        LogError << "Parse MuMuManager adb failed" << VAR(adb_output);
-        return {};
-    }
-
-    json::value& jadb = *adb_jopt;
-
     struct MumuAdbInfo
     {
         std::string adb_host;
@@ -152,6 +139,36 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
 
         MEO_JSONIZATION(adb_host, adb_port);
     };
+
+    json::value jadb;
+    {
+        bool need_adb = !jinfo.is<MumuAdbInfo>();
+        if (need_adb && jinfo.is_object()) {
+            for (auto& v : jinfo.as_object() | std::views::values) {
+                if (v.is<MumuAdbInfo>()) {
+                    need_adb = false;
+                    break;
+                }
+            }
+        }
+
+        if (need_adb) {
+            static const std::vector<std::string> mumu_adb_args = { "adb", "--vmindex", "all" };
+            ChildPipeIOStream adb_ios(mumu_mgr_path, mumu_adb_args);
+            std::string adb_output = adb_ios.read();
+            LogDebug << VAR(mumu_mgr_path) << VAR(mumu_adb_args) << VAR(adb_output);
+
+            auto adb_jopt = json::parse(adb_output);
+            if (!adb_jopt || !adb_jopt->is_object()) {
+                LogError << "Parse MuMuManager adb failed" << VAR(adb_output);
+                return {};
+            }
+            jadb = std::move(*adb_jopt);
+        }
+        else {
+            jadb = jinfo;
+        }
+    }
 
     std::filesystem::path dir;
     if (emulator.name == "MuMuPlayer12 v5") {
