@@ -134,7 +134,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         return {};
     }
 
-    bool need_adb = info.empty() || std::ranges::all_of(info, [](const MumuInfo& i) { return i.adb_host_ip.empty(); });
+    bool need_adb = info.empty() || std::ranges::any_of(info, [](const MumuInfo& i) { return i.adb_host_ip.empty(); });
 
     struct MumuAdbInfo
     {
@@ -173,7 +173,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     for (const MumuInfo& i : info) {
         std::string adb_host;
         int adb_port;
-        if (!need_adb) {
+        if (!i.adb_host_ip.empty()) {
             adb_host = i.adb_host_ip;
             adb_port = i.adb_port;
         }
