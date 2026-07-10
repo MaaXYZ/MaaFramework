@@ -445,22 +445,10 @@ bool ControllerAgent::handle_click(const ClickParam& param)
         return false;
     }
 
-    cv::Point raw_point = param.point;
-    cv::Point point = preproc_touch_point(raw_point);
-    const auto features = control_unit_->get_features();
-    const bool use_touch_down_up = features & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
-
-    LogDebug << "handle_click"
-             << VAR(raw_point)
-             << VAR(point)
-             << VAR(param.contact)
-             << VAR(param.pressure)
-             << VAR(features)
-             << VAR(use_touch_down_up);
+    cv::Point point = preproc_touch_point(param.point);
 
     bool ret = true;
-    if (use_touch_down_up) {
-        LogDebug << "click synthesized as touch_down/touch_up" << VAR(param.contact);
+    if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
         ret &= control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         ret &= control_unit_->touch_up(param.contact);
@@ -690,9 +678,7 @@ bool ControllerAgent::handle_touch_down(const TouchParam& param)
         return false;
     }
 
-    cv::Point raw_point = param.point;
-    cv::Point point = preproc_touch_point(raw_point);
-    LogDebug << "handle_touch_down" << VAR(raw_point) << VAR(point) << VAR(param.contact) << VAR(param.pressure);
+    cv::Point point = preproc_touch_point(param.point);
     bool ret = control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
 
     return ret;
@@ -705,9 +691,7 @@ bool ControllerAgent::handle_touch_move(const TouchParam& param)
         return false;
     }
 
-    cv::Point raw_point = param.point;
-    cv::Point point = preproc_touch_point(raw_point);
-    LogDebug << "handle_touch_move" << VAR(raw_point) << VAR(point) << VAR(param.contact) << VAR(param.pressure);
+    cv::Point point = preproc_touch_point(param.point);
     bool ret = control_unit_->touch_move(param.contact, point.x, point.y, param.pressure);
 
     return ret;
@@ -720,7 +704,6 @@ bool ControllerAgent::handle_touch_up(const TouchParam& param)
         return false;
     }
 
-    LogDebug << "handle_touch_up" << VAR(param.contact);
     bool ret = control_unit_->touch_up(param.contact);
 
     return ret;
@@ -950,8 +933,6 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         notify = focus_ids_.erase(id) > 0;
     }
 
-    const int action_type = static_cast<int>(action.type);
-
     const json::value cb_detail = {
         { "ctrl_id", id },
         { "uuid", get_uuid() },
@@ -960,7 +941,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         { "info", control_unit_->get_info() },
     };
 
-    LogDebug << "Controller action start" << VAR(id) << VAR(action_type) << VAR(notify);
+    // LogInfo << cb_detail.to_string();
 
     if (notify) {
         notifier_.notify(this, MaaMsg_Controller_Action_Starting, cb_detail);
@@ -1050,8 +1031,6 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     else if (!ret) {
         notifier_.notify(this, MaaMsg_Controller_Action_Failed, cb_detail);
     }
-
-    LogDebug << "Controller action finish" << VAR(id) << VAR(action_type) << VAR(ret);
 
     return ret;
 }
