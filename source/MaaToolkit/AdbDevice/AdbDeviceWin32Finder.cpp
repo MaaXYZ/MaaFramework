@@ -144,7 +144,14 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     }
 
     json::value& jadb = *adb_jopt;
-    bool adb_single = jadb.contains("adb_host");
+
+    struct MumuAdbInfo
+    {
+        std::string adb_host;
+        int adb_port;
+
+        MEO_JSONIZATION(adb_host, adb_port);
+    };
 
     std::filesystem::path dir;
     if (emulator.name == "MuMuPlayer12 v5") {
@@ -159,19 +166,20 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     std::vector<AdbDevice> result;
     for (const MumuInfo& i : info) {
         std::string adb_host;
-        int adb_port = 0;
-        if (adb_single) {
-            adb_host = jadb.get("adb_host", std::string {});
-            adb_port = jadb.get("adb_port", 0);
+        int adb_port;
+        if (jadb.is<MumuAdbInfo>()) {
+            auto a = jadb.as<MumuAdbInfo>();
+            adb_host = std::move(a.adb_host);
+            adb_port = a.adb_port;
         }
-        else if (jadb.contains(i.index)) {
-            adb_host = jadb[i.index].get("adb_host", std::string {});
-            adb_port = jadb[i.index].get("adb_port", 0);
+        else if (jadb.contains(i.index) && jadb[i.index].is<MumuAdbInfo>()) {
+            auto a = jadb[i.index].as<MumuAdbInfo>();
+            adb_host = std::move(a.adb_host);
+            adb_port = a.adb_port;
         }
         else {
             continue;
         }
-        if (adb_host.empty()) continue;
 
         AdbDevice device;
         device.name = std::format("{}-{}", i.name, emulator.name);
