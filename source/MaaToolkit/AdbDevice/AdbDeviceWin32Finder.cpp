@@ -186,12 +186,12 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         int adb_port;
         if (jadb.is<MumuAdbInfo>()) {
             auto a = jadb.as<MumuAdbInfo>();
-            adb_host = std::move(a.adb_host);
+            adb_host = a.adb_host;
             adb_port = a.adb_port;
         }
         else if (jadb.contains(i.index) && jadb[i.index].is<MumuAdbInfo>()) {
             auto a = jadb[i.index].as<MumuAdbInfo>();
-            adb_host = std::move(a.adb_host);
+            adb_host = a.adb_host;
             adb_port = a.adb_port;
         }
         else {
