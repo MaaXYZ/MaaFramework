@@ -142,10 +142,10 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
 
     json::value jadb;
     {
-        bool need_adb = !jinfo.is<MumuAdbInfo>();
+        bool need_adb = !jinfo.is<MumuAdbInfo>() && !jinfo.contains("adb_host_ip");
         if (need_adb && jinfo.is_object()) {
             for (auto& v : jinfo.as_object() | std::views::values) {
-                if (v.is<MumuAdbInfo>()) {
+                if (v.is<MumuAdbInfo>() || (v.contains("adb_host_ip") && v.contains("adb_port"))) {
                     need_adb = false;
                     break;
                 }
@@ -189,10 +189,25 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
             adb_host = a.adb_host;
             adb_port = a.adb_port;
         }
-        else if (jadb.contains(i.index) && jadb[i.index].is<MumuAdbInfo>()) {
-            auto a = jadb[i.index].as<MumuAdbInfo>();
-            adb_host = a.adb_host;
-            adb_port = a.adb_port;
+        else if (jadb.contains("adb_host_ip")) {
+            adb_host = jadb.get("adb_host_ip", std::string {});
+            adb_port = jadb.get("adb_port", 0);
+        }
+        else if (jadb.contains(i.index)) {
+            auto& v = jadb[i.index];
+            if (v.is<MumuAdbInfo>()) {
+                auto a = v.as<MumuAdbInfo>();
+                adb_host = a.adb_host;
+                adb_port = a.adb_port;
+            }
+            else if (v.contains("adb_host_ip")) {
+                adb_host = v.get("adb_host_ip", std::string {});
+                adb_port = v.get("adb_port", 0);
+            }
+            else {
+                LogDebug << "No adb info for index" << VAR(i.index);
+                continue;
+            }
         }
         else {
             LogDebug << "No adb info for index" << VAR(i.index);
