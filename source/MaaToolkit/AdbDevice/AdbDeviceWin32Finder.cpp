@@ -195,6 +195,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
             adb_port = a.adb_port;
         }
         else {
+            LogDebug << "No adb info for index" << VAR(i.index);
             continue;
         }
 
