@@ -107,7 +107,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         std::string index;
         std::string name;
         std::string adb_host_ip;
-        int adb_port;
+        int adb_port = 0; // sentinel for absent JSON field, port 0 is reserved
 
         MEO_JSONIZATION(index, name, MEO_OPT adb_host_ip, MEO_OPT adb_port);
     };
@@ -173,7 +173,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     for (const MumuInfo& i : info) {
         std::string adb_host;
         int adb_port;
-        if (!i.adb_host_ip.empty()) {
+        if (!i.adb_host_ip.empty() && i.adb_port > 0) {
             adb_host = i.adb_host_ip;
             adb_port = i.adb_port;
         }
