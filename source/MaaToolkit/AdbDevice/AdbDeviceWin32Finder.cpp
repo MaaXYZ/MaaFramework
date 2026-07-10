@@ -106,8 +106,10 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     {
         std::string index;
         std::string name;
+        std::string adb_host_ip;
+        int adb_port = 0;
 
-        MEO_JSONIZATION(index, name);
+        MEO_JSONIZATION(index, name, MEO_OPT adb_host_ip, MEO_OPT adb_port);
     };
 
     json::value& jinfo = *jopt;
@@ -129,8 +131,10 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     }
     else {
         LogError << "Invalid MuMuManager info format" << VAR(output);
-        return { };
+        return {};
     }
+
+    bool need_adb = info.empty() || std::ranges::all_of(info, [](const MumuInfo& i) { return i.adb_host_ip.empty(); });
 
     struct MumuAdbInfo
     {
@@ -141,33 +145,18 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     };
 
     json::value jadb;
-    {
-        bool need_adb = !jinfo.is<MumuAdbInfo>() && !jinfo.contains("adb_host_ip");
-        if (need_adb && jinfo.is_object()) {
-            for (auto& v : jinfo.as_object() | std::views::values) {
-                if (v.is<MumuAdbInfo>() || (v.contains("adb_host_ip") && v.contains("adb_port"))) {
-                    need_adb = false;
-                    break;
-                }
-            }
-        }
+    if (need_adb) {
+        static const std::vector<std::string> mumu_adb_args = { "adb", "--vmindex", "all" };
+        ChildPipeIOStream adb_ios(mumu_mgr_path, mumu_adb_args);
+        std::string adb_output = adb_ios.read();
+        LogDebug << VAR(mumu_mgr_path) << VAR(mumu_adb_args) << VAR(adb_output);
 
-        if (need_adb) {
-            static const std::vector<std::string> mumu_adb_args = { "adb", "--vmindex", "all" };
-            ChildPipeIOStream adb_ios(mumu_mgr_path, mumu_adb_args);
-            std::string adb_output = adb_ios.read();
-            LogDebug << VAR(mumu_mgr_path) << VAR(mumu_adb_args) << VAR(adb_output);
-
-            auto adb_jopt = json::parse(adb_output);
-            if (!adb_jopt || !adb_jopt->is_object()) {
-                LogError << "Parse MuMuManager adb failed" << VAR(adb_output);
-                return {};
-            }
-            jadb = std::move(*adb_jopt);
+        auto adb_jopt = json::parse(adb_output);
+        if (!adb_jopt || !adb_jopt->is_object()) {
+            LogError << "Parse MuMuManager adb failed" << VAR(adb_output);
+            return {};
         }
-        else {
-            jadb = jinfo;
-        }
+        jadb = std::move(*adb_jopt);
     }
 
     std::filesystem::path dir;
@@ -184,30 +173,19 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     for (const MumuInfo& i : info) {
         std::string adb_host;
         int adb_port;
-        if (jadb.is<MumuAdbInfo>()) {
+        if (!need_adb) {
+            adb_host = i.adb_host_ip;
+            adb_port = i.adb_port;
+        }
+        else if (jadb.is<MumuAdbInfo>()) {
             auto a = jadb.as<MumuAdbInfo>();
             adb_host = a.adb_host;
             adb_port = a.adb_port;
         }
-        else if (jadb.contains("adb_host_ip")) {
-            adb_host = jadb.get("adb_host_ip", std::string {});
-            adb_port = jadb.get("adb_port", 0);
-        }
-        else if (jadb.contains(i.index)) {
-            auto& v = jadb[i.index];
-            if (v.is<MumuAdbInfo>()) {
-                auto a = v.as<MumuAdbInfo>();
-                adb_host = a.adb_host;
-                adb_port = a.adb_port;
-            }
-            else if (v.contains("adb_host_ip")) {
-                adb_host = v.get("adb_host_ip", std::string {});
-                adb_port = v.get("adb_port", 0);
-            }
-            else {
-                LogDebug << "No adb info for index" << VAR(i.index);
-                continue;
-            }
+        else if (jadb.contains(i.index) && jadb[i.index].is<MumuAdbInfo>()) {
+            auto a = jadb[i.index].as<MumuAdbInfo>();
+            adb_host = a.adb_host;
+            adb_port = a.adb_port;
         }
         else {
             LogDebug << "No adb info for index" << VAR(i.index);
