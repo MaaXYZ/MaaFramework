@@ -29,21 +29,21 @@ const AdbDeviceFinder::EmulatorConstDataMap& AdbDeviceWin32Finder::get_emulator_
             .adb_candidate_paths = { "nox_adb.exe"_path },
             .adb_common_serials = { "127.0.0.1:62001", "127.0.0.1:59865" } } },
 
-        { "MuMuPlayer6",
+        { "MuMuPlayer v3",
           { .keyword = "NemuPlayer",
             .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
                                      "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
                                      "adb.exe"_path },
             .adb_common_serials = { "127.0.0.1:7555" } } },
 
-        { "MuMuPlayer12",
+        { "MuMuPlayer v4",
           {
               .keyword = "MuMuPlayer.exe",
               .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
                                        "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
                                        "adb.exe"_path },
           } },
-        { "MuMuPlayer12 v5",
+        { "MuMuPlayer v5+",
           {
               .keyword = "MuMuNxDevice.exe",
               .adb_candidate_paths = { "..\\..\\..\\nx_main\\adb.exe"_path, "adb.exe"_path },
@@ -107,9 +107,9 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         std::string index;
         std::string name;
         std::string adb_host_ip;
-        int adb_port;
+        int adb_port = 0; // sentinel for absent JSON field, port 0 is reserved
 
-        MEO_JSONIZATION(index, name, adb_host_ip, adb_port);
+        MEO_JSONIZATION(index, name, MEO_OPT adb_host_ip, MEO_OPT adb_port);
     };
 
     json::value& jinfo = *jopt;
@@ -134,6 +134,31 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         return { };
     }
 
+    bool need_adb = info.empty() || std::ranges::any_of(info, [](const MumuInfo& i) { return i.adb_host_ip.empty(); });
+
+    struct MumuAdbInfo
+    {
+        std::string adb_host;
+        int adb_port;
+
+        MEO_JSONIZATION(adb_host, adb_port);
+    };
+
+    json::value jadb;
+    if (need_adb) {
+        static const std::vector<std::string> mumu_adb_args = { "adb", "--vmindex", "all" };
+        ChildPipeIOStream adb_ios(mumu_mgr_path, mumu_adb_args);
+        std::string adb_output = adb_ios.read();
+        LogDebug << VAR(mumu_mgr_path) << VAR(mumu_adb_args) << VAR(adb_output);
+
+        auto adb_jopt = json::parse(adb_output);
+        if (!adb_jopt || !adb_jopt->is_object()) {
+            LogError << "Parse MuMuManager adb failed" << VAR(adb_output);
+            return { };
+        }
+        jadb = std::move(*adb_jopt);
+    }
+
     std::filesystem::path dir;
     if (emulator.name == "MuMuPlayer12 v5") {
         // MuMuPlayer12 v5: C:\Program Files\Netease\MuMuPlayer-12.0\nx_device\12.0\shell\MuMuNxDevice.exe
@@ -146,10 +171,31 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
 
     std::vector<AdbDevice> result;
     for (const MumuInfo& i : info) {
+        std::string adb_host;
+        int adb_port;
+        if (!i.adb_host_ip.empty() && i.adb_port > 0) {
+            adb_host = i.adb_host_ip;
+            adb_port = i.adb_port;
+        }
+        else if (jadb.is<MumuAdbInfo>()) {
+            auto a = jadb.as<MumuAdbInfo>();
+            adb_host = a.adb_host;
+            adb_port = a.adb_port;
+        }
+        else if (jadb.contains(i.index) && jadb[i.index].is<MumuAdbInfo>()) {
+            auto a = jadb[i.index].as<MumuAdbInfo>();
+            adb_host = a.adb_host;
+            adb_port = a.adb_port;
+        }
+        else {
+            LogDebug << "No adb info for index" << VAR(i.index);
+            continue;
+        }
+
         AdbDevice device;
         device.name = std::format("{}-{}", i.name, emulator.name);
         device.adb_path = emulator.adb_path;
-        device.serial = std::format("{}:{}", i.adb_host_ip, i.adb_port);
+        device.serial = std::format("{}:{}", adb_host, adb_port);
 
         device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
         device.input_methods = MaaAdbInputMethod_Default;
