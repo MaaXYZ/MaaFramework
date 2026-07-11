@@ -117,6 +117,9 @@ declare global {
          * | PostThreadMessage            | Low           | Maybe         | No           | Yes                |                                                             |
          * | SendMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Designed for apps that check real cursor position           |
          * | PostMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Designed for apps that check real cursor position           |
+         * | SendMessageWithWindowPos     | Medium        | Maybe         | No           | Yes                | Moves window to align target with cursor, then restores     |
+         * | PostMessageWithWindowPos     | Medium        | Maybe         | No           | Yes                | Moves window to align target with cursor, then restores     |
+         * | Interception                 | Medium        | Yes           | No           | No                 | Driver-level input injection via the Interception driver    |
          *
          * Note:
          * - Admin rights mainly depend on the target application's privilege level.
@@ -133,7 +136,8 @@ declare global {
             | 'SendMessageWithCursorPos'
             | 'PostMessageWithCursorPos'
             | 'SendMessageWithWindowPos'
-            | 'PostMessageWithWindowPos',
+            | 'PostMessageWithWindowPos'
+            | 'Interception',
             ScreencapOrInputMethods
         >
 

@@ -368,18 +368,18 @@ typedef uint64_t MaaWin32ScreencapMethod;
  *
  * Different applications process input differently, there is no universal solution.
  *
- * | Method                       | Compatibility | Require Admin | Seize Mouse  | Background Support | Notes |
- * |------------------------------|---------------|---------------|--------------|--------------------|-------------------------------------------------------------
- * | | Seize                        | High          | No            | Yes          | No                 | | | SendMessage                  |
- * Medium        | Maybe         | No           | Yes                |                                                             | |
- * PostMessage                  | Medium        | Maybe         | No           | Yes                | | | LegacyEvent                  | Low
- * | No            | Yes          | No                 |                                                             | | PostThreadMessage
- * | Low           | Maybe         | No           | Yes                |                                                             | |
- * SendMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Moves cursor to target position, then
- * restores              | | PostMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Moves cursor
- * to target position, then restores              | | SendMessageWithWindowPos     | Medium        | Maybe         | No           | Yes |
- * Moves window to align target with cursor, then restores     | | PostMessageWithWindowPos     | Medium        | Maybe         | No | Yes |
- * Moves window to align target with cursor, then restores     |
+ * | Method                       | Compatibility | Require Admin | Seize Mouse | Background Support | Notes                                                       |
+ * |------------------------------|---------------|---------------|-------------|--------------------|-------------------------------------------------------------|
+ * | Seize                        | High          | No            | Yes         | No                 |                                                             |
+ * | SendMessage                  | Medium        | Maybe         | No          | Yes                |                                                             |
+ * | PostMessage                  | Medium        | Maybe         | No          | Yes                |                                                             |
+ * | LegacyEvent                  | Low           | No            | Yes         | No                 |                                                             |
+ * | PostThreadMessage            | Low           | Maybe         | No          | Yes                | Deprecated                                                  |
+ * | SendMessageWithCursorPos     | Medium        | Maybe         | Briefly     | Yes                | Moves cursor to target position, then restores              |
+ * | PostMessageWithCursorPos     | Medium        | Maybe         | Briefly     | Yes                | Moves cursor to target position, then restores              |
+ * | SendMessageWithWindowPos     | Medium        | Maybe         | No          | Yes                | Moves window to align target with cursor, then restores     |
+ * | PostMessageWithWindowPos     | Medium        | Maybe         | No          | Yes                | Moves window to align target with cursor, then restores     |
+ * | Interception                 | Medium        | Yes           | No          | No                 | Driver-level input injection via the Interception driver    |
  *
  * Note:
  * - Admin rights mainly depend on the target application's privilege level.
@@ -400,6 +400,7 @@ typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_PostMessageWithCursorPos (1ULL << 6)
 #define MaaWin32InputMethod_SendMessageWithWindowPos (1ULL << 7)
 #define MaaWin32InputMethod_PostMessageWithWindowPos (1ULL << 8)
+#define MaaWin32InputMethod_Interception (1ULL << 9)
 
 // MaaMacOSScreencapMethod:
 /**
