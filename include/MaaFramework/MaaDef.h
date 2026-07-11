@@ -368,18 +368,19 @@ typedef uint64_t MaaWin32ScreencapMethod;
  *
  * Different applications process input differently, there is no universal solution.
  *
- * | Method                       | Compatibility | Require Admin | Seize Mouse | Background Support | Notes                                                       |
+ * | Method                       | Compatibility | Require Admin | Seize Mouse | Background Support | Notes |
  * |------------------------------|---------------|---------------|-------------|--------------------|-------------------------------------------------------------|
- * | Seize                        | High          | No            | Yes         | No                 |                                                             |
- * | SendMessage                  | Medium        | Maybe         | No          | Yes                |                                                             |
- * | PostMessage                  | Medium        | Maybe         | No          | Yes                |                                                             |
- * | LegacyEvent                  | Low           | No            | Yes         | No                 |                                                             |
- * | PostThreadMessage            | Low           | Maybe         | No          | Yes                | Deprecated                                                  |
- * | SendMessageWithCursorPos     | Medium        | Maybe         | Briefly     | Yes                | Moves cursor to target position, then restores              |
- * | PostMessageWithCursorPos     | Medium        | Maybe         | Briefly     | Yes                | Moves cursor to target position, then restores              |
- * | SendMessageWithWindowPos     | Medium        | Maybe         | No          | Yes                | Moves window to align target with cursor, then restores     |
- * | PostMessageWithWindowPos     | Medium        | Maybe         | No          | Yes                | Moves window to align target with cursor, then restores     |
- * | Interception                 | Medium        | Yes           | No          | No                 | Driver-level input injection via the Interception driver    |
+ * | Seize                        | High          | No            | Yes         | No                 | | | SendMessage                  |
+ * Medium        | Maybe         | No          | Yes                |                                                             | |
+ * PostMessage                  | Medium        | Maybe         | No          | Yes                | | | LegacyEvent                  | Low
+ * | No            | Yes         | No                 |                                                             | | PostThreadMessage |
+ * Low           | Maybe         | No          | Yes                | Deprecated                                                  | |
+ * SendMessageWithCursorPos     | Medium        | Maybe         | Briefly     | Yes                | Moves cursor to target position, then
+ * restores              | | PostMessageWithCursorPos     | Medium        | Maybe         | Briefly     | Yes                | Moves cursor
+ * to target position, then restores              | | SendMessageWithWindowPos     | Medium        | Maybe         | No          | Yes |
+ * Moves window to align target with cursor, then restores     | | PostMessageWithWindowPos     | Medium        | Maybe         | No | Yes
+ * | Moves window to align target with cursor, then restores     | | Interception                 | Medium        | Yes           | No | No
+ * | Driver-level input injection via the Interception driver    |
  *
  * Note:
  * - Admin rights mainly depend on the target application's privilege level.

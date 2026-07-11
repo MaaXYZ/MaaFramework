@@ -530,15 +530,8 @@ bool InterceptionInput::move_to_client_point(int x, int y)
     }
 
     auto [ix, iy] = *interception_point;
-    LogDebug << "Interception move_to_client_point"
-             << VAR(x)
-             << VAR(y)
-             << VAR(screen_point->x)
-             << VAR(screen_point->y)
-             << VAR(ix)
-             << VAR(iy)
-             << VAR(mouse_device_index_)
-             << VAR_VOIDP(hwnd_);
+    LogDebug << "Interception move_to_client_point" << VAR(x) << VAR(y) << VAR(screen_point->x) << VAR(screen_point->y) << VAR(ix)
+             << VAR(iy) << VAR(mouse_device_index_) << VAR_VOIDP(hwnd_);
     MouseStroke stroke;
     stroke.flags = kMouseMoveAbsolute;
     stroke.x = ix;
@@ -555,13 +548,8 @@ bool InterceptionInput::send_button(int contact, bool button_down)
     }
 
     const int mapped_contact = GetMappedContact(contact);
-    LogDebug << "Interception send_button"
-             << VAR(contact)
-             << VAR(mapped_contact)
-             << VAR(button_down)
-             << VAR(button_flag)
-             << VAR(mouse_device_index_)
-             << VAR_VOIDP(hwnd_);
+    LogDebug << "Interception send_button" << VAR(contact) << VAR(mapped_contact) << VAR(button_down) << VAR(button_flag)
+             << VAR(mouse_device_index_) << VAR_VOIDP(hwnd_);
 
     MouseStroke stroke;
     stroke.flags = kMouseMoveRelative;
@@ -598,14 +586,8 @@ bool InterceptionInput::send_key(int key, bool key_up)
         stroke.state |= kKeyE1;
     }
 
-    LogDebug << "Interception send_key"
-             << VAR(key)
-             << VAR(scan_code_ex)
-             << VAR(stroke.code)
-             << VAR(stroke.state)
-             << VAR(key_up)
-             << VAR(keyboard_device_index_)
-             << VAR_VOIDP(hwnd_);
+    LogDebug << "Interception send_key" << VAR(key) << VAR(scan_code_ex) << VAR(stroke.code) << VAR(stroke.state) << VAR(key_up)
+             << VAR(keyboard_device_index_) << VAR_VOIDP(hwnd_);
 
     return send_keyboard_stroke(stroke);
 }
