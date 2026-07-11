@@ -29,21 +29,21 @@ const AdbDeviceFinder::EmulatorConstDataMap& AdbDeviceWin32Finder::get_emulator_
             .adb_candidate_paths = { "nox_adb.exe"_path },
             .adb_common_serials = { "127.0.0.1:62001", "127.0.0.1:59865" } } },
 
-        { "MuMuPlayer6",
+        { "MuMuPlayer v3",
           { .keyword = "NemuPlayer",
             .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
                                      "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
                                      "adb.exe"_path },
             .adb_common_serials = { "127.0.0.1:7555" } } },
 
-        { "MuMuPlayer12",
+        { "MuMuPlayer v4",
           {
               .keyword = "MuMuPlayer.exe",
               .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
                                        "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
                                        "adb.exe"_path },
           } },
-        { "MuMuPlayer12 v5",
+        { "MuMuPlayer v5+",
           {
               .keyword = "MuMuNxDevice.exe",
               .adb_candidate_paths = { "..\\..\\..\\nx_main\\adb.exe"_path, "adb.exe"_path },
