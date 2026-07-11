@@ -140,7 +140,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a8a7cec67c98e73c2cd12b95708cafd16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a wlroots controller for Linux.  <br /></td></tr>
 <tr class="separator:a8a7cec67c98e73c2cd12b95708cafd16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8251284b9739632a57db4145894df73c" id="r_a8251284b9739632a57db4145894df73c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a8251284b9739632a57db4145894df73c">MaaKWinControllerCreate</a> (const char *device_node, int screen_width, int screen_height, <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> use_win32_vk_code)</td></tr>
-<tr class="memdesc:a8251284b9739632a57db4145894df73c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a KWin (pure Wayland) controller for Linux.  <br /></td></tr>
+<tr class="memdesc:a8251284b9739632a57db4145894df73c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a KWin / Linux Wayland controller via PipeWire and /dev/uinput.  <br /></td></tr>
 <tr class="separator:a8251284b9739632a57db4145894df73c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab979f25e17e04ae8cc2d2a6aa1b2540a" id="r_ab979f25e17e04ae8cc2d2a6aa1b2540a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#ab979f25e17e04ae8cc2d2a6aa1b2540a">MaaGamepadControllerCreate</a> (void *hWnd, <a class="el" href="MaaDef_8h.html#a53a0d2c454370893abfbaf100b48dc0d">MaaGamepadType</a> gamepad_type, <a class="el" href="MaaDef_8h.html#a23833339ba6406d680688350d27d37b3">MaaWin32ScreencapMethod</a> screencap_method)</td></tr>
 <tr class="memdesc:ab979f25e17e04ae8cc2d2a6aa1b2540a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a virtual gamepad controller for Windows.  <br /></td></tr>
@@ -662,7 +662,8 @@ Only single touch is supported (contact must be 0). </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Create a KWin (pure Wayland) controller for Linux. </p>
+<p>Create a KWin / Linux Wayland controller via PipeWire and /dev/uinput. </p>
+<p>Despite the name "KWin", this controller works with any Wayland compositor that implements the XDG Screencast Portal and kernel has uinput support (e.g., GNOME).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">device_node</td><td>The uinput device node path (e.g., "/dev/uinput"). </td></tr>
@@ -673,17 +674,15 @@ Only single touch is supported (contact must be 0). </dd></dl>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The controller handle, or nullptr on failure.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>This controller is designed for KWin (pure Wayland) on Linux. </dd>
+<dl class="section note"><dt>Note</dt><dd>Dependencies: pipewire (1.0+), xdg-desktop-portal. </dd>
 <dd>
-Input is simulated via /dev/uinput (kernel-level virtual touchscreen). </dd>
+Screencap is implemented via PipeWire / xdg-desktop-portal. </dd>
 <dd>
-Screencap is implemented via PipeWire / xdg-desktop-portal (KDE/KWin). Captures the foreground monitor in fullscreen mode. </dd>
+Input is simulated via /dev/uinput (kernel-level virtual input devices). </dd>
 <dd>
 Requires user authorization via the screen sharing dialog (xdg-desktop-portal). </dd>
 <dd>
-Requires write permission to /dev/uinput (typically via the "input" group). </dd>
-<dd>
-Only single touch is supported (contact must be 0). </dd></dl>
+Requires write permission to /dev/uinput (typically via the "input" group). It is recommended to configure a udev rule: KERNEL=="uinput", MODE="0660", GROUP="input". </dd></dl>
 
 </div>
 </div>
@@ -1893,7 +1892,7 @@ For other controllers, this is a no-op that always succeeds. </dd></dl>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="dir_0debf1eee29073ebb629a4e1dfd2a5f6.html">Instance</a></li><li class="navelem"><a class="el" href="MaaController_8h.html">MaaController.h</a></li>
-    <li class="footer">Generated on Tue Jun 16 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Sat Jul 11 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>
