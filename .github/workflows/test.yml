@@ -61,7 +61,7 @@ jobs:
                   maximum-size: 16GB
                   disk-root: 'D:'
 
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   submodules: recursive
 
@@ -81,12 +81,12 @@ jobs:
               run: |
                   python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows
 
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: latest
 
             - name: Use Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 24
 
@@ -155,13 +155,13 @@ jobs:
                   pnpm i
                   node binding.ts
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-text_log
                   path: 'install/bin/debug/*.log'
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-full
@@ -182,7 +182,7 @@ jobs:
                   sudo apt-get install -y ninja-build cmake ccache libpipewire-0.3-dev libdbus-1-dev
 
             # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   submodules: recursive
 
@@ -239,12 +239,12 @@ jobs:
                   sudo cp -r ./extracted/usr/include/* "$SYSROOT_DIR/usr/include/"
                   sudo cp -r ./extracted/usr/lib/aarch64-linux-gnu/* "$SYSROOT_DIR/usr/lib/"
 
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: latest
 
             - name: Use Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 24
 
@@ -321,13 +321,13 @@ jobs:
                   pnpm i
                   node binding.ts
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-text_log
                   path: 'install/bin/debug/*.log'
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-full
@@ -342,7 +342,7 @@ jobs:
         runs-on: macos-15
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   submodules: recursive
 
@@ -370,12 +370,12 @@ jobs:
               run: |
                   python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
 
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: latest
 
             - name: Use Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 24
 
@@ -450,13 +450,13 @@ jobs:
                   pnpm i
                   node binding.ts
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-text_log
                   path: 'install/bin/debug/*.log'
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-full

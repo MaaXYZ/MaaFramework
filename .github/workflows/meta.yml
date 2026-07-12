@@ -33,7 +33,7 @@ jobs:
     set:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   fetch-depth: 0
             
@@ -101,7 +101,7 @@ jobs:
                   latest-plugin=${{ steps.latest-plugin.outputs.release }}
                   " | tee -a "$GITHUB_OUTPUT" "$META_OUTPUT"
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               with:
                   name: meta
                   path: ${{ env.META_OUTPUT }}

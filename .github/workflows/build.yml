@@ -78,7 +78,7 @@ jobs:
                   maximum-size: 16GB
                   disk-root: 'D:'
 
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   submodules: true
 
@@ -107,12 +107,12 @@ jobs:
               run: |
                   python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows
 
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: latest
 
             - name: Use Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 24
 
@@ -156,7 +156,7 @@ jobs:
               run: |
                   cp -r build/download_plugins/bin install/bin/plugins
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}
@@ -176,17 +176,17 @@ jobs:
                   sudo apt-get update -y
                   sudo apt-get install -y ninja-build cmake ccache libpipewire-0.3-dev libdbus-1-dev
 
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: latest
 
             - name: Use Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 24
 
             # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   submodules: true
 
@@ -289,7 +289,7 @@ jobs:
               run: |
                   cp -r build/download_plugins/bin install/bin/plugins
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}
@@ -304,7 +304,7 @@ jobs:
         runs-on: macos-15
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   submodules: true
 
@@ -332,12 +332,12 @@ jobs:
               run: |
                   python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
 
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: latest
 
             - name: Use Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 24
 
@@ -389,7 +389,7 @@ jobs:
               run: |
                   cp -r build/download_plugins/bin install/bin/plugins
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}
@@ -406,7 +406,7 @@ jobs:
             fail-fast: false
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   submodules: true
 
@@ -486,7 +486,7 @@ jobs:
               run: |
                   cp -r build/download_plugins/bin install/bin/plugins
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-android-${{ matrix.arch }}
@@ -498,7 +498,7 @@ jobs:
         steps:
             - uses: nuget/setup-nuget@v2
 
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
             - uses: actions/download-artifact@v4
               with:
                   path: assets
@@ -508,7 +508,7 @@ jobs:
               shell: bash
               run: ./pack.sh ${{ needs.meta.outputs.version }}
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: pkgs-nuget
@@ -518,7 +518,7 @@ jobs:
         needs: [meta, windows, ubuntu, macos, android]
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
             - uses: actions/download-artifact@v4
               with:
                   path: assets
@@ -529,7 +529,7 @@ jobs:
                   pip install --upgrade -r tools/pip_pack/requirements.txt
                   python tools/pip_pack/pip_pack.py $tag
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: pkgs-pip
@@ -539,17 +539,17 @@ jobs:
         needs: [meta, windows, ubuntu, macos, android]
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
             - uses: actions/download-artifact@v4
               with:
                   path: assets
 
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: latest
 
             - name: Use Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 24
 
@@ -568,7 +568,7 @@ jobs:
                   pnpm i
                   node scripts/pack.ts $ASSETS ${{ needs.meta.outputs.tag }}
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               with:
                   name: pkgs-nodejs
                   path: 'source/binding/NodeJS/release'
@@ -579,7 +579,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v5
+              uses: actions/checkout@v7
               with:
                   submodules: true
 
