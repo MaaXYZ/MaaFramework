@@ -288,7 +288,7 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
         }
         const auto& pipeline_data = *node_opt;
 
-        if (batch_plan && !batch_triggered && batch_plan->node_names.contains(pipeline_data.name)) {
+        if (batch_plan && !batch_triggered && batch_plan->owner_node_names.contains(pipeline_data.name)) {
             batch_triggered = true;
 
             Recognizer recognizer(tasker_, *context_, image, ocr_cache);
@@ -355,7 +355,11 @@ std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const 
             continue;
         }
 
+        const auto old_size = ctx.plan.entries.size();
         collect_ocr_from_reco(ctx, data.name, data.reco_type, data.reco_param);
+        if (ctx.plan.entries.size() > old_size) {
+            ctx.plan.owner_node_names.emplace(data.name);
+        }
     }
 
     if (ctx.plan.entries.size() < 2) {
