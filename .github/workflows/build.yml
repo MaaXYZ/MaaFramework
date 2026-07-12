@@ -319,6 +319,7 @@ jobs:
 
             - name: Install dep
               run: |
+                  brew trust aws/tap 2>/dev/null || true
                   brew install ninja ccache
 
             - name: Setup ccache
