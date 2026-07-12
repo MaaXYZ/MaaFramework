@@ -38,11 +38,11 @@ jobs:
                   fetch-depth: 0
             
             - id: latest-plugin
-              uses: pozetroninc/github-action-get-latest-release@master
-              with:
-                  repository: MaaXYZ/MaaPluginDemo
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  excludes: "draft"
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  latest=$(gh release view --repo MaaXYZ/MaaPluginDemo --json tagName --jq .tagName 2>/dev/null || echo "")
+                  echo "release=$latest" >> "$GITHUB_OUTPUT"
 
             - name: set
               id: set
