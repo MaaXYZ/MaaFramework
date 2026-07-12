@@ -11,7 +11,7 @@ jobs:
         runs-on: macos-latest
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v7
+              uses: actions/checkout@v7.0.0
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   fetch-depth: 0
@@ -27,7 +27,7 @@ jobs:
                   python3 tools/FormatCode/format_cpp.py --verbose
 
             - name: Commit and push changes
-              uses: actions-js/push@master
+              uses: actions-js/push@v1.5
               with:
                   rebase: true
                   branch: ${{ github.ref }}

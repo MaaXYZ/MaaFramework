@@ -49,12 +49,12 @@ jobs:
             release_body: ${{ steps.git-cliff.outputs.content }}
         steps:
             - name: Checkout
-              uses: actions/checkout@v7
+              uses: actions/checkout@v7.0.0
               with:
                   fetch-depth: 0
 
             - name: Generate a changelog
-              uses: orhun/git-cliff-action@v4
+              uses: orhun/git-cliff-action@v4.8.0
               id: git-cliff
               with:
                   config: .github/cliff.toml
@@ -77,7 +77,7 @@ jobs:
             NUGET_PACKAGE_SOURCE: ${{ inputs.dry-run && 'https://apiint.nugettest.org/v3/index.json' || 'https://api.nuget.org/v3/index.json' }}
             NUGET_AUDIENCE: ${{ inputs.dry-run && 'https://int.nugettest.org' || 'https://www.nuget.org' }}
         steps:
-            - uses: dawidd6/action-download-artifact@v6
+            - uses: dawidd6/action-download-artifact@v21
               with:
                   workflow: build.yml
                   run_id: ${{ inputs.run-id }}
@@ -87,7 +87,7 @@ jobs:
                   if_no_artifact_found: fail
 
             - id: login
-              uses: NuGet/login@v1
+              uses: NuGet/login@v1.2.0
               with:
                 user: moomiji
                 token-service-url: ${{ env.NUGET_AUDIENCE }}/api/v2/token
@@ -110,11 +110,11 @@ jobs:
         permissions:
             id-token: write
         steps:
-            - uses: actions/checkout@v7
+            - uses: actions/checkout@v7.0.0
               with:
                   fetch-depth: 0
 
-            - uses: dawidd6/action-download-artifact@v6
+            - uses: dawidd6/action-download-artifact@v21
               with:
                   workflow: build.yml
                   run_id: ${{ inputs.run-id }}
@@ -141,7 +141,7 @@ jobs:
         env:
             PYPI_REPOSITORY: ${{ inputs.dry-run && 'testpypi' || 'pypi' }}
         steps:
-            - uses: dawidd6/action-download-artifact@v6
+            - uses: dawidd6/action-download-artifact@v21
               with:
                   workflow: build.yml
                   run_id: ${{ inputs.run-id }}
@@ -169,7 +169,7 @@ jobs:
         permissions:
             contents: write
         steps:
-            - uses: dawidd6/action-download-artifact@v6
+            - uses: dawidd6/action-download-artifact@v21
               with:
                   workflow: build.yml
                   run_id: ${{ inputs.run-id }}
@@ -187,7 +187,7 @@ jobs:
                   done
 
             - id: publish
-              uses: softprops/action-gh-release@v2
+              uses: softprops/action-gh-release@v3.0.1
               with:
                   files: assets/*.zip
                   tag_name: ${{ inputs.dry-run && 'v0.0.0' || needs.meta.outputs.tag }}
@@ -257,27 +257,27 @@ jobs:
         steps:
             - name: find issues
               id: find-issues
-              uses: actions-cool/issues-helper@v3
+              uses: actions-cool/issues-helper@v3.8.0
               with:
                   actions: "find-issues"
                   issue-state: "all"
                   title-includes: "${{ env.ISSUE_TITLE }}"
             - name: Create issue
               if: ${{ fromJSON(steps.find-issues.outputs.issues)[0] == null }}
-              uses: actions-cool/issues-helper@v3
+              uses: actions-cool/issues-helper@v3.8.0
               with:
                   actions: "create-issue"
                   title: ${{ env.ISSUE_TITLE }}
                   body: ${{ env.ISSUE_BODY }}
             - name: Open issue
               if: ${{ fromJSON(steps.find-issues.outputs.issues)[0].state == 'closed' }}
-              uses: actions-cool/issues-helper@v3
+              uses: actions-cool/issues-helper@v3.8.0
               with:
                   actions: "open-issue"
                   issue-number: ${{ fromJSON(steps.find-issues.outputs.issues)[0].number }}
             - name: Add comment
               if: ${{ fromJSON(steps.find-issues.outputs.issues)[0] != null }}
-              uses: actions-cool/issues-helper@v3
+              uses: actions-cool/issues-helper@v3.8.0
               with:
                   actions: "create-comment"
                   issue-number: ${{ fromJSON(steps.find-issues.outputs.issues)[0].number }}

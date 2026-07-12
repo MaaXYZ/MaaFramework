@@ -19,12 +19,12 @@ jobs:
         permissions:
             contents: write
         steps:
-            - uses: actions/checkout@v7
+            - uses: actions/checkout@v7.0.0
               with:
                   fetch-depth: 0
 
             - name: Build Doxygen
-              uses: mattnotmitt/doxygen-action@v1.9
+              uses: mattnotmitt/doxygen-action@1.12.0
               with:
                   doxyfile-path: tools/Doxygen/Doxyfile
 
@@ -36,7 +36,7 @@ jobs:
                   output: ./docs-gen/html
 
             - name: Deploy to GitHub Pages
-              uses: peaceiris/actions-gh-pages@v4
+              uses: peaceiris/actions-gh-pages@v4.1.0
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   publish_dir: ./docs-gen/html
