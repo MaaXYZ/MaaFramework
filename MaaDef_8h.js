@@ -40,6 +40,7 @@ var MaaDef_8h =
     [ "MaaWin32InputMethod_PostMessageWithCursorPos", "MaaDef_8h.html#abb8a086b671038580f7acc36248d4163", null ],
     [ "MaaWin32InputMethod_SendMessageWithWindowPos", "MaaDef_8h.html#afa5aca8f812f6146ef66b2a8db0da7a2", null ],
     [ "MaaWin32InputMethod_PostMessageWithWindowPos", "MaaDef_8h.html#a923e6bae66dabe3f86e618af84905cac", null ],
+    [ "MaaWin32InputMethod_Interception", "MaaDef_8h.html#a7f2c322a845b60645159fb2809725044", null ],
     [ "MaaMacOSScreencapMethod_None", "MaaDef_8h.html#ae8d4518e6db7d5e7b17d81c2cc95a2ec", null ],
     [ "MaaMacOSScreencapMethod_ScreenCaptureKit", "MaaDef_8h.html#ae0f15a02730f2a664e62e13573ff3aad", null ],
     [ "MaaMacOSInputMethod_None", "MaaDef_8h.html#af14dd44b20e4b0ce26c8e48c611236b4", null ],

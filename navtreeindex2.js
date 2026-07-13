@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"MaaToolkitDesktopWindow_8h.html#a00a365a2f75f6f572f6ce0c11bd6a92f":[3,0,0,4,2,0,5],
 "MaaToolkitDesktopWindow_8h.html#a2967397bb0a2cb9bb49ef1b49656bde7":[3,0,0,4,2,0,2],
 "MaaToolkitDesktopWindow_8h.html#a9630496646deb94ccf5976877ce12e92":[3,0,0,4,2,0,3],
 "MaaToolkitDesktopWindow_8h.html#a9ec7e382179fd165bbc4dd7726c058ee":[3,0,0,4,2,0,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "structRecordScroll.html#a21635995aed3a8a8ad0df36fd7896f4b":[2,0,19,2],
 "structRecordScroll.html#a535156e7e59c7579ae1fabf9a7eee275":[2,0,19,0],
 "structRecordScroll.html#a56a78df6771147d6cbe06088907c68b1":[2,0,19,1],
-"structRecordShell.html":[2,0,20],
-"structRecordShell.html#a986841ca28b93fecaba46863dfaf5ee0":[2,0,20,1]
+"structRecordShell.html":[2,0,20]
 };

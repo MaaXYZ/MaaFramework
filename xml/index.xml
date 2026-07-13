@@ -487,6 +487,7 @@
     <member refid="MaaDef_8h_1abb8a086b671038580f7acc36248d4163" kind="define"><name>MaaWin32InputMethod_PostMessageWithCursorPos</name></member>
     <member refid="MaaDef_8h_1afa5aca8f812f6146ef66b2a8db0da7a2" kind="define"><name>MaaWin32InputMethod_SendMessageWithWindowPos</name></member>
     <member refid="MaaDef_8h_1a923e6bae66dabe3f86e618af84905cac" kind="define"><name>MaaWin32InputMethod_PostMessageWithWindowPos</name></member>
+    <member refid="MaaDef_8h_1a7f2c322a845b60645159fb2809725044" kind="define"><name>MaaWin32InputMethod_Interception</name></member>
     <member refid="MaaDef_8h_1ae8d4518e6db7d5e7b17d81c2cc95a2ec" kind="define"><name>MaaMacOSScreencapMethod_None</name></member>
     <member refid="MaaDef_8h_1ae0f15a02730f2a664e62e13573ff3aad" kind="define"><name>MaaMacOSScreencapMethod_ScreenCaptureKit</name></member>
     <member refid="MaaDef_8h_1af14dd44b20e4b0ce26c8e48c611236b4" kind="define"><name>MaaMacOSInputMethod_None</name></member>
