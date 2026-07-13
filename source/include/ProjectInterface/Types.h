@@ -302,7 +302,7 @@ struct InterfaceData
         MEO_OPT github,
         controller,
         resource,
-        task,
+        MEO_OPT task,
         MEO_OPT option,
         MEO_OPT agent,
         MEO_OPT global_option,
