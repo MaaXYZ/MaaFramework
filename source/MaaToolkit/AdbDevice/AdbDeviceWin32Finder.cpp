@@ -198,7 +198,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         device.serial = std::format("{}:{}", adb_host, adb_port);
 
         device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
-        device.input_methods = MaaAdbInputMethod_Default;
+        device.input_methods = MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras;
 
         int index = 0;
         if (std::ranges::all_of(i.index, [](unsigned char c) { return std::isdigit(c); })) {
