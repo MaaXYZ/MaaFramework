@@ -29,6 +29,10 @@ extern "C"
     // macOS: window title (SCWindow.title)
     MAA_TOOLKIT_API const char* MaaToolkitDesktopWindowGetWindowName(const MaaToolkitDesktopWindow* window);
 
+    // Win32: full image path of the owning process, e.g. "C:\\...\\GeForceNOW.exe"
+    // Other platforms: empty string
+    MAA_TOOLKIT_API const char* MaaToolkitDesktopWindowGetProcessPath(const MaaToolkitDesktopWindow* window);
+
 #ifdef __cplusplus
 }
 #endif
