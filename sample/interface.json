@@ -63,6 +63,20 @@
                 "screencap": "ScreenCaptureKit", // 截图方式
                 "input": "GlobalEvent" // 输入方式
             }
+        },
+        {
+            "name": "GFN",
+            "label": "$GeForceNOW端", // 显示名称，支持国际化
+            "description": "通过 GeForce NOW 云串流原生客户端连接（前台模式，需先在 GFN 中启动对应游戏）",
+            "type": "Cloud",
+            "display_short_side": 720, // GFN 串流以 720p 为基准
+            "cloud": {
+                // provider 决定框架内置的窗口签名与截图/输入方式：
+                // geforce_now => 进程 GeForceNOW.exe、窗口类 CEFCLIENT、标题 "{game}.*on GeForce NOW"、PrintWindow + Seize
+                "provider": "geforce_now",
+                // game_title 为游戏名的正则片段，代入标题模板匹配窗口
+                "game_title": "Endfield"
+            }
         }
     ],
     "resource": [
