@@ -99,8 +99,7 @@
             "name": "Bilibili",
             "label": "$B站资源", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "path": [
-                "resource",
-                "resource_bilibili" // 资源路径，相对于interface.json所在目录
+                "resource" // 资源路径，相对于interface.json所在目录（resource_bilibili 为多资源包演示占位，示例未随附，故此处仅用 resource）
             ]
         }
     ],
