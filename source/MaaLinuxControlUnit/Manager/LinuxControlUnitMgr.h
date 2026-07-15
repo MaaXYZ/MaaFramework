@@ -9,15 +9,16 @@
 
 #include "Common/Conf.h"
 
+#include "Base/Config.h"
+#include "Wayland/WaylandClient.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
-class WaylandClient;
-
-class WlRootsControlUnitMgr : public WlRootsControlUnitAPI
+class LinuxControlUnitMgr : public LinuxControlUnitAPI
 {
 public:
-    WlRootsControlUnitMgr(std::filesystem::path wlr_socket_path, bool use_win32_vk_code);
-    virtual ~WlRootsControlUnitMgr() override;
+    LinuxControlUnitMgr(const LinuxControlUnitConfig& config);
+    virtual ~LinuxControlUnitMgr() override;
 
 public:
     virtual bool connect() override;
@@ -43,23 +44,25 @@ public:
 
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
-
-    virtual bool relative_move(int dx, int dy) override;
     virtual bool scroll(int dx, int dy) override;
+    virtual bool relative_move(int dx, int dy) override;
 
     virtual bool inactive() override;
 
     virtual json::object get_info() const override;
 
 private:
-    // Translate the input key (Win32 VK code if use_win32_vk_code_ is set,
-    // otherwise raw evdev code) to the underlying evdev code used by the
-    // virtual keyboard. Returns 0 when translation fails.
-    int translate_key(int key) const;
+    bool init_screencap();
+    bool init_input();
+    bool create_wl_client();
 
-    std::unique_ptr<WaylandClient> client_;
-    std::filesystem::path wlr_socket_path_;
-    const bool use_win32_vk_code_ = false;
+private:
+    const LinuxControlUnitConfig config_;
+    bool connected_ = false;
+    std::shared_ptr<InputBase> input_ = nullptr;
+    std::shared_ptr<ScreencapBase> screencap_ = nullptr;
+
+    std::shared_ptr<WaylandClient> wl_client_ = nullptr;
 };
 
 MAA_CTRL_UNIT_NS_END

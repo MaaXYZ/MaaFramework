@@ -1,9 +1,9 @@
-#include <opencv2/core.hpp>
+#include "Base/Config.h"
+#include "Manager/LinuxControlUnitMgr.h"
 
 #include "MaaControlUnit/KWinControlUnitAPI.h"
 
 #include "MaaUtils/Logger.h"
-#include "Manager/KWinControlUnitMgr.h"
 
 const char* MaaKWinControlUnitGetVersion()
 {
@@ -12,6 +12,8 @@ const char* MaaKWinControlUnitGetVersion()
 
 MaaKWinControlUnitHandle MaaKWinControlUnitCreate(const char* device_node, int screen_width, int screen_height, MaaBool use_win32_vk_code)
 {
+    LogWarn << "MaaKWinControlUnit is deprecated, use MaaLinuxControlUnit instead.";
+
     using namespace MAA_CTRL_UNIT_NS;
 
     LogFunc << VAR(device_node) << VAR(screen_width) << VAR(screen_height);
@@ -26,48 +28,23 @@ MaaKWinControlUnitHandle MaaKWinControlUnitCreate(const char* device_node, int s
         return nullptr;
     }
 
-    auto unit_mgr = std::make_unique<KWinControlUnitMgr>(device_node, screen_width, screen_height, use_win32_vk_code);
+    LinuxControlUnitConfig config = { };
+    config.screencap_method = MaaLinuxScreencapMethod_PipeWire;
+    config.input_method = MaaLinuxInputMethod_UInput;
+    config.pw_screen_width = screen_width;
+    config.pw_screen_height = screen_height;
+    config.uinput_path = device_node;
+    config.use_win32_vk_code = use_win32_vk_code;
+    // todo pw node
+
+    auto unit_mgr = std::make_unique<LinuxControlUnitMgr>(config);
     return unit_mgr.release();
-}
-
-MaaBool MaaKWinControlUnitConnect(MaaKWinControlUnitHandle handle)
-{
-    using namespace MAA_CTRL_UNIT_NS;
-
-    LogFunc << VAR_VOIDP(handle);
-
-    if (!handle) {
-        LogError << "handle is null";
-        return false;
-    }
-
-    return handle->connect();
-}
-
-MaaBool MaaKWinControlUnitTestScreencap(MaaKWinControlUnitHandle handle)
-{
-    using namespace MAA_CTRL_UNIT_NS;
-
-    LogFunc << VAR_VOIDP(handle);
-
-    if (!handle) {
-        LogError << "handle is null";
-        return false;
-    }
-
-    cv::Mat image;
-    bool ok = handle->screencap(image);
-    if (ok) {
-        LogInfo << "screencap succeeded, image size=" << image.size();
-    }
-    else {
-        LogError << "screencap failed";
-    }
-    return ok;
 }
 
 void MaaKWinControlUnitDestroy(MaaKWinControlUnitHandle handle)
 {
+    LogWarn << "MaaKWinControlUnit is deprecated, use MaaLinuxControlUnit instead.";
+
     LogFunc << VAR_VOIDP(handle);
 
     if (!handle) {

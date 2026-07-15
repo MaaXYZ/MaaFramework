@@ -432,6 +432,23 @@ typedef uint64_t MaaMacOSInputMethod;
 #define MaaMacOSInputMethod_GlobalEvent 1ULL
 #define MaaMacOSInputMethod_PostToPid (1ULL << 1)
 
+/**
+ *
+ */
+typedef uint64_t MaaLinuxScreencapMethod;
+#define MaaLinuxScreencapMethod_None 0ULL
+#define MaaLinuxScreencapMethod_Wlr 1ULL
+#define MaaLinuxScreencapMethod_ExtImage (1ULL << 1)
+#define MaaLinuxScreencapMethod_PipeWire (1ULL << 2)
+
+/**
+ *
+ */
+typedef uint64_t MaaLinuxInputMethod;
+#define MaaLinuxInputMethod_None 0ULL
+#define MaaLinuxInputMethod_Wlr 1ULL
+#define MaaLinuxInputMethod_UInput (1ULL << 1)
+
 // MaaGamepadType:
 /**
  * @brief Virtual gamepad type

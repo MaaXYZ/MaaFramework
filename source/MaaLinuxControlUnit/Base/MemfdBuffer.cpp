@@ -2,7 +2,6 @@
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Uuid.h"
-#include "WaylandHelper.h"
 
 #include <sys/mman.h>
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Base/UnitBase.h"
+
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
@@ -22,9 +24,6 @@ struct pw_stream;
 struct spa_buffer;
 struct spa_pod;
 
-/* Forward-declare D-Bus types (only used as pointers in method signatures) */
-struct DBusConnection;
-
 MAA_CTRL_UNIT_NS_BEGIN
 
 /**
@@ -42,32 +41,24 @@ MAA_CTRL_UNIT_NS_BEGIN
  * calls, but screencap() may be called from a different thread than
  * open()/close() as long as they are serialised by the caller.
  */
-class PipeWireScreencap
+class PipeWireScreencap : public ScreencapBase
 {
 public:
-    PipeWireScreencap();
+    explicit PipeWireScreencap(int pipewire_fd, uint32_t pipewire_node_id, int screen_width, int screen_height);
     ~PipeWireScreencap();
 
     PipeWireScreencap(const PipeWireScreencap&) = delete;
     PipeWireScreencap& operator=(const PipeWireScreencap&) = delete;
 
-    void set_screen_size(int width, int height);
-
     bool open();
     void close();
     bool connected() const;
 
-    bool screencap(cv::Mat& image);
+    std::optional<cv::Mat> screencap() override;
 
 private:
     /* ---- Internal cleanup ---- */
     void close_internal();
-
-    /* ---- D-Bus (xdg-desktop-portal) ---- */
-    bool dbus_create_session();
-    bool dbus_select_sources();
-    bool dbus_start_stream();
-    bool dbus_open_pipewire_remote(DBusConnection* conn);
 
     /* ---- PipeWire ---- */
     bool pw_init();
@@ -84,18 +75,16 @@ private:
     bool process_frame(const struct spa_buffer* spa_buf, cv::Mat& out_image);
     int infer_dimension_from_stride(uint32_t stride, size_t data_size) const;
 
+    /* PipeWire state */
+    int pipewire_fd_ = -1;
+    uint32_t pipewire_node_id_ = 0;
+
     /* ---- Internal state ---- */
     std::atomic<bool> connected_ { false };
     bool open_attempted_ = false;
 
     int screen_width_ = 0;
     int screen_height_ = 0;
-
-    /* D-Bus state */
-    DBusConnection* dbus_connection_ = nullptr;
-    std::string dbus_session_handle_;
-    uint32_t pipewire_node_id_ = 0;
-    int pipewire_fd_ = -1;
 
     /* PipeWire objects */
     pw_thread_loop* pw_thread_loop_ = nullptr;

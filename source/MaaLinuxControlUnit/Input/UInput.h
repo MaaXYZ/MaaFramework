@@ -9,36 +9,39 @@
 #include <string>
 #include <thread>
 
+#include "Base/UnitBase.h"
 #include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class UInputController
+class UInput : public RelativeMoveInput
 {
 public:
-    UInputController();
-    ~UInputController();
+    UInput();
+    ~UInput() override;
 
-    UInputController(const UInputController&) = delete;
-    UInputController& operator=(const UInputController&) = delete;
+    UInput(const UInput&) = delete;
+    UInput& operator=(const UInput&) = delete;
 
     bool open(const std::filesystem::path& device_node, int screen_width, int screen_height);
     void close();
     bool connected() const;
+    MaaControllerFeature get_features() const override;
+    bool click_key(int key) override;
 
-    bool click(int x, int y);
-    bool swipe(int x1, int y1, int x2, int y2, int duration);
+    bool click(int x, int y) override;
+    bool swipe(int x1, int y1, int x2, int y2, int duration) override;
 
-    bool touch_down(int contact, int x, int y, int pressure);
-    bool touch_move(int contact, int x, int y, int pressure);
-    bool touch_up(int contact);
-    bool input_text(const std::string& str);
+    bool touch_down(int contact, int x, int y, int pressure) override;
+    bool touch_move(int contact, int x, int y, int pressure) override;
+    bool touch_up(int contact) override;
+    bool input_text(const std::string& str) override;
 
-    bool scroll(int dx, int dy);
-    bool relative_move(int dx, int dy);
+    bool scroll(int dx, int dy) override;
+    bool relative_move(int dx, int dy) override;
 
-    bool key_down(int key_code);
-    bool key_up(int key_code);
+    bool key_down(int key_code) override;
+    bool key_up(int key_code) override;
 
     std::pair<int, int> screen_size() const;
 

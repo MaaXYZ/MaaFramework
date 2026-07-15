@@ -1,4 +1,4 @@
-#include "UInputController.h"
+#include "UInput.h"
 
 #include <cerrno>
 #include <fcntl.h>
@@ -11,16 +11,16 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-UInputController::UInputController()
+UInput::UInput()
 {
 }
 
-UInputController::~UInputController()
+UInput::~UInput()
 {
     close();
 }
 
-bool UInputController::open(const std::filesystem::path& device_node, int screen_width, int screen_height)
+bool UInput::open(const std::filesystem::path& device_node, int screen_width, int screen_height)
 {
     LogInfo << VAR(device_node) << VAR(screen_width) << VAR(screen_height);
 
@@ -51,7 +51,7 @@ bool UInputController::open(const std::filesystem::path& device_node, int screen
     return true;
 }
 
-void UInputController::close()
+void UInput::close()
 {
     std::unique_lock<std::mutex> lock(mutex_);
 
@@ -65,83 +65,41 @@ void UInputController::close()
     LogInfo << "UInput device closed";
 }
 
-bool UInputController::connected() const
+bool UInput::connected() const
 {
     return connected_;
 }
 
-bool UInputController::click(int x, int y)
+MaaControllerFeature UInput::get_features() const
 {
-    LogDebug << VAR(x) << VAR(y);
-
-    std::unique_lock<std::mutex> lock(mutex_);
-
-    if (!connected_) {
-        LogError << "Not connected";
-        return false;
-    }
-
-    if (!send_pointer_down(x, y)) {
-        LogError << "Failed to send pointer down";
-        return false;
-    }
-
-    // Small delay to simulate a real click
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-
-    if (!send_pointer_up()) {
-        LogError << "Failed to send pointer up";
-        return false;
-    }
-
-    return true;
+    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 }
 
-bool UInputController::swipe(int x1, int y1, int x2, int y2, int duration)
+bool UInput::click_key(int key)
 {
-    LogDebug << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
-
-    std::unique_lock<std::mutex> lock(mutex_);
-
-    if (!connected_) {
-        LogError << "Not connected";
-        return false;
-    }
-
-    constexpr int kSteps = 20; // Number of interpolation steps
-
-    if (!send_pointer_down(x1, y1)) {
-        LogError << "Failed to send pointer down";
-        return false;
-    }
-
-    int step_duration = duration / kSteps;
-    if (step_duration < 1) {
-        step_duration = 1;
-    }
-
-    for (int i = 1; i <= kSteps; ++i) {
-        float t = static_cast<float>(i) / kSteps;
-        int cx = static_cast<int>(std::round(x1 + (x2 - x1) * t));
-        int cy = static_cast<int>(std::round(y1 + (y2 - y1) * t));
-
-        if (!send_pointer_move(cx, cy)) {
-            LogError << "Failed to send pointer move at step" << i;
-            return false;
-        }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(step_duration));
-    }
-
-    if (!send_pointer_up()) {
-        LogError << "Failed to send pointer up";
-        return false;
-    }
-
-    return true;
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick, "
+                "use key_down/key_up instead"
+             << VAR(key);
+    return false;
 }
 
-bool UInputController::touch_down(int contact, int x, int y, int pressure)
+bool UInput::click(int x, int y)
+{
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
+                "use touch_down/touch_up instead"
+             << VAR(x) << VAR(y);
+    return false;
+}
+
+bool UInput::swipe(int x1, int y1, int x2, int y2, int duration)
+{
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
+                "use touch_down/touch_move/touch_up instead"
+             << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    return false;
+}
+
+bool UInput::touch_down(int contact, int x, int y, int pressure)
 {
     LogDebug << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
@@ -163,7 +121,7 @@ bool UInputController::touch_down(int contact, int x, int y, int pressure)
     return send_pointer_down(x, y, btn_code);
 }
 
-bool UInputController::touch_move(int contact, int x, int y, int pressure)
+bool UInput::touch_move(int contact, int x, int y, int pressure)
 {
     LogDebug << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
@@ -182,7 +140,7 @@ bool UInputController::touch_move(int contact, int x, int y, int pressure)
     return send_pointer_move(x, y);
 }
 
-bool UInputController::touch_up(int contact)
+bool UInput::touch_up(int contact)
 {
     LogDebug << VAR(contact);
 
@@ -209,7 +167,7 @@ bool UInputController::touch_up(int contact)
     return send_pointer_up(btn_code);
 }
 
-bool UInputController::input_text(const std::string& str)
+bool UInput::input_text(const std::string& str)
 {
     LogDebug << VAR(str);
 
@@ -238,7 +196,7 @@ bool UInputController::input_text(const std::string& str)
     return true;
 }
 
-bool UInputController::scroll(int dx, int dy)
+bool UInput::scroll(int dx, int dy)
 {
     LogDebug << VAR(dx) << VAR(dy);
 
@@ -281,7 +239,7 @@ bool UInputController::scroll(int dx, int dy)
     return true;
 }
 
-bool UInputController::relative_move(int dx, int dy)
+bool UInput::relative_move(int dx, int dy)
 {
     LogDebug << VAR(dx) << VAR(dy);
 
@@ -324,7 +282,7 @@ bool UInputController::relative_move(int dx, int dy)
     return true;
 }
 
-bool UInputController::key_down(int key_code)
+bool UInput::key_down(int key_code)
 {
     LogDebug << VAR(key_code);
 
@@ -344,7 +302,7 @@ bool UInputController::key_down(int key_code)
     return true;
 }
 
-bool UInputController::key_up(int key_code)
+bool UInput::key_up(int key_code)
 {
     LogDebug << VAR(key_code);
 
@@ -364,12 +322,12 @@ bool UInputController::key_up(int key_code)
     return true;
 }
 
-std::pair<int, int> UInputController::screen_size() const
+std::pair<int, int> UInput::screen_size() const
 {
     return { screen_width_, screen_height_ };
 }
 
-bool UInputController::create_device()
+bool UInput::create_device()
 {
     LogInfo << "Creating uinput device at" << VAR(device_node_);
 
@@ -484,7 +442,7 @@ bool UInputController::create_device()
     return true;
 }
 
-bool UInputController::destroy_device()
+bool UInput::destroy_device()
 {
     LogInfo << "Destroying uinput device";
 
@@ -504,7 +462,7 @@ bool UInputController::destroy_device()
     return true;
 }
 
-bool UInputController::emit_abs(int code, int value)
+bool UInput::emit_abs(int code, int value)
 {
     input_event ev = { };
     ev.type = EV_ABS;
@@ -518,7 +476,7 @@ bool UInputController::emit_abs(int code, int value)
     return true;
 }
 
-bool UInputController::emit_key(int code, int value)
+bool UInput::emit_key(int code, int value)
 {
     input_event ev = { };
     ev.type = EV_KEY;
@@ -532,7 +490,7 @@ bool UInputController::emit_key(int code, int value)
     return true;
 }
 
-bool UInputController::emit_syn()
+bool UInput::emit_syn()
 {
     input_event ev = { };
     ev.type = EV_SYN;
@@ -546,7 +504,7 @@ bool UInputController::emit_syn()
     return true;
 }
 
-bool UInputController::send_pointer_down(int x, int y, int btn_code)
+bool UInput::send_pointer_down(int x, int y, int btn_code)
 {
     // Move to absolute position first
     if (!emit_abs(ABS_X, x)) {
@@ -567,7 +525,7 @@ bool UInputController::send_pointer_down(int x, int y, int btn_code)
     return true;
 }
 
-bool UInputController::send_pointer_move(int x, int y)
+bool UInput::send_pointer_move(int x, int y)
 {
     // Move to new absolute position (button state unchanged)
     if (!emit_abs(ABS_X, x)) {
@@ -583,7 +541,7 @@ bool UInputController::send_pointer_move(int x, int y)
     return true;
 }
 
-bool UInputController::send_pointer_up(int btn_code)
+bool UInput::send_pointer_up(int btn_code)
 {
     // Release the specified button
     if (!emit_key(btn_code, 0)) {
@@ -597,7 +555,7 @@ bool UInputController::send_pointer_up(int btn_code)
     return true;
 }
 
-inline uint64_t UInputController::now_ms()
+inline uint64_t UInput::now_ms()
 {
     timespec ts = { 0 };
     clock_gettime(CLOCK_MONOTONIC, &ts);
