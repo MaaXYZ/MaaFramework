@@ -1037,7 +1037,6 @@ bool MessageInput::touch_up(int contact)
 
     OnScopeLeave([this]() { unblock_input(); });
 
-
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_up_message(contact, msg_info)) {
         LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "contact out of range"
