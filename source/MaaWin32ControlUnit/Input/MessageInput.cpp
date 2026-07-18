@@ -1037,10 +1037,6 @@ bool MessageInput::touch_up(int contact)
 
     OnScopeLeave([this]() { unblock_input(); });
 
-    if (reuse_gesture) {
-        bool use_post = (config_.mode == Mode::PostMessage);
-        ::MaaNS::CtrlUnitNs::send_activate_message(target, use_post);
-    }
 
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_up_message(contact, msg_info)) {
