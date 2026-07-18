@@ -118,40 +118,44 @@ extern "C"
     /**
      * @brief Create a wlroots controller for Linux.
      *
-     * @param wlr_socket_path The wayland socket path (e.g., "/run/user/1000/wayland-0").
-     * @param use_win32_vk_code If true, key codes passed to click_key / key_down / key_up are
-     *        interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes
-     *        internally. If false, key codes are passed through as raw evdev codes.
-     * @return The controller handle, or nullptr on failure.
-     *
-     * @note This controller is designed for wlroots on Linux.
+     * @deprecated Use MaaLinuxControllerCreate instead.
      */
     MAA_FRAMEWORK_API MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path, MaaBool use_win32_vk_code);
 
     /**
      * @brief Create a KWin / Linux Wayland controller via PipeWire and /dev/uinput.
      *
-     * Despite the name "KWin", this controller works with any Wayland compositor that
-     * implements the XDG Screencast Portal and kernel has uinput support (e.g., GNOME).
-     *
-     * @param device_node The uinput device node path (e.g., "/dev/uinput").
-     * @param screen_width The screen width in pixels.
-     * @param screen_height The screen height in pixels.
-     * @param use_win32_vk_code If true, key codes passed to click_key / key_down / key_up are
-     *        interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes
-     *        internally. If false, key codes are passed through as raw evdev codes.
-     * @return The controller handle, or nullptr on failure.
-     *
-     * @note Dependencies: pipewire (1.0+), xdg-desktop-portal.
-     * @note Screencap is implemented via PipeWire / xdg-desktop-portal.
-     * @note Input is simulated via /dev/uinput (kernel-level virtual input devices).
-     * @note Requires user authorization via the screen sharing dialog (xdg-desktop-portal).
-     * @note Requires write permission to /dev/uinput (typically via the "input" group).
-     *       It is recommended to configure a udev rule:
-     *       KERNEL=="uinput", MODE="0660", GROUP="input".
+     * @deprecated Use MaaLinuxControllerCreate instead.
      */
     MAA_FRAMEWORK_API MaaController*
         MaaKWinControllerCreate(const char* device_node, int screen_width, int screen_height, MaaBool use_win32_vk_code);
+
+    /**
+     * @brief Create a Linux controller for native Linux applications.
+     * @param config_json JSON config for the control unit. Required fields:
+     *                    - screencap_method: screencap method to use, see MaaLinuxScreencapMethod.
+     *                    - input_method: input method to use, see MaaLinuxInputMethod.
+     *                    Wlroots Required fields:
+     *                    - wlr_socket_path: wayland socket path (e.g., "/run/user/1000/wayland-0").
+     *                    PipeWire Required fields:
+     *                    - pw_socket_fd: The PipeWire socket FD.
+     *                    - pw_node_id: The PiprWire Node ID.
+     *                    - pw_screen_width: The screen width in pixels.
+     *                    - pw_screen_height: The screen height in pixels.
+     *                    UInput Required fields:
+     *                    - uinput_path: The uinput device node path (e.g., "/dev/uinput").
+     *                    Optional fields:
+     *                    - use_win32_vk_code: If true, key codes passed to click_key / key_down / key_up are
+     *                      interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes
+     *                      internally. If false, key codes are passed through as raw evdev codes.
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note This controller is only available on Linux.
+     * @note UInput Requires write permission to /dev/uinput (typically via the "input" group).
+     *       It is recommended to configure a udev rule:
+     *       KERNEL=="uinput", MODE="0660", GROUP="input".
+     */
+    MAA_FRAMEWORK_API MaaController* MaaLinuxControllerCreate(const char* config_json);
 
     /**
      * @brief Create a virtual gamepad controller for Windows.
