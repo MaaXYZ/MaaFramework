@@ -6,3 +6,4 @@
 #include "Config/MaaToolkitConfig.h"
 #include "DesktopWindow/MaaToolkitDesktopWindow.h"
 #include "MacOS/MaaToolkitMacOS.h"
+#include "Portal/MaaToolkitPortal.h"
