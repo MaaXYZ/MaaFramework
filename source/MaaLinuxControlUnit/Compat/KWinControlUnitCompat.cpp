@@ -2,6 +2,7 @@
 #include "Manager/LinuxControlUnitMgr.h"
 
 #include "MaaControlUnit/KWinControlUnitAPI.h"
+#include "MaaToolkit/Portal/MaaToolkitPortal.h"
 
 #include "MaaUtils/Logger.h"
 
@@ -35,7 +36,15 @@ MaaKWinControlUnitHandle MaaKWinControlUnitCreate(const char* device_node, int s
     config.pw_screen_height = screen_height;
     config.uinput_path = device_node;
     config.use_win32_vk_code = use_win32_vk_code;
-    // todo pw node
+
+    const auto helper = MaaToolkitPortalHelperCreate();
+    if (!MaaToolkitPortalHelperOpenStream(helper)) {
+        LogError << "Failed to open PipeWire Stream";
+        return nullptr;
+    }
+    config.pw_socket_fd = MaaToolkitPortalHelperGetPipeWireFD(helper);
+    config.pw_node_id = MaaToolkitPortalHelperGetPipeWireNodeID(helper);
+    MaaToolkitPortalHelperDestroy(helper);
 
     auto unit_mgr = std::make_unique<LinuxControlUnitMgr>(config);
     return unit_mgr.release();

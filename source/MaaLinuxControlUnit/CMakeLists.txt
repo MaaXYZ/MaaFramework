@@ -24,7 +24,7 @@ find_library(Wayland_LIBS wayland-client)
 find_library(FFI_LIBS ffi)
 target_link_libraries(MaaLinuxControlUnit PRIVATE MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS} Boost::system ${Wayland_LIBS} ${FFI_LIBS})
 target_link_libraries(MaaWlRootsControlUnit PRIVATE MaaUtils MaaLinuxControlUnit ${OpenCV_LIBS})
-target_link_libraries(MaaKWinControlUnit PRIVATE MaaUtils MaaLinuxControlUnit ${OpenCV_LIBS})
+target_link_libraries(MaaKWinControlUnit PRIVATE MaaUtils MaaToolkit MaaLinuxControlUnit ${OpenCV_LIBS})
 
 # PipeWire
 set(PIPEWIRE_ABS_LIB)
@@ -58,7 +58,7 @@ target_compile_definitions(MaaKWinControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
 
 add_dependencies(MaaLinuxControlUnit MaaUtils)
 add_dependencies(MaaWlRootsControlUnit MaaLinuxControlUnit)
-add_dependencies(MaaKWinControlUnit MaaLinuxControlUnit)
+add_dependencies(MaaKWinControlUnit MaaToolkit MaaLinuxControlUnit)
 
 install(
         TARGETS MaaLinuxControlUnit MaaWlRootsControlUnit MaaKWinControlUnit

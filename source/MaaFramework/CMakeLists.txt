@@ -50,8 +50,6 @@ endif()
 
 if (WITH_LINUX_CONTROLLER)
     add_dependencies(MaaFramework MaaLinuxControlUnit)
-    add_dependencies(MaaFramework MaaWlRootsControlUnit)
-    add_dependencies(MaaFramework MaaKWinControlUnit)
 endif ()
 
 # 提供一个仅包含include而不链接的target, 方便处理client/server通用代码
