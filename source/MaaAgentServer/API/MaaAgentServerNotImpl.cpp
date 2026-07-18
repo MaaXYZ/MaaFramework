@@ -74,6 +74,12 @@ MaaController* MaaKWinControllerCreate(const char*, int, int, MaaBool)
     return nullptr;
 }
 
+MaaController* MaaLinuxControllerCreate(const char*)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
 void MaaControllerDestroy(MaaController*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
