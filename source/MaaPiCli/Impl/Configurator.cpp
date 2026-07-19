@@ -7,6 +7,7 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/StringMisc.hpp"
+#include "ProjectInterface/CloudProviders.h"
 #include "ProjectInterface/Parser.h"
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
@@ -237,6 +238,34 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         if (win32.keyboard == MaaWin32InputMethod_None) {
             win32.keyboard = MaaWin32InputMethod_Seize;
         }
+
+        runtime.controller_param = std::move(win32);
+    } break;
+
+    case InterfaceData::Controller::Type::Cloud: {
+        // Cloud desugars to a Win32 controller: the resolved HWND is stored in the
+        // shared win32 config slot; the screencap + input methods come from the
+        // provider registry (default PrintWindow + Seize for GeForce NOW).
+        RuntimeParam::Win32Param win32;
+
+        win32.hwnd = config_.win32.hwnd;
+
+        const CloudProvider* provider = find_cloud_provider(controller.cloud.provider);
+        if (!provider) {
+            LogError << "Unknown cloud provider" << VAR(controller.cloud.provider);
+            return std::nullopt;
+        }
+
+        win32.screencap = parse_win32_screencap_method(provider->screencap);
+        if (win32.screencap == MaaWin32ScreencapMethod_None) {
+            win32.screencap = MaaWin32ScreencapMethod_PrintWindow;
+        }
+
+        win32.mouse = parse_win32_input_method(provider->input);
+        if (win32.mouse == MaaWin32InputMethod_None) {
+            win32.mouse = MaaWin32InputMethod_Seize;
+        }
+        win32.keyboard = win32.mouse;
 
         runtime.controller_param = std::move(win32);
     } break;

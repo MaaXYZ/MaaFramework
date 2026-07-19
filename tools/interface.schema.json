@@ -496,7 +496,8 @@
                         "MacOS",
                         "PlayCover",
                         "Gamepad",
-                        "WlRoots"
+                        "WlRoots",
+                        "Cloud"
                     ]
                 },
                 "display_short_side": {
@@ -606,6 +607,34 @@
                             ]
                         }
                     },
+                    "additionalProperties": false
+                },
+                "cloud": {
+                    "type": "object",
+                    "title": "Cloud 控制器配置",
+                    "description": "云串流控制器预设（type 为 Cloud 时生效）。框架内置各云服务商的窗口签名（进程 / 窗口类 / 标题模板）及截图与输入方式，只需指定服务商与游戏名",
+                    "properties": {
+                        "provider": {
+                            "type": "string",
+                            "title": "云服务商",
+                            "description": "云串流服务商标识。目前支持 GeForce NOW 原生客户端",
+                            "enum": [
+                                "geforce_now"
+                            ]
+                        },
+                        "game_title": {
+                            "type": "string",
+                            "title": "游戏名片段",
+                            "description": "用于匹配窗口标题的游戏名正则片段，会被代入服务商标题模板（如 \"{game}.*on GeForce NOW\"）",
+                            "examples": [
+                                "Endfield",
+                                "NTE"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "provider"
+                    ],
                     "additionalProperties": false
                 },
                 "macos": {

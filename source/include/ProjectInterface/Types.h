@@ -63,6 +63,17 @@ struct InterfaceData
             MEO_JSONIZATION(MEO_OPT use_win32_vk_code);
         };
 
+        // Cloud-streaming controller preset (e.g. GeForce NOW). Desugars to a Win32
+        // controller: the provider registry supplies the window class / title / process
+        // and the screencap + input methods; only the game title varies per project.
+        struct CloudConfig
+        {
+            std::string provider;   // provider key, e.g. "geforce_now"
+            std::string game_title; // regex-safe game fragment substituted into the provider title template
+
+            MEO_JSONIZATION(provider, MEO_OPT game_title);
+        };
+
         enum class Type
         {
             Invalid,
@@ -72,6 +83,7 @@ struct InterfaceData
             PlayCover,
             Gamepad,
             WlRoots,
+            Cloud,
         };
 
         std::string name;
@@ -98,6 +110,7 @@ struct InterfaceData
         PlayCoverConfig playcover;
         GamepadConfig gamepad;
         WlRootsConfig wlroots;
+        CloudConfig cloud;
 
         MEO_JSONIZATION(
             name,
@@ -114,7 +127,8 @@ struct InterfaceData
             MEO_OPT macos,
             MEO_OPT playcover,
             MEO_OPT gamepad,
-            MEO_OPT wlroots);
+            MEO_OPT wlroots,
+            MEO_OPT cloud);
     };
 
     struct Resource
