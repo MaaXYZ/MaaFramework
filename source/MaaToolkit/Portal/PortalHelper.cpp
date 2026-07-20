@@ -305,6 +305,12 @@ bool MaaToolkitPortalHelper::dbus_select_sources()
     dbus_append_dict_entry_string(&dict, "handle_token", "maa_select");
     dbus_append_dict_entry_uint32(&dict, "types", 1); // MONITOR
     dbus_append_dict_entry_bool(&dict, "multiple", false);
+    if (!restore_token_.empty()) {
+        dbus_append_dict_entry_string(&dict, "restore_token", restore_token_.c_str());
+    }
+    if (persist_) {
+        dbus_append_dict_entry_uint32(&dict, "persist_mode", 2);
+    }
     dbus_message_iter_close_container(&iter, &dict);
 
     DBusMessage* reply = dbus_call_pending(conn, "SelectSources", msg);
@@ -465,6 +471,16 @@ bool MaaToolkitPortalHelper::dbus_start_stream()
                                     }
                                 }
                             }
+                            if (persist_) {
+                                if (key && strcmp(key, "restore_token") == 0
+                                    && dbus_message_iter_get_arg_type(&value) == DBUS_TYPE_STRING) {
+                                    void* restore_token = nullptr;
+                                    dbus_message_iter_get_basic(&value, &restore_token);
+                                    if (restore_token != nullptr) {
+                                        restore_token_ = std::string(static_cast<char*>(restore_token));
+                                    }
+                                }
+                            }
 
                             dbus_message_iter_next(&dict_iter);
                         }
@@ -534,6 +550,21 @@ int MaaToolkitPortalHelper::get_fd() const
 uint32_t MaaToolkitPortalHelper::get_node_id() const
 {
     return pipewire_node_id_;
+}
+
+void MaaToolkitPortalHelper::set_persist(bool enable)
+{
+    persist_ = enable;
+}
+
+const char* MaaToolkitPortalHelper::get_restore_token() const
+{
+    return restore_token_.c_str();
+}
+
+void MaaToolkitPortalHelper::set_restore_token(const char* token)
+{
+    restore_token_ = std::string(token);
 }
 
 bool MaaToolkitPortalHelper::dbus_open_pipewire_remote(DBusConnection* conn)

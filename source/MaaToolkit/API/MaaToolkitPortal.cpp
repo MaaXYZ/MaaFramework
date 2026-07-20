@@ -50,6 +50,23 @@ bool MaaToolkitPortalHelperOpenStream(MaaToolkitPortalHelper* helper)
 #endif
 }
 
+void MaaToolkitPortalHelperSetPersist(MaaToolkitPortalHelper* helper, MaaBool enable)
+{
+#if defined(__linux__) && !defined(ANDROID)
+    if (!helper) {
+        LogError << "helper is null";
+        return;
+    }
+
+    helper->set_persist(enable);
+#else
+    std::ignore = helper;
+    std::ignore = enable;
+    LogError << "This API " << __FUNCTION__ << " is only available on Linux";
+    return false;
+#endif
+}
+
 int MaaToolkitPortalHelperGetPipeWireFD(MaaToolkitPortalHelper* helper)
 {
 #if defined(__linux__) && !defined(ANDROID)
@@ -77,5 +94,42 @@ uint32_t MaaToolkitPortalHelperGetPipeWireNodeID(MaaToolkitPortalHelper* helper)
     std::ignore = helper;
     LogError << "This API " << __FUNCTION__ << " is only available on Linux";
     return 0;
+#endif
+}
+
+const char* MaaToolkitPortalHelperGetRestoreToken(MaaToolkitPortalHelper* helper)
+{
+#if defined(__linux__) && !defined(ANDROID)
+    if (!helper) {
+        LogError << "helper is null";
+        return nullptr;
+    }
+    return helper->get_restore_token();
+#else
+    std::ignore = helper;
+    LogError << "This API " << __FUNCTION__ << " is only available on Linux";
+    return 0;
+#endif
+}
+
+void MaaToolkitPortalHelperSetRestoreToken(MaaToolkitPortalHelper* helper, const char* token)
+{
+#if defined(__linux__) && !defined(ANDROID)
+    if (!helper) {
+        LogError << "helper is null";
+        return;
+    }
+
+    if (!token) {
+        LogError << "token is null";
+        return;
+    }
+
+    helper->set_restore_token(token);
+#else
+    std::ignore = helper;
+    std::ignore = token;
+    LogError << "This API " << __FUNCTION__ << " is only available on Linux";
+    return false;
 #endif
 }

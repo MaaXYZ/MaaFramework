@@ -14,6 +14,9 @@ public:
 
     int get_fd() const;
     uint32_t get_node_id() const;
+    void set_persist(bool enable);
+    const char* get_restore_token() const;
+    void set_restore_token(const char* token);
 
 private:
     bool dbus_open_pipewire_remote(DBusConnection* conn);
@@ -22,4 +25,6 @@ private:
     std::string dbus_session_handle_;
     uint32_t pipewire_node_id_ = 0;
     int pipewire_fd_ = -1;
+    bool persist_ = false;
+    std::string restore_token_;
 };

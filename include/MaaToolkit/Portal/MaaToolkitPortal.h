@@ -11,8 +11,11 @@ extern "C"
     MAA_TOOLKIT_API MaaToolkitPortalHelper* MaaToolkitPortalHelperCreate();
     MAA_TOOLKIT_API void MaaToolkitPortalHelperDestroy(MaaToolkitPortalHelper* helper);
     MAA_TOOLKIT_API bool MaaToolkitPortalHelperOpenStream(MaaToolkitPortalHelper* helper);
+    MAA_TOOLKIT_API void MaaToolkitPortalHelperSetPersist(MaaToolkitPortalHelper* helper, MaaBool enable);
     MAA_TOOLKIT_API int MaaToolkitPortalHelperGetPipeWireFD(MaaToolkitPortalHelper* helper);
     MAA_TOOLKIT_API uint32_t MaaToolkitPortalHelperGetPipeWireNodeID(MaaToolkitPortalHelper* helper);
+    MAA_TOOLKIT_API const char* MaaToolkitPortalHelperGetRestoreToken(MaaToolkitPortalHelper* helper);
+    MAA_TOOLKIT_API void MaaToolkitPortalHelperSetRestoreToken(MaaToolkitPortalHelper* helper, const char* token);
 #ifdef __cplusplus
 }
 #endif
