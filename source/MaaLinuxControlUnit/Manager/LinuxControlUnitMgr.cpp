@@ -84,7 +84,8 @@ MaaControllerFeature LinuxControlUnitMgr::get_features() const
 {
     MaaControllerFeature feat = MaaControllerFeature_None;
     if (input_) {
-        feat |= input_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+        feat |= input_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick
+                & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
     }
     return feat;
 }
