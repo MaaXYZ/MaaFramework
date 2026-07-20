@@ -10,6 +10,17 @@
 #include <linux/input-event-codes.h>
 
 MAA_CTRL_UNIT_NS_BEGIN
+WlrInput::WlrInput(std::shared_ptr<WaylandClient> client)
+    : client_(std::move(client))
+    , shm_(client_->get_shm())
+    , seat_(client_->get_seat())
+    , output_(client_->get_output())
+    , pointer_manager_(client_->get_virtual_pointer_manager())
+    , keyboard_manager_(client_->get_virtual_keyboard_manager())
+{
+    prepare_device();
+}
+
 MaaControllerFeature WlrInput::get_features() const
 {
     return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;

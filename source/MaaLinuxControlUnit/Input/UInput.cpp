@@ -5,14 +5,19 @@
 #include <linux/input.h>
 #include <linux/uinput.h>
 #include <unistd.h>
+#include <utility>
 
 #include "MaaUtils/Logger.h"
 #include "Utils/AsciiToEvdev.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-UInput::UInput()
+UInput::UInput(std::filesystem::path device_node, int screen_width, int screen_height)
+    : screen_width_(screen_width)
+    , screen_height_(screen_height)
+    , device_node_(std::move(device_node))
 {
+    open();
 }
 
 UInput::~UInput()
@@ -20,12 +25,10 @@ UInput::~UInput()
     close();
 }
 
-bool UInput::open(const std::filesystem::path& device_node, int screen_width, int screen_height)
+bool UInput::open()
 {
-    LogInfo << VAR(device_node) << VAR(screen_width) << VAR(screen_height);
-
-    if (screen_width <= 0 || screen_height <= 0) {
-        LogError << "Invalid screen dimensions" << VAR(screen_width) << VAR(screen_height);
+    if (screen_width_ <= 0 || screen_height_ <= 0) {
+        LogError << "Invalid screen dimensions" << VAR(screen_width_) << VAR(screen_height_);
         return false;
     }
 
@@ -35,10 +38,6 @@ bool UInput::open(const std::filesystem::path& device_node, int screen_width, in
         LogWarn << "Already connected, closing first";
         destroy_device();
     }
-
-    device_node_ = device_node;
-    screen_width_ = screen_width;
-    screen_height_ = screen_height;
 
     if (!create_device()) {
         LogError << "Failed to create uinput device";

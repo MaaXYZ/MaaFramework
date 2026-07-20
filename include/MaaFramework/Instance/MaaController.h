@@ -142,8 +142,8 @@ extern "C"
      *                    - pw_node_id: The PiprWire Node ID.
      *                    - pw_screen_width: The screen width in pixels.
      *                    - pw_screen_height: The screen height in pixels.
-     *                    UInput Required fields:
-     *                    - uinput_path: The uinput device node path (e.g., "/dev/uinput").
+     *                    UInput Optional fields:
+     *                    - uinput_path: The uinput device node path, default is "/dev/uinput".
      *                    Optional fields:
      *                    - use_win32_vk_code: If true, key codes passed to click_key / key_down / key_up are
      *                      interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes

@@ -16,7 +16,7 @@ struct LinuxControlUnitConfig
     int pw_screen_width = 0;
     int pw_screen_height = 0;
 
-    std::string uinput_path;
+    std::string uinput_path = "/dev/uinput";
 
     bool use_win32_vk_code = false;
 

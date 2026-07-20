@@ -283,7 +283,7 @@ bool LinuxControlUnitMgr::init_input()
         input_ = std::make_shared<WlrInput>(wl_client_);
         return true;
     case MaaLinuxInputMethod_UInput:
-        input_ = std::make_shared<UInput>();
+        input_ = std::make_shared<UInput>(config_.uinput_path, config_.pw_screen_width, config_.pw_screen_height);
         return true;
     default:
         LogError << "Unknown Input Method" << VAR(config_.input_method);

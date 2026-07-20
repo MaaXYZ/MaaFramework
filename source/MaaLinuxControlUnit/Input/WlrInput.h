@@ -11,15 +11,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class WlrInput : public InputBase
 {
 public:
-    explicit WlrInput(std::shared_ptr<WaylandClient> client)
-        : client_(std::move(client))
-        , shm_(client_->get_shm())
-        , seat_(client_->get_seat())
-        , output_(client_->get_output())
-        , pointer_manager_(client_->get_virtual_pointer_manager())
-        , keyboard_manager_(client_->get_virtual_keyboard_manager())
-    {
-    }
+    explicit WlrInput(std::shared_ptr<WaylandClient> client);
 
     virtual ~WlrInput() override = default;
 

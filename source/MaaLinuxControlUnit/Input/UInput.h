@@ -17,13 +17,13 @@ MAA_CTRL_UNIT_NS_BEGIN
 class UInput : public RelativeMoveInput
 {
 public:
-    UInput();
+    UInput(std::filesystem::path device_node, int screen_width, int screen_height);
     ~UInput() override;
 
     UInput(const UInput&) = delete;
     UInput& operator=(const UInput&) = delete;
 
-    bool open(const std::filesystem::path& device_node, int screen_width, int screen_height);
+    bool open();
     void close();
     bool connected() const;
     MaaControllerFeature get_features() const override;
