@@ -432,8 +432,16 @@ typedef uint64_t MaaMacOSInputMethod;
 #define MaaMacOSInputMethod_GlobalEvent 1ULL
 #define MaaMacOSInputMethod_PostToPid (1ULL << 1)
 
+// MaaLinuxScreencapMethod:
 /**
+ * @brief Linux Screencap method
  *
+ * Select ONE method only.
+ *
+ * | Method          | Description                                           |
+ * |-----------------|-------------------------------------------------------|
+ * | Wlr             | Screencap using `wlr-screencopy-unstable-v1` protocol |
+ * | PipeWire        | Screencap using PipeWire                              |
  */
 typedef uint64_t MaaLinuxScreencapMethod;
 #define MaaLinuxScreencapMethod_None 0ULL
@@ -441,8 +449,16 @@ typedef uint64_t MaaLinuxScreencapMethod;
 #define MaaLinuxScreencapMethod_ExtImage (1ULL << 1)
 #define MaaLinuxScreencapMethod_PipeWire (1ULL << 2)
 
+// MaaLinuxInputMethod:
 /**
+ * @brief Linux Input method
  *
+ * Select ONE method only.
+ *
+ * | Method          | Description                                                                               |
+ * |-----------------|-------------------------------------------------------------------------------------------|
+ * | Wlr             | Input using `virtual-keyboard-unstable-v1` and `wlr-virtual-pointer-unstable-v1` protocol |
+ * | UInput          | Input using `/dev/uinput`                                                                 |
  */
 typedef uint64_t MaaLinuxInputMethod;
 #define MaaLinuxInputMethod_None 0ULL

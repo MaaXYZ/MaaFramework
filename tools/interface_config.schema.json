@@ -13,7 +13,12 @@
                 "type": {
                     "title": "控制器类型",
                     "type": "string",
-                    "enum": ["Adb", "Win32", "PlayCover", "WlRoots"]
+                    "enum": [
+                        "Adb",
+                        "Win32",
+                        "PlayCover",
+                        "Linux"
+                    ]
                 }
             }
         },
@@ -53,8 +58,8 @@
                 }
             }
         },
-        "wlroots": {
-            "title": "WlRoots配置",
+        "linux": {
+            "title": "Linux配置",
             "type": "object",
             "properties": {
                 "wlr_socket_path": {
