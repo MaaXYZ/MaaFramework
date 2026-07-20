@@ -55,6 +55,7 @@ private:
     bool init_screencap();
     bool init_input();
     bool create_wl_client();
+    int translate_key(int key) const;
 
 private:
     const LinuxControlUnitConfig config_;

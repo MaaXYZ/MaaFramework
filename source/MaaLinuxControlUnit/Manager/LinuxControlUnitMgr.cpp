@@ -1,6 +1,7 @@
 #include "LinuxControlUnitMgr.h"
 
 #include "Input/UInput.h"
+#include "Input/VkToEvdev.h"
 #include "Input/WlrInput.h"
 #include "Screencap/PipeWireScreencap.h"
 #include "Screencap/WlrScreencap.h"
@@ -84,8 +85,8 @@ MaaControllerFeature LinuxControlUnitMgr::get_features() const
 {
     MaaControllerFeature feat = MaaControllerFeature_None;
     if (input_) {
-        feat |= input_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick
-                & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+        feat |= input_->get_features()
+                & (MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick);
     }
     return feat;
 }
@@ -200,8 +201,9 @@ bool LinuxControlUnitMgr::key_down(int key)
         LogError << "input_ is null";
         return false;
     }
+    const int evdev_key = translate_key(key);
 
-    return input_->key_down(key);
+    return input_->key_down(evdev_key);
 }
 
 bool LinuxControlUnitMgr::key_up(int key)
@@ -210,7 +212,9 @@ bool LinuxControlUnitMgr::key_up(int key)
         LogError << "input_ is null";
         return false;
     }
-    return input_->key_up(key);
+    const int evdev_key = translate_key(key);
+
+    return input_->key_up(evdev_key);
 }
 
 bool LinuxControlUnitMgr::scroll(int dx, int dy)
@@ -299,6 +303,15 @@ bool LinuxControlUnitMgr::create_wl_client()
     }
     wl_client_ = std::make_shared<WaylandClient>();
     return wl_client_->connect(config_.wlr_socket_path);
+}
+
+int LinuxControlUnitMgr::translate_key(int key) const
+{
+    if (!config_.use_win32_vk_code) {
+        return key;
+    }
+
+    return vk_to_evdev(key);
 }
 
 MAA_CTRL_UNIT_NS_END
