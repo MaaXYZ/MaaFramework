@@ -232,6 +232,9 @@ void NeuralNetworkDetector::sort_(ResultsVec& results) const
     case ResultOrderBy::Vertical:
         sort_by_vertical_(results);
         break;
+    case ResultOrderBy::Radiation:
+        sort_by_radiation_(results, param_.center);
+        break;
     case ResultOrderBy::Score:
         sort_by_score_(results);
         break;

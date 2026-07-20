@@ -654,11 +654,18 @@
                     "enum": [
                         "Horizontal",
                         "Vertical",
+                        "Radiation",
                         "Score",
                         "Random"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal`。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal`。\n\n可选的值：`Horizontal` | `Vertical` | `Radiation` | `Score` | `Random` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
+                },
+                "center": {
+                    "title": "Center Property",
+                    "description": "Radiation 排序的中心坐标 [x, y]。可选，默认自动使用所有结果包围框的中心。仅当 `order_by` 为 `Radiation` 时有效。",
+                    "$ref": "#/$defs/jsonPoint",
+                    "markdownDescription": "*array<int, 2>*\n\nRadiation 排序的中心坐标 [x, y]。可选，默认自动使用所有结果包围框的中心。仅当 `order_by` 为 `Radiation` 时有效。"
                 },
                 "index": {
                     "title": "Index Property",
@@ -775,12 +782,19 @@
                     "enum": [
                         "Horizontal",
                         "Vertical",
+                        "Radiation",
                         "Score",
                         "Area",
                         "Random"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Radiation` | `Score` | `Area` | `Random` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
+                },
+                "center": {
+                    "title": "Center Property",
+                    "description": "Radiation 排序的中心坐标 [x, y]。可选，默认自动使用所有结果包围框的中心。仅当 `order_by` 为 `Radiation` 时有效。",
+                    "$ref": "#/$defs/jsonPoint",
+                    "markdownDescription": "*array<int, 2>*\n\nRadiation 排序的中心坐标 [x, y]。可选，默认自动使用所有结果包围框的中心。仅当 `order_by` 为 `Radiation` 时有效。"
                 },
                 "index": {
                     "title": "Index Property",
@@ -918,12 +932,19 @@
                     "enum": [
                         "Horizontal",
                         "Vertical",
+                        "Radiation",
                         "Score",
                         "Area",
                         "Random"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Radiation` | `Score` | `Area` | `Random` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
+                },
+                "center": {
+                    "title": "Center Property",
+                    "description": "Radiation 排序的中心坐标 [x, y]。可选，默认自动使用所有结果包围框的中心。仅当 `order_by` 为 `Radiation` 时有效。",
+                    "$ref": "#/$defs/jsonPoint",
+                    "markdownDescription": "*array<int, 2>*\n\nRadiation 排序的中心坐标 [x, y]。可选，默认自动使用所有结果包围框的中心。仅当 `order_by` 为 `Radiation` 时有效。"
                 },
                 "index": {
                     "title": "Index Property",
@@ -1034,13 +1055,20 @@
                     "enum": [
                         "Horizontal",
                         "Vertical",
+                        "Radiation",
                         "Area",
                         "Length",
                         "Random",
                         "Expected"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal`。\n\n可选的值：`Horizontal` | `Vertical` | `Area` | `Length` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal`。\n\n可选的值：`Horizontal` | `Vertical` | `Radiation` | `Area` | `Length` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
+                },
+                "center": {
+                    "title": "Center Property",
+                    "description": "Radiation 排序的中心坐标 [x, y]。可选，默认自动使用所有结果包围框的中心。仅当 `order_by` 为 `Radiation` 时有效。",
+                    "$ref": "#/$defs/jsonPoint",
+                    "markdownDescription": "*array<int, 2>*\n\nRadiation 排序的中心坐标 [x, y]。可选，默认自动使用所有结果包围框的中心。仅当 `order_by` 为 `Radiation` 时有效。"
                 },
                 "index": {
                     "title": "Index Property",
@@ -1136,12 +1164,19 @@
                     "enum": [
                         "Horizontal",
                         "Vertical",
+                        "Radiation",
                         "Score",
                         "Random",
                         "Expected"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Radiation` | `Score` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
+                },
+                "center": {
+                    "title": "Center Property",
+                    "description": "Radiation 排序的中心坐标 [x, y]。可选，默认自动使用所有结果包围框的中心。仅当 `order_by` 为 `Radiation` 时有效。",
+                    "$ref": "#/$defs/jsonPoint",
+                    "markdownDescription": "*array<int, 2>*\n\nRadiation 排序的中心坐标 [x, y]。可选，默认自动使用所有结果包围框的中心。仅当 `order_by` 为 `Radiation` 时有效。"
                 },
                 "index": {
                     "title": "Index Property",
@@ -1238,13 +1273,20 @@
                     "enum": [
                         "Horizontal",
                         "Vertical",
+                        "Radiation",
                         "Score",
                         "Area",
                         "Random",
                         "Expected"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Radiation` | `Score` | `Area` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
+                },
+                "center": {
+                    "title": "Center Property",
+                    "description": "Radiation 排序的中心坐标 [x, y]。可选，默认自动使用所有结果包围框的中心。仅当 `order_by` 为 `Radiation` 时有效。",
+                    "$ref": "#/$defs/jsonPoint",
+                    "markdownDescription": "*array<int, 2>*\n\nRadiation 排序的中心坐标 [x, y]。可选，默认自动使用所有结果包围框的中心。仅当 `order_by` 为 `Radiation` 时有效。"
                 },
                 "index": {
                     "title": "Index Property",
@@ -1635,6 +1677,28 @@
                         },
                         {
                             "$ref": "#/$defs/NeuralNetworkDetect/properties/index"
+                        }
+                    ]
+                },
+                "center": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/center"
+                        },
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/center"
+                        },
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/center"
+                        },
+                        {
+                            "$ref": "#/$defs/Ocr/properties/center"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/center"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/center"
                         }
                     ]
                 },
