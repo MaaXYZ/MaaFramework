@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <variant>
 #include <vector>
+#include <array>
 
 #include <meojson/json.hpp>
 
@@ -82,9 +83,10 @@ struct InterfaceData
         // 是否需要管理员权限（例如某些 Win32 输入方式需要更高权限）
         bool permission_required = false;
 
-        // 分辨率设置，三者互斥
+        // 分辨率设置，四者互斥
         std::optional<int> display_short_side; // 默认720
         std::optional<int> display_long_side;
+        std::optional<std::array<int, 2>> display_expand; // [width, height], Unity Canvas Scaler "Expand" 语义
         bool display_raw = false;
 
         // 附加资源路径，在 resource.path 加载完成后额外加载
@@ -107,6 +109,7 @@ struct InterfaceData
             MEO_OPT permission_required,
             MEO_OPT display_short_side,
             MEO_OPT display_long_side,
+            MEO_OPT display_expand,
             MEO_OPT display_raw,
             MEO_OPT attach_resource_path,
             MEO_OPT option,
@@ -436,11 +439,12 @@ struct Configuration
 
 struct RuntimeParam
 {
-    // 分辨率设置，三者互斥
+    // 分辨率设置，四者互斥
     struct DisplayConfig
     {
         std::optional<int> short_side; // 默认720
         std::optional<int> long_side;
+        std::optional<std::array<int, 2>> expand; // [width, height], Unity Canvas Scaler "Expand" 语义
         bool raw = false;
     };
 

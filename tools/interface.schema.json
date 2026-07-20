@@ -508,7 +508,17 @@
                 "display_long_side": {
                     "type": "number",
                     "title": "长边分辨率",
-                    "description": "默认缩放分辨率的长边长度，用于屏幕适配。与 display_short_side 和 display_raw 互斥"
+                    "description": "默认缩放分辨率的长边长度，用于屏幕适配。与 display_short_side、display_expand 和 display_raw 互斥"
+                },
+                "display_expand": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    },
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "title": "Unity Expand 参考分辨率",
+                    "description": "按 Unity Canvas Scaler 的 Expand 语义缩放：scale = max(width / raw_width, height / raw_height)，保持源宽高比，输出两边均不小于参考。格式 [width, height]。与 display_short_side、display_long_side 和 display_raw 互斥"
                 },
                 "display_raw": {
                     "type": "boolean",

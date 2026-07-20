@@ -313,6 +313,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     // 设置分辨率配置
     runtime.display_config.short_side = controller.display_short_side;
     runtime.display_config.long_side = controller.display_long_side;
+    runtime.display_config.expand = controller.display_expand;
     runtime.display_config.raw = controller.display_raw;
 
     std::vector<InterfaceData::Agent> agents = std::visit(
