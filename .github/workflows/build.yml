@@ -423,7 +423,7 @@ jobs:
             - uses: nttld/setup-ndk@v1
               id: setup-ndk
               with:
-                  ndk-version: r27d
+                  ndk-version: r29
 
             - name: Export ANDROID_NDK_ROOT
               run: echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
