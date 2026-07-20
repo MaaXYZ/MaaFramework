@@ -63,7 +63,7 @@ void MaaToolkitPortalHelperSetPersist(MaaToolkitPortalHelper* helper, MaaBool en
     std::ignore = helper;
     std::ignore = enable;
     LogError << "This API " << __FUNCTION__ << " is only available on Linux";
-    return false;
+    return;
 #endif
 }
 
@@ -130,6 +130,6 @@ void MaaToolkitPortalHelperSetRestoreToken(MaaToolkitPortalHelper* helper, const
     std::ignore = helper;
     std::ignore = token;
     LogError << "This API " << __FUNCTION__ << " is only available on Linux";
-    return false;
+    return;
 #endif
 }
