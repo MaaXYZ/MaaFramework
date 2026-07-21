@@ -310,6 +310,9 @@ declare global {
 
         type WlRootsCompositor = [handle: DesktopHandle, class_name: string, window_name: string]
 
+        /**
+         * @deprecated Use LinuxController instead.
+         */
         class WlRootsController extends Controller {
             /**
              * @param wlr_socket_path Wayland socket path (e.g. "/run/user/1000/wayland-0")
@@ -322,6 +325,9 @@ declare global {
             static find(): Promise<WlRootsCompositor[] | null>
         }
 
+        /**
+         * @deprecated Use LinuxController instead.
+         */
         class KWinController extends Controller {
             /**
              * @param device_node uinput device path (e.g. "/dev/uinput")
@@ -337,6 +343,38 @@ declare global {
                 screen_height: number,
                 use_win32_vk_code?: boolean,
             )
+        }
+
+        /**
+         * Linux controller for native Linux applications.
+         *
+         * Configurable screencap and input methods via JSON config.
+         * Supports Wlroots (Wayland), PipeWire / xdg-desktop-portal, and UInput.
+         */
+        class LinuxController extends Controller {
+            /**
+             * @param config JSON config for the control unit. Required fields:
+             *   - screencap_method: screencap method to use.
+             *   - input_method: input method to use.
+             *
+             *   Wlroots required fields:
+             *   - wlr_socket_path: wayland socket path (e.g. "/run/user/1000/wayland-0").
+             *
+             *   PipeWire required fields:
+             *   - pw_socket_fd: The PipeWire socket FD.
+             *   - pw_node_id: The PipeWire Node ID.
+             *   - pw_screen_width: The screen width in pixels.
+             *   - pw_screen_height: The screen height in pixels.
+             *
+             *   UInput optional fields:
+             *   - uinput_path: The uinput device node path, default is "/dev/uinput".
+             *
+             *   Optional fields:
+             *   - use_win32_vk_code: If true, key codes passed to click_key / key_down / key_up are
+             *     interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes
+             *     internally. If false, key codes are passed through as raw evdev codes.
+             */
+            constructor(config: string)
         }
 
         interface CustomControllerActor {
