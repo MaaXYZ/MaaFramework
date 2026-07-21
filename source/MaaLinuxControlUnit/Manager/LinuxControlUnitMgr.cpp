@@ -259,7 +259,8 @@ bool LinuxControlUnitMgr::inactive()
 
 json::object LinuxControlUnitMgr::get_info() const
 {
-    return config_.to_json().as_object();
+    const json::object type = { { "type", "linux" } };
+    return type | config_.to_json().as_object();
 }
 
 bool LinuxControlUnitMgr::init_screencap()
