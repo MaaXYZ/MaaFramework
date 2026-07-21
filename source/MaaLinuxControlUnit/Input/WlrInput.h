@@ -1,14 +1,15 @@
 #pragma once
 
+#include "Common/Conf.h"
+
 #include "Base/MemfdBuffer.h"
 #include "Base/UnitBase.h"
-#include "Common/Conf.h"
 #include "Wayland/WaylandClient.h"
 #include "Wayland/WaylandHelper.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class WlrInput : public InputBase
+class WlrInput : public RelativeMoveInput
 {
 public:
     explicit WlrInput(std::shared_ptr<WaylandClient> client);
@@ -27,6 +28,7 @@ public:
     bool key_down(int key) override;
     bool key_up(int key) override;
     bool scroll(int dx, int dy) override;
+    bool relative_move(int dx, int dy) override;
 
 private:
     enum class Keymap : uint8_t
@@ -37,7 +39,6 @@ private:
     };
 
     bool pointer(EventPhase phase, int x, int y, int contact);
-    bool relative_move(int dx, int dy);
     bool input_key(EventPhase phase, int key);
     bool switch_keymap(Keymap new_map);
     bool prepare_device();
