@@ -23,8 +23,6 @@ public:
     UInput(const UInput&) = delete;
     UInput& operator=(const UInput&) = delete;
 
-    bool open();
-    void close();
     bool connected() const;
     MaaControllerFeature get_features() const override;
     bool click_key(int key) override;
@@ -46,6 +44,8 @@ public:
     std::pair<int, int> screen_size() const;
 
 private:
+    bool open();
+    void close();
     bool create_device();
     bool destroy_device();
     bool emit_abs(int code, int value);

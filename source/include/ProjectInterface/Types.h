@@ -56,11 +56,13 @@ struct InterfaceData
             MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT gamepad_type, MEO_OPT screencap);
         };
 
-        struct WlRootsConfig
+        struct LinuxConfig
         {
+            std::string screencap;
+            std::string input;
             bool use_win32_vk_code = false;
 
-            MEO_JSONIZATION(MEO_OPT use_win32_vk_code);
+            MEO_JSONIZATION(MEO_OPT screencap, MEO_OPT input, MEO_OPT use_win32_vk_code);
         };
 
         enum class Type
@@ -71,7 +73,7 @@ struct InterfaceData
             MacOS,
             PlayCover,
             Gamepad,
-            WlRoots,
+            Linux,
         };
 
         std::string name;
@@ -97,7 +99,7 @@ struct InterfaceData
         MacOSConfig macos;
         PlayCoverConfig playcover;
         GamepadConfig gamepad;
-        WlRootsConfig wlroots;
+        LinuxConfig lnx;
 
         MEO_JSONIZATION(
             name,
@@ -112,9 +114,7 @@ struct InterfaceData
             MEO_OPT option,
             MEO_OPT win32,
             MEO_OPT macos,
-            MEO_OPT playcover,
-            MEO_OPT gamepad,
-            MEO_OPT wlroots);
+            MEO_OPT playcover, MEO_OPT gamepad, MEO_OPT lnx);
     };
 
     struct Resource
@@ -380,11 +380,18 @@ struct Configuration
         MEO_JSONIZATION(MEO_OPT _placeholder, MEO_OPT gamepad_type);
     };
 
-    struct WlRootsConfig
+    struct LinuxConfig
     {
+        std::string screencap;
+        std::string input;
         std::string wlr_socket_path;
+        int pw_screen_width = 0;
+        int pw_screen_height = 0;
+        bool use_win32_vk_code = false;
 
-        MEO_JSONIZATION(MEO_OPT wlr_socket_path);
+        MEO_JSONIZATION(
+            MEO_OPT screencap, MEO_OPT input, MEO_OPT wlr_socket_path, MEO_OPT pw_screen_width, MEO_OPT pw_screen_height,
+            MEO_OPT use_win32_vk_code);
     };
 
     struct Option
@@ -411,7 +418,7 @@ struct Configuration
     MacOSConfig macos;
     PlayCoverConfig playcover;
     GamepadConfig gamepad;
-    WlRootsConfig wlroots;
+    LinuxConfig lnx;
     std::string resource;
     std::vector<Task> task;
 
@@ -420,15 +427,7 @@ struct Configuration
     std::vector<Option> controller_option; // v2.3.0
 
     MEO_JSONIZATION(
-        controller,
-        MEO_OPT adb,
-        MEO_OPT win32,
-        MEO_OPT macos,
-        MEO_OPT playcover,
-        MEO_OPT gamepad,
-        MEO_OPT wlroots,
-        resource,
-        task,
+        controller, MEO_OPT adb, MEO_OPT win32, MEO_OPT macos, MEO_OPT playcover, MEO_OPT gamepad, MEO_OPT lnx, resource, task,
         MEO_OPT global_option,
         MEO_OPT resource_option,
         MEO_OPT controller_option);
@@ -483,9 +482,13 @@ struct RuntimeParam
         MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_None;
     };
 
-    struct WlRootsParam
+    struct LinuxParam
     {
+        MaaLinuxScreencapMethod screencap = MaaLinuxScreencapMethod_None;
+        MaaLinuxInputMethod input = MaaLinuxInputMethod_None;
         std::string wlr_socket_path;
+        int pw_screen_width = 0;
+        int pw_screen_height = 0;
         bool use_win32_vk_code = false;
     };
 
@@ -505,7 +508,7 @@ struct RuntimeParam
         std::unordered_map<std::string, std::string> env_vars; // v2.5.0: PI_* env vars
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param, MacOSParam, PlayCoverParam, GamepadParam, WlRootsParam> controller_param;
+    std::variant<std::monostate, AdbParam, Win32Param, MacOSParam, PlayCoverParam, GamepadParam, LinuxParam> controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;
