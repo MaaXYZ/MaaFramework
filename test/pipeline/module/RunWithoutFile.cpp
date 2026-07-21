@@ -53,11 +53,18 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     MaaTaskerBindResource(tasker_handle, resource_handle);
     MaaTaskerBindController(tasker_handle, controller_handle);
 
+    auto cleanup = [&]() {
+        MaaTaskerDestroy(tasker_handle);
+        MaaResourceDestroy(resource_handle);
+        MaaControllerDestroy(controller_handle);
+    };
+
     {
         auto failed_id = MaaTaskerPostTask(tasker_handle, "_NotExists_", "{}");
         auto failed_status = MaaTaskerWait(tasker_handle, failed_id);
         if (failed_id == MaaInvalidId || failed_status != MaaStatus_Failed) {
             std::cout << "Failed to detect invalid task" << std::endl;
+            cleanup();
             return false;
         }
     }
@@ -118,6 +125,19 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     MaaRectDestroy(backtracking_box);
     if (!backtracking_succeeded) {
         std::cout << "Failed to backtrack nested Or recognition" << std::endl;
+        cleanup();
+        return false;
+    }
+
+    MaaNodeId latest_node_id = MaaInvalidId;
+    if (MaaTaskerGetLatestNode(tasker_handle, "A", &latest_node_id)) {
+        std::cout << "Abandoned Or candidate A should not be registered in runtime cache" << std::endl;
+        cleanup();
+        return false;
+    }
+    if (!MaaTaskerGetLatestNode(tasker_handle, "B", &latest_node_id) || !MaaTaskerGetLatestNode(tasker_handle, "candidate", &latest_node_id)) {
+        std::cout << "Selected Or candidate B / alias candidate should be registered in runtime cache" << std::endl;
+        cleanup();
         return false;
     }
 
@@ -129,9 +149,7 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     auto task_id = MaaTaskerPostTask(tasker_handle, "MyTask", task_param_str.c_str());
     auto status = MaaTaskerWait(tasker_handle, task_id);
 
-    MaaTaskerDestroy(tasker_handle);
-    MaaResourceDestroy(resource_handle);
-    MaaControllerDestroy(controller_handle);
+    cleanup();
 
     return status == MaaStatus_Succeeded;
 }

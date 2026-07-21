@@ -434,7 +434,8 @@ void Recognizer::inherit_sub_boxes(const std::string& name, const RecoResult& su
 bool Recognizer::recognize_and_from(
     const MAA_RES_NS::Recognition::AndParam& param,
     size_t index,
-    std::vector<RecoResult>& sub_results)
+    std::vector<RecoResult>& sub_results,
+    PendingSubRegistry& pending_regs)
 {
     using namespace MAA_RES_NS::Recognition;
 
@@ -453,19 +454,22 @@ bool Recognizer::recognize_and_from(
             resolved->name,
             param,
             index + 1,
-            sub_results);
+            sub_results,
+            pending_regs);
     }
 
     auto res = recognize_sub(*resolved);
-    register_sub_result_in_cache(res);
     bool hit = res.box.has_value();
+    if (hit && !res.name.empty()) {
+        pending_regs.emplace_back(res.name, res.reco_id);
+    }
     sub_results.emplace_back(std::move(res));
     if (!hit) {
         LogDebug << "And: sub recognition failed";
         return false;
     }
 
-    return recognize_and_from(param, index + 1, sub_results);
+    return recognize_and_from(param, index + 1, sub_results, pending_regs);
 }
 
 bool Recognizer::recognize_or_in_and(
@@ -473,7 +477,8 @@ bool Recognizer::recognize_or_in_and(
     const std::string& name,
     const MAA_RES_NS::Recognition::AndParam& and_param,
     size_t next_index,
-    std::vector<RecoResult>& sub_results)
+    std::vector<RecoResult>& sub_results,
+    PendingSubRegistry& pending_regs)
 {
     if (!param) {
         LogError << "And: nested OrParam is null";
@@ -483,6 +488,7 @@ bool Recognizer::recognize_or_in_and(
     const auto filtered_snapshot = *sub_filtered_boxes_;
     const auto best_snapshot = *sub_best_box_;
     const size_t result_prefix_size = sub_results.size();
+    const size_t pending_prefix_size = pending_regs.size();
     std::vector<RecoResult> or_sub_results;
     std::vector<RecoResult> last_failed_path;
 
@@ -490,6 +496,7 @@ bool Recognizer::recognize_or_in_and(
         *sub_filtered_boxes_ = filtered_snapshot;
         *sub_best_box_ = best_snapshot;
         sub_results.resize(result_prefix_size);
+        pending_regs.resize(pending_prefix_size);
 
         auto resolved = resolve_sub_recognition(candidate, "And/Or");
         if (!resolved) {
@@ -497,8 +504,10 @@ bool Recognizer::recognize_or_in_and(
         }
 
         auto candidate_result = recognize_sub(*resolved);
-        register_sub_result_in_cache(candidate_result);
         bool hit = candidate_result.box.has_value();
+        if (hit && !candidate_result.name.empty()) {
+            pending_regs.emplace_back(candidate_result.name, candidate_result.reco_id);
+        }
         or_sub_results.emplace_back(std::move(candidate_result));
         if (!hit) {
             continue;
@@ -506,10 +515,12 @@ bool Recognizer::recognize_or_in_and(
 
         inherit_sub_boxes(name, or_sub_results.back());
         auto or_result = build_or_result(name, or_sub_results, or_sub_results.back().box);
-        register_sub_result_in_cache(or_result);
+        if (!name.empty()) {
+            pending_regs.emplace_back(name, or_result.reco_id);
+        }
         sub_results.emplace_back(std::move(or_result));
 
-        if (recognize_and_from(and_param, next_index, sub_results)) {
+        if (recognize_and_from(and_param, next_index, sub_results, pending_regs)) {
             LogDebug << "And: nested Or candidate succeeded";
             return true;
         }
@@ -520,6 +531,7 @@ bool Recognizer::recognize_or_in_and(
 
     *sub_filtered_boxes_ = filtered_snapshot;
     *sub_best_box_ = best_snapshot;
+    pending_regs.resize(pending_prefix_size);
     if (!last_failed_path.empty()) {
         sub_results = std::move(last_failed_path);
     }
@@ -542,7 +554,15 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
     LogDebug << "And recognition" << VAR(name) << VAR(param->all_of.size()) << VAR(param->box_index);
 
     std::vector<RecoResult> sub_results;
-    bool all_hit = recognize_and_from(*param, 0, sub_results);
+    PendingSubRegistry pending_regs;
+    bool all_hit = recognize_and_from(*param, 0, sub_results, pending_regs);
+
+    // 推迟到整条 And 路径确认成功后再注册，避免回溯放弃的分支污染 runtime cache
+    if (all_hit) {
+        for (const auto& [sub_name, sub_reco_id] : pending_regs) {
+            register_sub_result_in_cache(sub_name, sub_reco_id);
+        }
+    }
 
     std::vector<ImageEncodedBuffer> all_draws;
     for (auto& sub : sub_results) {
@@ -743,10 +763,19 @@ void Recognizer::register_sub_result_in_cache(const RecoResult& res)
         return;
     }
 
+    register_sub_result_in_cache(res.name, res.reco_id);
+}
+
+void Recognizer::register_sub_result_in_cache(const std::string& name, MaaRecoId reco_id)
+{
+    if (name.empty() || reco_id == MaaInvalidId) {
+        return;
+    }
+
     auto& cache = tasker_->runtime_cache();
     auto sub_node_id = TaskBase::generate_node_id();
-    cache.set_node_detail(sub_node_id, NodeDetail { .node_id = sub_node_id, .name = res.name, .reco_id = res.reco_id, .completed = true });
-    cache.set_latest_node(res.name, sub_node_id);
+    cache.set_node_detail(sub_node_id, NodeDetail { .node_id = sub_node_id, .name = name, .reco_id = reco_id, .completed = true });
+    cache.set_latest_node(name, sub_node_id);
 }
 
 bool Recognizer::debug_mode() const
