@@ -236,6 +236,11 @@ void Transceiver::uninit_socket()
     //     }
     // }
 
+    // AgentClient owns the bound socket and may be destroyed without a disconnect handshake.
+    if (is_bound_) {
+        zmq_sock_.set(zmq::sockopt::linger, 0);
+    }
+
     zmq_sock_.close();
     zmq_ctx_.close();
 

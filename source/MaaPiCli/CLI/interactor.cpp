@@ -1209,6 +1209,8 @@ void Interactor::add_task()
 
     if (all_data_tasks.empty()) {
         LogError << "Task is empty";
+        std::cout << "No tasks available.\n\n";
+        mpause();
         return;
     }
 

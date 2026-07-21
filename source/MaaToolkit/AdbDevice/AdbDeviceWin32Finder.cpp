@@ -66,7 +66,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_by_emulator_tool(const Emulato
 {
     LogFunc << VAR(emulator.name);
 
-    if (emulator.name == "MuMuPlayer12" || emulator.name == "MuMuPlayer12 v5") {
+    if (emulator.name == "MuMuPlayer v4" || emulator.name == "MuMuPlayer v5+") {
         return find_mumu_devices(emulator);
     }
     else if (emulator.name == "LDPlayer") {
@@ -160,12 +160,12 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     }
 
     std::filesystem::path dir;
-    if (emulator.name == "MuMuPlayer12 v5") {
-        // MuMuPlayer12 v5: C:\Program Files\Netease\MuMuPlayer-12.0\nx_device\12.0\shell\MuMuNxDevice.exe
+    if (emulator.name == "MuMuPlayer v5+") {
+        // MuMuPlayer v5+: C:\Program Files\Netease\MuMuPlayer-12.0\nx_device\12.0\shell\MuMuNxDevice.exe
         dir = emulator.process_path.parent_path().parent_path().parent_path().parent_path();
     }
     else {
-        // MuMuPlayer12: C:\Program Files\Netease\MuMuPlayer-12.0\shell\MuMuPlayer.exe
+        // MuMuPlayer v4: C:\Program Files\Netease\MuMuPlayer-12.0\shell\MuMuPlayer.exe
         dir = emulator.process_path.parent_path().parent_path();
     }
 

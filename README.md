@@ -219,6 +219,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MAK](https://github.com/Hollow-YK/MaaAssistantKedrgame) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Hollow-YK/MaaAssistantKedrgame) ![activity](https://img.shields.io/github/commit-activity/m/Hollow-YK/MaaAssistantKedrgame?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Hollow-YK/MaaAssistantKedrgame.svg?style=social) [![website](https://img.shields.io/badge/https://hollow--yk.github.io/MaaAssistantKedrgame/-%234285F4)](https://hollow-yk.github.io/MaaAssistantKedrgame/)  
     《雪松》小助手！由 MaaFramework 强力驱动！
 
+- [MAH](https://github.com/Quartewe/MAH) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Quartewe/MAH) ![activity](https://img.shields.io/github/commit-activity/m/Quartewe/MAH?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Quartewe/MAH.svg?style=social)  
+    东京放课后召唤师小助手。由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。

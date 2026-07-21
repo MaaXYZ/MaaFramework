@@ -222,6 +222,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MAK](https://github.com/Hollow-YK/MaaAssistantKedrgame) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Hollow-YK/MaaAssistantKedrgame) ![activity](https://img.shields.io/github/commit-activity/m/Hollow-YK/MaaAssistantKedrgame?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Hollow-YK/MaaAssistantKedrgame.svg?style=social) [![website](https://img.shields.io/badge/https://hollow--yk.github.io/MaaAssistantKedrgame/-%234285F4)](https://hollow-yk.github.io/MaaAssistantKedrgame/)  
     Maa 雪松 Assistant! Powered by MaaFramework!
 
+- [MAH](https://github.com/Quartewe/MAH) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Quartewe/MAH) ![activity](https://img.shields.io/github/commit-activity/m/Quartewe/MAH?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Quartewe/MAH.svg?style=social)  
+ A assistant for Tokyo Afterschool Summoners. Free your hands! Powered by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.

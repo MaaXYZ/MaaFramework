@@ -158,9 +158,7 @@ bool request_androws_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>
         return false;
     }
 
-    string_trim_(output);
-
-    if (output.empty()) {
+    if (output.find_first_not_of(" \t\n\r\f\v") == std::string::npos) {
         return false;
     }
 
