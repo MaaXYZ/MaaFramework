@@ -54,6 +54,8 @@ __all__ = [
     "MaaWin32InputMethod",
     "MaaMacOSScreencapMethod",
     "MaaMacOSInputMethod",
+    "MaaLinuxScreencapMethod",
+    "MaaLinuxInputMethod",
     "MaaGamepadType",
     "MaaControllerFeature",
     # FFI callback factories
@@ -75,6 +77,8 @@ __all__ = [
     "MaaWin32InputMethodEnum",
     "MaaMacOSScreencapMethodEnum",
     "MaaMacOSInputMethodEnum",
+    "MaaLinuxScreencapMethodEnum",
+    "MaaLinuxInputMethodEnum",
     "MaaGamepadTypeEnum",
     "MaaGamepadButtonEnum",
     "MaaGamepadContactEnum",
@@ -532,6 +536,53 @@ class MaaMacOSInputMethodEnum(IntEnum):
 
     GlobalEvent = 1
     PostToPid = 1 << 1
+
+
+MaaLinuxScreencapMethod = ctypes.c_uint64
+
+
+class MaaLinuxScreencapMethodEnum(IntEnum):
+    """
+    Linux screencap method.
+
+    No bitwise OR, select ONE method only.
+
+    No default value. Client should choose one as default.
+
+    | Method          | Description                                           |
+    |-----------------|-------------------------------------------------------|
+    | Wlr             | Screencap using `wlr-screencopy-unstable-v1` protocol |
+    | PipeWire        | Screencap using PipeWire                              |
+    """
+
+    Null = 0
+
+    Wlr = 1
+    ExtImage = 1 << 1
+    PipeWire = 1 << 2
+
+
+MaaLinuxInputMethod = ctypes.c_uint64
+
+
+class MaaLinuxInputMethodEnum(IntEnum):
+    """
+    Linux input method.
+
+    No bitwise OR, select ONE method only.
+
+    No default value. Client should choose one as default.
+
+    | Method          | Description                                                                               |
+    |-----------------|-------------------------------------------------------------------------------------------|
+    | Wlr             | Input using `virtual-keyboard-unstable-v1` and `wlr-virtual-pointer-unstable-v1` protocol |
+    | UInput          | Input using `/dev/uinput`                                                                 |
+    """
+
+    Null = 0
+
+    Wlr = 1
+    UInput = 1 << 1
 
 
 # No bitwise OR, just set it

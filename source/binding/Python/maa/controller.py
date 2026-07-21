@@ -1,6 +1,7 @@
 import ctypes
 import json
 import os
+import warnings
 from abc import abstractmethod
 from collections.abc import Sequence
 from ctypes import c_int32
@@ -26,6 +27,7 @@ __all__ = [
     "KWinController",
     "GamepadController",
     "WlRootsController",
+    "LinuxController",
     "AndroidNativeController",
     "CustomController",
 ]
@@ -1031,6 +1033,9 @@ class WlRootsController(Controller):
     ):
         """创建 WlRoots 控制器 / Create WlRoots controller
 
+        . deprecated::
+            Use LinuxController instead.
+
         Args:
             wlr_socket_path: Wayland Socket 路径 / Wayland Socket Path
             use_win32_vk_code: 为 True 时按键被视为 Win32 VK 键码并转换为 Linux evdev 码；
@@ -1041,6 +1046,11 @@ class WlRootsController(Controller):
         Raises:
             RuntimeError: 如果创建失败
         """
+        warnings.warn(
+            "WlRootsController is deprecated, use LinuxController instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__()
         self._set_wlroots_api_properties()
 
@@ -1076,6 +1086,9 @@ class KWinController(Controller):
     ):
         """创建 KWin 控制器 / Create KWin controller
 
+        . deprecated::
+            Use LinuxController instead.
+
         Args:
             device_node: uinput 设备节点路径 (如 "/dev/uinput") / uinput device node path
             screen_width: 屏幕宽度（像素） / Screen width in pixels
@@ -1088,6 +1101,11 @@ class KWinController(Controller):
         Raises:
             RuntimeError: 如果创建失败
         """
+        warnings.warn(
+            "KWinController is deprecated, use LinuxController instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__()
         self._set_kwin_api_properties()
 
@@ -1113,6 +1131,43 @@ class KWinController(Controller):
             ctypes.c_int32,
             ctypes.c_int32,
             MaaBool,
+        ]
+
+
+class LinuxController(Controller):
+    """Linux 控制器 / Linux controller
+
+    通过 JSON 配置截图方式和输入方式，支持多种 Linux 显示服务器 (Wayland/X11) 和控制方式。
+    Configurable screencap and input methods via JSON for various Linux display servers.
+    """
+
+    def __init__(
+        self,
+        config: dict[str, Any],
+    ):
+        """创建 Linux 控制器 / Create Linux controller
+
+        Args:
+            config: 控制器配置 JSON 对象，包含 screencap_method、input_method 等字段
+                    Controller config JSON object, containing screencap_method, input_method, etc.
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._set_linux_api_properties()
+
+        self._handle = Library.framework().MaaLinuxControllerCreate(
+            json.dumps(config, ensure_ascii=False).encode(),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create Linux controller.")
+
+    def _set_linux_api_properties(self):
+        Library.framework().MaaLinuxControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaLinuxControllerCreate.argtypes = [
+            ctypes.c_char_p,
         ]
 
 

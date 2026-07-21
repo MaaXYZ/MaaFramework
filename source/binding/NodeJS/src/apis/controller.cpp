@@ -786,6 +786,26 @@ maajs::ValueType load_kwin_controller(maajs::EnvType env)
     return ctor;
 }
 
+LinuxControllerImpl* LinuxControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [config_json] = maajs::UnWrapArgs<LinuxControllerCtorParam, void>(info);
+    auto ctrl = MaaLinuxControllerCreate(config_json.c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new LinuxControllerImpl(ctrl, true);
+}
+
+void LinuxControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType) {}
+
+maajs::ValueType load_linux_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<LinuxControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->linuxControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
 void WlRootsControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
 {
     MAA_BIND_FUNC(ctor, "find", find);

@@ -70,6 +70,30 @@ RuntimeParam::AdbParam reconfig_adb(const RuntimeParam::AdbParam& raw)
     return raw;
 }
 
+std::string reconfig_linux(const RuntimeParam::LinuxParam& raw)
+{
+    json::object obj { { "screencap_method", raw.screencap },
+                       { "input_method", raw.input },
+                       { "use_win32_vk_code", raw.use_win32_vk_code } };
+    if (raw.screencap == MaaLinuxScreencapMethod_Wlr || raw.input == MaaLinuxInputMethod_Wlr) {
+        obj["wlr_socket_path"] = raw.wlr_socket_path;
+    }
+    if (raw.screencap == MaaLinuxScreencapMethod_PipeWire) {
+        auto helper_handle = MaaToolkitPortalHelperCreate();
+        if (!MaaToolkitPortalHelperOpenStream(helper_handle)) {
+            LogError << "Failed to open stream";
+            return "";
+        }
+        obj["pw_socket_fd"] = MaaToolkitPortalHelperGetPipeWireFD(helper_handle);
+        obj["pw_node_id"] = MaaToolkitPortalHelperGetPipeWireNodeID(helper_handle);
+        obj["pw_screen_width"] = raw.pw_screen_width;
+        obj["pw_screen_height"] = raw.pw_screen_height;
+        MaaToolkitPortalHelperDestroy(helper_handle);
+    }
+
+    return obj.dumps();
+}
+
 bool Runner::run(const RuntimeParam& param)
 {
     MaaTasker* tasker_handle = MaaTaskerCreate();
@@ -116,9 +140,10 @@ bool Runner::run(const RuntimeParam& param)
         return false;
 #endif
     }
-    else if (const auto* p_wlroots_param = std::get_if<RuntimeParam::WlRootsParam>(&param.controller_param)) {
+    else if (const auto* p_wlroots_param = std::get_if<RuntimeParam::LinuxParam>(&param.controller_param)) {
 #if defined(__linux__)
-        controller_handle = MaaWlRootsControllerCreate(p_wlroots_param->wlr_socket_path.c_str(), p_wlroots_param->use_win32_vk_code);
+        auto config_json = reconfig_linux(*p_wlroots_param);
+        controller_handle = MaaLinuxControllerCreate(config_json.c_str());
 #else
         std::ignore = p_wlroots_param;
         LogError << "WlRoots controller is only supported on Linux";

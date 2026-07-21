@@ -8,6 +8,8 @@ typedef struct MaaToolkitAdbDeviceList MaaToolkitAdbDeviceList;
 typedef struct MaaToolkitDesktopWindow MaaToolkitDesktopWindow;
 typedef struct MaaToolkitDesktopWindowList MaaToolkitDesktopWindowList;
 
+typedef struct MaaToolkitPortalHelper MaaToolkitPortalHelper;
+
 enum MaaMacOSPermissionEnum
 {
     MaaMacOSPermissionScreenCapture = 1,
