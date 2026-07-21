@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <string_view>
 #include <meojson/json.hpp>
 
 #include "Common/Conf.h"
@@ -30,6 +31,13 @@ public:
     MaaRecoId get_id() const { return reco_id_; }
 
 private:
+    struct ResolvedSubRecognition
+    {
+        MAA_RES_NS::Recognition::Type type;
+        MAA_RES_NS::Recognition::Param param;
+        std::string name;
+    };
+
     RecoResult direct_hit(const MAA_VISION_NS::DirectHitParam& param, const std::string& name);
     RecoResult template_match(const MAA_VISION_NS::TemplateMatcherParam& param, const std::string& name);
     RecoResult feature_match(const MAA_VISION_NS::FeatureMatcherParam& param, const std::string& name);
@@ -43,6 +51,23 @@ private:
 
     template <typename Analyzer>
     RecoResult build_result(const std::string& name, const std::string& algorithm, Analyzer&& analyzer);
+
+    std::optional<ResolvedSubRecognition> resolve_sub_recognition(
+        const MAA_RES_NS::Recognition::SubRecognition& sub_reco,
+        std::string_view parent);
+    RecoResult recognize_sub(const ResolvedSubRecognition& sub_reco);
+    bool recognize_and_from(
+        const MAA_RES_NS::Recognition::AndParam& param,
+        size_t index,
+        std::vector<RecoResult>& sub_results);
+    bool recognize_or_in_and(
+        const std::shared_ptr<MAA_RES_NS::Recognition::OrParam>& param,
+        const std::string& name,
+        const MAA_RES_NS::Recognition::AndParam& and_param,
+        size_t next_index,
+        std::vector<RecoResult>& sub_results);
+    RecoResult build_or_result(const std::string& name, const std::vector<RecoResult>& sub_results, std::optional<cv::Rect> box);
+    void inherit_sub_boxes(const std::string& name, const RecoResult& sub_result);
 
     std::vector<cv::Rect> get_rois(const MAA_VISION_NS::Target& roi, bool use_best = false);
     std::vector<cv::Rect> get_rois_from_pretask(const std::string& name, bool use_best);
