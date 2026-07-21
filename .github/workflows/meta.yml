@@ -38,7 +38,7 @@ jobs:
                   fetch-depth: 0
             
             - id: latest-plugin
-              uses: pozetroninc/github-action-get-latest-release@v0.8.0
+              uses: step-security/github-action-get-latest-release@v0
               with:
                   repository: MaaXYZ/MaaPluginDemo
                   token: ${{ secrets.GITHUB_TOKEN }}
