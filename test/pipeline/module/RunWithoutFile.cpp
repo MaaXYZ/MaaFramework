@@ -27,6 +27,18 @@ MaaBool my_action(
     const MaaRect* box,
     void* trans_arg);
 
+MaaBool match_second_candidate(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_recognition_name,
+    const char* custom_recognition_param,
+    const MaaImageBuffer* image,
+    const MaaRect* roi,
+    void* trans_arg,
+    MaaRect* out_box,
+    MaaStringBuffer* out_detail);
+
 bool run_without_file(const std::filesystem::path& testset_dir)
 {
     auto screenshot_path = testset_dir / "PipelineSmoking" / "Screenshot";
@@ -51,6 +63,63 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     }
 
     MaaResourceRegisterCustomAction(resource_handle, "MyAct", &my_action, nullptr);
+    int recognition_attempts = 0;
+    MaaResourceRegisterCustomRecognition(resource_handle, "MatchSecondCandidate", &match_second_candidate, &recognition_attempts);
+
+    json::value backtracking_param {
+        { "Backtracking",
+          json::object {
+              { "recognition", "And" },
+              { "all_of",
+                json::array {
+                    json::object {
+                        { "sub_name", "candidate" },
+                        { "recognition", "Or" },
+                        { "any_of",
+                          json::array {
+                              json::object {
+                                  { "sub_name", "A" },
+                                  { "recognition", "DirectHit" },
+                                  { "roi", json::array { 10, 10, 20, 20 } },
+                              },
+                              json::object {
+                                  { "sub_name", "B" },
+                                  { "recognition", "DirectHit" },
+                                  { "roi", json::array { 200, 10, 20, 20 } },
+                              },
+                          } },
+                    },
+                    json::object {
+                        { "recognition", "Custom" },
+                        { "custom_recognition", "MatchSecondCandidate" },
+                        { "roi", "candidate" },
+                    },
+                } },
+          } },
+    };
+    std::string backtracking_param_str = backtracking_param.to_string();
+    auto backtracking_id = MaaTaskerPostTask(tasker_handle, "Backtracking", backtracking_param_str.c_str());
+    auto backtracking_status = MaaTaskerWait(tasker_handle, backtracking_id);
+    MaaNodeId backtracking_node_id = MaaInvalidId;
+    MaaSize node_id_list_size = 1;
+    MaaTaskerGetTaskDetail(
+        tasker_handle,
+        backtracking_id,
+        nullptr,
+        &backtracking_node_id,
+        &node_id_list_size,
+        nullptr);
+    MaaRecoId backtracking_reco_id = MaaInvalidId;
+    MaaTaskerGetNodeDetail(tasker_handle, backtracking_node_id, nullptr, &backtracking_reco_id, nullptr, nullptr);
+    auto backtracking_box = MaaRectCreate();
+    MaaTaskerGetRecognitionDetail(tasker_handle, backtracking_reco_id, nullptr, nullptr, nullptr, backtracking_box, nullptr, nullptr, nullptr);
+    bool backtracking_succeeded =
+        backtracking_status == MaaStatus_Succeeded && recognition_attempts == 2 && MaaRectGetX(backtracking_box) == 200;
+    MaaRectDestroy(backtracking_box);
+    if (!backtracking_succeeded) {
+        std::cout << "Failed to backtrack nested Or recognition" << std::endl;
+        return false;
+    }
 
     json::value task_param {
         { "MyTask", json::object { { "action", "Custom" }, { "custom_action", "MyAct" }, { "custom_action_param", "abcdefg" } } }
@@ -65,6 +134,28 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     MaaControllerDestroy(controller_handle);
 
     return status == MaaStatus_Succeeded;
+}
+
+MaaBool match_second_candidate(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_recognition_name,
+    const char* custom_recognition_param,
+    const MaaImageBuffer* image,
+    const MaaRect* roi,
+    void* trans_arg,
+    MaaRect* out_box,
+    MaaStringBuffer* out_detail)
+{
+    ++*static_cast<int*>(trans_arg);
+    if (MaaRectGetX(roi) != 200) {
+        return false;
+    }
+
+    MaaRectSet(out_box, MaaRectGetX(roi), MaaRectGetY(roi), MaaRectGetW(roi), MaaRectGetH(roi));
+    MaaStringBufferSet(out_detail, "{}");
+    return true;
 }
 
 MaaBool my_action(
