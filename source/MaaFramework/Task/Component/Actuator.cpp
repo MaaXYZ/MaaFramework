@@ -179,7 +179,7 @@ ActionResult Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const 
         return { };
     }
     cv::Point point = rand_point(target_rect);
-    MAA_CTRL_NS::ClickParam ctrl_param { .point = point, .contact = static_cast<int>(param.contact) };
+    MAA_CTRL_NS::ClickParam ctrl_param { .point = point, .contact = static_cast<int>(param.contact), .pressure = param.pressure };
     bool ret = controller()->click(ctrl_param);
 
     return ActionResult {

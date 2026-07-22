@@ -264,7 +264,7 @@
                         "hotkeys": {
                             "type": "array",
                             "title": "快捷键配置",
-                            "description": "定义用户可捕获的快捷键字段；输出为 ClickKey 可用的虚拟按键码",
+                            "description": "定义用户可捕获的快捷键字段；持久化值为人类可读字符串，pipeline_override 替换时映射为虚拟按键码整数",
                             "items": {
                                 "$ref": "#/definitions/hotkeyItem"
                             }
@@ -272,7 +272,7 @@
                         "pipeline_override": {
                             "$ref": "#/definitions/pipelineOverride",
                             "title": "Pipeline 覆盖模板",
-                            "description": "支持使用 {名称} 格式引用快捷键字段的值，替换结果应为整数数组"
+                            "description": "支持使用 {名称}、{名称}.primary、{名称}.modifier1 等占位符引用快捷键字段，替换结果为整数（虚拟按键码）"
                         }
                     },
                     "required": [
@@ -571,7 +571,8 @@
                                 "SendMessageWithCursorPos",
                                 "PostMessageWithCursorPos",
                                 "SendMessageWithWindowPos",
-                                "PostMessageWithWindowPos"
+                                "PostMessageWithWindowPos",
+                                "Interception"
                             ]
                         },
                         "keyboard": {
@@ -976,6 +977,22 @@
             "title": "预任务配置",
             "description": "💡 v2.7.0 Controller 启动前执行的自定义程序配置。Client 应在创建或连接 Controller 前运行该程序；若配置 option，则将 option 取值序列化为紧凑 JSON 字符串并追加为最后一个参数",
             "properties": {
+                "resource": {
+                    "type": "array",
+                    "title": "支持的资源包",
+                    "description": "💡 v2.8.1 可选。指定该预任务支持的资源包列表。数组元素应与 resource 配置中的 name 字段对应。若不指定，则表示该预任务在所有资源包中都可用",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "controller": {
+                    "type": "array",
+                    "title": "支持的控制器",
+                    "description": "💡 v2.8.1 可选。指定该预任务支持的控制器类型列表。数组元素应与 controller 配置中的 name 字段对应。若不指定，则表示该预任务在所有控制器类型中都可用",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "exec": {
                     "type": "string",
                     "title": "预任务程序路径",

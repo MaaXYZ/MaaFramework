@@ -397,9 +397,8 @@ void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& n
         return;
     }
 
-    if (ctx.plan.node_names.emplace(name).second) {
-        ctx.plan.entries.emplace_back(BatchOCREntry { .name = name, .param = param });
-    }
+    ctx.plan.node_names.emplace(name);
+    ctx.plan.entries.emplace_back(BatchOCREntry { .name = name, .param = param });
 }
 
 void PipelineTask::collect_ocr_from_reco(
