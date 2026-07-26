@@ -76,6 +76,56 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_by_emulator_tool(const Emulato
     return { };
 }
 
+namespace
+{
+// EmulatorExtras input requires MuMuManager version >= 6.3.2.0
+bool mumu_supports_extras_input(const std::filesystem::path& mumu_mgr_path)
+{
+    static const std::vector<std::string> version_args = { "version" };
+    ChildPipeIOStream ios(mumu_mgr_path, version_args);
+    std::string output = ios.read();
+    LogDebug << VAR(mumu_mgr_path) << VAR(version_args) << VAR(output);
+
+    struct MumuVersion
+    {
+        std::string version;
+
+        MEO_JSONIZATION(version);
+    };
+
+    // { "version": "6.3.2.0" }
+    auto jopt = json::parse(output);
+    if (!jopt || !jopt->is<MumuVersion>()) {
+        LogWarn << "Parse MuMuManager version failed" << VAR(output);
+        return false;
+    }
+
+    std::string version = jopt->as<MumuVersion>().version;
+    if (version.empty()) {
+        LogWarn << "MuMuManager version field is empty" << VAR(output);
+        return false;
+    }
+
+    static constexpr int kMinVersion[] = { 6, 3, 2, 0 };
+    auto parts = string_split(version, '.');
+    for (size_t n = 0; n < std::size(kMinVersion); ++n) {
+        int value = 0;
+        if (n < parts.size()) {
+            const std::string& part = parts[n];
+            if (part.empty() || !std::ranges::all_of(part, [](unsigned char c) { return std::isdigit(c); })) {
+                LogWarn << "Invalid MuMuManager version" << VAR(version);
+                return false;
+            }
+            value = std::stoi(part);
+        }
+        if (value != kMinVersion[n]) {
+            return value > kMinVersion[n];
+        }
+    }
+    return true;
+}
+}
+
 std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& emulator) const
 {
     LogFunc << VAR(emulator.name);
@@ -169,6 +219,9 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         dir = emulator.process_path.parent_path().parent_path();
     }
 
+    bool extras_input = mumu_supports_extras_input(mumu_mgr_path);
+    LogInfo << "MuMuManager supports extras input" << VAR(extras_input);
+
     std::vector<AdbDevice> result;
     for (const MumuInfo& i : info) {
         std::string adb_host;
@@ -198,7 +251,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         device.serial = std::format("{}:{}", adb_host, adb_port);
 
         device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
-        device.input_methods = MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras;
+        device.input_methods = extras_input ? (MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras) : MaaAdbInputMethod_Default;
 
         int index = 0;
         if (std::ranges::all_of(i.index, [](unsigned char c) { return std::isdigit(c); })) {
