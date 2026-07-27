@@ -94,6 +94,10 @@ RecoResult Recognizer::recognize(MAA_RES_NS::Recognition::Type type, const MAA_R
         break;
     }
 
+    if (result.status != RecognitionStatus::Error) {
+        result.status = result.box ? RecognitionStatus::Matched : RecognitionStatus::Miss;
+    }
+
     if (debug_mode() && !image_.empty()) {
         ImageEncodedBuffer png;
         cv::imencode(".png", image_, png);
@@ -168,6 +172,25 @@ RecoResult Recognizer::build_result(const std::string& name, const std::string& 
         .box = analyzer.best_result() ? std::make_optional(analyzer.best_result()->box) : std::nullopt,
         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
         .draws = std::move(analyzer).draws(),
+    };
+}
+
+RecoResult Recognizer::build_error(const std::string& name, const std::string& algorithm, std::string message)
+{
+    sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> { });
+    sub_best_box_->insert_or_assign(name, cv::Rect { });
+    return RecoResult {
+        .reco_id = reco_id_,
+        .name = name,
+        .algorithm = algorithm,
+        .detail = {
+            { "error",
+              {
+                  { "type", "ModelError" },
+                  { "message", std::move(message) },
+              } },
+        },
+        .status = RecognitionStatus::Error,
     };
 }
 
@@ -332,10 +355,16 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
 
     auto& onnx_res = resource()->onnx_res();
 
-    return build_result(
-        name,
-        "NeuralNetworkDetect",
-        NeuralNetworkDetector(image_, rois, param, onnx_res.detector(param.model), onnx_res.memory_info(), name));
+    auto model = onnx_res.detector_model(param.model);
+    if (!model.package) {
+        return build_error(name, "NeuralNetworkDetect", std::move(model.error));
+    }
+
+    NeuralNetworkDetector detector(image_, rois, param, std::move(model.package), name);
+    if (!detector.error().empty()) {
+        return build_error(name, "NeuralNetworkDetect", detector.error());
+    }
+    return build_result(name, "NeuralNetworkDetect", std::move(detector));
 }
 
 RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionParam& param, const std::string& name)
@@ -372,6 +401,7 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
 
     std::vector<RecoResult> sub_results;
     bool all_hit = true;
+    bool has_error = false;
 
     for (const auto& sub_reco : param->all_of) {
         Recognizer sub_recognizer(*this);
@@ -396,10 +426,11 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
 
         register_sub_result_in_cache(res);
 
+        has_error = res.status == RecognitionStatus::Error;
         all_hit &= res.box.has_value();
         sub_results.emplace_back(std::move(res));
 
-        if (!all_hit) {
+        if (has_error || !all_hit) {
             LogDebug << "And: sub recognition failed";
             break;
         }
@@ -416,6 +447,7 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
         .algorithm = "And",
         .detail = sub_results,
         .draws = std::move(all_draws),
+        .status = has_error ? RecognitionStatus::Error : RecognitionStatus::Miss,
     };
 
     if (!all_hit) {
@@ -457,6 +489,7 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
     std::vector<RecoResult> sub_results;
 
     bool has_hit = false;
+    bool has_error = false;
 
     for (const auto& sub_reco : param->any_of) {
         Recognizer sub_recognizer(*this);
@@ -478,11 +511,12 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
             res = sub_recognizer.recognize(inline_sub.type, inline_sub.param, inline_sub.sub_name);
         }
 
+        has_error = res.status == RecognitionStatus::Error;
         has_hit = res.box.has_value();
         register_sub_result_in_cache(res);
         sub_results.emplace_back(std::move(res));
 
-        if (has_hit) {
+        if (has_error || has_hit) {
             LogDebug << "Or: sub recognition succeeded";
             break;
         }
@@ -498,6 +532,7 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
         .algorithm = "Or",
         .detail = sub_results,
         .draws = std::move(all_draws),
+        .status = has_error ? RecognitionStatus::Error : RecognitionStatus::Miss,
     };
 
     if (!has_hit) {

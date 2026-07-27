@@ -2,6 +2,7 @@
 
 #include <array>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -105,10 +106,25 @@ struct JNeuralNetworkDetect
     std::string model;
     std::vector<int> expected;
     std::vector<double> threshold;
+    std::optional<std::string> nms;
+    std::optional<double> nms_threshold;
     std::string order_by;
     int index = 0;
 
-    MEO_TOJSON(roi, roi_offset, labels, model, expected, threshold, order_by, index);
+    json::value to_json() const
+    {
+        json::object result {
+            { "roi", roi },           { "roi_offset", roi_offset }, { "labels", labels },     { "model", model },
+            { "expected", expected }, { "threshold", threshold },   { "order_by", order_by }, { "index", index },
+        };
+        if (nms) {
+            result.emplace("nms", *nms);
+        }
+        if (nms_threshold) {
+            result.emplace("nms_threshold", *nms_threshold);
+        }
+        return result;
+    }
 };
 
 struct JCustomRecognition

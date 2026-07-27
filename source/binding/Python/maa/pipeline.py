@@ -125,6 +125,8 @@ class JNeuralNetworkDetect:
     roi_offset: JRect = (0, 0, 0, 0)
     labels: list[str] = field(default_factory=lambda: [])
     threshold: list[float] = field(default_factory=lambda: [0.3])
+    nms: Optional[str] = None
+    nms_threshold: Optional[float] = None
     order_by: str = "Horizontal"
     index: int = 0
 

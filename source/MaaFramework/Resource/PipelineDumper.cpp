@@ -195,6 +195,11 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
 
     case Recognition::Type::NeuralNetworkDetect: {
         const auto& p = std::get<MAA_VISION_NS::NeuralNetworkDetectorParam>(param);
+        static const std::unordered_map<MAA_VISION_NS::NeuralNetwork::NmsPolicy, std::string> kNmsNameMap = {
+            { MAA_VISION_NS::NeuralNetwork::NmsPolicy::None, "None" },
+            { MAA_VISION_NS::NeuralNetwork::NmsPolicy::ClassAwareIoU, "ClassAwareIoU" },
+            { MAA_VISION_NS::NeuralNetwork::NmsPolicy::CandidateCoverage, "CandidateCoverage" },
+        };
         reco.param = PipelineV2::JNeuralNetworkDetect {
             .roi = dump_target(p.roi_target),
             .roi_offset = dump_rect(p.roi_target.offset),
@@ -202,6 +207,8 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .model = p.model,
             .expected = p.expected,
             .threshold = p.thresholds,
+            .nms = p.nms ? std::make_optional(kNmsNameMap.at(*p.nms)) : std::nullopt,
+            .nms_threshold = p.nms_threshold,
             .order_by = dump_order_by(p.order_by),
             .index = p.result_index,
         };

@@ -180,6 +180,21 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
             break;
         }
 
+        if (reco.status == RecognitionStatus::Error) {
+            NodeDetail result {
+                .node_id = node_id,
+                .reco_id = MaaInvalidId,
+                .completed = false,
+            };
+            LogError << "Pipeline recognition error" << VAR(pretask.name) << VAR(reco.detail);
+            set_node_detail(result.node_id, result);
+            node_cb_detail["node_details"] = result;
+            node_cb_detail["reco_details"] = reco;
+            node_cb_detail["action_details"] = nullptr;
+            notify(MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
+            return result;
+        }
+
         if (!reco.box) {
             if (!check_timeout_and_sleep(current_clock)) {
                 break;
@@ -306,6 +321,11 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
         auto anchor_name = node.anchor ? std::optional { node.name } : std::nullopt;
         RecoResult result = run_recognition(image, pipeline_data, std::move(anchor_name), ocr_cache);
+
+        if (result.status == RecognitionStatus::Error) {
+            notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
+            return result;
+        }
 
         if (result.box) {
             LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);

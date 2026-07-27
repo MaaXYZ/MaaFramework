@@ -1,5 +1,7 @@
 #include "PipelineParser.h"
 
+#include <cmath>
+
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
@@ -823,6 +825,38 @@ bool PipelineParser::parse_nn_detector_param(
 
     if (!get_and_check_value_or_array(input, "threshold", output.thresholds, default_value.thresholds)) {
         LogError << "failed to get_and_check_value_or_array threshold" << VAR(input);
+        return false;
+    }
+
+    output.nms = default_value.nms;
+    if (auto nms = input.find<std::string>("nms")) {
+        static const std::unordered_map<std::string, MAA_VISION_NS::NeuralNetwork::NmsPolicy> kNmsMap = {
+            { "None", MAA_VISION_NS::NeuralNetwork::NmsPolicy::None },
+            { "ClassAwareIoU", MAA_VISION_NS::NeuralNetwork::NmsPolicy::ClassAwareIoU },
+            { "CandidateCoverage", MAA_VISION_NS::NeuralNetwork::NmsPolicy::CandidateCoverage },
+        };
+        const auto iter = kNmsMap.find(*nms);
+        if (iter == kNmsMap.end()) {
+            LogError << "invalid nms policy" << VAR(*nms);
+            return false;
+        }
+        output.nms = iter->second;
+    }
+    else if (input.exists("nms")) {
+        LogError << "nms must be a string";
+        return false;
+    }
+
+    output.nms_threshold = default_value.nms_threshold;
+    if (auto nms_threshold = input.find<double>("nms_threshold")) {
+        if (!std::isfinite(*nms_threshold) || *nms_threshold < 0.0 || *nms_threshold > 1.0) {
+            LogError << "nms_threshold must be in [0, 1]" << VAR(*nms_threshold);
+            return false;
+        }
+        output.nms_threshold = *nms_threshold;
+    }
+    else if (input.exists("nms_threshold")) {
+        LogError << "nms_threshold must be a number";
         return false;
     }
 

@@ -1211,13 +1211,13 @@
                     "title": "Labels Property",
                     "description": "标注，即每个分类的名字。可选。",
                     "$ref": "#/$defs/jsonStringList",
-                    "markdownDescription": "*list<string, >*\n\n标注，即每个分类的名字。可选。\n\n仅影响调试图片及日志等。若未填写，会自动从模型 metadata 中读取（支持从 `names`、`name`、`labels`、`class_names` 字段读取），一般无需手动设置。若模型 metadata 中也没有，则会填充 \"Unknown\" 。"
+                    "markdownDescription": "*list<string, >*\n\n标注，即每个分类的名字。可选。\n\n仅影响调试图片及日志等。标签按 Pipeline、模型同名 JSON、ONNX metadata 的顺序读取；均未提供时生成 `Unknown_<class_id>`。"
                 },
                 "model": {
                     "title": "Model Property",
                     "description": "模型文件路径。使用 `model/detect` 文件夹的相对路径。必选。",
                     "type": "string",
-                    "markdownDescription": "*string*\n\n模型文件路径。使用 `model/detect` 文件夹的相对路径。必选。\n\n目前支持由 YOLOv8 和 YOLOv11 导出的 ONNX 格式的模型，其他同样输入输出的 Yolo 模型理论上也可以支持，但未经测试。\n\n训练参考 [NNDetect 食谱](https://github.com/MaaXYZ/MaaNeuralNetworkCookbook/tree/main/NeuralNetworkDetect)。"
+                    "markdownDescription": "*string*\n\n模型文件路径。使用 `model/detect` 文件夹的相对路径并包含 `.onnx` 扩展名。必选。\n\n支持 Maa YOLO Dense 兼容格式、YOLOv8、YOLO11、YOLO26、Ultralytics RT-DETR 和 Roboflow RF-DETR；只有 Maa YOLO Dense 兼容格式可省略同名模型描述文件。\n\n训练参考 [NNDetect 食谱](https://github.com/MaaXYZ/MaaNeuralNetworkCookbook/tree/main/NeuralNetworkDetect)。"
                 },
                 "expected": {
                     "title": "Expected Property",
@@ -1231,6 +1231,23 @@
                     "$ref": "#/$defs/jsonNumber01OrList",
                     "markdownDescription": "*double* | *list<double, >*\n\n模型置信度阈值。可选，默认 0.3 。\n\n若为数组，长度需和 `expected` 数组长度相同。",
                     "default": 0.3
+                },
+                "nms": {
+                    "title": "NMS Policy Property",
+                    "description": "非极大值抑制策略。可选。",
+                    "type": "string",
+                    "enum": [
+                        "None",
+                        "ClassAwareIoU",
+                        "CandidateCoverage"
+                    ],
+                    "markdownDescription": "*string*\n\n非极大值抑制策略。可选。\n\n可选的值：`None` | `ClassAwareIoU` | `CandidateCoverage`。\n\n配置优先级为 Pipeline、模型同名 JSON、模型适配器默认值。"
+                },
+                "nms_threshold": {
+                    "title": "NMS Threshold Property",
+                    "description": "NMS 阈值。可选，默认使用模型配置。",
+                    "$ref": "#/$defs/jsonNumber01",
+                    "markdownDescription": "*double*\n\nNMS 阈值。可选，取值范围为 [0, 1]。仅填写该字段时，将覆盖当前有效 NMS 策略的阈值。"
                 },
                 "order_by": {
                     "title": "Order By Property",
@@ -1593,6 +1610,12 @@
                             "$ref": "#/$defs/NeuralNetworkDetect/properties/threshold"
                         }
                     ]
+                },
+                "nms": {
+                    "$ref": "#/$defs/NeuralNetworkDetect/properties/nms"
+                },
+                "nms_threshold": {
+                    "$ref": "#/$defs/NeuralNetworkDetect/properties/nms_threshold"
                 },
                 "order_by": {
                     "anyOf": [

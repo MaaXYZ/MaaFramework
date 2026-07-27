@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <unordered_map>
@@ -10,6 +11,7 @@
 
 #include "Common/Conf.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
+#include "NeuralNetwork/DetectionPostProcessor.h"
 
 MAA_VISION_NS_BEGIN
 
@@ -125,6 +127,8 @@ struct NeuralNetworkDetectorParam : public RoiTargetParamBase
     std::vector<std::string> labels; // only for output and debug
     std::vector</*result_index*/ int> expected;
     std::vector<double> thresholds = { kDefaultThreshold };
+    std::optional<NeuralNetwork::NmsPolicy> nms;
+    std::optional<double> nms_threshold;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;

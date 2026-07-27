@@ -1,16 +1,17 @@
 #include "NeuralNetworkDetector.h"
 
 #include <algorithm>
-#include <cctype>
-#include <map>
+#include <array>
+#include <format>
+#include <numeric>
 #include <ranges>
-#include <sstream>
-
-#include <boost/regex.hpp>
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "MaaUtils/NoWarningCV.hpp"
+#include "NeuralNetwork/DetectionPostProcessor.h"
+#include "NeuralNetwork/ImagePreprocessor.h"
+#include "NeuralNetwork/LabelParser.h"
 #include "VisionUtils.hpp"
 
 MAA_VISION_NS_BEGIN
@@ -19,13 +20,11 @@ NeuralNetworkDetector::NeuralNetworkDetector(
     cv::Mat image,
     std::vector<cv::Rect> rois,
     NeuralNetworkDetectorParam param,
-    std::shared_ptr<Ort::Session> session,
-    const Ort::MemoryInfo& memory_info,
+    std::shared_ptr<const NeuralNetwork::ModelPackage> package,
     std::string name)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
-    , session_(std::move(session))
-    , memory_info_(memory_info)
+    , package_(std::move(package))
 {
     analyze();
 }
@@ -34,169 +33,227 @@ void NeuralNetworkDetector::analyze()
 {
     LogFunc << name_;
 
-    if (!session_) {
-        LogError << "OrtSession not loaded";
+    if (!package_ || !package_->session || !package_->memory_info || !package_->adapter || package_->input_names.size() != 1) {
+        error_ = "detector model package is not loaded";
+        LogError << error_;
         return;
     }
 
     auto start_time = std::chrono::steady_clock::now();
-
-    auto labels = param_.labels.empty() ? parse_labels_from_metadata() : param_.labels;
-    while (next_roi()) {
-        auto results = detect(labels);
-        add_results(std::move(results), param_.expected, param_.thresholds);
+    std::vector<std::string> labels;
+    if (!NeuralNetwork::LabelParser::resolve(param_.labels, package_->descriptor.labels, package_->metadata_labels, labels, error_)) {
+        LogError << name_ << VAR(error_);
+        return;
+    }
+    NeuralNetwork::DetectionThresholdPolicy threshold_policy;
+    if (!NeuralNetwork::DetectionPostProcessor::build_threshold_policy(
+            param_.expected,
+            param_.thresholds,
+            NeuralNetworkDetectorParam::kDefaultThreshold,
+            threshold_policy,
+            error_)) {
+        LogError << name_ << VAR(error_);
+        return;
     }
 
-    cherry_pick();
+    CandidateResults all_results;
+    while (next_roi()) {
+        CandidateResults results;
+        if (!detect(labels, threshold_policy.score_floor, results, error_)) {
+            all_results_.clear();
+            filtered_results_.clear();
+            best_result_.reset();
+            LogError << name_ << VAR(error_);
+            return;
+        }
+        merge_vector_(all_results, std::move(results));
+    }
+
+    auto filtered_results = NeuralNetwork::DetectionPostProcessor::select_best_per_expected(
+        all_results,
+        threshold_policy.expected_thresholds,
+        [](const CandidateResult& result) { return static_cast<int>(result.cls_index); },
+        &CandidateResult::score);
+    finalize(std::move(all_results), std::move(filtered_results));
 
     auto cost = duration_since(start_time);
     LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model) << VAR(labels)
              << VAR(param_.expected) << VAR(param_.thresholds);
 }
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vector<std::string>& labels) const
+bool NeuralNetworkDetector::detect(
+    const std::vector<std::string>& labels,
+    double score_floor,
+    CandidateResults& results,
+    std::string& error) const
 {
-    if (!session_) {
-        LogError << "OrtSession not loaded";
-        return { };
-    }
+    using namespace NeuralNetwork;
 
-    // batch_size, channel, height, width
-    // for yolov8, input_shape is { 1, 3, 640, 640 }
-    const auto input_shape = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
-    if (input_shape.size() != 4) {
-        LogError << "Input shape is not 4" << VAR(input_shape);
-        return { };
-    }
+    try {
+        PreprocessedImage preprocessed;
+        if (!ImagePreprocessor::preprocess(image_with_roi(), package_->descriptor.preprocess, preprocessed, error)) {
+            return false;
+        }
 
-    cv::Mat image = image_with_roi();
-    cv::Size raw_roi_size(image.cols, image.rows);
-    cv::Size input_image_size(static_cast<int>(input_shape[3]), static_cast<int>(input_shape[2]));
-    cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
-    std::vector<float> input = image_to_tensor(image);
+        std::vector<Ort::Value> input_tensors;
+        input_tensors.emplace_back(
+            Ort::Value::CreateTensor<float>(
+                *package_->memory_info,
+                preprocessed.tensor.data(),
+                preprocessed.tensor.size(),
+                preprocessed.shape.data(),
+                preprocessed.shape.size()));
 
-    Ort::Value input_tensor =
-        Ort::Value::CreateTensor<float>(memory_info_, input.data(), input.size(), input_shape.data(), input_shape.size());
+        std::vector<const char*> input_names;
+        input_names.reserve(package_->input_names.size());
+        std::ranges::transform(package_->input_names, std::back_inserter(input_names), [](const std::string& name) {
+            return name.c_str();
+        });
+        std::vector<const char*> output_names;
+        output_names.reserve(package_->output_names.size());
+        std::ranges::transform(package_->output_names, std::back_inserter(output_names), [](const std::string& name) {
+            return name.c_str();
+        });
 
-    Ort::AllocatorWithDefaultOptions allocator;
-    const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();
-    const std::string out_0 = session_->GetOutputNameAllocated(0, allocator).get();
-    const std::vector input_names { in_0.c_str() };
-    const std::vector output_names { out_0.c_str() };
+        Ort::RunOptions run_options;
+        auto output_tensors = package_->session->Run(
+            run_options,
+            input_names.data(),
+            input_tensors.data(),
+            input_tensors.size(),
+            output_names.data(),
+            output_names.size());
+        if (output_tensors.size() != package_->output_names.size()) {
+            error = "ONNX Runtime returned an unexpected output count";
+            return false;
+        }
 
-    Ort::RunOptions run_options;
-    auto output_tensor =
-        session_->Run(run_options, input_names.data(), &input_tensor, input_names.size(), output_names.data(), output_names.size());
+        std::vector<TensorView> tensors;
+        tensors.reserve(output_tensors.size());
+        for (size_t index = 0; index < output_tensors.size(); ++index) {
+            if (!output_tensors[index].IsTensor()) {
+                error = "detector output is not a tensor";
+                return false;
+            }
+            const auto info = output_tensors[index].GetTensorTypeAndShapeInfo();
+            if (info.GetElementType() != ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) {
+                error = "detector output is not FP32";
+                return false;
+            }
+            tensors.emplace_back(
+                TensorView {
+                    .name = package_->output_names[index],
+                    .data = { output_tensors[index].GetTensorData<float>(), info.GetElementCount() },
+                    .shape = info.GetShape(),
+                });
+        }
 
-    const float* raw_output = output_tensor[0].GetTensorData<float>();
-    // output_shape is { 1, 5, 8400 }
-    std::vector<int64_t> output_shape = output_tensor[0].GetTensorTypeAndShapeInfo().GetShape();
+        DecodedDetections decoded;
+        if (!package_->adapter->decode(
+                tensors,
+                preprocessed.transform,
+                DecodeOptions { .score_floor = static_cast<float>(score_floor) },
+                decoded,
+                error)) {
+            return false;
+        }
+        if (!labels.empty() && decoded.class_count && *decoded.class_count != labels.size()) {
+            error = "label count does not match the detector output class count";
+            return false;
+        }
+        for (const auto& candidate : decoded.candidates) {
+            if (!labels.empty() && static_cast<size_t>(candidate.class_id) >= labels.size()) {
+                error = "detector class id is outside the available label table";
+                return false;
+            }
+        }
+        if (!DetectionPostProcessor::sanitize(decoded.candidates, image_with_roi().size(), error)) {
+            return false;
+        }
 
-    // yolov8 的 onnx 输出和前面的 v5, v7 等似乎不太一样，目前网上 yolov8 的 demo 较少，文档也没找到
-    // 这里的输出解析是我跟着数据推测的：
-    // center_x0, center_x1, ..... center_x8399
-    // center_y0, center_y1, ..... center_y8399
-    // w0, w1, ..... w8399
-    // h0, h1, ..... h8399
-    // cls1: conf0, conf1, ..... conf8399
-    // cls2: conf0, conf1, ..... conf8399
-    // cls3: conf0, conf1, ..... conf8399
-    // ......
-    std::vector<std::vector<float>> output(output_shape[1]);
-    for (int64_t i = 0; i < output_shape[1]; i++) {
-        output[i] = std::vector<float>(raw_output + i * output_shape[2], raw_output + (i + 1) * output_shape[2]);
-    }
+        DetectionPostProcessor::filter_by_score(decoded.candidates, score_floor);
+        const NmsPolicy nms = param_.nms.value_or(package_->descriptor.nms);
+        const float nms_threshold = static_cast<float>(param_.nms_threshold.value_or(package_->descriptor.nms_threshold));
+        auto candidates = DetectionPostProcessor::nms(std::move(decoded.candidates), nms, nms_threshold);
 
-    ResultsVec raw_results;
-    const size_t output_size = output.back().size();
-    double width_ratio = 1.0 * raw_roi_size.width / input_image_size.width;
-    double height_ratio = 1.0 * raw_roi_size.height / input_image_size.height;
-
-    for (size_t i = 0; i < output_size; ++i) {
-        constexpr size_t kConfidenceIndex = 4;
-        for (size_t j = kConfidenceIndex; j < output.size(); ++j) {
-            float score = output[j][i];
-            constexpr float kThreshold = 0.3f;
-            if (score < kThreshold) {
+        results.clear();
+        results.reserve(candidates.size());
+        for (const auto& candidate : candidates) {
+            cv::Rect2f box = candidate.box;
+            box.x += static_cast<float>(roi_.x);
+            box.y += static_cast<float>(roi_.y);
+            box &= cv::Rect2f { 0.0F, 0.0F, static_cast<float>(image_.cols), static_cast<float>(image_.rows) };
+            if (box.empty()) {
                 continue;
             }
 
-            int center_x = static_cast<int>(output[0][i]);
-            int center_y = static_cast<int>(output[1][i]);
-            int w = static_cast<int>(output[2][i]);
-            int h = static_cast<int>(output[3][i]);
-
-            int x = center_x - w / 2;
-            int y = center_y - h / 2;
-            cv::Rect box {
-                static_cast<int>(x * width_ratio) + roi_.x,
-                static_cast<int>(y * height_ratio) + roi_.y,
-                static_cast<int>(w * width_ratio),
-                static_cast<int>(h * height_ratio),
-            };
-
-            Result res;
-            res.cls_index = j - kConfidenceIndex;
-            res.label = res.cls_index < labels.size() ? labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
-            res.box = box;
-            res.score = score;
-
-            raw_results.emplace_back(std::move(res));
+            std::string label;
+            if (!LabelParser::label_for(candidate.class_id, labels, label, error)) {
+                return false;
+            }
+            results.emplace_back(
+                CandidateResult {
+                    .cls_index = static_cast<size_t>(candidate.class_id),
+                    .label = std::move(label),
+                    .box = box,
+                    .score = candidate.score,
+                });
         }
+
+        if (debug_draw_) {
+            ResultsVec debug_results;
+            debug_results.reserve(results.size());
+            std::ranges::transform(results, std::back_inserter(debug_results), [this](const CandidateResult& result) {
+                return to_result(result);
+            });
+            handle_draw(draw_result(debug_results));
+        }
+        error.clear();
+        return true;
     }
-
-    auto nms_results = NMS(std::move(raw_results));
-
-    if (debug_draw_) {
-        auto draw = draw_result(nms_results);
-        handle_draw(draw);
+    catch (const Ort::Exception& exception) {
+        error = std::string("ONNX Runtime inference error: ") + exception.what();
+        return false;
     }
-
-    return nms_results;
+    catch (const std::exception& exception) {
+        error = std::string("detector inference error: ") + exception.what();
+        return false;
+    }
 }
 
-void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<int>& expected, const std::vector<double>& thresholds)
+void NeuralNetworkDetector::finalize(CandidateResults all_results, CandidateResults filtered_results)
 {
-    if (expected.empty()) {
-        // expected 为空时，所有结果均可用，但仍需满足默认阈值
-        double default_threshold = thresholds.empty() ? NeuralNetworkDetectorParam::kDefaultThreshold : thresholds.front();
-        std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
-            return res.score >= default_threshold;
-        });
-        merge_vector_(all_results_, std::move(results));
-        return;
+    sort_(all_results);
+    sort_(filtered_results);
+    const auto best_index = pythonic_index(filtered_results.size(), param_.result_index);
+
+    all_results_.clear();
+    all_results_.reserve(all_results.size());
+    for (auto& result : all_results) {
+        all_results_.emplace_back(to_result(std::move(result)));
     }
 
-    if (expected.size() != thresholds.size()) {
-        LogError << name_ << "expected.size() != thresholds.size()" << VAR(expected) << VAR(thresholds);
-        return;
+    filtered_results_.clear();
+    filtered_results_.reserve(filtered_results.size());
+    for (auto& result : filtered_results) {
+        filtered_results_.emplace_back(to_result(std::move(result)));
     }
 
-    for (size_t i = 0; i != expected.size(); ++i) {
-        int exp = expected.at(i);
-        auto it = std::ranges::find(results, exp, std::mem_fn(&Result::cls_index));
-        if (it == results.end()) {
-            continue;
-        }
-        const Result& res = *it;
-        double thres = thresholds.at(i);
-        if (res.score < thres) {
-            continue;
-        }
-        filtered_results_.emplace_back(res);
+    if (best_index) {
+        best_result_ = filtered_results_.at(*best_index);
     }
-
-    merge_vector_(all_results_, std::move(results));
 }
 
-void NeuralNetworkDetector::cherry_pick()
+NeuralNetworkDetector::Result NeuralNetworkDetector::to_result(CandidateResult result) const
 {
-    sort_(all_results_);
-    sort_(filtered_results_);
-
-    if (auto index_opt = pythonic_index(filtered_results_.size(), param_.result_index)) {
-        best_result_ = filtered_results_.at(*index_opt);
-    }
+    cv::Rect box = NeuralNetwork::DetectionPostProcessor::to_integer_box(result.box);
+    box &= cv::Rect { 0, 0, image_.cols, image_.rows };
+    return {
+        .cls_index = result.cls_index,
+        .label = std::move(result.label),
+        .box = box,
+        .score = result.score,
+    };
 }
 
 cv::Mat NeuralNetworkDetector::draw_result(const ResultsVec& results) const
@@ -223,7 +280,7 @@ cv::Mat NeuralNetworkDetector::draw_result(const ResultsVec& results) const
     return image_draw;
 }
 
-void NeuralNetworkDetector::sort_(ResultsVec& results) const
+void NeuralNetworkDetector::sort_(CandidateResults& results) const
 {
     switch (param_.order_by) {
     case ResultOrderBy::Horizontal:
@@ -248,86 +305,6 @@ void NeuralNetworkDetector::sort_(ResultsVec& results) const
         LogError << "Not supported order by" << VAR(param_.order_by);
         break;
     }
-}
-
-std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() const
-{
-    if (!session_) {
-        return { };
-    }
-
-    Ort::AllocatorWithDefaultOptions allocator;
-    Ort::ModelMetadata metadata = session_->GetModelMetadata();
-
-    std::string names_str;
-
-    constexpr std::array<std::string_view, 4> possible_keys = { "names", "name", "labels", "class_names" };
-    for (const std::string_view& key : possible_keys) {
-        auto ptr = metadata.LookupCustomMetadataMapAllocated(key.data(), allocator);
-        if (!ptr) {
-            continue;
-        }
-        names_str = ptr.get();
-        break;
-    }
-
-    if (names_str.empty()) {
-        LogDebug << name_ << "No metadata found with keys: names, name, labels, class_names";
-        return { };
-    }
-
-    LogDebug << name_ << "Found metadata" << VAR(names_str);
-
-    // 解析字符串格式：{0: 'white_dog', 1: 'white_cat', 2: 'black_dog', 3: 'black_cat'}
-    // 支持单引号和双引号
-    std::vector<std::string> labels;
-
-    // 解析 Python 字典格式：{0: 'label1', 1: 'label2', ...}
-    // 正则表达式匹配：数字: 引号内的字符串
-    // 支持单引号和双引号，以及可能的空格
-    boost::regex dict_pattern(R"((\d+)\s*:\s*['"]([^'"]+)['"])");
-    boost::sregex_iterator iter(names_str.begin(), names_str.end(), dict_pattern);
-    boost::sregex_iterator end;
-
-    std::map<int, std::string> label_map;
-    for (; iter != end; ++iter) {
-        const boost::smatch& match = *iter;
-        if (match.size() < 3) {
-            continue; // 跳过不完整的匹配
-        }
-
-        const std::string& index_str = match[1].str();
-        int index = std::stoi(index_str);
-
-        const std::string& label = match[2].str();
-        if (label.empty()) {
-            continue; // 跳过空标签
-        }
-
-        label_map[index] = label;
-    }
-
-    if (label_map.empty()) {
-        LogWarn << name_ << "Failed to parse metadata as Python dict format" << VAR(names_str);
-        return { };
-    }
-
-    // 找到最大索引，创建对应大小的向量
-    int max_index = label_map.rbegin()->first;
-    if (max_index < 0 || max_index > 10000) {
-        LogWarn << name_ << "Invalid max_index" << VAR(max_index);
-        return { };
-    }
-
-    labels.resize(static_cast<size_t>(max_index + 1));
-    for (const auto& [index, label] : label_map) {
-        if (index >= 0 && static_cast<size_t>(index) < labels.size()) {
-            labels[static_cast<size_t>(index)] = label;
-        }
-    }
-
-    LogDebug << name_ << "Parsed labels from metadata" << VAR(labels.size());
-    return labels;
 }
 
 MAA_VISION_NS_END
