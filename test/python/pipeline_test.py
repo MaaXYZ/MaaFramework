@@ -15,6 +15,7 @@ from pathlib import Path
 import sys
 import json
 import io
+import time
 
 # Fix encoding issues on Windows
 if sys.stdout.encoding != "utf-8":
@@ -78,6 +79,39 @@ from maa.pipeline import (
 def assert_eq(actual, expected, msg=""):
     if actual != expected:
         raise AssertionError(f"{msg}: expected {expected!r}, got {actual!r}")
+
+
+def test_optional_direct_recognition_fields_are_omitted():
+    serialized = json.loads(
+        Tasker._gen_param_json(JNeuralNetworkDetect(model="detector"))
+    )
+    assert "nms" not in serialized
+    assert "nms_threshold" not in serialized
+
+
+def test_model_error_immediately_enters_on_error(tasker: Tasker):
+    start = time.monotonic()
+    detail = (
+        tasker.post_task(
+            "ModelErrorEntry",
+            {
+                "ModelErrorEntry": {
+                    "recognition": "NeuralNetworkDetect",
+                    "model": "missing-model.onnx",
+                    "inverse": True,
+                    "reco_timeout": 30_000,
+                    "on_error": ["ModelErrorHandler"],
+                },
+                "ModelErrorHandler": {},
+            },
+        )
+        .wait()
+        .get()
+    )
+    elapsed = time.monotonic() - start
+    assert detail is not None and detail.status.succeeded
+    assert elapsed < 5
+    assert "ModelErrorHandler" in [node.name for node in detail.nodes]
 
 
 def assert_true(condition, msg=""):
@@ -622,6 +656,8 @@ class PipelineTestRecognition(CustomRecognition):
                     "model": "detect.onnx",
                     "expected": [1],
                     "threshold": [0.5],
+                    "nms": "CandidateCoverage",
+                    "nms_threshold": 0.6,
                 }
             }
         )
@@ -634,6 +670,8 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(param.model, "detect.onnx", "model")
         assert_eq(param.expected, [1], "expected")
         assert_eq(param.threshold, [0.5], "threshold")
+        assert_eq(param.nms, "CandidateCoverage", "nms")
+        assert_eq(param.nms_threshold, 0.6, "nms_threshold")
 
         # Custom
         new_ctx.override_pipeline(
@@ -1355,6 +1393,7 @@ def create_test_pipeline_resource(resource_dir: Path):
 def pipeline_node_test():
     print(f"MaaFw Version: {Library.version()}")
     Toolkit.init_option(install_dir / "bin")
+    test_optional_direct_recognition_fields_are_omitted()
 
     PipelineTestRecognition.test_results.clear()
 
@@ -1395,6 +1434,8 @@ def pipeline_node_test():
         if not tasker.inited:
             print("Failed to init tasker")
             sys.exit(1)
+
+        test_model_error_immediately_enters_on_error(tasker)
 
         detail = tasker.post_task("TestEntry", {}).wait().get()
         if not detail:
