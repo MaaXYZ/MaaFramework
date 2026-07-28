@@ -23,8 +23,14 @@ void ONNXResMgr::use_cpu()
     LogInfo;
     std::scoped_lock lock(mutex_);
 
+    constexpr BackendState requested { .type = BackendType::CPU };
+    if (backend_ == requested) {
+        return;
+    }
+
     options_ = { };
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+    backend_ = requested;
     invalidate_detector_models();
 }
 
@@ -32,6 +38,11 @@ void ONNXResMgr::use_cuda(int device_id)
 {
     LogInfo << VAR(device_id);
     std::scoped_lock lock(mutex_);
+
+    const BackendState requested { .type = BackendType::CUDA, .argument = device_id };
+    if (backend_ == requested) {
+        return;
+    }
 
     Ort::SessionOptions options;
     OrtCUDAProviderOptions cuda_options { };
@@ -42,6 +53,7 @@ void ONNXResMgr::use_cuda(int device_id)
     // Keep CPU memory info here and let ORT move data to CUDA EP internally.
     options_ = std::move(options);
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+    backend_ = requested;
     invalidate_detector_models();
 
     LogInfo << "Using CUDA execution provider with device_id" << device_id;
@@ -54,6 +66,11 @@ void ONNXResMgr::use_directml(int device_id)
 
 #ifdef MAA_WITH_DML
 
+    const BackendState requested { .type = BackendType::DirectML, .argument = device_id };
+    if (backend_ == requested) {
+        return;
+    }
+
     Ort::SessionOptions options;
     auto status = OrtSessionOptionsAppendExecutionProvider_DML(options, device_id);
     if (!Ort::Status(status).IsOK()) {
@@ -63,6 +80,7 @@ void ONNXResMgr::use_directml(int device_id)
 
     options_ = std::move(options);
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+    backend_ = requested;
     invalidate_detector_models();
 
     LogInfo << "Using DML execution provider with device_id" << device_id;
@@ -81,6 +99,11 @@ void ONNXResMgr::use_coreml(uint32_t coreml_flag)
 
 #ifdef MAA_WITH_COREML
 
+    const BackendState requested { .type = BackendType::CoreML, .argument = coreml_flag };
+    if (backend_ == requested) {
+        return;
+    }
+
     Ort::SessionOptions options;
     auto status = OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options, coreml_flag);
     if (!Ort::Status(status).IsOK()) {
@@ -90,6 +113,7 @@ void ONNXResMgr::use_coreml(uint32_t coreml_flag)
 
     options_ = std::move(options);
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+    backend_ = requested;
     invalidate_detector_models();
 
     LogInfo << "Using CoreML execution provider";

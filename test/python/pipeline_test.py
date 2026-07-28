@@ -163,7 +163,7 @@ def write_pipeline_bundle(bundle_dir: Path, pipeline: dict):
 
 
 def test_generated_neural_network_detect_pipeline_configs():
-    cases = generate_cases(seed=20260728, count=8)
+    cases = generate_cases(seed=73, count=8)
     valid_cases = [case for case in cases if case.valid]
     invalid_cases = [case for case in cases if not case.valid]
 

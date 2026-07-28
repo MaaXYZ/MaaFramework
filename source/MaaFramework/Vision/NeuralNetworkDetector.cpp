@@ -1209,11 +1209,13 @@ void NeuralNetworkDetector::analyze()
         LogError << name_ << VAR(error_);
         return;
     }
+    const double decode_score_floor =
+        model_->descriptor.input.legacy ? NeuralNetworkDetectorParam::kDefaultThreshold : threshold_policy.score_floor;
 
     CandidateResults all_results;
     while (next_roi()) {
         CandidateResults results;
-        if (!detect(labels, threshold_policy.score_floor, results, error_)) {
+        if (!detect(labels, decode_score_floor, results, error_)) {
             all_results_.clear();
             filtered_results_.clear();
             best_result_.reset();
@@ -1225,7 +1227,9 @@ void NeuralNetworkDetector::analyze()
 
     CandidateResults filtered_results;
     if (threshold_policy.expected_thresholds.empty()) {
-        filtered_results = all_results;
+        std::ranges::copy_if(all_results, std::back_inserter(filtered_results), [&](const auto& result) {
+            return result.score >= threshold_policy.score_floor;
+        });
     }
     else {
         filtered_results.reserve(threshold_policy.expected_thresholds.size());

@@ -40,9 +40,10 @@ bool check_finite(std::span<const float> values, std::string_view protocol, std:
 
 bool decode_class_id(float value, int& class_id, std::string_view protocol, std::string& error)
 {
-    const float rounded = std::round(value);
-    if (!std::isfinite(value) || value < 0.0F || std::abs(value - rounded) > 1.0e-5F
-        || rounded > static_cast<float>(std::numeric_limits<int>::max())) {
+    const double precise_value = value;
+    const double rounded = std::round(precise_value);
+    if (!std::isfinite(precise_value) || precise_value < 0.0 || std::abs(precise_value - rounded) > 1.0e-5
+        || rounded > static_cast<double>(std::numeric_limits<int>::max())) {
         error = std::string(protocol) + " class id must be a non-negative integer";
         return false;
     }

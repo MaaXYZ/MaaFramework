@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <filesystem>
 #include <memory>
 #include <mutex>
@@ -36,6 +37,22 @@ public:
     const Ort::MemoryInfo& memory_info() const;
 
 private:
+    enum class BackendType
+    {
+        CPU,
+        CUDA,
+        DirectML,
+        CoreML,
+    };
+
+    struct BackendState
+    {
+        BackendType type = BackendType::CPU;
+        int64_t argument = 0;
+
+        bool operator==(const BackendState&) const = default;
+    };
+
     std::shared_ptr<Ort::Session> load(const std::string& name, const std::vector<std::filesystem::path>& roots);
     void invalidate_detector_models();
 
@@ -48,6 +65,7 @@ private:
 
     std::unordered_map<std::string, std::shared_ptr<Ort::Session>> classifiers_;
     std::unordered_map<std::string, MAA_VISION_NS::NeuralNetworkDetector::ModelLoadResult> detector_models_;
+    BackendState backend_;
     uint64_t backend_generation_ = 0;
     std::mutex mutex_;
 };
