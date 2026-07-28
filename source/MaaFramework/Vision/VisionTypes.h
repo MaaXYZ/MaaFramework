@@ -11,9 +11,20 @@
 
 #include "Common/Conf.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
-#include "NeuralNetwork/DetectionPostProcessor.h"
 
 MAA_VISION_NS_BEGIN
+
+namespace NeuralNetwork
+{
+
+enum class NmsPolicy
+{
+    None,
+    ClassAwareIoU,
+    CandidateCoverage,
+};
+
+} // namespace NeuralNetwork
 
 enum class TargetType
 {
@@ -115,15 +126,9 @@ struct NeuralNetworkClassifierParam : public RoiTargetParamBase
 
 struct NeuralNetworkDetectorParam : public RoiTargetParamBase
 {
-    enum class Net
-    {
-        YoloV8,
-    };
-    inline static constexpr Net kDefaultNet = Net::YoloV8;
     inline static constexpr double kDefaultThreshold = 0.3;
 
     std::string model;
-    Net net = kDefaultNet;
     std::vector<std::string> labels; // only for output and debug
     std::vector</*result_index*/ int> expected;
     std::vector<double> thresholds = { kDefaultThreshold };

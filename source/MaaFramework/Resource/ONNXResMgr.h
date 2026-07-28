@@ -11,7 +11,7 @@
 
 #include "Common/Conf.h"
 #include "MaaUtils/NonCopyable.hpp"
-#include "Vision/NeuralNetwork/ModelPackage.h"
+#include "Vision/NeuralNetworkDetector.h"
 
 MAA_RES_NS_BEGIN
 
@@ -32,14 +32,11 @@ public:
 
 public:
     std::shared_ptr<Ort::Session> classifier(const std::string& name);
-    std::shared_ptr<Ort::Session> detector(const std::string& name);
-    MAA_VISION_NS::NeuralNetwork::ModelPackageLoadResult detector_model(const std::string& name);
+    MAA_VISION_NS::NeuralNetworkDetector::ModelLoadResult detector_model(const std::string& name);
     const Ort::MemoryInfo& memory_info() const;
 
 private:
     std::shared_ptr<Ort::Session> load(const std::string& name, const std::vector<std::filesystem::path>& roots);
-    MAA_VISION_NS::NeuralNetwork::ModelPackageLoadResult build_detector_model(const MAA_VISION_NS::NeuralNetwork::ModelLayerFiles& layer);
-    std::vector<std::string> read_metadata_labels(const Ort::Session& session) const;
     void invalidate_detector_models();
 
     std::vector<std::filesystem::path> classifier_roots_;
@@ -50,8 +47,7 @@ private:
     Ort::MemoryInfo memory_info_;
 
     std::unordered_map<std::string, std::shared_ptr<Ort::Session>> classifiers_;
-    std::unordered_map<std::string, std::shared_ptr<const MAA_VISION_NS::NeuralNetwork::ModelPackage>> detector_models_;
-    MAA_VISION_NS::NeuralNetwork::ModelAdapterRegistry adapter_registry_;
+    std::unordered_map<std::string, MAA_VISION_NS::NeuralNetworkDetector::ModelLoadResult> detector_models_;
     uint64_t backend_generation_ = 0;
     std::mutex mutex_;
 };

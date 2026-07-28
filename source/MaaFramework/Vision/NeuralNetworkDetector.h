@@ -1,16 +1,21 @@
 #pragma once
 
+#include <filesystem>
+#include <memory>
 #include <ostream>
+#include <string>
 #include <vector>
 
 #include "MaaUtils/JsonExt.hpp"
-#include "NeuralNetwork/ModelPackage.h"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
-#include <onnxruntime/onnxruntime_cxx_api.h>
-
 #include "Common/Conf.h"
+
+namespace Ort
+{
+struct Session;
+}
 
 MAA_VISION_NS_BEGIN
 
@@ -29,11 +34,21 @@ class NeuralNetworkDetector
     , public RecoResultAPI<NeuralNetworkDetectorResult>
 {
 public:
+    struct Model;
+
+    struct ModelLoadResult
+    {
+        std::shared_ptr<const Model> model;
+        std::string error;
+    };
+
+    static ModelLoadResult load_model(const std::filesystem::path& onnx_path, std::shared_ptr<Ort::Session> session);
+
     NeuralNetworkDetector(
         cv::Mat image,
         std::vector<cv::Rect> rois,
         NeuralNetworkDetectorParam param,
-        std::shared_ptr<const NeuralNetwork::ModelPackage> package,
+        std::shared_ptr<const Model> model,
         std::string name = "");
 
     const std::string& error() const { return error_; }
@@ -62,7 +77,7 @@ private:
 
 private:
     const NeuralNetworkDetectorParam param_;
-    std::shared_ptr<const NeuralNetwork::ModelPackage> package_;
+    std::shared_ptr<const Model> model_;
     std::string error_;
 };
 

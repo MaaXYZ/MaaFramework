@@ -356,11 +356,11 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
     auto& onnx_res = resource()->onnx_res();
 
     auto model = onnx_res.detector_model(param.model);
-    if (!model.package) {
+    if (!model.model) {
         return build_error(name, "NeuralNetworkDetect", std::move(model.error));
     }
 
-    NeuralNetworkDetector detector(image_, rois, param, std::move(model.package), name);
+    NeuralNetworkDetector detector(image_, rois, param, std::move(model.model), name);
     if (!detector.error().empty()) {
         return build_error(name, "NeuralNetworkDetect", detector.error());
     }
