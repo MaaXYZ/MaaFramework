@@ -10,11 +10,14 @@ Pipeline 解析、override_pipeline 和 get_node_data/get_node_object 测试
 6. Node 属性: jump_back, anchor
 """
 
+from dataclasses import asdict
 import os
 from pathlib import Path
 import sys
 import json
 import io
+import math
+import tempfile
 import time
 
 # Fix encoding issues on Windows
@@ -74,6 +77,7 @@ from maa.pipeline import (
     JCustomAction,
     JNodeAttr,
 )
+from neural_network_detect_pipeline_cases import generate_cases
 
 
 def assert_eq(actual, expected, msg=""):
@@ -124,10 +128,112 @@ def assert_not_none(value, msg=""):
         raise AssertionError(f"{msg}: expected not None")
 
 
+def assert_nested_eq(actual, expected, msg=""):
+    if isinstance(expected, float):
+        if not isinstance(actual, (int, float)) or not math.isclose(
+            actual, expected, rel_tol=1e-9, abs_tol=1e-9
+        ):
+            raise AssertionError(f"{msg}: expected {expected!r}, got {actual!r}")
+        return
+    if isinstance(expected, dict):
+        assert_true(isinstance(actual, dict), f"{msg} type")
+        assert_eq(set(actual), set(expected), f"{msg} keys")
+        for key, value in expected.items():
+            assert_nested_eq(actual[key], value, f"{msg}.{key}")
+        return
+    if isinstance(expected, list):
+        assert_true(isinstance(actual, (list, tuple)), f"{msg} type")
+        assert_eq(len(actual), len(expected), f"{msg} length")
+        for index, value in enumerate(expected):
+            assert_nested_eq(actual[index], value, f"{msg}[{index}]")
+        return
+    assert_eq(actual, expected, msg)
+
+
 # ============================================================================
 # Resource 级别测试
 # ============================================================================
 
+
+def write_pipeline_bundle(bundle_dir: Path, pipeline: dict):
+    pipeline_dir = bundle_dir / "pipeline"
+    pipeline_dir.mkdir(parents=True, exist_ok=True)
+    with open(pipeline_dir / "generated_nn_detect.json", "w", encoding="utf-8") as f:
+        json.dump(pipeline, f, ensure_ascii=False, indent=4)
+
+
+def test_generated_neural_network_detect_pipeline_configs():
+    cases = generate_cases(seed=20260728, count=8)
+    valid_cases = [case for case in cases if case.valid]
+    invalid_cases = [case for case in cases if not case.valid]
+
+    assert_eq(len(valid_cases), 6, "valid generated NN detect case count")
+    assert_eq(len(invalid_cases), 2, "invalid generated NN detect case count")
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        root = Path(tmp_dir)
+        valid_bundle = root / "valid"
+        write_pipeline_bundle(
+            valid_bundle,
+            {case.name: case.node for case in valid_cases},
+        )
+
+        resource = Resource()
+        job = resource.post_bundle(str(valid_bundle)).wait()
+        assert_true(job.succeeded, "valid generated NN detect bundle job")
+        assert_true(resource.loaded, "valid generated NN detect bundle")
+
+        for case in valid_cases:
+            expected_param = case.expected_param
+            assert_not_none(expected_param, f"{case.name} expected param")
+
+            node_data = resource.get_node_data(case.name)
+            assert_not_none(node_data, f"{case.name} node data")
+            recognition = node_data["recognition"]
+            assert_eq(
+                recognition["type"],
+                "NeuralNetworkDetect",
+                f"{case.name} recognition type",
+            )
+            assert_nested_eq(
+                recognition["param"],
+                expected_param,
+                f"{case.name} normalized param",
+            )
+
+            node_object = resource.get_node_object(case.name)
+            assert_not_none(node_object, f"{case.name} node object")
+            assert_eq(
+                node_object.recognition.type,
+                JRecognitionType.NeuralNetworkDetect,
+                f"{case.name} object recognition type",
+            )
+            param = node_object.recognition.param
+            assert_true(
+                isinstance(param, JNeuralNetworkDetect),
+                f"{case.name} object param type",
+            )
+            expected_object_param = dict(expected_param)
+            expected_object_param.setdefault("nms", None)
+            expected_object_param.setdefault("nms_threshold", None)
+            assert_nested_eq(
+                asdict(param),
+                expected_object_param,
+                f"{case.name} object param",
+            )
+
+        for case in invalid_cases:
+            invalid_bundle = root / case.name
+            write_pipeline_bundle(invalid_bundle, {case.name: case.node})
+            invalid_resource = Resource()
+            invalid_job = invalid_resource.post_bundle(str(invalid_bundle)).wait()
+            assert_true(invalid_job.failed, f"{case.name} bundle job")
+            assert_true(not invalid_resource.loaded, f"{case.name} resource state")
+            assert_eq(
+                invalid_resource.get_node_data(case.name),
+                None,
+                f"{case.name} unavailable node",
+            )
 
 def test_resource_get_node_data(resource: Resource):
     """测试 Resource.get_node_data 返回原始 JSON dict"""
@@ -647,31 +753,6 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(param.model, "classify.onnx", "model")
         assert_eq(param.expected, [0, 2], "expected")
         assert_eq(param.labels, ["Cat", "Dog", "Mouse"], "labels")
-
-        # NeuralNetworkDetect
-        new_ctx.override_pipeline(
-            {
-                "RecoNNDetect": {
-                    "recognition": "NeuralNetworkDetect",
-                    "model": "detect.onnx",
-                    "expected": [1],
-                    "threshold": [0.5],
-                    "nms": "CandidateCoverage",
-                    "nms_threshold": 0.6,
-                }
-            }
-        )
-        obj = new_ctx.get_node_object("RecoNNDetect")
-        assert_eq(
-            obj.recognition.type, JRecognitionType.NeuralNetworkDetect, "NNDetect type"
-        )
-        param = obj.recognition.param
-        assert_true(isinstance(param, JNeuralNetworkDetect), "NNDetect param")
-        assert_eq(param.model, "detect.onnx", "model")
-        assert_eq(param.expected, [1], "expected")
-        assert_eq(param.threshold, [0.5], "threshold")
-        assert_eq(param.nms, "CandidateCoverage", "nms")
-        assert_eq(param.nms_threshold, 0.6, "nms_threshold")
 
         # Custom
         new_ctx.override_pipeline(
@@ -1394,10 +1475,9 @@ def pipeline_node_test():
     print(f"MaaFw Version: {Library.version()}")
     Toolkit.init_option(install_dir / "bin")
     test_optional_direct_recognition_fields_are_omitted()
+    test_generated_neural_network_detect_pipeline_configs()
 
     PipelineTestRecognition.test_results.clear()
-
-    import tempfile
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         test_resource_dir = Path(tmp_dir) / "resource"
