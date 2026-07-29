@@ -261,9 +261,13 @@ void ControllerAgent::post_stop()
     LogFunc;
 
     need_to_stop_ = true;
+    release_keys_requested_ = true;
 
     if (action_runner_ && action_runner_->running()) {
         action_runner_->clear();
+    }
+    else {
+        release_pressed_keys_if_requested();
     }
 }
 
@@ -737,9 +741,17 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
 
     for (const auto& keycode : param.keycode) {
         if (use_key_down_up) {
-            ret &= control_unit_->key_down(keycode);
+            bool key_down = control_unit_->key_down(keycode);
+            if (key_down) {
+                remember_key_down(keycode);
+            }
+            ret &= key_down;
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            ret &= control_unit_->key_up(keycode);
+            bool key_up = control_unit_->key_up(keycode);
+            if (key_up) {
+                forget_key_up(keycode);
+            }
+            ret &= key_up;
         }
         else {
             ret &= control_unit_->click_key(keycode);
@@ -762,9 +774,17 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
 
     for (const auto& keycode : param.keycode) {
         if (use_key_down_up) {
-            ret &= control_unit_->key_down(keycode);
+            bool key_down = control_unit_->key_down(keycode);
+            if (key_down) {
+                remember_key_down(keycode);
+            }
+            ret &= key_down;
             std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
-            ret &= control_unit_->key_up(keycode);
+            bool key_up = control_unit_->key_up(keycode);
+            if (key_up) {
+                forget_key_up(keycode);
+            }
+            ret &= key_up;
         }
         else {
             LogWarn << "long press key not supported, use click instead";
@@ -840,7 +860,11 @@ bool ControllerAgent::handle_key_down(const ClickKeyParam& param)
     bool ret = !param.keycode.empty();
 
     for (const auto& keycode : param.keycode) {
-        ret &= control_unit_->key_down(keycode);
+        bool key_down = control_unit_->key_down(keycode);
+        if (key_down) {
+            remember_key_down(keycode);
+        }
+        ret &= key_down;
     }
 
     return ret;
@@ -856,7 +880,11 @@ bool ControllerAgent::handle_key_up(const ClickKeyParam& param)
     bool ret = !param.keycode.empty();
 
     for (const auto& keycode : param.keycode) {
-        ret &= control_unit_->key_up(keycode);
+        bool key_up = control_unit_->key_up(keycode);
+        if (key_up) {
+            forget_key_up(keycode);
+        }
+        ret &= key_up;
     }
 
     return ret;
@@ -1025,6 +1053,8 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         ret = false;
     }
 
+    release_pressed_keys_if_requested();
+
     if (ret && notify) {
         notifier_.notify(this, MaaMsg_Controller_Action_Succeeded, cb_detail);
     }
@@ -1033,6 +1063,51 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     }
 
     return ret;
+}
+
+void ControllerAgent::remember_key_down(int keycode)
+{
+    std::unique_lock lock { pressed_keys_mutex_ };
+    pressed_keys_.insert(keycode);
+}
+
+void ControllerAgent::forget_key_up(int keycode)
+{
+    std::unique_lock lock { pressed_keys_mutex_ };
+    pressed_keys_.erase(keycode);
+}
+
+void ControllerAgent::release_pressed_keys()
+{
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return;
+    }
+
+    std::set<int> pressed_keys;
+    {
+        std::unique_lock lock { pressed_keys_mutex_ };
+        pressed_keys.swap(pressed_keys_);
+    }
+
+    for (int keycode : pressed_keys) {
+        if (control_unit_->key_up(keycode)) {
+            continue;
+        }
+
+        LogError << "Failed to release pressed key" << VAR(keycode);
+        std::unique_lock lock { pressed_keys_mutex_ };
+        pressed_keys_.insert(keycode);
+    }
+}
+
+void ControllerAgent::release_pressed_keys_if_requested()
+{
+    if (!release_keys_requested_.exchange(false)) {
+        return;
+    }
+
+    release_pressed_keys();
 }
 
 cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 #include <mutex>
 #include <set>
@@ -271,6 +272,11 @@ private:
     bool handle_shell(const ShellParam& param);
     bool handle_inactive();
 
+    void remember_key_down(int keycode);
+    void forget_key_up(int keycode);
+    void release_pressed_keys();
+    void release_pressed_keys_if_requested();
+
     MaaCtrlId post(Action action);
     MaaCtrlId focus_id(MaaCtrlId id);
     bool check_stop();
@@ -294,6 +300,9 @@ private: // options
 
 private:
     bool need_to_stop_ = false;
+    std::atomic_bool release_keys_requested_ = false;
+    std::set<int> pressed_keys_;
+    std::mutex pressed_keys_mutex_;
 
 private:
     const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;
