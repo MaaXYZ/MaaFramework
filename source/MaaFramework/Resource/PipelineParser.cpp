@@ -134,9 +134,13 @@ bool get_and_check_array_or_2darray(
         output = default_value;
         return true;
     }
-    if (!opt->is_array() || opt->as_array().empty()) {
+    if (!opt->is_array()) {
         LogError << "type error" << VAR(key) << VAR(input);
         return false;
+    }
+    if (opt->as_array().empty()) {
+        output = default_value;
+        return true;
     }
 
     output.clear();
