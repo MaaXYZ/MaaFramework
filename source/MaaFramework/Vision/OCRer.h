@@ -2,6 +2,7 @@
 
 #include <mutex>
 #include <ostream>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -106,6 +107,11 @@ private:
     inline static std::mutex s_predict_mutex_;
 };
 
-using OCRCache = std::unordered_map<std::string, OCRer::ResultsVec>;
+struct OCRCache
+{
+    // Batch results are only valid for OCR requests compatible with this model.
+    std::string model;
+    std::unordered_map<std::string, OCRer::ResultsVec> results;
+};
 
 MAA_VISION_NS_END
