@@ -46,6 +46,7 @@ __all__ = [
     "MaaToolkitAdbDeviceHandle",
     "MaaToolkitDesktopWindowListHandle",
     "MaaToolkitDesktopWindowHandle",
+    "MaaToolkitPortalHelperHandle",
     "MaaMacOSPermission",
     # Bitmask / method aliases
     "MaaAdbScreencapMethod",
@@ -714,6 +715,8 @@ MaaToolkitDesktopWindowListHandle = ctypes.c_void_p
 MaaToolkitDesktopWindowHandle = ctypes.c_void_p
 
 MaaMacOSPermission = ctypes.c_int32
+
+MaaToolkitPortalHelperHandle = ctypes.c_void_p
 
 
 class MaaMacOSPermissionEnum(IntEnum):
