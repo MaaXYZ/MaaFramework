@@ -102,6 +102,7 @@ struct ExtContext : public maajs::NativeClassBase
     maajs::FunctionRefType taskerCtor;
     maajs::FunctionRefType contextCtor;
     std::optional<maajs::FunctionRefType> clientCtor;
+    std::optional<maajs::FunctionRefType> portalHelperCtor;
 
     HandleMap<MaaResource> resources;
     HandleMap<MaaController> controllers;
@@ -132,6 +133,9 @@ struct ExtContext : public maajs::NativeClassBase
         marker(contextCtor.Value());
         if (clientCtor) {
             marker(clientCtor->Value());
+        }
+        if (portalHelperCtor) {
+            marker(portalHelperCtor->Value());
         }
 
         resources.gc_mark(marker);

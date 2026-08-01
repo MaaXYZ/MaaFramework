@@ -11,6 +11,7 @@
 #include "buffer.h"
 #include "callback.h"
 #include "ext.h"
+#include "portal.h"
 
 namespace
 {
@@ -732,6 +733,11 @@ WlRootsControllerImpl* WlRootsControllerImpl::ctor(const maajs::CallbackInfo& in
 
 maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
 {
+    return LinuxControllerImpl::find_wlr_compositor(env);
+}
+
+maajs::PromiseType LinuxControllerImpl::find_wlr_compositor(maajs::EnvType env)
+{
 #ifdef MAA_JS_WITH_TOOLKIT
     using Result = std::optional<std::vector<WlRootsCompositor>>;
     auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
@@ -760,7 +766,7 @@ maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
     return worker->Promise();
 #else
     std::ignore = env;
-    throw_toolkit_unavailable("WlRootsController.find");
+    throw_toolkit_unavailable("LinuxController.find_wlr_compositor");
 #endif
 }
 
@@ -796,13 +802,32 @@ LinuxControllerImpl* LinuxControllerImpl::ctor(const maajs::CallbackInfo& info)
     return new LinuxControllerImpl(ctrl, true);
 }
 
-void LinuxControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType) {}
+maajs::ValueType LinuxControllerImpl::create_portal_helper(maajs::EnvType env)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    return maajs::CallCtorHelper(*ExtContext::get(env)->portalHelperCtor);
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("LinuxController.create_portal_helper");
+#endif
+}
+
+void LinuxControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
+{
+    MAA_BIND_FUNC(ctor, "find_wlr_compositor", find_wlr_compositor);
+    MAA_BIND_FUNC(ctor, "create_portal_helper", create_portal_helper);
+}
 
 maajs::ValueType load_linux_controller(maajs::EnvType env)
 {
     maajs::FunctionType ctor;
     maajs::NativeClass<LinuxControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
     ExtContext::get(env)->linuxControllerCtor = maajs::PersistentFunction(ctor);
+#ifdef MAA_JS_WITH_TOOLKIT
+    maajs::FunctionType helper_ctor;
+    maajs::NativeClass<PortalHelperImpl>::init(env, helper_ctor);
+    ExtContext::get(env)->portalHelperCtor = maajs::PersistentFunction(helper_ctor);
+#endif
     return ctor;
 }
 

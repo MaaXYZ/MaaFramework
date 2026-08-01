@@ -230,6 +230,10 @@ struct LinuxControllerImpl : public ControllerImpl
 {
     using ControllerImpl::ControllerImpl;
 
+    static maajs::PromiseType find_wlr_compositor(maajs::EnvType env);
+
+    static maajs::ValueType create_portal_helper(maajs::EnvType env);
+
     constexpr static char name[] = "LinuxController";
 
     static LinuxControllerImpl* ctor(const maajs::CallbackInfo&);

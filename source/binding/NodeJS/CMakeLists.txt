@@ -9,6 +9,7 @@ set(MAA_JS_COMMON_SOURCES
     src/apis/resource.cpp
     src/apis/controller.cpp
     src/apis/tasker.cpp
+        src/apis/portal.cpp
     src/apis/context.cpp
     src/apis/callback.cpp
     src/apis/constant.cpp)

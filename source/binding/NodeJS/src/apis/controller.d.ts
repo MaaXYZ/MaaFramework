@@ -375,6 +375,17 @@ declare global {
              *     internally. If false, key codes are passed through as raw evdev codes.
              */
             constructor(config: string)
+
+            /**
+             * Create a PortalHelper for the PipeWire screencap method.
+             *
+             * Opens a xdg-desktop-portal ScreenCast session and exposes the resulting PipeWire
+             * FD and node ID, which can be fed into the LinuxController config
+             * (`pw_socket_fd` / `pw_node_id`).
+             */
+            static create_portal_helper(): PortalHelper
+
+            static find_wlr_compositor(): Promise<WlRootsCompositor[] | null>
         }
 
         interface CustomControllerActor {
