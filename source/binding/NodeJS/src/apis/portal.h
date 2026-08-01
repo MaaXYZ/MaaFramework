@@ -17,7 +17,7 @@ struct PortalHelperImpl : public maajs::NativeClassBase
     ~PortalHelperImpl();
     void destroy();
 
-    maajs::PromiseType open_stream(maajs::EnvType env);
+    maajs::PromiseType open_stream();
     void set_persist(bool enable);
     bool get_persist();
     int get_pipewire_fd();

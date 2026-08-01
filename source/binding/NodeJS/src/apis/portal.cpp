@@ -31,7 +31,7 @@ void PortalHelperImpl::destroy()
     own = false;
 }
 
-maajs::PromiseType PortalHelperImpl::open_stream(maajs::EnvType env)
+maajs::PromiseType PortalHelperImpl::open_stream()
 {
     using Result = bool;
     auto worker = new maajs::AsyncWork<Result>(env, [&]() -> Result {
