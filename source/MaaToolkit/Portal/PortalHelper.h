@@ -14,6 +14,7 @@ public:
 
     int get_fd() const;
     uint32_t get_node_id() const;
+    bool get_persist() const;
     void set_persist(bool enable);
     const char* get_restore_token() const;
     void set_restore_token(const char* token);

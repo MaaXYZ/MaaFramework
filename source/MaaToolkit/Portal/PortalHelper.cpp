@@ -552,6 +552,11 @@ uint32_t MaaToolkitPortalHelper::get_node_id() const
     return pipewire_node_id_;
 }
 
+bool MaaToolkitPortalHelper::get_persist() const
+{
+    return persist_;
+}
+
 void MaaToolkitPortalHelper::set_persist(bool enable)
 {
     persist_ = enable;

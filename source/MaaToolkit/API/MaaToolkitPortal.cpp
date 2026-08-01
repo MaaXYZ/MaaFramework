@@ -50,6 +50,22 @@ bool MaaToolkitPortalHelperOpenStream(MaaToolkitPortalHelper* helper)
 #endif
 }
 
+bool MaaToolkitPortalHelperGetPersist(MaaToolkitPortalHelper* helper)
+{
+#if defined(__linux__) && !defined(ANDROID)
+    if (!helper) {
+        LogError << "helper is null";
+        return false;
+    }
+
+    return helper->get_persist();
+#else
+    std::ignore = helper;
+    LogError << "This API " << __FUNCTION__ << " is only available on Linux";
+    return false;
+#endif
+}
+
 void MaaToolkitPortalHelperSetPersist(MaaToolkitPortalHelper* helper, MaaBool enable)
 {
 #if defined(__linux__) && !defined(ANDROID)
