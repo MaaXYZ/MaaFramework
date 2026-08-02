@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.12.0" xml:lang="en-US">
   <compounddef id="namespacestd" kind="namespace" language="Unknown">
     <compoundname>std</compoundname>
     <innerclass refid="classstd_1_1allocator" prot="public">std::allocator</innerclass>
@@ -53,6 +53,7 @@
     <innerclass refid="classstd_1_1ostringstream" prot="public">std::ostringstream</innerclass>
     <innerclass refid="classstd_1_1out__of__range" prot="public">std::out_of_range</innerclass>
     <innerclass refid="classstd_1_1overflow__error" prot="public">std::overflow_error</innerclass>
+    <innerclass refid="classstd_1_1pair" prot="public">std::pair</innerclass>
     <innerclass refid="classstd_1_1priority__queue" prot="public">std::priority_queue</innerclass>
     <innerclass refid="classstd_1_1queue" prot="public">std::queue</innerclass>
     <innerclass refid="classstd_1_1range__error" prot="public">std::range_error</innerclass>

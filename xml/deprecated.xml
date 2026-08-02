@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.12.0" xml:lang="en-US">
+  <compounddef id="deprecated" kind="page">
+    <compoundname>deprecated</compoundname>
+    <title>Deprecated List</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><variablelist>
+<varlistentry><term>Member <ref refid="MaaController_8h_1a8251284b9739632a57db4145894df73c" kindref="member">MaaKWinControllerCreate</ref>  (const char *device_node, int screen_width, int screen_height, MaaBool use_win32_vk_code)</term></varlistentry>
+<listitem><para><anchor id="deprecated_1_deprecated000002"/>Use MaaLinuxControllerCreate instead.  </para>
+</listitem>
+<varlistentry><term>Member <ref refid="MaaController_8h_1a8a7cec67c98e73c2cd12b95708cafd16" kindref="member">MaaWlRootsControllerCreate</ref>  (const char *wlr_socket_path, MaaBool use_win32_vk_code)</term></varlistentry>
+<listitem><para><anchor id="deprecated_1_deprecated000001"/>Use MaaLinuxControllerCreate instead. </para>
+</listitem>
+</variablelist>
+</para>
+    </detaileddescription>
+    <location file="deprecated"/>
+  </compounddef>
+</doxygen>

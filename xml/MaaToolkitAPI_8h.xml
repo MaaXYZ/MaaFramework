@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.12.0" xml:lang="en-US">
   <compounddef id="MaaToolkitAPI_8h" kind="file" language="C++">
     <compoundname>MaaToolkitAPI.h</compoundname>
     <includes refid="MaaToolkitDef_8h" local="yes">MaaToolkitDef.h</includes>
@@ -7,6 +7,7 @@
     <includes refid="MaaToolkitConfig_8h" local="yes">Config/MaaToolkitConfig.h</includes>
     <includes refid="MaaToolkitDesktopWindow_8h" local="yes">DesktopWindow/MaaToolkitDesktopWindow.h</includes>
     <includes refid="MaaToolkitMacOS_8h" local="yes">MacOS/MaaToolkitMacOS.h</includes>
+    <includes refid="MaaToolkitPortal_8h" local="yes">Portal/MaaToolkitPortal.h</includes>
     <incdepgraph>
       <node id="3">
         <label>MaaFramework/MaaDef.h</label>
@@ -51,6 +52,8 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>MaaToolkitDef.h</label>
@@ -61,6 +64,12 @@
       <node id="9">
         <label>MacOS/MaaToolkitMacOS.h</label>
         <link refid="MaaToolkitMacOS_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Portal/MaaToolkitPortal.h</label>
+        <link refid="MaaToolkitPortal_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
       </node>

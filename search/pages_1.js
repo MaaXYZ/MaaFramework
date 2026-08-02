@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['maaframework_20api_20reference_0',['MaaFramework API Reference',['../index.html',1,'']]]
+  ['deprecated_20list_0',['Deprecated List',['../deprecated.html',1,'']]]
 ];

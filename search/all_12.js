@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['y_0',['y',['../structRecordClick.html#af2b2a4c0faea89e09ae85d64ebef41c8',1,'RecordClick::y'],['../structRecordTouch.html#a1a7da180318019e996f72b523a4c67e1',1,'RecordTouch::y'],['../structMaaRect.html#ad01ed70b06d17f552838eaa84447041c',1,'MaaRect::y']]],
-  ['y1_1',['y1',['../structRecordSwipe.html#aa9600ba192b932e77c943e8445f5b4e5',1,'RecordSwipe']]],
-  ['y2_2',['y2',['../structRecordSwipe.html#a0a76db2885efe33a7743bcf1c803f5be',1,'RecordSwipe']]]
+  ['x_0',['x',['../structRecordClick.html#aca7fa079fb8ff4b69a1afc58ea2a9506',1,'RecordClick::x'],['../structRecordTouch.html#a6f37c130125b34b7cb5aee355a7bedbf',1,'RecordTouch::x'],['../structMaaRect.html#a5cf5c0bb6cb3244ea7364e0e14ccf439',1,'MaaRect::x']]],
+  ['x1_1',['x1',['../structRecordSwipe.html#aa8e0ab229392ba72368a82f86728f0be',1,'RecordSwipe']]],
+  ['x2_2',['x2',['../structRecordSwipe.html#adc7cdcd538df3f14ad10b9aeefcaec38',1,'RecordSwipe']]]
 ];

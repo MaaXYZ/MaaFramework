@@ -4,6 +4,7 @@ var dir_229d1428d76e394aeaec36b75a5d5699 =
     [ "Config", "dir_6eb8a3b80c08358342d8d19b4780874f.html", "dir_6eb8a3b80c08358342d8d19b4780874f" ],
     [ "DesktopWindow", "dir_5fd7a4c0d2eb20e652f065856939ee93.html", "dir_5fd7a4c0d2eb20e652f065856939ee93" ],
     [ "MacOS", "dir_0daaf0002ac5c3ef7d4a81eb57e45b7c.html", "dir_0daaf0002ac5c3ef7d4a81eb57e45b7c" ],
+    [ "Portal", "dir_f5b5c1fa47cb7ff2e371af46bf843854.html", "dir_f5b5c1fa47cb7ff2e371af46bf843854" ],
     [ "MaaToolkitAPI.h", "MaaToolkitAPI_8h.html", null ],
     [ "MaaToolkitDef.h", "MaaToolkitDef_8h.html", "MaaToolkitDef_8h" ]
 ];

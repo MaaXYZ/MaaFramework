@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.12.0" xml:lang="en-US">
   <compounddef id="classControlUnitAPI" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>ControlUnitAPI</compoundname>
     <derivedcompoundref refid="classAdbControlUnitAPI" prot="public" virt="non-virtual">AdbControlUnitAPI</derivedcompoundref>
@@ -8,6 +8,7 @@
     <derivedcompoundref refid="classFullControlUnitAPI" prot="public" virt="non-virtual">FullControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classGamepadControlUnitAPI" prot="public" virt="non-virtual">GamepadControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classKWinControlUnitAPI" prot="public" virt="non-virtual">KWinControlUnitAPI</derivedcompoundref>
+    <derivedcompoundref refid="classLinuxControlUnitAPI" prot="public" virt="non-virtual">LinuxControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classMacOSControlUnitAPI" prot="public" virt="non-virtual">MacOSControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classWin32ControlUnitAPI" prot="public" virt="non-virtual">Win32ControlUnitAPI</derivedcompoundref>
     <derivedcompoundref refid="classWlRootsControlUnitAPI" prot="public" virt="non-virtual">WlRootsControlUnitAPI</derivedcompoundref>
@@ -422,18 +423,24 @@
         </childnode>
       </node>
       <node id="8">
+        <label>LinuxControlUnitAPI</label>
+        <link refid="classLinuxControlUnitAPI"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
         <label>MacOSControlUnitAPI</label>
         <link refid="classMacOSControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>Win32ControlUnitAPI</label>
         <link refid="classWin32ControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>WlRootsControlUnitAPI</label>
         <link refid="classWlRootsControlUnitAPI"/>
         <childnode refid="1" relation="public-inheritance">

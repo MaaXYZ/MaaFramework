@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.12.0" xml:lang="en-US">
   <compounddef id="classGamepadControlUnitAPI" kind="class" language="C++" prot="public">
     <compoundname>GamepadControlUnitAPI</compoundname>
     <basecompoundref refid="classControlUnitAPI" prot="public" virt="non-virtual">ControlUnitAPI</basecompoundref>
@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="148" column="13"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="154" column="13"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -48,7 +48,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="145" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="146" bodyend="149"/>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="151" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="152" bodyend="155"/>
     <listofallmembers>
       <member refid="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" prot="public" virt="pure-virtual"><scope>GamepadControlUnitAPI</scope><name>click</name></member>
       <member refid="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" prot="public" virt="pure-virtual"><scope>GamepadControlUnitAPI</scope><name>click_key</name></member>

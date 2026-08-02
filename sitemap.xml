@@ -38,6 +38,9 @@
     <loc>https://maafw.com/KWinControlUnitAPI_8h_source.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/LinuxControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/MaaControlUnitAPI_8h_source.html</loc>
   </url>
   <url>
@@ -119,6 +122,9 @@
     <loc>https://maafw.com/MaaToolkitMacOS_8h_source.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/MaaToolkitPortal_8h_source.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/MaaAgentClientAPI_8h.html</loc>
   </url>
   <url>
@@ -150,6 +156,9 @@
   </url>
   <url>
     <loc>https://maafw.com/KWinControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/LinuxControlUnitAPI_8h.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/MaaControlUnitAPI_8h.html</loc>
@@ -233,6 +242,12 @@
     <loc>https://maafw.com/MaaToolkitMacOS_8h.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/MaaToolkitPortal_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/deprecated.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/group__MaaMsg.html</loc>
   </url>
   <url>
@@ -276,6 +291,12 @@
   </url>
   <url>
     <loc>https://maafw.com/classKWinControlUnitAPI-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classLinuxControlUnitAPI.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classLinuxControlUnitAPI-members.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/structMaaCustomControllerCallbacks.html</loc>
@@ -440,10 +461,19 @@
     <loc>https://maafw.com/dir_0daaf0002ac5c3ef7d4a81eb57e45b7c.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/dir_f5b5c1fa47cb7ff2e371af46bf843854.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/dir_d3f066ca4d2612436eb7c36c3816b59b.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/index.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/doxygen_crawl.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/pages.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/topics.html</loc>

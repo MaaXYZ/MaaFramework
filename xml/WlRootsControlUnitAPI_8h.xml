@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.12.0" xml:lang="en-US">
   <compounddef id="WlRootsControlUnitAPI_8h" kind="file" language="C++">
     <compoundname>WlRootsControlUnitAPI.h</compoundname>
     <includes refid="ControlUnitAPI_8h" local="yes">MaaControlUnit/ControlUnitAPI.h</includes>
@@ -96,7 +96,7 @@
         <location file="include/MaaControlUnit/WlRootsControlUnitAPI.h" line="11" column="37" declfile="include/MaaControlUnit/WlRootsControlUnitAPI.h" declline="11" declcolumn="37"/>
       </memberdef>
       <memberdef kind="function" id="WlRootsControlUnitAPI_8h_1a52d11ca58af5ad8839c616e820991798" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> <ref refid="ControlUnitAPI_8h_1ac75fa95b67dbddfe829cc6d4389dcce5" kindref="member">MaaWlRootsControlUnitHandle</ref></type>
+        <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> <ref refid="ControlUnitAPI_8h_1a90dbe472da4513958b9a3adf77bc7378" kindref="member">MaaWlRootsControlUnitHandle</ref></type>
         <definition>MAA_CONTROL_UNIT_API MaaWlRootsControlUnitHandle MaaWlRootsControlUnitCreate</definition>
         <argsstring>(const char *wlr_socket_path, MaaBool use_win32_vk_code)</argsstring>
         <name>MaaWlRootsControlUnitCreate</name>
@@ -122,7 +122,7 @@
         <argsstring>(MaaWlRootsControlUnitHandle handle)</argsstring>
         <name>MaaWlRootsControlUnitDestroy</name>
         <param>
-          <type><ref refid="ControlUnitAPI_8h_1ac75fa95b67dbddfe829cc6d4389dcce5" kindref="member">MaaWlRootsControlUnitHandle</ref></type>
+          <type><ref refid="ControlUnitAPI_8h_1a90dbe472da4513958b9a3adf77bc7378" kindref="member">MaaWlRootsControlUnitHandle</ref></type>
           <declname>handle</declname>
         </param>
         <briefdescription>

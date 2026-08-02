@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['version_0',['version',['../structRecordConnect.html#ab3d288437aeb6d6029861f287ab67894',1,'RecordConnect']]]
+  ['uuid_0',['uuid',['../structRecordConnect.html#a19dce4b36e47c6f76e7541cf399ac129',1,'RecordConnect']]]
 ];
