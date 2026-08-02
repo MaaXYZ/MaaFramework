@@ -34,7 +34,7 @@ concurrency:
     group: ${{ github.workflow }}-${{ inputs.run-id }}
     cancel-in-progress: false
 
-# 注意：如�?only-publish-to �?All，则所�?jobs 的状态都必须是成功，All 的状态由 create_issue 判断
+# 注意：如果 only-publish-to 是 All，则所有 jobs 的状态都必须是成功，All 的状态由 create_issue 判断
 jobs:
     meta:
         uses: ./.github/workflows/meta.yml
