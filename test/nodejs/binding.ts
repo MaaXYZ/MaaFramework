@@ -241,6 +241,14 @@ async function win32_relative_move_test() {
     }
 }
 
+function win32_interception_enum_test() {
+    console.log('test_win32_interception_enum')
+    if (maa.Win32InputMethod.Interception !== String(1 << 9)) {
+        console.log('unexpected Win32InputMethod.Interception', maa.Win32InputMethod.Interception)
+        process.exit(1)
+    }
+}
+
 class MyController implements maa.CustomControllerActor {
     count = 0
 
@@ -363,6 +371,7 @@ async function main() {
 
     await api_test()
     await win32_relative_move_test()
+    win32_interception_enum_test()
     await custom_ctrl_test()
 
     process.exit(0)

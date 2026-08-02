@@ -264,7 +264,7 @@
                         "hotkeys": {
                             "type": "array",
                             "title": "快捷键配置",
-                            "description": "定义用户可捕获的快捷键字段；输出为 ClickKey 可用的虚拟按键码",
+                            "description": "定义用户可捕获的快捷键字段；持久化值为人类可读字符串，pipeline_override 替换时映射为虚拟按键码整数",
                             "items": {
                                 "$ref": "#/definitions/hotkeyItem"
                             }
@@ -272,7 +272,7 @@
                         "pipeline_override": {
                             "$ref": "#/definitions/pipelineOverride",
                             "title": "Pipeline 覆盖模板",
-                            "description": "支持使用 {名称} 格式引用快捷键字段的值，替换结果应为整数数组"
+                            "description": "支持使用 {名称}、{名称}.primary、{名称}.modifier1 等占位符引用快捷键字段，替换结果为整数（虚拟按键码）"
                         }
                     },
                     "required": [
@@ -571,7 +571,8 @@
                                 "SendMessageWithCursorPos",
                                 "PostMessageWithCursorPos",
                                 "SendMessageWithWindowPos",
-                                "PostMessageWithWindowPos"
+                                "PostMessageWithWindowPos",
+                                "Interception"
                             ]
                         },
                         "keyboard": {
@@ -990,6 +991,22 @@
             "title": "预任务配置",
             "description": "💡 v2.7.0 Controller 启动前执行的自定义程序配置。Client 应在创建或连接 Controller 前运行该程序；若配置 option，则将 option 取值序列化为紧凑 JSON 字符串并追加为最后一个参数",
             "properties": {
+                "resource": {
+                    "type": "array",
+                    "title": "支持的资源包",
+                    "description": "💡 v2.8.1 可选。指定该预任务支持的资源包列表。数组元素应与 resource 配置中的 name 字段对应。若不指定，则表示该预任务在所有资源包中都可用",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "controller": {
+                    "type": "array",
+                    "title": "支持的控制器",
+                    "description": "💡 v2.8.1 可选。指定该预任务支持的控制器类型列表。数组元素应与 controller 配置中的 name 字段对应。若不指定，则表示该预任务在所有控制器类型中都可用",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "exec": {
                     "type": "string",
                     "title": "预任务程序路径",
@@ -1148,6 +1165,47 @@
             "$ref": "#/definitions/i18nString",
             "title": "项目描述",
             "description": "显示在「关于」页面。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
+        },
+        "telemetry": {
+            "type": "object",
+            "title": "匿名遥测配置",
+            "description": "💡 v2.9.0 可选。匿名遥测（数据埋点）配置容器，用于向资源作者自己的遥测平台上报崩溃与任务运行统计。并非所有 Client 都会支持。未配置时不进行任何遥测",
+            "properties": {
+                "sentry": {
+                    "type": "object",
+                    "title": "Sentry 遥测配置",
+                    "description": "基于 Sentry 的遥测配置",
+                    "properties": {
+                        "dsn": {
+                            "type": "string",
+                            "title": "Sentry DSN",
+                            "description": "Sentry 项目的 DSN。必填；缺省或为空字符串时不启用 Sentry 遥测"
+                        },
+                        "tracing": {
+                            "type": "boolean",
+                            "title": "是否启用性能 / 事务上报",
+                            "description": "任务开始、结束及各子任务结果以事务 / Span 形式上报。默认 true。关闭后仅上报崩溃 / 错误"
+                        },
+                        "traces_sample_rate": {
+                            "type": "number",
+                            "title": "事务采样率",
+                            "description": "取值 0~1，默认 1.0。用户量较大时可调低以控制 Sentry 配额，但统计将变为抽样",
+                            "minimum": 0,
+                            "maximum": 1
+                        },
+                        "environment": {
+                            "type": "string",
+                            "title": "环境标签",
+                            "description": "如 production、beta，用于在 Sentry 中区分。缺省由 Client 决定"
+                        }
+                    },
+                    "required": [
+                        "dsn"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
         },
         "controller": {
             "type": "array",
