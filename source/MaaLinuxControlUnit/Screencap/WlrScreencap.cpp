@@ -77,6 +77,11 @@ std::optional<cv::Mat> WlrScreencap::screencap()
         }
     }
 
+    if (!capture_successful_) {
+        LogError << "Failed to capture frame";
+        return std::nullopt;
+    }
+
     std::optional<int> cvt_mode;
     int cv_format = -1;
     switch (buffer_format_) { // TODO: Other possible format?
@@ -110,8 +115,10 @@ std::optional<cv::Mat> WlrScreencap::screencap()
         LogDebug << "Converting buffer" << VAR(buffer_format_) << VAR(cvt_mode.value());
         cv::cvtColor(raw, target, cvt_mode.value());
     }
-    std::optional ret(target);
-    return ret;
+    else {
+        raw.copyTo(target);
+    }
+    return target;
 }
 
 bool WlrScreencap::check_buffer(int format, int width, int height, int stride) const

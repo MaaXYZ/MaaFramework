@@ -71,8 +71,9 @@ class PortalHelper:
     def get_pipewire_node_id(self) -> int:
         return Library.toolkit().MaaToolkitPortalHelperGetPipeWireNodeID(self._handle)
 
-    def get_restore_token(self) -> str:
-        return Library.toolkit().MaaToolkitPortalHelperGetRestoreToken(self._handle).decode()
+    def get_restore_token(self) -> Optional[str]:
+        token = Library.toolkit().MaaToolkitPortalHelperGetRestoreToken(self._handle)
+        return token.decode() if token else None
 
     def set_restore_token(self, token: str):
         Library.toolkit().MaaToolkitPortalHelperSetRestoreToken(self._handle, token.encode("utf-8"))
@@ -239,6 +240,8 @@ class Toolkit:
         Toolkit._set_api_properties()
 
         portal_helper_handle = Library.toolkit().MaaToolkitPortalHelperCreate()
+        if not portal_helper_handle:
+            raise RuntimeError("Failed to create PortalHelper.")
         return PortalHelper(portal_helper_handle)
 
     ### private ###

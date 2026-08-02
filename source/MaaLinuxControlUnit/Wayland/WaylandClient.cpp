@@ -33,7 +33,8 @@ bool WaylandClient::open()
 {
     LogInfo << "Connecting to socket" << VAR(socket_path_);
     if (display_) {
-        return true;
+        // If we already have a display object, report the current connection state.
+        return connected_;
     }
 
     display_.reset(wl_display_connect(socket_path_.c_str()));
@@ -55,6 +56,17 @@ bool WaylandClient::open()
 void WaylandClient::close()
 {
     connected_ = false;
+
+    // Release protocol objects first, then disconnect display.
+    pointer_manager_.reset();
+    keyboard_manager_.reset();
+    screencopy_manager_.reset();
+    seat_.reset();
+    shm_.reset();
+    output_.reset();
+    registry_.reset();
+    display_.reset();
+
     LogInfo << "Closing the wayland socket";
 }
 

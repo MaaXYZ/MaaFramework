@@ -80,8 +80,13 @@ std::string reconfig_linux(const RuntimeParam::LinuxParam& raw)
     }
     if (raw.screencap == MaaLinuxScreencapMethod_PipeWire) {
         auto helper_handle = MaaToolkitPortalHelperCreate();
+        if (!helper_handle) {
+            LogError << "Failed to create portal helper";
+            return "";
+        }
         if (!MaaToolkitPortalHelperOpenStream(helper_handle)) {
             LogError << "Failed to open stream";
+            MaaToolkitPortalHelperDestroy(helper_handle);
             return "";
         }
         obj["pw_socket_fd"] = MaaToolkitPortalHelperGetPipeWireFD(helper_handle);
@@ -143,6 +148,10 @@ bool Runner::run(const RuntimeParam& param)
     else if (const auto* p_wlroots_param = std::get_if<RuntimeParam::LinuxParam>(&param.controller_param)) {
 #if defined(__linux__)
         auto config_json = reconfig_linux(*p_wlroots_param);
+        if (config_json.empty()) {
+            LogError << "Failed to build Linux controller config";
+            return false;
+        }
         controller_handle = MaaLinuxControllerCreate(config_json.c_str());
 #else
         std::ignore = p_wlroots_param;

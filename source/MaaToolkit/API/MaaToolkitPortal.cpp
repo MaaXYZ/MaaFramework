@@ -124,7 +124,7 @@ const char* MaaToolkitPortalHelperGetRestoreToken(MaaToolkitPortalHelper* helper
 #else
     std::ignore = helper;
     LogError << "This API " << __FUNCTION__ << " is only available on Linux";
-    return 0;
+    return nullptr;
 #endif
 }
 

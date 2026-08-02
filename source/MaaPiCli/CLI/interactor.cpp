@@ -1230,7 +1230,12 @@ void Interactor::input_pw_width_height()
         return;
     }
     if (!buffer.empty()) {
-        lnx.pw_screen_width = std::stoi(buffer);
+        if (buffer.size() <= 9 && std::ranges::all_of(buffer, [](unsigned char c) { return c >= '0' && c <= '9'; })) {
+            lnx.pw_screen_width = std::stoi(buffer);
+        }
+        else {
+            std::cout << "Invalid screen width, keeping previous value.\n";
+        }
     }
 
     std::string default_height = std::to_string(lnx.pw_screen_height);
@@ -1242,7 +1247,12 @@ void Interactor::input_pw_width_height()
         return;
     }
     if (!buffer.empty()) {
-        lnx.pw_screen_height = std::stoi(buffer);
+        if (buffer.size() <= 9 && std::ranges::all_of(buffer, [](unsigned char c) { return c >= '0' && c <= '9'; })) {
+            lnx.pw_screen_height = std::stoi(buffer);
+        }
+        else {
+            std::cout << "Invalid screen height, keeping previous value.\n";
+        }
     }
     std::cout << "\n";
 }

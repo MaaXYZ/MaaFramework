@@ -139,7 +139,7 @@ extern "C"
      *                    - wlr_socket_path: wayland socket path (e.g., "/run/user/1000/wayland-0").
      *                    PipeWire Required fields:
      *                    - pw_socket_fd: The PipeWire socket FD.
-     *                    - pw_node_id: The PiprWire Node ID.
+     *                    - pw_node_id: The PipeWire Node ID.
      *                    - pw_screen_width: The screen width in pixels.
      *                    - pw_screen_height: The screen height in pixels.
      *                    UInput Optional fields:

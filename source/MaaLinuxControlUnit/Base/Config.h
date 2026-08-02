@@ -21,8 +21,8 @@ struct LinuxControlUnitConfig
     bool use_win32_vk_code = false;
 
     MEO_JSONIZATION(
-        screencap_method, input_method, MEO_OPT wlr_socket_path, MEO_OPT pw_socket_fd, MEO_OPT pw_node_id, MEO_OPT uinput_path,
-        MEO_OPT use_win32_vk_code);
+        screencap_method, input_method, MEO_OPT wlr_socket_path, MEO_OPT pw_socket_fd, MEO_OPT pw_node_id, MEO_OPT pw_screen_width,
+        MEO_OPT pw_screen_height, MEO_OPT uinput_path, MEO_OPT use_win32_vk_code);
 };
 
 MAA_CTRL_UNIT_NS_END
