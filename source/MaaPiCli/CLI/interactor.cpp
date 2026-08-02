@@ -20,6 +20,7 @@
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
+#include "ProjectInterface/CloudProviders.h"
 #include "ProjectInterface/Runner.h"
 
 static bool s_eof = false;
@@ -335,6 +336,7 @@ void Interactor::print_config() const
             std::format("\t\t{}\n\t\t{}\n", config_.configuration().adb.adb_path, config_.configuration().adb.address));
         break;
     case InterfaceData::Controller::Type::Win32:
+    case InterfaceData::Controller::Type::Cloud:
         if (config_.configuration().win32.hwnd) {
             std::cout << MAA_NS::utf8_to_crt(std::format("\t\t{}\n", format_win32_config(config_.configuration().win32)));
         }
@@ -624,6 +626,10 @@ void Interactor::select_controller()
         config_.configuration().controller.type = InterfaceData::Controller::Type::Win32;
         select_win32_hwnd(controller.win32);
         break;
+    case InterfaceData::Controller::Type::Cloud:
+        config_.configuration().controller.type = InterfaceData::Controller::Type::Cloud;
+        select_cloud_hwnd(controller.cloud);
+        break;
     case InterfaceData::Controller::Type::MacOS:
         config_.configuration().controller.type = InterfaceData::Controller::Type::MacOS;
         select_macos(controller.macos);
@@ -859,6 +865,82 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
 
     if (matched_config.empty()) {
         LogError << "Window Not Found" << VAR(win32_config.class_regex) << VAR(win32_config.window_regex);
+        mpause();
+        return false;
+    }
+    size_t matched_size = matched_config.size();
+    if (matched_size == 1) {
+        config_.configuration().win32 = matched_config.front();
+        return true;
+    }
+
+    std::cout << "### Select HWND ###\n\n";
+
+    for (size_t i = 0; i < matched_size; ++i) {
+        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, format_win32_config(matched_config.at(i))));
+    }
+    std::cout << "\n";
+
+    int index = input(matched_size) - 1;
+    config_.configuration().win32 = matched_config.at(index);
+
+    return true;
+}
+
+bool Interactor::select_cloud_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::CloudConfig& cloud_config)
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const CloudProvider* provider = find_cloud_provider(cloud_config.provider);
+    if (!provider) {
+        LogError << "Unknown cloud provider" << VAR(cloud_config.provider);
+        mpause();
+        return false;
+    }
+
+    auto list_handle = MaaToolkitDesktopWindowListCreate();
+    OnScopeLeave([&]() { MaaToolkitDesktopWindowListDestroy(list_handle); });
+
+    MaaToolkitDesktopWindowFindAll(list_handle);
+
+    size_t list_size = MaaToolkitDesktopWindowListSize(list_handle);
+
+    // Cloud desugars to Win32: match the provider's window class + composed title,
+    // additionally filtered by the owning process for robustness. The resolved HWND
+    // is stored in the shared win32 config slot.
+    std::string window_regex_str = cloud_window_regex(*provider, cloud_config.game_title);
+    auto class_regex = MAA_NS::regex_valid(MAA_NS::to_u16(provider->class_regex));
+    auto window_regex = MAA_NS::regex_valid(MAA_NS::to_u16(window_regex_str));
+    auto process_regex = MAA_NS::regex_valid(MAA_NS::to_u16(provider->process_regex));
+    if (!class_regex || !window_regex || !process_regex) {
+        LogError << "regex is invalid" << VAR(provider->class_regex) << VAR(window_regex_str) << VAR(provider->process_regex);
+        return false;
+    }
+
+    std::vector<Configuration::Win32Config> matched_config;
+    for (size_t i = 0; i < list_size; ++i) {
+        Configuration::Win32Config rt_config;
+
+        auto window_handle = MaaToolkitDesktopWindowListAt(list_handle, i);
+        rt_config.hwnd = MaaToolkitDesktopWindowGetHandle(window_handle);
+        rt_config.class_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetClassName(window_handle));
+        rt_config.window_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetWindowName(window_handle));
+        std::wstring process_path = MAA_NS::to_u16(MaaToolkitDesktopWindowGetProcessPath(window_handle));
+
+        // Process filter is applied only when the process path is available; if it
+        // cannot be queried, fall back to class + title (the baseline that MaaEnd
+        // and MaaNTE both ship).
+        bool process_ok = process_path.empty() || boost::regex_search(process_path, *process_regex);
+
+        if (process_ok && boost::regex_search(rt_config.class_name, *class_regex)
+            && boost::regex_search(rt_config.window_name, *window_regex)) {
+            matched_config.emplace_back(std::move(rt_config));
+        }
+    }
+
+    if (matched_config.empty()) {
+        LogError << "Cloud window not found" << VAR(cloud_config.provider) << VAR(provider->class_regex) << VAR(window_regex_str)
+                 << VAR(provider->process_regex);
         mpause();
         return false;
     }
@@ -1693,6 +1775,19 @@ bool Interactor::check_validity()
         }
 
         return select_win32_hwnd(controller_iter->win32);
+    }
+
+    if (config_.configuration().controller.type == InterfaceData::Controller::Type::Cloud
+        && config_.configuration().win32.hwnd == nullptr) {
+        auto& name = config_.configuration().controller.name;
+        auto controller_iter = std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
+
+        if (controller_iter == config_.interface_data().controller.end()) {
+            LogError << "Contorller not found" << VAR(name);
+            return false;
+        }
+
+        return select_cloud_hwnd(controller_iter->cloud);
     }
 
     if (config_.configuration().controller.type == InterfaceData::Controller::Type::MacOS) {

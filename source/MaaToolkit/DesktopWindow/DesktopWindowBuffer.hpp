@@ -15,8 +15,9 @@ struct DesktopWindow
     void* hwnd = nullptr;
     std::wstring class_name;
     std::wstring window_name;
+    std::wstring process_path;
 
-    MEO_TOJSON(hwnd, class_name, window_name);
+    MEO_TOJSON(hwnd, class_name, window_name, process_path);
 };
 
 class DesktopWindowBuffer : public MaaToolkitDesktopWindow
@@ -26,6 +27,7 @@ public:
         : hwnd_(window.hwnd)
         , class_name_(from_u16(window.class_name))
         , window_name_(from_u16(window.window_name))
+        , process_path_(from_u16(window.process_path))
     {
     }
 
@@ -37,10 +39,13 @@ public:
 
     virtual const std::string& window_name() const override { return window_name_; }
 
+    virtual const std::string& process_path() const override { return process_path_; }
+
 private:
     void* hwnd_ = nullptr;
     std::string class_name_;
     std::string window_name_;
+    std::string process_path_;
 };
 
 MAA_TOOLKIT_NS_END

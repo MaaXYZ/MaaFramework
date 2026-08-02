@@ -102,3 +102,13 @@ const char* MaaToolkitDesktopWindowGetWindowName(const MaaToolkitDesktopWindow* 
 
     return window->window_name().c_str();
 }
+
+const char* MaaToolkitDesktopWindowGetProcessPath(const MaaToolkitDesktopWindow* window)
+{
+    if (!window) {
+        LogError << "window is null";
+        return "";
+    }
+
+    return window->process_path().c_str();
+}
