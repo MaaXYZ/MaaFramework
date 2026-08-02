@@ -285,8 +285,11 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
         return { };
     }
 
-    if (ocr_batch_cache_ && ocr_batch_cache_->contains(name)) {
-        const auto& cached = ocr_batch_cache_->at(name);
+    // Keep the read-side eligibility in sync with PipelineTask::try_add_ocr_node.
+    const bool can_use_batch_cache = ocr_batch_cache_ && !param.only_rec && param.color_filter.empty()
+                                     && param.roi_target.type != TargetType::PreTask && param.model == ocr_batch_cache_->model;
+    if (can_use_batch_cache && ocr_batch_cache_->results.contains(name)) {
+        const auto& cached = ocr_batch_cache_->results.at(name);
         LogDebug << "OCR using batch cache" << VAR(name) << VAR(cached);
         return build_result(name, "OCR", OCRer(image_, rois, param, cached, resource()->ocr_res().recer(param.model), name));
     }
@@ -731,7 +734,7 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
     };
 
     for (const auto& [node, rois] : node_rois) {
-        auto& cache = (*ocr_batch_cache_)[node];
+        auto& cache = ocr_batch_cache_->results[node];
         for (const MAA_VISION_NS::OCRerResult& res : ocrer.all_results()) {
             for (const auto& r : rois) {
                 if (!intersect(r, res.box)) {
@@ -742,7 +745,7 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
         }
     }
 
-    LogInfo << "prefetch_batch_ocr completed" << VAR(entries) << VAR(*ocr_batch_cache_);
+    LogInfo << "prefetch_batch_ocr completed" << VAR(entries) << VAR(ocr_batch_cache_->results);
 }
 
 MAA_TASK_NS_END

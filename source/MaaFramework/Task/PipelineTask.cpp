@@ -287,7 +287,8 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
     notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
 
     auto batch_plan = prepare_batch_ocr(list);
-    auto ocr_cache = batch_plan ? std::make_shared<MAA_VISION_NS::OCRCache>() : nullptr;
+    auto ocr_cache =
+        batch_plan ? std::make_shared<MAA_VISION_NS::OCRCache>(MAA_VISION_NS::OCRCache { .model = batch_plan->model }) : nullptr;
     bool batch_triggered = false;
 
     for (const auto& node : list) {

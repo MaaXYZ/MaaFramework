@@ -1152,6 +1152,47 @@
             "title": "项目描述",
             "description": "显示在「关于」页面。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
         },
+        "telemetry": {
+            "type": "object",
+            "title": "匿名遥测配置",
+            "description": "💡 v2.9.0 可选。匿名遥测（数据埋点）配置容器，用于向资源作者自己的遥测平台上报崩溃与任务运行统计。并非所有 Client 都会支持。未配置时不进行任何遥测",
+            "properties": {
+                "sentry": {
+                    "type": "object",
+                    "title": "Sentry 遥测配置",
+                    "description": "基于 Sentry 的遥测配置",
+                    "properties": {
+                        "dsn": {
+                            "type": "string",
+                            "title": "Sentry DSN",
+                            "description": "Sentry 项目的 DSN。必填；缺省或为空字符串时不启用 Sentry 遥测"
+                        },
+                        "tracing": {
+                            "type": "boolean",
+                            "title": "是否启用性能 / 事务上报",
+                            "description": "任务开始、结束及各子任务结果以事务 / Span 形式上报。默认 true。关闭后仅上报崩溃 / 错误"
+                        },
+                        "traces_sample_rate": {
+                            "type": "number",
+                            "title": "事务采样率",
+                            "description": "取值 0~1，默认 1.0。用户量较大时可调低以控制 Sentry 配额，但统计将变为抽样",
+                            "minimum": 0,
+                            "maximum": 1
+                        },
+                        "environment": {
+                            "type": "string",
+                            "title": "环境标签",
+                            "description": "如 production、beta，用于在 Sentry 中区分。缺省由 Client 决定"
+                        }
+                    },
+                    "required": [
+                        "dsn"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        },
         "controller": {
             "type": "array",
             "title": "控制器配置",
