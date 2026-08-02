@@ -49,7 +49,8 @@ jobs:
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                  # 如果�?inputs.run_id �?run_id 获取 meta 的输�?                  run_id="${{ inputs.reuse-from-run-id }}"
+                  # 如果有 inputs.run_id 从 run_id 获取 meta 的输出
+                  run_id="${{ inputs.reuse-from-run-id }}"
                   if [[ -n "$run_id" ]] && gh run download $run_id --repo ${{ github.repository }} --name meta; then
                     if [[ -f "$META_OUTPUT" ]]; then
                         echo "Reusing meta outputs from run ID: $run_id"
@@ -109,7 +110,8 @@ jobs:
             is-release: ${{ steps.set.outputs.is-release }}
             is-prerelease: ${{ steps.set.outputs.is-prerelease }}
             tag: ${{ steps.set.outputs.tag }} # v<release version> | v<ci version>
-            version: ${{ steps.set.outputs.version }} # <release version> | <ci version>+<build> e.g �?            build-config: ${{ steps.set.outputs.build-config }} # Release | RelWithDebInfo | Debug
+            version: ${{ steps.set.outputs.version }} # <release version> | <ci version>+<build> e.g ↓
+            build-config: ${{ steps.set.outputs.build-config }} # Release | RelWithDebInfo | Debug
             latest-plugin: ${{ steps.set.outputs.latest-plugin }}
 
 
