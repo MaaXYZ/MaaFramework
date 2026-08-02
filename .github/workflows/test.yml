@@ -55,7 +55,7 @@ jobs:
                   cd .
 
             - name: Windows runner hack (2)
-              uses: al-cheb/configure-pagefile-action@v1
+              uses: al-cheb/configure-pagefile-action@v1.5
               with:
                   minimum-size: 16GB
                   maximum-size: 16GB
