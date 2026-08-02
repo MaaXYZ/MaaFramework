@@ -132,7 +132,10 @@ public:
     virtual ~KWinControlUnitAPI() = default;
 };
 
-class LinuxControlUnitAPI : public ControlUnitAPI, public ScrollableUnit, public RelativeMovableUnit
+class LinuxControlUnitAPI
+    : public ControlUnitAPI
+    , public ScrollableUnit
+    , public RelativeMovableUnit
 {
 public:
     virtual ~LinuxControlUnitAPI() = default;

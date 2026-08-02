@@ -34,9 +34,7 @@ void PortalHelperImpl::destroy()
 maajs::PromiseType PortalHelperImpl::open_stream()
 {
     using Result = bool;
-    auto worker = new maajs::AsyncWork<Result>(env, [&]() -> Result {
-        return MaaToolkitPortalHelperOpenStream(helper);
-    });
+    auto worker = new maajs::AsyncWork<Result>(env, [&]() -> Result { return MaaToolkitPortalHelperOpenStream(helper); });
     worker->Queue();
     return worker->Promise();
 }

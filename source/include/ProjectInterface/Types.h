@@ -114,7 +114,9 @@ struct InterfaceData
             MEO_OPT option,
             MEO_OPT win32,
             MEO_OPT macos,
-            MEO_OPT playcover, MEO_OPT gamepad, MEO_OPT lnx);
+            MEO_OPT playcover,
+            MEO_OPT gamepad,
+            MEO_OPT lnx);
     };
 
     struct Resource
@@ -390,7 +392,11 @@ struct Configuration
         bool use_win32_vk_code = false;
 
         MEO_JSONIZATION(
-            MEO_OPT screencap, MEO_OPT input, MEO_OPT wlr_socket_path, MEO_OPT pw_screen_width, MEO_OPT pw_screen_height,
+            MEO_OPT screencap,
+            MEO_OPT input,
+            MEO_OPT wlr_socket_path,
+            MEO_OPT pw_screen_width,
+            MEO_OPT pw_screen_height,
             MEO_OPT use_win32_vk_code);
     };
 
@@ -427,7 +433,15 @@ struct Configuration
     std::vector<Option> controller_option; // v2.3.0
 
     MEO_JSONIZATION(
-        controller, MEO_OPT adb, MEO_OPT win32, MEO_OPT macos, MEO_OPT playcover, MEO_OPT gamepad, MEO_OPT lnx, resource, task,
+        controller,
+        MEO_OPT adb,
+        MEO_OPT win32,
+        MEO_OPT macos,
+        MEO_OPT playcover,
+        MEO_OPT gamepad,
+        MEO_OPT lnx,
+        resource,
+        task,
         MEO_OPT global_option,
         MEO_OPT resource_option,
         MEO_OPT controller_option);
