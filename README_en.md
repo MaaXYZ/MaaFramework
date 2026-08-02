@@ -226,7 +226,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
  A assistant for Tokyo Afterschool Summoners. Free your hands! Powered by MaaFramework!
 
 - [MATR](https://github.com/NotZoruak/MATR) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/NotZoruak/MATR) ![activity](https://img.shields.io/github/commit-activity/m/NotZoruak/MATR?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/NotZoruak/MATR?style=social)  
-    A Touken Ranbu Assistant. Image technology + simulation control, freeing your hands! Powered by MaaFramework!
+ A Touken Ranbu Assistant. Image technology + simulation control, freeing your hands! Powered by MaaFramework!
 
 ## Eco-Building
 
