@@ -34,7 +34,7 @@ concurrency:
     group: ${{ github.workflow }}-${{ inputs.run-id }}
     cancel-in-progress: false
 
-# 注意：如果 only-publish-to 是 All，则所有 jobs 的状态都必须是成功，All 的状态由 create_issue 判断
+# 注意：如�?only-publish-to �?All，则所�?jobs 的状态都必须是成功，All 的状态由 create_issue 判断
 jobs:
     meta:
         uses: ./.github/workflows/meta.yml
@@ -49,12 +49,12 @@ jobs:
             release_body: ${{ steps.git-cliff.outputs.content }}
         steps:
             - name: Checkout
-              uses: actions/checkout@v7.0.0
+              uses: actions/checkout@v7
               with:
                   fetch-depth: 0
 
             - name: Generate a changelog
-              uses: orhun/git-cliff-action@v4.8.0
+              uses: orhun/git-cliff-action@v4
               id: git-cliff
               with:
                   config: .github/cliff.toml
@@ -87,7 +87,7 @@ jobs:
                   if_no_artifact_found: fail
 
             - id: login
-              uses: NuGet/login@v1.2.0
+              uses: NuGet/login@v1
               with:
                 user: moomiji
                 token-service-url: ${{ env.NUGET_AUDIENCE }}/api/v2/token
@@ -110,7 +110,7 @@ jobs:
         permissions:
             id-token: write
         steps:
-            - uses: actions/checkout@v7.0.0
+            - uses: actions/checkout@v7
               with:
                   fetch-depth: 0
 
@@ -187,7 +187,7 @@ jobs:
                   done
 
             - id: publish
-              uses: softprops/action-gh-release@v3.0.1
+              uses: softprops/action-gh-release@v3
               with:
                   files: assets/*.zip
                   tag_name: ${{ inputs.dry-run && 'v0.0.0' || needs.meta.outputs.tag }}
@@ -257,27 +257,27 @@ jobs:
         steps:
             - name: find issues
               id: find-issues
-              uses: actions-cool/issues-helper@v3.8.0
+              uses: actions-cool/issues-helper@v3
               with:
                   actions: "find-issues"
                   issue-state: "all"
                   title-includes: "${{ env.ISSUE_TITLE }}"
             - name: Create issue
               if: ${{ fromJSON(steps.find-issues.outputs.issues)[0] == null }}
-              uses: actions-cool/issues-helper@v3.8.0
+              uses: actions-cool/issues-helper@v3
               with:
                   actions: "create-issue"
                   title: ${{ env.ISSUE_TITLE }}
                   body: ${{ env.ISSUE_BODY }}
             - name: Open issue
               if: ${{ fromJSON(steps.find-issues.outputs.issues)[0].state == 'closed' }}
-              uses: actions-cool/issues-helper@v3.8.0
+              uses: actions-cool/issues-helper@v3
               with:
                   actions: "open-issue"
                   issue-number: ${{ fromJSON(steps.find-issues.outputs.issues)[0].number }}
             - name: Add comment
               if: ${{ fromJSON(steps.find-issues.outputs.issues)[0] != null }}
-              uses: actions-cool/issues-helper@v3.8.0
+              uses: actions-cool/issues-helper@v3
               with:
                   actions: "create-comment"
                   issue-number: ${{ fromJSON(steps.find-issues.outputs.issues)[0].number }}
