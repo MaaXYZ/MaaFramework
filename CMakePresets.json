@@ -107,6 +107,34 @@
                 "strategy": "set",
                 "value": "ARM64"
             }
+        },
+        {
+            "name": "MSVC 2026",
+            "displayName": "MSVC 2026",
+            "description": "MSVC 2026",
+            "generator": "Visual Studio 18 2026",
+            "binaryDir": "${sourceDir}/build",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "MSVC 2026 ARM",
+            "displayName": "MSVC 2026 ARM",
+            "description": "MSVC 2026 ARM",
+            "generator": "Visual Studio 18 2026",
+            "binaryDir": "${sourceDir}/build",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "architecture": {
+                "strategy": "set",
+                "value": "ARM64"
+            }
         }
     ],
     "buildPresets": [
@@ -275,6 +303,54 @@
             "displayName": "MSVC 2022 ARM Release",
             "description": "MSVC 2022 ARM Release",
             "configurePreset": "MSVC 2022 ARM",
+            "configuration": "Release",
+            "jobs": 16
+        },
+        {
+            "name": "MSVC 2026 - Debug",
+            "displayName": "MSVC 2026 Debug",
+            "description": "MSVC 2026 Debug",
+            "configurePreset": "MSVC 2026",
+            "configuration": "Debug",
+            "jobs": 16
+        },
+        {
+            "name": "MSVC 2026 - RelWithDebInfo",
+            "displayName": "MSVC 2026 RelWithDebInfo",
+            "description": "MSVC 2026 RelWithDebInfo",
+            "configurePreset": "MSVC 2026",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
+            "name": "MSVC 2026 - Release",
+            "displayName": "MSVC 2026 Release",
+            "description": "MSVC 2026 Release",
+            "configurePreset": "MSVC 2026",
+            "configuration": "Release",
+            "jobs": 16
+        },
+        {
+            "name": "MSVC 2026 ARM - Debug",
+            "displayName": "MSVC 2026 ARM Debug",
+            "description": "MSVC 2026 ARM Debug",
+            "configurePreset": "MSVC 2026 ARM",
+            "configuration": "Debug",
+            "jobs": 16
+        },
+        {
+            "name": "MSVC 2026 ARM - RelWithDebInfo",
+            "displayName": "MSVC 2026 ARM RelWithDebInfo",
+            "description": "MSVC 2026 ARM RelWithDebInfo",
+            "configurePreset": "MSVC 2026 ARM",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
+            "name": "MSVC 2026 ARM - Release",
+            "displayName": "MSVC 2026 ARM Release",
+            "description": "MSVC 2026 ARM Release",
+            "configurePreset": "MSVC 2026 ARM",
             "configuration": "Release",
             "jobs": 16
         }
