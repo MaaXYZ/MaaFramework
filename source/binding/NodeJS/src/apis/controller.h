@@ -224,6 +224,22 @@ struct KWinControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+using LinuxControllerCtorParam = std::tuple<std::string>;
+
+struct LinuxControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    static maajs::PromiseType find_wlr_compositor(maajs::EnvType env);
+
+    static maajs::ValueType create_portal_helper(maajs::EnvType env);
+
+    constexpr static char name[] = "LinuxController";
+
+    static LinuxControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
 struct CustomControllerContext
 {
     std::map<std::string, maajs::CallbackContext*> callbacks;

@@ -28,6 +28,7 @@ static maajs::ObjectType init(maajs::EnvType env)
     maajs::BindValue(maa, "GamepadController", load_gamepad_controller(env));
     maajs::BindValue(maa, "WlRootsController", load_wlroots_controller(env));
     maajs::BindValue(maa, "KWinController", load_kwin_controller(env));
+    maajs::BindValue(maa, "LinuxController", load_linux_controller(env));
     maajs::BindValue(maa, "CustomController", load_custom_controller(env));
     maajs::BindValue(maa, "TaskJob", load_task_job(env));
     maajs::BindValue(maa, "Tasker", load_tasker(env));

@@ -89,6 +89,34 @@ MaaMacOSInputMethod parse_macos_input_method(const std::string& method)
     }
     return MaaMacOSInputMethod_None;
 }
+
+MaaLinuxScreencapMethod parse_linux_screencap_method(const std::string& method)
+{
+    static const std::unordered_map<std::string, MaaLinuxScreencapMethod> mapping = {
+        { "Wlr", MaaLinuxScreencapMethod_Wlr },
+        { "PipeWire", MaaLinuxScreencapMethod_PipeWire },
+    };
+
+    if (auto it = mapping.find(method); it != mapping.end()) {
+        return it->second;
+    }
+
+    return MaaLinuxScreencapMethod_None;
+}
+
+MaaLinuxInputMethod parse_linux_input_method(const std::string& method)
+{
+    static const std::unordered_map<std::string, MaaLinuxInputMethod> mapping = {
+        { "Wlr", MaaLinuxInputMethod_Wlr },
+        { "UInput", MaaLinuxInputMethod_UInput },
+    };
+
+    if (auto it = mapping.find(method); it != mapping.end()) {
+        return it->second;
+    }
+
+    return MaaLinuxInputMethod_None;
+}
 } // namespace
 
 bool Configurator::load(const std::filesystem::path& resource_dir, const std::filesystem::path& user_dir)
@@ -295,13 +323,33 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         runtime.controller_param = std::move(gamepad);
     } break;
 
-    case InterfaceData::Controller::Type::WlRoots: {
-        RuntimeParam::WlRootsParam wlroots;
+    case InterfaceData::Controller::Type::Linux: {
+        RuntimeParam::LinuxParam lnx;
 
-        wlroots.wlr_socket_path = config_.wlroots.wlr_socket_path;
-        wlroots.use_win32_vk_code = controller.wlroots.use_win32_vk_code;
+        lnx.wlr_socket_path = config_.lnx.wlr_socket_path;
+        lnx.use_win32_vk_code = controller.lnx.use_win32_vk_code;
+        if (!controller.lnx.screencap.empty()) {
+            lnx.screencap = parse_linux_screencap_method(controller.lnx.screencap);
+        }
+        if (lnx.screencap == MaaLinuxScreencapMethod_None) {
+            lnx.screencap = MaaLinuxScreencapMethod_Wlr;
+        }
 
-        runtime.controller_param = std::move(wlroots);
+        if (!controller.lnx.input.empty()) {
+            lnx.input = parse_linux_input_method(controller.lnx.input);
+        }
+        if (lnx.input == MaaLinuxInputMethod_None) {
+            lnx.input = MaaLinuxInputMethod_Wlr;
+        }
+
+        if (lnx.screencap == MaaLinuxScreencapMethod_Wlr || lnx.input == MaaLinuxInputMethod_Wlr) {
+            lnx.wlr_socket_path = config_.lnx.wlr_socket_path;
+        }
+
+        lnx.pw_screen_height = config_.lnx.pw_screen_height;
+        lnx.pw_screen_width = config_.lnx.pw_screen_width;
+
+        runtime.controller_param = std::move(lnx);
     } break;
 
     default: {

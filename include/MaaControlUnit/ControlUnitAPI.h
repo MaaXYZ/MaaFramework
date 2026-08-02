@@ -132,6 +132,12 @@ public:
     virtual ~KWinControlUnitAPI() = default;
 };
 
+class LinuxControlUnitAPI : public ControlUnitAPI, public ScrollableUnit, public RelativeMovableUnit
+{
+public:
+    virtual ~LinuxControlUnitAPI() = default;
+};
+
 class CustomControlUnitAPI
     : public ControlUnitAPI
     , public ScrollableUnit
@@ -164,8 +170,9 @@ using MaaControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;
 using MaaAdbControlUnitHandle = MAA_CTRL_UNIT_NS::AdbControlUnitAPI*;
 using MaaWin32ControlUnitHandle = MAA_CTRL_UNIT_NS::Win32ControlUnitAPI*;
 using MaaMacOSControlUnitHandle = MAA_CTRL_UNIT_NS::MacOSControlUnitAPI*;
-using MaaWlRootsControlUnitHandle = MAA_CTRL_UNIT_NS::WlRootsControlUnitAPI*;
-using MaaKWinControlUnitHandle = MAA_CTRL_UNIT_NS::KWinControlUnitAPI*;
+using MaaLinuxControlUnitHandle = MAA_CTRL_UNIT_NS::LinuxControlUnitAPI*;
+using MaaWlRootsControlUnitHandle = MAA_CTRL_UNIT_NS::LinuxControlUnitAPI*;
+using MaaKWinControlUnitHandle = MAA_CTRL_UNIT_NS::LinuxControlUnitAPI*;
 using MaaGamepadControlUnitHandle = MAA_CTRL_UNIT_NS::GamepadControlUnitAPI*;
 using MaaCustomControlUnitHandle = MAA_CTRL_UNIT_NS::CustomControlUnitAPI*;
 using MaaReplayControlUnitHandle = MAA_CTRL_UNIT_NS::FullControlUnitAPI*;

@@ -27,9 +27,11 @@ private:
     void select_macos(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::MacOSConfig& macos_config);
     void select_playcover(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::PlayCoverConfig& playcover_config);
     void select_gamepad(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::GamepadConfig& gamepad_config);
+    void select_linux(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::LinuxConfig& linux_config);
     void select_wlroots();
     void select_wlroots_auto_detect();
     void select_wlroots_manual_input();
+    void input_pw_width_height();
 
     void select_resource();
     void add_task();

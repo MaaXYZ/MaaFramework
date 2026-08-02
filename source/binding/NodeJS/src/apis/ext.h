@@ -96,11 +96,13 @@ struct ExtContext : public maajs::NativeClassBase
     maajs::FunctionRefType gamepadControllerCtor;
     maajs::FunctionRefType wlrootsControllerCtor;
     maajs::FunctionRefType kwinControllerCtor;
+    maajs::FunctionRefType linuxControllerCtor;
     maajs::FunctionRefType customControllerCtor;
     maajs::FunctionRefType taskJobCtor;
     maajs::FunctionRefType taskerCtor;
     maajs::FunctionRefType contextCtor;
     std::optional<maajs::FunctionRefType> clientCtor;
+    std::optional<maajs::FunctionRefType> portalHelperCtor;
 
     HandleMap<MaaResource> resources;
     HandleMap<MaaController> controllers;
@@ -124,12 +126,16 @@ struct ExtContext : public maajs::NativeClassBase
         marker(gamepadControllerCtor.Value());
         marker(wlrootsControllerCtor.Value());
         marker(kwinControllerCtor.Value());
+        marker(linuxControllerCtor.Value());
         marker(customControllerCtor.Value());
         marker(taskJobCtor.Value());
         marker(taskerCtor.Value());
         marker(contextCtor.Value());
         if (clientCtor) {
             marker(clientCtor->Value());
+        }
+        if (portalHelperCtor) {
+            marker(portalHelperCtor->Value());
         }
 
         resources.gc_mark(marker);
