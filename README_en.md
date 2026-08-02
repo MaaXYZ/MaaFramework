@@ -225,7 +225,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MAH](https://github.com/Quartewe/MAH) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Quartewe/MAH) ![activity](https://img.shields.io/github/commit-activity/m/Quartewe/MAH?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Quartewe/MAH.svg?style=social)  
  A assistant for Tokyo Afterschool Summoners. Free your hands! Powered by MaaFramework!
 
-- [MATR](https://github.com/NotZoruak/MATR) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/NotZoruak/MATR) ![activity](https://img.shields.io/github/commit-activity/m/NotZoruak/MATR?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/NotZoruak/MATR?style=social)
+- [MATR](https://github.com/NotZoruak/MATR) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/NotZoruak/MATR) ![activity](https://img.shields.io/github/commit-activity/m/NotZoruak/MATR?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/NotZoruak/MATR?style=social)
     A Touken Ranbu Assistant. Image technology + simulation control, freeing your hands! Powered by MaaFramework!
 
 ## Eco-Building
