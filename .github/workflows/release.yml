@@ -34,7 +34,7 @@ concurrency:
     group: ${{ github.workflow }}-${{ inputs.run-id }}
     cancel-in-progress: false
 
-# 注意：如果 only-publish-to 是 All，则所有 jobs 的状态都必须是成功，All 的状态由 create_issue 判断
+# 注意：如�?only-publish-to �?All，则所�?jobs 的状态都必须是成功，All 的状态由 create_issue 判断
 jobs:
     meta:
         uses: ./.github/workflows/meta.yml
@@ -49,7 +49,7 @@ jobs:
             release_body: ${{ steps.git-cliff.outputs.content }}
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
               with:
                   fetch-depth: 0
 
@@ -77,7 +77,7 @@ jobs:
             NUGET_PACKAGE_SOURCE: ${{ inputs.dry-run && 'https://apiint.nugettest.org/v3/index.json' || 'https://api.nuget.org/v3/index.json' }}
             NUGET_AUDIENCE: ${{ inputs.dry-run && 'https://int.nugettest.org' || 'https://www.nuget.org' }}
         steps:
-            - uses: dawidd6/action-download-artifact@v6
+            - uses: dawidd6/action-download-artifact@v21
               with:
                   workflow: build.yml
                   run_id: ${{ inputs.run-id }}
@@ -110,11 +110,11 @@ jobs:
         permissions:
             id-token: write
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   fetch-depth: 0
 
-            - uses: dawidd6/action-download-artifact@v6
+            - uses: dawidd6/action-download-artifact@v21
               with:
                   workflow: build.yml
                   run_id: ${{ inputs.run-id }}
@@ -141,7 +141,7 @@ jobs:
         env:
             PYPI_REPOSITORY: ${{ inputs.dry-run && 'testpypi' || 'pypi' }}
         steps:
-            - uses: dawidd6/action-download-artifact@v6
+            - uses: dawidd6/action-download-artifact@v21
               with:
                   workflow: build.yml
                   run_id: ${{ inputs.run-id }}
@@ -169,7 +169,7 @@ jobs:
         permissions:
             contents: write
         steps:
-            - uses: dawidd6/action-download-artifact@v6
+            - uses: dawidd6/action-download-artifact@v21
               with:
                   workflow: build.yml
                   run_id: ${{ inputs.run-id }}
@@ -187,7 +187,7 @@ jobs:
                   done
 
             - id: publish
-              uses: softprops/action-gh-release@v2
+              uses: softprops/action-gh-release@v3
               with:
                   files: assets/*.zip
                   tag_name: ${{ inputs.dry-run && 'v0.0.0' || needs.meta.outputs.tag }}
