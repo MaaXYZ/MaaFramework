@@ -827,36 +827,27 @@ bool PipelineParser::parse_nn_detector_param(
         LogError << "failed to get_and_check_value_or_array threshold" << VAR(input);
         return false;
     }
-
-    output.nms = default_value.nms;
-    if (auto nms = input.find<std::string>("nms")) {
-        static const std::unordered_map<std::string, MAA_VISION_NS::NeuralNetwork::NmsPolicy> kNmsMap = {
-            { "None", MAA_VISION_NS::NeuralNetwork::NmsPolicy::None },
-            { "ClassAwareIoU", MAA_VISION_NS::NeuralNetwork::NmsPolicy::ClassAwareIoU },
-            { "CandidateCoverage", MAA_VISION_NS::NeuralNetwork::NmsPolicy::CandidateCoverage },
-        };
-        const auto iter = kNmsMap.find(*nms);
-        if (iter == kNmsMap.end()) {
-            LogError << "invalid nms policy" << VAR(*nms);
-            return false;
-        }
-        output.nms = iter->second;
-    }
-    else if (input.exists("nms")) {
-        LogError << "nms must be a string";
+    if (!get_and_check_value(input, "multi_label", output.multi_label, default_value.multi_label)) {
+        LogError << "failed to get_and_check_value multi_label" << VAR(input);
         return false;
     }
-
-    output.nms_threshold = default_value.nms_threshold;
-    if (auto nms_threshold = input.find<double>("nms_threshold")) {
-        if (!std::isfinite(*nms_threshold) || *nms_threshold < 0.0 || *nms_threshold > 1.0) {
-            LogError << "nms_threshold must be in [0, 1]" << VAR(*nms_threshold);
+    if (auto input_size = input.find<std::array<int, 2>>("input_size")) {
+        if ((*input_size)[0] <= 0 || (*input_size)[1] <= 0) {
+            LogError << "input_size must contain positive width and height" << VAR(*input_size);
             return false;
         }
-        output.nms_threshold = *nms_threshold;
+        output.input_size = cv::Size { (*input_size)[0], (*input_size)[1] };
     }
-    else if (input.exists("nms_threshold")) {
-        LogError << "nms_threshold must be a number";
+    else if (input.exists("input_size")) {
+        LogError << "input_size must be [width, height]" << VAR(input);
+        return false;
+    }
+    else {
+        output.input_size = default_value.input_size;
+    }
+
+    if (input.exists("nms") || input.exists("nms_threshold")) {
+        LogError << "NeuralNetworkDetect NMS must be configured in the model descriptor";
         return false;
     }
 

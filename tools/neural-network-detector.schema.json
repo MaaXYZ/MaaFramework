@@ -1,23 +1,594 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/MaaXYZ/MaaFramework/main/tools/neural-network-detector.schema.json",
     "title": "MaaFramework NeuralNetworkDetector model descriptor",
     "type": "object",
     "additionalProperties": false,
-    "required": [
-        "input_protocol",
-        "output_protocol"
-    ],
     "properties": {
         "$schema": {
             "type": "string"
         },
-        "input_protocol": {
-            "$ref": "#/$defs/InputProtocol"
+        "input": {
+            "$ref": "#/$defs/Input"
         },
-        "output_protocol": {
-            "$ref": "#/$defs/OutputProtocol"
+        "output": {
+            "$ref": "#/$defs/Output"
+        },
+        "nms": {
+            "$ref": "#/$defs/Nms"
         },
         "labels": {
+            "$ref": "#/$defs/Labels"
+        }
+    },
+    "$defs": {
+        "Size": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "prefixItems": [
+                {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            ]
+        },
+        "Triplet": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+                "type": "number"
+            }
+        },
+        "Input": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "oneOf": [
+                    {
+                        "$ref": "#/$defs/InputPreset"
+                    },
+                    {
+                        "$ref": "#/$defs/ResizeStep"
+                    },
+                    {
+                        "$ref": "#/$defs/ColorStep"
+                    },
+                    {
+                        "$ref": "#/$defs/ScaleStep"
+                    },
+                    {
+                        "$ref": "#/$defs/NormalizeStep"
+                    },
+                    {
+                        "$ref": "#/$defs/LayoutStep"
+                    },
+                    {
+                        "$ref": "#/$defs/AuxInputStep"
+                    }
+                ]
+            },
+            "allOf": [
+                {
+                    "contains": {
+                        "required": [
+                            "preset"
+                        ]
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                },
+                {
+                    "contains": {
+                        "properties": {
+                            "type": {
+                                "const": "Resize"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                },
+                {
+                    "contains": {
+                        "properties": {
+                            "type": {
+                                "const": "Color"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                },
+                {
+                    "contains": {
+                        "properties": {
+                            "type": {
+                                "const": "Scale"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                },
+                {
+                    "contains": {
+                        "properties": {
+                            "type": {
+                                "const": "Normalize"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                },
+                {
+                    "contains": {
+                        "properties": {
+                            "type": {
+                                "const": "Layout"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                },
+                {
+                    "contains": {
+                        "properties": {
+                            "type": {
+                                "const": "AuxInput"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                }
+            ]
+        },
+        "InputPreset": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "preset"
+            ],
+            "properties": {
+                "preset": {
+                    "enum": [
+                        "UltralyticsLetterbox",
+                        "Resize",
+                        "ResizeIN"
+                    ]
+                }
+            }
+        },
+        "ResizeStep": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "const": "Resize"
+                },
+                "mode": {
+                    "enum": [
+                        "Stretch",
+                        "Letterbox"
+                    ],
+                    "default": "Stretch"
+                },
+                "size": {
+                    "$ref": "#/$defs/Size"
+                },
+                "interpolation": {
+                    "enum": [
+                        "Nearest",
+                        "Linear",
+                        "Cubic",
+                        "Area"
+                    ],
+                    "default": "Linear"
+                },
+                "fill": {
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 255
+                        },
+                        {
+                            "$ref": "#/$defs/Triplet"
+                        }
+                    ],
+                    "default": 114
+                },
+                "padding_position": {
+                    "enum": [
+                        "Center",
+                        "TopLeft"
+                    ],
+                    "default": "Center"
+                }
+            }
+        },
+        "ColorStep": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "const": "Color"
+                },
+                "order": {
+                    "enum": [
+                        "RGB",
+                        "BGR"
+                    ],
+                    "default": "RGB"
+                }
+            }
+        },
+        "ScaleStep": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "const": "Scale"
+                },
+                "factor": {
+                    "type": "number",
+                    "default": 0.00392156862745098
+                }
+            }
+        },
+        "NormalizeStep": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "mean",
+                "std"
+            ],
+            "properties": {
+                "type": {
+                    "const": "Normalize"
+                },
+                "mean": {
+                    "$ref": "#/$defs/Triplet"
+                },
+                "std": {
+                    "$ref": "#/$defs/Triplet"
+                }
+            }
+        },
+        "LayoutStep": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "const": "Layout"
+                },
+                "order": {
+                    "enum": [
+                        "NCHW",
+                        "NHWC"
+                    ],
+                    "default": "NCHW"
+                }
+            }
+        },
+        "AuxInputStep": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "const": "AuxInput"
+                },
+                "kind": {
+                    "const": "OriginalSize",
+                    "default": "OriginalSize"
+                },
+                "order": {
+                    "enum": [
+                        "HW",
+                        "WH"
+                    ],
+                    "default": "HW"
+                }
+            }
+        },
+        "Output": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "oneOf": [
+                    {
+                        "$ref": "#/$defs/OutputPreset"
+                    },
+                    {
+                        "$ref": "#/$defs/TensorMapStep"
+                    },
+                    {
+                        "$ref": "#/$defs/BoxDecodeStep"
+                    },
+                    {
+                        "$ref": "#/$defs/ScoreDecodeStep"
+                    },
+                    {
+                        "$ref": "#/$defs/CandidateSelectStep"
+                    }
+                ]
+            },
+            "allOf": [
+                {
+                    "contains": {
+                        "required": [
+                            "preset"
+                        ]
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                },
+                {
+                    "contains": {
+                        "properties": {
+                            "type": {
+                                "const": "TensorMap"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                },
+                {
+                    "contains": {
+                        "properties": {
+                            "type": {
+                                "const": "BoxDecode"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                },
+                {
+                    "contains": {
+                        "properties": {
+                            "type": {
+                                "const": "ScoreDecode"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                },
+                {
+                    "contains": {
+                        "properties": {
+                            "type": {
+                                "const": "CandidateSelect"
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "minContains": 0,
+                    "maxContains": 1
+                }
+            ]
+        },
+        "OutputPreset": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "preset"
+            ],
+            "properties": {
+                "preset": {
+                    "enum": [
+                        "YoloDense",
+                        "YoloEndToEnd",
+                        "DetrQueries",
+                        "DetrPacked"
+                    ]
+                }
+            }
+        },
+        "TensorMapStep": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "layout",
+                "fields"
+            ],
+            "properties": {
+                "type": {
+                    "const": "TensorMap"
+                },
+                "layout": {
+                    "enum": [
+                        "ChannelsFirst",
+                        "ChannelsLast",
+                        "Split"
+                    ]
+                },
+                "fields": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "enum": [
+                            "Boxes",
+                            "ClassScores",
+                            "Objectness",
+                            "Score",
+                            "ClassId"
+                        ]
+                    }
+                }
+            }
+        },
+        "BoxDecodeStep": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "format",
+                "coordinates"
+            ],
+            "properties": {
+                "type": {
+                    "const": "BoxDecode"
+                },
+                "format": {
+                    "enum": [
+                        "CxCyWh",
+                        "XyXy"
+                    ]
+                },
+                "coordinates": {
+                    "enum": [
+                        "Input",
+                        "Normalized",
+                        "Source"
+                    ]
+                }
+            }
+        },
+        "ScoreDecodeStep": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "const": "ScoreDecode"
+                },
+                "activation": {
+                    "enum": [
+                        "None",
+                        "Sigmoid",
+                        "Softmax"
+                    ],
+                    "default": "None"
+                },
+                "objectness_activation": {
+                    "enum": [
+                        "None",
+                        "Sigmoid"
+                    ],
+                    "default": "None"
+                },
+                "combine": {
+                    "enum": [
+                        "None",
+                        "Multiply"
+                    ],
+                    "default": "None"
+                },
+                "no_object_index": {
+                    "oneOf": [
+                        {
+                            "enum": [
+                                "First",
+                                "Last"
+                            ]
+                        },
+                        {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    ]
+                }
+            }
+        },
+        "CandidateSelectStep": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "const": "CandidateSelect"
+                },
+                "top_k": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
+        "Nms": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "enum": [
+                        "None",
+                        "ClassAwareIoU",
+                        "CandidateCoverage"
+                    ]
+                },
+                "threshold": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "default": 0.7
+                }
+            }
+        },
+        "Labels": {
             "oneOf": [
                 {
                     "type": "array",
@@ -40,269 +611,6 @@
                     }
                 }
             ]
-        },
-        "producer": {
-            "type": "object"
-        },
-        "nms": {
-            "enum": [
-                "None",
-                "ClassAwareIoU",
-                "CandidateCoverage"
-            ]
-        },
-        "nms_threshold": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 1
-        }
-    },
-    "allOf": [
-        {
-            "if": {
-                "properties": {
-                    "output_protocol": {
-                        "properties": {
-                            "type": {
-                                "const": "DetrPacked"
-                            },
-                            "layout": {
-                                "const": "Split"
-                            }
-                        },
-                        "required": [
-                            "type",
-                            "layout"
-                        ]
-                    }
-                }
-            },
-            "then": {
-                "properties": {
-                    "input_protocol": {
-                        "required": [
-                            "original_size"
-                        ]
-                    }
-                }
-            },
-            "else": {
-                "properties": {
-                    "input_protocol": {
-                        "not": {
-                            "required": [
-                                "original_size"
-                            ]
-                        }
-                    }
-                }
-            }
-        }
-    ],
-    "$defs": {
-        "PositiveSize": {
-            "type": "array",
-            "prefixItems": [
-                {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                {
-                    "type": "integer",
-                    "minimum": 1
-                }
-            ],
-            "items": false
-        },
-        "OriginalSize": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-                "input_name",
-                "order"
-            ],
-            "properties": {
-                "input_name": {
-                    "type": "string",
-                    "minLength": 1
-                },
-                "order": {
-                    "enum": [
-                        "HW",
-                        "WH"
-                    ]
-                }
-            }
-        },
-        "InputProtocol": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-                "type",
-                "input_name"
-            ],
-            "properties": {
-                "type": {
-                    "enum": [
-                        "UltralyticsLetterbox",
-                        "DirectResizeDivide255",
-                        "DirectResizeImageNet"
-                    ]
-                },
-                "input_name": {
-                    "type": "string",
-                    "minLength": 1
-                },
-                "size": {
-                    "$ref": "#/$defs/PositiveSize"
-                },
-                "original_size": {
-                    "$ref": "#/$defs/OriginalSize"
-                }
-            }
-        },
-        "OutputProtocol": {
-            "oneOf": [
-                {
-                    "$ref": "#/$defs/YoloDense"
-                },
-                {
-                    "$ref": "#/$defs/YoloEndToEnd"
-                },
-                {
-                    "$ref": "#/$defs/DetrQueries"
-                },
-                {
-                    "$ref": "#/$defs/DetrPackedInterleaved"
-                },
-                {
-                    "$ref": "#/$defs/DetrPackedSplit"
-                }
-            ]
-        },
-        "YoloDense": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-                "type",
-                "layout"
-            ],
-            "properties": {
-                "type": {
-                    "const": "YoloDense"
-                },
-                "layout": {
-                    "enum": [
-                        "ChannelsFirst",
-                        "ChannelsLast"
-                    ]
-                },
-                "output_name": {
-                    "type": "string",
-                    "minLength": 1
-                }
-            }
-        },
-        "YoloEndToEnd": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-                "type"
-            ],
-            "properties": {
-                "type": {
-                    "const": "YoloEndToEnd"
-                },
-                "output_name": {
-                    "type": "string",
-                    "minLength": 1
-                }
-            }
-        },
-        "DetrQueries": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-                "type",
-                "boxes",
-                "logits",
-                "activation"
-            ],
-            "properties": {
-                "type": {
-                    "const": "DetrQueries"
-                },
-                "boxes": {
-                    "type": "string",
-                    "minLength": 1
-                },
-                "logits": {
-                    "type": "string",
-                    "minLength": 1
-                },
-                "activation": {
-                    "enum": [
-                        "Sigmoid",
-                        "SoftmaxWithNoObject"
-                    ]
-                },
-                "top_k": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "default": 300
-                }
-            }
-        },
-        "DetrPackedInterleaved": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-                "type",
-                "layout"
-            ],
-            "properties": {
-                "type": {
-                    "const": "DetrPacked"
-                },
-                "layout": {
-                    "const": "Interleaved"
-                },
-                "output_name": {
-                    "type": "string",
-                    "minLength": 1
-                }
-            }
-        },
-        "DetrPackedSplit": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-                "type",
-                "layout",
-                "labels",
-                "boxes",
-                "scores"
-            ],
-            "properties": {
-                "type": {
-                    "const": "DetrPacked"
-                },
-                "layout": {
-                    "const": "Split"
-                },
-                "labels": {
-                    "type": "string",
-                    "minLength": 1
-                },
-                "boxes": {
-                    "type": "string",
-                    "minLength": 1
-                },
-                "scores": {
-                    "type": "string",
-                    "minLength": 1
-                }
-            }
         }
     }
 }

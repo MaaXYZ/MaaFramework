@@ -19,6 +19,7 @@ namespace NeuralNetworkAdapter
 enum class TensorElementType
 {
     Float32,
+    Float16,
     Int64,
 };
 
@@ -51,45 +52,60 @@ struct DecodedDetections
     std::optional<size_t> class_count;
 };
 
-enum class OutputProtocol
-{
-    YoloDense,
-    YoloEndToEnd,
-    DetrQueries,
-    DetrPacked,
-};
-
-enum class YoloDenseLayout
+enum class TensorLayout
 {
     ChannelsFirst,
     ChannelsLast,
-};
-
-enum class DetrActivation
-{
-    Sigmoid,
-    SoftmaxWithNoObject,
-};
-
-enum class DetrPackedLayout
-{
-    Interleaved,
     Split,
 };
 
-struct AdapterOptions
+enum class TensorField
 {
-    OutputProtocol protocol = OutputProtocol::YoloDense;
-    YoloDenseLayout yolo_dense_layout = YoloDenseLayout::ChannelsFirst;
-    bool yolo_dense_multi_label = false;
-    DetrActivation detr_activation = DetrActivation::Sigmoid;
-    size_t detr_top_k = 300;
-    DetrPackedLayout detr_packed_layout = DetrPackedLayout::Interleaved;
+    Boxes,
+    ClassScores,
+    Objectness,
+    Score,
+    ClassId,
+};
+
+enum class ScoreActivation
+{
+    None,
+    Sigmoid,
+    Softmax,
+};
+
+enum class ScoreCombination
+{
+    None,
+    Multiply,
+};
+
+struct TensorMapSpec
+{
+    TensorLayout layout = TensorLayout::ChannelsLast;
+    std::vector<TensorField> fields;
+};
+
+struct ScoreDecodeSpec
+{
+    ScoreActivation activation = ScoreActivation::None;
+    ScoreActivation objectness_activation = ScoreActivation::None;
+    ScoreCombination combination = ScoreCombination::None;
+    std::optional<int64_t> no_object_index;
+};
+
+struct OutputPipelineSpec
+{
+    TensorMapSpec tensor_map;
+    ScoreDecodeSpec score_decode;
+    std::optional<size_t> top_k;
 };
 
 struct DecodeOptions
 {
     float score_floor = 0.0F;
+    bool multi_label = true;
 };
 
 class IAdapter
@@ -102,17 +118,13 @@ public:
         decode(std::span<const TensorView> tensors, const DecodeOptions& options, DecodedDetections& output, std::string& error) const = 0;
 };
 
-std::unique_ptr<IAdapter> create(const AdapterOptions& options);
+std::unique_ptr<IAdapter> create(const OutputPipelineSpec& spec);
 
 bool has_batch_one(const std::vector<int64_t>& shape);
+bool is_float_tensor(TensorElementType type);
 bool check_finite(std::span<const float> values, std::string_view protocol, std::string& error);
 bool decode_class_id(float value, int& class_id, std::string_view protocol, std::string& error);
 bool validate_score(float value, float& score, std::string_view protocol, std::string& error);
-
-std::unique_ptr<IAdapter> create_yolo_dense(const AdapterOptions& options);
-std::unique_ptr<IAdapter> create_yolo_end_to_end();
-std::unique_ptr<IAdapter> create_detr_queries(const AdapterOptions& options);
-std::unique_ptr<IAdapter> create_detr_packed(const AdapterOptions& options);
 
 } // namespace NeuralNetworkAdapter
 

@@ -127,8 +127,8 @@ declare global {
                 model?: string
                 expected?: MaybeArray<number, Mode>
                 threshold?: MaybeArray<number, Mode>
-                nms?: 'None' | 'ClassAwareIoU' | 'CandidateCoverage'
-                nms_threshold?: number
+                multi_label?: boolean
+                input_size?: [number, number]
                 order_by?: OrderByMap['NeuralNetworkDetect']
                 index?: number
             },

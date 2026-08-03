@@ -14,6 +14,7 @@ MAA_RES_NS_BEGIN
 
 namespace PipelineV2
 {
+using JSize = std::array<int, 2>;
 using JRect = std::array<int, 4>;
 using JTarget = std::variant<bool, std::string, JRect>;
 
@@ -106,25 +107,12 @@ struct JNeuralNetworkDetect
     std::string model;
     std::vector<int> expected;
     std::vector<double> threshold;
-    std::optional<std::string> nms;
-    std::optional<double> nms_threshold;
+    bool multi_label = true;
+    std::optional<JSize> input_size;
     std::string order_by;
     int index = 0;
 
-    json::value to_json() const
-    {
-        json::object result {
-            { "roi", roi },           { "roi_offset", roi_offset }, { "labels", labels },     { "model", model },
-            { "expected", expected }, { "threshold", threshold },   { "order_by", order_by }, { "index", index },
-        };
-        if (nms) {
-            result.emplace("nms", *nms);
-        }
-        if (nms_threshold) {
-            result.emplace("nms_threshold", *nms_threshold);
-        }
-        return result;
-    }
+    MEO_TOJSON(roi, roi_offset, labels, model, expected, threshold, multi_label, input_size, order_by, index);
 };
 
 struct JCustomRecognition

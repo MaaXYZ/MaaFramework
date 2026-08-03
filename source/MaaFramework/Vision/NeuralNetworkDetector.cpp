@@ -2,19 +2,16 @@
 
 #include <algorithm>
 #include <array>
-#include <cctype>
-#include <charconv>
 #include <cmath>
 #include <format>
-#include <functional>
 #include <limits>
 #include <ranges>
-#include <unordered_set>
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/NoWarningCV.hpp"
+#include "NeuralNetworkAdapter/ModelResolver.h"
 #include "NeuralNetworkAdapter/NeuralNetworkAdapter.h"
 #include "VisionUtils.hpp"
 
@@ -23,69 +20,24 @@ MAA_VISION_NS_BEGIN
 namespace
 {
 
-using NeuralNetworkAdapter::AdapterOptions;
+using NeuralNetworkAdapter::BoxDecodeSpec;
+using NeuralNetworkAdapter::BoxFormat;
+using NeuralNetworkAdapter::ColorOrder;
+using NeuralNetworkAdapter::CoordinateSpace;
 using NeuralNetworkAdapter::DecodedDetections;
-using NeuralNetworkAdapter::DetrActivation;
-using NeuralNetworkAdapter::DetrPackedLayout;
 using NeuralNetworkAdapter::IAdapter;
-using NeuralNetworkAdapter::OutputProtocol;
+using NeuralNetworkAdapter::ImageLayout;
+using NeuralNetworkAdapter::InputPipelineSpec;
+using NeuralNetworkAdapter::ModelDescriptor;
+using NeuralNetworkAdapter::ModelFacts;
+using NeuralNetworkAdapter::OriginalSizeOrder;
+using NeuralNetworkAdapter::PaddingPosition;
 using NeuralNetworkAdapter::RawDetection;
+using NeuralNetworkAdapter::ResizeInterpolation;
+using NeuralNetworkAdapter::ResizeMode;
 using NeuralNetworkAdapter::TensorElementType;
 using NeuralNetworkAdapter::TensorSpec;
 using NeuralNetworkAdapter::TensorView;
-using NeuralNetworkAdapter::YoloDenseLayout;
-
-enum class InputProtocol
-{
-    UltralyticsLetterbox,
-    DirectResizeDivide255,
-    DirectResizeImageNet,
-};
-
-enum class OriginalSizeOrder
-{
-    HW,
-    WH,
-};
-
-enum class BoxEncoding
-{
-    InputCxcywh,
-    InputXyxy,
-    NormalizedCxcywh,
-    SourceXyxy,
-};
-
-struct OriginalSizeInput
-{
-    std::string name;
-    OriginalSizeOrder order = OriginalSizeOrder::HW;
-};
-
-struct InputProtocolSpec
-{
-    InputProtocol type = InputProtocol::DirectResizeDivide255;
-    std::string name;
-    cv::Size size;
-    std::optional<OriginalSizeInput> original_size;
-    bool legacy = false;
-};
-
-struct OutputProtocolSpec
-{
-    AdapterOptions adapter;
-    std::vector<std::string> output_names;
-    BoxEncoding box_encoding = BoxEncoding::InputCxcywh;
-};
-
-struct ModelDescriptor
-{
-    InputProtocolSpec input;
-    OutputProtocolSpec output;
-    std::vector<std::string> labels;
-    NeuralNetwork::NmsPolicy nms = NeuralNetwork::NmsPolicy::ClassAwareIoU;
-    float nms_threshold = 0.7F;
-};
 
 struct CoordinateTransform
 {
@@ -133,561 +85,13 @@ struct ThresholdPolicy
     std::vector<ExpectedThreshold> expected_thresholds;
 };
 
-bool check_allowed_fields(
-    const json::object& object,
-    const std::unordered_set<std::string_view>& allowed,
-    std::string_view context,
-    std::string& error)
-{
-    for (const auto& [key, value] : object) {
-        (void)value;
-        if (!allowed.contains(key)) {
-            error = "unknown " + std::string(context) + " field: " + key;
-            return false;
-        }
-    }
-    return true;
-}
-
-bool parse_positive_size(const json::value& value, cv::Size& output, std::string& error)
-{
-    if (!value.is_array() || value.as_array().size() != 2) {
-        error = "input_protocol.size must be [width, height]";
-        return false;
-    }
-    const auto& width_value = value.as_array()[0];
-    const auto& height_value = value.as_array()[1];
-    if (!width_value.is_number() || !height_value.is_number()) {
-        error = "input_protocol.size must contain positive integers";
-        return false;
-    }
-    const double width = width_value.as_double();
-    const double height = height_value.as_double();
-    if (!std::isfinite(width) || !std::isfinite(height) || width <= 0.0 || height <= 0.0 || std::trunc(width) != width
-        || std::trunc(height) != height || width > std::numeric_limits<int>::max() || height > std::numeric_limits<int>::max()) {
-        error = "input_protocol.size must contain positive integers";
-        return false;
-    }
-    output = { static_cast<int>(width), static_cast<int>(height) };
-    return true;
-}
-
-bool parse_labels(const json::value& value, std::vector<std::string>& labels, std::string& error)
-{
-    std::vector<std::string> parsed;
-    if (value.is_array()) {
-        for (const auto& item : value.as_array()) {
-            if (!item.is_string()) {
-                error = "labels array must contain only strings";
-                return false;
-            }
-            parsed.emplace_back(item.as_string());
-        }
-    }
-    else if (value.is_object()) {
-        std::vector<std::pair<size_t, std::string>> entries;
-        entries.reserve(value.as_object().size());
-        for (const auto& [key_text, item] : value.as_object()) {
-            size_t key = 0;
-            const auto [end, conversion_error] = std::from_chars(key_text.data(), key_text.data() + key_text.size(), key);
-            if (conversion_error != std::errc() || end != key_text.data() + key_text.size() || !item.is_string()) {
-                error = "labels object must map decimal class ids to strings";
-                return false;
-            }
-            entries.emplace_back(key, item.as_string());
-        }
-        std::ranges::sort(entries, { }, &std::pair<size_t, std::string>::first);
-        for (size_t index = 0; index < entries.size(); ++index) {
-            if (entries[index].first != index) {
-                error = "label class ids must be contiguous from zero";
-                return false;
-            }
-            parsed.emplace_back(std::move(entries[index].second));
-        }
-    }
-    else {
-        error = "labels must be an array or object";
-        return false;
-    }
-
-    if (parsed.empty()) {
-        error = "labels must not be empty";
-        return false;
-    }
-    std::unordered_set<std::string> unique;
-    unique.reserve(parsed.size());
-    for (const auto& label : parsed) {
-        if (label.empty()) {
-            error = "labels must not contain empty strings";
-            return false;
-        }
-        if (!unique.emplace(label).second) {
-            error = "labels must be unique";
-            return false;
-        }
-    }
-    labels = std::move(parsed);
-    error.clear();
-    return true;
-}
-
-void skip_spaces(std::string_view text, size_t& position)
-{
-    while (position < text.size() && std::isspace(static_cast<unsigned char>(text[position]))) {
-        ++position;
-    }
-}
-
-bool parse_python_labels(std::string_view text, std::vector<std::string>& labels, std::string& error)
-{
-    size_t position = 0;
-    skip_spaces(text, position);
-    if (position == text.size() || text[position++] != '{') {
-        error = "metadata labels are not a supported JSON value or Python dictionary";
-        return false;
-    }
-
-    std::vector<std::pair<size_t, std::string>> entries;
-    for (;;) {
-        skip_spaces(text, position);
-        if (position < text.size() && text[position] == '}') {
-            ++position;
-            break;
-        }
-
-        const size_t key_begin = position;
-        while (position < text.size() && std::isdigit(static_cast<unsigned char>(text[position]))) {
-            ++position;
-        }
-        size_t key = 0;
-        const auto [key_end, key_error] = std::from_chars(text.data() + key_begin, text.data() + position, key);
-        if (key_begin == position || key_error != std::errc() || key_end != text.data() + position) {
-            error = "metadata label keys must be non-negative decimal class ids";
-            return false;
-        }
-
-        skip_spaces(text, position);
-        if (position == text.size() || text[position++] != ':') {
-            error = "invalid metadata labels dictionary";
-            return false;
-        }
-        skip_spaces(text, position);
-        if (position == text.size() || (text[position] != '\'' && text[position] != '"')) {
-            error = "metadata labels must be strings";
-            return false;
-        }
-
-        const char quote = text[position++];
-        std::string label;
-        bool closed = false;
-        while (position < text.size()) {
-            const char current = text[position++];
-            if (current == quote) {
-                closed = true;
-                break;
-            }
-            if (current == '\\') {
-                if (position == text.size()) {
-                    error = "invalid escape in metadata label";
-                    return false;
-                }
-                label.push_back(text[position++]);
-                continue;
-            }
-            label.push_back(current);
-        }
-        if (!closed) {
-            error = "unterminated metadata label";
-            return false;
-        }
-        entries.emplace_back(key, std::move(label));
-
-        skip_spaces(text, position);
-        if (position < text.size() && text[position] == ',') {
-            ++position;
-            continue;
-        }
-        if (position < text.size() && text[position] == '}') {
-            ++position;
-            break;
-        }
-        error = "invalid metadata labels dictionary";
-        return false;
-    }
-
-    skip_spaces(text, position);
-    if (position != text.size()) {
-        error = "unexpected characters after metadata labels dictionary";
-        return false;
-    }
-
-    json::object object;
-    for (auto& [index, label] : entries) {
-        object.emplace(std::to_string(index), std::move(label));
-    }
-    return parse_labels(json::value(std::move(object)), labels, error);
-}
-
-bool parse_metadata_labels(std::string_view text, std::vector<std::string>& labels, std::string& error)
-{
-    if (auto value = json::parse(text)) {
-        return parse_labels(*value, labels, error);
-    }
-    return parse_python_labels(text, labels, error);
-}
-
-std::vector<std::string> read_metadata_labels(const Ort::Session& session)
-{
-    Ort::AllocatorWithDefaultOptions allocator;
-    const Ort::ModelMetadata metadata = session.GetModelMetadata();
-    constexpr std::array<std::string_view, 4> kKeys = { "names", "name", "labels", "class_names" };
-    for (const auto key : kKeys) {
-        auto raw = metadata.LookupCustomMetadataMapAllocated(key.data(), allocator);
-        if (!raw) {
-            continue;
-        }
-        std::vector<std::string> labels;
-        std::string error;
-        if (parse_metadata_labels(raw.get(), labels, error)) {
-            return labels;
-        }
-        LogWarn << "Failed to parse ONNX label metadata" << VAR(key) << VAR(error);
-    }
-    return { };
-}
-
-bool parse_input_protocol(const json::value& value, InputProtocolSpec& output, std::string& error)
-{
-    if (!value.is_object()) {
-        error = "input_protocol must be an object";
-        return false;
-    }
-    static const std::unordered_set<std::string_view> kAllowed = { "type", "input_name", "size", "original_size" };
-    if (!check_allowed_fields(value.as_object(), kAllowed, "input_protocol", error)) {
-        return false;
-    }
-
-    const auto type = value.find<std::string>("type");
-    const auto name = value.find<std::string>("input_name");
-    if (!type || !name || name->empty()) {
-        error = "input_protocol requires non-empty type and input_name strings";
-        return false;
-    }
-    if (*type == "UltralyticsLetterbox") {
-        output.type = InputProtocol::UltralyticsLetterbox;
-    }
-    else if (*type == "DirectResizeDivide255") {
-        output.type = InputProtocol::DirectResizeDivide255;
-    }
-    else if (*type == "DirectResizeImageNet") {
-        output.type = InputProtocol::DirectResizeImageNet;
-    }
-    else {
-        error = "input_protocol.type is not supported: " + *type;
-        return false;
-    }
-    output.name = *name;
-
-    if (auto size = value.find("size"); size && !parse_positive_size(*size, output.size, error)) {
-        return false;
-    }
-    if (auto original_size = value.find("original_size")) {
-        if (!original_size->is_object()) {
-            error = "input_protocol.original_size must be an object";
-            return false;
-        }
-        static const std::unordered_set<std::string_view> kOriginalAllowed = { "input_name", "order" };
-        if (!check_allowed_fields(original_size->as_object(), kOriginalAllowed, "original_size", error)) {
-            return false;
-        }
-        const auto original_name = original_size->find<std::string>("input_name");
-        const auto order = original_size->find<std::string>("order");
-        if (!original_name || original_name->empty() || !order) {
-            error = "original_size requires non-empty input_name and order strings";
-            return false;
-        }
-        OriginalSizeInput parsed { .name = *original_name };
-        if (*order == "HW") {
-            parsed.order = OriginalSizeOrder::HW;
-        }
-        else if (*order == "WH") {
-            parsed.order = OriginalSizeOrder::WH;
-        }
-        else {
-            error = "original_size.order must be HW or WH";
-            return false;
-        }
-        if (parsed.name == output.name) {
-            error = "image and original_size input names must differ";
-            return false;
-        }
-        output.original_size = std::move(parsed);
-    }
-    error.clear();
-    return true;
-}
-
-bool parse_optional_output_name(const json::value& value, std::vector<std::string>& names, std::string& error)
-{
-    if (auto name = value.find<std::string>("output_name")) {
-        if (name->empty()) {
-            error = "output_name must not be empty";
-            return false;
-        }
-        names = { *name };
-    }
-    else if (value.exists("output_name")) {
-        error = "output_name must be a string";
-        return false;
-    }
-    return true;
-}
-
-bool parse_output_protocol(const json::value& value, OutputProtocolSpec& output, std::string& error)
-{
-    if (!value.is_object()) {
-        error = "output_protocol must be an object";
-        return false;
-    }
-    const auto type = value.find<std::string>("type");
-    if (!type || type->empty()) {
-        error = "output_protocol.type must be a non-empty string";
-        return false;
-    }
-
-    if (*type == "YoloDense") {
-        static const std::unordered_set<std::string_view> kAllowed = { "type", "layout", "output_name" };
-        if (!check_allowed_fields(value.as_object(), kAllowed, "YoloDense", error)) {
-            return false;
-        }
-        const auto layout = value.find<std::string>("layout");
-        if (!layout) {
-            error = "YoloDense.layout is required";
-            return false;
-        }
-        output.adapter.protocol = OutputProtocol::YoloDense;
-        output.box_encoding = BoxEncoding::InputCxcywh;
-        if (*layout == "ChannelsFirst") {
-            output.adapter.yolo_dense_layout = YoloDenseLayout::ChannelsFirst;
-        }
-        else if (*layout == "ChannelsLast") {
-            output.adapter.yolo_dense_layout = YoloDenseLayout::ChannelsLast;
-        }
-        else {
-            error = "YoloDense.layout must be ChannelsFirst or ChannelsLast";
-            return false;
-        }
-        return parse_optional_output_name(value, output.output_names, error);
-    }
-
-    if (*type == "YoloEndToEnd") {
-        static const std::unordered_set<std::string_view> kAllowed = { "type", "output_name" };
-        if (!check_allowed_fields(value.as_object(), kAllowed, "YoloEndToEnd", error)) {
-            return false;
-        }
-        output.adapter.protocol = OutputProtocol::YoloEndToEnd;
-        output.box_encoding = BoxEncoding::InputXyxy;
-        return parse_optional_output_name(value, output.output_names, error);
-    }
-
-    if (*type == "DetrQueries") {
-        static const std::unordered_set<std::string_view> kAllowed = { "type", "boxes", "logits", "activation", "top_k" };
-        if (!check_allowed_fields(value.as_object(), kAllowed, "DetrQueries", error)) {
-            return false;
-        }
-        const auto boxes = value.find<std::string>("boxes");
-        const auto logits = value.find<std::string>("logits");
-        const auto activation = value.find<std::string>("activation");
-        if (!boxes || boxes->empty() || !logits || logits->empty() || *boxes == *logits || !activation) {
-            error = "DetrQueries requires distinct boxes and logits names and an activation";
-            return false;
-        }
-        output.adapter.protocol = OutputProtocol::DetrQueries;
-        output.box_encoding = BoxEncoding::NormalizedCxcywh;
-        output.output_names = { *boxes, *logits };
-        if (*activation == "Sigmoid") {
-            output.adapter.detr_activation = DetrActivation::Sigmoid;
-        }
-        else if (*activation == "SoftmaxWithNoObject") {
-            output.adapter.detr_activation = DetrActivation::SoftmaxWithNoObject;
-        }
-        else {
-            error = "DetrQueries.activation must be Sigmoid or SoftmaxWithNoObject";
-            return false;
-        }
-        if (auto top_k = value.find<double>("top_k")) {
-            if (!std::isfinite(*top_k) || *top_k <= 0.0 || std::trunc(*top_k) != *top_k
-                || *top_k > static_cast<double>(std::numeric_limits<size_t>::max())) {
-                error = "DetrQueries.top_k must be a positive integer";
-                return false;
-            }
-            output.adapter.detr_top_k = static_cast<size_t>(*top_k);
-        }
-        else if (value.exists("top_k")) {
-            error = "DetrQueries.top_k must be a positive integer";
-            return false;
-        }
-        error.clear();
-        return true;
-    }
-
-    if (*type == "DetrPacked") {
-        const auto layout = value.find<std::string>("layout");
-        if (!layout) {
-            error = "DetrPacked.layout is required";
-            return false;
-        }
-        output.adapter.protocol = OutputProtocol::DetrPacked;
-        if (*layout == "Interleaved") {
-            static const std::unordered_set<std::string_view> kAllowed = { "type", "layout", "output_name" };
-            if (!check_allowed_fields(value.as_object(), kAllowed, "DetrPacked Interleaved", error)) {
-                return false;
-            }
-            output.adapter.detr_packed_layout = DetrPackedLayout::Interleaved;
-            output.box_encoding = BoxEncoding::NormalizedCxcywh;
-            return parse_optional_output_name(value, output.output_names, error);
-        }
-        if (*layout == "Split") {
-            static const std::unordered_set<std::string_view> kAllowed = { "type", "layout", "labels", "boxes", "scores" };
-            if (!check_allowed_fields(value.as_object(), kAllowed, "DetrPacked Split", error)) {
-                return false;
-            }
-            const auto labels = value.find<std::string>("labels");
-            const auto boxes = value.find<std::string>("boxes");
-            const auto scores = value.find<std::string>("scores");
-            if (!labels || labels->empty() || !boxes || boxes->empty() || !scores || scores->empty()) {
-                error = "DetrPacked Split requires labels, boxes, and scores output names";
-                return false;
-            }
-            std::unordered_set<std::string> unique = { *labels, *boxes, *scores };
-            if (unique.size() != 3) {
-                error = "DetrPacked Split output names must be distinct";
-                return false;
-            }
-            output.adapter.detr_packed_layout = DetrPackedLayout::Split;
-            output.box_encoding = BoxEncoding::SourceXyxy;
-            output.output_names = { *labels, *boxes, *scores };
-            error.clear();
-            return true;
-        }
-        error = "DetrPacked.layout must be Interleaved or Split";
-        return false;
-    }
-
-    error = "output_protocol.type is not supported: " + *type;
-    return false;
-}
-
-bool parse_nms(std::string_view value, NeuralNetwork::NmsPolicy& output)
-{
-    if (value == "None") {
-        output = NeuralNetwork::NmsPolicy::None;
-        return true;
-    }
-    if (value == "ClassAwareIoU") {
-        output = NeuralNetwork::NmsPolicy::ClassAwareIoU;
-        return true;
-    }
-    if (value == "CandidateCoverage") {
-        output = NeuralNetwork::NmsPolicy::CandidateCoverage;
-        return true;
-    }
-    return false;
-}
-
-NeuralNetwork::NmsPolicy default_nms(OutputProtocol protocol)
-{
-    return protocol == OutputProtocol::YoloDense ? NeuralNetwork::NmsPolicy::ClassAwareIoU : NeuralNetwork::NmsPolicy::None;
-}
-
-bool parse_descriptor(const json::value& value, ModelDescriptor& output, std::string& error)
-{
-    if (!value.is_object()) {
-        error = "model descriptor must be an object";
-        return false;
-    }
-    static const std::unordered_set<std::string_view> kAllowed = {
-        "$schema", "input_protocol", "output_protocol", "labels", "producer", "nms", "nms_threshold",
-    };
-    if (!check_allowed_fields(value.as_object(), kAllowed, "model descriptor", error)) {
-        return false;
-    }
-    if (value.exists("$schema") && !value.find<std::string>("$schema")) {
-        error = "$schema must be a string";
-        return false;
-    }
-    if (auto producer = value.find("producer"); producer && !producer->is_object()) {
-        error = "producer must be an object";
-        return false;
-    }
-    const auto input = value.find("input_protocol");
-    const auto output_protocol = value.find("output_protocol");
-    if (!input || !output_protocol) {
-        error = "input_protocol and output_protocol are required";
-        return false;
-    }
-
-    ModelDescriptor parsed;
-    if (!parse_input_protocol(*input, parsed.input, error) || !parse_output_protocol(*output_protocol, parsed.output, error)) {
-        return false;
-    }
-    const bool split =
-        parsed.output.adapter.protocol == OutputProtocol::DetrPacked && parsed.output.adapter.detr_packed_layout == DetrPackedLayout::Split;
-    if (split != parsed.input.original_size.has_value()) {
-        error = split ? "DetrPacked Split requires input_protocol.original_size"
-                      : "input_protocol.original_size is only allowed for DetrPacked Split";
-        return false;
-    }
-
-    parsed.nms = default_nms(parsed.output.adapter.protocol);
-    if (auto labels = value.find("labels"); labels && !parse_labels(*labels, parsed.labels, error)) {
-        return false;
-    }
-    if (auto nms = value.find<std::string>("nms")) {
-        if (!parse_nms(*nms, parsed.nms)) {
-            error = "nms is not a supported policy";
-            return false;
-        }
-    }
-    else if (value.exists("nms")) {
-        error = "nms must be a string";
-        return false;
-    }
-    if (auto threshold = value.find<double>("nms_threshold")) {
-        if (!std::isfinite(*threshold) || *threshold < 0.0 || *threshold > 1.0) {
-            error = "nms_threshold must be in [0, 1]";
-            return false;
-        }
-        parsed.nms_threshold = static_cast<float>(*threshold);
-    }
-    else if (value.exists("nms_threshold")) {
-        error = "nms_threshold must be a number";
-        return false;
-    }
-
-    output = std::move(parsed);
-    error.clear();
-    return true;
-}
-
-ModelDescriptor legacy_descriptor()
-{
-    ModelDescriptor descriptor;
-    descriptor.input.type = InputProtocol::DirectResizeDivide255;
-    descriptor.input.legacy = true;
-    descriptor.output.adapter.protocol = OutputProtocol::YoloDense;
-    descriptor.output.adapter.yolo_dense_layout = YoloDenseLayout::ChannelsFirst;
-    descriptor.output.adapter.yolo_dense_multi_label = true;
-    descriptor.output.box_encoding = BoxEncoding::InputCxcywh;
-    descriptor.nms = NeuralNetwork::NmsPolicy::CandidateCoverage;
-    descriptor.nms_threshold = 0.7F;
-    return descriptor;
-}
-
 std::optional<TensorElementType> tensor_element_type(ONNXTensorElementDataType type)
 {
     if (type == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) {
         return TensorElementType::Float32;
+    }
+    if (type == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16) {
+        return TensorElementType::Float16;
     }
     if (type == ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64) {
         return TensorElementType::Int64;
@@ -695,178 +99,142 @@ std::optional<TensorElementType> tensor_element_type(ONNXTensorElementDataType t
     return std::nullopt;
 }
 
-const TensorSpec* find_tensor(std::span<const TensorSpec> tensors, std::string_view name)
+cv::Size resolve_input_size(const cv::Mat& image, const InputPipelineSpec& spec, const std::optional<cv::Size>& pipeline_size)
 {
-    const auto iterator = std::ranges::find(tensors, name, &TensorSpec::name);
-    return iterator == tensors.end() ? nullptr : &*iterator;
+    const size_t height_axis = spec.layout == ImageLayout::NCHW ? 2 : 1;
+    const size_t width_axis = spec.layout == ImageLayout::NCHW ? 3 : 2;
+    const int64_t static_width = spec.graph_shape[width_axis];
+    const int64_t static_height = spec.graph_shape[height_axis];
+    const int width = static_width > 0 ? static_cast<int>(static_width)
+                                       : (pipeline_size ? pipeline_size->width : (spec.resize_size ? spec.resize_size->width : image.cols));
+    const int height = static_height > 0
+                           ? static_cast<int>(static_height)
+                           : (pipeline_size ? pipeline_size->height : (spec.resize_size ? spec.resize_size->height : image.rows));
+    return { width, height };
 }
 
-bool validate_image_input(ModelDescriptor& descriptor, const TensorSpec& input, std::string& error)
+int cv_interpolation(ResizeInterpolation interpolation)
 {
-    if (input.element_type != TensorElementType::Float32 || input.shape.size() != 4 || (input.shape[0] != 1 && input.shape[0] != -1)
-        || input.shape[1] != 3 || input.shape[2] == 0 || input.shape[2] < -1 || input.shape[3] == 0 || input.shape[3] < -1) {
-        error = "detector image input must be FP32 NCHW with shape [1, 3, H, W]";
-        return false;
+    switch (interpolation) {
+    case ResizeInterpolation::Nearest:
+        return cv::INTER_NEAREST;
+    case ResizeInterpolation::Linear:
+        return cv::INTER_LINEAR;
+    case ResizeInterpolation::Cubic:
+        return cv::INTER_CUBIC;
+    case ResizeInterpolation::Area:
+        return cv::INTER_AREA;
     }
-
-    const int64_t model_height = input.shape[2];
-    const int64_t model_width = input.shape[3];
-    if (descriptor.input.size.width > 0 && descriptor.input.size.height > 0) {
-        if ((model_width > 0 && model_width != descriptor.input.size.width)
-            || (model_height > 0 && model_height != descriptor.input.size.height)) {
-            error = "input_protocol.size does not match the model input shape";
-            return false;
-        }
-    }
-    else if (
-        model_width > 0 && model_height > 0 && model_width <= std::numeric_limits<int>::max()
-        && model_height <= std::numeric_limits<int>::max()) {
-        descriptor.input.size = { static_cast<int>(model_width), static_cast<int>(model_height) };
-    }
-    else {
-        error = "dynamic detector input H/W requires input_protocol.size";
-        return false;
-    }
-    return true;
+    return cv::INTER_LINEAR;
 }
 
-bool validate_original_size_input(const TensorSpec& input, std::string& error)
-{
-    if (input.element_type != TensorElementType::Int64 || input.shape.size() != 2 || (input.shape[0] != 1 && input.shape[0] != -1)
-        || input.shape[1] != 2) {
-        error = "original_size input must be INT64 with shape [1, 2]";
-        return false;
-    }
-    return true;
-}
-
-bool select_outputs(
-    const ModelDescriptor& descriptor,
-    std::span<const TensorSpec> available,
-    std::vector<TensorSpec>& selected,
+bool preprocess(
+    const cv::Mat& image,
+    const InputPipelineSpec& spec,
+    const std::optional<cv::Size>& pipeline_size,
+    PreprocessedImage& output,
     std::string& error)
-{
-    const bool single = descriptor.output.adapter.protocol == OutputProtocol::YoloDense
-                        || descriptor.output.adapter.protocol == OutputProtocol::YoloEndToEnd
-                        || (descriptor.output.adapter.protocol == OutputProtocol::DetrPacked
-                            && descriptor.output.adapter.detr_packed_layout == DetrPackedLayout::Interleaved);
-    if (single) {
-        if (available.size() != 1) {
-            error = "selected output protocol requires exactly one model output";
-            return false;
-        }
-        if (!descriptor.output.output_names.empty() && descriptor.output.output_names.front() != available.front().name) {
-            error = "configured output_name does not match the model output";
-            return false;
-        }
-        selected = { available.front() };
-        return true;
-    }
-
-    if (available.size() != descriptor.output.output_names.size()) {
-        error = "model output count does not match output_protocol";
-        return false;
-    }
-    selected.clear();
-    selected.reserve(descriptor.output.output_names.size());
-    for (const auto& name : descriptor.output.output_names) {
-        const auto* tensor = find_tensor(available, name);
-        if (!tensor) {
-            error = "configured detector output was not found: " + name;
-            return false;
-        }
-        selected.emplace_back(*tensor);
-    }
-    return true;
-}
-
-bool preprocess(const cv::Mat& image, const InputProtocolSpec& spec, PreprocessedImage& output, std::string& error)
 {
     if (image.empty() || image.type() != CV_8UC3) {
         error = "detector input image must be non-empty CV_8UC3";
         return false;
     }
-    if (spec.size.width <= 0 || spec.size.height <= 0) {
+    const cv::Size input_size = resolve_input_size(image, spec, pipeline_size);
+    if (input_size.width <= 0 || input_size.height <= 0) {
         error = "detector input size must be positive";
         return false;
     }
 
-    const bool letterbox = spec.type == InputProtocol::UltralyticsLetterbox;
-    const int interpolation = spec.legacy ? cv::INTER_AREA : cv::INTER_LINEAR;
+    const bool letterbox = spec.resize_mode == ResizeMode::Letterbox;
+    const int interpolation = cv_interpolation(spec.interpolation);
     cv::Mat resized;
     CoordinateTransform transform {
         .source_size = image.size(),
-        .input_size = spec.size,
+        .input_size = input_size,
     };
     if (!letterbox) {
-        cv::resize(image, resized, spec.size, 0.0, 0.0, interpolation);
-        transform.scale_x = static_cast<float>(spec.size.width) / static_cast<float>(image.cols);
-        transform.scale_y = static_cast<float>(spec.size.height) / static_cast<float>(image.rows);
+        cv::resize(image, resized, input_size, 0.0, 0.0, interpolation);
+        transform.scale_x = static_cast<float>(input_size.width) / static_cast<float>(image.cols);
+        transform.scale_y = static_cast<float>(input_size.height) / static_cast<float>(image.rows);
     }
     else {
         const float scale = std::min(
-            static_cast<float>(spec.size.width) / static_cast<float>(image.cols),
-            static_cast<float>(spec.size.height) / static_cast<float>(image.rows));
+            static_cast<float>(input_size.width) / static_cast<float>(image.cols),
+            static_cast<float>(input_size.height) / static_cast<float>(image.rows));
         const cv::Size resized_size {
             std::max(1, static_cast<int>(std::round(static_cast<float>(image.cols) * scale))),
             std::max(1, static_cast<int>(std::round(static_cast<float>(image.rows) * scale))),
         };
         cv::Mat scaled;
         cv::resize(image, scaled, resized_size, 0.0, 0.0, interpolation);
-        const int left = (spec.size.width - resized_size.width) / 2;
-        const int top = (spec.size.height - resized_size.height) / 2;
-        const int right = spec.size.width - resized_size.width - left;
-        const int bottom = spec.size.height - resized_size.height - top;
-        cv::copyMakeBorder(scaled, resized, top, bottom, left, right, cv::BORDER_CONSTANT, cv::Scalar(114, 114, 114));
+        const int left = spec.padding_position == PaddingPosition::Center ? (input_size.width - resized_size.width) / 2 : 0;
+        const int top = spec.padding_position == PaddingPosition::Center ? (input_size.height - resized_size.height) / 2 : 0;
+        const int right = input_size.width - resized_size.width - left;
+        const int bottom = input_size.height - resized_size.height - top;
+        cv::copyMakeBorder(
+            scaled,
+            resized,
+            top,
+            bottom,
+            left,
+            right,
+            cv::BORDER_CONSTANT,
+            cv::Scalar(spec.fill[0], spec.fill[1], spec.fill[2]));
         transform.scale_x = static_cast<float>(resized_size.width) / static_cast<float>(image.cols);
         transform.scale_y = static_cast<float>(resized_size.height) / static_cast<float>(image.rows);
         transform.padding_x = static_cast<float>(left);
         transform.padding_y = static_cast<float>(top);
     }
 
-    cv::cvtColor(resized, resized, cv::COLOR_BGR2RGB);
+    if (spec.color == ColorOrder::RGB) {
+        cv::cvtColor(resized, resized, cv::COLOR_BGR2RGB);
+    }
     cv::Mat float_image;
-    resized.convertTo(float_image, CV_32FC3, 1.0 / 255.0);
+    resized.convertTo(float_image, CV_32FC3, spec.scale);
     std::array<cv::Mat, 3> channels;
     cv::split(float_image, channels);
 
-    constexpr std::array<float, 3> kImageNetMean = { 0.485F, 0.456F, 0.406F };
-    constexpr std::array<float, 3> kImageNetStd = { 0.229F, 0.224F, 0.225F };
-    const bool image_net = spec.type == InputProtocol::DirectResizeImageNet;
-    const size_t plane_size = static_cast<size_t>(spec.size.area());
-    output.tensor.resize(plane_size * channels.size());
+    const size_t plane_size = static_cast<size_t>(input_size.area());
     for (size_t channel = 0; channel < channels.size(); ++channel) {
-        if (image_net) {
-            channels[channel] = (channels[channel] - kImageNetMean[channel]) / kImageNetStd[channel];
-        }
-        std::copy_n(channels[channel].ptr<float>(), plane_size, output.tensor.begin() + static_cast<std::ptrdiff_t>(channel * plane_size));
+        channels[channel] = (channels[channel] - spec.mean[channel]) / spec.std[channel];
     }
-    output.shape = { 1, 3, spec.size.height, spec.size.width };
+    output.tensor.resize(plane_size * channels.size());
+    if (spec.layout == ImageLayout::NCHW) {
+        for (size_t channel = 0; channel < channels.size(); ++channel) {
+            std::copy_n(
+                channels[channel].ptr<float>(),
+                plane_size,
+                output.tensor.begin() + static_cast<std::ptrdiff_t>(channel * plane_size));
+        }
+        output.shape = { 1, 3, input_size.height, input_size.width };
+    }
+    else {
+        cv::merge(channels, float_image);
+        std::copy_n(float_image.ptr<float>(), output.tensor.size(), output.tensor.begin());
+        output.shape = { 1, input_size.height, input_size.width, 3 };
+    }
     output.transform = transform;
     error.clear();
     return true;
 }
 
-cv::Rect2f decode_box(const RawDetection& raw, BoxEncoding encoding, const CoordinateTransform& transform)
+cv::Rect2f decode_box(const RawDetection& raw, const BoxDecodeSpec& spec, const CoordinateTransform& transform)
 {
+    std::array<float, 4> values = raw.box;
+    if (spec.coordinates == CoordinateSpace::Normalized) {
+        values[0] *= static_cast<float>(transform.input_size.width);
+        values[1] *= static_cast<float>(transform.input_size.height);
+        values[2] *= static_cast<float>(transform.input_size.width);
+        values[3] *= static_cast<float>(transform.input_size.height);
+    }
     cv::Rect2f input_box;
-    if (encoding == BoxEncoding::InputCxcywh || encoding == BoxEncoding::NormalizedCxcywh) {
-        float center_x = raw.box[0];
-        float center_y = raw.box[1];
-        float width = raw.box[2];
-        float height = raw.box[3];
-        if (encoding == BoxEncoding::NormalizedCxcywh) {
-            center_x *= static_cast<float>(transform.input_size.width);
-            center_y *= static_cast<float>(transform.input_size.height);
-            width *= static_cast<float>(transform.input_size.width);
-            height *= static_cast<float>(transform.input_size.height);
-        }
-        input_box = { center_x - width / 2.0F, center_y - height / 2.0F, width, height };
+    if (spec.format == BoxFormat::CxCyWh) {
+        input_box = { values[0] - values[2] / 2.0F, values[1] - values[3] / 2.0F, values[2], values[3] };
     }
     else {
-        input_box = { raw.box[0], raw.box[1], raw.box[2] - raw.box[0], raw.box[3] - raw.box[1] };
+        input_box = { values[0], values[1], values[2] - values[0], values[3] - values[1] };
     }
-    return encoding == BoxEncoding::SourceXyxy ? input_box : transform.to_source(input_box);
+    return spec.coordinates == CoordinateSpace::Source ? input_box : transform.to_source(input_box);
 }
 
 cv::Rect truncate_box(const cv::Rect2f& box)
@@ -1023,13 +391,18 @@ bool resolve_labels(
     std::vector<std::string>& output,
     std::string& error)
 {
-    const auto& selected = !pipeline.empty() ? pipeline : (!descriptor.empty() ? descriptor : metadata);
+    const auto& selected = !pipeline.empty() ? pipeline : (!metadata.empty() ? metadata : descriptor);
     if (selected.empty()) {
         output.clear();
         error.clear();
         return true;
     }
-    return parse_labels(json::value(selected), output, error);
+    if (!NeuralNetworkAdapter::validate_labels(selected, error)) {
+        return false;
+    }
+    output = selected;
+    error.clear();
+    return true;
 }
 
 std::string label_for(int class_id, const std::vector<std::string>& labels)
@@ -1060,38 +433,27 @@ NeuralNetworkDetector::ModelLoadResult
     }
 
     try {
-        ModelDescriptor descriptor;
         std::filesystem::path descriptor_path = onnx_path;
         descriptor_path.replace_extension(".json");
-        if (std::filesystem::exists(descriptor_path)) {
-            const auto descriptor_json = json::open(descriptor_path, true, false);
+        const bool has_descriptor = std::filesystem::exists(descriptor_path);
+        std::optional<json::value> descriptor_json;
+        if (has_descriptor) {
+            descriptor_json = json::open(descriptor_path, true, false);
             if (!descriptor_json) {
                 return { .error = "failed to parse model descriptor: " + descriptor_path.string() };
             }
-            std::string error;
-            if (!parse_descriptor(*descriptor_json, descriptor, error)) {
-                return { .error = "invalid model descriptor " + descriptor_path.string() + ": " + error };
-            }
-        }
-        else {
-            descriptor = legacy_descriptor();
-        }
-
-        auto adapter = NeuralNetworkAdapter::create(descriptor.output.adapter);
-        if (!adapter) {
-            return { .error = "failed to create detector output adapter" };
         }
 
         Ort::AllocatorWithDefaultOptions allocator;
-        std::vector<TensorSpec> input_specs;
-        input_specs.reserve(session->GetInputCount());
+        ModelFacts facts;
+        facts.inputs.reserve(session->GetInputCount());
         for (size_t index = 0; index < session->GetInputCount(); ++index) {
             const auto info = session->GetInputTypeInfo(index).GetTensorTypeAndShapeInfo();
             const auto element_type = tensor_element_type(info.GetElementType());
             if (!element_type) {
                 return { .error = "detector input uses an unsupported tensor element type" };
             }
-            input_specs.emplace_back(
+            facts.inputs.emplace_back(
                 TensorSpec {
                     .name = session->GetInputNameAllocated(index, allocator).get(),
                     .element_type = *element_type,
@@ -1099,44 +461,14 @@ NeuralNetworkDetector::ModelLoadResult
                 });
         }
 
-        const size_t expected_input_count = descriptor.input.original_size ? 2 : 1;
-        if (input_specs.size() != expected_input_count) {
-            return { .error = "detector input count does not match input_protocol" };
-        }
-        const TensorSpec* image_input = nullptr;
-        if (descriptor.input.name.empty()) {
-            image_input = &input_specs.front();
-            descriptor.input.name = image_input->name;
-        }
-        else {
-            image_input = find_tensor(input_specs, descriptor.input.name);
-        }
-        if (!image_input) {
-            return { .error = "configured detector image input was not found: " + descriptor.input.name };
-        }
-        std::string error;
-        if (!validate_image_input(descriptor, *image_input, error)) {
-            return { .error = "detector input contract mismatch: " + error };
-        }
-
-        std::vector<std::string> input_names = { descriptor.input.name };
-        if (descriptor.input.original_size) {
-            const auto* original_input = find_tensor(input_specs, descriptor.input.original_size->name);
-            if (!original_input || !validate_original_size_input(*original_input, error)) {
-                return { .error = "detector input contract mismatch: " + (original_input ? error : "original_size input was not found") };
-            }
-            input_names.emplace_back(descriptor.input.original_size->name);
-        }
-
-        std::vector<TensorSpec> available_outputs;
-        available_outputs.reserve(session->GetOutputCount());
+        facts.outputs.reserve(session->GetOutputCount());
         for (size_t index = 0; index < session->GetOutputCount(); ++index) {
             const auto info = session->GetOutputTypeInfo(index).GetTensorTypeAndShapeInfo();
             const auto element_type = tensor_element_type(info.GetElementType());
             if (!element_type) {
                 return { .error = "detector output uses an unsupported tensor element type" };
             }
-            available_outputs.emplace_back(
+            facts.outputs.emplace_back(
                 TensorSpec {
                     .name = session->GetOutputNameAllocated(index, allocator).get(),
                     .element_type = *element_type,
@@ -1144,15 +476,31 @@ NeuralNetworkDetector::ModelLoadResult
                 });
         }
 
-        std::vector<TensorSpec> outputs;
-        if (!select_outputs(descriptor, available_outputs, outputs, error) || !adapter->validate(outputs, error)) {
-            return { .error = "detector output contract mismatch: " + error };
+        const Ort::ModelMetadata metadata = session->GetModelMetadata();
+        for (auto& key : metadata.GetCustomMetadataMapKeysAllocated(allocator)) {
+            auto value = metadata.LookupCustomMetadataMapAllocated(key.get(), allocator);
+            if (value) {
+                facts.metadata.emplace(key.get(), value.get());
+            }
         }
+
+        NeuralNetworkAdapter::ResolvedModel resolved;
+        std::string error;
+        if (!NeuralNetworkAdapter::resolve_model(facts, descriptor_json ? &*descriptor_json : nullptr, resolved, error)) {
+            return { .error = has_descriptor ? "invalid model descriptor " + descriptor_path.string() + ": " + error
+                                             : "failed to resolve detector model protocol: " + error };
+        }
+
+        auto adapter = NeuralNetworkAdapter::create(resolved.descriptor.output.adapter);
+        if (!adapter) {
+            return { .error = "failed to create detector output adapter" };
+        }
+
         std::vector<std::string> output_names;
         std::vector<TensorElementType> output_types;
-        output_names.reserve(outputs.size());
-        output_types.reserve(outputs.size());
-        for (const auto& output : outputs) {
+        output_names.reserve(resolved.outputs.size());
+        output_types.reserve(resolved.outputs.size());
+        for (const auto& output : resolved.outputs) {
             output_names.emplace_back(output.name);
             output_types.emplace_back(output.element_type);
         }
@@ -1160,10 +508,10 @@ NeuralNetworkDetector::ModelLoadResult
         auto model = std::make_shared<Model>();
         model->onnx_path = onnx_path;
         model->session = std::move(session);
-        model->descriptor = std::move(descriptor);
+        model->descriptor = std::move(resolved.descriptor);
         model->adapter = std::shared_ptr<const IAdapter>(std::move(adapter));
-        model->metadata_labels = model->descriptor.labels.empty() ? read_metadata_labels(*model->session) : std::vector<std::string> { };
-        model->input_names = std::move(input_names);
+        model->metadata_labels = std::move(resolved.metadata_labels);
+        model->input_names = std::move(resolved.input_names);
         model->output_names = std::move(output_names);
         model->output_types = std::move(output_types);
         return { .model = std::move(model) };
@@ -1209,8 +557,7 @@ void NeuralNetworkDetector::analyze()
         LogError << name_ << VAR(error_);
         return;
     }
-    const double decode_score_floor =
-        model_->descriptor.input.legacy ? NeuralNetworkDetectorParam::kDefaultThreshold : threshold_policy.score_floor;
+    const double decode_score_floor = threshold_policy.score_floor;
 
     CandidateResults all_results;
     while (next_roi()) {
@@ -1263,21 +610,37 @@ bool NeuralNetworkDetector::detect(
 {
     try {
         PreprocessedImage preprocessed;
-        if (!preprocess(image_with_roi(), model_->descriptor.input, preprocessed, error)) {
+        if (!preprocess(image_with_roi(), model_->descriptor.input, param_.input_size, preprocessed, error)) {
             return false;
         }
 
         std::array<int64_t, 2> original_size { };
         std::array<int64_t, 2> original_size_shape = { 1, 2 };
+        std::vector<Ort::Float16_t> float16_input;
         std::vector<Ort::Value> input_tensors;
         input_tensors.reserve(model_->input_names.size());
-        input_tensors.emplace_back(
-            Ort::Value::CreateTensor<float>(
-                model_->memory_info,
-                preprocessed.tensor.data(),
-                preprocessed.tensor.size(),
-                preprocessed.shape.data(),
-                preprocessed.shape.size()));
+        if (model_->descriptor.input.element_type == TensorElementType::Float16) {
+            float16_input.reserve(preprocessed.tensor.size());
+            std::ranges::transform(preprocessed.tensor, std::back_inserter(float16_input), [](float value) {
+                return Ort::Float16_t(value);
+            });
+            input_tensors.emplace_back(
+                Ort::Value::CreateTensor<Ort::Float16_t>(
+                    model_->memory_info,
+                    float16_input.data(),
+                    float16_input.size(),
+                    preprocessed.shape.data(),
+                    preprocessed.shape.size()));
+        }
+        else {
+            input_tensors.emplace_back(
+                Ort::Value::CreateTensor<float>(
+                    model_->memory_info,
+                    preprocessed.tensor.data(),
+                    preprocessed.tensor.size(),
+                    preprocessed.shape.data(),
+                    preprocessed.shape.size()));
+        }
         if (const auto& spec = model_->descriptor.input.original_size) {
             original_size = spec->order == OriginalSizeOrder::HW ? std::array<int64_t, 2> { image_with_roi().rows, image_with_roi().cols }
                                                                  : std::array<int64_t, 2> { image_with_roi().cols, image_with_roi().rows };
@@ -1312,6 +675,7 @@ bool NeuralNetworkDetector::detect(
 
         std::vector<TensorView> tensors;
         tensors.reserve(output_tensors.size());
+        std::vector<std::vector<float>> float16_outputs(output_tensors.size());
         for (size_t index = 0; index < output_tensors.size(); ++index) {
             if (!output_tensors[index].IsTensor()) {
                 error = "detector output is not a tensor";
@@ -1331,8 +695,21 @@ bool NeuralNetworkDetector::detect(
             if (*element_type == TensorElementType::Float32) {
                 view.float_data = { output_tensors[index].GetTensorData<float>(), info.GetElementCount() };
             }
-            else {
+            else if (*element_type == TensorElementType::Float16) {
+                const auto* data = output_tensors[index].GetTensorData<Ort::Float16_t>();
+                auto& converted = float16_outputs[index];
+                converted.reserve(info.GetElementCount());
+                for (size_t element = 0; element < info.GetElementCount(); ++element) {
+                    converted.emplace_back(data[element].ToFloat());
+                }
+                view.float_data = converted;
+            }
+            else if (*element_type == TensorElementType::Int64) {
                 view.int64_data = { output_tensors[index].GetTensorData<int64_t>(), info.GetElementCount() };
+            }
+            else {
+                error = "detector output uses an unsupported runtime tensor type";
+                return false;
             }
             tensors.emplace_back(std::move(view));
         }
@@ -1340,7 +717,10 @@ bool NeuralNetworkDetector::detect(
         DecodedDetections decoded;
         if (!model_->adapter->decode(
                 tensors,
-                NeuralNetworkAdapter::DecodeOptions { .score_floor = static_cast<float>(score_floor) },
+                NeuralNetworkAdapter::DecodeOptions {
+                    .score_floor = static_cast<float>(score_floor),
+                    .multi_label = param_.multi_label,
+                },
                 decoded,
                 error)) {
             return false;
@@ -1351,7 +731,7 @@ bool NeuralNetworkDetector::detect(
         for (const auto& raw : decoded.candidates) {
             candidates.emplace_back(
                 DetectionCandidate {
-                    .box = decode_box(raw, model_->descriptor.output.box_encoding, preprocessed.transform),
+                    .box = decode_box(raw, model_->descriptor.output.box_decode, preprocessed.transform),
                     .score = raw.score,
                     .class_id = raw.class_id,
                 });
@@ -1371,9 +751,7 @@ bool NeuralNetworkDetector::detect(
         }
         std::erase_if(candidates, [score_floor](const auto& candidate) { return candidate.score < score_floor; });
 
-        const auto nms = param_.nms.value_or(model_->descriptor.nms);
-        const float nms_threshold = static_cast<float>(param_.nms_threshold.value_or(model_->descriptor.nms_threshold));
-        candidates = apply_nms(std::move(candidates), nms, nms_threshold);
+        candidates = apply_nms(std::move(candidates), model_->descriptor.nms, model_->descriptor.nms_threshold);
 
         results.clear();
         results.reserve(candidates.size());

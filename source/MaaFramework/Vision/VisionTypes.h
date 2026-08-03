@@ -132,8 +132,8 @@ struct NeuralNetworkDetectorParam : public RoiTargetParamBase
     std::vector<std::string> labels; // only for output and debug
     std::vector</*result_index*/ int> expected;
     std::vector<double> thresholds = { kDefaultThreshold };
-    std::optional<NeuralNetwork::NmsPolicy> nms;
-    std::optional<double> nms_threshold;
+    bool multi_label = true;
+    std::optional<cv::Size> input_size;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
