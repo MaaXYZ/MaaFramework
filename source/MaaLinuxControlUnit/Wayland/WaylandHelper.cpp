@@ -9,7 +9,7 @@
     {                                                        \
     void default_delete<TypeName>::operator()(TypeName* ptr) \
     {                                                        \
-        LogDebug << "Delete protocol";                       \
+        LogDebug << "Delete protocol " #TypeName;            \
         DeleteFunction(ptr);                                 \
     }                                                        \
     }
