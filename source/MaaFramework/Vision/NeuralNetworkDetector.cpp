@@ -74,11 +74,13 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
     cv::Size raw_roi_size(image.cols, image.rows);
     cv::Size input_image_size(static_cast<int>(input_shape[3]), static_cast<int>(input_shape[2]));
     const double scale = std::min(
-        static_cast<double>(input_image_size.width) / raw_roi_size.width,
-        static_cast<double>(input_image_size.height) / raw_roi_size.height);
+        std::min(
+            static_cast<double>(input_image_size.width) / raw_roi_size.width,
+            static_cast<double>(input_image_size.height) / raw_roi_size.height),
+        1.0);
     cv::Size resized_image_size(
-        static_cast<int>(std::round(raw_roi_size.width * scale)),
-        static_cast<int>(std::round(raw_roi_size.height * scale)));
+        static_cast<int>(std::floor(raw_roi_size.width * scale)),
+        static_cast<int>(std::floor(raw_roi_size.height * scale)));
     cv::resize(image, image, resized_image_size, 0, 0, cv::INTER_AREA);
     const int pad_width = input_image_size.width - resized_image_size.width;
     const int pad_height = input_image_size.height - resized_image_size.height;
@@ -138,10 +140,10 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
                 continue;
             }
 
-            int center_x = static_cast<int>(output[0][i]);
-            int center_y = static_cast<int>(output[1][i]);
-            int w = static_cast<int>(output[2][i]);
-            int h = static_cast<int>(output[3][i]);
+            const double center_x = output[0][i];
+            const double center_y = output[1][i];
+            const double w = output[2][i];
+            const double h = output[3][i];
 
             int x = static_cast<int>((center_x - w / 2 - pad_left) / scale);
             int y = static_cast<int>((center_y - h / 2 - pad_top) / scale);
