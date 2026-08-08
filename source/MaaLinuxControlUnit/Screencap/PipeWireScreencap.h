@@ -56,6 +56,8 @@ public:
 
     std::optional<cv::Mat> screencap() override;
 
+    void inactive() override;
+
 private:
     /* ---- Internal cleanup ---- */
     void close_internal();
@@ -114,6 +116,7 @@ private:
     cv::Mat latest_frame_;
     bool frame_available_ = false;
     std::condition_variable frame_cv_;
+    bool stream_active_ = true;
 };
 
 MAA_CTRL_UNIT_NS_END

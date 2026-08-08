@@ -1,8 +1,7 @@
-#include "MaaFramework/Instance/MaaController.h"
-#include "MaaFramework/Utility/MaaBuffer.h"
-
 #include <iostream>
+#include <thread>
 
+#include "MaaFramework/MaaAPI.h"
 #include "MaaToolkit/MaaToolkitAPI.h"
 
 //
@@ -44,9 +43,11 @@ int main()
     MaaControllerWait(ctrl, ctrl_id);
     ctrl_id = MaaControllerPostScreencap(ctrl);
     MaaControllerWait(ctrl, ctrl_id);
-    auto imgbuf = MaaImageBufferCreate(); // Add breakpoint at here to view image
-    auto img = MaaControllerCachedImage(ctrl, imgbuf);
-    if (!img) {
+    MaaControllerPostInactive(ctrl);
+    std::this_thread::sleep_for(std::chrono::seconds(5)); // test inactive
+    auto image_buffer = MaaImageBufferCreate();           // Add breakpoint at here to view image
+    auto image_result = MaaControllerCachedImage(ctrl, image_buffer);
+    if (!image_result) {
         destroy();
         return -1;
     }
