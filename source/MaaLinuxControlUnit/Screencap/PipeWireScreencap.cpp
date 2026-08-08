@@ -157,6 +157,13 @@ std::optional<cv::Mat> PipeWireScreencap::screencap()
         return std::nullopt;
     }
 
+    if (!stream_active_) {
+        pw_thread_loop_lock(pw_thread_loop_);
+        pw_stream_set_active(pw_stream_, true);
+        pw_thread_loop_unlock(pw_thread_loop_);
+        stream_active_ = true;
+    }
+
     // Wait for the first frame with a timeout.
     // Subsequent calls return the cached frame immediately without waiting.
     std::unique_lock<std::mutex> lock(frame_mutex_);
@@ -171,6 +178,23 @@ std::optional<cv::Mat> PipeWireScreencap::screencap()
     latest_frame_.copyTo(target);
     std::optional ret(target);
     return ret;
+}
+
+void PipeWireScreencap::inactive()
+{
+    ScreencapBase::inactive();
+    if (!pw_stream_ || !pw_thread_loop_ || !stream_active_) {
+        return;
+    }
+    {
+        std::lock_guard lock(frame_mutex_);
+        latest_frame_ = cv::Mat();
+        frame_available_ = false;
+    }
+    pw_thread_loop_lock(pw_thread_loop_);
+    pw_stream_set_active(pw_stream_, false);
+    pw_thread_loop_unlock(pw_thread_loop_);
+    stream_active_ = false;
 }
 
 // ===========================================================================

@@ -1,8 +1,10 @@
 #include "LinuxControlUnitMgr.h"
 
+#include "Input/NoneInput.h"
 #include "Input/UInput.h"
 #include "Input/VkToEvdev.h"
 #include "Input/WlrInput.h"
+#include "Screencap/NoneScreencap.h"
 #include "Screencap/PipeWireScreencap.h"
 #include "Screencap/WlrScreencap.h"
 
@@ -266,6 +268,9 @@ json::object LinuxControlUnitMgr::get_info() const
 bool LinuxControlUnitMgr::init_screencap()
 {
     switch (config_.screencap_method) {
+    case MaaLinuxScreencapMethod_None:
+        screencap_ = std::make_shared<NoneScreencap>();
+        return true;
     case MaaLinuxScreencapMethod_Wlr:
         screencap_ = std::make_shared<WlrScreencap>(wl_client_);
         return true;
@@ -285,6 +290,9 @@ bool LinuxControlUnitMgr::init_screencap()
 bool LinuxControlUnitMgr::init_input()
 {
     switch (config_.input_method) {
+    case MaaLinuxInputMethod_None:
+        input_ = std::make_shared<NoneInput>();
+        return true;
     case MaaLinuxInputMethod_Wlr:
         input_ = std::make_shared<WlrInput>(wl_client_);
         return true;

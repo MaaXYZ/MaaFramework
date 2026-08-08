@@ -45,7 +45,7 @@ class PipeWireScreencap : public ScreencapBase
 {
 public:
     explicit PipeWireScreencap(int pipewire_fd, uint32_t pipewire_node_id, int screen_width, int screen_height);
-    ~PipeWireScreencap();
+    ~PipeWireScreencap() override;
 
     PipeWireScreencap(const PipeWireScreencap&) = delete;
     PipeWireScreencap& operator=(const PipeWireScreencap&) = delete;
@@ -55,6 +55,8 @@ public:
     bool connected() const;
 
     std::optional<cv::Mat> screencap() override;
+
+    void inactive() override;
 
 private:
     /* ---- Internal cleanup ---- */
@@ -114,6 +116,7 @@ private:
     cv::Mat latest_frame_;
     bool frame_available_ = false;
     std::condition_variable frame_cv_;
+    bool stream_active_ = true;
 };
 
 MAA_CTRL_UNIT_NS_END
