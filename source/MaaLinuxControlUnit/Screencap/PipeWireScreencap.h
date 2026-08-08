@@ -45,7 +45,7 @@ class PipeWireScreencap : public ScreencapBase
 {
 public:
     explicit PipeWireScreencap(int pipewire_fd, uint32_t pipewire_node_id, int screen_width, int screen_height);
-    ~PipeWireScreencap();
+    ~PipeWireScreencap() override;
 
     PipeWireScreencap(const PipeWireScreencap&) = delete;
     PipeWireScreencap& operator=(const PipeWireScreencap&) = delete;
