@@ -114,6 +114,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [create-maa-project](https://github.com/Windsland52/create-maa-project) ![TypeScript](https://img.shields.io/badge/TypeScript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/create-maa-project) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/create-maa-project?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/create-maa-project?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/create-maa-project) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/create-maa-project/)  
     MaaFW 项目脚手架 CLI & MCP Server，交互式创建与增量维护 Pipeline / Agent 项目
 
+- [MaaEvidenceKit](https://github.com/Windsland52/MaaEvidenceKit) ![TypeScript](https://img.shields.io/badge/TypeScript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MaaEvidenceKit) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MaaEvidenceKit?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MaaEvidenceKit?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/maa-evidence-kit)  
+    为 AI Agent 提取 MaaFramework 日志与项目配置中的确定性证据，支持运行时与静态分析、源码定位及任务流程关联
+
 - [Everything-Maa](https://github.com/KhazixW2/Everything-Maa) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black) ![license](https://img.shields.io/github/license/KhazixW2/Everything-Maa) ![activity](https://img.shields.io/github/commit-activity/m/KhazixW2/Everything-Maa?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/KhazixW2/Everything-Maa?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/everything-maa)  
     面向 AI 辅助开发的 MaaFramework 工具集，提供可复用 Skills、版本化 MCP 配置与 CLI 安装器，覆盖项目创建、Pipeline 编写、测试和分析
 
