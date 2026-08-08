@@ -12,7 +12,7 @@ public:
 
     virtual ~NoneScreencap() override = default;
 
-    std::optional<cv::Mat> screencap() override { return cv::Mat(); }
+    std::optional<cv::Mat> screencap() override { return std::nullopt; }
 };
 
 MAA_CTRL_UNIT_NS_END
