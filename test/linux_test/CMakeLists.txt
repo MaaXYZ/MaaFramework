@@ -1,3 +1,5 @@
 add_executable(portal_test portal_test.cpp)
+add_executable(pw_screencap_test pw_screencap_test.cpp)
 
 target_link_libraries(portal_test MaaFramework MaaToolkit)
+target_link_libraries(pw_screencap_test MaaFramework MaaToolkit)
