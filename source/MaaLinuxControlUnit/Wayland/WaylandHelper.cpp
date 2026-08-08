@@ -10,8 +10,8 @@
     void default_delete<TypeName>::operator()(TypeName* ptr)        \
     {                                                               \
         LogDebug << "Delete protocol " #TypeName << VAR_VOIDP(ptr); \
-        DeleteFunction(ptr);                                 \
-    }                                                        \
+        DeleteFunction(ptr);                                        \
+    }                                                               \
     }
 
 DEFAULT_DELETER(wl_display, wl_display_disconnect)
