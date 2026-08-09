@@ -10,12 +10,79 @@
 #include "InputUtils.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <mmsystem.h>
+#include <optional>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
 namespace
 {
+
+constexpr LONG CursorParkingMargin = 8;
+
+struct WindowParkingCandidate
+{
+    LONG left = 0;
+    LONG top = 0;
+    long long overflow = 0;
+    long long movement = 0;
+    bool preferred = false;
+};
+
+LONG fit_window_axis(LONG current, LONG bound_begin, LONG bound_end, LONG size)
+{
+    const LONG available = bound_end - bound_begin;
+    if (size >= available) {
+        return bound_begin;
+    }
+    return std::clamp(current, bound_begin, bound_end - size);
+}
+
+long long rect_overflow(const RECT& rect, const RECT& bounds)
+{
+    return static_cast<long long>(std::max(bounds.left - rect.left, 0L)) + static_cast<long long>(std::max(bounds.top - rect.top, 0L))
+           + static_cast<long long>(std::max(rect.right - bounds.right, 0L))
+           + static_cast<long long>(std::max(rect.bottom - bounds.bottom, 0L));
+}
+
+std::optional<WindowParkingCandidate> make_parking_candidate(
+    LONG left,
+    LONG top,
+    bool preferred,
+    const POINT& cursor,
+    const RECT& window_rect,
+    const RECT& client_rect,
+    const RECT& monitor_rect)
+{
+    RECT predicted_window = window_rect;
+    OffsetRect(&predicted_window, left - window_rect.left, top - window_rect.top);
+
+    RECT predicted_client = client_rect;
+    OffsetRect(&predicted_client, left - window_rect.left, top - window_rect.top);
+    if (PtInRect(&predicted_client, cursor)) {
+        return std::nullopt;
+    }
+
+    return WindowParkingCandidate {
+        .left = left,
+        .top = top,
+        .overflow = rect_overflow(predicted_window, monitor_rect),
+        .movement = std::abs(static_cast<long long>(left) - window_rect.left) + std::abs(static_cast<long long>(top) - window_rect.top),
+        .preferred = preferred,
+    };
+}
+
+void select_parking_candidate(std::optional<WindowParkingCandidate>& best, std::optional<WindowParkingCandidate> candidate)
+{
+    if (!candidate) {
+        return;
+    }
+    if (!best || candidate->overflow < best->overflow || (candidate->overflow == best->overflow && candidate->preferred && !best->preferred)
+        || (candidate->overflow == best->overflow && candidate->preferred == best->preferred && candidate->movement < best->movement)) {
+        best = candidate;
+    }
+}
 
 struct NtDllHolder : public LibraryHolder<NtDllHolder>
 {
@@ -203,6 +270,8 @@ void MessageInput::restore_window_pos()
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
+    std::scoped_lock lock(window_move_mutex_);
+
     LONG left = saved_window_rect_.left;
     LONG top = saved_window_rect_.top;
 
@@ -352,6 +421,8 @@ bool MessageInput::move_window_to_align_cursor(int x, int y)
         return false;
     }
 
+    std::scoped_lock lock(window_move_mutex_);
+
     POINT cursor_pos;
     if (!GetCursorPos(&cursor_pos)) {
         LogError << "GetCursorPos failed" << VAR(GetLastError());
@@ -389,6 +460,244 @@ bool MessageInput::move_window_to_align_cursor(int x, int y)
     }
 
     return true;
+}
+
+bool MessageInput::get_client_screen_rect(RECT& rect) const
+{
+    RECT client_rect = { };
+    if (!GetClientRect(hwnd_, &client_rect)) {
+        LogError << "GetClientRect failed" << VAR(hwnd_) << VAR(GetLastError());
+        return false;
+    }
+
+    POINT top_left = { client_rect.left, client_rect.top };
+    POINT bottom_right = { client_rect.right, client_rect.bottom };
+    if (!ClientToScreen(hwnd_, &top_left) || !ClientToScreen(hwnd_, &bottom_right)) {
+        LogError << "ClientToScreen failed while getting client rect" << VAR(hwnd_) << VAR(GetLastError());
+        return false;
+    }
+
+    rect = { top_left.x, top_left.y, bottom_right.x, bottom_right.y };
+    return true;
+}
+
+bool MessageInput::find_window_parking_position(
+    const POINT& cursor,
+    const RECT& window_rect,
+    const RECT& client_rect,
+    LONG& out_left,
+    LONG& out_top) const
+{
+    RECT anchor_rect = window_pos_saved_ ? saved_window_rect_ : window_rect;
+    HMONITOR monitor = MonitorFromRect(&anchor_rect, MONITOR_DEFAULTTONEAREST);
+    if (!monitor) {
+        LogError << "MonitorFromRect failed while parking window";
+        return false;
+    }
+
+    MONITORINFO monitor_info { sizeof(MONITORINFO) };
+    if (!GetMonitorInfoW(monitor, &monitor_info)) {
+        LogError << "GetMonitorInfoW failed while parking window" << VAR(GetLastError());
+        return false;
+    }
+
+    const LONG window_width = window_rect.right - window_rect.left;
+    const LONG window_height = window_rect.bottom - window_rect.top;
+    const LONG client_width = client_rect.right - client_rect.left;
+    const LONG client_height = client_rect.bottom - client_rect.top;
+    const LONG client_offset_x = client_rect.left - window_rect.left;
+    const LONG client_offset_y = client_rect.top - window_rect.top;
+    const RECT& monitor_rect = monitor_info.rcMonitor;
+
+    const LONG fitted_left = fit_window_axis(window_rect.left, monitor_rect.left, monitor_rect.right, window_width);
+    const LONG fitted_top = fit_window_axis(window_rect.top, monitor_rect.top, monitor_rect.bottom, window_height);
+
+    std::optional<WindowParkingCandidate> best;
+    if (window_pos_saved_) {
+        select_parking_candidate(
+            best,
+            make_parking_candidate(saved_window_rect_.left, saved_window_rect_.top, true, cursor, window_rect, client_rect, monitor_rect));
+    }
+    select_parking_candidate(
+        best,
+        make_parking_candidate(window_rect.left, window_rect.top, false, cursor, window_rect, client_rect, monitor_rect));
+    select_parking_candidate(
+        best,
+        make_parking_candidate(
+            cursor.x + CursorParkingMargin - client_offset_x,
+            fitted_top,
+            false,
+            cursor,
+            window_rect,
+            client_rect,
+            monitor_rect));
+    select_parking_candidate(
+        best,
+        make_parking_candidate(
+            cursor.x - CursorParkingMargin - client_width - client_offset_x,
+            fitted_top,
+            false,
+            cursor,
+            window_rect,
+            client_rect,
+            monitor_rect));
+    select_parking_candidate(
+        best,
+        make_parking_candidate(
+            fitted_left,
+            cursor.y + CursorParkingMargin - client_offset_y,
+            false,
+            cursor,
+            window_rect,
+            client_rect,
+            monitor_rect));
+    select_parking_candidate(
+        best,
+        make_parking_candidate(
+            fitted_left,
+            cursor.y - CursorParkingMargin - client_height - client_offset_y,
+            false,
+            cursor,
+            window_rect,
+            client_rect,
+            monitor_rect));
+
+    if (!best) {
+        LogError << "Failed to find a cursor-free window position" << VAR(cursor.x) << VAR(cursor.y);
+        return false;
+    }
+
+    out_left = best->left;
+    out_top = best->top;
+    return true;
+}
+
+void MessageInput::send_mouse_leave()
+{
+    HWND target = get_active_hwnd();
+    if (!send_or_post_w(target, WM_MOUSELEAVE, 0, 0)) {
+        LogWarn << "Failed to send WM_MOUSELEAVE while parking window" << VAR(target);
+    }
+    if (target != hwnd_ && !send_or_post_w(hwnd_, WM_MOUSELEAVE, 0, 0)) {
+        LogWarn << "Failed to send WM_MOUSELEAVE to root window while parking" << VAR(hwnd_);
+    }
+}
+
+void MessageInput::wait_for_window_tracking_to_stop()
+{
+    if (!tracking_active_.load()) {
+        return;
+    }
+
+    request_stop_window_tracking();
+    const auto deadline = TrackingClock::now() + std::chrono::milliseconds(40);
+    while (tracking_active_.load() && TrackingClock::now() < deadline) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+
+    if (!tracking_active_.load()) {
+        return;
+    }
+
+    LogWarn << "Window tracking did not stop within grace period, forcing stop";
+    if (has_pending_mouse_.load()) {
+        process_pending_mouse_frame();
+    }
+    stop_window_tracking();
+}
+
+bool MessageInput::park_window_away_from_cursor()
+{
+    if (!config_.with_window_pos || mouse_lock_follow_active_.load()) {
+        return true;
+    }
+    if (!hwnd_ || !IsWindow(hwnd_)) {
+        LogError << "Cannot park invalid window" << VAR(hwnd_);
+        return false;
+    }
+    if (mouse_down_sent_.load()) {
+        LogWarn << "Skip parking window while a mouse contact is active";
+        return false;
+    }
+
+    wait_for_window_tracking_to_stop();
+
+    auto prev_dpi_ctx = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    OnScopeLeave([&]() {
+        if (prev_dpi_ctx) {
+            SetThreadDpiAwarenessContext(prev_dpi_ctx);
+        }
+    });
+
+    std::scoped_lock lock(window_move_mutex_);
+    save_window_pos();
+
+    for (int attempt = 0; attempt < 3; ++attempt) {
+        POINT cursor = { };
+        RECT window_rect = { };
+        RECT client_rect = { };
+        if (!GetCursorPos(&cursor)) {
+            LogError << "GetCursorPos failed while parking window" << VAR(GetLastError());
+            return false;
+        }
+        if (!GetWindowRect(hwnd_, &window_rect)) {
+            LogError << "GetWindowRect failed while parking window" << VAR(hwnd_) << VAR(GetLastError());
+            return false;
+        }
+        if (!get_client_screen_rect(client_rect)) {
+            return false;
+        }
+
+        LONG new_left = 0;
+        LONG new_top = 0;
+        if (!find_window_parking_position(cursor, window_rect, client_rect, new_left, new_top)) {
+            return false;
+        }
+
+        const bool needs_move = std::abs(new_left - window_rect.left) > 1 || std::abs(new_top - window_rect.top) > 1;
+        if (needs_move
+            && !SetWindowPos(
+                hwnd_,
+                nullptr,
+                new_left,
+                new_top,
+                0,
+                0,
+                SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS)) {
+            LogError << "SetWindowPos failed while parking window" << VAR(hwnd_) << VAR(new_left) << VAR(new_top) << VAR(GetLastError());
+            return false;
+        }
+
+        if (needs_move) {
+            for (int settle_attempt = 0; settle_attempt < 10; ++settle_attempt) {
+                RECT settled_rect = { };
+                if (GetWindowRect(hwnd_, &settled_rect) && std::abs(settled_rect.left - new_left) <= 1
+                    && std::abs(settled_rect.top - new_top) <= 1) {
+                    break;
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(2));
+            }
+        }
+
+        send_mouse_leave();
+        if (needs_move) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(17));
+        }
+
+        POINT current_cursor = { };
+        RECT current_client_rect = { };
+        if (GetCursorPos(&current_cursor) && get_client_screen_rect(current_client_rect)
+            && !PtInRect(&current_client_rect, current_cursor)) {
+            if (needs_move) {
+                LogInfo << "Parked window away from cursor" << VAR(new_left) << VAR(new_top) << VAR(current_cursor.x)
+                        << VAR(current_cursor.y);
+            }
+            return true;
+        }
+    }
+
+    LogWarn << "Cursor re-entered target window while parking";
+    return false;
 }
 
 bool MessageInput::is_window_move_allowed(int new_left, int new_top, const RECT& current_rect, const char* reason)
@@ -617,6 +926,11 @@ void MessageInput::resume_target_process()
 
 void MessageInput::process_pending_mouse_frame()
 {
+    std::scoped_lock lock(window_move_mutex_);
+    if (!tracking_active_.load()) {
+        return;
+    }
+
     has_pending_mouse_ = false;
 
     // 原子读取并清零累积的 delta（exchange 保证不丢失并发写入）
@@ -1051,9 +1365,12 @@ bool MessageInput::touch_up(int contact)
         return false;
     }
 
-    // touch_up 后继续黏住窗口一小段时间，再由 tracking 线程自行结束。
+    mouse_down_sent_ = false;
+
     if (config_.with_window_pos) {
-        request_stop_window_tracking();
+        if (!park_window_away_from_cursor()) {
+            LogWarn << "Failed to park target window after touch up";
+        }
     }
     else {
         finish_pos();
@@ -1171,7 +1488,9 @@ bool MessageInput::scroll(int dx, int dy)
     }
 
     if (config_.with_window_pos) {
-        request_stop_window_tracking();
+        if (!park_window_away_from_cursor()) {
+            LogWarn << "Failed to park target window after scroll";
+        }
     }
     else {
         finish_pos();
@@ -1442,6 +1761,11 @@ void MessageInput::deactivate_mouse_lock_follow()
 
 void MessageInput::process_mouse_lock_follow_frame()
 {
+    std::scoped_lock lock(window_move_mutex_);
+    if (!tracking_active_.load() || !mouse_lock_follow_active_.load()) {
+        return;
+    }
+
     has_pending_mouse_ = false;
 
     int dx = pending_mouse_x_.exchange(0);

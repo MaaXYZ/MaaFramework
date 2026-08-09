@@ -15,6 +15,8 @@ public:
     virtual ~ScreencapBase() = default;
 
 public:
+    virtual void prepare_screencap() { }
+
     virtual std::optional<cv::Mat> screencap() = 0;
 
     virtual void inactive() { }

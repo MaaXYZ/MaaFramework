@@ -189,12 +189,14 @@ std::shared_ptr<ScreencapBase>
 
     for (auto& [method, unit] : units) {
         LogInfo << "Warming up" << method;
+        unit->prepare_screencap();
         if (!unit->screencap()) {
             LogWarn << "failed to warm up" << method;
         }
 
         LogInfo << "Testing" << method;
         auto now = std::chrono::steady_clock::now();
+        unit->prepare_screencap();
         if (!unit->screencap()) {
             LogWarn << "failed to test" << method;
             continue;
@@ -271,6 +273,13 @@ bool Win32ControlUnitMgr::screencap(cv::Mat& image)
     if (!screencap_) {
         LogError << "screencap_ is null";
         return false;
+    }
+
+    screencap_->prepare_screencap();
+
+    auto message_input = std::dynamic_pointer_cast<MessageInput>(mouse_);
+    if (message_input && !message_input->park_window_away_from_cursor()) {
+        LogWarn << "Failed to park target window away from cursor before screencap";
     }
 
     auto opt = screencap_->screencap();

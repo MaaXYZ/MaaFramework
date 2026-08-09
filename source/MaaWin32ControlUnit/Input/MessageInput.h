@@ -60,6 +60,9 @@ public: // from InputBase
 public: // mouse lock follow
     bool set_mouse_lock_follow(bool enabled);
 
+    // WithWindowPos 模式下让目标窗口避开当前物理鼠标，避免目标应用自绘光标进入截图。
+    bool park_window_away_from_cursor();
+
     // WithWindowPos 模式下默认禁用显示器保护，因为后台控制器需要自由移动窗口。
     // 如需恢复保护，调用 set_window_pos_guard_enabled(true)。
     void set_window_pos_guard_enabled(bool enabled) { window_pos_guard_enabled_ = enabled; }
@@ -79,6 +82,11 @@ private:
 
     // WithWindowPos 模式：移动窗口使客户区坐标 (x,y) 与当前鼠标位置重合
     bool move_window_to_align_cursor(int x, int y);
+    bool get_client_screen_rect(RECT& rect) const;
+    bool find_window_parking_position(const POINT& cursor, const RECT& window_rect, const RECT& client_rect, LONG& out_left, LONG& out_top)
+        const;
+    void send_mouse_leave();
+    void wait_for_window_tracking_to_stop();
     bool is_window_move_allowed(int new_left, int new_top, const RECT& current_rect, const char* reason);
     void abort_windowpos_operation(const char* reason);
     void reset_windowpos_guard_state();
@@ -171,6 +179,7 @@ private:
     HWND rawinput_hwnd_ = nullptr;
     std::atomic_int counter_pending_ = 0;
     std::mutex tracking_state_mutex_;
+    std::mutex window_move_mutex_;
     std::condition_variable tracking_state_cv_;
     bool tracking_thread_init_done_ = false;
     bool tracking_thread_init_ok_ = false;

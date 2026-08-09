@@ -20,11 +20,9 @@ public:
     virtual ~FramePoolWithPseudoMinimizeScreencap() override = default;
 
 public: // from ScreencapBase
-    virtual std::optional<cv::Mat> screencap() override
-    {
-        helper_.ensure_not_minimized();
-        return inner_.screencap();
-    }
+    virtual void prepare_screencap() override { helper_.ensure_not_minimized(); }
+
+    virtual std::optional<cv::Mat> screencap() override { return inner_.screencap(); }
 
     virtual void inactive() override
     {
