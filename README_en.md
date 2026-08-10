@@ -116,6 +116,12 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [create-maa-project](https://github.com/Windsland52/create-maa-project) ![TypeScript](https://img.shields.io/badge/TypeScript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/create-maa-project) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/create-maa-project?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/create-maa-project?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/create-maa-project) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/create-maa-project/)  
     MaaFW project scaffolding CLI & MCP Server for interactive creation and incremental maintenance of Pipeline / Agent projects.
 
+- [MaaEvidenceKit](https://github.com/Windsland52/MaaEvidenceKit) ![TypeScript](https://img.shields.io/badge/TypeScript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MaaEvidenceKit) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MaaEvidenceKit?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MaaEvidenceKit?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/maa-evidence-kit)  
+    Extracts deterministic evidence from MaaFramework logs and project configurations for AI agents, with runtime and static analysis, source location, and task-flow correlation.
+
+- [Everything-Maa](https://github.com/KhazixW2/Everything-Maa) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black) ![license](https://img.shields.io/github/license/KhazixW2/Everything-Maa) ![activity](https://img.shields.io/github/commit-activity/m/KhazixW2/Everything-Maa?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/KhazixW2/Everything-Maa?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/everything-maa)  
+    A MaaFramework toolkit for AI-assisted development, providing reusable skills, versioned MCP profiles, and a CLI installer for project creation, Pipeline authoring, testing, and analysis.
+
 ### Application
 
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
@@ -224,6 +230,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [MAH](https://github.com/Quartewe/MAH) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Quartewe/MAH) ![activity](https://img.shields.io/github/commit-activity/m/Quartewe/MAH?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Quartewe/MAH.svg?style=social)  
  A assistant for Tokyo Afterschool Summoners. Free your hands! Powered by MaaFramework!
+
+- [MATR](https://github.com/NotZoruak/MATR) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/NotZoruak/MATR) ![activity](https://img.shields.io/github/commit-activity/m/NotZoruak/MATR?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/NotZoruak/MATR?style=social)  
+ A Touken Ranbu Assistant. Image technology + simulation control, freeing your hands! Powered by MaaFramework!
 
 ## Eco-Building
 

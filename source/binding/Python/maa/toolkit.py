@@ -49,6 +49,35 @@ class DesktopWindow:
     class_name: str
     window_name: str
 
+class PortalHelper:
+    _handle: MaaToolkitPortalHelperHandle
+
+    def __init__(self, handle: MaaToolkitPortalHelperHandle):
+        self._handle = handle
+
+    def __del__(self):
+        if self._handle:
+            Library.toolkit().MaaToolkitPortalHelperDestroy(self._handle)
+
+    def open_stream(self) -> bool:
+        return Library.toolkit().MaaToolkitPortalHelperOpenStream(self._handle)
+
+    def set_persist(self, enable: bool):
+        Library.toolkit().MaaToolkitPortalHelperSetPersist(self._handle, enable)
+
+    def get_pipewire_fd(self) -> int:
+        return Library.toolkit().MaaToolkitPortalHelperGetPipeWireFD(self._handle)
+
+    def get_pipewire_node_id(self) -> int:
+        return Library.toolkit().MaaToolkitPortalHelperGetPipeWireNodeID(self._handle)
+
+    def get_restore_token(self) -> Optional[str]:
+        token = Library.toolkit().MaaToolkitPortalHelperGetRestoreToken(self._handle)
+        return token.decode() if token else None
+
+    def set_restore_token(self, token: str):
+        Library.toolkit().MaaToolkitPortalHelperSetRestoreToken(self._handle, token.encode("utf-8"))
+
 
 class Toolkit:
     """工具包 / Toolkit
@@ -206,6 +235,15 @@ class Toolkit:
 
         return bool(Library.toolkit().MaaToolkitMacOSRevealPermissionSettings(perm))
 
+    @staticmethod
+    def portal_helper_create() -> PortalHelper:
+        Toolkit._set_api_properties()
+
+        portal_helper_handle = Library.toolkit().MaaToolkitPortalHelperCreate()
+        if not portal_helper_handle:
+            raise RuntimeError("Failed to create PortalHelper.")
+        return PortalHelper(portal_helper_handle)
+
     ### private ###
 
     _api_properties_initialized: bool = False
@@ -299,3 +337,27 @@ class Toolkit:
 
         Library.toolkit().MaaToolkitMacOSRevealPermissionSettings.restype = MaaBool
         Library.toolkit().MaaToolkitMacOSRevealPermissionSettings.argtypes = [MaaMacOSPermission]
+
+        Library.toolkit().MaaToolkitPortalHelperCreate.restype = MaaToolkitPortalHelperHandle
+        Library.toolkit().MaaToolkitPortalHelperCreate.argtypes = []
+
+        Library.toolkit().MaaToolkitPortalHelperDestroy.restype = None
+        Library.toolkit().MaaToolkitPortalHelperDestroy.argtypes = [MaaToolkitPortalHelperHandle]
+
+        Library.toolkit().MaaToolkitPortalHelperOpenStream.restype = MaaBool
+        Library.toolkit().MaaToolkitPortalHelperOpenStream.argtypes = [MaaToolkitPortalHelperHandle]
+
+        Library.toolkit().MaaToolkitPortalHelperSetPersist.restype = None
+        Library.toolkit().MaaToolkitPortalHelperSetPersist.argtypes = [MaaToolkitPortalHelperHandle, MaaBool]
+
+        Library.toolkit().MaaToolkitPortalHelperGetPipeWireFD.restype = ctypes.c_int32
+        Library.toolkit().MaaToolkitPortalHelperGetPipeWireFD.argtypes = [MaaToolkitPortalHelperHandle]
+
+        Library.toolkit().MaaToolkitPortalHelperGetPipeWireNodeID.restype = ctypes.c_uint32
+        Library.toolkit().MaaToolkitPortalHelperGetPipeWireNodeID.argtypes = [MaaToolkitPortalHelperHandle]
+
+        Library.toolkit().MaaToolkitPortalHelperGetRestoreToken.restype = ctypes.c_char_p
+        Library.toolkit().MaaToolkitPortalHelperGetRestoreToken.argtypes = [MaaToolkitPortalHelperHandle]
+
+        Library.toolkit().MaaToolkitPortalHelperSetRestoreToken.restype = None
+        Library.toolkit().MaaToolkitPortalHelperSetRestoreToken.argtypes = [MaaToolkitPortalHelperHandle, ctypes.c_char_p]
