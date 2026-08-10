@@ -126,6 +126,18 @@ enum MaaGlobalOptionEnum
     /// value: size_t, eg: 4096; val_size: sizeof(size_t)
     /// default value is 4096
     MaaGlobalOption_RecoImageCacheLimit = 9,
+
+    /// The level of log output to log file (maafw.log)
+    ///
+    /// value: MaaLoggingLevel, val_size: sizeof(MaaLoggingLevel)
+    /// default value is MaaLoggingLevel_All
+    MaaGlobalOption_LogLevel = 10,
+
+    /// Max age in days before log/debug files are deleted
+    ///
+    /// value: int32_t, eg: 7; val_size: sizeof(int32_t)
+    /// default value is 7, 0 to disable cleanup
+    MaaGlobalOption_LogCleanupDays = 11,
 };
 
 typedef MaaOption MaaResOption;

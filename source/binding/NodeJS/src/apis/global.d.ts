@@ -10,6 +10,8 @@ declare global {
             set save_draw(value: boolean)
             set save_on_error(value: boolean)
             set stdout_level(value: StdoutLevel)
+            set log_level(value: StdoutLevel)
+            set log_cleanup_days(value: number)
             set debug_mode(value: boolean)
             set draw_quality(value: number)
             set reco_image_cache_limit(value: number)

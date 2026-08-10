@@ -21,6 +21,8 @@ private:
 private:
     bool set_log_dir(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_log_level(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_log_cleanup_days(MaaOptionValue value, MaaOptionValueSize val_size);
 };
 
 MAA_AGENT_SERVER_NS_END

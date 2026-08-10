@@ -150,6 +150,8 @@ async function api_test() {
 
     maa.Global.save_draw = true
     maa.Global.stdout_level = 'All'
+    maa.Global.log_level = 'All'
+    maa.Global.log_cleanup_days = 7
     maa.Global.log_dir = '.'
 
     const devices = await maa.AdbController.find()

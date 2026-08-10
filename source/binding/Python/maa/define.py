@@ -232,6 +232,18 @@ class MaaGlobalOptionEnum(IntEnum):
     # default value is 4096
     RecoImageCacheLimit = 9
 
+    # The level of log output to log file (maafw.log)
+    #
+    # value, val_size: sizeof(MaaLoggingLevel)
+    # default value is MaaLoggingLevel_All
+    LogLevel = 10
+
+    # Max age in days before log/debug files are deleted
+    #
+    # value: int, eg: 7; val_size: sizeof(int32)
+    # default value is 7, 0 to disable cleanup
+    LogCleanupDays = 11
+
 
 class MaaCtrlOptionEnum(IntEnum):
     Invalid = 0

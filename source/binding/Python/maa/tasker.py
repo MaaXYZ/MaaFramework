@@ -691,6 +691,48 @@ class Tasker:
         )
 
     @staticmethod
+    def set_log_level(level: LoggingLevelEnum) -> bool:
+        """设置日志输出到日志文件中的级别 / Set the log output level to log file
+
+        Args:
+            level: 日志级别 / Logging level
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        clevel = MaaLoggingLevel(level)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.LogLevel),
+                ctypes.pointer(clevel),
+                ctypes.sizeof(MaaLoggingLevel),
+            )
+        )
+
+    @staticmethod
+    def set_log_cleanup_days(days: int) -> bool:
+        """设置日志文件清理天数 / Set log file cleanup days
+
+        超过该天数的 .log/.jpg/.png 会在日志初始化时删除。0 表示不清理。默认 7 天。
+        Files older than this many days (.log/.jpg/.png) are deleted when logging starts.
+        0 disables cleanup. Default is 7.
+
+        Args:
+            days: 保留天数，0 表示不清理 / Retention days, 0 to disable cleanup
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        cdays = ctypes.c_int32(days)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.LogCleanupDays),
+                ctypes.pointer(cdays),
+                ctypes.sizeof(ctypes.c_int32),
+            )
+        )
+
+    @staticmethod
     def set_debug_mode(debug_mode: bool) -> bool:
         """设置是否启用调试模式 / Set whether to enable debug mode
 

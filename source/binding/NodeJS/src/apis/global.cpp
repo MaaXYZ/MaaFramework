@@ -19,6 +19,36 @@ namespace
     throw maajs::MaaError { std::format("{} is not available in AgentServer builds", api) };
 }
 
+int32_t parse_logging_level(const std::string& level, const char* option)
+{
+    if (level == "Off") {
+        return MaaLoggingLevel_Off;
+    }
+    if (level == "Fatal") {
+        return MaaLoggingLevel_Fatal;
+    }
+    if (level == "Error") {
+        return MaaLoggingLevel_Error;
+    }
+    if (level == "Warn") {
+        return MaaLoggingLevel_Warn;
+    }
+    if (level == "Info") {
+        return MaaLoggingLevel_Info;
+    }
+    if (level == "Debug") {
+        return MaaLoggingLevel_Debug;
+    }
+    if (level == "Trace") {
+        return MaaLoggingLevel_Trace;
+    }
+    if (level == "All") {
+        return MaaLoggingLevel_All;
+    }
+
+    throw maajs::MaaError { std::format("Global set {} failed, invalid level {}", option, level) };
+}
+
 } // namespace
 
 std::string version_from_macro()
@@ -54,37 +84,26 @@ void set_save_on_error(bool value)
 
 void set_stdout_level(std::string level)
 {
-    int32_t value = 0;
-    if (level == "Off") {
-        value = MaaLoggingLevel_Off;
-    }
-    else if (level == "Fatal") {
-        value = MaaLoggingLevel_Fatal;
-    }
-    else if (level == "Error") {
-        value = MaaLoggingLevel_Error;
-    }
-    else if (level == "Warn") {
-        value = MaaLoggingLevel_Warn;
-    }
-    else if (level == "Info") {
-        value = MaaLoggingLevel_Info;
-    }
-    else if (level == "Debug") {
-        value = MaaLoggingLevel_Debug;
-    }
-    else if (level == "Trace") {
-        value = MaaLoggingLevel_Trace;
-    }
-    else if (level == "All") {
-        value = MaaLoggingLevel_All;
-    }
-    else {
-        throw maajs::MaaError { std::format("Global set stdout_level failed, invalid level {}", level) };
-    }
+    int32_t value = parse_logging_level(level, "stdout_level");
 
     if (!MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &value, sizeof(value))) {
         throw maajs::MaaError { "Global set stdout_level failed" };
+    }
+}
+
+void set_log_level(std::string level)
+{
+    int32_t value = parse_logging_level(level, "log_level");
+
+    if (!MaaGlobalSetOption(MaaGlobalOption_LogLevel, &value, sizeof(value))) {
+        throw maajs::MaaError { "Global set log_level failed" };
+    }
+}
+
+void set_log_cleanup_days(int value)
+{
+    if (!MaaGlobalSetOption(MaaGlobalOption_LogCleanupDays, &value, sizeof(value))) {
+        throw maajs::MaaError { "Global set log_cleanup_days failed" };
     }
 }
 
@@ -197,6 +216,8 @@ maajs::ObjectType load_global(maajs::EnvType env)
     MAA_BIND_SETTER(globalObject, "save_draw", set_save_draw);
     MAA_BIND_SETTER(globalObject, "save_on_error", set_save_on_error);
     MAA_BIND_SETTER(globalObject, "stdout_level", set_stdout_level);
+    MAA_BIND_SETTER(globalObject, "log_level", set_log_level);
+    MAA_BIND_SETTER(globalObject, "log_cleanup_days", set_log_cleanup_days);
     MAA_BIND_SETTER(globalObject, "debug_mode", set_debug_mode);
     MAA_BIND_SETTER(globalObject, "draw_quality", set_draw_quality);
     MAA_BIND_SETTER(globalObject, "reco_image_cache_limit", set_reco_image_cache_limit);

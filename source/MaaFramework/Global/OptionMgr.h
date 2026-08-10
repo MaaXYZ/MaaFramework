@@ -39,6 +39,8 @@ private:
     bool set_log_dir(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_save_draw(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_log_level(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_log_cleanup_days(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_save_on_error(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_draw_quality(MaaOptionValue value, MaaOptionValueSize val_size);

@@ -68,6 +68,8 @@ bool GlobalOptionConfig::apply_option()
 
     MaaBool ret = true;
 
+    ret &= MaaGlobalSetOption(MaaGlobalOption_LogCleanupDays, &option_.log_cleanup_days, sizeof(option_.log_cleanup_days));
+
     std::string logging_dir = option_.logging ? path_to_utf8_string(debug_dir_) : "";
     ret &= MaaGlobalSetOption(MaaGlobalOption_LogDir, static_cast<void*>(logging_dir.data()), logging_dir.size());
 
@@ -76,6 +78,8 @@ bool GlobalOptionConfig::apply_option()
     ret &= MaaGlobalSetOption(MaaGlobalOption_SaveOnError, &option_.save_on_error, sizeof(option_.save_on_error));
 
     ret &= MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &option_.stdout_level, sizeof(option_.stdout_level));
+
+    ret &= MaaGlobalSetOption(MaaGlobalOption_LogLevel, &option_.log_level, sizeof(option_.log_level));
 
     ret &= MaaGlobalSetOption(MaaGlobalOption_DrawQuality, &option_.draw_quality, sizeof(option_.draw_quality));
 
