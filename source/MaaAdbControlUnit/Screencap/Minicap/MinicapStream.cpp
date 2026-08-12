@@ -76,6 +76,8 @@ std::optional<std::string> MinicapStream::read_exact(size_t count)
 
 std::optional<cv::Mat> MinicapStream::read_frame()
 {
+    constexpr uint64_t kBytesPerPixel = 4;
+
     auto size_data = read_exact(sizeof(uint32_t));
     if (!size_data) {
         return std::nullopt;
@@ -83,6 +85,13 @@ std::optional<cv::Mat> MinicapStream::read_frame()
 
     uint32_t size = 0;
     std::memcpy(&size, size_data->data(), sizeof(size));
+
+    const auto max_size = static_cast<uint64_t>(display_width_) * static_cast<uint64_t>(display_height_) * kBytesPerPixel;
+    if (size == 0 || size > max_size) {
+        LogError << "invalid minicap frame size" << VAR(size) << VAR(max_size);
+        quit_ = true;
+        return std::nullopt;
+    }
 
     auto data = read_exact(size);
     if (!data) {
@@ -198,11 +207,19 @@ void MinicapStream::pulling()
             consecutive_failures = 0;
             backoff = kBackoffBase;
 
-            std::unique_lock locker(mutex_);
-            image_ = std::move(*image);
+            {
+                std::unique_lock locker(mutex_);
+                image_ = std::move(*image);
+            }
             cond_.notify_all();
             continue;
         }
+
+        {
+            std::unique_lock locker(mutex_);
+            image_.release();
+        }
+        cond_.notify_all();
 
         if (quit_) {
             break;
@@ -220,8 +237,6 @@ void MinicapStream::pulling()
         }
 
         std::unique_lock locker(mutex_);
-        image_.release();
-        cond_.notify_all();
         cond_.wait_for(locker, backoff, [this]() { return quit_.load(); });
         backoff = std::min(backoff * 2, kBackoffMax);
     }
