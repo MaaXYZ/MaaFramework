@@ -185,7 +185,7 @@ void MinicapStream::pulling()
     using namespace std::chrono_literals;
 
     constexpr auto kBackoffBase = 10ms;
-    constexpr auto kBackoffMax = 1s;
+    constexpr auto kBackoffMax = 1000ms;
     constexpr auto kLogInterval = 1min;
 
     size_t consecutive_failures = 0;
