@@ -93,6 +93,9 @@ class PortalHelper:
     def open_stream(self) -> bool:
         return Library.toolkit().MaaToolkitPortalHelperOpenStream(self._handle)
 
+    def get_persist(self) -> bool:
+        return bool(Library.toolkit().MaaToolkitPortalHelperGetPersist(self._handle))
+
     def set_persist(self, enable: bool):
         Library.toolkit().MaaToolkitPortalHelperSetPersist(self._handle, enable)
 
@@ -467,6 +470,9 @@ class Toolkit:
 
         Library.toolkit().MaaToolkitPortalHelperOpenStream.restype = MaaBool
         Library.toolkit().MaaToolkitPortalHelperOpenStream.argtypes = [MaaToolkitPortalHelperHandle]
+
+        Library.toolkit().MaaToolkitPortalHelperGetPersist.restype = MaaBool
+        Library.toolkit().MaaToolkitPortalHelperGetPersist.argtypes = [MaaToolkitPortalHelperHandle]
 
         Library.toolkit().MaaToolkitPortalHelperSetPersist.restype = None
         Library.toolkit().MaaToolkitPortalHelperSetPersist.argtypes = [MaaToolkitPortalHelperHandle, MaaBool]
