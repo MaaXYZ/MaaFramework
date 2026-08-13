@@ -372,9 +372,9 @@ void Interactor::print_config() const
         if ((lnx.screencap == "Wlr" || lnx.input == "Wlr") && !lnx.wlr_socket_path.empty()) {
             std::cout << MAA_NS::utf8_to_crt(std::format("\t\tWayland Socket: {}\n", lnx.wlr_socket_path));
         }
-        if ((lnx.screencap == "PipeWire" || lnx.input == "UInput")) {
+        if (lnx.input == "UInput") {
             std::cout << MAA_NS::utf8_to_crt(
-                std::format("\t\tScreen Width: {}\n\t\tScreen Height: {}\n", lnx.pw_screen_width, lnx.pw_screen_height));
+                std::format("\t\tScreen Width: {}\n\t\tScreen Height: {}\n", lnx.uinput_screen_width, lnx.uinput_screen_height));
         }
 
         if (!kLinuxSupported) {
@@ -1143,8 +1143,8 @@ void Interactor::select_linux(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Con
         select_wlroots();
     }
 
-    if (lnx.screencap == "PipeWire" || lnx.input == "UInput") {
-        input_pw_width_height();
+    if (lnx.input == "UInput") {
+        input_uinput_width_height();
     }
 }
 
@@ -1216,11 +1216,11 @@ void Interactor::select_wlroots_manual_input()
     std::cout << "\n";
 }
 
-void Interactor::input_pw_width_height()
+void Interactor::input_uinput_width_height()
 {
     auto& lnx = config_.configuration().lnx;
 
-    std::string default_width = std::to_string(lnx.pw_screen_width);
+    std::string default_width = std::to_string(lnx.uinput_screen_width);
     std::cout << "Screen width [" << default_width << "]: ";
     std::cin.sync();
     std::string buffer;
@@ -1231,14 +1231,14 @@ void Interactor::input_pw_width_height()
     }
     if (!buffer.empty()) {
         if (buffer.size() <= 9 && std::ranges::all_of(buffer, [](unsigned char c) { return c >= '0' && c <= '9'; })) {
-            lnx.pw_screen_width = std::stoi(buffer);
+            lnx.uinput_screen_width = std::stoi(buffer);
         }
         else {
             std::cout << "Invalid screen width, keeping previous value.\n";
         }
     }
 
-    std::string default_height = std::to_string(lnx.pw_screen_height);
+    std::string default_height = std::to_string(lnx.uinput_screen_height);
     std::cout << "Screen height [" << default_height << "]: ";
     std::cin.sync();
     std::getline(std::cin, buffer);
@@ -1248,7 +1248,7 @@ void Interactor::input_pw_width_height()
     }
     if (!buffer.empty()) {
         if (buffer.size() <= 9 && std::ranges::all_of(buffer, [](unsigned char c) { return c >= '0' && c <= '9'; })) {
-            lnx.pw_screen_height = std::stoi(buffer);
+            lnx.uinput_screen_height = std::stoi(buffer);
         }
         else {
             std::cout << "Invalid screen height, keeping previous value.\n";

@@ -311,7 +311,7 @@ bool LinuxControlUnitMgr::create_input()
         input_ = std::make_shared<WlrInput>(wl_client_);
         return true;
     case MaaLinuxInputMethod_UInput:
-        input_ = std::make_shared<UInput>(config_.uinput_path, config_.pw_screen_width, config_.pw_screen_height);
+        input_ = std::make_shared<UInput>(config_.uinput_path, config_.uinput_screen_width, config_.uinput_screen_height);
         return true;
     case MaaLinuxInputMethod_Libei:
         input_ = std::make_shared<EiInput>(config_.eis_socket_path);

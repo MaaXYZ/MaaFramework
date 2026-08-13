@@ -31,7 +31,7 @@ private:
     void select_wlroots();
     void select_wlroots_auto_detect();
     void select_wlroots_manual_input();
-    void input_pw_width_height();
+    void input_uinput_width_height();
 
     void select_resource();
     void add_task();

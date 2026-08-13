@@ -91,9 +91,11 @@ std::string reconfig_linux(const RuntimeParam::LinuxParam& raw)
         }
         obj["pw_socket_fd"] = MaaToolkitPortalHelperGetPipeWireFD(helper_handle);
         obj["pw_node_id"] = MaaToolkitPortalHelperGetPipeWireNodeID(helper_handle);
-        obj["pw_screen_width"] = raw.pw_screen_width;
-        obj["pw_screen_height"] = raw.pw_screen_height;
         MaaToolkitPortalHelperDestroy(helper_handle);
+    }
+    if (raw.input == MaaLinuxInputMethod_UInput) {
+        obj["uinput_screen_width"] = raw.uinput_screen_width;
+        obj["uinput_screen_height"] = raw.uinput_screen_height;
     }
 
     return obj.dumps();

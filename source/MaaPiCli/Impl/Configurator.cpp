@@ -346,8 +346,8 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
             lnx.wlr_socket_path = config_.lnx.wlr_socket_path;
         }
 
-        lnx.pw_screen_height = config_.lnx.pw_screen_height;
-        lnx.pw_screen_width = config_.lnx.pw_screen_width;
+        lnx.uinput_screen_height = config_.lnx.uinput_screen_height;
+        lnx.uinput_screen_width = config_.lnx.uinput_screen_width;
 
         runtime.controller_param = std::move(lnx);
     } break;

@@ -3,13 +3,14 @@
 #include "Base/UnitBase.h"
 
 #include <atomic>
-#include <condition_variable>
-#include <mutex>
 #include <string>
+
+#include <memory>
 
 #include <spa/utils/hook.h>
 
 #include <pipewire/stream.h>
+#include <spa/param/video/raw.h>
 
 #include <opencv2/core.hpp>
 
@@ -17,7 +18,6 @@
 
 /* Forward-declare PipeWire types (they are C types, not in any C++ namespace) */
 struct pw_thread_loop;
-struct pw_loop;
 struct pw_context;
 struct pw_core;
 struct pw_stream;
@@ -27,30 +27,36 @@ struct spa_pod;
 MAA_CTRL_UNIT_NS_BEGIN
 
 /**
- * @brief PipeWire screen capture via xdg-desktop-portal (KDE/KWin).
+ * @brief PipeWire screen capture.
  *
- * Captures the entire monitor framebuffer using the ScreenCast portal.
- * The workflow is:
- *   1. D-Bus handshake with xdg-desktop-portal to create a session,
- *      select sources, start streaming, and obtain a PipeWire FD.
- *   2. Connect to KWin's private PipeWire instance via the portal FD.
- *   3. Negotiate format and receive frames via PipeWire callbacks.
- *   4. Convert BGRA → BGR and resize to target screen dimensions.
+ * Two connection modes:
+ *   1. Portal FD: the caller hands over a PipeWire FD (e.g. from the ScreenCast portal, the
+ *      KDE/KWin path) and the stream node ID.
+ *   2. Session daemon: no FD; connects to the session PipeWire daemon and attaches to the given
+ *      node (e.g. a gamescope Video/Source node).
  *
- * Thread safety: open()/close()/screencap() are NOT safe for concurrent
+ * Frame dimensions are always taken from the negotiated stream format, never from the caller.
+ *
+ * Thread safety: init()/close()/screencap() are NOT safe for concurrent
  * calls, but screencap() may be called from a different thread than
- * open()/close() as long as they are serialised by the caller.
+ * init()/close() as long as they are serialised by the caller.
+ *
+ * Cross-thread state (latest_frame_, frame dimensions, frame_wanted_,
+ * stream_active_) follows the pw_thread_loop discipline: consumer-side
+ * code holds the loop lock when touching it, and callbacks run on the
+ * loop thread, so the loop stops while the lock is held. Handshakes use
+ * pw_thread_loop_timed_wait()/pw_thread_loop_signal().
  */
 class PipeWireScreencap : public ScreencapBase
 {
 public:
-    explicit PipeWireScreencap(int pipewire_fd, uint32_t pipewire_node_id, int screen_width, int screen_height);
+    explicit PipeWireScreencap(int pipewire_fd, uint32_t pipewire_node_id);
     ~PipeWireScreencap() override;
 
     PipeWireScreencap(const PipeWireScreencap&) = delete;
     PipeWireScreencap& operator=(const PipeWireScreencap&) = delete;
 
-    bool open();
+    bool init() override;
     void close();
     bool connected() const;
 
@@ -74,8 +80,7 @@ private:
     static void pw_on_stream_process(void* data);
 
     /* ---- Frame processing ---- */
-    bool process_frame(const struct spa_buffer* spa_buf, cv::Mat& out_image);
-    int infer_dimension_from_stride(uint32_t stride, size_t data_size) const;
+    bool copy_raw_frame(const struct spa_buffer* spa_buf);
 
     /* PipeWire state */
     int pipewire_fd_ = -1;
@@ -83,14 +88,9 @@ private:
 
     /* ---- Internal state ---- */
     std::atomic<bool> connected_ { false };
-    bool open_attempted_ = false;
-
-    int screen_width_ = 0;
-    int screen_height_ = 0;
 
     /* PipeWire objects */
     pw_thread_loop* pw_thread_loop_ = nullptr;
-    pw_loop* pw_loop_ = nullptr;
     pw_context* pw_context_ = nullptr;
     pw_core* pw_core_ = nullptr;
     pw_stream* pw_stream_ = nullptr;
@@ -101,22 +101,17 @@ private:
     /* PipeWire stream hook (embedded, must outlive pw_stream_add_listener) */
     spa_hook stream_hook_ = { };
 
-    /* Heap-allocated event vtables (must outlive the listener) */
-    pw_stream_events* stream_events_ = nullptr;
-
     /* Negotiated frame dimensions (set by param_changed callback) */
     int frame_width_ = 0;
     int frame_height_ = 0;
+    /* Negotiated SPA video format */
+    enum spa_video_format frame_format_ = SPA_VIDEO_FORMAT_UNKNOWN;
 
-    /* DMABUF warning (log only once to avoid flooding) */
-    bool dmabuf_warned_ = false;
-
-    /* Latest frame data (protected by frame_mutex_) */
-    std::mutex frame_mutex_;
+    /* loop-lock discipline, see class comment */
     cv::Mat latest_frame_;
-    bool frame_available_ = false;
-    std::condition_variable frame_cv_;
-    bool stream_active_ = true;
+    /* 消费者等帧标志: 无等待者时跳过拷贝, 省去空闲时对不可缓存映射的全量读取 */
+    bool frame_wanted_ = false;
+    bool stream_active_ = false;
 };
 
 MAA_CTRL_UNIT_NS_END
