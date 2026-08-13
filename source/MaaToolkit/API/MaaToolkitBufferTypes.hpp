@@ -36,3 +36,11 @@ public:
     virtual uint32_t id() const = 0;
     virtual const std::string& name() const = 0;
 };
+
+struct MaaToolkitGamescopeEisSocket
+{
+public:
+    virtual ~MaaToolkitGamescopeEisSocket() = default;
+
+    virtual const std::string& path() const = 0;
+};

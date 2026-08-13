@@ -722,6 +722,8 @@ MaaToolkitDesktopWindowHandle = ctypes.c_void_p
 
 MaaToolkitGamescopeNodeListHandle = ctypes.c_void_p
 MaaToolkitGamescopeNodeHandle = ctypes.c_void_p
+MaaToolkitGamescopeEisSocketListHandle = ctypes.c_void_p
+MaaToolkitGamescopeEisSocketHandle = ctypes.c_void_p
 
 MaaMacOSPermission = ctypes.c_int32
 

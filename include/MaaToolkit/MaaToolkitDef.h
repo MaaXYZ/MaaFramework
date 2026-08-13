@@ -12,6 +12,8 @@ typedef struct MaaToolkitPortalHelper MaaToolkitPortalHelper;
 
 typedef struct MaaToolkitGamescopeNode MaaToolkitGamescopeNode;
 typedef struct MaaToolkitGamescopeNodeList MaaToolkitGamescopeNodeList;
+typedef struct MaaToolkitGamescopeEisSocket MaaToolkitGamescopeEisSocket;
+typedef struct MaaToolkitGamescopeEisSocketList MaaToolkitGamescopeEisSocketList;
 
 enum MaaMacOSPermissionEnum
 {
