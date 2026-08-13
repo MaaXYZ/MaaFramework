@@ -52,8 +52,8 @@ public:
     virtual json::object get_info() const override;
 
 private:
-    bool init_screencap();
-    bool init_input();
+    bool create_screencap();
+    bool create_input();
     bool create_wl_client();
     int translate_key(int key) const;
 

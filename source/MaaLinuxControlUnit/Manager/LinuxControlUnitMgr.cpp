@@ -1,5 +1,6 @@
 #include "LinuxControlUnitMgr.h"
 
+#include "Input/EiInput.h"
 #include "Input/NoneInput.h"
 #include "Input/UInput.h"
 #include "Input/VkToEvdev.h"
@@ -34,10 +35,19 @@ bool LinuxControlUnitMgr::connect()
         }
     }
 
-    if (!init_screencap()) {
+    if (!create_screencap()) {
         return false;
     }
-    if (!init_input()) {
+    if (!create_input()) {
+        return false;
+    }
+
+    if (!screencap_->init()) {
+        LogError << "Failed to init screencap";
+        return false;
+    }
+    if (!input_->init()) {
+        LogError << "Failed to init input";
         return false;
     }
 
@@ -59,7 +69,7 @@ bool LinuxControlUnitMgr::request_uuid(std::string& uuid)
         ss << config_.wlr_socket_path;
         break;
     case MaaLinuxScreencapMethod_PipeWire:
-        ss << config_.pw_socket_fd;
+        ss << config_.pw_socket_fd << '_' << config_.pw_node_id;
         break;
     default:
         ss << "-1";
@@ -72,6 +82,9 @@ bool LinuxControlUnitMgr::request_uuid(std::string& uuid)
         break;
     case MaaLinuxInputMethod_UInput:
         ss << config_.uinput_path;
+        break;
+    case MaaLinuxInputMethod_Libei:
+        ss << config_.eis_socket_path;
         break;
     default:
         ss << "-1";
@@ -265,7 +278,7 @@ json::object LinuxControlUnitMgr::get_info() const
     return type | config_.to_json().as_object();
 }
 
-bool LinuxControlUnitMgr::init_screencap()
+bool LinuxControlUnitMgr::create_screencap()
 {
     switch (config_.screencap_method) {
     case MaaLinuxScreencapMethod_None:
@@ -275,11 +288,12 @@ bool LinuxControlUnitMgr::init_screencap()
         screencap_ = std::make_shared<WlrScreencap>(wl_client_);
         return true;
     case MaaLinuxScreencapMethod_PipeWire:
-        screencap_ = std::make_shared<PipeWireScreencap>(
-            config_.pw_socket_fd,
-            config_.pw_node_id,
-            config_.pw_screen_width,
-            config_.pw_screen_height);
+        if (config_.pw_socket_fd < 0 && config_.pw_node_id == 0) {
+            // 无 portal fd 时必须显式指定节点, 否则会误连到任意节点
+            LogError << "pw_node_id required when no portal fd is provided";
+            return false;
+        }
+        screencap_ = std::make_shared<PipeWireScreencap>(config_.pw_socket_fd, config_.pw_node_id);
         return true;
     default:
         LogError << "Unknown Screencap Method" << VAR(config_.screencap_method);
@@ -287,7 +301,7 @@ bool LinuxControlUnitMgr::init_screencap()
     }
 }
 
-bool LinuxControlUnitMgr::init_input()
+bool LinuxControlUnitMgr::create_input()
 {
     switch (config_.input_method) {
     case MaaLinuxInputMethod_None:
@@ -298,6 +312,9 @@ bool LinuxControlUnitMgr::init_input()
         return true;
     case MaaLinuxInputMethod_UInput:
         input_ = std::make_shared<UInput>(config_.uinput_path, config_.pw_screen_width, config_.pw_screen_height);
+        return true;
+    case MaaLinuxInputMethod_Libei:
+        input_ = std::make_shared<EiInput>(config_.eis_socket_path);
         return true;
     default:
         LogError << "Unknown Input Method" << VAR(config_.input_method);

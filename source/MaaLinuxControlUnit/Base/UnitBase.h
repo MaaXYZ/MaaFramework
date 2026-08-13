@@ -25,6 +25,8 @@ public:
     virtual ~ScreencapBase() = default;
 
 public:
+    virtual bool init() { return true; }
+
     virtual std::optional<cv::Mat> screencap() = 0;
 
     virtual void inactive() { }
@@ -36,6 +38,8 @@ public:
     virtual ~InputBase() = default;
 
 public:
+    virtual bool init() { return true; }
+
     virtual MaaControllerFeature get_features() const = 0;
 
     virtual bool click(int x, int y) = 0;
