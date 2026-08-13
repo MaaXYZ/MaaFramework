@@ -49,6 +49,8 @@ class DesktopWindow:
     class_name: str
     window_name: str
 
+
+@dataclass
 class GamescopeNode:
     """gamescope PipeWire 节点信息 / gamescope PipeWire node info
 
@@ -62,10 +64,6 @@ class GamescopeNode:
 
     id: int
     name: str
-
-    def __init__(self, id: int, name: str):
-        self.id = id
-        self.name = name
 
 
 class PortalHelper:
@@ -202,6 +200,7 @@ class Toolkit:
         Library.toolkit().MaaToolkitDesktopWindowListDestroy(list_handle)
         return windows
 
+    @staticmethod
     def find_gamescope_nodes() -> list[GamescopeNode]:
         """查找会话 PipeWire daemon 上的 gamescope 节点 / Find gamescope nodes on the session PipeWire daemon
 

@@ -580,12 +580,14 @@ class MaaLinuxInputMethodEnum(IntEnum):
     |-----------------|-------------------------------------------------------------------------------------------|
     | Wlr             | Input using `virtual-keyboard-unstable-v1` and `wlr-virtual-pointer-unstable-v1` protocol |
     | UInput          | Input using `/dev/uinput`                                                                 |
+    | Libei           | Input using libei (EIS socket, e.g. the one provided by gamescope)                        |
     """
 
     Null = 0
 
     Wlr = 1
     UInput = 1 << 1
+    Libei = 1 << 2
 
 
 # No bitwise OR, just set it

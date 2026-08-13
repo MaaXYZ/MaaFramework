@@ -443,7 +443,7 @@ typedef uint64_t MaaMacOSInputMethod;
  * | Method          | Description                                                              |
  * |-----------------|--------------------------------------------------------------------------|
  * | Wlr             | Screencap using `wlr-screencopy-unstable-v1` protocol                    |
- * | PipeWire        | Screencap using PipeWire (portal fd or session-daemon node)        |
+ * | PipeWire        | Screencap using PipeWire (portal fd or session-daemon node)              |
  */
 typedef uint64_t MaaLinuxScreencapMethod;
 #define MaaLinuxScreencapMethod_None 0ULL
