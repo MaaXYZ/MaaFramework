@@ -109,6 +109,7 @@ MaaLinuxInputMethod parse_linux_input_method(const std::string& method)
     static const std::unordered_map<std::string, MaaLinuxInputMethod> mapping = {
         { "Wlr", MaaLinuxInputMethod_Wlr },
         { "UInput", MaaLinuxInputMethod_UInput },
+        { "Libei", MaaLinuxInputMethod_Libei },
     };
 
     if (auto it = mapping.find(method); it != mapping.end()) {
@@ -348,6 +349,8 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
 
         lnx.uinput_screen_height = config_.lnx.uinput_screen_height;
         lnx.uinput_screen_width = config_.lnx.uinput_screen_width;
+        lnx.pw_node_id = config_.lnx.pw_node_id;
+        lnx.eis_socket_path = config_.lnx.eis_socket_path;
 
         runtime.controller_param = std::move(lnx);
     } break;

@@ -1139,6 +1139,13 @@ class LinuxController(Controller):
 
     通过 JSON 配置截图方式和输入方式，支持多种 Linux 显示服务器 (Wayland/X11) 和控制方式。
     Configurable screencap and input methods via JSON for various Linux display servers.
+
+    窗口捕获 (gamescope 等): screencap_method 为 PipeWire 时设置 pw_node_id 直连会话 daemon 节点
+    (节点可用 MaaToolkitGamescopeNodeFindAll 发现); 输入方式 Libei 需提供 eis_socket_path
+    (如 /run/user/1000/gamescope-0-ei)。
+    Window capture (gamescope etc.): with PipeWire screencap, set pw_node_id to attach to a
+    session-daemon node directly (discover nodes with MaaToolkitGamescopeNodeFindAll); use
+    input_method Libei with eis_socket_path for libei (EIS) input.
     """
 
     def __init__(
@@ -1150,6 +1157,9 @@ class LinuxController(Controller):
         Args:
             config: 控制器配置 JSON 对象，包含 screencap_method、input_method 等字段
                     Controller config JSON object, containing screencap_method, input_method, etc.
+                    gamescope 节点直连示例 / gamescope node example:
+                    {"screencap_method": 4, "input_method": 4, "pw_node_id": 70,
+                     "eis_socket_path": "/run/user/1000/gamescope-0-ei"}
 
         Raises:
             RuntimeError: 如果创建失败

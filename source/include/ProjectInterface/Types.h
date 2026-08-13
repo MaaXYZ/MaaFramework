@@ -61,8 +61,14 @@ struct InterfaceData
             std::string screencap;
             std::string input;
             bool use_win32_vk_code = false;
+            // libei (EIS) 输入 socket 路径, 如 /run/user/<uid>/gamescope-<n>-ei
+            std::string eis_socket_path;
 
-            MEO_JSONIZATION(MEO_OPT screencap, MEO_OPT input, MEO_OPT use_win32_vk_code);
+            MEO_JSONIZATION(
+                MEO_OPT screencap,
+                MEO_OPT input,
+                MEO_OPT use_win32_vk_code,
+                MEO_OPT eis_socket_path);
         };
 
         enum class Type
@@ -389,6 +395,10 @@ struct Configuration
         std::string wlr_socket_path;
         int uinput_screen_width = 0;
         int uinput_screen_height = 0;
+        // 会话 daemon 节点直连 (gamescope 等, 节点可用 MaaToolkitGamescopeNodeFindAll 发现)
+        uint32_t pw_node_id = 0;
+        // libei (EIS) 输入 socket 路径
+        std::string eis_socket_path;
         bool use_win32_vk_code = false;
 
         MEO_JSONIZATION(
@@ -397,6 +407,8 @@ struct Configuration
             MEO_OPT wlr_socket_path,
             MEO_OPT uinput_screen_width,
             MEO_OPT uinput_screen_height,
+            MEO_OPT pw_node_id,
+            MEO_OPT eis_socket_path,
             MEO_OPT use_win32_vk_code);
     };
 
@@ -503,6 +515,10 @@ struct RuntimeParam
         std::string wlr_socket_path;
         int uinput_screen_width = 0;
         int uinput_screen_height = 0;
+        // 会话 daemon 节点直连 (gamescope 等, 节点可用 MaaToolkitGamescopeNodeFindAll 发现)
+        uint32_t pw_node_id = 0;
+        // libei (EIS) 输入 socket 路径
+        std::string eis_socket_path;
         bool use_win32_vk_code = false;
     };
 

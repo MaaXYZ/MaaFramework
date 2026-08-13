@@ -17,6 +17,7 @@ struct LinuxControlUnitConfig
     int uinput_screen_height = 0;
 
     std::string uinput_path = "/dev/uinput";
+    std::string eis_socket_path;
 
     bool use_win32_vk_code = false;
 
@@ -29,6 +30,7 @@ struct LinuxControlUnitConfig
         MEO_OPT uinput_screen_width,
         MEO_OPT uinput_screen_height,
         MEO_OPT uinput_path,
+        MEO_OPT eis_socket_path,
         MEO_OPT use_win32_vk_code);
 };
 

@@ -707,7 +707,8 @@
                             "description": "可选。Linux 控制器的输入控制方式，不提供则使用默认",
                             "enum": [
                                 "Wlr",
-                                "UInput"
+                                "UInput",
+                                "Libei"
                             ]
                         },
                         "screencap": {
@@ -719,6 +720,12 @@
                                 "ExtImage",
                                 "PipeWire"
                             ]
+                        },
+                        "eis_socket_path": {
+                            "type": "string",
+                            "title": "EIS socket 路径",
+                            "description": "可选。输入方式为 Libei 时的 EIS socket 路径，如 /run/user/1000/gamescope-0-ei",
+                            "default": ""
                         },
                         "use_win32_vk_code": {
                             "type": "boolean",

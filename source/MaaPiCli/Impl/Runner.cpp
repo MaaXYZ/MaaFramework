@@ -79,23 +79,33 @@ std::string reconfig_linux(const RuntimeParam::LinuxParam& raw)
         obj["wlr_socket_path"] = raw.wlr_socket_path;
     }
     if (raw.screencap == MaaLinuxScreencapMethod_PipeWire) {
-        auto helper_handle = MaaToolkitPortalHelperCreate();
-        if (!helper_handle) {
-            LogError << "Failed to create portal helper";
-            return "";
+        if (raw.pw_node_id != 0) {
+            // 会话 daemon 节点直连 (gamescope 等, 节点可用 MaaToolkitGamescopeNodeFindAll 发现)
+            obj["pw_node_id"] = raw.pw_node_id;
         }
-        if (!MaaToolkitPortalHelperOpenStream(helper_handle)) {
-            LogError << "Failed to open stream";
+        else {
+            // 显示器捕获: 通过 portal 获取 fd + node id
+            auto helper_handle = MaaToolkitPortalHelperCreate();
+            if (!helper_handle) {
+                LogError << "Failed to create portal helper";
+                return "";
+            }
+            if (!MaaToolkitPortalHelperOpenStream(helper_handle)) {
+                LogError << "Failed to open stream";
+                MaaToolkitPortalHelperDestroy(helper_handle);
+                return "";
+            }
+            obj["pw_socket_fd"] = MaaToolkitPortalHelperGetPipeWireFD(helper_handle);
+            obj["pw_node_id"] = MaaToolkitPortalHelperGetPipeWireNodeID(helper_handle);
             MaaToolkitPortalHelperDestroy(helper_handle);
-            return "";
         }
-        obj["pw_socket_fd"] = MaaToolkitPortalHelperGetPipeWireFD(helper_handle);
-        obj["pw_node_id"] = MaaToolkitPortalHelperGetPipeWireNodeID(helper_handle);
-        MaaToolkitPortalHelperDestroy(helper_handle);
     }
     if (raw.input == MaaLinuxInputMethod_UInput) {
         obj["uinput_screen_width"] = raw.uinput_screen_width;
         obj["uinput_screen_height"] = raw.uinput_screen_height;
+    }
+    if (raw.input == MaaLinuxInputMethod_Libei) {
+        obj["eis_socket_path"] = raw.eis_socket_path;
     }
 
     return obj.dumps();

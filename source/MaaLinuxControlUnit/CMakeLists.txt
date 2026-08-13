@@ -6,6 +6,8 @@ set(maa_linux_control_unit_src_c99
         ${CMAKE_CURRENT_SOURCE_DIR}/Manager/LinuxControlUnitMgr.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Screencap/PipeWireScreencap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Screencap/PipeWireScreencap.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Screencap/WindowCastSession.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Input/EiInput.cpp
 )
 
 add_library(MaaLinuxControlUnit SHARED ${maa_linux_control_unit_src} ${maa_linux_control_unit_header})
@@ -46,6 +48,24 @@ if (PIPEWIRE_ABS_LIB)
     target_link_libraries(MaaLinuxControlUnit PRIVATE ${PIPEWIRE_ABS_LIB})
 else ()
     message(FATAL_ERROR "MaaLinuxControlUnit: PipeWire not found on this platform")
+endif ()
+
+# libei (EIS input)
+set(LIBEI_ABS_LIB)
+if (PkgConfig_FOUND)
+    pkg_check_modules(LIBEI QUIET libei-1.0)
+endif ()
+if (LIBEI_FOUND)
+    find_library(LIBEI_ABS_LIB
+            NAMES ei
+            PATHS ${LIBEI_LIBRARY_DIRS} /usr/lib)
+endif ()
+if (LIBEI_ABS_LIB)
+    message(STATUS "MaaLinuxControlUnit: libei absolute path: ${LIBEI_ABS_LIB}")
+    target_include_directories(MaaLinuxControlUnit PRIVATE ${LIBEI_INCLUDE_DIRS})
+    target_link_libraries(MaaLinuxControlUnit PRIVATE ${LIBEI_ABS_LIB})
+else ()
+    message(FATAL_ERROR "MaaLinuxControlUnit: libei not found on this platform")
 endif ()
 
 set_source_files_properties(${maa_linux_control_unit_src_c99}
