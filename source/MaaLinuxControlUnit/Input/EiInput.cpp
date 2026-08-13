@@ -261,7 +261,11 @@ bool EiInput::send(F&& emit)
         LogError << "send called without a valid device/ei";
         return false;
     }
-    while (poll_and_dispatch(0) > 0) {
+    while (device_ && poll_and_dispatch(0) > 0) {
+    }
+    if (!device_) {
+        LogError << "device removed or disconnected";
+        return false;
     }
     emit(device_);
     ei_device_frame(device_, ei_now(ei_));
