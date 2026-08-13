@@ -39,6 +39,25 @@ if (LINUX)
     else ()
         message(FATAL_ERROR "MaaToolkit: DBus not found on this platform")
     endif ()
+
+    # PipeWire (gamescope node discovery)
+    set(PIPEWIRE_ABS_LIB)
+    if (PkgConfig_FOUND)
+        pkg_check_modules(PIPEWIRE QUIET libpipewire-0.3)
+    endif ()
+    if (PIPEWIRE_FOUND)
+        find_library(PIPEWIRE_ABS_LIB
+                NAMES pipewire-0.3
+                PATHS ${PIPEWIRE_LIBRARY_DIRS} /usr/lib)
+    endif ()
+    if (PIPEWIRE_ABS_LIB)
+        message(STATUS "MaaToolkit: PipeWire absolute path: ${PIPEWIRE_ABS_LIB}")
+        target_include_directories(MaaToolkit PRIVATE ${PIPEWIRE_INCLUDE_DIRS})
+        target_link_libraries(MaaToolkit PRIVATE ${PIPEWIRE_ABS_LIB})
+    else ()
+        message(FATAL_ERROR "MaaToolkit: libpipewire-0.3 not found on this platform")
+    endif ()
+
     find_library(Wayland_LIBS wayland-client)
     find_library(FFI_LIBS ffi)
     target_link_libraries(MaaToolkit PRIVATE pthread dl ${Wayland_LIBS} ${FFI_LIBS})
@@ -52,6 +71,14 @@ if(APPLE)
 endif()
 
 add_dependencies(MaaToolkit MaaUtils MaaFramework LibraryHolder)
+
+# spa/pipewire headers use C99/GNU extensions; silence them like MaaLinuxControlUnit does
+set(maa_toolkit_src_c99
+        ${CMAKE_CURRENT_SOURCE_DIR}/Gamescope/GamescopeNodeFinder.cpp
+)
+set_source_files_properties(${maa_toolkit_src_c99}
+        PROPERTIES COMPILE_OPTIONS "-Wno-c99-extensions;-Wno-gnu-statement-expression-from-macro-expansion;-Wno-gnu-zero-variadic-macro-arguments;-Wno-gnu-case-range;-Wno-sign-compare"
+)
 
 install(
     TARGETS MaaToolkit

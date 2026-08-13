@@ -27,3 +27,12 @@ public:
     virtual const std::string& class_name() const = 0;
     virtual const std::string& window_name() const = 0;
 };
+
+struct MaaToolkitGamescopeNode
+{
+public:
+    virtual ~MaaToolkitGamescopeNode() = default;
+
+    virtual uint32_t id() const = 0;
+    virtual const std::string& name() const = 0;
+};

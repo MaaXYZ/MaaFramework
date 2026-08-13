@@ -46,6 +46,8 @@ __all__ = [
     "MaaToolkitAdbDeviceHandle",
     "MaaToolkitDesktopWindowListHandle",
     "MaaToolkitDesktopWindowHandle",
+    "MaaToolkitGamescopeNodeListHandle",
+    "MaaToolkitGamescopeNodeHandle",
     "MaaToolkitPortalHelperHandle",
     "MaaMacOSPermission",
     # Bitmask / method aliases
@@ -715,6 +717,9 @@ MaaToolkitAdbDeviceListHandle = ctypes.c_void_p
 MaaToolkitAdbDeviceHandle = ctypes.c_void_p
 MaaToolkitDesktopWindowListHandle = ctypes.c_void_p
 MaaToolkitDesktopWindowHandle = ctypes.c_void_p
+
+MaaToolkitGamescopeNodeListHandle = ctypes.c_void_p
+MaaToolkitGamescopeNodeHandle = ctypes.c_void_p
 
 MaaMacOSPermission = ctypes.c_int32
 

@@ -49,6 +49,25 @@ class DesktopWindow:
     class_name: str
     window_name: str
 
+class GamescopeNode:
+    """gamescope PipeWire 节点信息 / gamescope PipeWire node info
+
+    通过 Toolkit.find_gamescope_nodes 获取。
+    Obtained via Toolkit.find_gamescope_nodes.
+
+    Attributes:
+        id: PipeWire 节点 ID / PipeWire node ID
+        name: 节点名称 / Node name
+    """
+
+    id: int
+    name: str
+
+    def __init__(self, id: int, name: str):
+        self.id = id
+        self.name = name
+
+
 class PortalHelper:
     _handle: MaaToolkitPortalHelperHandle
 
@@ -183,6 +202,31 @@ class Toolkit:
         Library.toolkit().MaaToolkitDesktopWindowListDestroy(list_handle)
         return windows
 
+    def find_gamescope_nodes() -> list[GamescopeNode]:
+        """查找会话 PipeWire daemon 上的 gamescope 节点 / Find gamescope nodes on the session PipeWire daemon
+
+        Returns:
+            List[GamescopeNode]: 节点列表 (gamescope 未运行时为空) / Node list (empty when gamescope is not running)
+        """
+        Toolkit._set_api_properties()
+
+        list_handle = Library.toolkit().MaaToolkitGamescopeNodeListCreate()
+
+        Library.toolkit().MaaToolkitGamescopeNodeFindAll(list_handle)
+
+        count = Library.toolkit().MaaToolkitGamescopeNodeListSize(list_handle)
+
+        nodes: list[GamescopeNode] = []
+        for i in range(count):
+            node_handle = Library.toolkit().MaaToolkitGamescopeNodeListAt(list_handle, i)
+            node_id = Library.toolkit().MaaToolkitGamescopeNodeGetId(node_handle)
+            name = Library.toolkit().MaaToolkitGamescopeNodeGetName(node_handle).decode()
+
+            nodes.append(GamescopeNode(node_id, name))
+
+        Library.toolkit().MaaToolkitGamescopeNodeListDestroy(list_handle)
+        return nodes
+
     @staticmethod
     def macos_check_permission(perm: MaaMacOSPermissionEnum) -> bool:
         """检查 macOS 权限 / Check macOS permission
@@ -301,6 +345,27 @@ class Toolkit:
 
         Library.toolkit().MaaToolkitAdbDeviceGetConfig.restype = ctypes.c_char_p
         Library.toolkit().MaaToolkitAdbDeviceGetConfig.argtypes = [MaaToolkitAdbDeviceHandle]
+
+        Library.toolkit().MaaToolkitGamescopeNodeListCreate.restype = MaaToolkitGamescopeNodeListHandle
+        Library.toolkit().MaaToolkitGamescopeNodeListCreate.argtypes = []
+
+        Library.toolkit().MaaToolkitGamescopeNodeListDestroy.restype = None
+        Library.toolkit().MaaToolkitGamescopeNodeListDestroy.argtypes = [MaaToolkitGamescopeNodeListHandle]
+
+        Library.toolkit().MaaToolkitGamescopeNodeFindAll.restype = MaaBool
+        Library.toolkit().MaaToolkitGamescopeNodeFindAll.argtypes = [MaaToolkitGamescopeNodeListHandle]
+
+        Library.toolkit().MaaToolkitGamescopeNodeListSize.restype = MaaSize
+        Library.toolkit().MaaToolkitGamescopeNodeListSize.argtypes = [MaaToolkitGamescopeNodeListHandle]
+
+        Library.toolkit().MaaToolkitGamescopeNodeListAt.restype = MaaToolkitGamescopeNodeHandle
+        Library.toolkit().MaaToolkitGamescopeNodeListAt.argtypes = [MaaToolkitGamescopeNodeListHandle, MaaSize]
+
+        Library.toolkit().MaaToolkitGamescopeNodeGetId.restype = ctypes.c_uint32
+        Library.toolkit().MaaToolkitGamescopeNodeGetId.argtypes = [MaaToolkitGamescopeNodeHandle]
+
+        Library.toolkit().MaaToolkitGamescopeNodeGetName.restype = ctypes.c_char_p
+        Library.toolkit().MaaToolkitGamescopeNodeGetName.argtypes = [MaaToolkitGamescopeNodeHandle]
 
         Library.toolkit().MaaToolkitDesktopWindowListCreate.restype = MaaToolkitDesktopWindowListHandle
         Library.toolkit().MaaToolkitDesktopWindowListCreate.argtypes = []
