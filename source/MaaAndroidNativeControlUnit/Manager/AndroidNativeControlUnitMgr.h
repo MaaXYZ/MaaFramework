@@ -56,7 +56,6 @@ public:
     json::object get_info() const override;
 
 private:
-    static bool validate_contact(int contact);
     bool dispatch_input_message(AndroidNativeNS::MethodParam param) const;
     bool normalize_touch_point(int raw_x, int raw_y, cv::Point& mapped) const;
     cv::Point get_touch_up_point(int contact) const;

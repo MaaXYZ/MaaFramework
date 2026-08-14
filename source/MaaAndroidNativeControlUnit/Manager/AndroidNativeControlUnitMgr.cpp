@@ -152,14 +152,9 @@ bool AndroidNativeControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int dura
 bool AndroidNativeControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     LogFunc << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
-    (void)pressure;
 
     if (!connected()) {
         LogError << "controller is not connected";
-        return false;
-    }
-
-    if (!validate_contact(contact)) {
         return false;
     }
 
@@ -172,6 +167,8 @@ bool AndroidNativeControlUnitMgr::touch_down(int contact, int x, int y, int pres
     param.display_id = config_.display_id;
     param.method = TOUCH_DOWN;
     param.args.touch.p = { mapped.x, mapped.y };
+    param.args.touch.contact = contact;
+    param.args.touch.pressure = pressure;
 
     if (!dispatch_input_message(param)) {
         return false;
@@ -184,14 +181,9 @@ bool AndroidNativeControlUnitMgr::touch_down(int contact, int x, int y, int pres
 bool AndroidNativeControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 {
     LogFunc << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
-    (void)pressure;
 
     if (!connected()) {
         LogError << "controller is not connected";
-        return false;
-    }
-
-    if (!validate_contact(contact)) {
         return false;
     }
 
@@ -204,6 +196,8 @@ bool AndroidNativeControlUnitMgr::touch_move(int contact, int x, int y, int pres
     param.display_id = config_.display_id;
     param.method = TOUCH_MOVE;
     param.args.touch.p = { mapped.x, mapped.y };
+    param.args.touch.contact = contact;
+    param.args.touch.pressure = pressure;
 
     if (!dispatch_input_message(param)) {
         return false;
@@ -222,16 +216,13 @@ bool AndroidNativeControlUnitMgr::touch_up(int contact)
         return false;
     }
 
-    if (!validate_contact(contact)) {
-        return false;
-    }
-
     const cv::Point mapped = get_touch_up_point(contact);
 
     MethodParam param { };
     param.display_id = config_.display_id;
     param.method = TOUCH_UP;
     param.args.touch.p = { mapped.x, mapped.y };
+    param.args.touch.contact = contact;
 
     if (!dispatch_input_message(param)) {
         return false;
@@ -317,16 +308,6 @@ json::object AndroidNativeControlUnitMgr::get_info() const
     touch_resolution["height"] = config_.touch_height;
     info["touch_resolution"] = std::move(touch_resolution);
     return info;
-}
-
-bool AndroidNativeControlUnitMgr::validate_contact(int contact)
-{
-    if (contact == 0) {
-        return true;
-    }
-
-    LogWarn << "native android controller only supports single touch" << VAR(contact);
-    return false;
 }
 
 bool AndroidNativeControlUnitMgr::dispatch_input_message(MethodParam param) const
