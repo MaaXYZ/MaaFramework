@@ -72,13 +72,16 @@ endif()
 
 add_dependencies(MaaToolkit MaaUtils MaaFramework LibraryHolder)
 
-# spa/pipewire headers use C99/GNU extensions; silence them like MaaLinuxControlUnit does
-set(maa_toolkit_src_c99
-        ${CMAKE_CURRENT_SOURCE_DIR}/Gamescope/GamescopeNodeFinder.cpp
-)
-set_source_files_properties(${maa_toolkit_src_c99}
-        PROPERTIES COMPILE_OPTIONS "-Wno-c99-extensions;-Wno-gnu-statement-expression-from-macro-expansion;-Wno-gnu-zero-variadic-macro-arguments;-Wno-gnu-case-range;-Wno-sign-compare"
-)
+# spa/pipewire headers use C99/GNU extensions; silence them like MaaLinuxControlUnit does.
+# The file is __linux__-guarded, so only apply Clang/GCC flags on Linux (MSVC rejects -W flags).
+if (LINUX)
+    set(maa_toolkit_src_c99
+            ${CMAKE_CURRENT_SOURCE_DIR}/Gamescope/GamescopeNodeFinder.cpp
+    )
+    set_source_files_properties(${maa_toolkit_src_c99}
+            PROPERTIES COMPILE_OPTIONS "-Wno-c99-extensions;-Wno-gnu-statement-expression-from-macro-expansion;-Wno-gnu-zero-variadic-macro-arguments;-Wno-gnu-case-range;-Wno-sign-compare"
+    )
+endif ()
 
 install(
     TARGETS MaaToolkit
