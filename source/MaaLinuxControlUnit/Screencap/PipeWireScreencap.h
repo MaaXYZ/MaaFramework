@@ -37,14 +37,20 @@ MAA_CTRL_UNIT_NS_BEGIN
  *
  * Frame dimensions are always taken from the negotiated stream format, never from the caller.
  *
+ * The stream is connected inactive (PW_STREAM_FLAG_INACTIVE): screencap()
+ * activates it on demand and inactive() deactivates it, so the producer
+ * only renders while frames are actually wanted. When the producer stalls
+ * (e.g. a paused game stops sending frames), screencap() falls back to the
+ * last delivered frame instead of failing.
+ *
  * Thread safety: init()/close()/screencap() are NOT safe for concurrent
  * calls, but screencap() may be called from a different thread than
  * init()/close() as long as they are serialised by the caller.
  *
- * Cross-thread state (latest_frame_, frame dimensions, frame_wanted_,
- * stream_active_) follows the pw_thread_loop discipline: consumer-side
- * code holds the loop lock when touching it, and callbacks run on the
- * loop thread, so the loop stops while the lock is held. Handshakes use
+ * Cross-thread state (latest_frame_, frame dimensions, frame_wanted_)
+ * follows the pw_thread_loop discipline: consumer-side code holds the
+ * loop lock when touching it, and callbacks run on the loop thread, so
+ * the loop stops while the lock is held. Handshakes use
  * pw_thread_loop_timed_wait()/pw_thread_loop_signal().
  */
 class PipeWireScreencap : public ScreencapBase
@@ -107,11 +113,10 @@ private:
     /* Negotiated SPA video format */
     enum spa_video_format frame_format_ = SPA_VIDEO_FORMAT_UNKNOWN;
 
-    /* loop-lock discipline, see class comment */
+    /* 最新一帧 (协商格式): 仅回调写入; 超时回退时交付它的转换结果 */
     cv::Mat latest_frame_;
-    /* 消费者等帧标志: 无等待者时跳过拷贝, 省去空闲时对不可缓存映射的全量读取 */
+    /* 帧请求握手: screencap 置位等帧, 回调拷贝成功后复位并 signal */
     bool frame_wanted_ = false;
-    bool stream_active_ = false;
 };
 
 MAA_CTRL_UNIT_NS_END

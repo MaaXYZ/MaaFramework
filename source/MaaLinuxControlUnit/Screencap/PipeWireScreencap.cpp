@@ -30,8 +30,6 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-static constexpr int kPWFirstFrameTimeoutSec = 3;
-
 // 需持 loop 锁调用; 唤醒可能不来自目标事件, 谓词不成立就继续等
 template <typename Pred>
 static bool loop_wait_until(pw_thread_loop* loop, int timeout_sec, Pred pred)
@@ -96,6 +94,72 @@ static bool dma_buf_sync_access(int fd, bool start)
     return true;
 }
 
+// RAII: mmap 与 DMA_BUF_IOCTL_SYNC 括号的成对管理, 失败时 ptr() 为空
+class ScopedBufferMap
+{
+public:
+    ScopedBufferMap(const struct spa_data& data, size_t dmabuf_map_size)
+    {
+        ptr_ = data.data;
+        if (ptr_) {
+            return;
+        }
+
+        if (data.type == SPA_DATA_MemFd && data.fd >= 0) {
+            size_ = data.maxsize > 0 ? data.maxsize : data.chunk ? data.chunk->size : 0;
+            if (size_ > 0) {
+                ptr_ = mmap(nullptr, size_, PROT_READ, MAP_PRIVATE, data.fd, 0);
+                if (ptr_ == MAP_FAILED) {
+                    ptr_ = nullptr;
+                    LogError << "mmap of PipeWire buffer failed: " << strerror(errno);
+                }
+                else {
+                    fd_ = data.fd;
+                }
+            }
+        }
+        else if (data.type == SPA_DATA_DmaBuf && data.fd >= 0) {
+            // GBM 可能给 stride 加 padding, 映射不足 stride*height 会越界触发 SIGBUS
+            size_ = dmabuf_map_size;
+            ptr_ = mmap(nullptr, size_, PROT_READ, MAP_SHARED, data.fd, 0);
+            if (ptr_ == MAP_FAILED) {
+                ptr_ = nullptr;
+                LogError << "mmap of DMA-BUF buffer failed: " << strerror(errno);
+            }
+            else {
+                fd_ = data.fd;
+                synced_ = dma_buf_sync_access(data.fd, true);
+            }
+        }
+        else {
+            LogError << "Unsupported buffer type: " << data.type;
+        }
+    }
+
+    ~ScopedBufferMap()
+    {
+        if (fd_ < 0) {
+            return;
+        }
+        // 读完后先 END 同步再 munmap, 保证 ioctl 括号成对
+        if (synced_) {
+            dma_buf_sync_access(fd_, false);
+        }
+        munmap(ptr_, size_);
+    }
+
+    ScopedBufferMap(const ScopedBufferMap&) = delete;
+    ScopedBufferMap& operator=(const ScopedBufferMap&) = delete;
+
+    void* ptr() const { return ptr_; }
+
+private:
+    void* ptr_ = nullptr;
+    int fd_ = -1;
+    size_t size_ = 0;
+    bool synced_ = false;
+};
+
 PipeWireScreencap::PipeWireScreencap(int pipewire_fd, uint32_t pipewire_node_id)
     : pipewire_fd_(pipewire_fd)
     , pipewire_node_id_(pipewire_node_id)
@@ -140,9 +204,7 @@ void PipeWireScreencap::close_internal()
         pw_thread_loop_ = nullptr;
     }
 
-    // Reset all state
     connected_ = false;
-    stream_active_ = false;
     frame_wanted_ = false;
     frame_width_ = 0;
     frame_height_ = 0;
@@ -164,7 +226,7 @@ bool PipeWireScreencap::init()
         return false;
     }
 
-    // 协商是异步的, 节点不存在等失败在此超时, 与首帧失败分开诊断
+    // 协商是异步的, 节点不存在等失败在此超时
     static constexpr int kNegotiationTimeoutSec = 3;
     pw_thread_loop_lock(pw_thread_loop_);
     if (!loop_wait_until(pw_thread_loop_, kNegotiationTimeoutSec, [this]() { return frame_width_ > 0 && frame_height_ > 0; })) {
@@ -173,26 +235,9 @@ bool PipeWireScreencap::init()
         close_internal();
         return false;
     }
-
-    // 激活必须晚于 buffers reply, 否则 producer 不送帧
-    pw_stream_set_active(pw_stream_, true);
-    stream_active_ = true;
-
-    // 首帧验证 producer 真的在送帧
-    frame_wanted_ = true;
-    bool got_frame = loop_wait_until(pw_thread_loop_, kPWFirstFrameTimeoutSec, [this]() { return !latest_frame_.empty(); });
-    frame_wanted_ = false;
-    if (!got_frame) {
-        pw_thread_loop_unlock(pw_thread_loop_);
-        LogError << "Timeout waiting for first PipeWire frame";
-        close_internal();
-        return false;
-    }
-
-    // 验证帧先于任何请求, 交付它会让首次 screencap 拿到陈旧画面
-    latest_frame_ = cv::Mat();
     pw_thread_loop_unlock(pw_thread_loop_);
 
+    // stream 以 INACTIVE 连接, 由 screencap 按需激活, producer 在无人取帧时不空转
     connected_ = true;
     LogInfo << "PipeWire screencap ready" << VAR(frame_width_) << VAR(frame_height_);
     return true;
@@ -216,26 +261,26 @@ bool PipeWireScreencap::screencap(cv::Mat& image)
 
     pw_thread_loop_lock(pw_thread_loop_);
 
-    if (!stream_active_) {
-        // inactive() 已停流, 重新激活后才会有新帧
-        pw_stream_set_active(pw_stream_, true);
-        stream_active_ = true;
-    }
+    // 已激活时为 no-op; 覆盖首次激活与 inactive() 之后的重新激活
+    pw_stream_set_active(pw_stream_, true);
 
-    if (latest_frame_.empty()) {
-        // 置位后回调才会拷贝, 否则永远等不到帧
-        frame_wanted_ = true;
-        bool got_frame = loop_wait_until(pw_thread_loop_, kPWFirstFrameTimeoutSec, [this]() { return !latest_frame_.empty(); });
+    // 每次截图都需新帧, 上一帧仅作超时回退
+    static constexpr int kFrameTimeoutSec = 3;
+    frame_wanted_ = true;
+    bool got_frame = loop_wait_until(pw_thread_loop_, kFrameTimeoutSec, [this]() { return !frame_wanted_; });
+    if (!got_frame) {
         frame_wanted_ = false;
-        if (!got_frame) {
+        if (latest_frame_.empty()) {
             pw_thread_loop_unlock(pw_thread_loop_);
             LogError << "Timeout waiting for PipeWire frame";
             return false;
         }
+        // producer 卡顿 (游戏加载/暂停) 时不送帧; 交付上一帧让识别走常规 miss 路径而非控制器硬失败
+        LogWarn << "Timeout waiting for PipeWire frame, delivering last frame";
     }
 
-    // 转换耗时, 留在锁外以免停摆 loop 线程
-    cv::Mat raw = std::move(latest_frame_);
+    // 浅拷贝 (引用计数) 后在锁外转换, 以免停摆 loop 线程
+    cv::Mat raw = latest_frame_;
     enum spa_video_format format = frame_format_;
     pw_thread_loop_unlock(pw_thread_loop_);
 
@@ -251,19 +296,19 @@ bool PipeWireScreencap::screencap(cv::Mat& image)
     else {
         cv::cvtColor(raw, image, fmt_info->cv_conversion);
     }
+
     return true;
 }
 
 void PipeWireScreencap::inactive()
 {
-    ScreencapBase::inactive();
-    if (!pw_stream_ || !pw_thread_loop_ || !stream_active_) {
+    if (!pw_stream_ || !pw_thread_loop_) {
         return;
     }
 
+    // 停流使 producer 停止渲染; 已停用时为 no-op
     pw_thread_loop_lock(pw_thread_loop_);
     pw_stream_set_active(pw_stream_, false);
-    stream_active_ = false;
     pw_thread_loop_unlock(pw_thread_loop_);
 }
 
@@ -273,7 +318,6 @@ void PipeWireScreencap::inactive()
 
 bool PipeWireScreencap::pw_init()
 {
-    // Create pw_thread_loop (standard event loop with integrated bg thread)
     pw_thread_loop_ = pw_thread_loop_new("MaaScreencap", nullptr);
     if (!pw_thread_loop_) {
         LogError << "Failed to create PipeWire thread loop";
@@ -323,16 +367,13 @@ bool PipeWireScreencap::pw_create_stream()
 
     // Use pw_stream_new (not pw_stream_new_simple) to avoid exception
     // unwinding ABI incompatibility between clang/libc++ and PipeWire's glibc.
+    // pw_stream_new 无论成败都消费 props (失败路径内部已释放), 调用者不得再 free.
     pw_stream_ = pw_stream_new(pw_core_, "MaaFramework Screencap", props);
     if (!pw_stream_) {
         LogError << "Failed to create PipeWire stream: " << strerror(errno);
-        if (props) {
-            pw_properties_free(props);
-        }
         return false;
     }
 
-    // Set up event listeners
     static const struct pw_stream_events stream_events = {
         .version = PW_VERSION_STREAM_EVENTS,
         .state_changed = pw_on_stream_state_changed,
@@ -345,12 +386,12 @@ bool PipeWireScreencap::pw_create_stream()
     return true;
 }
 
-bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
+// 官方 DMA-BUF 协商文档要求消费者声明两个 EnumFormat:
+// 带 modifier 的在前 (DMA-BUF), 不带的作 shm fallback;
+// modifier 仅声明 Linear, 保证 CPU 可直接 mmap.
+// 多声明几种格式: producer 可能 fixate 非 BGRA 格式, 均可按 kSpaFormatTable 转换.
+static const struct spa_pod* make_video_format_pod(struct spa_pod_builder& b, bool with_modifier)
 {
-    // 接受任意分辨率/帧率; 多声明几种格式: producer 可能 fixate 非 BGRA 格式, 均可按 kSpaFormatTable 转换。
-    uint8_t buffer[4096];
-    struct spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
-
     static const struct spa_rectangle kDefRect = { 1280, 720 };
     static const struct spa_rectangle kMinRect = { 1, 1 };
     static const struct spa_rectangle kMaxRect = { 4096, 4096 };
@@ -358,13 +399,10 @@ bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
     static const struct spa_fraction kMinFps = { 0, 1 };
     static const struct spa_fraction kMaxFps = { 1000, 1 };
 
-    // 官方 DMA-BUF 协商文档要求消费者声明两个 EnumFormat:
-    // 带 modifier 的在前 (DMA-BUF), 不带的作 shm fallback;
-    // modifier 仅声明 Linear, 保证 CPU 可直接 mmap
-    const struct spa_pod* fmt_dmabuf = (const struct spa_pod*)spa_pod_builder_add_object(
+    struct spa_pod_frame f[1];
+    spa_pod_builder_push_object(&b, &f[0], SPA_TYPE_OBJECT_Format, SPA_PARAM_EnumFormat);
+    spa_pod_builder_add(
         &b,
-        SPA_TYPE_OBJECT_Format,
-        SPA_PARAM_EnumFormat,
         SPA_FORMAT_mediaType,
         SPA_POD_Id(SPA_MEDIA_TYPE_video),
         SPA_FORMAT_mediaSubtype,
@@ -383,33 +421,20 @@ bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
         SPA_POD_CHOICE_RANGE_Rectangle(&kDefRect, &kMinRect, &kMaxRect),
         SPA_FORMAT_VIDEO_framerate,
         SPA_POD_CHOICE_RANGE_Fraction(&kDefFps, &kMinFps, &kMaxFps),
-        SPA_FORMAT_VIDEO_modifier,
-        SPA_POD_Long(DRM_FORMAT_MOD_LINEAR),
         0);
+    if (with_modifier) {
+        spa_pod_builder_add(&b, SPA_FORMAT_VIDEO_modifier, SPA_POD_Long(DRM_FORMAT_MOD_LINEAR), 0);
+    }
+    return static_cast<const struct spa_pod*>(spa_pod_builder_pop(&b, &f[0]));
+}
 
-    const struct spa_pod* fmt_shm = (const struct spa_pod*)spa_pod_builder_add_object(
-        &b,
-        SPA_TYPE_OBJECT_Format,
-        SPA_PARAM_EnumFormat,
-        SPA_FORMAT_mediaType,
-        SPA_POD_Id(SPA_MEDIA_TYPE_video),
-        SPA_FORMAT_mediaSubtype,
-        SPA_POD_Id(SPA_MEDIA_SUBTYPE_raw),
-        SPA_FORMAT_VIDEO_format,
-        SPA_POD_CHOICE_ENUM_Id(
-            7,
-            SPA_VIDEO_FORMAT_RGB,
-            SPA_VIDEO_FORMAT_RGBA,
-            SPA_VIDEO_FORMAT_RGBx,
-            SPA_VIDEO_FORMAT_BGR,
-            SPA_VIDEO_FORMAT_BGRA,
-            SPA_VIDEO_FORMAT_BGRx,
-            SPA_VIDEO_FORMAT_YUY2),
-        SPA_FORMAT_VIDEO_size,
-        SPA_POD_CHOICE_RANGE_Rectangle(&kDefRect, &kMinRect, &kMaxRect),
-        SPA_FORMAT_VIDEO_framerate,
-        SPA_POD_CHOICE_RANGE_Fraction(&kDefFps, &kMinFps, &kMaxFps),
-        0);
+bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
+{
+    uint8_t buffer[4096];
+    struct spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
+
+    const struct spa_pod* fmt_dmabuf = make_video_format_pod(b, true);
+    const struct spa_pod* fmt_shm = make_video_format_pod(b, false);
 
     int32_t data_types = (1 << SPA_DATA_MemFd) | (1 << SPA_DATA_DmaBuf);
     const struct spa_pod* buf_pod = (const struct spa_pod*)spa_pod_builder_add_object(
@@ -422,8 +447,8 @@ bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
 
     const struct spa_pod* params[3] = { fmt_dmabuf, fmt_shm, buf_pod };
 
-    constexpr auto stream_flags =
-        static_cast<enum pw_stream_flags>(PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_DONT_RECONNECT | PW_STREAM_FLAG_MAP_BUFFERS);
+    constexpr auto stream_flags = static_cast<enum pw_stream_flags>(
+        PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_DONT_RECONNECT | PW_STREAM_FLAG_MAP_BUFFERS | PW_STREAM_FLAG_INACTIVE);
 
     // Start the bg thread BEFORE pw_stream_connect
     if (pw_thread_loop_start(pw_thread_loop_) < 0) {
@@ -475,19 +500,10 @@ void PipeWireScreencap::pw_on_stream_state_changed(
     }
 }
 
-void PipeWireScreencap::pw_on_stream_param_changed(void* data, uint32_t id, const struct spa_pod* param)
+// gamescope 的 Format pod 以 Choice(None) 包装定值, spa_format_video_raw_parse 对此会解析失败,
+// 需回退为手动取 choice 默认值.
+static void parse_video_format(const struct spa_pod* param, uint32_t& width, uint32_t& height, enum spa_video_format& format)
 {
-    auto* self = static_cast<PipeWireScreencap*>(data);
-
-    if (!param || id != SPA_PARAM_Format) {
-        return;
-    }
-
-    // gamescope 的 Format pod 以 Choice(None) 包装定值, spa_format_video_raw_parse 对此会解析失败, 需手动取 choice 默认值。
-    uint32_t width = 0;
-    uint32_t height = 0;
-    enum spa_video_format format = SPA_VIDEO_FORMAT_UNKNOWN;
-
     struct spa_video_info info;
     if (spa_format_parse(param, &info.media_type, &info.media_subtype) == 0 && info.media_type == SPA_MEDIA_TYPE_video
         && info.media_subtype == SPA_MEDIA_SUBTYPE_raw && spa_format_video_raw_parse(param, &info.info.raw) == 0) {
@@ -496,42 +512,58 @@ void PipeWireScreencap::pw_on_stream_param_changed(void* data, uint32_t id, cons
         format = static_cast<enum spa_video_format>(info.info.raw.format);
     }
 
-    if (width == 0 || height == 0 || format == SPA_VIDEO_FORMAT_UNKNOWN) {
-        const struct spa_pod_prop* prop;
-        SPA_POD_OBJECT_FOREACH((struct spa_pod_object*)param, prop)
-        {
-            const struct spa_pod* val = &prop->value;
-            if (prop->key == SPA_FORMAT_VIDEO_size) {
-                if (spa_pod_is_choice(val)) {
-                    // choice 的第一个备选值即默认值
-                    if (SPA_POD_CHOICE_VALUE_TYPE(val) == SPA_TYPE_Rectangle) {
-                        const struct spa_rectangle* rect = (const struct spa_rectangle*)SPA_POD_CHOICE_VALUES(val);
-                        if (rect->width > 0 && rect->height > 0) {
-                            width = rect->width;
-                            height = rect->height;
-                        }
-                    }
-                }
-                else if (spa_pod_is_rectangle(val)) {
-                    struct spa_rectangle* rect = static_cast<struct spa_rectangle*>(SPA_POD_BODY(val));
+    if (width > 0 && height > 0 && format != SPA_VIDEO_FORMAT_UNKNOWN) {
+        return;
+    }
+
+    const struct spa_pod_prop* prop;
+    SPA_POD_OBJECT_FOREACH((struct spa_pod_object*)param, prop)
+    {
+        const struct spa_pod* val = &prop->value;
+        if (prop->key == SPA_FORMAT_VIDEO_size) {
+            if (spa_pod_is_choice(val)) {
+                // choice 的第一个备选值即默认值
+                if (SPA_POD_CHOICE_VALUE_TYPE(val) == SPA_TYPE_Rectangle) {
+                    const struct spa_rectangle* rect = (const struct spa_rectangle*)SPA_POD_CHOICE_VALUES(val);
                     if (rect->width > 0 && rect->height > 0) {
                         width = rect->width;
                         height = rect->height;
                     }
                 }
             }
-            else if (prop->key == SPA_FORMAT_VIDEO_format) {
-                if (spa_pod_is_choice(val)) {
-                    if (SPA_POD_CHOICE_VALUE_TYPE(val) == SPA_TYPE_Id) {
-                        format = static_cast<enum spa_video_format>(*(uint32_t*)SPA_POD_CHOICE_VALUES(val));
-                    }
-                }
-                else if (spa_pod_is_id(val)) {
-                    format = static_cast<enum spa_video_format>(*(uint32_t*)SPA_POD_BODY(val));
+            else if (spa_pod_is_rectangle(val)) {
+                struct spa_rectangle* rect = static_cast<struct spa_rectangle*>(SPA_POD_BODY(val));
+                if (rect->width > 0 && rect->height > 0) {
+                    width = rect->width;
+                    height = rect->height;
                 }
             }
         }
+        else if (prop->key == SPA_FORMAT_VIDEO_format) {
+            if (spa_pod_is_choice(val)) {
+                if (SPA_POD_CHOICE_VALUE_TYPE(val) == SPA_TYPE_Id) {
+                    format = static_cast<enum spa_video_format>(*(uint32_t*)SPA_POD_CHOICE_VALUES(val));
+                }
+            }
+            else if (spa_pod_is_id(val)) {
+                format = static_cast<enum spa_video_format>(*(uint32_t*)SPA_POD_BODY(val));
+            }
+        }
     }
+}
+
+void PipeWireScreencap::pw_on_stream_param_changed(void* data, uint32_t id, const struct spa_pod* param)
+{
+    auto* self = static_cast<PipeWireScreencap*>(data);
+
+    if (!param || id != SPA_PARAM_Format) {
+        return;
+    }
+
+    uint32_t width = 0;
+    uint32_t height = 0;
+    enum spa_video_format format = SPA_VIDEO_FORMAT_UNKNOWN;
+    parse_video_format(param, width, height, format);
 
     const SpaFormatInfo* fmt_info = spa_format_info(format);
     if (!fmt_info) {
@@ -601,78 +633,30 @@ bool PipeWireScreencap::copy_raw_frame(const struct spa_buffer* spa_buf)
 
     const struct spa_data& data = spa_buf->datas[0];
 
-    // Obtain a CPU-accessible pointer to the buffer data
-    void* mapped_ptr = data.data;
-    bool need_unmap = false;
-    bool need_sync_end = false;
-    size_t map_size = 0;
-
-    if (!mapped_ptr) {
-        if (data.type == SPA_DATA_MemFd && data.fd >= 0) {
-            map_size = data.maxsize > 0 ? data.maxsize : data.chunk ? data.chunk->size : 0;
-            if (map_size > 0) {
-                mapped_ptr = mmap(nullptr, map_size, PROT_READ, MAP_PRIVATE, data.fd, 0);
-                if (mapped_ptr == MAP_FAILED) {
-                    LogError << "mmap of PipeWire buffer failed: " << strerror(errno);
-                    return false;
-                }
-                need_unmap = true;
-            }
-        }
-        else if (data.type == SPA_DATA_DmaBuf && data.fd >= 0) {
-            // Linear DMA-BUF (modifier 0) can be CPU-mapped directly.
-            // GBM 可能给 stride 加 padding, 映射不足 stride*height 会越界触发 SIGBUS。
-            uint32_t stride = data.chunk ? data.chunk->stride : 0;
-            if (stride == 0) {
-                stride = static_cast<uint32_t>(frame_width_) * fmt_info->channels;
-            }
-            map_size = static_cast<size_t>(stride) * frame_height_;
-            mapped_ptr = mmap(nullptr, map_size, PROT_READ, MAP_SHARED, data.fd, 0);
-            if (mapped_ptr == MAP_FAILED) {
-                LogError << "mmap of DMA-BUF buffer failed: " << strerror(errno);
-                return false;
-            }
-            need_unmap = true;
-            need_sync_end = dma_buf_sync_access(data.fd, true);
-        }
-        else {
-            LogError << "Unsupported buffer type: " << data.type;
-            return false;
-        }
-    }
-
-    if (!mapped_ptr) {
-        return false;
-    }
-
-    // 统一收尾: 读完后先 END 同步再 munmap, 保证 ioctl 括号成对
-    auto unmap = [&]() {
-        if (need_unmap) {
-            if (need_sync_end) {
-                dma_buf_sync_access(data.fd, false);
-            }
-            munmap(mapped_ptr, map_size);
-        }
-    };
-
-    // GBM 的 stride padding 使行间不连续
+    // GBM 的 stride padding 使行间不连续; 缺省按紧凑布局
     int row_bytes = frame_width_ * fmt_info->channels;
     uint32_t stride = data.chunk ? data.chunk->stride : 0;
     if (stride == 0) {
         stride = static_cast<uint32_t>(row_bytes);
     }
 
+    ScopedBufferMap map(data, static_cast<size_t>(stride) * frame_height_);
+    if (!map.ptr()) {
+        return false;
+    }
+
     latest_frame_.create(frame_height_, frame_width_, CV_8UC(fmt_info->channels));
     if (stride == static_cast<uint32_t>(row_bytes)) {
-        std::memcpy(latest_frame_.data, mapped_ptr, static_cast<size_t>(frame_height_) * stride);
+        std::memcpy(latest_frame_.data, map.ptr(), static_cast<size_t>(frame_height_) * stride);
     }
     else {
         for (int row = 0; row < frame_height_; ++row) {
-            std::memcpy(latest_frame_.ptr(row), static_cast<uint8_t*>(mapped_ptr) + static_cast<size_t>(row) * stride, row_bytes);
+            std::memcpy(
+                latest_frame_.ptr(row),
+                static_cast<uint8_t*>(map.ptr()) + static_cast<size_t>(row) * stride,
+                row_bytes);
         }
     }
-
-    unmap();
 
     return true;
 }
