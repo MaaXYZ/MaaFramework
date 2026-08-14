@@ -113,6 +113,8 @@ private:
     cv::Mat latest_frame_;
     /* 帧请求握手: screencap 置位等帧, 回调拷贝成功后复位并 signal */
     bool frame_wanted_ = false;
+    /* 连续帧超时计数: 静默死亡的 producer 无事件可依, 只能靠它兜底判定 */
+    int frame_timeout_count_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

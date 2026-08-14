@@ -10,8 +10,8 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include <linux/dma-buf.h>
 #include <drm/drm_fourcc.h>
+#include <linux/dma-buf.h>
 
 #include <pipewire/pipewire.h>
 #include <pipewire/stream.h>
@@ -352,6 +352,7 @@ void PipeWireScreencap::close_internal()
 
     connected_ = false;
     frame_wanted_ = false;
+    frame_timeout_count_ = 0;
     frame_width_ = 0;
     frame_height_ = 0;
     frame_format_ = SPA_VIDEO_FORMAT_UNKNOWN;
@@ -410,6 +411,7 @@ void PipeWireScreencap::inactive()
     // 停流使 producer 停止渲染; 已停用时为 no-op
     LoopLocker lock(pw_thread_loop_);
     pw_stream_set_active(pw_stream_, false);
+    frame_timeout_count_ = 0;
 }
 
 // ===========================================================================
@@ -440,13 +442,27 @@ bool PipeWireScreencap::screencap(cv::Mat& image)
 
     // 每次截图都需新帧, 上一帧仅作超时回退
     static constexpr int kFrameTimeoutSec = 3;
+    static constexpr int kMaxConsecutiveFrameTimeouts = 3;
     if (!wait_for_frame_locked(kFrameTimeoutSec)) {
+        if (!connected_) {
+            LogError << "PipeWire connection lost while waiting for frame";
+            return false;
+        }
+
+        ++frame_timeout_count_;
         if (latest_frame_.empty()) {
             LogError << "Timeout waiting for PipeWire frame";
             return false;
         }
+        if (frame_timeout_count_ > kMaxConsecutiveFrameTimeouts) {
+            LogError << "PipeWire producer appears dead after " << frame_timeout_count_ << " consecutive frame timeouts";
+            return false;
+        }
         // producer 卡顿 (游戏加载/暂停) 时不送帧; 交付上一帧让识别走常规 miss 路径而非控制器硬失败
         LogWarn << "Timeout waiting for PipeWire frame, delivering last frame";
+    }
+    else {
+        frame_timeout_count_ = 0;
     }
 
     // 浅拷贝 (引用计数) 后在锁外转换, 以免停摆 loop 线程
@@ -563,8 +579,8 @@ bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
 
     const struct spa_pod* params[3] = { fmt_dmabuf, fmt_shm, buf_pod };
 
-    constexpr auto stream_flags = static_cast<enum pw_stream_flags>(
-        PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_DONT_RECONNECT | PW_STREAM_FLAG_MAP_BUFFERS);
+    constexpr auto stream_flags =
+        static_cast<enum pw_stream_flags>(PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_DONT_RECONNECT | PW_STREAM_FLAG_MAP_BUFFERS);
 
     // Start the bg thread BEFORE pw_stream_connect
     if (pw_thread_loop_start(pw_thread_loop_) < 0) {
@@ -607,14 +623,15 @@ void PipeWireScreencap::pw_on_stream_state_changed(
     const char* error)
 {
     auto* self = static_cast<PipeWireScreencap*>(data);
-    (void)self;
     (void)old_state;
 
-    if (new_state < 0) {
-        LogError << "Stream error: " << (error ? error : "(unknown)");
+    if (new_state == PW_STREAM_STATE_ERROR) {
+        LogError << "PipeWire stream error: " << (error ? error : "(unknown)");
+        self->connected_ = false;
     }
-    else if (new_state == PW_STREAM_STATE_STREAMING && error) {
-        LogWarn << "Stream error: " << error;
+    else if (new_state == PW_STREAM_STATE_UNCONNECTED) {
+        LogError << "PipeWire stream disconnected";
+        self->connected_ = false;
     }
 }
 
@@ -717,10 +734,7 @@ bool PipeWireScreencap::copy_raw_frame(const struct spa_buffer* spa_buf)
     }
     else {
         for (int row = 0; row < frame_height_; ++row) {
-            std::memcpy(
-                latest_frame_.ptr(row),
-                static_cast<uint8_t*>(map.ptr()) + static_cast<size_t>(row) * stride,
-                row_bytes);
+            std::memcpy(latest_frame_.ptr(row), static_cast<uint8_t*>(map.ptr()) + static_cast<size_t>(row) * stride, row_bytes);
         }
     }
 
