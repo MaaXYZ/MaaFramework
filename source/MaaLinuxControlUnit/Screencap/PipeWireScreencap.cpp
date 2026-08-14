@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include <linux/dma-buf.h>
+#include <drm/drm_fourcc.h>
 
 #include <pipewire/pipewire.h>
 #include <pipewire/stream.h>
@@ -357,8 +358,9 @@ bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
     static const struct spa_fraction kMinFps = { 0, 1 };
     static const struct spa_fraction kMaxFps = { 1000, 1 };
 
-    // 官方 DMA-BUF 协商文档要求消费者同时声明两个 EnumFormat:
-    // 带 modifier 的 (dmabuf, gamescope 靠 modifier 有无决定 DmaBuf/MemFd) 与不带的 (shm fallback, portal/摄像头等不支持 modifier 的 producer 只会命中此 offer)。
+    // 官方 DMA-BUF 协商文档要求消费者声明两个 EnumFormat:
+    // 带 modifier 的在前 (DMA-BUF), 不带的作 shm fallback;
+    // modifier 仅声明 Linear, 保证 CPU 可直接 mmap
     const struct spa_pod* fmt_dmabuf = (const struct spa_pod*)spa_pod_builder_add_object(
         &b,
         SPA_TYPE_OBJECT_Format,
@@ -382,7 +384,7 @@ bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
         SPA_FORMAT_VIDEO_framerate,
         SPA_POD_CHOICE_RANGE_Fraction(&kDefFps, &kMinFps, &kMaxFps),
         SPA_FORMAT_VIDEO_modifier,
-        SPA_POD_Long(0), // Linear: dmabuf 才可被 CPU mmap 读取
+        SPA_POD_Long(DRM_FORMAT_MOD_LINEAR),
         0);
 
     const struct spa_pod* fmt_shm = (const struct spa_pod*)spa_pod_builder_add_object(
