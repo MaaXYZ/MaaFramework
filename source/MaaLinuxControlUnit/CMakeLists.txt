@@ -6,7 +6,6 @@ set(maa_linux_control_unit_src_c99
         ${CMAKE_CURRENT_SOURCE_DIR}/Manager/LinuxControlUnitMgr.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Screencap/PipeWireScreencap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Screencap/PipeWireScreencap.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/Screencap/WindowCastSession.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Input/EiInput.cpp
 )
 
