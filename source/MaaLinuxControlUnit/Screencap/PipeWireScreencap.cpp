@@ -207,10 +207,10 @@ bool PipeWireScreencap::connected() const
     return connected_;
 }
 
-std::optional<cv::Mat> PipeWireScreencap::screencap()
+bool PipeWireScreencap::screencap(cv::Mat& image)
 {
     if (!connected_) {
-        return std::nullopt;
+        return false;
     }
 
     pw_thread_loop_lock(pw_thread_loop_);
@@ -229,7 +229,7 @@ std::optional<cv::Mat> PipeWireScreencap::screencap()
         if (!got_frame) {
             pw_thread_loop_unlock(pw_thread_loop_);
             LogError << "Timeout waiting for PipeWire frame";
-            return std::nullopt;
+            return false;
         }
     }
 
@@ -241,17 +241,16 @@ std::optional<cv::Mat> PipeWireScreencap::screencap()
     const SpaFormatInfo* fmt_info = spa_format_info(format);
     if (!fmt_info) {
         LogError << "Unsupported video format" << VAR(static_cast<int>(format));
-        return std::nullopt;
+        return false;
     }
 
-    cv::Mat image;
     if (fmt_info->cv_conversion < 0) {
         image = std::move(raw);
     }
     else {
         cv::cvtColor(raw, image, fmt_info->cv_conversion);
     }
-    return image;
+    return true;
 }
 
 void PipeWireScreencap::inactive()

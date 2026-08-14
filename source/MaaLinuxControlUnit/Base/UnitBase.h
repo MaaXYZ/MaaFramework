@@ -2,8 +2,6 @@
 
 #include <meojson/json.hpp>
 
-#include <optional>
-
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
 
@@ -27,7 +25,7 @@ public:
 public:
     virtual bool init() { return true; }
 
-    virtual std::optional<cv::Mat> screencap() = 0;
+    virtual bool screencap(/*out*/ cv::Mat& image) = 0;
 
     virtual void inactive() { }
 };

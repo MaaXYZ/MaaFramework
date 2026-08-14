@@ -60,7 +60,7 @@ public:
     void close();
     bool connected() const;
 
-    std::optional<cv::Mat> screencap() override;
+    bool screencap(/*out*/ cv::Mat& image) override;
 
     void inactive() override;
 

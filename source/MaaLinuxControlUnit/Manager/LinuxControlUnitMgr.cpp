@@ -129,15 +129,7 @@ bool LinuxControlUnitMgr::screencap(cv::Mat& image)
         return false;
     }
 
-    auto opt = screencap_->screencap();
-    if (!opt) {
-        LogError << "failed to screencap";
-        return false;
-    }
-
-    image = std::move(opt).value();
-
-    return true;
+    return screencap_->screencap(image);
 }
 
 bool LinuxControlUnitMgr::click(int x, int y)
