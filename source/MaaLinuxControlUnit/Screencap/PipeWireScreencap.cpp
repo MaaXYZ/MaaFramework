@@ -386,7 +386,6 @@ bool PipeWireScreencap::init()
         return false;
     }
 
-    // stream 以 INACTIVE 连接, 由 screencap 按需激活, producer 在无人取帧时不空转
     connected_ = true;
     LogInfo << "PipeWire screencap ready" << VAR(frame_width_) << VAR(frame_height_);
     return true;
@@ -436,7 +435,7 @@ bool PipeWireScreencap::screencap(cv::Mat& image)
 
     LoopLocker lock(pw_thread_loop_);
 
-    // 已激活时为 no-op; 覆盖首次激活与 inactive() 之后的重新激活
+    // 已激活时为 no-op; 覆盖 inactive() 停流后的重新激活
     pw_stream_set_active(pw_stream_, true);
 
     // 每次截图都需新帧, 上一帧仅作超时回退
@@ -565,7 +564,7 @@ bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
     const struct spa_pod* params[3] = { fmt_dmabuf, fmt_shm, buf_pod };
 
     constexpr auto stream_flags = static_cast<enum pw_stream_flags>(
-        PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_DONT_RECONNECT | PW_STREAM_FLAG_MAP_BUFFERS | PW_STREAM_FLAG_INACTIVE);
+        PW_STREAM_FLAG_AUTOCONNECT | PW_STREAM_FLAG_DONT_RECONNECT | PW_STREAM_FLAG_MAP_BUFFERS);
 
     // Start the bg thread BEFORE pw_stream_connect
     if (pw_thread_loop_start(pw_thread_loop_) < 0) {

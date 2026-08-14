@@ -48,6 +48,8 @@ __all__ = [
     "MaaToolkitDesktopWindowHandle",
     "MaaToolkitGamescopeNodeListHandle",
     "MaaToolkitGamescopeNodeHandle",
+    "MaaToolkitGamescopeEisSocketListHandle",
+    "MaaToolkitGamescopeEisSocketHandle",
     "MaaToolkitPortalHelperHandle",
     "MaaMacOSPermission",
     # Bitmask / method aliases

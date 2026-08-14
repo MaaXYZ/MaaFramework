@@ -37,12 +37,6 @@ MAA_CTRL_UNIT_NS_BEGIN
  *
  * Frame dimensions are always taken from the negotiated stream format, never from the caller.
  *
- * The stream is connected inactive (PW_STREAM_FLAG_INACTIVE): screencap()
- * activates it on demand and inactive() deactivates it, so the producer
- * only renders while frames are actually wanted. When the producer stalls
- * (e.g. a paused game stops sending frames), screencap() falls back to the
- * last delivered frame instead of failing.
- *
  * Thread safety: init()/close()/screencap() are NOT safe for concurrent
  * calls, but screencap() may be called from a different thread than
  * init()/close() as long as they are serialised by the caller.
