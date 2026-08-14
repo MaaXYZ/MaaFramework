@@ -30,6 +30,10 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+// ===========================================================================
+// File-scope helpers
+// ===========================================================================
+
 // 需持 loop 锁调用; 唤醒可能不来自目标事件, 谓词不成立就继续等
 template <typename Pred>
 static bool loop_wait_until(pw_thread_loop* loop, int timeout_sec, Pred pred)
@@ -192,6 +196,104 @@ private:
     bool synced_ = false;
 };
 
+// 官方 DMA-BUF 协商文档要求消费者声明两个 EnumFormat:
+// 带 modifier 的在前 (DMA-BUF), 不带的作 shm fallback;
+// modifier 仅声明 Linear, 保证 CPU 可直接 mmap.
+// 多声明几种格式: producer 可能 fixate 非 BGRA 格式, 均可按 kSpaFormatTable 转换.
+static const struct spa_pod* make_video_format_pod(struct spa_pod_builder& b, bool with_modifier)
+{
+    static const struct spa_rectangle kDefRect = { 1280, 720 };
+    static const struct spa_rectangle kMinRect = { 1, 1 };
+    static const struct spa_rectangle kMaxRect = { 4096, 4096 };
+    static const struct spa_fraction kDefFps = { 30, 1 };
+    static const struct spa_fraction kMinFps = { 0, 1 };
+    static const struct spa_fraction kMaxFps = { 1000, 1 };
+
+    struct spa_pod_frame f[1];
+    spa_pod_builder_push_object(&b, &f[0], SPA_TYPE_OBJECT_Format, SPA_PARAM_EnumFormat);
+    spa_pod_builder_add(
+        &b,
+        SPA_FORMAT_mediaType,
+        SPA_POD_Id(SPA_MEDIA_TYPE_video),
+        SPA_FORMAT_mediaSubtype,
+        SPA_POD_Id(SPA_MEDIA_SUBTYPE_raw),
+        SPA_FORMAT_VIDEO_format,
+        SPA_POD_CHOICE_ENUM_Id(
+            7,
+            SPA_VIDEO_FORMAT_RGB,
+            SPA_VIDEO_FORMAT_RGBA,
+            SPA_VIDEO_FORMAT_RGBx,
+            SPA_VIDEO_FORMAT_BGR,
+            SPA_VIDEO_FORMAT_BGRA,
+            SPA_VIDEO_FORMAT_BGRx,
+            SPA_VIDEO_FORMAT_YUY2),
+        SPA_FORMAT_VIDEO_size,
+        SPA_POD_CHOICE_RANGE_Rectangle(&kDefRect, &kMinRect, &kMaxRect),
+        SPA_FORMAT_VIDEO_framerate,
+        SPA_POD_CHOICE_RANGE_Fraction(&kDefFps, &kMinFps, &kMaxFps),
+        0);
+    if (with_modifier) {
+        spa_pod_builder_add(&b, SPA_FORMAT_VIDEO_modifier, SPA_POD_Long(DRM_FORMAT_MOD_LINEAR), 0);
+    }
+    return static_cast<const struct spa_pod*>(spa_pod_builder_pop(&b, &f[0]));
+}
+
+// gamescope 的 Format pod 以 Choice(None) 包装定值, spa_format_video_raw_parse 对此会解析失败,
+// 需回退为手动取 choice 默认值.
+static void parse_video_format(const struct spa_pod* param, uint32_t& width, uint32_t& height, enum spa_video_format& format)
+{
+    struct spa_video_info info;
+    if (spa_format_parse(param, &info.media_type, &info.media_subtype) == 0 && info.media_type == SPA_MEDIA_TYPE_video
+        && info.media_subtype == SPA_MEDIA_SUBTYPE_raw && spa_format_video_raw_parse(param, &info.info.raw) == 0) {
+        width = info.info.raw.size.width;
+        height = info.info.raw.size.height;
+        format = static_cast<enum spa_video_format>(info.info.raw.format);
+    }
+
+    if (width > 0 && height > 0 && format != SPA_VIDEO_FORMAT_UNKNOWN) {
+        return;
+    }
+
+    const struct spa_pod_prop* prop;
+    SPA_POD_OBJECT_FOREACH((struct spa_pod_object*)param, prop)
+    {
+        const struct spa_pod* val = &prop->value;
+        if (prop->key == SPA_FORMAT_VIDEO_size) {
+            if (spa_pod_is_choice(val)) {
+                // choice 的第一个备选值即默认值
+                if (SPA_POD_CHOICE_VALUE_TYPE(val) == SPA_TYPE_Rectangle) {
+                    const struct spa_rectangle* rect = (const struct spa_rectangle*)SPA_POD_CHOICE_VALUES(val);
+                    if (rect->width > 0 && rect->height > 0) {
+                        width = rect->width;
+                        height = rect->height;
+                    }
+                }
+            }
+            else if (spa_pod_is_rectangle(val)) {
+                struct spa_rectangle* rect = static_cast<struct spa_rectangle*>(SPA_POD_BODY(val));
+                if (rect->width > 0 && rect->height > 0) {
+                    width = rect->width;
+                    height = rect->height;
+                }
+            }
+        }
+        else if (prop->key == SPA_FORMAT_VIDEO_format) {
+            if (spa_pod_is_choice(val)) {
+                if (SPA_POD_CHOICE_VALUE_TYPE(val) == SPA_TYPE_Id) {
+                    format = static_cast<enum spa_video_format>(*(uint32_t*)SPA_POD_CHOICE_VALUES(val));
+                }
+            }
+            else if (spa_pod_is_id(val)) {
+                format = static_cast<enum spa_video_format>(*(uint32_t*)SPA_POD_BODY(val));
+            }
+        }
+    }
+}
+
+// ===========================================================================
+// Lifecycle
+// ===========================================================================
+
 PipeWireScreencap::PipeWireScreencap(int pipewire_fd, uint32_t pipewire_node_id)
     : pipewire_fd_(pipewire_fd)
     , pipewire_node_id_(pipewire_node_id)
@@ -288,6 +390,21 @@ bool PipeWireScreencap::connected() const
     return connected_;
 }
 
+void PipeWireScreencap::inactive()
+{
+    if (!pw_stream_ || !pw_thread_loop_) {
+        return;
+    }
+
+    // 停流使 producer 停止渲染; 已停用时为 no-op
+    LoopLocker lock(pw_thread_loop_);
+    pw_stream_set_active(pw_stream_, false);
+}
+
+// ===========================================================================
+// Screencap
+// ===========================================================================
+
 // 需持 loop 锁调用; 置位 frame_wanted_ 等新帧, 超时取消请求
 bool PipeWireScreencap::wait_for_frame_locked(int timeout_sec)
 {
@@ -342,19 +459,8 @@ bool PipeWireScreencap::screencap(cv::Mat& image)
     return true;
 }
 
-void PipeWireScreencap::inactive()
-{
-    if (!pw_stream_ || !pw_thread_loop_) {
-        return;
-    }
-
-    // 停流使 producer 停止渲染; 已停用时为 no-op
-    LoopLocker lock(pw_thread_loop_);
-    pw_stream_set_active(pw_stream_, false);
-}
-
 // ===========================================================================
-// PipeWire implementation
+// PipeWire setup
 // ===========================================================================
 
 bool PipeWireScreencap::pw_init()
@@ -425,48 +531,6 @@ bool PipeWireScreencap::pw_create_stream()
     pw_stream_add_listener(pw_stream_, &stream_hook_, &stream_events, this);
 
     return true;
-}
-
-// 官方 DMA-BUF 协商文档要求消费者声明两个 EnumFormat:
-// 带 modifier 的在前 (DMA-BUF), 不带的作 shm fallback;
-// modifier 仅声明 Linear, 保证 CPU 可直接 mmap.
-// 多声明几种格式: producer 可能 fixate 非 BGRA 格式, 均可按 kSpaFormatTable 转换.
-static const struct spa_pod* make_video_format_pod(struct spa_pod_builder& b, bool with_modifier)
-{
-    static const struct spa_rectangle kDefRect = { 1280, 720 };
-    static const struct spa_rectangle kMinRect = { 1, 1 };
-    static const struct spa_rectangle kMaxRect = { 4096, 4096 };
-    static const struct spa_fraction kDefFps = { 30, 1 };
-    static const struct spa_fraction kMinFps = { 0, 1 };
-    static const struct spa_fraction kMaxFps = { 1000, 1 };
-
-    struct spa_pod_frame f[1];
-    spa_pod_builder_push_object(&b, &f[0], SPA_TYPE_OBJECT_Format, SPA_PARAM_EnumFormat);
-    spa_pod_builder_add(
-        &b,
-        SPA_FORMAT_mediaType,
-        SPA_POD_Id(SPA_MEDIA_TYPE_video),
-        SPA_FORMAT_mediaSubtype,
-        SPA_POD_Id(SPA_MEDIA_SUBTYPE_raw),
-        SPA_FORMAT_VIDEO_format,
-        SPA_POD_CHOICE_ENUM_Id(
-            7,
-            SPA_VIDEO_FORMAT_RGB,
-            SPA_VIDEO_FORMAT_RGBA,
-            SPA_VIDEO_FORMAT_RGBx,
-            SPA_VIDEO_FORMAT_BGR,
-            SPA_VIDEO_FORMAT_BGRA,
-            SPA_VIDEO_FORMAT_BGRx,
-            SPA_VIDEO_FORMAT_YUY2),
-        SPA_FORMAT_VIDEO_size,
-        SPA_POD_CHOICE_RANGE_Rectangle(&kDefRect, &kMinRect, &kMaxRect),
-        SPA_FORMAT_VIDEO_framerate,
-        SPA_POD_CHOICE_RANGE_Fraction(&kDefFps, &kMinFps, &kMaxFps),
-        0);
-    if (with_modifier) {
-        spa_pod_builder_add(&b, SPA_FORMAT_VIDEO_modifier, SPA_POD_Long(DRM_FORMAT_MOD_LINEAR), 0);
-    }
-    return static_cast<const struct spa_pod*>(spa_pod_builder_pop(&b, &f[0]));
 }
 
 bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
@@ -540,58 +604,6 @@ void PipeWireScreencap::pw_on_stream_state_changed(
     }
     else if (new_state == PW_STREAM_STATE_STREAMING && error) {
         LogWarn << "Stream error: " << error;
-    }
-}
-
-// gamescope 的 Format pod 以 Choice(None) 包装定值, spa_format_video_raw_parse 对此会解析失败,
-// 需回退为手动取 choice 默认值.
-static void parse_video_format(const struct spa_pod* param, uint32_t& width, uint32_t& height, enum spa_video_format& format)
-{
-    struct spa_video_info info;
-    if (spa_format_parse(param, &info.media_type, &info.media_subtype) == 0 && info.media_type == SPA_MEDIA_TYPE_video
-        && info.media_subtype == SPA_MEDIA_SUBTYPE_raw && spa_format_video_raw_parse(param, &info.info.raw) == 0) {
-        width = info.info.raw.size.width;
-        height = info.info.raw.size.height;
-        format = static_cast<enum spa_video_format>(info.info.raw.format);
-    }
-
-    if (width > 0 && height > 0 && format != SPA_VIDEO_FORMAT_UNKNOWN) {
-        return;
-    }
-
-    const struct spa_pod_prop* prop;
-    SPA_POD_OBJECT_FOREACH((struct spa_pod_object*)param, prop)
-    {
-        const struct spa_pod* val = &prop->value;
-        if (prop->key == SPA_FORMAT_VIDEO_size) {
-            if (spa_pod_is_choice(val)) {
-                // choice 的第一个备选值即默认值
-                if (SPA_POD_CHOICE_VALUE_TYPE(val) == SPA_TYPE_Rectangle) {
-                    const struct spa_rectangle* rect = (const struct spa_rectangle*)SPA_POD_CHOICE_VALUES(val);
-                    if (rect->width > 0 && rect->height > 0) {
-                        width = rect->width;
-                        height = rect->height;
-                    }
-                }
-            }
-            else if (spa_pod_is_rectangle(val)) {
-                struct spa_rectangle* rect = static_cast<struct spa_rectangle*>(SPA_POD_BODY(val));
-                if (rect->width > 0 && rect->height > 0) {
-                    width = rect->width;
-                    height = rect->height;
-                }
-            }
-        }
-        else if (prop->key == SPA_FORMAT_VIDEO_format) {
-            if (spa_pod_is_choice(val)) {
-                if (SPA_POD_CHOICE_VALUE_TYPE(val) == SPA_TYPE_Id) {
-                    format = static_cast<enum spa_video_format>(*(uint32_t*)SPA_POD_CHOICE_VALUES(val));
-                }
-            }
-            else if (spa_pod_is_id(val)) {
-                format = static_cast<enum spa_video_format>(*(uint32_t*)SPA_POD_BODY(val));
-            }
-        }
     }
 }
 
