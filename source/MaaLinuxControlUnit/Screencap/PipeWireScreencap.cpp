@@ -48,6 +48,38 @@ static bool loop_wait_until(pw_thread_loop* loop, int timeout_sec, Pred pred)
     return true;
 }
 
+// RAII 持锁: 析构解锁兜底所有返回路径; unlock() 可提前释放 (幂等)
+class LoopLocker
+{
+public:
+    explicit LoopLocker(pw_thread_loop* loop)
+        : loop_(loop)
+    {
+        pw_thread_loop_lock(loop_);
+    }
+
+    ~LoopLocker()
+    {
+        if (loop_) {
+            pw_thread_loop_unlock(loop_);
+        }
+    }
+
+    LoopLocker(const LoopLocker&) = delete;
+    LoopLocker& operator=(const LoopLocker&) = delete;
+
+    void unlock()
+    {
+        if (loop_) {
+            pw_thread_loop_unlock(loop_);
+            loop_ = nullptr;
+        }
+    }
+
+private:
+    pw_thread_loop* loop_ = nullptr;
+};
+
 // ---------------------------------------------------------------------------
 // SPA format -> OpenCV conversion table
 // ---------------------------------------------------------------------------
@@ -228,14 +260,17 @@ bool PipeWireScreencap::init()
 
     // 协商是异步的, 节点不存在等失败在此超时
     static constexpr int kNegotiationTimeoutSec = 3;
-    pw_thread_loop_lock(pw_thread_loop_);
-    if (!loop_wait_until(pw_thread_loop_, kNegotiationTimeoutSec, [this]() { return frame_width_ > 0 && frame_height_ > 0; })) {
-        pw_thread_loop_unlock(pw_thread_loop_);
+    bool negotiated = false;
+    {
+        LoopLocker lock(pw_thread_loop_);
+        negotiated = loop_wait_until(pw_thread_loop_, kNegotiationTimeoutSec, [this]() { return frame_width_ > 0 && frame_height_ > 0; });
+    }
+    if (!negotiated) {
+        // close_internal 会等 loop 线程退出, 不能在持锁状态下调用
         LogError << "PipeWire format negotiation timed out";
         close_internal();
         return false;
     }
-    pw_thread_loop_unlock(pw_thread_loop_);
 
     // stream 以 INACTIVE 连接, 由 screencap 按需激活, producer 在无人取帧时不空转
     connected_ = true;
@@ -253,25 +288,32 @@ bool PipeWireScreencap::connected() const
     return connected_;
 }
 
+// 需持 loop 锁调用; 置位 frame_wanted_ 等新帧, 超时取消请求
+bool PipeWireScreencap::wait_for_frame_locked(int timeout_sec)
+{
+    frame_wanted_ = true;
+    bool got_frame = loop_wait_until(pw_thread_loop_, timeout_sec, [this]() { return !frame_wanted_; });
+    if (!got_frame) {
+        frame_wanted_ = false;
+    }
+    return got_frame;
+}
+
 bool PipeWireScreencap::screencap(cv::Mat& image)
 {
     if (!connected_) {
         return false;
     }
 
-    pw_thread_loop_lock(pw_thread_loop_);
+    LoopLocker lock(pw_thread_loop_);
 
     // 已激活时为 no-op; 覆盖首次激活与 inactive() 之后的重新激活
     pw_stream_set_active(pw_stream_, true);
 
     // 每次截图都需新帧, 上一帧仅作超时回退
     static constexpr int kFrameTimeoutSec = 3;
-    frame_wanted_ = true;
-    bool got_frame = loop_wait_until(pw_thread_loop_, kFrameTimeoutSec, [this]() { return !frame_wanted_; });
-    if (!got_frame) {
-        frame_wanted_ = false;
+    if (!wait_for_frame_locked(kFrameTimeoutSec)) {
         if (latest_frame_.empty()) {
-            pw_thread_loop_unlock(pw_thread_loop_);
             LogError << "Timeout waiting for PipeWire frame";
             return false;
         }
@@ -282,7 +324,7 @@ bool PipeWireScreencap::screencap(cv::Mat& image)
     // 浅拷贝 (引用计数) 后在锁外转换, 以免停摆 loop 线程
     cv::Mat raw = latest_frame_;
     enum spa_video_format format = frame_format_;
-    pw_thread_loop_unlock(pw_thread_loop_);
+    lock.unlock();
 
     const SpaFormatInfo* fmt_info = spa_format_info(format);
     if (!fmt_info) {
@@ -307,9 +349,8 @@ void PipeWireScreencap::inactive()
     }
 
     // 停流使 producer 停止渲染; 已停用时为 no-op
-    pw_thread_loop_lock(pw_thread_loop_);
+    LoopLocker lock(pw_thread_loop_);
     pw_stream_set_active(pw_stream_, false);
-    pw_thread_loop_unlock(pw_thread_loop_);
 }
 
 // ===========================================================================
@@ -456,9 +497,11 @@ bool PipeWireScreencap::pw_connect_stream(uint32_t node_id)
         return false;
     }
 
-    pw_thread_loop_lock(pw_thread_loop_);
-    int ret = pw_stream_connect(pw_stream_, PW_DIRECTION_INPUT, node_id, stream_flags, params, 3);
-    pw_thread_loop_unlock(pw_thread_loop_);
+    int ret = 0;
+    {
+        LoopLocker lock(pw_thread_loop_);
+        ret = pw_stream_connect(pw_stream_, PW_DIRECTION_INPUT, node_id, stream_flags, params, 3);
+    }
 
     if (ret < 0) {
         LogError << "Failed to connect PipeWire stream to node" << node_id;

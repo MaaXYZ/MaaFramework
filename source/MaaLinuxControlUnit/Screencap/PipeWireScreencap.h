@@ -86,6 +86,8 @@ private:
     static void pw_on_stream_process(void* data);
 
     /* ---- Frame processing ---- */
+    /* 需持 loop 锁调用: 置位 frame_wanted_ 等新帧, 超时取消请求 */
+    bool wait_for_frame_locked(int timeout_sec);
     bool copy_raw_frame(const struct spa_buffer* spa_buf);
 
     /* PipeWire state */
