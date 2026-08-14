@@ -369,15 +369,14 @@ void Interactor::print_config() const
     } break;
     case InterfaceData::Controller::Type::Linux: {
         const auto& lnx = config_.configuration().lnx;
-        std::cout << MAA_NS::utf8_to_crt(std::format("\t\tScreencap: {}\n\t\tInput: {}\n", lnx.screencap, lnx.input));
-        if ((lnx.screencap == "Wlr" || lnx.input == "Wlr") && !lnx.wlr_socket_path.empty()) {
+        if (!lnx.wlr_socket_path.empty()) {
             std::cout << MAA_NS::utf8_to_crt(std::format("\t\tWayland Socket: {}\n", lnx.wlr_socket_path));
         }
-        if (lnx.input == "UInput" && lnx.uinput_screen_width > 0) {
+        if (lnx.uinput_screen_width > 0) {
             std::cout << MAA_NS::utf8_to_crt(
                 std::format("\t\tScreen Width: {}\n\t\tScreen Height: {}\n", lnx.uinput_screen_width, lnx.uinput_screen_height));
         }
-        if (lnx.input == "Libei" && !lnx.eis_socket_path.empty()) {
+        if (!lnx.eis_socket_path.empty()) {
             std::cout << MAA_NS::utf8_to_crt(std::format("\t\tEIS Socket: {}\n", lnx.eis_socket_path));
         }
 
@@ -1099,80 +1098,15 @@ void Interactor::select_linux(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Con
 
     auto& lnx = config_.configuration().lnx;
 
-    lnx.use_win32_vk_code = linux_config.use_win32_vk_code;
+    // 截图/输入方式由项目在 interface.json 中声明, 这里只按声明引导用户填写连接参数
+    const std::string screencap = linux_config.screencap.empty() ? "Wlr" : linux_config.screencap;
+    const std::string input = linux_config.input.empty() ? "Wlr" : linux_config.input;
 
-    // Use screencap_method from interface.json if available
-    if (!linux_config.screencap.empty() && lnx.screencap.empty()) {
-        lnx.screencap = linux_config.screencap;
-    }
-
-    // Use input_method from interface.json if available
-    if (!linux_config.input.empty() && lnx.input.empty()) {
-        lnx.input = linux_config.input;
-    }
-
-    // Use eis_socket_path from interface.json if available
-    if (!linux_config.eis_socket_path.empty() && lnx.eis_socket_path.empty()) {
-        lnx.eis_socket_path = linux_config.eis_socket_path;
-    }
-
-    // Default values
-    std::string default_screencap = lnx.screencap.empty() ? "Wlr" : lnx.screencap;
-    std::string default_input = lnx.input.empty() ? "Wlr" : lnx.input;
-
-    {
-        // Ask for screencap_method
-        std::cout << "Screencap method [" << default_screencap << "]: ";
-        std::cin.sync();
-        std::string buffer;
-        std::getline(std::cin, buffer);
-
-        if (std::cin.eof()) {
-            s_eof = true;
-            return;
-        }
-
-        lnx.screencap = buffer.empty() ? default_screencap : buffer;
-
-        // Ask for input_method
-        std::cout << "Input method [" << default_input << "]: ";
-        std::cin.sync();
-        std::getline(std::cin, buffer);
-
-        if (std::cin.eof()) {
-            s_eof = true;
-            return;
-        }
-
-        lnx.input = buffer.empty() ? default_input : buffer;
-        std::cout << "\n";
-    }
-
-    if (lnx.screencap == "Wlr" || lnx.input == "Wlr") {
+    if (screencap == "Wlr" || input == "Wlr") {
         select_wlroots();
     }
 
-    if (lnx.screencap == "PipeWire") {
-        // portal 显示器捕获需 pw_socket_fd + pw_node_id; 会话 daemon 节点捕获需 pw_node_id (可用 MaaToolkitGamescopeNodeFindAll 发现)
-        std::string default_node = lnx.pw_node_id == 0 ? "" : std::to_string(lnx.pw_node_id);
-        std::cout << "PipeWire node id (0 to skip, use MaaToolkitGamescopeNodeFindAll to discover) [" << default_node
-                  << "]: ";
-        std::cin.sync();
-        std::string buffer;
-        std::getline(std::cin, buffer);
-
-        if (std::cin.eof()) {
-            s_eof = true;
-            return;
-        }
-
-        if (!buffer.empty()) {
-            lnx.pw_node_id = static_cast<uint32_t>(std::strtoul(buffer.c_str(), nullptr, 10));
-        }
-        std::cout << "\n";
-    }
-
-    if (lnx.input == "Libei") {
+    if (input == "Libei") {
         std::string default_eis = lnx.eis_socket_path;
         std::cout << "EIS socket path (e.g. /run/user/1000/gamescope-0-ei) [" << default_eis << "]: ";
         std::cin.sync();
@@ -1188,7 +1122,7 @@ void Interactor::select_linux(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Con
         std::cout << "\n";
     }
 
-    if (lnx.input == "UInput") {
+    if (input == "UInput") {
         input_uinput_width_height();
     }
 }

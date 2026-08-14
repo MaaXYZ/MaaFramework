@@ -329,6 +329,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
 
         lnx.wlr_socket_path = config_.lnx.wlr_socket_path;
         lnx.use_win32_vk_code = controller.lnx.use_win32_vk_code;
+        lnx.pipewire_source = controller.lnx.pipewire_source.empty() ? "Gamescope" : controller.lnx.pipewire_source;
         if (!controller.lnx.screencap.empty()) {
             lnx.screencap = parse_linux_screencap_method(controller.lnx.screencap);
         }
@@ -349,7 +350,6 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
 
         lnx.uinput_screen_height = config_.lnx.uinput_screen_height;
         lnx.uinput_screen_width = config_.lnx.uinput_screen_width;
-        lnx.pw_node_id = config_.lnx.pw_node_id;
         lnx.eis_socket_path = config_.lnx.eis_socket_path;
 
         runtime.controller_param = std::move(lnx);

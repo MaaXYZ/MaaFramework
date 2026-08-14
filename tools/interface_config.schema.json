@@ -62,24 +62,6 @@
             "title": "Linux配置",
             "type": "object",
             "properties": {
-                "screencap": {
-                    "title": "截图方式",
-                    "description": "可选。Linux 控制器的截图方式，不提供则使用默认",
-                    "enum": [
-                        "Wlr",
-                        "ExtImage",
-                        "PipeWire"
-                    ]
-                },
-                "input": {
-                    "title": "输入控制方式",
-                    "description": "可选。Linux 控制器的输入控制方式，不提供则使用默认",
-                    "enum": [
-                        "Wlr",
-                        "UInput",
-                        "Libei"
-                    ]
-                },
                 "wlr_socket_path": {
                     "title": "Wayland Socket 路径",
                     "type": "string"
@@ -92,18 +74,9 @@
                     "title": "UInput 屏幕高度（像素）",
                     "type": "integer"
                 },
-                "pw_node_id": {
-                    "title": "PipeWire 节点 ID",
-                    "type": "integer"
-                },
                 "eis_socket_path": {
                     "title": "EIS socket 路径",
                     "type": "string"
-                },
-                "use_win32_vk_code": {
-                    "title": "使用 Win32 VK 键码",
-                    "description": "可选。为 true 时按键被视为 Win32 Virtual-Key 码，内部转换为 Linux evdev 码；否则按原始 evdev 码处理。默认 false",
-                    "type": "boolean"
                 }
             }
         },

@@ -79,9 +79,16 @@ std::string reconfig_linux(const RuntimeParam::LinuxParam& raw)
         obj["wlr_socket_path"] = raw.wlr_socket_path;
     }
     if (raw.screencap == MaaLinuxScreencapMethod_PipeWire) {
-        if (raw.pw_node_id != 0) {
-            // 会话 daemon 节点直连 (gamescope 等, 节点可用 MaaToolkitGamescopeNodeFindAll 发现)
-            obj["pw_node_id"] = raw.pw_node_id;
+        if (raw.pipewire_source == "Gamescope") {
+            // 会话 daemon 节点直连 (gamescope), node id 运行时现查
+            auto node_list = MaaToolkitGamescopeNodeListCreate();
+            OnScopeLeave([&]() { MaaToolkitGamescopeNodeListDestroy(node_list); });
+
+            if (!MaaToolkitGamescopeNodeFindAll(node_list) || MaaToolkitGamescopeNodeListSize(node_list) == 0) {
+                LogError << "No gamescope PipeWire node found";
+                return "";
+            }
+            obj["pw_node_id"] = MaaToolkitGamescopeNodeGetId(MaaToolkitGamescopeNodeListAt(node_list, 0));
         }
         else {
             // 显示器捕获: 通过 portal 获取 fd + node id
