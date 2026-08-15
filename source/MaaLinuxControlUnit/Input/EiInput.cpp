@@ -40,6 +40,7 @@ bool EiInput::init()
             ei_unref(ei_);
             ei_ = nullptr;
         }
+        ei_fd_ = -1;
         return false;
     };
 
@@ -97,6 +98,7 @@ void EiInput::shutdown()
         ei_unref(ei_);
         ei_ = nullptr;
     }
+    ei_fd_ = -1;
     connected_ = false;
 }
 
