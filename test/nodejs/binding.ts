@@ -156,6 +156,8 @@ async function api_test() {
     console.log('devices', devices)
     const desktop = await maa.Win32Controller.find()
     console.log('desktop', desktop)
+    const gamescope = await maa.LinuxController.find_gamescope_instances()
+    console.log('gamescope', gamescope)
 
     if (!analyzed || !runned) {
         console.log('failed to run custom recognition or action')
@@ -245,6 +247,18 @@ function win32_interception_enum_test() {
     console.log('test_win32_interception_enum')
     if (maa.Win32InputMethod.Interception !== String(1 << 9)) {
         console.log('unexpected Win32InputMethod.Interception', maa.Win32InputMethod.Interception)
+        process.exit(1)
+    }
+}
+
+function linux_enum_test() {
+    console.log('test_linux_enum')
+    if (maa.LinuxScreencapMethod.PipeWire !== String(1 << 2)) {
+        console.log('unexpected LinuxScreencapMethod.PipeWire', maa.LinuxScreencapMethod.PipeWire)
+        process.exit(1)
+    }
+    if (maa.LinuxInputMethod.Libei !== String(1 << 2)) {
+        console.log('unexpected LinuxInputMethod.Libei', maa.LinuxInputMethod.Libei)
         process.exit(1)
     }
 }
@@ -372,6 +386,7 @@ async function main() {
     await api_test()
     await win32_relative_move_test()
     win32_interception_enum_test()
+    linux_enum_test()
     await custom_ctrl_test()
 
     process.exit(0)
