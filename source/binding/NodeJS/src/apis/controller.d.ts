@@ -366,7 +366,7 @@ declare global {
              *
              *   PipeWire session-daemon node capture (gamescope etc.):
              *   - pw_node_id: attach to a session-daemon node directly; discover the node
-             *     with MaaToolkitGamescopeNodeFindAll.
+             *     with MaaToolkitGamescopeInstanceFindAll.
              *
              *   UInput optional fields:
              *   - uinput_path: The uinput device node path, default is "/dev/uinput".

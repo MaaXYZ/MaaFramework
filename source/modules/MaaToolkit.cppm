@@ -12,10 +12,8 @@ export using ::MaaToolkitAdbDevice;
 export using ::MaaToolkitAdbDeviceList;
 export using ::MaaToolkitDesktopWindow;
 export using ::MaaToolkitDesktopWindowList;
-export using ::MaaToolkitGamescopeEisSocket;
-export using ::MaaToolkitGamescopeEisSocketList;
-export using ::MaaToolkitGamescopeNode;
-export using ::MaaToolkitGamescopeNodeList;
+export using ::MaaToolkitGamescopeInstance;
+export using ::MaaToolkitGamescopeInstanceList;
 export using ::MaaToolkitPortalHelper;
 
 // AdbDevice/MaaToolkitAdbDevice.h
@@ -50,19 +48,14 @@ export using ::MaaToolkitDesktopWindowGetWindowName;
 
 // Gamescope/MaaToolkitGamescope.h
 
-export using ::MaaToolkitGamescopeNodeListCreate;
-export using ::MaaToolkitGamescopeNodeListDestroy;
-export using ::MaaToolkitGamescopeNodeFindAll;
-export using ::MaaToolkitGamescopeNodeListSize;
-export using ::MaaToolkitGamescopeNodeListAt;
-export using ::MaaToolkitGamescopeNodeGetName;
-export using ::MaaToolkitGamescopeNodeGetId;
-export using ::MaaToolkitGamescopeEisSocketListCreate;
-export using ::MaaToolkitGamescopeEisSocketListDestroy;
-export using ::MaaToolkitGamescopeEisSocketFindAll;
-export using ::MaaToolkitGamescopeEisSocketListSize;
-export using ::MaaToolkitGamescopeEisSocketListAt;
-export using ::MaaToolkitGamescopeEisSocketGetPath;
+export using ::MaaToolkitGamescopeInstanceListCreate;
+export using ::MaaToolkitGamescopeInstanceListDestroy;
+export using ::MaaToolkitGamescopeInstanceFindAll;
+export using ::MaaToolkitGamescopeInstanceListSize;
+export using ::MaaToolkitGamescopeInstanceListAt;
+export using ::MaaToolkitGamescopeInstanceGetDisplayNo;
+export using ::MaaToolkitGamescopeInstanceGetPipeWireNodeId;
+export using ::MaaToolkitGamescopeInstanceGetEisSocketPath;
 
 // Portal/MaaToolkitPortal.h
 

@@ -741,10 +741,10 @@ def test_toolkit():
     for win in desktop[:3]:
         print(f"    - {win.window_name[:30] if win.window_name else '(no name)'}")
 
-    eis_sockets = Toolkit.find_gamescope_eis_sockets()
-    print(f"  gamescope eis sockets: {len(eis_sockets)}")
-    for sock in eis_sockets[:3]:
-        print(f"    - {sock.path}")
+    instances = Toolkit.find_gamescope_instances()
+    print(f"  gamescope instances: {len(instances)}")
+    for inst in instances[:3]:
+        print(f"    - display_no={inst.display_no} node_id={inst.pipewire_node_id} eis={inst.eis_socket_path}")
 
     print("  PASS: toolkit")
 

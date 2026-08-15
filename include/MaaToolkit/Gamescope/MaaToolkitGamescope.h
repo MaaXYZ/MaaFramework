@@ -9,26 +9,17 @@ extern "C"
 {
 #endif
 
-    MAA_TOOLKIT_API MaaToolkitGamescopeNodeList* MaaToolkitGamescopeNodeListCreate();
-    MAA_TOOLKIT_API void MaaToolkitGamescopeNodeListDestroy(MaaToolkitGamescopeNodeList* handle);
+    MAA_TOOLKIT_API MaaToolkitGamescopeInstanceList* MaaToolkitGamescopeInstanceListCreate();
+    MAA_TOOLKIT_API void MaaToolkitGamescopeInstanceListDestroy(MaaToolkitGamescopeInstanceList* handle);
 
-    MAA_TOOLKIT_API MaaBool MaaToolkitGamescopeNodeFindAll(/*out*/ MaaToolkitGamescopeNodeList* buffer);
+    MAA_TOOLKIT_API MaaBool MaaToolkitGamescopeInstanceFindAll(/*out*/ MaaToolkitGamescopeInstanceList* buffer);
 
-    MAA_TOOLKIT_API MaaSize MaaToolkitGamescopeNodeListSize(const MaaToolkitGamescopeNodeList* list);
-    MAA_TOOLKIT_API const MaaToolkitGamescopeNode* MaaToolkitGamescopeNodeListAt(const MaaToolkitGamescopeNodeList* list, MaaSize index);
+    MAA_TOOLKIT_API MaaSize MaaToolkitGamescopeInstanceListSize(const MaaToolkitGamescopeInstanceList* list);
+    MAA_TOOLKIT_API const MaaToolkitGamescopeInstance* MaaToolkitGamescopeInstanceListAt(const MaaToolkitGamescopeInstanceList* list, MaaSize index);
 
-    MAA_TOOLKIT_API const char* MaaToolkitGamescopeNodeGetName(const MaaToolkitGamescopeNode* node);
-    MAA_TOOLKIT_API uint32_t MaaToolkitGamescopeNodeGetId(const MaaToolkitGamescopeNode* node);
-
-    MAA_TOOLKIT_API MaaToolkitGamescopeEisSocketList* MaaToolkitGamescopeEisSocketListCreate();
-    MAA_TOOLKIT_API void MaaToolkitGamescopeEisSocketListDestroy(MaaToolkitGamescopeEisSocketList* handle);
-
-    MAA_TOOLKIT_API MaaBool MaaToolkitGamescopeEisSocketFindAll(/*out*/ MaaToolkitGamescopeEisSocketList* buffer);
-
-    MAA_TOOLKIT_API MaaSize MaaToolkitGamescopeEisSocketListSize(const MaaToolkitGamescopeEisSocketList* list);
-    MAA_TOOLKIT_API const MaaToolkitGamescopeEisSocket* MaaToolkitGamescopeEisSocketListAt(const MaaToolkitGamescopeEisSocketList* list, MaaSize index);
-
-    MAA_TOOLKIT_API const char* MaaToolkitGamescopeEisSocketGetPath(const MaaToolkitGamescopeEisSocket* socket);
+    MAA_TOOLKIT_API uint32_t MaaToolkitGamescopeInstanceGetDisplayNo(const MaaToolkitGamescopeInstance* instance);
+    MAA_TOOLKIT_API uint32_t MaaToolkitGamescopeInstanceGetPipeWireNodeId(const MaaToolkitGamescopeInstance* instance);
+    MAA_TOOLKIT_API const char* MaaToolkitGamescopeInstanceGetEisSocketPath(const MaaToolkitGamescopeInstance* instance);
 
 #ifdef __cplusplus
 }

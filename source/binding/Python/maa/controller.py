@@ -1141,10 +1141,10 @@ class LinuxController(Controller):
     Configurable screencap and input methods via JSON for various Linux display servers.
 
     窗口捕获 (gamescope 等): screencap_method 为 PipeWire 时设置 pw_node_id 直连会话 daemon 节点
-    (节点可用 MaaToolkitGamescopeNodeFindAll 发现); 输入方式 Libei 需提供 eis_socket_path
+    (节点可用 MaaToolkitGamescopeInstanceFindAll 发现); 输入方式 Libei 需提供 eis_socket_path
     (如 /run/user/1000/gamescope-0-ei)。
     Window capture (gamescope etc.): with PipeWire screencap, set pw_node_id to attach to a
-    session-daemon node directly (discover nodes with MaaToolkitGamescopeNodeFindAll); use
+    session-daemon node directly (discover nodes with MaaToolkitGamescopeInstanceFindAll); use
     input_method Libei with eis_socket_path for libei (EIS) input.
     """
 

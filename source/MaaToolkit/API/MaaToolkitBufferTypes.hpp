@@ -28,19 +28,12 @@ public:
     virtual const std::string& window_name() const = 0;
 };
 
-struct MaaToolkitGamescopeNode
+struct MaaToolkitGamescopeInstance
 {
 public:
-    virtual ~MaaToolkitGamescopeNode() = default;
+    virtual ~MaaToolkitGamescopeInstance() = default;
 
-    virtual uint32_t id() const = 0;
-    virtual const std::string& name() const = 0;
-};
-
-struct MaaToolkitGamescopeEisSocket
-{
-public:
-    virtual ~MaaToolkitGamescopeEisSocket() = default;
-
-    virtual const std::string& path() const = 0;
+    virtual uint32_t display_no() const = 0;
+    virtual uint32_t pipewire_node_id() const = 0;
+    virtual const std::string& eis_socket_path() const = 0;
 };

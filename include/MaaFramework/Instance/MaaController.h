@@ -142,7 +142,7 @@ extern "C"
      *                    - pw_node_id: The PipeWire Node ID.
      *                    PipeWire session-daemon node capture (gamescope etc.):
      *                    - pw_node_id: attach to a session-daemon node directly; discover the
-     *                      node with MaaToolkitGamescopeNodeFindAll.
+     *                      node with MaaToolkitGamescopeInstanceFindAll.
      *                    UInput Optional fields:
      *                    - uinput_path: The uinput device node path, default is "/dev/uinput".
      *                    - uinput_screen_width / uinput_screen_height: screen size for the uinput

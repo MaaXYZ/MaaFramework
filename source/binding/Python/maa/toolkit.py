@@ -51,33 +51,21 @@ class DesktopWindow:
 
 
 @dataclass
-class GamescopeNode:
-    """gamescope PipeWire 节点信息 / gamescope PipeWire node info
+class GamescopeInstance:
+    """gamescope 实例信息 / gamescope instance info
 
-    通过 Toolkit.find_gamescope_nodes 获取。
-    Obtained via Toolkit.find_gamescope_nodes.
-
-    Attributes:
-        id: PipeWire 节点 ID / PipeWire node ID
-        name: 节点名称 / Node name
-    """
-
-    id: int
-    name: str
-
-
-@dataclass
-class GamescopeEisSocket:
-    """gamescope libei (EIS) socket 信息 / gamescope libei (EIS) socket info
-
-    通过 Toolkit.find_gamescope_eis_sockets 获取。
-    Obtained via Toolkit.find_gamescope_eis_sockets.
+    通过 Toolkit.find_gamescope_instances 获取。
+    Obtained via Toolkit.find_gamescope_instances.
 
     Attributes:
-        path: EIS socket 路径 / EIS socket path
+        display_no: display 编号 (gamescope-<n> 的 n) / display number (n in gamescope-<n>)
+        pipewire_node_id: PipeWire 节点 ID (0 表示无可用截图节点) / PipeWire node ID (0 means no capture node)
+        eis_socket_path: EIS socket 路径 (空串表示无 EIS socket) / EIS socket path (empty means no EIS socket)
     """
 
-    path: str
+    display_no: int
+    pipewire_node_id: int
+    eis_socket_path: str
 
 
 class PortalHelper:
@@ -218,55 +206,31 @@ class Toolkit:
         return windows
 
     @staticmethod
-    def find_gamescope_nodes() -> list[GamescopeNode]:
-        """查找会话 PipeWire daemon 上的 gamescope 节点 / Find gamescope nodes on the session PipeWire daemon
+    def find_gamescope_instances() -> list[GamescopeInstance]:
+        """查找 gamescope 实例 / Find gamescope instances
 
         Returns:
-            List[GamescopeNode]: 节点列表 (gamescope 未运行时为空) / Node list (empty when gamescope is not running)
+            List[GamescopeInstance]: 实例列表 (gamescope 未运行时为空) / Instance list (empty when gamescope is not running)
         """
         Toolkit._set_api_properties()
 
-        list_handle = Library.toolkit().MaaToolkitGamescopeNodeListCreate()
+        list_handle = Library.toolkit().MaaToolkitGamescopeInstanceListCreate()
 
-        Library.toolkit().MaaToolkitGamescopeNodeFindAll(list_handle)
+        Library.toolkit().MaaToolkitGamescopeInstanceFindAll(list_handle)
 
-        count = Library.toolkit().MaaToolkitGamescopeNodeListSize(list_handle)
+        count = Library.toolkit().MaaToolkitGamescopeInstanceListSize(list_handle)
 
-        nodes: list[GamescopeNode] = []
+        instances: list[GamescopeInstance] = []
         for i in range(count):
-            node_handle = Library.toolkit().MaaToolkitGamescopeNodeListAt(list_handle, i)
-            node_id = Library.toolkit().MaaToolkitGamescopeNodeGetId(node_handle)
-            name = Library.toolkit().MaaToolkitGamescopeNodeGetName(node_handle).decode()
+            instance_handle = Library.toolkit().MaaToolkitGamescopeInstanceListAt(list_handle, i)
+            display_no = Library.toolkit().MaaToolkitGamescopeInstanceGetDisplayNo(instance_handle)
+            node_id = Library.toolkit().MaaToolkitGamescopeInstanceGetPipeWireNodeId(instance_handle)
+            eis_socket_path = Library.toolkit().MaaToolkitGamescopeInstanceGetEisSocketPath(instance_handle).decode()
 
-            nodes.append(GamescopeNode(node_id, name))
+            instances.append(GamescopeInstance(display_no, node_id, eis_socket_path))
 
-        Library.toolkit().MaaToolkitGamescopeNodeListDestroy(list_handle)
-        return nodes
-
-    @staticmethod
-    def find_gamescope_eis_sockets() -> list[GamescopeEisSocket]:
-        """查找 gamescope 的 libei (EIS) socket / Find gamescope libei (EIS) sockets
-
-        Returns:
-            List[GamescopeEisSocket]: socket 列表 (gamescope 未运行时为空) / Socket list (empty when gamescope is not running)
-        """
-        Toolkit._set_api_properties()
-
-        list_handle = Library.toolkit().MaaToolkitGamescopeEisSocketListCreate()
-
-        Library.toolkit().MaaToolkitGamescopeEisSocketFindAll(list_handle)
-
-        count = Library.toolkit().MaaToolkitGamescopeEisSocketListSize(list_handle)
-
-        sockets: list[GamescopeEisSocket] = []
-        for i in range(count):
-            socket_handle = Library.toolkit().MaaToolkitGamescopeEisSocketListAt(list_handle, i)
-            path = Library.toolkit().MaaToolkitGamescopeEisSocketGetPath(socket_handle).decode()
-
-            sockets.append(GamescopeEisSocket(path))
-
-        Library.toolkit().MaaToolkitGamescopeEisSocketListDestroy(list_handle)
-        return sockets
+        Library.toolkit().MaaToolkitGamescopeInstanceListDestroy(list_handle)
+        return instances
 
     @staticmethod
     def macos_check_permission(perm: MaaMacOSPermissionEnum) -> bool:
@@ -387,44 +351,29 @@ class Toolkit:
         Library.toolkit().MaaToolkitAdbDeviceGetConfig.restype = ctypes.c_char_p
         Library.toolkit().MaaToolkitAdbDeviceGetConfig.argtypes = [MaaToolkitAdbDeviceHandle]
 
-        Library.toolkit().MaaToolkitGamescopeNodeListCreate.restype = MaaToolkitGamescopeNodeListHandle
-        Library.toolkit().MaaToolkitGamescopeNodeListCreate.argtypes = []
+        Library.toolkit().MaaToolkitGamescopeInstanceListCreate.restype = MaaToolkitGamescopeInstanceListHandle
+        Library.toolkit().MaaToolkitGamescopeInstanceListCreate.argtypes = []
 
-        Library.toolkit().MaaToolkitGamescopeNodeListDestroy.restype = None
-        Library.toolkit().MaaToolkitGamescopeNodeListDestroy.argtypes = [MaaToolkitGamescopeNodeListHandle]
+        Library.toolkit().MaaToolkitGamescopeInstanceListDestroy.restype = None
+        Library.toolkit().MaaToolkitGamescopeInstanceListDestroy.argtypes = [MaaToolkitGamescopeInstanceListHandle]
 
-        Library.toolkit().MaaToolkitGamescopeNodeFindAll.restype = MaaBool
-        Library.toolkit().MaaToolkitGamescopeNodeFindAll.argtypes = [MaaToolkitGamescopeNodeListHandle]
+        Library.toolkit().MaaToolkitGamescopeInstanceFindAll.restype = MaaBool
+        Library.toolkit().MaaToolkitGamescopeInstanceFindAll.argtypes = [MaaToolkitGamescopeInstanceListHandle]
 
-        Library.toolkit().MaaToolkitGamescopeNodeListSize.restype = MaaSize
-        Library.toolkit().MaaToolkitGamescopeNodeListSize.argtypes = [MaaToolkitGamescopeNodeListHandle]
+        Library.toolkit().MaaToolkitGamescopeInstanceListSize.restype = MaaSize
+        Library.toolkit().MaaToolkitGamescopeInstanceListSize.argtypes = [MaaToolkitGamescopeInstanceListHandle]
 
-        Library.toolkit().MaaToolkitGamescopeNodeListAt.restype = MaaToolkitGamescopeNodeHandle
-        Library.toolkit().MaaToolkitGamescopeNodeListAt.argtypes = [MaaToolkitGamescopeNodeListHandle, MaaSize]
+        Library.toolkit().MaaToolkitGamescopeInstanceListAt.restype = MaaToolkitGamescopeInstanceHandle
+        Library.toolkit().MaaToolkitGamescopeInstanceListAt.argtypes = [MaaToolkitGamescopeInstanceListHandle, MaaSize]
 
-        Library.toolkit().MaaToolkitGamescopeNodeGetId.restype = ctypes.c_uint32
-        Library.toolkit().MaaToolkitGamescopeNodeGetId.argtypes = [MaaToolkitGamescopeNodeHandle]
+        Library.toolkit().MaaToolkitGamescopeInstanceGetDisplayNo.restype = ctypes.c_uint32
+        Library.toolkit().MaaToolkitGamescopeInstanceGetDisplayNo.argtypes = [MaaToolkitGamescopeInstanceHandle]
 
-        Library.toolkit().MaaToolkitGamescopeNodeGetName.restype = ctypes.c_char_p
-        Library.toolkit().MaaToolkitGamescopeNodeGetName.argtypes = [MaaToolkitGamescopeNodeHandle]
+        Library.toolkit().MaaToolkitGamescopeInstanceGetPipeWireNodeId.restype = ctypes.c_uint32
+        Library.toolkit().MaaToolkitGamescopeInstanceGetPipeWireNodeId.argtypes = [MaaToolkitGamescopeInstanceHandle]
 
-        Library.toolkit().MaaToolkitGamescopeEisSocketListCreate.restype = MaaToolkitGamescopeEisSocketListHandle
-        Library.toolkit().MaaToolkitGamescopeEisSocketListCreate.argtypes = []
-
-        Library.toolkit().MaaToolkitGamescopeEisSocketListDestroy.restype = None
-        Library.toolkit().MaaToolkitGamescopeEisSocketListDestroy.argtypes = [MaaToolkitGamescopeEisSocketListHandle]
-
-        Library.toolkit().MaaToolkitGamescopeEisSocketFindAll.restype = MaaBool
-        Library.toolkit().MaaToolkitGamescopeEisSocketFindAll.argtypes = [MaaToolkitGamescopeEisSocketListHandle]
-
-        Library.toolkit().MaaToolkitGamescopeEisSocketListSize.restype = MaaSize
-        Library.toolkit().MaaToolkitGamescopeEisSocketListSize.argtypes = [MaaToolkitGamescopeEisSocketListHandle]
-
-        Library.toolkit().MaaToolkitGamescopeEisSocketListAt.restype = MaaToolkitGamescopeEisSocketHandle
-        Library.toolkit().MaaToolkitGamescopeEisSocketListAt.argtypes = [MaaToolkitGamescopeEisSocketListHandle, MaaSize]
-
-        Library.toolkit().MaaToolkitGamescopeEisSocketGetPath.restype = ctypes.c_char_p
-        Library.toolkit().MaaToolkitGamescopeEisSocketGetPath.argtypes = [MaaToolkitGamescopeEisSocketHandle]
+        Library.toolkit().MaaToolkitGamescopeInstanceGetEisSocketPath.restype = ctypes.c_char_p
+        Library.toolkit().MaaToolkitGamescopeInstanceGetEisSocketPath.argtypes = [MaaToolkitGamescopeInstanceHandle]
 
         Library.toolkit().MaaToolkitDesktopWindowListCreate.restype = MaaToolkitDesktopWindowListHandle
         Library.toolkit().MaaToolkitDesktopWindowListCreate.argtypes = []

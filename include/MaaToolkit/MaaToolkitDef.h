@@ -10,10 +10,8 @@ typedef struct MaaToolkitDesktopWindowList MaaToolkitDesktopWindowList;
 
 typedef struct MaaToolkitPortalHelper MaaToolkitPortalHelper;
 
-typedef struct MaaToolkitGamescopeNode MaaToolkitGamescopeNode;
-typedef struct MaaToolkitGamescopeNodeList MaaToolkitGamescopeNodeList;
-typedef struct MaaToolkitGamescopeEisSocket MaaToolkitGamescopeEisSocket;
-typedef struct MaaToolkitGamescopeEisSocketList MaaToolkitGamescopeEisSocketList;
+typedef struct MaaToolkitGamescopeInstance MaaToolkitGamescopeInstance;
+typedef struct MaaToolkitGamescopeInstanceList MaaToolkitGamescopeInstanceList;
 
 enum MaaMacOSPermissionEnum
 {

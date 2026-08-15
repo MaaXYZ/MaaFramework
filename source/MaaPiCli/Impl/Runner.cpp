@@ -80,15 +80,28 @@ std::string reconfig_linux(const RuntimeParam::LinuxParam& raw)
     }
     if (raw.screencap == MaaLinuxScreencapMethod_PipeWire) {
         if (raw.pipewire_source == "Gamescope") {
-            // 会话 daemon 节点直连 (gamescope), node id 运行时现查
-            auto node_list = MaaToolkitGamescopeNodeListCreate();
-            OnScopeLeave([&]() { MaaToolkitGamescopeNodeListDestroy(node_list); });
+            // gamescope 实例的 PipeWire 节点现查; 跳过无截图节点的实例
+            auto instance_list = MaaToolkitGamescopeInstanceListCreate();
+            OnScopeLeave([&]() { MaaToolkitGamescopeInstanceListDestroy(instance_list); });
 
-            if (!MaaToolkitGamescopeNodeFindAll(node_list) || MaaToolkitGamescopeNodeListSize(node_list) == 0) {
+            if (!MaaToolkitGamescopeInstanceFindAll(instance_list)) {
+                LogError << "Failed to find gamescope instances";
+                return "";
+            }
+
+            uint32_t pw_node_id = 0;
+            for (MaaSize i = 0; i < MaaToolkitGamescopeInstanceListSize(instance_list); ++i) {
+                auto instance = MaaToolkitGamescopeInstanceListAt(instance_list, i);
+                if (uint32_t node_id = MaaToolkitGamescopeInstanceGetPipeWireNodeId(instance); node_id != 0) {
+                    pw_node_id = node_id;
+                    break;
+                }
+            }
+            if (pw_node_id == 0) {
                 LogError << "No gamescope PipeWire node found";
                 return "";
             }
-            obj["pw_node_id"] = MaaToolkitGamescopeNodeGetId(MaaToolkitGamescopeNodeListAt(node_list, 0));
+            obj["pw_node_id"] = pw_node_id;
         }
         else {
             // 显示器捕获: 通过 portal 获取 fd + node id
