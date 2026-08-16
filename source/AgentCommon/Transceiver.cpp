@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cerrno>
 #include <cstdlib>
 #include <format>
 #include <fstream>
@@ -272,8 +273,16 @@ bool Transceiver::poll(zmq::pollitem_t& pollitem)
         auto remaining_time = timeout_ > elapsed ? timeout_ - elapsed : std::chrono::milliseconds(0);
         auto interval = std::min(remaining_time, std::chrono::milliseconds(1000));
 
-        if (zmq::poll(&pollitem, 1, interval)) {
-            return true;
+        try {
+            if (zmq::poll(&pollitem, 1, interval)) {
+                return true;
+            }
+        }
+        catch (const zmq::error_t& e) {
+            // Android/Linux: signals may interrupt poll; retry with remaining timeout.
+            if (e.num() != EINTR) {
+                throw;
+            }
         }
 
         if (elapsed > timeout_) {
