@@ -13,7 +13,11 @@ namespace
 // 接触点 id 必须是小整数，实测用 0xA000 这类大值会被合成设备整帧拒绝
 constexpr uint32_t kAnchorPointerId = 1;
 constexpr uint32_t kContactPointerIdBase = 2;
-constexpr ULONG kMaxContacts = 10;
+
+// 上层可用的接触点数量。锚点自己要占掉一个名额，创建合成设备时需要一并算上，
+// 否则上层用满多点触控时最后一个接触点会因为超出设备容量而被拒绝
+constexpr ULONG kMaxTouchPoints = 10;
+constexpr ULONG kMaxContacts = kMaxTouchPoints + 1;
 
 constexpr int kAnchorSize = 4;
 constexpr int kAnchorMargin = 8;
