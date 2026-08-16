@@ -763,7 +763,14 @@ bool AnchoredTouchInput::prepare_window()
     // 那一次若发生在截图侧伪最小化期间，记下的不透明度会是 0，沿用它会让目标窗口整个不可见
     if (!SetLayeredWindowAttributes(hwnd_, 0, 255, LWA_ALPHA)) {
         LogError << "SetLayeredWindowAttributes failed" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
-        SetWindowLongPtrW(hwnd_, GWL_EXSTYLE, exstyle);
+
+        // 回滚也可能失败，那样分层样式就留在了目标窗口上，必须记成待清理的债务
+        SetLastError(0);
+        if (SetWindowLongPtrW(hwnd_, GWL_EXSTYLE, exstyle) == 0 && GetLastError() != 0) {
+            LogError << "failed to roll back WS_EX_LAYERED" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
+            layered_applied_ = true;
+        }
+
         return false;
     }
 
@@ -1079,28 +1086,33 @@ void AnchoredTouchInput::unprepare_window()
                  << VAR(transparent_suppressed_) << VAR(restored_from_minimized_);
     }
 
+    if (layered_applied_) {
+        // 只清掉我们加的分层位，保留这期间目标程序自己改动的其他样式。
+        // 原始扩展样式里没有该位，所以不存在误清的风险
+        SetLastError(0);
+        LONG_PTR exstyle = GetWindowLongPtrW(hwnd_, GWL_EXSTYLE);
+        if (exstyle == 0 && GetLastError() != 0) {
+            LogError << "GetWindowLongPtrW failed" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
+            return;
+        }
+
+        SetLastError(0);
+        if (SetWindowLongPtrW(hwnd_, GWL_EXSTYLE, exstyle & ~static_cast<LONG_PTR>(WS_EX_LAYERED)) == 0 && GetLastError() != 0) {
+            LogError << "failed to restore the target window ex-style" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
+            return;
+        }
+
+        layered_applied_ = false;
+    }
+
+    // 借用状态或分层样式只要还有一项没还清，就保留 window_prepared_，
+    // 否则本函数下次会在开头直接返回，残留的改动再没有清理的机会
+    if (borrowed_ || layered_applied_) {
+        return;
+    }
+
     window_prepared_ = false;
     window_prepare_ok_ = false;
-
-    if (!layered_applied_) {
-        return;
-    }
-
-    layered_applied_ = false;
-
-    // 只清掉我们加的分层位，保留这期间目标程序自己改动的其他样式。
-    // 原始扩展样式里没有该位，所以不存在误清的风险
-    SetLastError(0);
-    LONG_PTR exstyle = GetWindowLongPtrW(hwnd_, GWL_EXSTYLE);
-    if (exstyle == 0 && GetLastError() != 0) {
-        LogError << "GetWindowLongPtrW failed" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
-        return;
-    }
-
-    SetLastError(0);
-    if (SetWindowLongPtrW(hwnd_, GWL_EXSTYLE, exstyle & ~static_cast<LONG_PTR>(WS_EX_LAYERED)) == 0 && GetLastError() != 0) {
-        LogError << "failed to restore the target window ex-style" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
-    }
 }
 
 LRESULT CALLBACK AnchoredTouchInput::anchor_wnd_proc(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param)
