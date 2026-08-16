@@ -30,15 +30,19 @@ MAA_CTRL_UNIT_NS_BEGIN
 //
 // 合成指针的命中判定只认桌面当前的 Z 序，目标点被其他窗口遮挡时注入不会到达目标窗口，
 // 所以按下前会把目标窗口提到 topmost 并降到最低分层透明度，所有接触点抬起后还原，
-// 见 lift_for_point / unlift_locked。提升不成功时 touch_down 直接失败，绝不注入，
+// 见 ensure_hittable / release_window_locked。借用不成功时 touch_down 直接失败，绝不注入，
 // 否则输入会落到遮挡目标的那个窗口上。
 //
-// 为省掉每次提升都要切换扩展样式引起的闪烁，WS_EX_LAYERED 一旦挂上就保留到 inactive()
-// 或空闲退出，由 restore_window() 清除。该样式随时可能被目标程序自己重设掉，
-// 因此每次提升前都要重新确认，缺了就补挂；补不上或压不低不透明度时一律不提升，
+// 为省掉每次借用都要切换扩展样式引起的闪烁，WS_EX_LAYERED 一旦挂上就保留到 inactive()
+// 或空闲退出，由 unprepare_window() 清除。该样式随时可能被目标程序自己重设掉，
+// 因此每次借用前都要重新确认，缺了就补挂；补不上或压不低不透明度时一律不提升，
 // 否则目标窗口会完全可见地弹到最前面。
-// 目标窗口原本就是分层窗口时不改样式，只借用它的 alpha，并在还原时写回原有的
-// color key、alpha 与 flags。若其分层属性由 UpdateLayeredWindow 设置，碰它会破坏绘制，此时拒绝提升。
+// 目标窗口原本就是分层窗口时不改样式，只借用它的不透明度，并在还原时写回原值；
+// 这些原值按次读取，不跨借用沿用。若其分层属性由 UpdateLayeredWindow 设置，
+// 碰它会破坏绘制，此时拒绝借用。
+//
+// 目标窗口的状态并非本方式独占：截图侧的伪最小化也会改写同一个窗口的扩展样式与不透明度，
+// 因此归还前会核对借用痕迹是否还在，见 check_borrow_mark()。
 class AnchoredTouchInput : public InputBase
 {
 public:

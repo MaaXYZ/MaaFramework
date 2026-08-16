@@ -402,9 +402,13 @@ typedef uint64_t MaaWin32ScreencapMethod;
  *   are documented as incompatible with WS_EX_LAYERED, but that restriction does not always hold in
  *   practice, so such classes only produce a warning and the actual API results decide.
  *   A minimized target window is temporarily shown at the lowest opacity before its coordinates are
- *   resolved, and minimized again once all contacts are released. WS_EX_TRANSPARENT is temporarily
- *   removed while the window is borrowed, since it lets input pass through to the windows underneath.
- *   Mouse only, select another method for keyboard input.
+ *   resolved, and minimized again once all contacts are released; this covers only windows that this
+ *   method itself took out of the minimized state, the screencap-side pseudo-minimize keeps its own.
+ *   WS_EX_TRANSPARENT is temporarily removed while the window is borrowed, since it lets input pass
+ *   through to the windows underneath. Because the screencap side writes the same window state,
+ *   the borrowed attributes are verified before being restored, and left alone once taken over.
+ *   Clicking and swiping only. Keyboard can be routed to another method, but scroll cannot:
+ *   it always goes through the mouse method and a synthetic touch device has no wheel.
  */
 typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_None 0ULL
