@@ -813,8 +813,41 @@ bool AnchoredTouchInput::dim_window()
         return false;
     }
 
+    mark_color_key_ = original_color_key_;
+    mark_layered_flags_ = flags;
+
     dimmed_ = true;
     return true;
+}
+
+AnchoredTouchInput::WindowOwnership AnchoredTouchInput::check_borrow_mark() const
+{
+    SetLastError(0);
+    LONG_PTR exstyle = GetWindowLongPtrW(hwnd_, GWL_EXSTYLE);
+    if (exstyle == 0 && GetLastError() != 0) {
+        return WindowOwnership::Unknown;
+    }
+
+    // 借用期间目标窗口一定是分层的，也一定不带 WS_EX_TRANSPARENT。任一条不成立，
+    // 都说明它已经被目标程序或其他模块重设过——例如截图侧的伪最小化还原会写回一份
+    // 不含这两个样式改动的扩展样式，此时再写回借用前的旧值会把窗口重新变成穿透或不可见
+    if ((exstyle & WS_EX_LAYERED) == 0 || (exstyle & WS_EX_TRANSPARENT) != 0) {
+        return WindowOwnership::Taken;
+    }
+
+    COLORREF color_key = 0;
+    BYTE alpha = 0;
+    DWORD layered_flags = 0;
+    if (!GetLayeredWindowAttributes(hwnd_, &color_key, &alpha, &layered_flags)) {
+        // 读不到就无从判断，不能当作已被接管，保留待还原项等下一次机会
+        return WindowOwnership::Unknown;
+    }
+
+    if (alpha != kDimAlpha || color_key != mark_color_key_ || layered_flags != mark_layered_flags_) {
+        return WindowOwnership::Taken;
+    }
+
+    return WindowOwnership::Ours;
 }
 
 bool AnchoredTouchInput::undim_window()
@@ -991,7 +1024,9 @@ void AnchoredTouchInput::release_window_locked()
         // 把 topmost 窗口插到非 topmost 窗口之后会剥掉它的 topmost 属性，
         // 因此只有前序兄弟与目标窗口的 topmost 状态一致时才用它还原
         HWND insert_after = original_topmost_ ? HWND_TOPMOST : HWND_NOTOPMOST;
-        if (prev_sibling_ && IsWindow(prev_sibling_)) {
+        if (prev_sibling_ && IsWindow(prev_sibling_) && GetForegroundWindow() != hwnd_) {
+            // 用户在借用期间把窗口调到了前台，插回原来的兄弟之后会把它压到别的窗口下面。
+            // 这种情况下只摘掉 topmost 属性，不再恢复具体位置
             bool sibling_topmost = (GetWindowLongPtrW(prev_sibling_, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0;
             if (sibling_topmost == original_topmost_) {
                 insert_after = prev_sibling_;
@@ -1038,12 +1073,31 @@ void AnchoredTouchInput::release_window_locked()
         }
     }
 
-    if (!restore_transparent()) {
-        restored = false;
-    }
+    // 分层属性与 WS_EX_TRANSPARENT 的还原共用一次归属核对：这两项写的是同一份窗口状态，
+    // 各判各的会出现一项识破接管、另一项照旧写回的情况
+    if (dimmed_ || transparent_suppressed_) {
+        switch (check_borrow_mark()) {
+        case WindowOwnership::Taken:
+            LogWarn << "the target window has been reconfigured by another module, skip restoring its layered attributes"
+                    << VAR_VOIDP(hwnd_);
+            transparent_suppressed_ = false;
+            dimmed_ = false;
+            break;
 
-    if (!undim_window()) {
-        restored = false;
+        case WindowOwnership::Unknown:
+            LogWarn << "cannot read the target window layered state, will retry" << VAR_VOIDP(hwnd_);
+            restored = false;
+            break;
+
+        case WindowOwnership::Ours:
+            if (!restore_transparent()) {
+                restored = false;
+            }
+            if (!undim_window()) {
+                restored = false;
+            }
+            break;
+        }
     }
 
     if (restored) {

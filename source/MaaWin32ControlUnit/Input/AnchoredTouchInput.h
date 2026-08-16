@@ -75,6 +75,15 @@ private:
         bool active = false;
     };
 
+    // 归还窗口前对借用痕迹的核对结果。目标程序或其他模块（例如截图侧的伪最小化还原）
+    // 可能在借用期间重设目标窗口，此时写回借用前的旧值只会破坏对方刚设好的状态
+    enum class WindowOwnership
+    {
+        Ours,    // 状态仍与借用时写入的一致，可以照常还原
+        Taken,   // 已被外部改动，放弃还原
+        Unknown, // 读不到真实状态，保留待还原项以便重试
+    };
+
     static bool load_injection_api();
 
     static LRESULT CALLBACK anchor_wnd_proc(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param);
@@ -98,9 +107,10 @@ private:
     bool is_occluded(POINT screen) const;
     bool anchor_covers(POINT screen) const;
 
-    // 以下六个需要在持有 window_mutex_ 的情况下调用
+    // 以下八个需要在持有 window_mutex_ 的情况下调用
     bool prepare_window();
     void begin_borrow();
+    WindowOwnership check_borrow_mark() const;
     bool dim_window();
     bool undim_window();
     bool suppress_transparent();
@@ -156,6 +166,10 @@ private:
     bool transparent_suppressed_ = false;
     bool restored_from_minimized_ = false;
     HWND prev_sibling_ = nullptr;
+
+    // dim_window() 实际写入目标窗口的分层属性，供 check_borrow_mark() 核对
+    COLORREF mark_color_key_ = 0;
+    DWORD mark_layered_flags_ = LWA_ALPHA;
 };
 
 MAA_CTRL_UNIT_NS_END
