@@ -759,7 +759,9 @@ bool AnchoredTouchInput::prepare_window()
         return false;
     }
 
-    if (!SetLayeredWindowAttributes(hwnd_, original_color_key_, original_alpha_, original_layered_flags_)) {
+    // 这是我们新建的分层状态，必须写明确的初值。original_* 记的是上一次借用时读到的属性，
+    // 那一次若发生在截图侧伪最小化期间，记下的不透明度会是 0，沿用它会让目标窗口整个不可见
+    if (!SetLayeredWindowAttributes(hwnd_, 0, 255, LWA_ALPHA)) {
         LogError << "SetLayeredWindowAttributes failed" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
         SetWindowLongPtrW(hwnd_, GWL_EXSTYLE, exstyle);
         return false;
