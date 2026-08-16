@@ -473,6 +473,7 @@ class MaaWin32InputMethodEnum(IntEnum):
     | SendMessageWithWindowPos | Medium | Maybe | No          | Yes| Moves window to align w/ cursor, rest.|
     | PostMessageWithWindowPos | Medium | Maybe | No          | Yes| Moves window to align w/ cursor, rest.|
     | Interception             | Medium | Yes   | No          | No | Driver-level input injection via Interception driver |
+    | AnchoredTouch            | Medium | No    | No          | Yes| Injects synthetic touch points, never moves the cursor |
 
     Note:
     - Admin rights mainly depend on the target application's privilege level.
@@ -481,6 +482,9 @@ class MaaWin32InputMethodEnum(IntEnum):
       then restore cursor position. This "briefly" seizes the mouse but won't block user operations.
     - "WithWindowPos" methods briefly move the window so the target aligns with the current cursor
       position, send message, then restore the window position. The cursor is not moved.
+    - "AnchoredTouch" injects synthetic touch points, the target window receives WM_POINTER messages.
+      The target window is briefly raised to topmost while the target point is occluded.
+      Mouse only, select another method for keyboard input.
     """
 
     Null = 0
@@ -495,6 +499,7 @@ class MaaWin32InputMethodEnum(IntEnum):
     SendMessageWithWindowPos = 1 << 7
     PostMessageWithWindowPos = 1 << 8
     Interception = 1 << 9
+    AnchoredTouch = 1 << 10
 
 
 MaaMacOSScreencapMethod = ctypes.c_uint64
