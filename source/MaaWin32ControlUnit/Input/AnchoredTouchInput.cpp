@@ -30,7 +30,10 @@ constexpr int kTickMs = 12;
 // 空闲多久后停止注入线程。inactive() 是主要的释放入口，这里只作兜底
 constexpr int kIdleShutdownMs = 60 * 1000;
 
-constexpr int kWaitFrames = 2;
+// touch_move 等待新坐标被提交所需的帧数。一帧即可确保当前坐标进入注入序列，
+// 多等一帧会让每次 touch_move 平均阻塞一个额外的 tick，而上层按距离把一次滑动拆成数十步，
+// 该开销会成倍放大：实测 200ms 的滑动一度耗时 1244ms
+constexpr int kWaitFrames = 1;
 constexpr auto kWaitTimeout = std::chrono::milliseconds(2000);
 
 constexpr UINT32 kDownFlags = POINTER_FLAG_DOWN | POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT | POINTER_FLAG_CONFIDENCE;
