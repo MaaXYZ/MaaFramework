@@ -81,11 +81,13 @@ bool WaylandClient::bind_protocol()
     registry_listener_.global = [](void* data, struct wl_registry* registry, uint32_t id, const char* interface, uint32_t version) {
         const auto self = static_cast<WaylandClient*>(data);
 
-#define BIND(interface_type, global_member)                                                                                            \
-    if (std::string_view(interface) == #interface_type) {                                                                              \
-        LogDebug << "Bind protocol" << VAR(interface);                                                                                 \
-        self->global_member.reset(static_cast<interface_type*>(wl_registry_bind(registry, id, &interface_type##_interface, version))); \
-        return;                                                                                                                        \
+#define BIND(interface_type, global_member)                                                                     \
+    if (std::string_view(interface) == #interface_type) {                                                       \
+        LogDebug << "Bind protocol" << VAR(interface);                                                          \
+        self->global_member.reset(                                                                              \
+            static_cast<interface_type*>(wl_registry_bind(registry, id, &interface_type##_interface, version)), \
+            std::default_delete<interface_type> { });                                                           \
+        return;                                                                                                 \
     }
 
         BIND(wl_output, output_);
