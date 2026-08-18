@@ -26,6 +26,7 @@ public:
     EiInput& operator=(const EiInput&) = delete;
 
     bool connected() const { return connected_; }
+
     bool init() override;
     MaaControllerFeature get_features() const override;
 

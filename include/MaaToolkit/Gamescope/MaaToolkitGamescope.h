@@ -15,7 +15,8 @@ extern "C"
     MAA_TOOLKIT_API MaaBool MaaToolkitGamescopeInstanceFindAll(/*out*/ MaaToolkitGamescopeInstanceList* buffer);
 
     MAA_TOOLKIT_API MaaSize MaaToolkitGamescopeInstanceListSize(const MaaToolkitGamescopeInstanceList* list);
-    MAA_TOOLKIT_API const MaaToolkitGamescopeInstance* MaaToolkitGamescopeInstanceListAt(const MaaToolkitGamescopeInstanceList* list, MaaSize index);
+    MAA_TOOLKIT_API const MaaToolkitGamescopeInstance*
+        MaaToolkitGamescopeInstanceListAt(const MaaToolkitGamescopeInstanceList* list, MaaSize index);
 
     MAA_TOOLKIT_API uint32_t MaaToolkitGamescopeInstanceGetDisplayNo(const MaaToolkitGamescopeInstance* instance);
     MAA_TOOLKIT_API uint32_t MaaToolkitGamescopeInstanceGetPipeWireNodeId(const MaaToolkitGamescopeInstance* instance);

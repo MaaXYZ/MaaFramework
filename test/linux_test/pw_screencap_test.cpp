@@ -30,11 +30,7 @@ int main()
         std::cout << "Restore Token: " << restore << std::endl;
     }
     auto ctrl = MaaLinuxControllerCreate(
-        std::format(
-            R"({{"screencap_method":4,"input_method":0, "pw_socket_fd":{}, "pw_node_id":{} }})",
-            pw_socket_fd,
-            pw_node_id)
-            .c_str());
+        std::format(R"({{"screencap_method":4,"input_method":0, "pw_socket_fd":{}, "pw_node_id":{} }})", pw_socket_fd, pw_node_id).c_str());
     auto destroy = [&]() {
         MaaControllerDestroy(ctrl);
         MaaToolkitPortalHelperDestroy(helper);
