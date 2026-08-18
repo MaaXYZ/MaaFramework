@@ -310,6 +310,12 @@ declare global {
 
         type WlRootsCompositor = [handle: DesktopHandle, class_name: string, window_name: string]
 
+        type GamescopeInstance = [
+            display_no: number,
+            pipewire_node_id: number,
+            eis_socket_path: string,
+        ]
+
         /**
          * @deprecated Use LinuxController instead.
          */
@@ -360,14 +366,21 @@ declare global {
              *   Wlroots required fields:
              *   - wlr_socket_path: wayland socket path (e.g. "/run/user/1000/wayland-0").
              *
-             *   PipeWire required fields:
-             *   - pw_socket_fd: The PipeWire socket FD.
+             *   PipeWire monitor capture (via xdg-desktop-portal):
+             *   - pw_socket_fd: The PipeWire socket FD (from the ScreenCast portal).
              *   - pw_node_id: The PipeWire Node ID.
-             *   - pw_screen_width: The screen width in pixels.
-             *   - pw_screen_height: The screen height in pixels.
+             *
+             *   PipeWire session-daemon node capture (gamescope etc.):
+             *   - pw_node_id: attach to a session-daemon node directly; discover the node
+             *     with find_gamescope_instances().
              *
              *   UInput optional fields:
              *   - uinput_path: The uinput device node path, default is "/dev/uinput".
+             *   - uinput_screen_width / uinput_screen_height: screen size for the uinput
+             *     absolute axis range.
+             *
+             *   Libei (EIS) required fields:
+             *   - eis_socket_path: the EIS socket path, e.g. "/run/user/1000/gamescope-0-ei".
              *
              *   Optional fields:
              *   - use_win32_vk_code: If true, key codes passed to click_key / key_down / key_up are
@@ -384,6 +397,19 @@ declare global {
              * (`pw_socket_fd` / `pw_node_id`).
              */
             static create_portal_helper(): PortalHelper
+
+            /**
+             * Find running gamescope instances.
+             *
+             * Scans $XDG_RUNTIME_DIR (falling back to /run/user/<uid>) for
+             * `gamescope-<n>` named Wayland sockets; each instance's PipeWire node ID
+             * is queried via the gamescope_pipewire protocol, and the EIS socket path
+             * is derived as `gamescope-<n>-ei`. Stale sockets that cannot be connected
+             * are discarded; a connected instance without PipeWire has node id 0.
+             *
+             * @returns instances sorted by display number, or null if the query failed
+             */
+            static find_gamescope_instances(): Promise<GamescopeInstance[] | null>
 
             static find_wlr_compositor(): Promise<WlRootsCompositor[] | null>
         }

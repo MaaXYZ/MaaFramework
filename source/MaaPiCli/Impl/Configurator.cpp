@@ -109,6 +109,7 @@ MaaLinuxInputMethod parse_linux_input_method(const std::string& method)
     static const std::unordered_map<std::string, MaaLinuxInputMethod> mapping = {
         { "Wlr", MaaLinuxInputMethod_Wlr },
         { "UInput", MaaLinuxInputMethod_UInput },
+        { "Libei", MaaLinuxInputMethod_Libei },
     };
 
     if (auto it = mapping.find(method); it != mapping.end()) {
@@ -328,6 +329,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
 
         lnx.wlr_socket_path = config_.lnx.wlr_socket_path;
         lnx.use_win32_vk_code = controller.lnx.use_win32_vk_code;
+        lnx.pipewire_source = controller.lnx.pipewire_source.empty() ? "Gamescope" : controller.lnx.pipewire_source;
         if (!controller.lnx.screencap.empty()) {
             lnx.screencap = parse_linux_screencap_method(controller.lnx.screencap);
         }
@@ -346,8 +348,9 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
             lnx.wlr_socket_path = config_.lnx.wlr_socket_path;
         }
 
-        lnx.pw_screen_height = config_.lnx.pw_screen_height;
-        lnx.pw_screen_width = config_.lnx.pw_screen_width;
+        lnx.uinput_screen_height = config_.lnx.uinput_screen_height;
+        lnx.uinput_screen_width = config_.lnx.uinput_screen_width;
+        lnx.eis_socket_path = config_.lnx.eis_socket_path;
 
         runtime.controller_param = std::move(lnx);
     } break;

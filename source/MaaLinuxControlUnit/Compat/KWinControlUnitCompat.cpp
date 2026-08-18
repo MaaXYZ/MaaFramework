@@ -32,8 +32,8 @@ MaaKWinControlUnitHandle MaaKWinControlUnitCreate(const char* device_node, int s
     LinuxControlUnitConfig config = { };
     config.screencap_method = MaaLinuxScreencapMethod_PipeWire;
     config.input_method = MaaLinuxInputMethod_UInput;
-    config.pw_screen_width = screen_width;
-    config.pw_screen_height = screen_height;
+    config.uinput_screen_width = screen_width;
+    config.uinput_screen_height = screen_height;
     config.uinput_path = device_node;
     config.use_win32_vk_code = use_win32_vk_code;
 

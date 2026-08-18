@@ -200,6 +200,8 @@ struct GamepadControllerImpl : public ControllerImpl
 using WlRootsCompositor = std::tuple<uint64_t, std::string, std::string>;
 using WlRootsControllerCtorParam = std::tuple<std::string, maajs::OptionalParam<bool>>;
 
+using GamescopeInstance = std::tuple<uint32_t, uint32_t, std::string>;
+
 struct WlRootsControllerImpl : public ControllerImpl
 {
     using ControllerImpl::ControllerImpl;
@@ -231,6 +233,8 @@ struct LinuxControllerImpl : public ControllerImpl
     using ControllerImpl::ControllerImpl;
 
     static maajs::PromiseType find_wlr_compositor(maajs::EnvType env);
+
+    static maajs::PromiseType find_gamescope_instances(maajs::EnvType env);
 
     static maajs::ValueType create_portal_helper(maajs::EnvType env);
 

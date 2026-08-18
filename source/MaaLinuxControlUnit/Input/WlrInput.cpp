@@ -18,7 +18,6 @@ WlrInput::WlrInput(std::shared_ptr<WaylandClient> client)
     , pointer_manager_(client_->get_virtual_pointer_manager())
     , keyboard_manager_(client_->get_virtual_keyboard_manager())
 {
-    prepare_device();
 }
 
 MaaControllerFeature WlrInput::get_features() const
@@ -252,7 +251,7 @@ bool WlrInput::switch_keymap(Keymap new_map)
     return client_->process_requests();
 }
 
-bool WlrInput::prepare_device()
+bool WlrInput::init()
 {
     pointer_.reset(zwlr_virtual_pointer_manager_v1_create_virtual_pointer_with_output(pointer_manager_.get(), seat_.get(), output_.get()));
     keyboard_.reset(zwp_virtual_keyboard_manager_v1_create_virtual_keyboard(keyboard_manager_.get(), seat_.get()));

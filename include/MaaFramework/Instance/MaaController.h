@@ -139,13 +139,18 @@ extern "C"
      *                    - input_method: input method to use, see MaaLinuxInputMethod.
      *                    Wlroots Required fields:
      *                    - wlr_socket_path: wayland socket path (e.g., "/run/user/1000/wayland-0").
-     *                    PipeWire Required fields:
-     *                    - pw_socket_fd: The PipeWire socket FD.
+     *                    PipeWire monitor capture (via xdg-desktop-portal):
+     *                    - pw_socket_fd: The PipeWire socket FD (from the ScreenCast portal).
      *                    - pw_node_id: The PipeWire Node ID.
-     *                    - pw_screen_width: The screen width in pixels.
-     *                    - pw_screen_height: The screen height in pixels.
+     *                    PipeWire session-daemon node capture (gamescope etc.):
+     *                    - pw_node_id: attach to a session-daemon node directly; discover the
+     *                      node with MaaToolkitGamescopeInstanceFindAll.
      *                    UInput Optional fields:
      *                    - uinput_path: The uinput device node path, default is "/dev/uinput".
+     *                    - uinput_screen_width / uinput_screen_height: screen size for the uinput
+     *                      absolute axis range. Optional.
+     *                    Libei (EIS) Required fields:
+     *                    - eis_socket_path: the EIS socket path, e.g. "/run/user/1000/gamescope-0-ei".
      *                    Optional fields:
      *                    - use_win32_vk_code: If true, key codes passed to click_key / key_down / key_up are
      *                      interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes

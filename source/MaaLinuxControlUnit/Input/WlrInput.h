@@ -17,6 +17,7 @@ public:
     virtual ~WlrInput() override = default;
 
 public:
+    bool init() override;
     MaaControllerFeature get_features() const override;
     bool click(int x, int y) override;
     bool swipe(int x1, int y1, int x2, int y2, int duration) override;
@@ -41,7 +42,6 @@ private:
     bool pointer(EventPhase phase, int x, int y, int contact);
     bool input_key(EventPhase phase, int key);
     bool switch_keymap(Keymap new_map);
-    bool prepare_device();
 
     std::shared_ptr<WaylandClient> client_;
     std::shared_ptr<wl_shm> shm_;

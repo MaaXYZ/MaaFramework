@@ -46,6 +46,8 @@ __all__ = [
     "MaaToolkitAdbDeviceHandle",
     "MaaToolkitDesktopWindowListHandle",
     "MaaToolkitDesktopWindowHandle",
+    "MaaToolkitGamescopeInstanceListHandle",
+    "MaaToolkitGamescopeInstanceHandle",
     "MaaToolkitPortalHelperHandle",
     "MaaMacOSPermission",
     # Bitmask / method aliases
@@ -578,12 +580,14 @@ class MaaLinuxInputMethodEnum(IntEnum):
     |-----------------|-------------------------------------------------------------------------------------------|
     | Wlr             | Input using `virtual-keyboard-unstable-v1` and `wlr-virtual-pointer-unstable-v1` protocol |
     | UInput          | Input using `/dev/uinput`                                                                 |
+    | Libei           | Input using libei (EIS socket, e.g. the one provided by gamescope)                        |
     """
 
     Null = 0
 
     Wlr = 1
     UInput = 1 << 1
+    Libei = 1 << 2
 
 
 # No bitwise OR, just set it
@@ -715,6 +719,9 @@ MaaToolkitAdbDeviceListHandle = ctypes.c_void_p
 MaaToolkitAdbDeviceHandle = ctypes.c_void_p
 MaaToolkitDesktopWindowListHandle = ctypes.c_void_p
 MaaToolkitDesktopWindowHandle = ctypes.c_void_p
+
+MaaToolkitGamescopeInstanceListHandle = ctypes.c_void_p
+MaaToolkitGamescopeInstanceHandle = ctypes.c_void_p
 
 MaaMacOSPermission = ctypes.c_int32
 
