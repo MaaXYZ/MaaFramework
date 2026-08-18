@@ -1,5 +1,11 @@
 file(GLOB_RECURSE maa_toolkit_src *.h *.hpp *.cpp)
 
+if(LINUX)
+    # gamescope_pipewire 协议（仅 Linux, 生成代码依赖 wayland-util.h）
+    file(GLOB_RECURSE maa_toolkit_protocol_c Gamescope/Protocol/*.c)
+    list(APPEND maa_toolkit_src ${maa_toolkit_protocol_c})
+endif()
+
 if(APPLE)
     file(GLOB_RECURSE maa_toolkit_objc_src *.mm)
     list(APPEND maa_toolkit_src ${maa_toolkit_objc_src})
@@ -39,6 +45,25 @@ if (LINUX)
     else ()
         message(FATAL_ERROR "MaaToolkit: DBus not found on this platform")
     endif ()
+
+    # PipeWire (gamescope node discovery)
+    set(PIPEWIRE_ABS_LIB)
+    if (PkgConfig_FOUND)
+        pkg_check_modules(PIPEWIRE QUIET libpipewire-0.3)
+    endif ()
+    if (PIPEWIRE_FOUND)
+        find_library(PIPEWIRE_ABS_LIB
+                NAMES pipewire-0.3
+                PATHS ${PIPEWIRE_LIBRARY_DIRS} /usr/lib)
+    endif ()
+    if (PIPEWIRE_ABS_LIB)
+        message(STATUS "MaaToolkit: PipeWire absolute path: ${PIPEWIRE_ABS_LIB}")
+        target_include_directories(MaaToolkit PRIVATE ${PIPEWIRE_INCLUDE_DIRS})
+        target_link_libraries(MaaToolkit PRIVATE ${PIPEWIRE_ABS_LIB})
+    else ()
+        message(FATAL_ERROR "MaaToolkit: libpipewire-0.3 not found on this platform")
+    endif ()
+
     find_library(Wayland_LIBS wayland-client)
     find_library(FFI_LIBS ffi)
     target_link_libraries(MaaToolkit PRIVATE pthread dl ${Wayland_LIBS} ${FFI_LIBS})

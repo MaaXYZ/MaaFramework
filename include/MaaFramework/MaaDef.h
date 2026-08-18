@@ -440,10 +440,10 @@ typedef uint64_t MaaMacOSInputMethod;
  *
  * Select ONE method only.
  *
- * | Method          | Description                                           |
- * |-----------------|-------------------------------------------------------|
- * | Wlr             | Screencap using `wlr-screencopy-unstable-v1` protocol |
- * | PipeWire        | Screencap using PipeWire                              |
+ * | Method          | Description                                                              |
+ * |-----------------|--------------------------------------------------------------------------|
+ * | Wlr             | Screencap using `wlr-screencopy-unstable-v1` protocol                    |
+ * | PipeWire        | Screencap using PipeWire (portal fd or session-daemon node)              |
  */
 typedef uint64_t MaaLinuxScreencapMethod;
 #define MaaLinuxScreencapMethod_None 0ULL
@@ -461,11 +461,13 @@ typedef uint64_t MaaLinuxScreencapMethod;
  * |-----------------|-------------------------------------------------------------------------------------------|
  * | Wlr             | Input using `virtual-keyboard-unstable-v1` and `wlr-virtual-pointer-unstable-v1` protocol |
  * | UInput          | Input using `/dev/uinput`                                                                 |
+ * | Libei           | Input using libei (EIS socket, e.g. the one provided by gamescope)                        |
  */
 typedef uint64_t MaaLinuxInputMethod;
 #define MaaLinuxInputMethod_None 0ULL
 #define MaaLinuxInputMethod_Wlr 1ULL
 #define MaaLinuxInputMethod_UInput (1ULL << 1)
+#define MaaLinuxInputMethod_Libei (1ULL << 2)
 
 // MaaGamepadType:
 /**

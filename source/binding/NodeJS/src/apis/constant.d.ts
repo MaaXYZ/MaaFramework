@@ -171,6 +171,45 @@ declare global {
             | 'PostToPid',
             ScreencapOrInputMethods
         >
+
+        /**
+         * Linux screencap method.
+         *
+         * No bitwise OR, select ONE method only.
+         *
+         * No default value. Client should choose one as default.
+         *
+         * | Method    | Description                                                           |
+         * |-----------|-----------------------------------------------------------------------|
+         * | Wlr       | Screencap using `wlr-screencopy-unstable-v1` protocol                 |
+         * | PipeWire  | Screencap using PipeWire (portal fd or session-daemon node)           |
+         */
+        const LinuxScreencapMethod: Record<
+            | 'Wlr'
+            | 'ExtImage'
+            | 'PipeWire',
+            ScreencapOrInputMethods
+        >
+
+        /**
+         * Linux input method.
+         *
+         * No bitwise OR, select ONE method only.
+         *
+         * No default value. Client should choose one as default.
+         *
+         * | Method  | Description                                                                              |
+         * |---------|------------------------------------------------------------------------------------------|
+         * | Wlr     | Input using `virtual-keyboard-unstable-v1` and `wlr-virtual-pointer-unstable-v1` protocol |
+         * | UInput  | Input using `/dev/uinput`                                                                |
+         * | Libei   | Input using libei (EIS socket, e.g. the one provided by gamescope)                        |
+         */
+        const LinuxInputMethod: Record<
+            | 'Wlr'
+            | 'UInput'
+            | 'Libei',
+            ScreencapOrInputMethods
+        >
         const GamepadType: Record<'Xbox360' | 'DualShock4', Uint64>
     }
 }

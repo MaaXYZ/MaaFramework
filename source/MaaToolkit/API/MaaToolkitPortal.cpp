@@ -28,7 +28,7 @@ void MaaToolkitPortalHelperDestroy(MaaToolkitPortalHelper* helper)
 #endif
 }
 
-bool MaaToolkitPortalHelperOpenStream(MaaToolkitPortalHelper* helper)
+MaaBool MaaToolkitPortalHelperOpenStream(MaaToolkitPortalHelper* helper)
 {
 #if defined(__linux__) && !defined(ANDROID)
     if (!helper) {
@@ -50,7 +50,7 @@ bool MaaToolkitPortalHelperOpenStream(MaaToolkitPortalHelper* helper)
 #endif
 }
 
-bool MaaToolkitPortalHelperGetPersist(MaaToolkitPortalHelper* helper)
+MaaBool MaaToolkitPortalHelperGetPersist(MaaToolkitPortalHelper* helper)
 {
 #if defined(__linux__) && !defined(ANDROID)
     if (!helper) {

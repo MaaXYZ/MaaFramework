@@ -770,6 +770,39 @@ maajs::PromiseType LinuxControllerImpl::find_wlr_compositor(maajs::EnvType env)
 #endif
 }
 
+maajs::PromiseType LinuxControllerImpl::find_gamescope_instances(maajs::EnvType env)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    using Result = std::optional<std::vector<GamescopeInstance>>;
+    auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
+        auto lst = MaaToolkitGamescopeInstanceListCreate();
+        if (!MaaToolkitGamescopeInstanceFindAll(lst)) {
+            MaaToolkitGamescopeInstanceListDestroy(lst);
+            return std::nullopt;
+        }
+
+        std::vector<GamescopeInstance> result;
+        auto size = MaaToolkitGamescopeInstanceListSize(lst);
+        result.reserve(size);
+        for (size_t i = 0; i < size; i++) {
+            auto instance = MaaToolkitGamescopeInstanceListAt(lst, i);
+            result.push_back(std::make_tuple(
+                MaaToolkitGamescopeInstanceGetDisplayNo(instance),
+                MaaToolkitGamescopeInstanceGetPipeWireNodeId(instance),
+                std::string(MaaToolkitGamescopeInstanceGetEisSocketPath(instance))));
+        }
+        MaaToolkitGamescopeInstanceListDestroy(lst);
+
+        return result;
+    });
+    worker->Queue();
+    return worker->Promise();
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("LinuxController.find_gamescope_instances");
+#endif
+}
+
 KWinControllerImpl* KWinControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
     auto [device_node, screen_width, screen_height, use_win32_vk_code] = maajs::UnWrapArgs<KWinControllerCtorParam, void>(info);
@@ -815,6 +848,7 @@ maajs::ValueType LinuxControllerImpl::create_portal_helper(maajs::EnvType env)
 void LinuxControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
 {
     MAA_BIND_FUNC(ctor, "find_wlr_compositor", find_wlr_compositor);
+    MAA_BIND_FUNC(ctor, "find_gamescope_instances", find_gamescope_instances);
     MAA_BIND_FUNC(ctor, "create_portal_helper", create_portal_helper);
 }
 

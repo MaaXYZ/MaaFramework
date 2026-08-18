@@ -31,7 +31,7 @@ int main()
     }
     auto ctrl = MaaLinuxControllerCreate(
         std::format(
-            R"({{"screencap_method":4,"input_method":0, "pw_socket_fd":{}, "pw_node_id":{}, "pw_screen_width":1920, "pw_screen_height":1080}})",
+            R"({{"screencap_method":4,"input_method":0, "pw_socket_fd":{}, "pw_node_id":{} }})",
             pw_socket_fd,
             pw_node_id)
             .c_str());

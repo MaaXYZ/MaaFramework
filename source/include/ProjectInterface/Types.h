@@ -61,8 +61,9 @@ struct InterfaceData
             std::string screencap;
             std::string input;
             bool use_win32_vk_code = false;
+            std::string pipewire_source = "Gamescope";
 
-            MEO_JSONIZATION(MEO_OPT screencap, MEO_OPT input, MEO_OPT use_win32_vk_code);
+            MEO_JSONIZATION(MEO_OPT screencap, MEO_OPT input, MEO_OPT use_win32_vk_code, MEO_OPT pipewire_source);
         };
 
         enum class Type
@@ -384,20 +385,12 @@ struct Configuration
 
     struct LinuxConfig
     {
-        std::string screencap;
-        std::string input;
         std::string wlr_socket_path;
-        int pw_screen_width = 0;
-        int pw_screen_height = 0;
-        bool use_win32_vk_code = false;
+        int uinput_screen_width = 0;
+        int uinput_screen_height = 0;
+        std::string eis_socket_path;
 
-        MEO_JSONIZATION(
-            MEO_OPT screencap,
-            MEO_OPT input,
-            MEO_OPT wlr_socket_path,
-            MEO_OPT pw_screen_width,
-            MEO_OPT pw_screen_height,
-            MEO_OPT use_win32_vk_code);
+        MEO_JSONIZATION(MEO_OPT wlr_socket_path, MEO_OPT uinput_screen_width, MEO_OPT uinput_screen_height, MEO_OPT eis_socket_path);
     };
 
     struct Option
@@ -500,9 +493,11 @@ struct RuntimeParam
     {
         MaaLinuxScreencapMethod screencap = MaaLinuxScreencapMethod_None;
         MaaLinuxInputMethod input = MaaLinuxInputMethod_None;
+        std::string pipewire_source = "Gamescope";
         std::string wlr_socket_path;
-        int pw_screen_width = 0;
-        int pw_screen_height = 0;
+        int uinput_screen_width = 0;
+        int uinput_screen_height = 0;
+        std::string eis_socket_path;
         bool use_win32_vk_code = false;
     };
 

@@ -66,13 +66,17 @@
                     "title": "Wayland Socket 路径",
                     "type": "string"
                 },
-                "pw_screen_width": {
-                    "title": "PipeWire 屏幕宽度（像素）",
+                "uinput_screen_width": {
+                    "title": "UInput 屏幕宽度（像素）",
                     "type": "integer"
                 },
-                "pw_screen_height": {
-                    "title": "PipeWire 屏幕高度（像素）",
+                "uinput_screen_height": {
+                    "title": "UInput 屏幕高度（像素）",
                     "type": "integer"
+                },
+                "eis_socket_path": {
+                    "title": "EIS socket 路径",
+                    "type": "string"
                 }
             }
         },

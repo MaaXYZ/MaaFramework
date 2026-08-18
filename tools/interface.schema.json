@@ -707,7 +707,8 @@
                             "description": "可选。Linux 控制器的输入控制方式，不提供则使用默认",
                             "enum": [
                                 "Wlr",
-                                "UInput"
+                                "UInput",
+                                "Libei"
                             ]
                         },
                         "screencap": {
@@ -716,9 +717,18 @@
                             "description": "可选。Linux 控制器的截图方式，不提供则使用默认",
                             "enum": [
                                 "Wlr",
-                                "ExtImage",
                                 "PipeWire"
                             ]
+                        },
+                        "pipewire_source": {
+                            "type": "string",
+                            "title": "PipeWire 截图来源",
+                            "description": "可选。PipeWire 截图的流来源。Gamescope 直接连接 gamescope 节点（node id 运行时发现）；Portal 走 xdg-desktop-portal ScreenCast。仅当 screencap 为 PipeWire 时有效",
+                            "enum": [
+                                "Gamescope",
+                                "Portal"
+                            ],
+                            "default": "Gamescope"
                         },
                         "use_win32_vk_code": {
                             "type": "boolean",

@@ -10,6 +10,9 @@ typedef struct MaaToolkitDesktopWindowList MaaToolkitDesktopWindowList;
 
 typedef struct MaaToolkitPortalHelper MaaToolkitPortalHelper;
 
+typedef struct MaaToolkitGamescopeInstance MaaToolkitGamescopeInstance;
+typedef struct MaaToolkitGamescopeInstanceList MaaToolkitGamescopeInstanceList;
+
 enum MaaMacOSPermissionEnum
 {
     MaaMacOSPermissionScreenCapture = 1,

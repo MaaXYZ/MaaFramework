@@ -17,7 +17,6 @@ UInput::UInput(std::filesystem::path device_node, int screen_width, int screen_h
     , screen_height_(screen_height)
     , device_node_(std::move(device_node))
 {
-    open();
 }
 
 UInput::~UInput()
@@ -25,7 +24,7 @@ UInput::~UInput()
     close();
 }
 
-bool UInput::open()
+bool UInput::init()
 {
     if (screen_width_ <= 0 || screen_height_ <= 0) {
         LogError << "Invalid screen dimensions" << VAR(screen_width_) << VAR(screen_height_);

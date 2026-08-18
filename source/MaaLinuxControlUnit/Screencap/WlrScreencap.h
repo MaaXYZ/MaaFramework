@@ -23,7 +23,7 @@ public:
     virtual ~WlrScreencap() override = default;
 
 public:
-    virtual std::optional<cv::Mat> screencap() override;
+    virtual bool screencap(/*out*/ cv::Mat& image) override;
 
 private:
     bool check_buffer(int format, int width, int height, int stride) const;
