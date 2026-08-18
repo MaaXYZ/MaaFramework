@@ -75,9 +75,9 @@ class Controller:
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -104,9 +104,9 @@ class Controller:
             x2: 终点 x 坐标 / End x coordinate
             y2: 终点 y 坐标 / End y coordinate
             duration: 滑动时长(毫秒) / Swipe duration in milliseconds
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -202,9 +202,9 @@ class Controller:
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -219,9 +219,9 @@ class Controller:
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -234,9 +234,9 @@ class Controller:
         """抬起 / Touch up
 
         Args:
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
 
         Returns:
             Job: 作业对象 / Job object
@@ -940,7 +940,11 @@ class MacOSController(Controller):
 
 
 class AndroidNativeController(Controller):
-    """Android Native 控制器 / Android native controller"""
+    """Android Native 控制器 / Android native controller
+
+    支持多指触控：contact 为手指编号（0 为第一根手指，取值 0–15）。
+    Multi-touch is supported: contact is the finger id (0 for the first finger, range 0–15).
+    """
 
     def __init__(
         self,

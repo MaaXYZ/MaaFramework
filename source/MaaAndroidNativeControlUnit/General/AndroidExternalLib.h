@@ -60,6 +60,7 @@ struct InputArgs
 struct TouchArgs
 {
     Position p { };
+    int contact = 0;
 };
 
 struct KeyArgs

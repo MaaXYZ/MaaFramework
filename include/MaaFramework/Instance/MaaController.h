@@ -65,6 +65,8 @@ extern "C"
      *
      * @note This controller is only available on Android.
      * @note The configured screen_resolution must match the control unit's raw screenshot/touch coordinate space.
+     * @note Multi-touch is supported: contact is the finger id (0 for the first finger). The external
+     *       library's TouchArgs must carry contact.
      */
     MAA_FRAMEWORK_API MaaController* MaaAndroidNativeControllerCreate(const char* config_json);
 
