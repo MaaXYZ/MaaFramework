@@ -238,7 +238,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
  A Touken Ranbu Assistant. Image technology + simulation control, freeing your hands! Powered by MaaFramework!
 
 - [MaaADr](https://github.com/Azureetude/MaaADr) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Azureetude/MaaADr) ![activity](https://img.shields.io/github/commit-activity/m/Azureetude/MaaADr?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Azureetude/MaaADr?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?rid=MaaADr&os=win&arch=x64&channel=stable)  
- A assistant for AnotherEidos Of Dragon Vein R(AnaDos). Powered by MaaFramework!
+ An assistant for AnotherEidos Of Dragon Vein R(AnaDos). Powered by MaaFramework!
 
 ## Eco-Building
 
