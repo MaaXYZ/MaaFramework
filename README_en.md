@@ -237,6 +237,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MATR](https://github.com/NotZoruak/MATR) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/NotZoruak/MATR) ![activity](https://img.shields.io/github/commit-activity/m/NotZoruak/MATR?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/NotZoruak/MATR?style=social)  
  A Touken Ranbu Assistant. Image technology + simulation control, freeing your hands! Powered by MaaFramework!
 
+- [MaaADr](https://github.com/Azureetude/MaaADr) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Azureetude/MaaADr) ![activity](https://img.shields.io/github/commit-activity/m/Azureetude/MaaADr?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Azureetude/MaaADr?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?rid=MaaADr&os=win&arch=x64&channel=stable)  
+ An assistant for AnotherEidos Of Dragon Vein R(AnaDos). Powered by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
