@@ -745,14 +745,11 @@ bool AnchoredTouchInput::prepare_window()
         return false;
     }
 
-    // 目标窗口本来就是分层窗口，样式不归我们维护
-    if (original_layered_) {
-        return true;
-    }
-
-    // 分层样式随时可能被目标程序自己（切换窗口模式、DPI 变化）或其他模块重设掉，
-    // 一旦丢失，后面的 SetLayeredWindowAttributes 会全部失败，目标窗口将以完全不透明的状态被提到最前，
-    // 所以每次提升前都要重新确认它还在
+    // 分层样式的归属只看当前状态，不看首次准备时读到的值。首次准备若发生在截图侧伪最小化期间，
+    // 读到的分层样式是对方挂的，对方还原后它就不存在了，沿用那一次的结论会让后面的
+    // SetLayeredWindowAttributes 全部失败。目标程序自己（切换窗口模式、DPI 变化）也随时可能把它重设掉，
+    // 一旦丢失又照旧提升，目标窗口会以完全不透明的状态被弹到最前，所以每次提升前都要重新确认它还在。
+    // 反过来，窗口当前已是分层的就不动样式，只借用它的不透明度，也不记为我们的债务
     if ((exstyle & WS_EX_LAYERED) != 0) {
         return true;
     }
@@ -832,23 +829,30 @@ AnchoredTouchInput::WindowOwnership AnchoredTouchInput::check_borrow_mark() cons
         return WindowOwnership::Unknown;
     }
 
-    // 借用期间目标窗口一定是分层的，也一定不带 WS_EX_TRANSPARENT。任一条不成立，
-    // 都说明它已经被目标程序或其他模块重设过——例如截图侧的伪最小化还原会写回一份
-    // 不含这两个样式改动的扩展样式，此时再写回借用前的旧值会把窗口重新变成穿透或不可见
-    if ((exstyle & WS_EX_LAYERED) == 0 || (exstyle & WS_EX_TRANSPARENT) != 0) {
+    // 核对的只是还没交还的那几项。上一轮归还若只成功了一半，成功的那一项已经把窗口改回了原样，
+    // 继续拿借用期间的完整预期去量，会把自己刚做的还原认成外部改动，剩下的一项从此再也不还
+    if ((exstyle & WS_EX_LAYERED) == 0) {
         return WindowOwnership::Taken;
     }
 
-    COLORREF color_key = 0;
-    BYTE alpha = 0;
-    DWORD layered_flags = 0;
-    if (!GetLayeredWindowAttributes(hwnd_, &color_key, &alpha, &layered_flags)) {
-        // 读不到就无从判断，不能当作已被接管，保留待还原项等下一次机会
-        return WindowOwnership::Unknown;
+    // 摘掉的 WS_EX_TRANSPARENT 又出现了，说明窗口已经被目标程序或其他模块重设过——例如截图侧的
+    // 伪最小化还原会写回一份不含本次样式改动的扩展样式，此时再写回借用前的旧值会把窗口重新变成穿透
+    if (transparent_suppressed_ && (exstyle & WS_EX_TRANSPARENT) != 0) {
+        return WindowOwnership::Taken;
     }
 
-    if (alpha != kDimAlpha || color_key != mark_color_key_ || layered_flags != mark_layered_flags_) {
-        return WindowOwnership::Taken;
+    if (dimmed_) {
+        COLORREF color_key = 0;
+        BYTE alpha = 0;
+        DWORD layered_flags = 0;
+        if (!GetLayeredWindowAttributes(hwnd_, &color_key, &alpha, &layered_flags)) {
+            // 读不到就无从判断，不能当作已被接管，保留待还原项等下一次机会
+            return WindowOwnership::Unknown;
+        }
+
+        if (alpha != kDimAlpha || color_key != mark_color_key_ || layered_flags != mark_layered_flags_) {
+            return WindowOwnership::Taken;
+        }
     }
 
     return WindowOwnership::Ours;
@@ -1145,8 +1149,6 @@ void AnchoredTouchInput::unprepare_window()
     }
 
     if (layered_applied_) {
-        // 只清掉我们加的分层位，保留这期间目标程序自己改动的其他样式。
-        // 原始扩展样式里没有该位，所以不存在误清的风险
         SetLastError(0);
         LONG_PTR exstyle = GetWindowLongPtrW(hwnd_, GWL_EXSTYLE);
         if (exstyle == 0 && GetLastError() != 0) {
@@ -1154,6 +1156,25 @@ void AnchoredTouchInput::unprepare_window()
             return;
         }
 
+        // 样式是我们挂上的，承载在它上面的不透明度却未必还是我们的：截图侧的伪最小化会直接复用
+        // 这份已经挂好的样式，把不透明度压到 0 并加上 WS_EX_TRANSPARENT。此时摘掉样式，
+        // 那份不透明度会随之失效，本该隐形的窗口整个显出来，对方也再无从还原。
+        // 因此只在分层状态仍停在我们建立的中性值上时才清，否则留着，等下一次调用再试。
+        // Win32ControlUnitMgr::inactive() 先停截图侧再停输入侧，任务结束时的那一次重试即可清干净
+        COLORREF color_key = 0;
+        BYTE alpha = 0;
+        DWORD layered_flags = 0;
+        bool neutral = (exstyle & WS_EX_TRANSPARENT) == 0 && GetLayeredWindowAttributes(hwnd_, &color_key, &alpha, &layered_flags)
+                       && alpha == 255 && layered_flags == LWA_ALPHA;
+
+        if (!neutral) {
+            LogWarn << "the layered state is in use by another module, keep WS_EX_LAYERED" << VAR_VOIDP(hwnd_) << VAR(alpha)
+                    << VAR(layered_flags);
+            return;
+        }
+
+        // 只清掉我们加的分层位，保留这期间目标程序自己改动的其他样式。
+        // 原始扩展样式里没有该位，所以不存在误清的风险
         SetLastError(0);
         if (SetWindowLongPtrW(hwnd_, GWL_EXSTYLE, exstyle & ~static_cast<LONG_PTR>(WS_EX_LAYERED)) == 0 && GetLastError() != 0) {
             LogError << "failed to restore the target window ex-style" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
