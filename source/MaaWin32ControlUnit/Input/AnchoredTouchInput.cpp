@@ -131,8 +131,11 @@ bool AnchoredTouchInput::touch_down(int contact, int x, int y, [[maybe_unused]] 
         return false;
     }
 
-    // 目标窗口最小化时客户区不在屏幕上，必须先把它显示出来，坐标换算才有意义
-    if (!ensure_restored()) {
+    // 最小化窗口的客户区不在屏幕上，ClientToScreen 会给出屏幕外的坐标，提升也救不回来。
+    // 截图方式选了带伪最小化的那两种时，窗口早已被转成非最小化状态，这里不会触发；
+    // 选其他截图方式时截图本身也无法工作，此处拒绝并报错
+    if (IsIconic(hwnd_)) {
+        LogError << "the target window is minimized" << VAR_VOIDP(hwnd_);
         return false;
     }
 
@@ -941,42 +944,6 @@ bool AnchoredTouchInput::restore_transparent()
     return true;
 }
 
-bool AnchoredTouchInput::ensure_restored()
-{
-    std::lock_guard lock(window_mutex_);
-
-    if (!hwnd_ || !IsIconic(hwnd_)) {
-        return true;
-    }
-
-    // 最小化窗口的客户区不在屏幕上，ClientToScreen 会给出屏幕外的坐标，
-    // 所以必须赶在坐标换算之前把它显示出来，抬起后再收回去。
-    // 截图方式选了带伪最小化的那两种时，窗口早已被转成非最小化状态，这里不会触发
-    if (!prepare_window()) {
-        return false;
-    }
-
-    begin_borrow();
-
-    // 先把不透明度压到最低再显示，否则窗口会完整地闪出来一帧
-    if (!dim_window() || !suppress_transparent()) {
-        release_window_locked();
-        return false;
-    }
-
-    ShowWindow(hwnd_, SW_SHOWNOACTIVATE);
-
-    // ShowWindow 的返回值是窗口先前的可见状态，最小化窗口同样算可见，不能用作成功判据
-    if (IsIconic(hwnd_)) {
-        LogError << "failed to restore the target window from the minimized state" << VAR_VOIDP(hwnd_);
-        release_window_locked();
-        return false;
-    }
-
-    restored_from_minimized_ = true;
-    return true;
-}
-
 bool AnchoredTouchInput::ensure_hittable(POINT screen)
 {
     std::lock_guard lock(window_mutex_);
@@ -1070,37 +1037,8 @@ void AnchoredTouchInput::release_window_locked()
         }
     }
 
-    // 先降回 Z 序、收回最小化，最后才恢复不透明度，
-    // 顺序反过来目标窗口会有一段完全可见且仍位于最上层的时间
-    if (restored_from_minimized_) {
-        // 用户在这期间把窗口调到前台的话，就不要再替他收回去了。
-        // 激活尚未完成时前台窗口还没换过来，因此额外看一眼前台线程的活动与焦点窗口，
-        // 这只能减小竞态窗口，无法完全消除
-        bool user_took_over = GetForegroundWindow() == hwnd_;
-        if (!user_took_over) {
-            GUITHREADINFO info = { sizeof(GUITHREADINFO) };
-            if (GetGUIThreadInfo(0, &info)) {
-                user_took_over = info.hwndActive == hwnd_ || info.hwndFocus == hwnd_;
-            }
-        }
-
-        if (user_took_over) {
-            restored_from_minimized_ = false;
-        }
-        else {
-            ShowWindow(hwnd_, SW_MINIMIZE);
-
-            if (IsIconic(hwnd_)) {
-                restored_from_minimized_ = false;
-            }
-            else {
-                LogError << "failed to minimize the target window again" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
-                restored = false;
-            }
-        }
-    }
-
-    // 分层属性与 WS_EX_TRANSPARENT 的还原共用一次归属核对：这两项写的是同一份窗口状态，
+    // 不透明度放在最后恢复：顺序反过来目标窗口会有一段完全可见且仍位于最上层的时间。
+    // 分层属性与 WS_EX_TRANSPARENT 的还原共用一次归属核对，这两项写的是同一份窗口状态，
     // 各判各的会出现一项识破接管、另一项照旧写回的情况
     if (dimmed_ || transparent_suppressed_) {
         switch (check_borrow_mark()) {
@@ -1164,7 +1102,7 @@ void AnchoredTouchInput::unprepare_window()
 
     if (borrowed_) {
         LogError << "the target window state could not be fully restored" << VAR_VOIDP(hwnd_) << VAR(raised_) << VAR(dimmed_)
-                 << VAR(transparent_suppressed_) << VAR(restored_from_minimized_);
+                 << VAR(transparent_suppressed_);
     }
 
     if (layered_applied_) {

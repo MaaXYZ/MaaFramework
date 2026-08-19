@@ -122,7 +122,6 @@ private:
     bool restore_transparent();
     void release_window_locked();
 
-    bool ensure_restored();
     bool ensure_hittable(POINT screen);
     void release_window();
     void release_window_if_idle();
@@ -163,13 +162,12 @@ private:
     BYTE original_alpha_ = 255;
     DWORD original_layered_flags_ = LWA_ALPHA;
 
-    // borrowed_ 表示目标窗口正处于被临时改动的状态，下面四项记录具体改动了什么，
+    // borrowed_ 表示目标窗口正处于被临时改动的状态，下面三项记录具体改动了什么，
     // 一次触控序列结束后由 release_window_locked() 逐项还原
     bool borrowed_ = false;
     bool dimmed_ = false;
     bool raised_ = false;
     bool transparent_suppressed_ = false;
-    bool restored_from_minimized_ = false;
     HWND prev_sibling_ = nullptr;
 
     // dim_window() 实际写入目标窗口的分层属性，供 check_borrow_mark() 核对
