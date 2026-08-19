@@ -429,8 +429,13 @@ bool AnchoredTouchInput::worker_setup()
 
     ShowWindow(anchor, SW_SHOWNOACTIVATE);
 
+    // 读不到锚点矩形就没有可信的注入位置，anchor_pos_ 会停在 (0, 0)，主指针随之落到屏幕左上角
     RECT anchor_rect = {};
-    GetWindowRect(anchor, &anchor_rect);
+    if (!GetWindowRect(anchor, &anchor_rect)) {
+        LogError << "GetWindowRect failed" << VAR_VOIDP(anchor) << VAR(GetLastError());
+        return false;
+    }
+
     anchor_pos_ = { (anchor_rect.left + anchor_rect.right) / 2, (anchor_rect.top + anchor_rect.bottom) / 2 };
 
     auto device = g_create_device(PT_TOUCH, kMaxContacts, POINTER_FEEDBACK_NONE);
@@ -482,7 +487,21 @@ void AnchoredTouchInput::follow_target_window()
     last_target_rect_ = rect;
 
     POINT origin = compute_anchor_origin();
-    SetWindowPos(anchor_hwnd_.load(), HWND_TOPMOST, origin.x, origin.y, kAnchorSize, kAnchorSize, SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+
+    // 锚点没挪成还照着新位置注入的话，主指针会落在锚点窗口之外，
+    // 保护前提失效，可能打到别的窗口上并重新引发鼠标提升。
+    // 失败时锚点窗口与 anchor_pos_ 一起留在原处，两边仍然自洽
+    if (!SetWindowPos(
+            anchor_hwnd_.load(),
+            HWND_TOPMOST,
+            origin.x,
+            origin.y,
+            kAnchorSize,
+            kAnchorSize,
+            SWP_NOACTIVATE | SWP_NOOWNERZORDER)) {
+        LogError << "failed to move the anchor window" << VAR(origin.x) << VAR(origin.y) << VAR(GetLastError());
+        return;
+    }
 
     anchor_pos_ = { origin.x + kAnchorSize / 2, origin.y + kAnchorSize / 2 };
 }
