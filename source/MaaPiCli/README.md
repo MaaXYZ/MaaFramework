@@ -43,7 +43,6 @@ MaaFramework 官方提供的命令行 ProjectInterface Client，用于通过终�
 
 | 功能 | 协议行为 | CLI 实际行为 |
 |------|----------|-------------|
-| `welcome` 变更追踪 | Client 记录已展示的字符串或完整有序公告列表，内容更新时重新弹窗 | 每次启动都按声明顺序展示全部公告，不追踪变更 |
 | `focus` 回调消息 | Client 注册回调，按 `display` 渠道分发模板消息 | 未注册回调，不处理 focus 消息 |
 | `group.description` | 显示分组的详细描述 | 仅显示分组名称/label |
 | task 禁用态显示 | 不满足 resource/controller 约束的 task 灰显 | 直接过滤不显示 |

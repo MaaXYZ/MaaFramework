@@ -8,16 +8,21 @@ public:
     explicit Interactor(std::filesystem::path user_path);
 
     bool load(const std::filesystem::path& resource_path);
-    void print_config() const;
     void interact();
-    bool run();
+    bool run_directly();
 
 private:
+    using Welcome = MAA_PROJECT_INTERFACE_NS::InterfaceData::Welcome;
+
     void interact_for_first_time_use();
 
-    void welcome() const;
+    void print_config_and_acknowledge_welcome();
+    Welcome resolve_welcome() const;
+    bool print_project_info(const Welcome& resolved_welcome) const;
     void print_welcome_item(const MAA_PROJECT_INTERFACE_NS::InterfaceData::WelcomeItem& item) const;
+    void acknowledge_welcome_update(const Welcome& resolved_welcome);
     bool interact_once();
+    bool run();
 
     void select_controller();
     void select_adb();

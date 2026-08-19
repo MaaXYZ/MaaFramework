@@ -24,6 +24,7 @@ option(WITH_QUICKJS_BINDING "build with quickjs binding" OFF)
 option(WITH_MAA_AGENT "build with MaaAgent" ON)
 
 option(BUILD_PICLI "build maa picli" ON)
+option(BUILD_PICLI_TESTING "build maa picli testing" OFF)
 option(BUILD_SAMPLE "build a demo" OFF)
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
@@ -96,6 +97,10 @@ endif()
 if(BUILD_PIPELINE_TESTING)
     add_subdirectory(test/pipeline)
     add_subdirectory(test/TestingDataSet)
+endif()
+
+if(BUILD_PICLI_TESTING)
+    add_subdirectory(test/picli)
 endif()
 
 if(BUILD_DLOPEN_TESTING)

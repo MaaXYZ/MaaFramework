@@ -240,7 +240,7 @@ void Interactor::interact()
     }
 
     while (true) {
-        print_config();
+        print_config_and_acknowledge_welcome();
         if (!interact_once()) {
             break;
         }
@@ -284,6 +284,12 @@ Interactor::ElevationResult Interactor::check_and_elevate_if_needed()
 #endif
 }
 
+bool Interactor::run_directly()
+{
+    print_config_and_acknowledge_welcome();
+    return run();
+}
+
 bool Interactor::run()
 {
     auto elevation_result = check_and_elevate_if_needed();
@@ -318,13 +324,19 @@ bool Interactor::run()
     return ret;
 }
 
-void Interactor::print_config() const
+void Interactor::print_config_and_acknowledge_welcome()
 {
     using namespace MAA_PROJECT_INTERFACE_NS;
 
     clear_screen();
 
-    welcome();
+    auto resolved_welcome = resolve_welcome();
+    if (print_project_info(resolved_welcome)) {
+        acknowledge_welcome_update(resolved_welcome);
+        if (!config_.is_first_time_use()) {
+            config_.save(user_path_);
+        }
+    }
     std::cout << "### Current configuration ###\n\n";
 
     std::cout << "Controller:\n\n";
@@ -433,7 +445,14 @@ void Interactor::print_config() const
 
 void Interactor::interact_for_first_time_use()
 {
-    welcome();
+    auto resolved_welcome = resolve_welcome();
+    const bool has_welcome_content = std::visit([](const auto& welcome) { return !welcome.empty(); }, resolved_welcome);
+    if (print_project_info(resolved_welcome)) {
+        acknowledge_welcome_update(resolved_welcome);
+        if (has_welcome_content) {
+            mpause();
+        }
+    }
     select_controller();
     select_resource();
 
@@ -465,11 +484,31 @@ void Interactor::interact_for_first_time_use()
     }
 }
 
-void Interactor::welcome() const
+Interactor::Welcome Interactor::resolve_welcome() const
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& welcome = config_.interface_data().welcome;
+    if (const auto* welcome_text = std::get_if<std::string>(&welcome)) {
+        return read_text_content(*welcome_text);
+    }
+
+    const auto& welcome_items = std::get<std::vector<InterfaceData::WelcomeItem>>(welcome);
+    std::vector<InterfaceData::WelcomeItem> resolved_items;
+    resolved_items.reserve(welcome_items.size());
+    for (const auto& item : welcome_items) {
+        resolved_items.emplace_back(config_.translate(item.label), read_text_content(item.content));
+    }
+    return resolved_items;
+}
+
+bool Interactor::print_project_info(const Welcome& resolved_welcome) const
 {
     using namespace MAA_PROJECT_INTERFACE_NS;
 
     const auto& data = config_.interface_data();
+    const auto& configuration = config_.configuration();
+    const bool has_welcome_update = configuration.has_welcome_update(data.welcome, resolved_welcome);
 
     // 显示标题或项目名称
     if (!data.title.empty()) {
@@ -486,12 +525,14 @@ void Interactor::welcome() const
         }
     }
 
-    if (const auto* welcome_text = std::get_if<std::string>(&data.welcome); welcome_text && !welcome_text->empty()) {
-        std::cout << MAA_NS::utf8_to_crt(read_text_content(*welcome_text)) << "\n\n";
-    }
-    else if (const auto* welcome_items = std::get_if<std::vector<InterfaceData::WelcomeItem>>(&data.welcome)) {
-        for (const auto& item : *welcome_items) {
-            print_welcome_item(item);
+    if (has_welcome_update) {
+        if (const auto* welcome_text = std::get_if<std::string>(&resolved_welcome); welcome_text && !welcome_text->empty()) {
+            std::cout << MAA_NS::utf8_to_crt(*welcome_text) << "\n\n";
+        }
+        else if (const auto* welcome_items = std::get_if<std::vector<InterfaceData::WelcomeItem>>(&resolved_welcome)) {
+            for (const auto& item : *welcome_items) {
+                print_welcome_item(item);
+            }
         }
     }
 
@@ -517,15 +558,21 @@ void Interactor::welcome() const
         std::string license_text = read_text_content(data.license);
         std::cout << "License: " << MAA_NS::utf8_to_crt(license_text) << "\n\n";
     }
+    return has_welcome_update;
 }
 
 void Interactor::print_welcome_item(const MAA_PROJECT_INTERFACE_NS::InterfaceData::WelcomeItem& item) const
 {
     if (!item.label.empty()) {
-        std::cout << MAA_NS::utf8_to_crt(config_.translate(item.label)) << "\n";
+        std::cout << MAA_NS::utf8_to_crt(item.label) << "\n";
     }
 
-    std::cout << MAA_NS::utf8_to_crt(read_text_content(item.content)) << "\n\n";
+    std::cout << MAA_NS::utf8_to_crt(item.content) << "\n\n";
+}
+
+void Interactor::acknowledge_welcome_update(const Welcome& resolved_welcome)
+{
+    config_.configuration().acknowledge_welcome_update(config_.interface_data().welcome, resolved_welcome);
 }
 
 bool Interactor::interact_once()
