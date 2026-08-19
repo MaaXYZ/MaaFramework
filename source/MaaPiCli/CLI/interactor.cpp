@@ -486,10 +486,13 @@ void Interactor::welcome() const
         }
     }
 
-    // 显示欢迎信息
-    if (!data.welcome.empty()) {
-        std::string welcome_text = read_text_content(data.welcome);
-        std::cout << MAA_NS::utf8_to_crt(welcome_text) << "\n\n";
+    if (const auto* welcome_text = std::get_if<std::string>(&data.welcome); welcome_text && !welcome_text->empty()) {
+        std::cout << MAA_NS::utf8_to_crt(read_text_content(*welcome_text)) << "\n\n";
+    }
+    else if (const auto* welcome_items = std::get_if<std::vector<InterfaceData::WelcomeItem>>(&data.welcome)) {
+        for (const auto& item : *welcome_items) {
+            print_welcome_item(item);
+        }
     }
 
     // 显示项目描述
@@ -514,6 +517,15 @@ void Interactor::welcome() const
         std::string license_text = read_text_content(data.license);
         std::cout << "License: " << MAA_NS::utf8_to_crt(license_text) << "\n\n";
     }
+}
+
+void Interactor::print_welcome_item(const MAA_PROJECT_INTERFACE_NS::InterfaceData::WelcomeItem& item) const
+{
+    if (!item.label.empty()) {
+        std::cout << MAA_NS::utf8_to_crt(config_.translate(item.label)) << "\n";
+    }
+
+    std::cout << MAA_NS::utf8_to_crt(read_text_content(item.content)) << "\n\n";
 }
 
 bool Interactor::interact_once()

@@ -268,13 +268,21 @@ struct InterfaceData
         MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, MEO_OPT icon, task);
     };
 
+    struct WelcomeItem
+    {
+        std::string label;
+        std::string content;
+
+        MEO_JSONIZATION(MEO_OPT label, content);
+    };
+
     int interface_version = 2;
     std::unordered_map<std::string, std::string> languages; // 语言代码 -> 翻译文件路径
     std::string name;
     std::string label;
     std::string title;
     std::string version;
-    std::string welcome;
+    std::variant<std::string, std::vector<WelcomeItem>> welcome;
     std::string description;
     std::string contact;
     std::string license;

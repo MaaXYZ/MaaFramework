@@ -16,6 +16,7 @@ private:
     void interact_for_first_time_use();
 
     void welcome() const;
+    void print_welcome_item(const MAA_PROJECT_INTERFACE_NS::InterfaceData::WelcomeItem& item) const;
     bool interact_once();
 
     void select_controller();
