@@ -1117,14 +1117,17 @@ void AnchoredTouchInput::unprepare_window()
         // 这份已经挂好的样式，把不透明度压到 0 并加上 WS_EX_TRANSPARENT。此时摘掉样式，
         // 那份不透明度会随之失效，本该隐形的窗口整个显出来，对方也再无从还原。
         // 因此只在分层状态仍停在我们建立的中性值上时才清，否则留着，等下一次调用再试。
-        // Win32ControlUnitMgr::inactive() 先停截图侧再停输入侧，任务结束时的那一次重试即可清干净
+        // Win32ControlUnitMgr::inactive() 先停截图侧再停输入侧，任务结束时的那一次重试即可清干净。
+        // 样式已经不在则不算被占用——截图侧的还原是整份写回扩展样式，会把我们加的这一位一并抹掉，
+        // 此时下面的清除退化成空操作，照常销账即可
         COLORREF color_key = 0;
         BYTE alpha = 0;
         DWORD layered_flags = 0;
-        bool neutral = (exstyle & WS_EX_TRANSPARENT) == 0 && GetLayeredWindowAttributes(hwnd_, &color_key, &alpha, &layered_flags)
-                       && alpha == 255 && layered_flags == LWA_ALPHA;
+        bool in_use = (exstyle & WS_EX_LAYERED) != 0
+                      && ((exstyle & WS_EX_TRANSPARENT) != 0 || !GetLayeredWindowAttributes(hwnd_, &color_key, &alpha, &layered_flags)
+                          || alpha != 255 || layered_flags != LWA_ALPHA);
 
-        if (!neutral) {
+        if (in_use) {
             LogWarn << "the layered state is in use by another module, keep WS_EX_LAYERED" << VAR_VOIDP(hwnd_) << VAR(alpha)
                     << VAR(layered_flags);
             return;
