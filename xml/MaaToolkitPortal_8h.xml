@@ -76,9 +76,9 @@
         </inbodydescription>
         <location file="include/MaaToolkit/Portal/MaaToolkitPortal.h" line="12" column="26" declfile="include/MaaToolkit/Portal/MaaToolkitPortal.h" declline="12" declcolumn="26"/>
       </memberdef>
-      <memberdef kind="function" id="MaaToolkitPortal_8h_1ad1b181d558300039a98c28efdee9df4e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> bool</type>
-        <definition>MAA_TOOLKIT_API bool MaaToolkitPortalHelperOpenStream</definition>
+      <memberdef kind="function" id="MaaToolkitPortal_8h_1a859f0a0ae7a4c526e8357b9ec9e3267b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_TOOLKIT_API MaaBool MaaToolkitPortalHelperOpenStream</definition>
         <argsstring>(MaaToolkitPortalHelper *helper)</argsstring>
         <name>MaaToolkitPortalHelperOpenStream</name>
         <param>
@@ -91,11 +91,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaToolkit/Portal/MaaToolkitPortal.h" line="13" column="26" declfile="include/MaaToolkit/Portal/MaaToolkitPortal.h" declline="13" declcolumn="26"/>
+        <location file="include/MaaToolkit/Portal/MaaToolkitPortal.h" line="13" column="29" declfile="include/MaaToolkit/Portal/MaaToolkitPortal.h" declline="13" declcolumn="29"/>
       </memberdef>
-      <memberdef kind="function" id="MaaToolkitPortal_8h_1ab4a8a63fe9905b98da4cdc3abc7ff676" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> bool</type>
-        <definition>MAA_TOOLKIT_API bool MaaToolkitPortalHelperGetPersist</definition>
+      <memberdef kind="function" id="MaaToolkitPortal_8h_1af9ad6f2e92e2c614b7d16be0fa70948a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_TOOLKIT_API MaaBool MaaToolkitPortalHelperGetPersist</definition>
         <argsstring>(MaaToolkitPortalHelper *helper)</argsstring>
         <name>MaaToolkitPortalHelperGetPersist</name>
         <param>
@@ -108,7 +108,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaToolkit/Portal/MaaToolkitPortal.h" line="14" column="26" declfile="include/MaaToolkit/Portal/MaaToolkitPortal.h" declline="14" declcolumn="26"/>
+        <location file="include/MaaToolkit/Portal/MaaToolkitPortal.h" line="14" column="29" declfile="include/MaaToolkit/Portal/MaaToolkitPortal.h" declline="14" declcolumn="29"/>
       </memberdef>
       <memberdef kind="function" id="MaaToolkitPortal_8h_1ac4bfdb67f96cb357cacb64ffa6e2e9ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> void</type>

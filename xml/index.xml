@@ -508,6 +508,7 @@
     <member refid="MaaDef_8h_1acc4023bfcdaeb134ea99829fdad1924d" kind="define"><name>MaaLinuxInputMethod_None</name></member>
     <member refid="MaaDef_8h_1a6f6144e8ef482c32e9c65a93ecc53f4a" kind="define"><name>MaaLinuxInputMethod_Wlr</name></member>
     <member refid="MaaDef_8h_1a3e188bedbcb7fa30364a87af9d2a5ad3" kind="define"><name>MaaLinuxInputMethod_UInput</name></member>
+    <member refid="MaaDef_8h_1aeb666e38ed98ab9d3956eacbcdf87726" kind="define"><name>MaaLinuxInputMethod_Libei</name></member>
     <member refid="MaaDef_8h_1a586ad29ada2c999ae75b77ad6baeedb9" kind="define"><name>MaaGamepadType_Xbox360</name></member>
     <member refid="MaaDef_8h_1af8af7e509a456f76d65db79f99b14591" kind="define"><name>MaaGamepadType_DualShock4</name></member>
     <member refid="MaaDef_8h_1acbc161630001bc8f54f7cf136a0493fc" kind="define"><name>MaaGamepadButton_A</name></member>
@@ -765,6 +766,16 @@
     <member refid="MaaToolkitDesktopWindow_8h_1aaa1d8918fd09a42fdd9fadf562200040" kind="function"><name>MaaToolkitDesktopWindowGetClassName</name></member>
     <member refid="MaaToolkitDesktopWindow_8h_1ad41c0d4f44b0ea74def23a1bdf82811c" kind="function"><name>MaaToolkitDesktopWindowGetWindowName</name></member>
   </compound>
+  <compound refid="MaaToolkitGamescope_8h" kind="file"><name>MaaToolkitGamescope.h</name>
+    <member refid="MaaToolkitGamescope_8h_1a4cdd1c64b88b1deb83cca5f357d1bbdd" kind="function"><name>MaaToolkitGamescopeInstanceListCreate</name></member>
+    <member refid="MaaToolkitGamescope_8h_1aa2c6513e0582f7d72b3305211fb9e69b" kind="function"><name>MaaToolkitGamescopeInstanceListDestroy</name></member>
+    <member refid="MaaToolkitGamescope_8h_1a464e8cccbaf81dabf0b13a4e868ec52f" kind="function"><name>MaaToolkitGamescopeInstanceFindAll</name></member>
+    <member refid="MaaToolkitGamescope_8h_1acf290f68badd16cba1b2dcd482e1a538" kind="function"><name>MaaToolkitGamescopeInstanceListSize</name></member>
+    <member refid="MaaToolkitGamescope_8h_1a7cd7afa99ea206e472e7645a9634d5c1" kind="function"><name>MaaToolkitGamescopeInstanceListAt</name></member>
+    <member refid="MaaToolkitGamescope_8h_1a8b61a28e00f76ffab87d6448b834e576" kind="function"><name>MaaToolkitGamescopeInstanceGetDisplayNo</name></member>
+    <member refid="MaaToolkitGamescope_8h_1a8f411f8f5c58fe5e7a029b897605f0f4" kind="function"><name>MaaToolkitGamescopeInstanceGetPipeWireNodeId</name></member>
+    <member refid="MaaToolkitGamescope_8h_1aee7d23847390ceba497b63417ef6e085" kind="function"><name>MaaToolkitGamescopeInstanceGetEisSocketPath</name></member>
+  </compound>
   <compound refid="MaaToolkitAPI_8h" kind="file"><name>MaaToolkitAPI.h</name>
   </compound>
   <compound refid="MaaToolkitDef_8h" kind="file"><name>MaaToolkitDef.h</name>
@@ -776,6 +787,8 @@
     <member refid="MaaToolkitDef_8h_1a5d8743988770806277c247ba9e84040a" kind="typedef"><name>MaaToolkitDesktopWindow</name></member>
     <member refid="MaaToolkitDef_8h_1aaf164274a2c0089edb67f33e26719ff0" kind="typedef"><name>MaaToolkitDesktopWindowList</name></member>
     <member refid="MaaToolkitDef_8h_1a3844e7dc93bd5cb708f6ebe26f1b765a" kind="typedef"><name>MaaToolkitPortalHelper</name></member>
+    <member refid="MaaToolkitDef_8h_1ac71e783ebe24075d46badf4636d7a7f7" kind="typedef"><name>MaaToolkitGamescopeInstance</name></member>
+    <member refid="MaaToolkitDef_8h_1a10ef1849a46a42c93c9f8a9e6be9e55a" kind="typedef"><name>MaaToolkitGamescopeInstanceList</name></member>
     <member refid="MaaToolkitDef_8h_1acdcb49d9222ccceaeedb28b7fcdd8fe8" kind="typedef"><name>MaaMacOSPermission</name></member>
   </compound>
   <compound refid="MaaToolkitMacOS_8h" kind="file"><name>MaaToolkitMacOS.h</name>
@@ -786,8 +799,8 @@
   <compound refid="MaaToolkitPortal_8h" kind="file"><name>MaaToolkitPortal.h</name>
     <member refid="MaaToolkitPortal_8h_1a712517bb7f64cb40c682f840f9550283" kind="function"><name>MaaToolkitPortalHelperCreate</name></member>
     <member refid="MaaToolkitPortal_8h_1af7b96bbd9125818f0bf96b950c688c08" kind="function"><name>MaaToolkitPortalHelperDestroy</name></member>
-    <member refid="MaaToolkitPortal_8h_1ad1b181d558300039a98c28efdee9df4e" kind="function"><name>MaaToolkitPortalHelperOpenStream</name></member>
-    <member refid="MaaToolkitPortal_8h_1ab4a8a63fe9905b98da4cdc3abc7ff676" kind="function"><name>MaaToolkitPortalHelperGetPersist</name></member>
+    <member refid="MaaToolkitPortal_8h_1a859f0a0ae7a4c526e8357b9ec9e3267b" kind="function"><name>MaaToolkitPortalHelperOpenStream</name></member>
+    <member refid="MaaToolkitPortal_8h_1af9ad6f2e92e2c614b7d16be0fa70948a" kind="function"><name>MaaToolkitPortalHelperGetPersist</name></member>
     <member refid="MaaToolkitPortal_8h_1ac4bfdb67f96cb357cacb64ffa6e2e9ea" kind="function"><name>MaaToolkitPortalHelperSetPersist</name></member>
     <member refid="MaaToolkitPortal_8h_1a7afee80c29187b156afdb88b80dcd29d" kind="function"><name>MaaToolkitPortalHelperGetPipeWireFD</name></member>
     <member refid="MaaToolkitPortal_8h_1a637242d1dc40cdef9fbc9ea06b53626b" kind="function"><name>MaaToolkitPortalHelperGetPipeWireNodeID</name></member>
@@ -833,6 +846,8 @@
   <compound refid="dir_6eb8a3b80c08358342d8d19b4780874f" kind="dir"><name>include/MaaToolkit/Config</name>
   </compound>
   <compound refid="dir_5fd7a4c0d2eb20e652f065856939ee93" kind="dir"><name>include/MaaToolkit/DesktopWindow</name>
+  </compound>
+  <compound refid="dir_664dbaad67e25264b6707222c2e1a0a1" kind="dir"><name>include/MaaToolkit/Gamescope</name>
   </compound>
   <compound refid="dir_40c6fe55fc949fd40ad3e87842c632ab" kind="dir"><name>include/MaaFramework/Global</name>
   </compound>

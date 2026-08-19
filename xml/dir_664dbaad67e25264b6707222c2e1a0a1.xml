@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.12.0" xml:lang="en-US">
+  <compounddef id="dir_664dbaad67e25264b6707222c2e1a0a1" kind="dir">
+    <compoundname>include/MaaToolkit/Gamescope</compoundname>
+    <innerfile refid="MaaToolkitGamescope_8h">MaaToolkitGamescope.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaToolkit/Gamescope/"/>
+  </compounddef>
+</doxygen>

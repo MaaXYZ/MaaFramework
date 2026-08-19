@@ -6,6 +6,7 @@
     <includedby refid="MaaToolkitAdbDevice_8h" local="yes">include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h</includedby>
     <includedby refid="MaaToolkitConfig_8h" local="yes">include/MaaToolkit/Config/MaaToolkitConfig.h</includedby>
     <includedby refid="MaaToolkitDesktopWindow_8h" local="yes">include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h</includedby>
+    <includedby refid="MaaToolkitGamescope_8h" local="yes">include/MaaToolkit/Gamescope/MaaToolkitGamescope.h</includedby>
     <includedby refid="MaaToolkitAPI_8h" local="yes">include/MaaToolkit/MaaToolkitAPI.h</includedby>
     <includedby refid="MaaToolkitMacOS_8h" local="yes">include/MaaToolkit/MacOS/MaaToolkitMacOS.h</includedby>
     <includedby refid="MaaToolkitPortal_8h" local="yes">include/MaaToolkit/Portal/MaaToolkitPortal.h</includedby>
@@ -51,6 +52,12 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
+      <node id="6">
+        <label>include/MaaToolkit/Gamescope/MaaToolkitGamescope.h</label>
+        <link refid="MaaToolkitGamescope_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
       <node id="3">
         <label>include/MaaToolkit/MaaToolkitAPI.h</label>
         <link refid="MaaToolkitAPI_8h"/>
@@ -64,20 +71,22 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
         <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>include/MaaToolkit/MacOS/MaaToolkitMacOS.h</label>
         <link refid="MaaToolkitMacOS_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="7">
+      <node id="8">
         <label>include/MaaToolkit/Portal/MaaToolkitPortal.h</label>
         <link refid="MaaToolkitPortal_8h"/>
         <childnode refid="3" relation="include">
@@ -110,7 +119,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaToolkit/MaaToolkitDef.h" line="13" column="1" bodyfile="include/MaaToolkit/MaaToolkitDef.h" bodystart="14" bodyend="17"/>
+        <location file="include/MaaToolkit/MaaToolkitDef.h" line="16" column="1" bodyfile="include/MaaToolkit/MaaToolkitDef.h" bodystart="17" bodyend="20"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
@@ -179,6 +188,32 @@
         </inbodydescription>
         <location file="include/MaaToolkit/MaaToolkitDef.h" line="11" column="37" bodyfile="include/MaaToolkit/MaaToolkitDef.h" bodystart="11" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="typedef" id="MaaToolkitDef_8h_1ac71e783ebe24075d46badf4636d7a7f7" prot="public" static="no">
+        <type>struct <ref refid="MaaToolkitDef_8h_1ac71e783ebe24075d46badf4636d7a7f7" kindref="member">MaaToolkitGamescopeInstance</ref></type>
+        <definition>typedef struct MaaToolkitGamescopeInstance MaaToolkitGamescopeInstance</definition>
+        <argsstring></argsstring>
+        <name>MaaToolkitGamescopeInstance</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/MaaToolkitDef.h" line="13" column="42" bodyfile="include/MaaToolkit/MaaToolkitDef.h" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="MaaToolkitDef_8h_1a10ef1849a46a42c93c9f8a9e6be9e55a" prot="public" static="no">
+        <type>struct <ref refid="MaaToolkitDef_8h_1a10ef1849a46a42c93c9f8a9e6be9e55a" kindref="member">MaaToolkitGamescopeInstanceList</ref></type>
+        <definition>typedef struct MaaToolkitGamescopeInstanceList MaaToolkitGamescopeInstanceList</definition>
+        <argsstring></argsstring>
+        <name>MaaToolkitGamescopeInstanceList</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/MaaToolkitDef.h" line="14" column="46" bodyfile="include/MaaToolkit/MaaToolkitDef.h" bodystart="14" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="typedef" id="MaaToolkitDef_8h_1acdcb49d9222ccceaeedb28b7fcdd8fe8" prot="public" static="no">
         <type>int32_t</type>
         <definition>typedef int32_t MaaMacOSPermission</definition>
@@ -190,7 +225,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaToolkit/MaaToolkitDef.h" line="19" column="17" bodyfile="include/MaaToolkit/MaaToolkitDef.h" bodystart="19" bodyend="-1"/>
+        <location file="include/MaaToolkit/MaaToolkitDef.h" line="22" column="17" bodyfile="include/MaaToolkit/MaaToolkitDef.h" bodystart="22" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

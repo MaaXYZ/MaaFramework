@@ -225,6 +225,8 @@ Macros</h2></td></tr>
 <tr class="separator:a6f6144e8ef482c32e9c65a93ecc53f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e188bedbcb7fa30364a87af9d2a5ad3" id="r_a3e188bedbcb7fa30364a87af9d2a5ad3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e188bedbcb7fa30364a87af9d2a5ad3">MaaLinuxInputMethod_UInput</a>&#160;&#160;&#160;(1ULL &lt;&lt; 1)</td></tr>
 <tr class="separator:a3e188bedbcb7fa30364a87af9d2a5ad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb666e38ed98ab9d3956eacbcdf87726" id="r_aeb666e38ed98ab9d3956eacbcdf87726"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb666e38ed98ab9d3956eacbcdf87726">MaaLinuxInputMethod_Libei</a>&#160;&#160;&#160;(1ULL &lt;&lt; 2)</td></tr>
+<tr class="separator:aeb666e38ed98ab9d3956eacbcdf87726"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a586ad29ada2c999ae75b77ad6baeedb9" id="r_a586ad29ada2c999ae75b77ad6baeedb9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a586ad29ada2c999ae75b77ad6baeedb9">MaaGamepadType_Xbox360</a>&#160;&#160;&#160;0ULL</td></tr>
 <tr class="separator:a586ad29ada2c999ae75b77ad6baeedb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8af7e509a456f76d65db79f99b14591" id="r_af8af7e509a456f76d65db79f99b14591"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8af7e509a456f76d65db79f99b14591">MaaGamepadType_DualShock4</a>&#160;&#160;&#160;1ULL</td></tr>
@@ -1247,6 +1249,20 @@ Enumerations</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">#define MaaLinuxInputMethod_UInput&#160;&#160;&#160;(1ULL &lt;&lt; 1)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeb666e38ed98ab9d3956eacbcdf87726" name="aeb666e38ed98ab9d3956eacbcdf87726"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb666e38ed98ab9d3956eacbcdf87726">&#9670;&#160;</a></span>MaaLinuxInputMethod_Libei</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaLinuxInputMethod_Libei&#160;&#160;&#160;(1ULL &lt;&lt; 2)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -2398,7 +2414,7 @@ Enumerations</h2></td></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">Wlr   </td><td class="markdownTableBodyNone">Screencap using <code>wlr-screencopy-unstable-v1</code> protocol    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">PipeWire   </td><td class="markdownTableBodyNone">Screencap using PipeWire   </td></tr>
+<td class="markdownTableBodyNone">PipeWire   </td><td class="markdownTableBodyNone">Screencap using PipeWire (portal fd or session-daemon node)   </td></tr>
 </table>
 
 </div>
@@ -2423,7 +2439,9 @@ Enumerations</h2></td></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">Wlr   </td><td class="markdownTableBodyNone">Input using <code>virtual-keyboard-unstable-v1</code> and <code>wlr-virtual-pointer-unstable-v1</code> protocol    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">UInput   </td><td class="markdownTableBodyNone">Input using <code>/dev/uinput</code>   </td></tr>
+<td class="markdownTableBodyNone">UInput   </td><td class="markdownTableBodyNone">Input using <code>/dev/uinput</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Libei   </td><td class="markdownTableBodyNone">Input using libei (EIS socket, e.g. the one provided by gamescope)   </td></tr>
 </table>
 
 </div>
@@ -2871,7 +2889,7 @@ Enumerations</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Sat Aug 8 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
+    <li class="footer">Generated on Wed Aug 19 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
 </body>

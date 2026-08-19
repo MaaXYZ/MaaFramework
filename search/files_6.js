@@ -22,8 +22,9 @@ var searchData=
   ['maatoolkitconfig_2eh_19',['MaaToolkitConfig.h',['../MaaToolkitConfig_8h.html',1,'']]],
   ['maatoolkitdef_2eh_20',['MaaToolkitDef.h',['../MaaToolkitDef_8h.html',1,'']]],
   ['maatoolkitdesktopwindow_2eh_21',['MaaToolkitDesktopWindow.h',['../MaaToolkitDesktopWindow_8h.html',1,'']]],
-  ['maatoolkitmacos_2eh_22',['MaaToolkitMacOS.h',['../MaaToolkitMacOS_8h.html',1,'']]],
-  ['maatoolkitportal_2eh_23',['MaaToolkitPortal.h',['../MaaToolkitPortal_8h.html',1,'']]],
-  ['maautility_2eh_24',['MaaUtility.h',['../MaaUtility_8h.html',1,'']]],
-  ['macoscontrolunitapi_2eh_25',['MacOSControlUnitAPI.h',['../MacOSControlUnitAPI_8h.html',1,'']]]
+  ['maatoolkitgamescope_2eh_22',['MaaToolkitGamescope.h',['../MaaToolkitGamescope_8h.html',1,'']]],
+  ['maatoolkitmacos_2eh_23',['MaaToolkitMacOS.h',['../MaaToolkitMacOS_8h.html',1,'']]],
+  ['maatoolkitportal_2eh_24',['MaaToolkitPortal.h',['../MaaToolkitPortal_8h.html',1,'']]],
+  ['maautility_2eh_25',['MaaUtility.h',['../MaaUtility_8h.html',1,'']]],
+  ['macoscontrolunitapi_2eh_26',['MacOSControlUnitAPI.h',['../MacOSControlUnitAPI_8h.html',1,'']]]
 ];

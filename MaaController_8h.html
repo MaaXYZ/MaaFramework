@@ -399,7 +399,9 @@ Only single touch is supported (contact must be 0). </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>The controller handle, or nullptr on failure.</dd></dl>
 <dl class="section note"><dt>Note</dt><dd>This controller is only available on Android. </dd>
 <dd>
-The configured screen_resolution must match the control unit's raw screenshot/touch coordinate space. </dd></dl>
+The configured screen_resolution must match the control unit's raw screenshot/touch coordinate space. </dd>
+<dd>
+Multi-touch is supported: contact is the finger id (0 for the first finger). The external library's TouchArgs must carry contact. </dd></dl>
 
 </div>
 </div>
@@ -622,12 +624,13 @@ Only single touch is supported (contact must be 0). </dd></dl>
     <tr><td class="paramname">config_json</td><td>JSON config for the control unit. Required fields:<ul>
 <li>screencap_method: screencap method to use, see MaaLinuxScreencapMethod.</li>
 <li>input_method: input method to use, see MaaLinuxInputMethod. Wlroots Required fields:</li>
-<li>wlr_socket_path: wayland socket path (e.g., "/run/user/1000/wayland-0"). PipeWire Required fields:</li>
-<li>pw_socket_fd: The PipeWire socket FD.</li>
-<li>pw_node_id: The PipeWire Node ID.</li>
-<li>pw_screen_width: The screen width in pixels.</li>
-<li>pw_screen_height: The screen height in pixels. UInput Optional fields:</li>
-<li>uinput_path: The uinput device node path, default is "/dev/uinput". Optional fields:</li>
+<li>wlr_socket_path: wayland socket path (e.g., "/run/user/1000/wayland-0"). PipeWire monitor capture (via xdg-desktop-portal):</li>
+<li>pw_socket_fd: The PipeWire socket FD (from the ScreenCast portal).</li>
+<li>pw_node_id: The PipeWire Node ID. PipeWire session-daemon node capture (gamescope etc.):</li>
+<li>pw_node_id: attach to a session-daemon node directly; discover the node with MaaToolkitGamescopeInstanceFindAll. UInput Optional fields:</li>
+<li>uinput_path: The uinput device node path, default is "/dev/uinput".</li>
+<li>uinput_screen_width / uinput_screen_height: screen size for the uinput absolute axis range. Optional. Libei (EIS) Required fields:</li>
+<li>eis_socket_path: the EIS socket path, e.g. "/run/user/1000/gamescope-0-ei". Optional fields:</li>
 <li>use_win32_vk_code: If true, key codes passed to click_key / key_down / key_up are interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes internally. If false, key codes are passed through as raw evdev codes. </li>
 </ul>
 </td></tr>
@@ -1617,7 +1620,7 @@ For other controllers, this is a no-op that always succeeds. </dd></dl>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="dir_0debf1eee29073ebb629a4e1dfd2a5f6.html">Instance</a></li><li class="navelem"><a class="el" href="MaaController_8h.html">MaaController.h</a></li>
-    <li class="footer">Generated on Sat Aug 8 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
+    <li class="footer">Generated on Wed Aug 19 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
 </body>

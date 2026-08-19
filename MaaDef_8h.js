@@ -53,6 +53,7 @@ var MaaDef_8h =
     [ "MaaLinuxInputMethod_None", "MaaDef_8h.html#acc4023bfcdaeb134ea99829fdad1924d", null ],
     [ "MaaLinuxInputMethod_Wlr", "MaaDef_8h.html#a6f6144e8ef482c32e9c65a93ecc53f4a", null ],
     [ "MaaLinuxInputMethod_UInput", "MaaDef_8h.html#a3e188bedbcb7fa30364a87af9d2a5ad3", null ],
+    [ "MaaLinuxInputMethod_Libei", "MaaDef_8h.html#aeb666e38ed98ab9d3956eacbcdf87726", null ],
     [ "MaaGamepadType_Xbox360", "MaaDef_8h.html#a586ad29ada2c999ae75b77ad6baeedb9", null ],
     [ "MaaGamepadType_DualShock4", "MaaDef_8h.html#af8af7e509a456f76d65db79f99b14591", null ],
     [ "MaaGamepadButton_A", "MaaDef_8h.html#acbc161630001bc8f54f7cf136a0493fc", null ],

@@ -1,0 +1,192 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.12.0" xml:lang="en-US">
+  <compounddef id="MaaToolkitGamescope_8h" kind="file" language="C++">
+    <compoundname>MaaToolkitGamescope.h</compoundname>
+    <includes refid="MaaToolkitDef_8h" local="yes">../MaaToolkitDef.h</includes>
+    <includedby refid="MaaToolkitAPI_8h" local="yes">include/MaaToolkit/MaaToolkitAPI.h</includedby>
+    <incdepgraph>
+      <node id="3">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="1">
+        <label>include/MaaToolkit/Gamescope/MaaToolkitGamescope.h</label>
+        <link refid="MaaToolkitGamescope_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>../MaaToolkitDef.h</label>
+        <link refid="MaaToolkitDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>include/MaaToolkit/Gamescope/MaaToolkitGamescope.h</label>
+        <link refid="MaaToolkitGamescope_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>include/MaaToolkit/MaaToolkitAPI.h</label>
+        <link refid="MaaToolkitAPI_8h"/>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="MaaToolkitGamescope_8h_1a4cdd1c64b88b1deb83cca5f357d1bbdd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaToolkitDef_8h_1a10ef1849a46a42c93c9f8a9e6be9e55a" kindref="member">MaaToolkitGamescopeInstanceList</ref> *</type>
+        <definition>MAA_TOOLKIT_API MaaToolkitGamescopeInstanceList * MaaToolkitGamescopeInstanceListCreate</definition>
+        <argsstring>()</argsstring>
+        <name>MaaToolkitGamescopeInstanceListCreate</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" line="12" column="53" declfile="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" declline="12" declcolumn="53"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitGamescope_8h_1aa2c6513e0582f7d72b3305211fb9e69b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> void</type>
+        <definition>MAA_TOOLKIT_API void MaaToolkitGamescopeInstanceListDestroy</definition>
+        <argsstring>(MaaToolkitGamescopeInstanceList *handle)</argsstring>
+        <name>MaaToolkitGamescopeInstanceListDestroy</name>
+        <param>
+          <type><ref refid="MaaToolkitDef_8h_1a10ef1849a46a42c93c9f8a9e6be9e55a" kindref="member">MaaToolkitGamescopeInstanceList</ref> *</type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" line="13" column="26" declfile="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" declline="13" declcolumn="26"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitGamescope_8h_1a464e8cccbaf81dabf0b13a4e868ec52f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_TOOLKIT_API MaaBool MaaToolkitGamescopeInstanceFindAll</definition>
+        <argsstring>(MaaToolkitGamescopeInstanceList *buffer)</argsstring>
+        <name>MaaToolkitGamescopeInstanceFindAll</name>
+        <param>
+          <type><ref refid="MaaToolkitDef_8h_1a10ef1849a46a42c93c9f8a9e6be9e55a" kindref="member">MaaToolkitGamescopeInstanceList</ref> *</type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" line="15" column="29" declfile="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" declline="15" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitGamescope_8h_1acf290f68badd16cba1b2dcd482e1a538" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+        <definition>MAA_TOOLKIT_API MaaSize MaaToolkitGamescopeInstanceListSize</definition>
+        <argsstring>(const MaaToolkitGamescopeInstanceList *list)</argsstring>
+        <name>MaaToolkitGamescopeInstanceListSize</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a10ef1849a46a42c93c9f8a9e6be9e55a" kindref="member">MaaToolkitGamescopeInstanceList</ref> *</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" line="17" column="29" declfile="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" declline="17" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitGamescope_8h_1a7cd7afa99ea206e472e7645a9634d5c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const <ref refid="MaaToolkitDef_8h_1ac71e783ebe24075d46badf4636d7a7f7" kindref="member">MaaToolkitGamescopeInstance</ref> *</type>
+        <definition>MAA_TOOLKIT_API const MaaToolkitGamescopeInstance * MaaToolkitGamescopeInstanceListAt</definition>
+        <argsstring>(const MaaToolkitGamescopeInstanceList *list, MaaSize index)</argsstring>
+        <name>MaaToolkitGamescopeInstanceListAt</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a10ef1849a46a42c93c9f8a9e6be9e55a" kindref="member">MaaToolkitGamescopeInstanceList</ref> *</type>
+          <declname>list</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" line="19" column="9" declfile="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" declline="19" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitGamescope_8h_1a8b61a28e00f76ffab87d6448b834e576" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> uint32_t</type>
+        <definition>MAA_TOOLKIT_API uint32_t MaaToolkitGamescopeInstanceGetDisplayNo</definition>
+        <argsstring>(const MaaToolkitGamescopeInstance *instance)</argsstring>
+        <name>MaaToolkitGamescopeInstanceGetDisplayNo</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1ac71e783ebe24075d46badf4636d7a7f7" kindref="member">MaaToolkitGamescopeInstance</ref> *</type>
+          <declname>instance</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" line="21" column="30" declfile="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" declline="21" declcolumn="30"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitGamescope_8h_1a8f411f8f5c58fe5e7a029b897605f0f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> uint32_t</type>
+        <definition>MAA_TOOLKIT_API uint32_t MaaToolkitGamescopeInstanceGetPipeWireNodeId</definition>
+        <argsstring>(const MaaToolkitGamescopeInstance *instance)</argsstring>
+        <name>MaaToolkitGamescopeInstanceGetPipeWireNodeId</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1ac71e783ebe24075d46badf4636d7a7f7" kindref="member">MaaToolkitGamescopeInstance</ref> *</type>
+          <declname>instance</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" line="22" column="30" declfile="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" declline="22" declcolumn="30"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitGamescope_8h_1aee7d23847390ceba497b63417ef6e085" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
+        <definition>MAA_TOOLKIT_API const char * MaaToolkitGamescopeInstanceGetEisSocketPath</definition>
+        <argsstring>(const MaaToolkitGamescopeInstance *instance)</argsstring>
+        <name>MaaToolkitGamescopeInstanceGetEisSocketPath</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1ac71e783ebe24075d46badf4636d7a7f7" kindref="member">MaaToolkitGamescopeInstance</ref> *</type>
+          <declname>instance</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" line="23" column="32" declfile="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h" declline="23" declcolumn="32"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaToolkit/Gamescope/MaaToolkitGamescope.h"/>
+  </compounddef>
+</doxygen>

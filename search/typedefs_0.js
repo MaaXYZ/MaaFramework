@@ -64,10 +64,12 @@ var searchData=
   ['maatoolkitadbdevicelist_61',['MaaToolkitAdbDeviceList',['../MaaToolkitDef_8h.html#a61bc7b4be1b04be75314fe7d088b0bc6',1,'MaaToolkitDef.h']]],
   ['maatoolkitdesktopwindow_62',['MaaToolkitDesktopWindow',['../MaaToolkitDef_8h.html#a5d8743988770806277c247ba9e84040a',1,'MaaToolkitDef.h']]],
   ['maatoolkitdesktopwindowlist_63',['MaaToolkitDesktopWindowList',['../MaaToolkitDef_8h.html#aaf164274a2c0089edb67f33e26719ff0',1,'MaaToolkitDef.h']]],
-  ['maatoolkitportalhelper_64',['MaaToolkitPortalHelper',['../MaaToolkitDef_8h.html#a3844e7dc93bd5cb708f6ebe26f1b765a',1,'MaaToolkitDef.h']]],
-  ['maawfid_65',['MaaWfId',['../MaaDef_8h.html#a3c8f6095f8a7b0b3ad6c971a4f45c333',1,'MaaDef.h']]],
-  ['maawin32controlunithandle_66',['MaaWin32ControlUnitHandle',['../ControlUnitAPI_8h.html#a65786017771209552b0f1836a58deef0',1,'ControlUnitAPI.h']]],
-  ['maawin32inputmethod_67',['MaaWin32InputMethod',['../MaaDef_8h.html#a29af4457ff72b57b157a1d58d6d28878',1,'MaaDef.h']]],
-  ['maawin32screencapmethod_68',['MaaWin32ScreencapMethod',['../MaaDef_8h.html#a23833339ba6406d680688350d27d37b3',1,'MaaDef.h']]],
-  ['maawlrootscontrolunithandle_69',['MaaWlRootsControlUnitHandle',['../ControlUnitAPI_8h.html#a90dbe472da4513958b9a3adf77bc7378',1,'ControlUnitAPI.h']]]
+  ['maatoolkitgamescopeinstance_64',['MaaToolkitGamescopeInstance',['../MaaToolkitDef_8h.html#ac71e783ebe24075d46badf4636d7a7f7',1,'MaaToolkitDef.h']]],
+  ['maatoolkitgamescopeinstancelist_65',['MaaToolkitGamescopeInstanceList',['../MaaToolkitDef_8h.html#a10ef1849a46a42c93c9f8a9e6be9e55a',1,'MaaToolkitDef.h']]],
+  ['maatoolkitportalhelper_66',['MaaToolkitPortalHelper',['../MaaToolkitDef_8h.html#a3844e7dc93bd5cb708f6ebe26f1b765a',1,'MaaToolkitDef.h']]],
+  ['maawfid_67',['MaaWfId',['../MaaDef_8h.html#a3c8f6095f8a7b0b3ad6c971a4f45c333',1,'MaaDef.h']]],
+  ['maawin32controlunithandle_68',['MaaWin32ControlUnitHandle',['../ControlUnitAPI_8h.html#a65786017771209552b0f1836a58deef0',1,'ControlUnitAPI.h']]],
+  ['maawin32inputmethod_69',['MaaWin32InputMethod',['../MaaDef_8h.html#a29af4457ff72b57b157a1d58d6d28878',1,'MaaDef.h']]],
+  ['maawin32screencapmethod_70',['MaaWin32ScreencapMethod',['../MaaDef_8h.html#a23833339ba6406d680688350d27d37b3',1,'MaaDef.h']]],
+  ['maawlrootscontrolunithandle_71',['MaaWlRootsControlUnitHandle',['../ControlUnitAPI_8h.html#a90dbe472da4513958b9a3adf77bc7378',1,'ControlUnitAPI.h']]]
 ];
