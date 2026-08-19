@@ -120,7 +120,7 @@ declare global {
          * | SendMessageWithWindowPos     | Medium        | Maybe         | No           | Yes                | Moves window to align target with cursor, then restores     |
          * | PostMessageWithWindowPos     | Medium        | Maybe         | No           | Yes                | Moves window to align target with cursor, then restores     |
          * | Interception                 | Medium        | Yes           | No           | No                 | Driver-level input injection via the Interception driver    |
-         * | AnchoredTouch                | Medium        | No            | No           | Yes                | Injects synthetic touch points, never moves the cursor       |
+         * | AnchoredTouch                | Medium        | Maybe         | No           | Yes                | Injects synthetic touch points, never moves the cursor       |
          *
          * Note:
          * - Admin rights mainly depend on the target application's privilege level.

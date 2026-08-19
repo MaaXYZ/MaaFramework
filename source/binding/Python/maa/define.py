@@ -473,7 +473,7 @@ class MaaWin32InputMethodEnum(IntEnum):
     | SendMessageWithWindowPos | Medium | Maybe | No          | Yes| Moves window to align w/ cursor, rest.|
     | PostMessageWithWindowPos | Medium | Maybe | No          | Yes| Moves window to align w/ cursor, rest.|
     | Interception             | Medium | Yes   | No          | No | Driver-level input injection via Interception driver |
-    | AnchoredTouch            | Medium | No    | No          | Yes| Injects synthetic touch points, never moves the cursor |
+    | AnchoredTouch            | Medium | Maybe | No          | Yes| Injects synthetic touch points, never moves the cursor |
 
     Note:
     - Admin rights mainly depend on the target application's privilege level.
