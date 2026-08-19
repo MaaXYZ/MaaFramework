@@ -786,10 +786,11 @@ maajs::PromiseType LinuxControllerImpl::find_gamescope_instances(maajs::EnvType 
         result.reserve(size);
         for (size_t i = 0; i < size; i++) {
             auto instance = MaaToolkitGamescopeInstanceListAt(lst, i);
-            result.push_back(std::make_tuple(
-                MaaToolkitGamescopeInstanceGetDisplayNo(instance),
-                MaaToolkitGamescopeInstanceGetPipeWireNodeId(instance),
-                std::string(MaaToolkitGamescopeInstanceGetEisSocketPath(instance))));
+            result.push_back(
+                std::make_tuple(
+                    MaaToolkitGamescopeInstanceGetDisplayNo(instance),
+                    MaaToolkitGamescopeInstanceGetPipeWireNodeId(instance),
+                    std::string(MaaToolkitGamescopeInstanceGetEisSocketPath(instance))));
         }
         MaaToolkitGamescopeInstanceListDestroy(lst);
 

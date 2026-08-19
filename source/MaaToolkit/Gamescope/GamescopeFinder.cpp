@@ -67,7 +67,9 @@ void handle_global(void* data, wl_registry* registry, uint32_t name, const char*
     }
 }
 
-void handle_global_remove(void* /*data*/, wl_registry* /*registry*/, uint32_t /*name*/) {}
+void handle_global_remove(void* /*data*/, wl_registry* /*registry*/, uint32_t /*name*/)
+{
+}
 
 void handle_stream_node(void* data, gamescope_pipewire* /*pipewire*/, uint32_t node_id)
 {
@@ -126,7 +128,7 @@ std::vector<GamescopeInstance> GamescopeFinder::find_all()
     std::vector<GamescopeInstance> instances;
     auto dir = runtime_dir();
 
-    std::error_code ec = {};
+    std::error_code ec = { };
     std::filesystem::directory_iterator it(dir, ec);
     if (ec) {
         LogWarn << "failed to open runtime dir" << VAR(dir) << VAR(ec.message());
@@ -159,7 +161,8 @@ std::vector<GamescopeInstance> GamescopeFinder::find_all()
             instance.eis_socket_path = eis_path.string();
         }
 
-        LogInfo << "Found gamescope instance" << VAR(instance.display_no) << VAR(instance.pipewire_node_id) << VAR(instance.eis_socket_path);
+        LogInfo << "Found gamescope instance" << VAR(instance.display_no) << VAR(instance.pipewire_node_id)
+                << VAR(instance.eis_socket_path);
         instances.push_back(std::move(instance));
     }
 
@@ -184,7 +187,7 @@ GamescopeFinder& GamescopeFinder::get_instance()
 
 std::vector<GamescopeInstance> GamescopeFinder::find_all()
 {
-    return {};
+    return { };
 }
 
 MAA_TOOLKIT_NS_END

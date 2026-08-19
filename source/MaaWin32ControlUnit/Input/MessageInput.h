@@ -27,6 +27,7 @@ public:
         Mode mode = Mode::SendMessage;
         bool with_cursor_pos = false;
         bool with_window_pos = false;
+        bool track_hardware_mouse = true;
         bool block_input = false;
     };
 
