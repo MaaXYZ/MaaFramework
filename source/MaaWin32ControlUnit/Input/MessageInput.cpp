@@ -333,14 +333,7 @@ void MessageInput::finish_pos()
         restore_cursor_pos();
     }
     else if (config_.with_window_pos) {
-        if (config_.track_hardware_mouse) {
-            stop_window_tracking();
-        }
-        else {
-            // Without tracking there is no pending hardware delta, so every completion path can restore immediately.
-            restore_window_pos();
-            reset_windowpos_guard_state();
-        }
+        stop_window_tracking();
     }
 }
 
@@ -348,8 +341,7 @@ void MessageInput::restore_pos()
 {
     finish_pos();
 
-    // No-tracking mode has already restored in finish_pos(). Tracking mode still needs a forced restore here.
-    if (config_.with_window_pos && config_.track_hardware_mouse) {
+    if (config_.with_window_pos) {
         restore_window_pos();
         reset_windowpos_guard_state();
     }
@@ -1063,11 +1055,12 @@ bool MessageInput::touch_up(int contact)
         return false;
     }
 
-    // Tracking mode keeps the window aligned briefly after touch_up.
+    // Match the tracked WindowPos lifecycle: successful gestures keep the window at its current
+    // offset. inactive(), destruction, and failure paths restore the saved position.
     if (config_.with_window_pos && config_.track_hardware_mouse) {
         request_stop_window_tracking();
     }
-    else {
+    else if (!config_.with_window_pos) {
         finish_pos();
     }
 
@@ -1185,7 +1178,7 @@ bool MessageInput::scroll(int dx, int dy)
     if (config_.with_window_pos && config_.track_hardware_mouse) {
         request_stop_window_tracking();
     }
-    else {
+    else if (!config_.with_window_pos) {
         finish_pos();
     }
 
