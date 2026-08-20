@@ -84,6 +84,7 @@ protected:
     void set_timeout(const std::chrono::milliseconds& timeout);
 
 private:
+    void create_pair_socket();
     bool send_impl(const json::value& j);
     void handle_image(const ImageHeader& header);
     void handle_image_encoded(const ImageEncodedHeader& header);
