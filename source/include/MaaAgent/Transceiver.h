@@ -76,12 +76,14 @@ protected:
     void uninit_socket();
 
     bool send(const json::value& j);
+    bool send_no_wait(const json::value& j);
     std::optional<json::value> recv();
 
     bool alive();
     void set_timeout(const std::chrono::milliseconds& timeout);
 
 private:
+    bool send_impl(const json::value& j);
     void handle_image(const ImageHeader& header);
     void handle_image_encoded(const ImageEncodedHeader& header);
     bool poll(zmq::pollitem_t& pollitem);

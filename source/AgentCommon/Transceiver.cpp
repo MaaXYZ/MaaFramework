@@ -305,6 +305,17 @@ bool Transceiver::send(const json::value& j)
         return false;
     }
 
+    return send_impl(j);
+}
+
+bool Transceiver::send_no_wait(const json::value& j)
+{
+    std::unique_lock lock(socket_mutex_);
+    return send_impl(j);
+}
+
+bool Transceiver::send_impl(const json::value& j)
+{
     std::string jstr = j.dumps();
     zmq::message_t msg(jstr.data(), jstr.size());
 

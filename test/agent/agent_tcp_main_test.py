@@ -12,6 +12,7 @@ from pathlib import Path
 import socket
 import sys
 import subprocess
+import time
 
 if len(sys.argv) < 3:
     print("Usage: python agent_tcp_main_test.py <binding_dir> <install_dir>")
@@ -39,6 +40,40 @@ from maa.custom_action import CustomAction
 class ConflictingAction(CustomAction):
     def run(self, context, argv):
         return True
+
+
+def run_startup_failure_test(
+    agent: AgentClient,
+    socket_id: str,
+    mode: str,
+    timeout_ms: int,
+):
+    executable_name = "AgentFaultServer.exe" if sys.platform == "win32" else "AgentFaultServer"
+    executable = install_dir / "bin" / executable_name
+    child_process = subprocess.Popen(
+        [str(executable), mode, socket_id],
+        stdout=subprocess.PIPE,
+        text=True,
+    )
+
+    try:
+        assert child_process.stdout is not None
+        ready_message = child_process.stdout.readline().strip()
+        assert ready_message == "ready", f"{mode} server failed before readiness: {ready_message}"
+        assert agent.set_timeout(timeout_ms)
+        started_at = time.monotonic()
+        assert not agent.connect(), f"connect should fail in {mode} mode"
+        elapsed = time.monotonic() - started_at
+        assert elapsed < 2, f"{mode} cleanup should be bounded, took {elapsed:.3f}s"
+        child_process.wait(timeout=10)
+        assert child_process.returncode == 0, f"{mode} server should receive automatic shutdown"
+    finally:
+        if child_process.poll() is None:
+            child_process.terminate()
+            child_process.wait(timeout=10)
+
+    assert agent.set_timeout(-1)
+
 
 NUMERIC_IDENTIFIER_FLAG = "--numeric-identifier-flow"
 
@@ -76,7 +111,13 @@ def reserve_tcp_port():
         return sock.getsockname()[1]
 
 
-def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
+def run_tcp_flow(
+    agent: AgentClient,
+    socket_id: str,
+    *,
+    scenario: str,
+    test_startup_failures: bool = False,
+):
     resource, dbg_controller, tasker = prepare_runtime()
 
     print(f"agent ({scenario}): {agent}")
@@ -99,6 +140,17 @@ def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
         print("failed to register sink")
         exit(1)
     print("agent.register_sink() succeeded")
+
+    if test_startup_failures:
+        run_startup_failure_test(agent, socket_id, "protocol-mismatch", 5000)
+        run_startup_failure_test(agent, socket_id, "drop-startup-response", 200)
+        fault_conflict = ConflictingAction()
+        assert resource.register_custom_action("FaultConflict", fault_conflict)
+        try:
+            run_startup_failure_test(agent, socket_id, "registration-conflict", 5000)
+            assert "FaultConflict" in resource.custom_action_list
+        finally:
+            assert resource.unregister_custom_action("FaultConflict")
 
     # ============================================================
     # 超时测试
@@ -140,9 +192,8 @@ def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
         assert not agent.connected, "agent should remain disconnected after registration rollback"
         assert "MyAct" in resource.custom_action_list, "existing custom action should be preserved"
         assert "MyRec" not in resource.custom_recognition_list, "agent registrations should be rolled back"
-        assert agent.disconnect(), "disconnect should stop the server after registration rollback"
         child_process.wait(timeout=10)
-        assert child_process.returncode == 0
+        assert child_process.returncode == 0, "failed connect should stop the server automatically"
     finally:
         if child_process.poll() is None:
             agent.disconnect()
@@ -150,7 +201,6 @@ def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
             child_process.wait(timeout=10)
 
     assert resource.unregister_custom_action("MyAct")
-    assert agent.register_sink(resource, dbg_controller, tasker)
 
     child_process = subprocess.Popen(
         [
@@ -286,7 +336,12 @@ def api_test():
     # AgentClient TCP API 测试: 显式 create_tcp
     # ============================================================
     agent = AgentClient.create_tcp(0)
-    run_tcp_flow(agent, agent.identifier, scenario="create_tcp flow")
+    run_tcp_flow(
+        agent,
+        agent.identifier,
+        scenario="create_tcp flow",
+        test_startup_failures=True,
+    )
 
     # ============================================================
     # AgentClient TCP API 测试: 纯数字 identifier 自动走 TCP

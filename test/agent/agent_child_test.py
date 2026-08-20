@@ -390,6 +390,8 @@ assert not AgentServer.register_custom_action("MyRec", MyAction())
 assert not AgentServer.register_custom_recognition("MyAct", MyRecognition())
 assert AgentServer._custom_recognition_holder["MyRec"] is original_reco
 assert AgentServer._custom_action_holder["MyAct"] is original_action
+assert AgentServer.register_custom_recognition("CaseSensitive", MyRecognition())
+assert AgentServer.register_custom_action("casesensitive", MyAction())
 
 try:
     AgentServer.custom_recognition("MyAct")(MyRecognition)

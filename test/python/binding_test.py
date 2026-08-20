@@ -287,6 +287,8 @@ def test_resource_api():
     assert not resource.register_custom_recognition("MyAct", duplicate_reco)
     assert resource._custom_recognition_holder["MyRec"] is my_reco
     assert resource._custom_action_holder["MyAct"] is my_action
+    assert resource.register_custom_recognition("CaseSensitive", MyRecognition())
+    assert resource.register_custom_action("casesensitive", MyAction())
 
     try:
         resource.custom_recognition("MyAct")(MyRecognition)
