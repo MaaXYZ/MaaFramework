@@ -382,6 +382,35 @@ class MyAction(CustomAction):
         return CustomAction.RunResult(success=True)
 
 
+original_reco = AgentServer._custom_recognition_holder["MyRec"]
+original_action = AgentServer._custom_action_holder["MyAct"]
+assert not AgentServer.register_custom_recognition("MyRec", MyRecognition())
+assert not AgentServer.register_custom_action("MyAct", MyAction())
+assert not AgentServer.register_custom_action("MyRec", MyAction())
+assert not AgentServer.register_custom_recognition("MyAct", MyRecognition())
+assert AgentServer._custom_recognition_holder["MyRec"] is original_reco
+assert AgentServer._custom_action_holder["MyAct"] is original_action
+
+try:
+    AgentServer.custom_recognition("MyAct")(MyRecognition)
+    assert False, "duplicate custom decorator should raise RuntimeError"
+except RuntimeError as error:
+    assert str(error) == "Custom name is already registered: 'MyAct'"
+
+try:
+    AgentServer.custom_action("MyRec")(MyAction)
+    assert False, "duplicate custom decorator should raise RuntimeError"
+except RuntimeError as error:
+    assert str(error) == "Custom name is already registered: 'MyRec'"
+
+for custom_decorator in [AgentServer.custom_recognition, AgentServer.custom_action]:
+    try:
+        custom_decorator("")
+        assert False, "empty custom name should raise ValueError"
+    except ValueError as error:
+        assert str(error) == "Custom name must not be empty"
+
+
 # ============================================================================
 # Event Sink 装饰器方式注册
 # ============================================================================

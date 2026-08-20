@@ -363,12 +363,20 @@ class Resource:
 
         Returns:
             装饰器函数 / Decorator function
+
+        Raises:
+            ValueError: 名称为空 / The name is empty
+            RuntimeError: 名称已被注册 / The name is already registered
         """
+
+        if not name:
+            raise ValueError("Custom name must not be empty")
 
         def wrapper_recognition(
             recognition: type["CustomRecognition"],
         ) -> type["CustomRecognition"]:
-            self.register_custom_recognition(name=name, recognition=recognition())
+            if not self.register_custom_recognition(name=name, recognition=recognition()):
+                raise RuntimeError(f"Custom name is already registered: {name!r}")
             return recognition
 
         return wrapper_recognition
@@ -387,10 +395,7 @@ class Resource:
         Returns:
             bool: 是否成功 / Whether successful
         """
-        # avoid gc
-        self._custom_recognition_holder[name] = recognition
-
-        return bool(
+        success = bool(
             Library.framework().MaaResourceRegisterCustomRecognition(
                 self._handle,
                 name.encode(),
@@ -398,6 +403,11 @@ class Resource:
                 recognition.c_arg,
             )
         )
+        if success:
+            # avoid gc
+            self._custom_recognition_holder[name] = recognition
+
+        return success
 
     def unregister_custom_recognition(self, name: str) -> bool:
         """移除自定义识别器 / Remove the custom recognizer
@@ -440,10 +450,18 @@ class Resource:
 
         Returns:
             装饰器函数 / Decorator function
+
+        Raises:
+            ValueError: 名称为空 / The name is empty
+            RuntimeError: 名称已被注册 / The name is already registered
         """
 
+        if not name:
+            raise ValueError("Custom name must not be empty")
+
         def wrapper_action(action: type["CustomAction"]) -> type["CustomAction"]:
-            self.register_custom_action(name=name, action=action())
+            if not self.register_custom_action(name=name, action=action()):
+                raise RuntimeError(f"Custom name is already registered: {name!r}")
             return action
 
         return wrapper_action
@@ -458,10 +476,7 @@ class Resource:
         Returns:
             bool: 是否成功 / Whether successful
         """
-        # avoid gc
-        self._custom_action_holder[name] = action
-
-        return bool(
+        success = bool(
             Library.framework().MaaResourceRegisterCustomAction(
                 self._handle,
                 name.encode(),
@@ -469,6 +484,11 @@ class Resource:
                 action.c_arg,
             )
         )
+        if success:
+            # avoid gc
+            self._custom_action_holder[name] = action
+
+        return success
 
     def unregister_custom_action(self, name: str) -> bool:
         """移除自定义操作 / Remove the custom action
