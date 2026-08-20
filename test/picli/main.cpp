@@ -68,9 +68,6 @@ bool test_welcome_items()
 bool test_invalid_welcome_items()
 {
     return check(!parse_interface("[]"), "empty welcome array should be rejected")
-bool test_invalid_welcome_items()
-{
-    return check(!parse_interface("[]"), "empty welcome array should be rejected")
            && check(!parse_interface(R"([{ "label": "Missing content" }])"), "welcome content should be required")
            && check(
                !parse_interface(R"([{ "content": "Notice", "unexpected": true }])"),
