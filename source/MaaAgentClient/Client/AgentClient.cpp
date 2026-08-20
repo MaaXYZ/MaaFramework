@@ -165,6 +165,7 @@ bool AgentClient::connect()
     }
 
     clear_custom_registration();
+    connected_ = false;
 
     auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest { });
 
@@ -184,15 +185,22 @@ bool AgentClient::connect()
 
     for (const auto& reco : resp.recognitions) {
         LogInfo << "register recognition" << VAR(reco);
-        bound_res_->register_custom_recognition(reco, reco_agent, this);
+        if (!bound_res_->register_custom_recognition(reco, reco_agent, this)) {
+            LogError << "failed to register recognition" << VAR(reco);
+            clear_custom_registration();
+            return false;
+        }
+        registered_recognitions_.emplace_back(reco);
     }
     for (const auto& act : resp.actions) {
         LogInfo << "register action" << VAR(act);
-        bound_res_->register_custom_action(act, action_agent, this);
+        if (!bound_res_->register_custom_action(act, action_agent, this)) {
+            LogError << "failed to register action" << VAR(act);
+            clear_custom_registration();
+            return false;
+        }
+        registered_actions_.emplace_back(act);
     }
-
-    registered_recognitions_ = resp.recognitions;
-    registered_actions_ = resp.actions;
 
     connected_ = true;
     return true;

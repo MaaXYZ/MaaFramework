@@ -276,8 +276,40 @@ def test_resource_api():
     # 测试自定义识别/动作注册
     my_reco = MyRecognition()
     my_action = MyAction()
-    resource.register_custom_recognition("MyRec", my_reco)
-    resource.register_custom_action("MyAct", my_action)
+    assert resource.register_custom_recognition("MyRec", my_reco)
+    assert resource.register_custom_action("MyAct", my_action)
+
+    duplicate_reco = MyRecognition()
+    duplicate_action = MyAction()
+    assert not resource.register_custom_recognition("MyRec", duplicate_reco)
+    assert not resource.register_custom_action("MyAct", duplicate_action)
+    assert not resource.register_custom_action("MyRec", duplicate_action)
+    assert not resource.register_custom_recognition("MyAct", duplicate_reco)
+    assert resource._custom_recognition_holder["MyRec"] is my_reco
+    assert resource._custom_action_holder["MyAct"] is my_action
+    assert resource.register_custom_recognition("CaseSensitive", MyRecognition())
+    assert resource.register_custom_action("casesensitive", MyAction())
+    assert not resource.register_custom_recognition("", MyRecognition())
+    assert not resource.register_custom_action("", MyAction())
+
+    try:
+        resource.custom_recognition("MyAct")(MyRecognition)
+        assert False, "duplicate custom decorator should raise RuntimeError"
+    except RuntimeError as error:
+        assert str(error) == "Custom name is already registered: 'MyAct'"
+
+    try:
+        resource.custom_action("MyRec")(MyAction)
+        assert False, "duplicate custom decorator should raise RuntimeError"
+    except RuntimeError as error:
+        assert str(error) == "Custom name is already registered: 'MyRec'"
+
+    for custom_decorator in [resource.custom_recognition, resource.custom_action]:
+        try:
+            custom_decorator("")
+            assert False, "empty custom name should raise ValueError"
+        except ValueError as error:
+            assert str(error) == "Custom name must not be empty"
 
     # 测试 custom_recognition_list 和 custom_action_list
     reco_list = resource.custom_recognition_list
@@ -300,8 +332,8 @@ def test_resource_api():
     assert "MyAct" not in action_list_after, "MyAct should be unregistered"
 
     # 重新注册用于后续测试
-    resource.register_custom_recognition("MyRec", my_reco)
-    resource.register_custom_action("MyAct", my_action)
+    assert resource.register_custom_recognition("MyRec", my_reco)
+    assert resource.register_custom_action("MyAct", my_action)
 
     # 测试 override_pipeline (resource 级别)
     # 先创建被引用的节点

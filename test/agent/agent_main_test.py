@@ -32,6 +32,12 @@ from maa.controller import DbgController
 from maa.tasker import Tasker
 from maa.agent_client import AgentClient
 from maa.toolkit import Toolkit
+from maa.custom_action import CustomAction
+
+
+class ConflictingAction(CustomAction):
+    def run(self, context, argv):
+        return True
 
 
 def api_test():
@@ -118,6 +124,14 @@ def api_test():
             socket_id,
         ],
     )
+
+    conflicting_action = ConflictingAction()
+    assert resource.register_custom_action("MyAct", conflicting_action)
+    assert not agent.connect(), "connect should fail on duplicate custom name"
+    assert not agent.connected, "agent should remain disconnected after registration rollback"
+    assert "MyAct" in resource.custom_action_list, "existing custom action should be preserved"
+    assert "MyRec" not in resource.custom_recognition_list, "agent registrations should be rolled back"
+    assert resource.unregister_custom_action("MyAct")
 
     # 等待连接
     if not agent.connect():

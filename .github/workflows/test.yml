@@ -154,6 +154,7 @@ jobs:
                   cd test/nodejs
                   pnpm i
                   node binding.ts
+                  node server.ts
 
             - uses: actions/upload-artifact@v7
               if: always()
@@ -356,6 +357,7 @@ jobs:
                   cd test/nodejs
                   pnpm i
                   node binding.ts
+                  node server.ts
 
             - uses: actions/upload-artifact@v7
               if: always()
@@ -486,6 +488,7 @@ jobs:
                   cd test/nodejs
                   pnpm i
                   node binding.ts
+                  node server.ts
 
             - uses: actions/upload-artifact@v7
               if: always()
