@@ -46,6 +46,7 @@ from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.library import Library
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
+from agent_test_utils import record_sink_event, signal_server_ready
 
 
 analyzed: bool = False
@@ -58,7 +59,8 @@ def main():
         exit(1)
 
     socket_id = sys.argv[-1]
-    AgentServer.start_up(socket_id)
+    assert AgentServer.start_up(socket_id)
+    signal_server_ready()
     AgentServer.join()
     AgentServer.shut_down()
 
@@ -423,24 +425,28 @@ for custom_decorator in [AgentServer.custom_recognition, AgentServer.custom_acti
 @AgentServer.resource_sink()
 class MyResSink(ResourceEventSink):
     def on_raw_notification(self, resource, msg: str, details: dict):
+        record_sink_event("resource")
         print(f"[ResourceSink] msg: {msg}")
 
 
 @AgentServer.controller_sink()
 class MyCtrlSink(ControllerEventSink):
     def on_raw_notification(self, controller, msg: str, details: dict):
+        record_sink_event("controller")
         print(f"[ControllerSink] msg: {msg}")
 
 
 @AgentServer.tasker_sink()
 class MyTaskerSink(TaskerEventSink):
     def on_raw_notification(self, tasker, msg: str, details: dict):
+        record_sink_event("tasker")
         print(f"[TaskerSink] msg: {msg}")
 
 
 @AgentServer.context_sink()
 class MyCtxSink(ContextEventSink):
     def on_raw_notification(self, context, msg: str, details: dict):
+        record_sink_event("context")
         print(f"[ContextSink] msg: {msg}")
 
 

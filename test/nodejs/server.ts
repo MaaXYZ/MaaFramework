@@ -1,19 +1,8 @@
 import './maa-server.ts'
+import { expectRegistrationError } from './custom-registration.ts'
 
 const myReco: maa.CustomRecognitionCallback = () => [[0, 0, 0, 0], 'NodeServerRec']
 const myAct: maa.CustomActionCallback = () => true
-
-function expectRegistrationError(register: () => void, expectedMessage: string) {
-    let errorMessage = ''
-    try {
-        register()
-    } catch (error) {
-        errorMessage = error instanceof Error ? error.message : String(error)
-    }
-    if (!errorMessage.includes(expectedMessage)) {
-        throw new Error(`unexpected custom registration error: ${errorMessage}`)
-    }
-}
 
 async function main() {
     console.log('MaaFw Version:', maa.Global)

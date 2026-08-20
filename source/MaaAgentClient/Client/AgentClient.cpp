@@ -15,6 +15,11 @@
 
 MAA_AGENT_CLIENT_NS_BEGIN
 
+namespace
+{
+constexpr std::chrono::milliseconds kShutdownSocketLinger { 200 };
+}
+
 AgentClient::AgentClient(const std::string& identifier)
 {
     LogFunc;
@@ -164,6 +169,8 @@ bool AgentClient::connect()
         return false;
     }
 
+    reset_socket_if_needed();
+
     clear_custom_registration();
     connected_ = false;
     remote_session_may_have_started_ = true;
@@ -216,6 +223,7 @@ bool AgentClient::disconnect()
 
     connected_ = false;
     shutdown_remote_session(ShutdownMode::WaitForResponse);
+    reset_socket_if_needed();
     return true;
 }
 
@@ -233,26 +241,41 @@ bool AgentClient::abort_connect()
 {
     clear_custom_registration();
     connected_ = false;
-    shutdown_remote_session(ShutdownMode::SendOnly);
+    const bool shutdown_queued = shutdown_remote_session(ShutdownMode::SendOnly);
+    // Give the queued one-way shutdown a bounded drain window before replacing the socket.
+    reset_socket_if_needed(shutdown_queued ? kShutdownSocketLinger : std::chrono::milliseconds(0));
     return false;
 }
 
-void AgentClient::shutdown_remote_session(ShutdownMode mode)
+bool AgentClient::shutdown_remote_session(ShutdownMode mode)
 {
     if (!remote_session_may_have_started_) {
-        return;
+        return false;
     }
 
+    bool shutdown_queued = false;
     if (alive()) {
         if (mode == ShutdownMode::WaitForResponse) {
             send_and_recv<ShutDownResponse>(ShutDownRequest { });
         }
         else {
-            send_no_wait(ShutDownRequest { });
+            shutdown_queued = send_no_wait(ShutDownRequest { });
         }
     }
 
     remote_session_may_have_started_ = false;
+    socket_needs_reset_ = true;
+    return shutdown_queued;
+}
+
+void AgentClient::reset_socket_if_needed(std::chrono::milliseconds linger)
+{
+    if (!socket_needs_reset_) {
+        return;
+    }
+
+    reset_socket(linger);
+    socket_needs_reset_ = false;
 }
 
 void AgentClient::set_timeout(const std::chrono::milliseconds& timeout)
