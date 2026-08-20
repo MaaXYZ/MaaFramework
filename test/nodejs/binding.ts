@@ -79,6 +79,18 @@ const myAct: maa.CustomActionCallback = async self => {
     return true
 }
 
+function expectRegistrationError(register: () => void, expectedMessage: string) {
+    let errorMessage = ''
+    try {
+        register()
+    } catch (error) {
+        errorMessage = error instanceof Error ? error.message : String(error)
+    }
+    if (!errorMessage.includes(expectedMessage)) {
+        throw new Error(`unexpected custom registration error: ${errorMessage}`)
+    }
+}
+
 async function api_test() {
     const r1 = new maa.Resource()
     r1.inference_execution_provider = 'DirectML'
@@ -153,15 +165,7 @@ async function api_test() {
             expectedMessage: 'Custom name must not be empty'
         }
     ]) {
-        let errorMessage = ''
-        try {
-            register()
-        } catch (error) {
-            errorMessage = error instanceof Error ? error.message : String(error)
-        }
-        if (!errorMessage.includes(expectedMessage)) {
-            throw new Error(`unexpected custom registration error: ${errorMessage}`)
-        }
+        expectRegistrationError(register, expectedMessage)
     }
 
     const ppover = {

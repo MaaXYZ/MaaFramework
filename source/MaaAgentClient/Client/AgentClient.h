@@ -167,6 +167,16 @@ public:
     void clear_controller_sink();
     void clear_tasker_sink();
 
+private:
+    enum class ShutdownMode
+    {
+        SendOnly,
+        WaitForResponse,
+    };
+
+    bool abort_connect();
+    void shutdown_remote_session(ShutdownMode mode);
+
 public:
     static void res_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg);
     static void ctrl_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg);
@@ -187,7 +197,7 @@ private:
     MaaSinkId reg_ctrl_sink_id_ = MaaInvalidId;
 
     bool connected_ = false;
-    bool remote_session_started_ = false;
+    bool remote_session_may_have_started_ = false;
     std::string identifier_;
 
     std::map<std::string, MaaContext*> context_map_;
