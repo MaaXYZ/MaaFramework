@@ -175,6 +175,7 @@ bool AgentClient::connect()
     }
     const auto& resp = *resp_opt;
     LogInfo << VAR(resp);
+    remote_session_started_ = true;
 
     if (resp.protocol != kProtocolVersion) {
         LogError << "Protocol version mismatch" << "client:" << VAR(MAA_VERSION) << VAR(kProtocolVersion) << "server:" << VAR(resp.version)
@@ -215,7 +216,7 @@ bool AgentClient::disconnect()
     clear_resource_sink();
     clear_tasker_sink();
 
-    if (!connected()) {
+    if (!remote_session_started_) {
         return true;
     }
 
@@ -224,6 +225,7 @@ bool AgentClient::disconnect()
     }
 
     connected_ = false;
+    remote_session_started_ = false;
     return true;
 }
 

@@ -123,7 +123,7 @@ def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
     # ============================================================
     # 启动 AgentServer 子进程 (TCP 模式)
     # ============================================================
-    subprocess.Popen(
+    child_process = subprocess.Popen(
         [
             sys.executable,
             str(Path(__file__).parent / "agent_tcp_child_test.py"),
@@ -133,13 +133,34 @@ def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
         ],
     )
 
-    conflicting_action = ConflictingAction()
-    assert resource.register_custom_action("MyAct", conflicting_action)
-    assert not agent.connect(), "connect should fail on duplicate custom name"
-    assert not agent.connected, "agent should remain disconnected after registration rollback"
-    assert "MyAct" in resource.custom_action_list, "existing custom action should be preserved"
-    assert "MyRec" not in resource.custom_recognition_list, "agent registrations should be rolled back"
+    try:
+        conflicting_action = ConflictingAction()
+        assert resource.register_custom_action("MyAct", conflicting_action)
+        assert not agent.connect(), "connect should fail on duplicate custom name"
+        assert not agent.connected, "agent should remain disconnected after registration rollback"
+        assert "MyAct" in resource.custom_action_list, "existing custom action should be preserved"
+        assert "MyRec" not in resource.custom_recognition_list, "agent registrations should be rolled back"
+        assert agent.disconnect(), "disconnect should stop the server after registration rollback"
+        child_process.wait(timeout=10)
+        assert child_process.returncode == 0
+    finally:
+        if child_process.poll() is None:
+            agent.disconnect()
+            child_process.terminate()
+            child_process.wait(timeout=10)
+
     assert resource.unregister_custom_action("MyAct")
+    assert agent.register_sink(resource, dbg_controller, tasker)
+
+    child_process = subprocess.Popen(
+        [
+            sys.executable,
+            str(Path(__file__).parent / "agent_tcp_child_test.py"),
+            str(binding_dir),
+            str(install_dir),
+            socket_id,
+        ],
+    )
 
     # 等待连接
     if not agent.connect():
@@ -219,6 +240,8 @@ def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
         print("failed to disconnect")
         exit(1)
     print("agent.disconnect() succeeded")
+    child_process.wait(timeout=10)
+    assert child_process.returncode == 0
 
     # 验证断开连接后的状态
     print(f"agent.connected after disconnect: {agent.connected}")
