@@ -252,6 +252,30 @@ void Transceiver::uninit_socket()
     }
 }
 
+void Transceiver::reset_socket(std::chrono::milliseconds linger)
+{
+    std::unique_lock lock(socket_mutex_);
+
+    zmq_sock_.set(zmq::sockopt::linger, static_cast<int>(linger.count()));
+    zmq_sock_.close();
+
+    if (is_bound_ && !is_tcp_) {
+        std::error_code ec;
+        std::filesystem::remove(ipc_path_, ec);
+    }
+
+    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
+    zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
+    zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
+
+    if (is_bound_) {
+        zmq_sock_.bind(ipc_addr_);
+    }
+    else {
+        zmq_sock_.connect(ipc_addr_);
+    }
+}
+
 bool Transceiver::alive()
 {
     std::unique_lock lock(socket_mutex_);

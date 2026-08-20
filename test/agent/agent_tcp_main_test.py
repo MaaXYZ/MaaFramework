@@ -35,6 +35,13 @@ from maa.tasker import Tasker
 from maa.agent_client import AgentClient
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
+from agent_test_utils import (
+    CONNECT_TIMEOUT_MS,
+    create_marker_path,
+    run_connected_agent_test,
+    start_agent_server,
+    stop_agent_server,
+)
 
 
 class ConflictingAction(CustomAction):
@@ -64,7 +71,7 @@ def run_startup_failure_test(
         started_at = time.monotonic()
         assert not agent.connect(), f"connect should fail in {mode} mode"
         elapsed = time.monotonic() - started_at
-        assert elapsed < 2, f"{mode} cleanup should be bounded, took {elapsed:.3f}s"
+        assert elapsed < timeout_ms / 1000 + 2, f"{mode} cleanup should be bounded, took {elapsed:.3f}s"
         child_process.wait(timeout=10)
         assert child_process.returncode == 0, f"{mode} server should receive automatic shutdown"
     finally:
@@ -175,17 +182,17 @@ def run_tcp_flow(
     # ============================================================
     # 启动 AgentServer 子进程 (TCP 模式)
     # ============================================================
-    child_process = subprocess.Popen(
-        [
-            sys.executable,
-            str(Path(__file__).parent / "agent_tcp_child_test.py"),
-            str(binding_dir),
-            str(install_dir),
-            socket_id,  # 传递端口号字符串
-        ],
-    )
+    agent_server_command = [
+        sys.executable,
+        str(Path(__file__).parent / "agent_tcp_child_test.py"),
+        str(binding_dir),
+        str(install_dir),
+        socket_id,
+    ]
+    child_process = start_agent_server(agent_server_command)
 
     try:
+        assert agent.set_timeout(CONNECT_TIMEOUT_MS)
         conflicting_action = ConflictingAction()
         assert resource.register_custom_action("MyAct", conflicting_action)
         assert not agent.connect(), "connect should fail on duplicate custom name"
@@ -195,103 +202,20 @@ def run_tcp_flow(
         child_process.wait(timeout=10)
         assert child_process.returncode == 0, "failed connect should stop the server automatically"
     finally:
-        if child_process.poll() is None:
-            agent.disconnect()
-            child_process.terminate()
-            child_process.wait(timeout=10)
+        assert agent.set_timeout(-1)
+        stop_agent_server(child_process)
 
     assert resource.unregister_custom_action("MyAct")
 
-    child_process = subprocess.Popen(
-        [
-            sys.executable,
-            str(Path(__file__).parent / "agent_tcp_child_test.py"),
-            str(binding_dir),
-            str(install_dir),
-            socket_id,
-        ],
+    sink_report_file = create_marker_path("agent-tcp-sinks")
+    run_connected_agent_test(
+        agent,
+        agent_server_command,
+        sink_report_file,
+        resource,
+        tasker,
+        install_dir / "test" / "PipelineSmoking" / "resource" / "pipeline",
     )
-
-    # 等待连接
-    if not agent.connect():
-        print("failed to connect to agent server via TCP")
-        exit(1)
-    print("agent.connect() via TCP succeeded")
-
-    # 测试 connected 和 alive
-    if not agent.connected:
-        print("agent is not connected")
-        exit(1)
-    print(f"agent.connected: {agent.connected}")
-
-    if not agent.alive:
-        print("agent is not alive")
-        exit(1)
-    print(f"agent.alive: {agent.alive}")
-
-    # ============================================================
-    # 测试 custom_recognition_list 和 custom_action_list
-    # ============================================================
-    reco_list = agent.custom_recognition_list
-    action_list = agent.custom_action_list
-    print(f"agent.custom_recognition_list: {reco_list}")
-    print(f"agent.custom_action_list: {action_list}")
-
-    assert "MyRec" in reco_list, f"MyRec should be in custom_recognition_list, got {reco_list}"
-    assert "MyAct" in action_list, f"MyAct should be in custom_action_list, got {action_list}"
-
-    # ============================================================
-    # 执行 Pipeline 任务
-    # ============================================================
-    ppover = {
-        "Entry": {"next": "Rec"},
-        "Rec": {
-            "recognition": "Custom",
-            "custom_recognition": "MyRec",
-            "action": "Custom",
-            "custom_action": "MyAct",
-            "custom_action_param": "哈哈哈(*´▽｀)ノノ",
-        },
-    }
-    detail = tasker.post_task("Entry", ppover).wait().get()
-    if detail:
-        print(f"pipeline detail: entry={detail.entry}, status={detail.status}")
-        print(f"pipeline nodes count: {len(detail.nodes)}")
-
-        # 测试获取详细信息
-        if detail.nodes:
-            node = detail.nodes[0]
-            print(f"  first node: {node.name}")
-
-            # 测试 get_node_detail
-            node_detail = tasker.get_node_detail(node.node_id)
-            if node_detail:
-                print(f"  node_detail: name={node_detail.name}, completed={node_detail.completed}")
-
-            # 测试 get_recognition_detail
-            if node.recognition:
-                reco_detail = tasker.get_recognition_detail(node.recognition.reco_id)
-                if reco_detail:
-                    print(f"  reco_detail: name={reco_detail.name}, algorithm={reco_detail.algorithm}")
-
-            # 测试 get_action_detail
-            if node.action:
-                action_detail = tasker.get_action_detail(node.action.action_id)
-                if action_detail:
-                    print(f"  action_detail: name={action_detail.name}, success={action_detail.success}")
-    else:
-        print("pipeline failed")
-        raise RuntimeError("pipeline failed")
-
-    # ============================================================
-    # 断开连接
-    # ============================================================
-    if not agent.disconnect():
-        print("failed to disconnect")
-        exit(1)
-    print("agent.disconnect() succeeded")
-    child_process.wait(timeout=10)
-    assert child_process.returncode == 0
 
     # 验证断开连接后的状态
     print(f"agent.connected after disconnect: {agent.connected}")

@@ -1,5 +1,6 @@
 import { join } from 'path'
 import './maa-client.ts'
+import { expectRegistrationError } from './custom-registration.ts'
 
 import * as fs from 'fs/promises'
 
@@ -77,18 +78,6 @@ const myAct: maa.CustomActionCallback = async self => {
     runned = true
 
     return true
-}
-
-function expectRegistrationError(register: () => void, expectedMessage: string) {
-    let errorMessage = ''
-    try {
-        register()
-    } catch (error) {
-        errorMessage = error instanceof Error ? error.message : String(error)
-    }
-    if (!errorMessage.includes(expectedMessage)) {
-        throw new Error(`unexpected custom registration error: ${errorMessage}`)
-    }
 }
 
 async function api_test() {

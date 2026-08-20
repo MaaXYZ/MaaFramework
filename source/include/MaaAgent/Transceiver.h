@@ -74,6 +74,7 @@ protected:
 
     void init_socket(const std::string& identifier, bool bind);
     void uninit_socket();
+    void reset_socket(std::chrono::milliseconds linger = std::chrono::milliseconds(0));
 
     bool send(const json::value& j);
     bool send_no_wait(const json::value& j);
