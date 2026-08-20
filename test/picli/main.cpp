@@ -71,7 +71,10 @@ bool test_invalid_welcome_items()
            && check(!parse_interface(R"([{ "label": "Missing content" }])"), "welcome content should be required")
            && check(
                !parse_interface(R"([{ "content": "Notice", "unexpected": true }])"),
-               "welcome item properties not declared by the schema should be rejected");
+               "welcome item properties not declared by the schema should be rejected")
+           && check(
+               !parse_interface(R"([{ "content": "Notice" }, "unexpected"])"),
+               "non-object welcome items should be rejected");
 }
 
 bool test_welcome_tracking()

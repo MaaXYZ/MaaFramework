@@ -19,6 +19,10 @@ std::optional<std::pair<size_t, std::string>> find_unknown_welcome_item_property
 
     const auto& items = welcome->as_array();
     for (size_t index = 0; index < items.size(); ++index) {
+        if (!items[index].is_object()) {
+            continue;
+        }
+
         for (const auto& property : items[index].as_object()) {
             const auto& key = property.first;
             if (key != "label" && key != "content") {
