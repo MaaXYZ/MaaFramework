@@ -122,7 +122,8 @@ bool get_multi_keys_and_check_value_or_array(
     return true;
 }
 
-template <typename OutT> bool get_and_check_array_or_2darray(
+template <typename OutT>
+bool get_and_check_array_or_2darray(
     const json::value& input,
     const std::string& key,
     std::vector<std::vector<OutT>>& output,
