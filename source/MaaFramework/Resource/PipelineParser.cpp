@@ -65,7 +65,7 @@ bool get_and_check_value_or_array(
     }
 
     if (opt->is_array()) {
-        for (const auto& item : array) {
+        for (const auto& item : opt->as_array()) {
             if (!item.is<OutT>()) {
                 LogError << "type error" << VAR(key) << VAR(input);
                 return false;
@@ -99,7 +99,7 @@ bool get_multi_keys_and_check_value_or_array(
             continue;
         }
         else if (opt->is_array()) {
-            for (const auto& item : array) {
+            for (const auto& item : opt->as_array()) {
                 if (!item.is<OutT>()) {
                     LogError << "type error" << VAR(keys) << VAR(input);
                     return false;
@@ -122,8 +122,7 @@ bool get_multi_keys_and_check_value_or_array(
     return true;
 }
 
-template <typename OutT>
-bool get_and_check_array_or_2darray(
+templbool get_and_check_array_or_2darray(
     const json::value& input,
     const std::string& key,
     std::vector<std::vector<OutT>>& output,
@@ -187,6 +186,9 @@ bool get_and_check_array_or_2darray(
     }
 
     return !output.empty();
+}
+
+   return !output.empty();
 }
 
 bool PipelineParser::parse_node(
@@ -2013,7 +2015,7 @@ bool PipelineParser::parse_anchor(
         output[opt->as_string()] = node_name;
     }
     else if (opt->is_array()) {
-        for (const auto& item : array) {
+        for (const auto& item : opt->as_array()) {
             if (!item.is_string()) {
                 LogError << "type error" << VAR(key) << VAR(input);
                 return false;
