@@ -65,7 +65,7 @@ bool get_and_check_value_or_array(
     }
 
     if (opt->is_array()) {
-        for (const auto& item : opt->as_array()) {
+        for (const auto& item : array) {
             if (!item.is<OutT>()) {
                 LogError << "type error" << VAR(key) << VAR(input);
                 return false;
@@ -99,7 +99,7 @@ bool get_multi_keys_and_check_value_or_array(
             continue;
         }
         else if (opt->is_array()) {
-            for (const auto& item : opt->as_array()) {
+            for (const auto& item : array) {
                 if (!item.is<OutT>()) {
                     LogError << "type error" << VAR(keys) << VAR(input);
                     return false;
@@ -127,7 +127,8 @@ bool get_and_check_array_or_2darray(
     const json::value& input,
     const std::string& key,
     std::vector<std::vector<OutT>>& output,
-    const std::vector<std::vector<OutT>>& default_value)
+    const std::vector<std::vector<OutT>>& default_value,
+    bool empty_as_default = false)
 {
     auto opt = input.find(key);
     if (!opt) {
@@ -138,16 +139,22 @@ bool get_and_check_array_or_2darray(
         LogError << "type error" << VAR(key) << VAR(input);
         return false;
     }
-    if (opt->as_array().empty()) {
-        output = default_value;
+    const auto& array = opt->as_array();
+    if (array.empty()) {
+        if (empty_as_default) {
+            output = default_value;
+        }
+        else {
+            output.clear();
+        }
         return true;
     }
 
     output.clear();
 
-    auto& front = opt->as_array()[0];
+    const auto& front = array[0];
     if (front.is_array()) {
-        for (const auto& arr : opt->as_array()) {
+        for (const auto& arr : array) {
             if (!arr.is_array()) {
                 LogError << "type error" << VAR(key) << VAR(input);
                 return false;
@@ -165,7 +172,7 @@ bool get_and_check_array_or_2darray(
     }
     else if (front.is<OutT>()) {
         std::vector<OutT> row;
-        for (const auto& item : opt->as_array()) {
+        for (const auto& item : array) {
             if (!item.is<OutT>()) {
                 LogError << "type error" << VAR(key) << VAR(input);
                 return false;
@@ -884,13 +891,13 @@ bool PipelineParser::parse_color_matcher_param(
     }
 
     std::vector<std::vector<int>> lower;
-    if (!get_and_check_array_or_2darray(input, "lower", lower, default_lower)) {
+    if (!get_and_check_array_or_2darray(input, "lower", lower, default_lower, true)) {
         LogError << "failed to get_and_check_array_or_2darray lower" << VAR(input);
         return false;
     }
 
     std::vector<std::vector<int>> upper;
-    if (!get_and_check_array_or_2darray(input, "upper", upper, default_upper)) {
+    if (!get_and_check_array_or_2darray(input, "upper", upper, default_upper, true)) {
         LogError << "failed to get_and_check_array_or_2darray lower" << VAR(input);
         return false;
     }
@@ -2006,7 +2013,7 @@ bool PipelineParser::parse_anchor(
         output[opt->as_string()] = node_name;
     }
     else if (opt->is_array()) {
-        for (const auto& item : opt->as_array()) {
+        for (const auto& item : array) {
             if (!item.is_string()) {
                 LogError << "type error" << VAR(key) << VAR(input);
                 return false;
