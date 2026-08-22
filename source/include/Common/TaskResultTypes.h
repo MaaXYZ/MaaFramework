@@ -12,6 +12,13 @@ MAA_TASK_NS_BEGIN
 
 using ImageEncodedBuffer = std::vector<uint8_t>;
 
+enum class RecognitionStatus
+{
+    Matched,
+    Miss,
+    Error,
+};
+
 struct RecoResult
 {
     MaaRecoId reco_id = MaaInvalidId;
@@ -21,9 +28,26 @@ struct RecoResult
     json::value detail;
     ImageEncodedBuffer raw;
     std::vector<ImageEncodedBuffer> draws;
+    RecognitionStatus status = RecognitionStatus::Miss;
 
     MEO_TOJSON(reco_id, name, algorithm, box, detail);
 };
+
+inline void apply_recognition_inverse(RecoResult& result)
+{
+    if (result.status == RecognitionStatus::Error) {
+        return;
+    }
+
+    if (result.status == RecognitionStatus::Matched) {
+        result.status = RecognitionStatus::Miss;
+        result.box.reset();
+    }
+    else {
+        result.status = RecognitionStatus::Matched;
+        result.box = cv::Rect { };
+    }
+}
 
 struct ActionResult
 {
