@@ -46,6 +46,7 @@ from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.library import Library
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
+from agent_test_utils import record_sink_event, signal_server_ready
 
 
 analyzed: bool = False
@@ -58,7 +59,8 @@ def main():
         exit(1)
 
     socket_id = sys.argv[-1]
-    AgentServer.start_up(socket_id)
+    assert AgentServer.start_up(socket_id)
+    signal_server_ready()
     AgentServer.join()
     AgentServer.shut_down()
 
@@ -382,6 +384,39 @@ class MyAction(CustomAction):
         return CustomAction.RunResult(success=True)
 
 
+original_reco = AgentServer._custom_recognition_holder["MyRec"]
+original_action = AgentServer._custom_action_holder["MyAct"]
+assert not AgentServer.register_custom_recognition("MyRec", MyRecognition())
+assert not AgentServer.register_custom_action("MyAct", MyAction())
+assert not AgentServer.register_custom_action("MyRec", MyAction())
+assert not AgentServer.register_custom_recognition("MyAct", MyRecognition())
+assert AgentServer._custom_recognition_holder["MyRec"] is original_reco
+assert AgentServer._custom_action_holder["MyAct"] is original_action
+assert AgentServer.register_custom_recognition("CaseSensitive", MyRecognition())
+assert AgentServer.register_custom_action("casesensitive", MyAction())
+assert not AgentServer.register_custom_recognition("", MyRecognition())
+assert not AgentServer.register_custom_action("", MyAction())
+
+try:
+    AgentServer.custom_recognition("MyAct")(MyRecognition)
+    assert False, "duplicate custom decorator should raise RuntimeError"
+except RuntimeError as error:
+    assert str(error) == "Custom name is already registered: 'MyAct'"
+
+try:
+    AgentServer.custom_action("MyRec")(MyAction)
+    assert False, "duplicate custom decorator should raise RuntimeError"
+except RuntimeError as error:
+    assert str(error) == "Custom name is already registered: 'MyRec'"
+
+for custom_decorator in [AgentServer.custom_recognition, AgentServer.custom_action]:
+    try:
+        custom_decorator("")
+        assert False, "empty custom name should raise ValueError"
+    except ValueError as error:
+        assert str(error) == "Custom name must not be empty"
+
+
 # ============================================================================
 # Event Sink 装饰器方式注册
 # ============================================================================
@@ -390,24 +425,28 @@ class MyAction(CustomAction):
 @AgentServer.resource_sink()
 class MyResSink(ResourceEventSink):
     def on_raw_notification(self, resource, msg: str, details: dict):
+        record_sink_event("resource")
         print(f"[ResourceSink] msg: {msg}")
 
 
 @AgentServer.controller_sink()
 class MyCtrlSink(ControllerEventSink):
     def on_raw_notification(self, controller, msg: str, details: dict):
+        record_sink_event("controller")
         print(f"[ControllerSink] msg: {msg}")
 
 
 @AgentServer.tasker_sink()
 class MyTaskerSink(TaskerEventSink):
     def on_raw_notification(self, tasker, msg: str, details: dict):
+        record_sink_event("tasker")
         print(f"[TaskerSink] msg: {msg}")
 
 
 @AgentServer.context_sink()
 class MyCtxSink(ContextEventSink):
     def on_raw_notification(self, context, msg: str, details: dict):
+        record_sink_event("context")
         print(f"[ContextSink] msg: {msg}")
 
 

@@ -44,12 +44,20 @@ class AgentServer:
 
         Returns:
             装饰器函数 / Decorator function
+
+        Raises:
+            ValueError: 名称为空 / The name is empty
+            RuntimeError: 名称已被注册 / The name is already registered
         """
+
+        if not name:
+            raise ValueError("Custom name must not be empty")
 
         def wrapper_recognition(
             recognition: type["CustomRecognition"],
         ) -> type["CustomRecognition"]:
-            AgentServer.register_custom_recognition(name=name, recognition=recognition())
+            if not AgentServer.register_custom_recognition(name=name, recognition=recognition()):
+                raise RuntimeError(f"Custom name is already registered: {name!r}")
             return recognition
 
         return wrapper_recognition
@@ -73,16 +81,18 @@ class AgentServer:
 
         AgentServer._set_api_properties()
 
-        # avoid gc
-        AgentServer._custom_recognition_holder[name] = recognition
-
-        return bool(
+        success = bool(
             Library.agent_server().MaaAgentServerRegisterCustomRecognition(
                 name.encode(),
                 recognition.c_handle,
                 recognition.c_arg,
             )
         )
+        if success:
+            # avoid gc
+            AgentServer._custom_recognition_holder[name] = recognition
+
+        return success
 
     @staticmethod
     def custom_action(
@@ -96,10 +106,18 @@ class AgentServer:
 
         Returns:
             装饰器函数 / Decorator function
+
+        Raises:
+            ValueError: 名称为空 / The name is empty
+            RuntimeError: 名称已被注册 / The name is already registered
         """
 
+        if not name:
+            raise ValueError("Custom name must not be empty")
+
         def wrapper_action(action: type["CustomAction"]) -> type["CustomAction"]:
-            AgentServer.register_custom_action(name=name, action=action())
+            if not AgentServer.register_custom_action(name=name, action=action()):
+                raise RuntimeError(f"Custom name is already registered: {name!r}")
             return action
 
         return wrapper_action
@@ -120,16 +138,18 @@ class AgentServer:
 
         AgentServer._set_api_properties()
 
-        # avoid gc
-        AgentServer._custom_action_holder[name] = action
-
-        return bool(
+        success = bool(
             Library.agent_server().MaaAgentServerRegisterCustomAction(
                 name.encode(),
                 action.c_handle,
                 action.c_arg,
             )
         )
+        if success:
+            # avoid gc
+            AgentServer._custom_action_holder[name] = action
+
+        return success
 
     @staticmethod
     def start_up(identifier: str) -> bool:
