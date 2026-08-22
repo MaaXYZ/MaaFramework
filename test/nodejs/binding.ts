@@ -251,6 +251,14 @@ function win32_interception_enum_test() {
     }
 }
 
+function win32_anchored_touch_enum_test() {
+    console.log('test_win32_anchored_touch_enum')
+    if (maa.Win32InputMethod.AnchoredTouch !== String(1 << 10)) {
+        console.log('unexpected Win32InputMethod.AnchoredTouch', maa.Win32InputMethod.AnchoredTouch)
+        process.exit(1)
+    }
+}
+
 function linux_enum_test() {
     console.log('test_linux_enum')
     if (maa.LinuxScreencapMethod.PipeWire !== String(1 << 2)) {
@@ -386,6 +394,7 @@ async function main() {
     await api_test()
     await win32_relative_move_test()
     win32_interception_enum_test()
+    win32_anchored_touch_enum_test()
     linux_enum_test()
     await custom_ctrl_test()
 

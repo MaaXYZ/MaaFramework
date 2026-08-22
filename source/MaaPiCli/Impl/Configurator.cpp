@@ -43,6 +43,7 @@ MaaWin32InputMethod parse_win32_input_method(const std::string& method)
         { "SendMessageWithWindowPos", MaaWin32InputMethod_SendMessageWithWindowPos },
         { "PostMessageWithWindowPos", MaaWin32InputMethod_PostMessageWithWindowPos },
         { "Interception", MaaWin32InputMethod_Interception },
+        { "AnchoredTouch", MaaWin32InputMethod_AnchoredTouch },
     };
 
     if (auto it = mapping.find(method); it != mapping.end()) {

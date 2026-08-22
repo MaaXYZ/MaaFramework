@@ -572,7 +572,8 @@
                                 "PostMessageWithCursorPos",
                                 "SendMessageWithWindowPos",
                                 "PostMessageWithWindowPos",
-                                "Interception"
+                                "Interception",
+                                "AnchoredTouch"
                             ]
                         },
                         "keyboard": {
