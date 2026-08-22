@@ -16,7 +16,9 @@ std::optional<cv::Mat> DesktopDupWindowScreencap::screencap()
     }
 
     if (!ensure_foreground_with_cooldown(hwnd_)) {
-        LogWarn << "Failed to ensure foreground window before screencap";
+        const HWND foreground_window = GetForegroundWindow();
+        LogWarn << "Failed to ensure foreground window before screencap" << VAR_VOIDP(hwnd_) << VAR_VOIDP(foreground_window)
+                << VAR(IsIconic(hwnd_)) << VAR(IsWindowVisible(hwnd_));
     }
 
     // Ensure the window is fully visible on the monitor before screencap
