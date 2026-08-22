@@ -16,7 +16,15 @@
     "version": "1.0.0", // 项目版本号，用于版本更新检查和Client显示
     "contact": "QQ群: 592974962；B站：https://bilibili/xxxx", // 联系方式信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
     "license": "MIT", // 项目许可证信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
-    "welcome": "欢迎使用MAA!", // 欢迎消息，在用户首次使用时弹窗显示，亦可作为公告使用。支持文件路径、URL或直接文本，内容支持Markdown格式。当内容更新时会再次弹窗，支持国际化
+    "welcome": [ // 欢迎消息或公告列表，保留单个字符串写法；label和content均支持国际化
+        {
+            "label": "$欢迎公告",
+            "content": "$欢迎公告内容" // 支持文件路径、URL或直接文本，内容支持Markdown格式
+        },
+        {
+            "content": "[MaaFramework](https://github.com/MaaXYZ/MaaFramework)"
+        }
+    ],
     "description": "MaaFramework is a framework for building automation applications.", // 项目描述信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
     "agent": {
         "child_exec": "python",

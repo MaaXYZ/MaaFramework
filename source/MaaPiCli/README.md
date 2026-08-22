@@ -4,7 +4,7 @@ MaaFramework 官方提供的命令行 ProjectInterface Client，用于通过终�
 
 ## PI 协议支持版本
 
-**已支持至 PI v2.5.0**（2026-03-23）
+**完整支持至 PI v2.5.0**（2026-03-23），并额外支持部分后续协议字段。
 
 | PI 版本 | 状态 | 说明 |
 |---------|------|------|
@@ -14,6 +14,15 @@ MaaFramework 官方提供的命令行 ProjectInterface Client，用于通过终�
 | v2.3.1 | ✅ | Option 适用性过滤 |
 | v2.4.0 | ✅ | `group` 任务分组、`task.group` |
 | v2.5.0 | ✅ | Agent 子进程 `PI_*` 环境变量 |
+| v2.6.0 | ❌ | 未实现 `resource.hash` 资源完整性校验 |
+| v2.7.0 | ❌ | 未实现 `pretask` |
+| v2.8.0 | ❌ | 未实现 `setting`、`hotkey` 及对应的 `import` 扩展 |
+| v2.8.1 | ❌ | 未实现 `pretask.controller/resource` 过滤 |
+| v2.9.0 | ❌ | 未实现 `telemetry` |
+| v2.9.1 | ❌ | 未实现 `focus.trace`；CLI 也不处理 `focus` 回调 |
+| v2.10.0 | ⚠️ | 仅支持 `welcome` 字符串及公告对象数组 |
+
+`❌` 表示 MaaPiCli 未实现对应协议行为，不代表包含该字段的 `interface.json` 一定无法解析。
 
 ## CLI 局限性
 
@@ -34,7 +43,6 @@ MaaFramework 官方提供的命令行 ProjectInterface Client，用于通过终�
 
 | 功能 | 协议行为 | CLI 实际行为 |
 |------|----------|-------------|
-| `welcome` 变更追踪 | Client 记录已展示内容，内容更新时重新弹窗 | 每次启动都展示，不追踪变更 |
 | `focus` 回调消息 | Client 注册回调，按 `display` 渠道分发模板消息 | 未注册回调，不处理 focus 消息 |
 | `group.description` | 显示分组的详细描述 | 仅显示分组名称/label |
 | task 禁用态显示 | 不满足 resource/controller 约束的 task 灰显 | 直接过滤不显示 |

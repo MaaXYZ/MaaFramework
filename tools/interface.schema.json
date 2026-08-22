@@ -8,6 +8,27 @@
             "type": "string",
             "description": "支持国际化的字符串，以 $ 开头表示从翻译文件中读取"
         },
+        "welcomeItem": {
+            "type": "object",
+            "title": "公告项",
+            "description": "单条欢迎消息或公告。label 和 content 均支持国际化",
+            "properties": {
+                "label": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "公告标题",
+                    "description": "可选。用于在公告列表或公告内容上方展示"
+                },
+                "content": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "公告内容",
+                    "description": "必填。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
+                }
+            },
+            "required": [
+                "content"
+            ],
+            "additionalProperties": false
+        },
         "pipelineOverride": {
             "type": "object",
             "title": "Pipeline 覆盖配置",
@@ -1168,9 +1189,22 @@
             "description": "显示在「关于」页面。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
         },
         "welcome": {
-            "$ref": "#/definitions/i18nString",
             "title": "欢迎消息",
-            "description": "在用户首次使用时弹窗显示，亦可作为公告使用。支持文件路径、URL 或直接文本，内容支持 Markdown 格式。系统会记录显示内容，当内容更新时会再次弹窗显示"
+            "description": "在用户首次使用时弹窗显示，亦可作为公告使用。💡 v2.10.0：支持公告项数组。系统会记录完整的有序内容，当内容更新时会再次弹窗显示",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/i18nString"
+                },
+                {
+                    "type": "array",
+                    "title": "公告列表",
+                    "description": "按数组顺序展示多条公告",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/welcomeItem"
+                    }
+                }
+            ]
         },
         "description": {
             "$ref": "#/definitions/i18nString",

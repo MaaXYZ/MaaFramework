@@ -67,9 +67,8 @@ int main(int argc, char** argv)
         return -1;
     }
     if (directly) {
-        interactor.print_config();
-        bool result = interactor.run();
-        // Note: run() returning true may also mean an elevated instance was started;
+        bool result = interactor.run_directly();
+        // Note: run_directly() returning true may also mean an elevated instance was started;
         // in either case, we exit the current process gracefully.
         return result ? 0 : -1;
     }
