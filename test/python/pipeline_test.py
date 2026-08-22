@@ -145,6 +145,59 @@ def test_resource_node_list(resource: Resource):
     print("  PASS: resource.node_list")
 
 
+def test_and_sub_recognition_dumper_roundtrip():
+    """And 内联子识别经过 dump 后仍然可以重新加载"""
+    print("\n=== test_and_sub_recognition_dumper_roundtrip ===")
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_path = Path(tmp_dir)
+        source_dir = tmp_path / "source"
+        source_pipeline_dir = source_dir / "pipeline"
+        source_pipeline_dir.mkdir(parents=True)
+        with open(source_pipeline_dir / "source.json", "w", encoding="utf-8") as file:
+            json.dump(
+                {
+                    "AndTask": {
+                        "recognition": {
+                            "type": "And",
+                            "param": {
+                                "all_of": [
+                                    {
+                                        "sub_name": "OCR1",
+                                        "recognition": {
+                                            "type": "OCR",
+                                            "param": {"expected": ["test"]},
+                                        },
+                                    }
+                                ]
+                            },
+                        }
+                    }
+                },
+                file,
+                indent=4,
+            )
+
+        resource = Resource()
+        resource.post_bundle(str(source_dir)).wait()
+        assert_true(resource.loaded, "source resource should load")
+
+        dumped = resource.get_node_data("AndTask")
+        assert_not_none(dumped, "dumped And node")
+
+        roundtrip_dir = tmp_path / "roundtrip"
+        roundtrip_pipeline_dir = roundtrip_dir / "pipeline"
+        roundtrip_pipeline_dir.mkdir(parents=True)
+        with open(roundtrip_pipeline_dir / "roundtrip.json", "w", encoding="utf-8") as file:
+            json.dump({"AndTask": dumped}, file, indent=4)
+
+        roundtrip_resource = Resource()
+        roundtrip_resource.post_bundle(str(roundtrip_dir)).wait()
+        assert_true(roundtrip_resource.loaded, "dumped resource should load again")
+
+    print("  PASS: And sub-recognition dumper/parser round-trip")
+
+
 # ============================================================================
 # Context 级别测试
 # ============================================================================
@@ -1383,6 +1436,7 @@ def pipeline_node_test():
         test_resource_get_node_data(resource)
         test_resource_get_node_object(resource)
         test_resource_node_list(resource)
+        test_and_sub_recognition_dumper_roundtrip()
 
         dbg_controller = DbgController(
             install_dir / "test" / "PipelineSmoking" / "Screenshot",
