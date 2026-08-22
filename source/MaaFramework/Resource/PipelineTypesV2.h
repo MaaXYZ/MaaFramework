@@ -2,6 +2,7 @@
 
 #include <array>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -34,8 +35,9 @@ struct JTemplateMatch
     int index = 0;
     int method = 0;
     bool green_mask = false;
+    std::optional<cv::Point> center;
 
-    MEO_TOJSON(roi, roi_offset, MEO_KEY("template") template_, threshold, order_by, index, method, green_mask);
+    MEO_TOJSON(roi, roi_offset, MEO_KEY("template") template_, threshold, order_by, index, method, green_mask, center);
 };
 
 struct JFeatureMatch
@@ -49,8 +51,9 @@ struct JFeatureMatch
     bool green_mask = false;
     std::string detector;
     double ratio = 0;
+    std::optional<cv::Point> center;
 
-    MEO_TOJSON(roi, roi_offset, MEO_KEY("template") template_, count, order_by, index, green_mask, detector, ratio);
+    MEO_TOJSON(roi, roi_offset, MEO_KEY("template") template_, count, order_by, index, green_mask, detector, ratio, center);
 };
 
 struct JColorMatch
@@ -64,8 +67,9 @@ struct JColorMatch
     std::string order_by;
     int index = 0;
     bool connected = false;
+    std::optional<cv::Point> center;
 
-    MEO_TOJSON(roi, roi_offset, method, lower, upper, count, order_by, index, connected);
+    MEO_TOJSON(roi, roi_offset, method, lower, upper, count, order_by, index, connected, center);
 };
 
 struct JOCR
@@ -80,8 +84,9 @@ struct JOCR
     bool only_rec = false;
     std::string model;
     std::string color_filter;
+    std::optional<cv::Point> center;
 
-    MEO_TOJSON(roi, roi_offset, expected, threshold, replace, order_by, index, only_rec, model, color_filter);
+    MEO_TOJSON(roi, roi_offset, expected, threshold, replace, order_by, index, only_rec, model, color_filter, center);
 };
 
 struct JNeuralNetworkClassify
@@ -93,8 +98,9 @@ struct JNeuralNetworkClassify
     std::vector<int> expected;
     std::string order_by;
     int index = 0;
+    std::optional<cv::Point> center;
 
-    MEO_TOJSON(roi, roi_offset, labels, model, expected, order_by, index);
+    MEO_TOJSON(roi, roi_offset, labels, model, expected, order_by, index, center);
 };
 
 struct JNeuralNetworkDetect
@@ -107,8 +113,9 @@ struct JNeuralNetworkDetect
     std::vector<double> threshold;
     std::string order_by;
     int index = 0;
+    std::optional<cv::Point> center;
 
-    MEO_TOJSON(roi, roi_offset, labels, model, expected, threshold, order_by, index);
+    MEO_TOJSON(roi, roi_offset, labels, model, expected, threshold, order_by, index, center);
 };
 
 struct JCustomRecognition

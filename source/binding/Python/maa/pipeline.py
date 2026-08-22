@@ -64,6 +64,7 @@ class JTemplateMatch:
     index: int = 0
     method: int = 5
     green_mask: bool = False
+    center: Optional[Tuple[int, int]] = None
 
 
 @dataclass
@@ -77,6 +78,7 @@ class JFeatureMatch:
     index: int = 0
     green_mask: bool = False
     ratio: float = 0.6
+    center: Optional[Tuple[int, int]] = None
 
 
 @dataclass
@@ -90,6 +92,7 @@ class JColorMatch:
     count: int = 1
     index: int = 0
     connected: bool = False
+    center: Optional[Tuple[int, int]] = None
 
 
 @dataclass
@@ -104,6 +107,7 @@ class JOCR:
     only_rec: bool = False
     model: str = ""
     color_filter: str = ""
+    center: Optional[Tuple[int, int]] = None
 
 
 @dataclass
@@ -115,6 +119,7 @@ class JNeuralNetworkClassify:
     labels: list[str] = field(default_factory=lambda: [])
     order_by: str = "Horizontal"
     index: int = 0
+    center: Optional[Tuple[int, int]] = None
 
 
 @dataclass
@@ -127,6 +132,7 @@ class JNeuralNetworkDetect:
     threshold: list[float] = field(default_factory=lambda: [0.3])
     order_by: str = "Horizontal"
     index: int = 0
+    center: Optional[Tuple[int, int]] = None
 
 
 @dataclass

@@ -32,7 +32,7 @@
     "OCR": {
         "recognition": "OCR",
         "threshold": 0.3, // 置信度阈值
-        "order_by": "Horizontal", // 排序方式：Horizontal | Vertical | Area | Length
+        "order_by": "Horizontal", // 排序方式：Horizontal | Vertical | Radiation | Area | Length
         "replace": [] // 文字替换规则列表，格式：[["待替换字符串", "替换为"]]
     },
     // ===== 动作类型默认配置 =====

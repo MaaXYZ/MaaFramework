@@ -501,12 +501,15 @@ bool PipelineParser::parse_template_matcher_param(
             {
                 MAA_VISION_NS::ResultOrderBy::Horizontal,
                 MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Radiation,
                 MAA_VISION_NS::ResultOrderBy::Score,
                 MAA_VISION_NS::ResultOrderBy::Random,
             })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
+
+    get_and_check_value(input, "center", output.center, default_value.center);
 
     if (!get_and_check_value_or_array(input, "template", output.template_, default_value.template_)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
@@ -552,6 +555,7 @@ bool PipelineParser::parse_feature_matcher_param(
             {
                 MAA_VISION_NS::ResultOrderBy::Horizontal,
                 MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Radiation,
                 MAA_VISION_NS::ResultOrderBy::Score,
                 MAA_VISION_NS::ResultOrderBy::Area,
                 MAA_VISION_NS::ResultOrderBy::Random,
@@ -559,6 +563,8 @@ bool PipelineParser::parse_feature_matcher_param(
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
+
+    get_and_check_value(input, "center", output.center, default_value.center);
 
     if (!get_and_check_value_or_array(input, "template", output.template_, default_value.template_)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
@@ -637,6 +643,7 @@ bool PipelineParser::parse_ocrer_param(
             {
                 MAA_VISION_NS::ResultOrderBy::Horizontal,
                 MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Radiation,
                 MAA_VISION_NS::ResultOrderBy::Area,
                 MAA_VISION_NS::ResultOrderBy::Length,
                 MAA_VISION_NS::ResultOrderBy::Random,
@@ -645,6 +652,8 @@ bool PipelineParser::parse_ocrer_param(
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
+
+    get_and_check_value(input, "center", output.center, default_value.center);
 
     if (!get_and_check_value(input, "model", output.model, default_value.model)) {
         LogError << "failed to get_and_check_value model" << VAR(input);
@@ -757,6 +766,7 @@ bool PipelineParser::parse_nn_classifier_param(
             {
                 MAA_VISION_NS::ResultOrderBy::Horizontal,
                 MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Radiation,
                 MAA_VISION_NS::ResultOrderBy::Score,
                 MAA_VISION_NS::ResultOrderBy::Random,
                 MAA_VISION_NS::ResultOrderBy::Expected,
@@ -764,6 +774,9 @@ bool PipelineParser::parse_nn_classifier_param(
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
+
+    get_and_check_value(input, "center", output.center, default_value.center);
+
     if (!get_and_check_value(input, "model", output.model, default_value.model)) {
         LogError << "failed to get_and_check_value model" << VAR(input);
         return false;
@@ -799,6 +812,7 @@ bool PipelineParser::parse_nn_detector_param(
             {
                 MAA_VISION_NS::ResultOrderBy::Horizontal,
                 MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Radiation,
                 MAA_VISION_NS::ResultOrderBy::Score,
                 MAA_VISION_NS::ResultOrderBy::Area,
                 MAA_VISION_NS::ResultOrderBy::Random,
@@ -807,6 +821,8 @@ bool PipelineParser::parse_nn_detector_param(
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
+
+    get_and_check_value(input, "center", output.center, default_value.center);
 
     if (!get_and_check_value(input, "model", output.model, default_value.model)) {
         LogError << "failed to get_and_check_value model" << VAR(input);
@@ -863,6 +879,7 @@ bool PipelineParser::parse_color_matcher_param(
             {
                 MAA_VISION_NS::ResultOrderBy::Horizontal,
                 MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Radiation,
                 MAA_VISION_NS::ResultOrderBy::Score,
                 MAA_VISION_NS::ResultOrderBy::Area,
                 MAA_VISION_NS::ResultOrderBy::Random,
@@ -870,6 +887,8 @@ bool PipelineParser::parse_color_matcher_param(
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
+
+    get_and_check_value(input, "center", output.center, default_value.center);
 
     std::vector<std::vector<int>> default_lower;
     std::vector<std::vector<int>> default_upper;
@@ -976,6 +995,8 @@ bool PipelineParser::parse_order_of_result(
         { "horizontal", MAA_VISION_NS::ResultOrderBy::Horizontal },
         { "Vertical", MAA_VISION_NS::ResultOrderBy::Vertical },
         { "vertical", MAA_VISION_NS::ResultOrderBy::Vertical },
+        { "Radiation", MAA_VISION_NS::ResultOrderBy::Radiation },
+        { "radiation", MAA_VISION_NS::ResultOrderBy::Radiation },
         { "Score", MAA_VISION_NS::ResultOrderBy::Score },
         { "score", MAA_VISION_NS::ResultOrderBy::Score },
         { "Area", MAA_VISION_NS::ResultOrderBy::Area },
