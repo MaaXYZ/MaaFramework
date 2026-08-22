@@ -201,6 +201,8 @@ Macros</h2></td></tr>
 <tr class="separator:a923e6bae66dabe3f86e618af84905cac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f2c322a845b60645159fb2809725044" id="r_a7f2c322a845b60645159fb2809725044"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7f2c322a845b60645159fb2809725044">MaaWin32InputMethod_Interception</a>&#160;&#160;&#160;(1ULL &lt;&lt; 9)</td></tr>
 <tr class="separator:a7f2c322a845b60645159fb2809725044"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec5b610edef57ec3ddb25c952735a187" id="r_aec5b610edef57ec3ddb25c952735a187"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec5b610edef57ec3ddb25c952735a187">MaaWin32InputMethod_AnchoredTouch</a>&#160;&#160;&#160;(1ULL &lt;&lt; 10)</td></tr>
+<tr class="separator:aec5b610edef57ec3ddb25c952735a187"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8d4518e6db7d5e7b17d81c2cc95a2ec" id="r_ae8d4518e6db7d5e7b17d81c2cc95a2ec"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8d4518e6db7d5e7b17d81c2cc95a2ec">MaaMacOSScreencapMethod_None</a>&#160;&#160;&#160;0ULL</td></tr>
 <tr class="separator:ae8d4518e6db7d5e7b17d81c2cc95a2ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0f15a02730f2a664e62e13573ff3aad" id="r_ae0f15a02730f2a664e62e13573ff3aad"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0f15a02730f2a664e62e13573ff3aad">MaaMacOSScreencapMethod_ScreenCaptureKit</a>&#160;&#160;&#160;1ULL</td></tr>
@@ -1081,6 +1083,20 @@ Enumerations</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">#define MaaWin32InputMethod_Interception&#160;&#160;&#160;(1ULL &lt;&lt; 9)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec5b610edef57ec3ddb25c952735a187" name="aec5b610edef57ec3ddb25c952735a187"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec5b610edef57ec3ddb25c952735a187">&#9670;&#160;</a></span>MaaWin32InputMethod_AnchoredTouch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaWin32InputMethod_AnchoredTouch&#160;&#160;&#160;(1ULL &lt;&lt; 10)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -2337,11 +2353,12 @@ Enumerations</h2></td></tr>
 <p>No bitwise OR, select ONE method only.</p>
 <p>No default value. Client should choose one as default.</p>
 <p>Different applications process input differently, there is no universal solution.</p>
-<p>| Method | Compatibility | Require Admin | Seize Mouse | Background Support | Notes | |---------------------------&mdash;|------------&mdash;|------------&mdash;|----------&mdash;|-----------------&mdash;|----------------------------------------------------------&mdash;| | Seize | High | No | Yes | No | | | SendMessage | Medium | Maybe | No | Yes | | | PostMessage | Medium | Maybe | No | Yes | | | LegacyEvent | Low | No | Yes | No | | | PostThreadMessage | Low | Maybe | No | Yes | Deprecated | | SendMessageWithCursorPos | Medium | Maybe | Briefly | Yes | Moves cursor to target position, then restores | | PostMessageWithCursorPos | Medium | Maybe | Briefly | Yes | Moves cursor to target position, then restores | | SendMessageWithWindowPos | Medium | Maybe | No | Yes | Moves window to align target with cursor, then restores | | PostMessageWithWindowPos | Medium | Maybe | No | Yes | Moves window to align target with cursor, then restores | | Interception | Medium | Yes | No | No | Driver-level input injection via the Interception driver |</p>
+<p>| Method | Compatibility | Require Admin | Seize Mouse | Background Support | Notes | |---------------------------&mdash;|------------&mdash;|------------&mdash;|----------&mdash;|-----------------&mdash;|----------------------------------------------------------&mdash;| | Seize | High | No | Yes | No | | | SendMessage | Medium | Maybe | No | Yes | | | PostMessage | Medium | Maybe | No | Yes | | | LegacyEvent | Low | No | Yes | No | | | PostThreadMessage | Low | Maybe | No | Yes | Deprecated | | SendMessageWithCursorPos | Medium | Maybe | Briefly | Yes | Moves cursor to target position, then restores | | PostMessageWithCursorPos | Medium | Maybe | Briefly | Yes | Moves cursor to target position, then restores | | SendMessageWithWindowPos | Medium | Maybe | No | Yes | Moves window to align target with cursor, then restores | | PostMessageWithWindowPos | Medium | Maybe | No | Yes | Moves window to align target with cursor, then restores | | Interception | Medium | Yes | No | No | Driver-level input injection via the Interception driver | | AnchoredTouch | Medium | Maybe | No | Yes | Injects synthetic touch points, never moves the cursor |</p>
 <p>Note:</p><ul>
 <li>Admin rights mainly depend on the target application's privilege level. If the target runs as admin, MaaFramework should also run as admin for compatibility.</li>
 <li>"WithCursorPos" methods briefly move the cursor to target position, send message, then restore cursor position. This "briefly" seizes the mouse but won't block user operations.</li>
-<li>"WithWindowPos" methods briefly move the window so the target aligns with the current cursor position, send message, then restore the window position. The cursor is not moved. </li>
+<li>"WithWindowPos" methods briefly move the window so the target aligns with the current cursor position, send message, then restore the window position. The cursor is not moved.</li>
+<li>"AnchoredTouch" injects synthetic touch points, the target window receives WM_POINTER messages. The cursor is never moved and the foreground window is never changed. Since synthetic pointers are dispatched by desktop Z-order, the target window is briefly raised to topmost while the target point is occluded, and restored once all contacts are released. If raising does not take effect, the operation fails instead of injecting into the window that occludes the target. Raising requires WS_EX_LAYERED on the target window, which is added on the first raise, verified before every raise, and removed when the controller goes idle unless another module is relying on that layered state by then. If the style cannot be kept or the opacity cannot be lowered, the operation fails rather than raising the target window visibly. Windows layered via UpdateLayeredWindow are not supported. CS_OWNDC / CS_CLASSDC window classes are documented as incompatible with WS_EX_LAYERED, but that restriction does not always hold in practice, so such classes only produce a warning and the actual API results decide. A minimized target window is not supported and the operation fails, since its client area is off-screen and raising does not change that. Screencap methods with pseudo-minimize take the window out of that state before every capture, so this does not occur with them. WS_EX_TRANSPARENT is temporarily removed while the window is borrowed, since it lets input pass through to the windows underneath. Because the screencap side writes the same window state, the borrowed attributes are verified before being restored, and left alone once taken over. Clicking and swiping only. Keyboard can be routed to another method, but scroll cannot: it always goes through the mouse method and a synthetic touch device has no wheel. </li>
 </ul>
 
 </div>
@@ -2889,7 +2906,7 @@ Enumerations</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Wed Aug 19 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
+    <li class="footer">Generated on Sat Aug 22 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
 </body>

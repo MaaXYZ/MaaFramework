@@ -1,5 +1,6 @@
 var NAVTREEINDEX3 =
 {
+"structMaaRect.html":[3,0,9],
 "structMaaRect.html#a5cf5c0bb6cb3244ea7364e0e14ccf439":[3,0,9,0],
 "structMaaRect.html#a73e6dc516ec3103c7ac89d94eaa9550b":[3,0,9,2],
 "structMaaRect.html#ad01ed70b06d17f552838eaa84447041c":[3,0,9,1],
