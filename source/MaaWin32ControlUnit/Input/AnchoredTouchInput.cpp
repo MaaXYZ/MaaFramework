@@ -55,7 +55,7 @@ DestroySyntheticPointerDeviceFunc g_destroy_device = nullptr;
 
 POINTER_TYPE_INFO make_touch_info(uint32_t id, POINT point, UINT32 flags)
 {
-    POINTER_TYPE_INFO info = {};
+    POINTER_TYPE_INFO info = { };
     info.type = PT_TOUCH;
     info.touchInfo.pointerInfo.pointerType = PT_TOUCH;
     info.touchInfo.pointerInfo.pointerId = id;
@@ -139,7 +139,7 @@ bool AnchoredTouchInput::touch_down(int contact, int x, int y, [[maybe_unused]] 
         return false;
     }
 
-    POINT point = {};
+    POINT point = { };
     if (!to_screen(x, y, point)) {
         release_window_if_idle();
         return false;
@@ -177,7 +177,7 @@ bool AnchoredTouchInput::touch_move(int contact, int x, int y, [[maybe_unused]] 
         return false;
     }
 
-    POINT point = {};
+    POINT point = { };
     if (!to_screen(x, y, point)) {
         return false;
     }
@@ -340,7 +340,7 @@ void AnchoredTouchInput::worker_main()
     auto next_tick = std::chrono::steady_clock::now();
 
     while (running_) {
-        MSG msg = {};
+        MSG msg = { };
         while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessageW(&msg);
@@ -390,7 +390,7 @@ void AnchoredTouchInput::worker_main()
 
 bool AnchoredTouchInput::worker_setup()
 {
-    WNDCLASSEXW wc = {};
+    WNDCLASSEXW wc = { };
     wc.cbSize = sizeof(wc);
     wc.lpfnWndProc = &AnchoredTouchInput::anchor_wnd_proc;
     wc.hInstance = GetModuleHandleW(nullptr);
@@ -433,7 +433,7 @@ bool AnchoredTouchInput::worker_setup()
     ShowWindow(anchor, SW_SHOWNOACTIVATE);
 
     // 读不到锚点矩形就没有可信的注入位置，anchor_pos_ 会停在 (0, 0)，主指针随之落到屏幕左上角
-    RECT anchor_rect = {};
+    RECT anchor_rect = { };
     if (!GetWindowRect(anchor, &anchor_rect)) {
         LogError << "GetWindowRect failed" << VAR_VOIDP(anchor) << VAR(GetLastError());
         return false;
@@ -477,7 +477,7 @@ void AnchoredTouchInput::worker_teardown()
 
 void AnchoredTouchInput::follow_target_window()
 {
-    RECT rect = {};
+    RECT rect = { };
     if (!GetWindowRect(hwnd_, &rect)) {
         return;
     }
@@ -677,7 +677,7 @@ POINT AnchoredTouchInput::compute_anchor_origin() const
         { screen_right - kAnchorSize - kAnchorMargin, screen_bottom - kAnchorSize - kAnchorMargin },
     };
 
-    RECT window_rect = {};
+    RECT window_rect = { };
     if (!GetWindowRect(hwnd_, &window_rect)) {
         return candidates[0];
     }
@@ -713,7 +713,7 @@ bool AnchoredTouchInput::anchor_covers(POINT screen) const
         return false;
     }
 
-    RECT rect = {};
+    RECT rect = { };
     if (!GetWindowRect(anchor, &rect)) {
         return false;
     }

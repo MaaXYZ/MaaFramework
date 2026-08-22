@@ -74,7 +74,7 @@ public: // from InputBase
 private:
     struct ContactState
     {
-        POINT screen_pos = {};
+        POINT screen_pos = { };
         bool pending_down = false;
         bool pending_up = false;
         bool active = false;
@@ -146,9 +146,9 @@ private:
 
     // 以下仅注入线程访问
     void* device_ = nullptr;
-    POINT anchor_pos_ = {};
+    POINT anchor_pos_ = { };
     bool anchor_down_ = false;
-    RECT last_target_rect_ = {};
+    RECT last_target_rect_ = { };
     std::wstring class_name_;
 
     // 对目标窗口样式与 Z 序的临时改动，由调用线程在 touch_down / touch_up 中操作
