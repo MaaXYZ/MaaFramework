@@ -2481,6 +2481,28 @@ bool AgentClient::handle_controller_set_option(const json::value& j)
         ret = controller->set_option(key, keys.data(), sizeof(int32_t) * keys.size());
         break;
     }
+    case MaaCtrlOption_ScreenshotTargetExpand: {
+        if (!req.value.is_array() || req.value.as_array().size() != 2) {
+            LogError << "ScreenshotTargetExpand value must be a 2-element array" << VAR(req.value.type_name());
+            break;
+        }
+        int32_t dims[2] = { 0, 0 };
+        const auto& arr = req.value.as_array();
+        bool ok = true;
+        for (size_t i = 0; i < 2; ++i) {
+            if (!arr[i].is_number()) {
+                LogError << "ScreenshotTargetExpand array element must be a number" << VAR(arr[i].type_name());
+                ok = false;
+                break;
+            }
+            dims[i] = static_cast<int32_t>(arr[i].as_integer());
+        }
+        if (!ok || dims[0] <= 0 || dims[1] <= 0) {
+            break;
+        }
+        ret = controller->set_option(key, dims, sizeof(dims));
+        break;
+    }
     default:
         LogError << "unknown key" << VAR(req.key);
         break;
