@@ -268,17 +268,7 @@ struct InterfaceData
         MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, MEO_OPT icon, task);
     };
 
-    struct WelcomeItem
-    {
-        std::string label;
-        std::string content;
-
-        bool operator==(const WelcomeItem&) const = default;
-
-        MEO_JSONIZATION(MEO_OPT label, content);
-    };
-
-    using Welcome = std::variant<std::string, std::vector<WelcomeItem>>;
+    using Welcome = std::variant<std::string, std::vector<std::string>>;
 
     int interface_version = 2;
     std::unordered_map<std::string, std::string> languages; // 语言代码 -> 翻译文件路径

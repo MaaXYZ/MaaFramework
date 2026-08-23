@@ -19,7 +19,6 @@ private:
     void print_config_and_acknowledge_welcome();
     Welcome resolve_welcome() const;
     bool print_project_info(const Welcome& resolved_welcome) const;
-    void print_welcome_item(const MAA_PROJECT_INTERFACE_NS::InterfaceData::WelcomeItem& item) const;
     void acknowledge_welcome_update(const Welcome& resolved_welcome);
     bool interact_once();
     bool run();

@@ -49,44 +49,34 @@ bool test_legacy_welcome()
     return check(welcome && *welcome == "Welcome", "legacy welcome should remain a string");
 }
 
-bool test_welcome_items()
+bool test_welcome_list()
 {
-    auto data_opt = parse_interface(R"([
-        { "label": "$title", "content": "$content" },
-        { "content": "notice.md" }
-    ])");
-    if (!check(data_opt.has_value(), "welcome item array should parse")) {
+    auto data_opt = parse_interface(R"(["$title", "notice.md"])");
+    if (!check(data_opt.has_value(), "welcome string array should parse")) {
         return false;
     }
 
-    const auto* items = std::get_if<std::vector<InterfaceData::WelcomeItem>>(&data_opt->welcome);
-    return check(items && items->size() == 2, "welcome item order should be preserved")
-           && check((*items)[0].label == "$title" && (*items)[0].content == "$content", "i18n fields should be preserved")
-           && check((*items)[1].label.empty() && (*items)[1].content == "notice.md", "label should be optional");
+    const auto* items = std::get_if<std::vector<std::string>>(&data_opt->welcome);
+    return check(items && *items == std::vector<std::string> { "$title", "notice.md" }, "welcome order should be preserved");
 }
 
-bool test_invalid_welcome_items()
+bool test_invalid_welcome_list()
 {
     return check(!parse_interface("[]"), "empty welcome array should be rejected")
-           && check(!parse_interface(R"([{ "label": "Missing content" }])"), "welcome content should be required")
-           && check(
-               !parse_interface(R"([{ "content": "Notice", "unexpected": true }])"),
-               "welcome item properties not declared by the schema should be rejected")
-           && check(
-               !parse_interface(R"([{ "content": "Notice" }, "unexpected"])"),
-               "non-object welcome items should be rejected");
+           && check(!parse_interface(R"([{ "content": "Notice" }])"), "object welcome items should be rejected")
+           && check(!parse_interface(R"(["Notice", 1])"), "non-string welcome items should be rejected");
 }
 
 bool test_welcome_tracking()
 {
     Configuration config;
-    InterfaceData::Welcome welcome = std::vector<InterfaceData::WelcomeItem> {
-        { "First", "first.md" },
-        { "Second", "second.md" },
+    InterfaceData::Welcome welcome = std::vector<std::string> {
+        "first.md",
+        "second.md",
     };
-    InterfaceData::Welcome resolved_welcome = std::vector<InterfaceData::WelcomeItem> {
-        { "First", "First content" },
-        { "Second", "Second content" },
+    InterfaceData::Welcome resolved_welcome = std::vector<std::string> {
+        "First content",
+        "Second content",
     };
 
     if (!check(config.has_welcome_update(welcome, resolved_welcome), "unseen welcome should be reported as updated")) {
@@ -98,44 +88,38 @@ bool test_welcome_tracking()
     }
 
     auto reordered = welcome;
-    auto& reordered_items = std::get<std::vector<InterfaceData::WelcomeItem>>(reordered);
+    auto& reordered_items = std::get<std::vector<std::string>>(reordered);
     std::swap(reordered_items[0], reordered_items[1]);
     if (!check(config.has_welcome_update(reordered, resolved_welcome), "reordered welcome should be reported as updated")) {
         return false;
     }
 
     auto added = welcome;
-    std::get<std::vector<InterfaceData::WelcomeItem>>(added).push_back({ "Third", "third.md" });
+    std::get<std::vector<std::string>>(added).push_back("third.md");
     if (!check(config.has_welcome_update(added, resolved_welcome), "added welcome item should be reported as updated")) {
         return false;
     }
 
     auto removed = welcome;
-    std::get<std::vector<InterfaceData::WelcomeItem>>(removed).pop_back();
+    std::get<std::vector<std::string>>(removed).pop_back();
     if (!check(config.has_welcome_update(removed, resolved_welcome), "removed welcome item should be reported as updated")) {
         return false;
     }
 
-    auto changed_label = welcome;
-    std::get<std::vector<InterfaceData::WelcomeItem>>(changed_label)[0].label = "Changed";
-    if (!check(config.has_welcome_update(changed_label, resolved_welcome), "changed label should be reported as updated")) {
-        return false;
-    }
-
     auto changed_content = welcome;
-    std::get<std::vector<InterfaceData::WelcomeItem>>(changed_content)[0].content = "changed.md";
+    std::get<std::vector<std::string>>(changed_content)[0] = "changed.md";
     if (!check(config.has_welcome_update(changed_content, resolved_welcome), "changed content should be reported as updated")) {
         return false;
     }
 
-    auto changed_translated_label = resolved_welcome;
-    std::get<std::vector<InterfaceData::WelcomeItem>>(changed_translated_label)[0].label = "Translated title changed";
-    if (!check(config.has_welcome_update(welcome, changed_translated_label), "changed translated label should be reported as updated")) {
+    auto changed_translated_content = resolved_welcome;
+    std::get<std::vector<std::string>>(changed_translated_content)[0] = "Translated content changed";
+    if (!check(config.has_welcome_update(welcome, changed_translated_content), "changed translated content should be reported as updated")) {
         return false;
     }
 
     auto changed_file_content = resolved_welcome;
-    std::get<std::vector<InterfaceData::WelcomeItem>>(changed_file_content)[0].content = "Updated file content";
+    std::get<std::vector<std::string>>(changed_file_content)[0] = "Updated file content";
     if (!check(config.has_welcome_update(welcome, changed_file_content), "changed file content should be reported as updated")) {
         return false;
     }
@@ -153,11 +137,11 @@ bool test_welcome_tracking_round_trip()
     Configuration config;
     config.controller.name = "Default";
     config.resource = "Default";
-    InterfaceData::Welcome welcome = std::vector<InterfaceData::WelcomeItem> {
-        { "$title", "notice.md" },
+    InterfaceData::Welcome welcome = std::vector<std::string> {
+        "$notice",
     };
-    InterfaceData::Welcome resolved_welcome = std::vector<InterfaceData::WelcomeItem> {
-        { "Title", "Resolved notice" },
+    InterfaceData::Welcome resolved_welcome = std::vector<std::string> {
+        "Resolved notice",
     };
     config.acknowledge_welcome_update(welcome, resolved_welcome);
 
@@ -274,13 +258,9 @@ bool test_interactor_welcome_lifecycle()
         },
         "controller": [{ "name": "Default", "type": "Adb" }],
         "resource": [{ "name": "Default", "path": ["resource"] }],
-        "welcome": [
-            { "label": "$first_label", "content": "$first_content" },
-            { "content": "$second_content" }
-        ]
+        "welcome": ["$first_content", "$second_content"]
     })";
     constexpr std::string_view translations_json = R"({
-        "first_label": "First announcement",
         "first_content": "first.md",
         "second_content": "Second announcement content"
     })";
@@ -294,7 +274,9 @@ bool test_interactor_welcome_lifecycle()
 
     if (!check(write_text_file(project_path / "interface.json", interface_json), "test interface should be written")
         || !check(write_text_file(project_path / "translations.json", translations_json), "test translations should be written")
-        || !check(write_text_file(project_path / "first.md", "First announcement content"), "test announcement should be written")
+        || !check(
+               write_text_file(project_path / "first.md", "# First announcement\nFirst announcement content"),
+               "test announcement should be written")
         || !check(
             write_text_file(project_path / "config/maa_pi_config.json", config_json.dumps(4)),
             "test configuration should be written")) {
@@ -310,7 +292,7 @@ bool test_interactor_welcome_lifecycle()
     if (!check(first_output.has_value(), "first interaction should complete")) {
         return false;
     }
-    const auto first_label = first_output->find("First announcement");
+    const auto first_label = first_output->find("# First announcement");
     const auto first_content = first_output->find("First announcement content");
     const auto second_content = first_output->find("Second announcement content");
     if (!check(
@@ -324,13 +306,13 @@ bool test_interactor_welcome_lifecycle()
     if (!check(saved_config.has_value(), "acknowledged welcome state should be persisted")) {
         return false;
     }
-    InterfaceData::Welcome raw_welcome = std::vector<InterfaceData::WelcomeItem> {
-        { "$first_label", "$first_content" },
-        { "", "$second_content" },
+    InterfaceData::Welcome raw_welcome = std::vector<std::string> {
+        "$first_content",
+        "$second_content",
     };
-    InterfaceData::Welcome resolved_welcome = std::vector<InterfaceData::WelcomeItem> {
-        { "First announcement", "First announcement content" },
-        { "", "Second announcement content" },
+    InterfaceData::Welcome resolved_welcome = std::vector<std::string> {
+        "# First announcement\nFirst announcement content",
+        "Second announcement content",
     };
     if (!check(
             !saved_config->has_welcome_update(raw_welcome, resolved_welcome),
@@ -366,7 +348,7 @@ bool test_interactor_welcome_lifecycle()
 
 int main()
 {
-    const bool passed = test_legacy_welcome() && test_welcome_items() && test_invalid_welcome_items() && test_welcome_tracking()
+    const bool passed = test_legacy_welcome() && test_welcome_list() && test_invalid_welcome_list() && test_welcome_tracking()
                         && test_welcome_tracking_round_trip() && test_interactor_welcome_lifecycle();
     return passed ? 0 : 1;
 }

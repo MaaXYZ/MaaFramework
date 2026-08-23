@@ -20,7 +20,7 @@ MaaFramework 官方提供的命令行 ProjectInterface Client，用于通过终�
 | v2.8.1 | ❌ | 未实现 `pretask.controller/resource` 过滤 |
 | v2.9.0 | ❌ | 未实现 `telemetry` |
 | v2.9.1 | ❌ | 未实现 `focus.trace`；CLI 也不处理 `focus` 回调 |
-| v2.10.0 | ⚠️ | 仅支持 `welcome` 字符串及公告对象数组 |
+| v2.10.0 | ⚠️ | 仅支持 `welcome` 字符串及字符串数组 |
 
 `❌` 表示 MaaPiCli 未实现对应协议行为，不代表包含该字段的 `interface.json` 一定无法解析。
 

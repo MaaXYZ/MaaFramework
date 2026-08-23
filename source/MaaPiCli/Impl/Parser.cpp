@@ -8,33 +8,6 @@
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 
-namespace
-{
-std::optional<std::pair<size_t, std::string>> find_unknown_welcome_item_property(const json::value& input)
-{
-    const auto* welcome = input.find_value("welcome");
-    if (!welcome || !welcome->is_array()) {
-        return std::nullopt;
-    }
-
-    const auto& items = welcome->as_array();
-    for (size_t index = 0; index < items.size(); ++index) {
-        if (!items[index].is_object()) {
-            continue;
-        }
-
-        for (const auto& property : items[index].as_object()) {
-            const auto& key = property.first;
-            if (key != "label" && key != "content") {
-                return std::pair { index, key };
-            }
-        }
-    }
-
-    return std::nullopt;
-}
-} // namespace
-
 std::optional<InterfaceData> Parser::parse_interface(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
@@ -85,12 +58,6 @@ std::optional<InterfaceData> Parser::parse_interface(const json::value& json)
         return std::nullopt;
     }
 
-    if (auto unknown_property = find_unknown_welcome_item_property(json)) {
-        const auto& [index, key] = *unknown_property;
-        LogError << "Unknown welcome item property" << VAR(index) << VAR(key);
-        return std::nullopt;
-    }
-
     auto data = json.as<InterfaceData>();
 
     // check interface version
@@ -99,7 +66,7 @@ std::optional<InterfaceData> Parser::parse_interface(const json::value& json)
         return std::nullopt;
     }
 
-    if (const auto* welcome_items = std::get_if<std::vector<InterfaceData::WelcomeItem>>(&data.welcome);
+    if (const auto* welcome_items = std::get_if<std::vector<std::string>>(&data.welcome);
         welcome_items && welcome_items->empty()) {
         LogError << "Welcome cannot be an empty array";
         return std::nullopt;
