@@ -9,7 +9,7 @@
 
 #include <meojson/json.hpp>
 
-#include "Common/Conf.h"
+#include "ProjectInterface/Conf.h"
 #include "MaaFramework/MaaDef.h"
 
 MAA_PROJECT_INTERFACE_NS_BEGIN

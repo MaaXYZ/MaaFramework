@@ -89,6 +89,13 @@ add_subdirectory(3rdparty)
 add_subdirectory(source)
 add_subdirectory(tools)
 
+target_include_directories(
+    MaaUtils
+    PUBLIC $<BUILD_INTERFACE:${MAAUTILS_DIR}/include> $<INSTALL_INTERFACE:include>)
+# MaaUtils public headers expose Boost and OpenCV types.
+target_link_libraries(
+    MaaUtils PUBLIC Boost::headers Boost::system ${OpenCV_LIBS})
+
 if(BUILD_SAMPLE)
     add_subdirectory(sample/cpp)
 endif()
@@ -122,6 +129,9 @@ install(
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin # ARCHIVE DESTINATION lib
 )
+
+install(DIRECTORY "${MAAUTILS_DIR}/include/MaaUtils" DESTINATION "include")
+install(DIRECTORY "${MAAUTILS_DIR}/include/meojson" DESTINATION "include")
 
 if(WIN32)
     install(FILES $<TARGET_PDB_FILE:MaaUtils> DESTINATION symbol OPTIONAL)

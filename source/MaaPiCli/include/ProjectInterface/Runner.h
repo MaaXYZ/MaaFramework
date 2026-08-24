@@ -2,7 +2,7 @@
 
 #include "Types.h"
 
-#include "Common/Conf.h"
+#include "ProjectInterface/Conf.h"
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 
