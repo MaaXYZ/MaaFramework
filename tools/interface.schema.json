@@ -1387,7 +1387,7 @@
                                 "option": {
                                     "type": "object",
                                     "title": "任务选项预设值",
-                                    "description": "可选。该任务各配置项的预设值，键为顶层 option 中的键名。select/switch 类型填 case.name 字符串，checkbox 类型填 case.name 数组，input 类型填 record<string, string>。💡 v2.10.0 password 为 true 的输入字段不得出现在预设值中；该跨 option 定义的约束无法由本 Schema 表达，须由 Client 或语义校验器执行",
+                                    "description": "可选。该任务各配置项的预设值，键为顶层 option 中的键名。select/switch 类型填 case.name 字符串，checkbox 类型填 case.name 数组，input 类型填 record<string, string>。💡 v2.10.0 资源作者不要把 password 为 true 的输入字段写入预设值",
                                     "additionalProperties": true
                                 }
                             },
