@@ -100,6 +100,12 @@
                     "$ref": "#/definitions/i18nString",
                     "title": "校验错误信息",
                     "description": "正则校验用户输入错误时显示的信息"
+                },
+                "password": {
+                    "type": "boolean",
+                    "title": "密码字段",
+                    "description": "💡 v2.10.0 可选，默认 false。为 true 时 Client 应将该字段视为密码：UI 掩码显示，不得将原文写入日志/遥测；用户配置中须加密存储，仅在内存中解密供运行时使用",
+                    "default": false
                 }
             },
             "required": [
