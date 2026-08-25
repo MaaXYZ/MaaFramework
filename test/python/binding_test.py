@@ -133,7 +133,10 @@ class MyRecognition(CustomRecognition):
 
         # 失败动作也应保留 action_id 和动作类型，便于关联失败事件
         failed_action_detail = context.run_action_direct(
-            JActionType.Click, JClick(target=(0, 0, 0, 0)), (100, 100, 50, 50), ""
+            JActionType.Click,
+            JClick(target="__missing_target__"),
+            (100, 100, 50, 50),
+            "",
         )
         assert failed_action_detail is not None
         assert failed_action_detail.action_id != 0
