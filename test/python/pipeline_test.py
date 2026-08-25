@@ -15,6 +15,7 @@ from pathlib import Path
 import sys
 import json
 import io
+import tempfile
 
 # Fix encoding issues on Windows
 if sys.stdout.encoding != "utf-8":
