@@ -325,6 +325,7 @@ jobs:
               shell: bash
               run: |
                   cmake -S test/package -B build-package \
+                    -DCMAKE_TOOLCHAIN_FILE="$PWD/source/MaaUtils/MaaDeps/cmake/maa-x64-linux-toolchain.cmake" \
                     -DCMAKE_PREFIX_PATH="$PWD/install;$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-x64-linux" \
                     -DCMAKE_BUILD_TYPE=Debug
                   cmake --build build-package --config Debug -j 16
