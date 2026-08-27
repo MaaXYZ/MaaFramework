@@ -141,6 +141,20 @@ jobs:
 
                   cp -r LICENSE.md install
 
+            - name: Build standalone CLI
+              shell: bash
+              run: |
+                  install_prefix=$(cygpath -m "$PWD/install")
+                  dependency_prefix=$(cygpath -m "$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows")
+                  cmake_platform="${{ matrix.arch == 'x86_64' && 'x64' || 'ARM64' }}"
+
+                  cmake -S source/MaaPiCli -B build-picli \
+                    -A "$cmake_platform" \
+                    -DCMAKE_SYSTEM_VERSION="10.0.26100.0" \
+                    -DCMAKE_PREFIX_PATH="$install_prefix;$dependency_prefix" \
+                    -DCMAKE_BUILD_TYPE=${{ needs.meta.outputs.build-config }}
+                  cmake --build build-picli --target MaaPiCli --config ${{ needs.meta.outputs.build-config }} -j 16
+
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
