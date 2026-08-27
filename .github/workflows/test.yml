@@ -115,10 +115,7 @@ jobs:
               shell: bash
               run: |
                   cmake -S test/package -B build-package \
-                    -DCMAKE_PREFIX_PATH="$PWD/install" \
-                    -DBoost_DIR="$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-x64-windows/share/boost" \
-                    -DOpenCV_DIR="$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-x64-windows/share/opencv4" \
-                    -DEigen3_DIR="$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-x64-windows/share/eigen3" \
+                    -DCMAKE_PREFIX_PATH="$PWD/install;$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-x64-windows" \
                     -DCMAKE_BUILD_TYPE=Debug
                   cmake --build build-package --config Debug -j 16
                   ctest --test-dir build-package -C Debug --output-on-failure
@@ -328,10 +325,7 @@ jobs:
               shell: bash
               run: |
                   cmake -S test/package -B build-package \
-                    -DCMAKE_PREFIX_PATH="$PWD/install" \
-                    -DBoost_DIR="$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-x64-linux/share/boost" \
-                    -DOpenCV_DIR="$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-x64-linux/share/opencv4" \
-                    -DEigen3_DIR="$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-x64-linux/share/eigen3" \
+                    -DCMAKE_PREFIX_PATH="$PWD/install;$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-x64-linux" \
                     -DCMAKE_BUILD_TYPE=Debug
                   cmake --build build-package --config Debug -j 16
                   ctest --test-dir build-package -C Debug --output-on-failure
