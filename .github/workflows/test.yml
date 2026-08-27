@@ -113,15 +113,17 @@ jobs:
             - name: Test installed package
               if: ${{ matrix.arch == 'x86_64' }}
               shell: bash
+              timeout-minutes: 5
               run: |
                   install_prefix=$(cygpath -m "$PWD/install")
                   dependency_prefix=$(cygpath -m "$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-x64-windows")
+                  export PATH="$(cygpath -u "$PWD/install/bin"):$PATH"
 
                   cmake -S test/package -B build-package \
                     -DCMAKE_PREFIX_PATH="$install_prefix;$dependency_prefix" \
                     -DCMAKE_BUILD_TYPE=Debug
                   cmake --build build-package --config Debug -j 16
-                  ctest --test-dir build-package -C Debug --output-on-failure
+                  ctest --test-dir build-package -C Debug --output-on-failure --timeout 60
 
             - name: Build standalone CLI
               if: ${{ matrix.arch == 'x86_64' }}
