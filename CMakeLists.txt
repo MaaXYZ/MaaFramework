@@ -96,6 +96,11 @@ target_include_directories(
 target_link_libraries(
     MaaUtils PUBLIC Boost::headers Boost::system ${OpenCV_LIBS})
 
+if(LINUX)
+    find_package(Threads REQUIRED)
+    target_link_libraries(MaaUtils PUBLIC Threads::Threads)
+endif()
+
 if(BUILD_SAMPLE)
     add_subdirectory(sample/cpp)
 endif()
