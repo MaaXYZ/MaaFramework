@@ -132,7 +132,8 @@ install(
     TARGETS MaaUtils
     EXPORT MaaFrameworkTargets
     RUNTIME DESTINATION bin
-    LIBRARY DESTINATION bin # ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION bin
+    ARCHIVE DESTINATION lib
 )
 
 install(DIRECTORY "${MAAUTILS_DIR}/include/MaaUtils" DESTINATION "include")
