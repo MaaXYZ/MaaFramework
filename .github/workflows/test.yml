@@ -66,7 +66,7 @@ jobs:
                   submodules: recursive
 
             - name: Setup Windows 10 SDK
-              uses: GuillaumeFalourd/setup-windows10-sdk-action@v2
+              uses: GuillaumeFalourd/setup-windows10-sdk-action@v2.5
               with:
                   sdk-version: 26100
 
