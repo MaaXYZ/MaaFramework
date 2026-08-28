@@ -134,6 +134,9 @@ jobs:
                   cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
                   rm -rf install/bin/msvc-debug
 
+                  test ! -e install/bin/MaaPiCli
+                  test ! -e install/bin/MaaPiCli.exe
+
                   cp -r docs install
                   cp README*.md install
 
@@ -154,6 +157,30 @@ jobs:
                     -DCMAKE_PREFIX_PATH="$install_prefix;$dependency_prefix" \
                     -DCMAKE_BUILD_TYPE=${{ needs.meta.outputs.build-config }}
                   cmake --build build-picli --target MaaPiCli --config ${{ needs.meta.outputs.build-config }} -j 16
+                  cmake --install build-picli --prefix install-picli --config ${{ needs.meta.outputs.build-config }}
+
+            - name: Package standalone CLI
+              shell: bash
+              run: |
+                  mkdir -p picli-package/bin
+
+                  if [[ "${{ runner.os }}" == "Windows" ]]; then
+                      find install/bin -maxdepth 1 -type f \( -name '*.dll' -o -name '*.exe' \) \
+                        -exec cp {} picli-package/bin/ \;
+                  elif [[ "${{ runner.os }}" == "Linux" ]]; then
+                      cp -a install/bin/*.so* picli-package/bin/
+                  else
+                      cp -a install/bin/*.dylib picli-package/bin/
+                  fi
+
+                  cp install-picli/bin/MaaPiCli.exe picli-package/bin/
+                  cp source/MaaPiCli/README.md picli-package/
+                  cp LICENSE.md picli-package/
+
+            - uses: actions/upload-artifact@v7
+              with:
+                  name: MAA-PiCli-win-${{ matrix.arch }}
+                  path: 'picli-package'
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -313,6 +340,8 @@ jobs:
               run: |
                   cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
 
+                  test ! -e install/bin/MaaPiCli
+
                   if [[ ${{ needs.meta.outputs.build-config }} == RelWithDebInfo ]]; then
                     tools/split-linux-debug.sh install
                   fi
@@ -323,6 +352,34 @@ jobs:
                   cp -r sample install
 
                   cp -r LICENSE.md install
+
+            - name: Build and install standalone CLI
+              shell: bash
+              run: |
+                  cmake -S source/MaaPiCli -B build-picli \
+                    -DCMAKE_TOOLCHAIN_FILE="$PWD/source/MaaUtils/MaaDeps/cmake/maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux-toolchain.cmake" \
+                    -DCMAKE_PREFIX_PATH="$PWD/install;$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux" \
+                    -DCMAKE_BUILD_TYPE=${{ needs.meta.outputs.build-config }}
+                  cmake --build build-picli --config ${{ needs.meta.outputs.build-config }} -j 16
+                  cmake --install build-picli --prefix install-picli --config ${{ needs.meta.outputs.build-config }}
+
+            - name: Package standalone CLI
+              shell: bash
+              run: |
+                  if [[ ${{ needs.meta.outputs.build-config }} == RelWithDebInfo ]]; then
+                    tools/split-linux-debug.sh install-picli
+                  fi
+
+                  mkdir -p picli-package/bin
+                  cp -a install/bin/*.so* picli-package/bin/
+                  cp install-picli/bin/MaaPiCli picli-package/bin/
+                  cp source/MaaPiCli/README.md picli-package/
+                  cp LICENSE.md picli-package/
+
+            - uses: actions/upload-artifact@v7
+              with:
+                  name: MAA-PiCli-linux-${{ matrix.arch }}
+                  path: 'picli-package'
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -414,6 +471,8 @@ jobs:
               run: |
                   cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
 
+                  test ! -e install/bin/MaaPiCli
+
                   if [[ ${{ needs.meta.outputs.build-config }} == RelWithDebInfo ]]; then
                     tools/collect-mac-debug.sh install
                   fi
@@ -424,6 +483,35 @@ jobs:
                   cp -r sample install
 
                   cp -r LICENSE.md install
+
+            - name: Build and install standalone CLI
+              shell: bash
+              run: |
+                  cmake -S source/MaaPiCli -B build-picli \
+                    -DCMAKE_PREFIX_PATH="$PWD/install;$PWD/source/MaaUtils/MaaDeps/vcpkg/installed/maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx" \
+                    -DCMAKE_BUILD_TYPE=${{ needs.meta.outputs.build-config }} \
+                    -DCMAKE_OSX_SYSROOT=macosx \
+                    -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}'
+                  cmake --build build-picli --config ${{ needs.meta.outputs.build-config }} -j 16
+                  cmake --install build-picli --prefix install-picli --config ${{ needs.meta.outputs.build-config }}
+
+            - name: Package standalone CLI
+              shell: bash
+              run: |
+                  if [[ ${{ needs.meta.outputs.build-config }} == RelWithDebInfo ]]; then
+                    tools/collect-mac-debug.sh install-picli
+                  fi
+
+                  mkdir -p picli-package/bin
+                  cp -a install/bin/*.dylib picli-package/bin/
+                  cp install-picli/bin/MaaPiCli picli-package/bin/
+                  cp source/MaaPiCli/README.md picli-package/
+                  cp LICENSE.md picli-package/
+
+            - uses: actions/upload-artifact@v7
+              with:
+                  name: MAA-PiCli-macos-${{ matrix.arch }}
+                  path: 'picli-package'
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1

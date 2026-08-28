@@ -23,7 +23,6 @@ option(WITH_QUICKJS_BINDING "build with quickjs binding" OFF)
 
 option(WITH_MAA_AGENT "build with MaaAgent" ON)
 
-option(BUILD_PICLI "build maa picli" ON)
 option(BUILD_SAMPLE "build a demo" OFF)
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
