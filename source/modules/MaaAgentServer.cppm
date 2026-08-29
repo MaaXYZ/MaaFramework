@@ -14,3 +14,4 @@ export using ::MaaAgentServerStartUp;
 export using ::MaaAgentServerShutDown;
 export using ::MaaAgentServerJoin;
 export using ::MaaAgentServerDetach;
+export using ::MaaAgentServerSetShutdownCallback;

@@ -677,3 +677,17 @@ typedef MaaBool(MAA_CALL* MaaCustomActionCallback)(
     MaaRecoId reco_id,
     const MaaRect* box,
     void* trans_arg);
+
+/// AgentServer shutdown callback, set via MaaAgentServerSetShutdownCallback.
+/// Called when a remote ShutDownRequest is received, before the message loop stops;
+/// the ShutDownResponse is replied only after the callback returns, so the host may
+/// block inside the callback to finish cleanup (e.g. flushing in-flight notifications).
+/// Notes:
+/// - Runs on the AgentServer message thread: do NOT call MaaAgentServerJoin /
+///   MaaAgentServerShutDown inside the callback. They wait for the calling thread
+///   itself, which is undefined behavior (typically throws / terminates);
+/// - Must not throw exceptions;
+/// - Should return as soon as possible (the client is synchronously waiting);
+/// - Must be set before MaaAgentServerStartUp (no synchronization between setting
+///   and the message loop reading it).
+typedef void(MAA_CALL* MaaShutdownCallback)(void* trans_arg);

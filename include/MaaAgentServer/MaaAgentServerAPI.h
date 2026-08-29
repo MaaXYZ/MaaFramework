@@ -17,6 +17,8 @@ extern "C"
     MAA_AGENT_SERVER_API MaaSinkId MaaAgentServerAddTaskerSink(MaaEventCallback sink, void* trans_arg);
     MAA_AGENT_SERVER_API MaaSinkId MaaAgentServerAddContextSink(MaaEventCallback sink, void* trans_arg);
 
+    MAA_AGENT_SERVER_API MaaBool MaaAgentServerSetShutdownCallback(MaaShutdownCallback callback, void* trans_arg);
+
     MAA_AGENT_SERVER_API MaaBool MaaAgentServerStartUp(const char* identifier);
     MAA_AGENT_SERVER_API void MaaAgentServerShutDown();
     MAA_AGENT_SERVER_API void MaaAgentServerJoin();

@@ -102,6 +102,19 @@ bool AgentServer::register_custom_action(const std::string& name, MaaCustomActio
     return custom_actions_.insert_or_assign(name, CustomActionSession { action, trans_arg }).second;
 }
 
+bool AgentServer::set_shutdown_callback(MaaShutdownCallback callback, void* trans_arg)
+{
+    LogInfo << VAR_VOIDP(callback) << VAR_VOIDP(trans_arg);
+
+    if (callback == nullptr) {
+        LogError << "callback is null";
+        return false;
+    }
+
+    shutdown_session_ = ShutdownSession { callback, trans_arg };
+    return true;
+}
+
 MaaSinkId AgentServer::add_resource_sink(MaaEventCallback sink, void* trans_arg)
 {
     return res_notifier_.add_sink(sink, trans_arg);
@@ -292,6 +305,12 @@ bool AgentServer::handle_shut_down_request(const json::value& j)
     }
 
     LogInfo << VAR(ipc_addr_);
+
+    if (shutdown_session_.callback) {
+        LogInfo << "shutdown callback begin" << VAR_VOIDP(shutdown_session_.trans_arg);
+        shutdown_session_.callback(shutdown_session_.trans_arg);
+        LogInfo << "shutdown callback end";
+    }
 
     msg_loop_running_ = false;
 

@@ -32,6 +32,12 @@ class AgentServer
         void* trans_arg = nullptr;
     };
 
+    struct ShutdownSession
+    {
+        MaaShutdownCallback callback = nullptr;
+        void* trans_arg = nullptr;
+    };
+
 public:
     ~AgentServer() = default;
 
@@ -42,6 +48,7 @@ public:
 
     bool register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg);
     bool register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg);
+    bool set_shutdown_callback(MaaShutdownCallback callback, void* trans_arg);
 
     MaaSinkId add_resource_sink(MaaEventCallback sink, void* trans_arg);
     MaaSinkId add_controller_sink(MaaEventCallback sink, void* trans_arg);
@@ -67,6 +74,8 @@ private:
 private:
     std::unordered_map<std::string, CustomRecognitionSession> custom_recognitions_;
     std::unordered_map<std::string, CustomActionSession> custom_actions_;
+
+    ShutdownSession shutdown_session_;
 
     EventDispatcher res_notifier_;
     EventDispatcher ctrl_notifier_ = EventDispatcher(false);
