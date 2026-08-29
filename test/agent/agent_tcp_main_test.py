@@ -12,6 +12,7 @@ from pathlib import Path
 import socket
 import sys
 import subprocess
+import time
 
 if len(sys.argv) < 3:
     print("Usage: python agent_tcp_main_test.py <binding_dir> <install_dir>")
@@ -117,7 +118,10 @@ def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
     # ============================================================
     # 启动 AgentServer 子进程 (TCP 模式)
     # ============================================================
-    subprocess.Popen(
+    shutdown_marker = install_dir / "test" / "agent_shutdown_callback_ran"
+    shutdown_marker.unlink(missing_ok=True)
+
+    child_proc = subprocess.Popen(
         [
             sys.executable,
             str(Path(__file__).parent / "agent_tcp_child_test.py"),
@@ -127,6 +131,26 @@ def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
         ],
     )
 
+    # 有限超时：子进程启动失败（import 崩溃等）时快速失败，而非无限等待拖到 CI 步超时
+    if not agent.set_timeout(60_000):
+        print("failed to set timeout to 60s")
+        exit(1)
+
+    try:
+        _tcp_flow_body(agent, tasker, socket_id, shutdown_marker, scenario)
+        # 成功路径：子进程应已自行优雅退出
+        child_proc.wait(timeout=15)
+        if child_proc.returncode != 0:
+            print(f"agent child process exited with {child_proc.returncode}")
+            exit(1)
+    finally:
+        # 失败路径也要回收子进程，避免其卡在 join 上残留
+        if child_proc.poll() is None:
+            child_proc.kill()
+            child_proc.wait(timeout=15)
+
+
+def _tcp_flow_body(agent, tasker, socket_id, shutdown_marker, scenario):
     # 等待连接
     if not agent.connect():
         print("failed to connect to agent server via TCP")
@@ -201,13 +225,29 @@ def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
     # ============================================================
     # 断开连接
     # ============================================================
+    t0 = time.time()
     if not agent.disconnect():
         print("failed to disconnect")
         exit(1)
-    print("agent.disconnect() succeeded")
+    elapsed = time.time() - t0
+    print(f"agent.disconnect() succeeded in {elapsed:.2f}s")
+
+    # 正常路径下响应应在回调（含 1s sleep）后立即到达，远小于超时上界；
+    # 若响应缺失（如发送被中断谓词误杀），disconnect 会等满 60s 超时——此断言必红
+    assert elapsed < 10, (
+        f"disconnect took {elapsed:.2f}s — ShutDownResponse likely never arrived "
+        f"(timeout fallback), expected < 10s for normal graceful shutdown"
+    )
 
     # 验证断开连接后的状态
     print(f"agent.connected after disconnect: {agent.connected}")
+
+    # disconnect 返回即代表服务端 shutdown 回调已执行完毕（Response 在回调之后才发）
+    if not shutdown_marker.exists():
+        print("shutdown callback marker not found after disconnect")
+        exit(1)
+    print("shutdown callback ran before disconnect returned")
+    shutdown_marker.unlink()
 
     print("\n" + "=" * 50)
     print(f"{scenario} passed!")

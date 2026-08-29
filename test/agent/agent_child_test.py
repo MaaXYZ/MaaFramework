@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import sys
 import io
+import time
 import numpy
 
 # Fix encoding issues on Windows (cp1252 cannot encode some Unicode characters)
@@ -50,6 +51,19 @@ from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
 
 analyzed: bool = False
 runned: bool = False
+shutdown_callback_ran: bool = False
+
+shutdown_marker: Path = install_dir / "test" / "agent_shutdown_callback_ran"
+
+
+def on_shutdown() -> None:
+    global shutdown_callback_ran
+    shutdown_callback_ran = True
+    print("on_shutdown callback")
+    # 模拟宿主收尾耗时；若 ShutDownResponse 先于回调发出，main 侧断言必然失败
+    time.sleep(1)
+    shutdown_marker.parent.mkdir(parents=True, exist_ok=True)
+    shutdown_marker.write_text("done", encoding="utf-8")
 
 
 def main():
@@ -58,9 +72,32 @@ def main():
         exit(1)
 
     socket_id = sys.argv[-1]
+
+    shutdown_marker.unlink(missing_ok=True)
+
+    # 冒烟：可注册、可覆盖。首个回调若被调用会置位 flag（用于断言「覆盖而非追加」语义）
+    first_callback_ran = False
+
+    def _first_callback():
+        nonlocal first_callback_ran
+        first_callback_ran = True
+
+    if not AgentServer.set_shutdown_callback(_first_callback):
+        print("failed to register first shutdown callback")
+        exit(1)
+    if not AgentServer.set_shutdown_callback(on_shutdown):
+        print("failed to overwrite shutdown callback")
+        exit(1)
+
     AgentServer.start_up(socket_id)
     AgentServer.join()
     AgentServer.shut_down()
+
+    # join 返回即代表消息循环已停止；此时回调必然已执行过
+    # （marker 文件由 main 侧在 disconnect 断言后删除，此处不依赖文件）
+    assert shutdown_callback_ran, "shutdown callback should have run before message loop stops"
+    # 覆盖语义：首个回调不应被调用（若实现错成追加，两个都会跑）
+    assert not first_callback_ran, "re-registration should overwrite, not append"
 
 
 @AgentServer.custom_recognition("MyRec")
