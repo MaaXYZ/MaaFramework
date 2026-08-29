@@ -13,6 +13,17 @@ declare global {
                 cb: (ctx: Context, msg: TaskerContextNotify) => MaybePromise<void>,
             ): void
 
+            /**
+             * Invoked when the AgentServer receives a ShutDownRequest, before the
+             * message loop stops; the ShutDownResponse is replied only after the
+             * callback (including the returned Promise) settles. Must be set
+             * before start_up; re-registration overwrites.
+             * Do NOT call maa.Server.join / maa.Server.shut_down inside the callback,
+             * and do NOT throw synchronously (it terminates the process); a rejected
+             * Promise is silently ignored and shutdown continues.
+             */
+            set_shutdown_callback(cb: () => MaybePromise<void>): void
+
             start_up(identifier: string): Promise<boolean>
             shut_down(): Promise<void>
             join(): Promise<void>

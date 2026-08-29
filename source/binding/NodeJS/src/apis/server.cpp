@@ -52,6 +52,18 @@ static void add_context_sink(maajs::FunctionType func)
     ExtContext::get(func.Env())->globalCallbacks.push_back(std::move(ctx));
 }
 
+// 注册关闭回调。ctx 由 globalCallbacks 持有（进程级存活），保证回调
+// 触发时 JS 函数对象和 ThreadSafeFunction 不会被 GC 回收。
+// C++ 侧返回 false（如服务端已 start_up 后再注册）时抛异常给 JS 层。
+static void set_shutdown_callback(maajs::EnvType env, maajs::FunctionType func)
+{
+    auto ctx = std::make_unique<maajs::CallbackContext>(func, "ShutdownCallback");
+    if (!MaaAgentServerSetShutdownCallback(ShutdownCallback, ctx.get())) {
+        throw maajs::MaaError { "Server set_shutdown_callback failed" };
+    }
+    ExtContext::get(env)->globalCallbacks.push_back(std::move(ctx));
+}
+
 static maajs::PromiseType start_up(maajs::EnvType env, std::string identifier)
 {
     auto work = new maajs::AsyncWork<bool>(env, [identifier]() { return MaaAgentServerStartUp(identifier.c_str()); });
@@ -94,6 +106,7 @@ maajs::ValueType load_server(maajs::EnvType env)
     MAA_BIND_FUNC(obj, "add_controller_sink", add_controller_sink);
     MAA_BIND_FUNC(obj, "add_tasker_sink", add_tasker_sink);
     MAA_BIND_FUNC(obj, "add_context_sink", add_context_sink);
+    MAA_BIND_FUNC(obj, "set_shutdown_callback", set_shutdown_callback);
     MAA_BIND_FUNC(obj, "start_up", start_up);
     MAA_BIND_FUNC(obj, "shut_down", shut_down);
     MAA_BIND_FUNC(obj, "join", join);

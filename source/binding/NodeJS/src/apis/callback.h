@@ -6,6 +6,7 @@ void ResourceSink(void* resource, const char* message, const char* details_json,
 void ControllerSink(void* controller, const char* message, const char* details_json, void* callback_arg);
 void TaskerSink(void* tasker, const char* message, const char* details_json, void* callback_arg);
 void ContextSink(void* context, const char* message, const char* details_json, void* callback_arg);
+void ShutdownCallback(void* trans_arg);
 
 MaaBool CustomReco(
     MaaContext* context,
