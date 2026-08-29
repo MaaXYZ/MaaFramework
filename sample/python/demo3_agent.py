@@ -17,6 +17,13 @@ def main():
 
     socket_id = sys.argv[-1]
 
+    def on_shutdown() -> None:
+        print("on_shutdown: cleanup before server stops...")
+        # 回调返回后服务端才会回复 ShutDownResponse，可在此阻塞完成收尾；
+        # 回调运行在服务端消息线程，应尽快返回，勿在回调内调用 Join/ShutDown
+
+    AgentServer.set_shutdown_callback(on_shutdown)
+
     AgentServer.start_up(socket_id)
     AgentServer.join()
     AgentServer.shut_down()

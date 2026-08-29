@@ -38,12 +38,16 @@ async function main() {
 
     const socket_id = process.argv[process.argv.length - 1]
 
-    await maa.AgentServer.start_up(socket_id)
+    maa.Server.set_shutdown_callback(async () => {
+        console.log('on_shutdown: cleanup before server stops...')
+    })
 
-    maa.AgentServer.register_custom_recognizer('MyRecongition', my_reco)
+    await maa.Server.start_up(socket_id)
 
-    await maa.AgentServer.join()
-    maa.AgentServer.shut_down()
+    maa.Server.register_custom_recognition('MyRecongition', my_reco)
+
+    await maa.Server.join()
+    maa.Server.shut_down()
 }
 
 main()
