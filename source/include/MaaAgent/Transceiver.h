@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <mutex>
 #include <optional>
 
@@ -76,15 +77,28 @@ protected:
     void uninit_socket();
 
     bool send(const json::value& j);
-    std::optional<json::value> recv();
+    // 接收一条消息。abort_pred 是"该不该放弃等待"的检查函数——
+    // poll 每秒醒来调它一次，返回 true 就不等了（用于让外部打断阻塞的 recv）。
+    std::optional<json::value> recv(
+        const std::function<bool()>& abort_pred = nullptr);
 
     bool alive();
+    // 有界探活：在 duration 内等 socket 可写。区分"对端忙"（等一会儿就能写）
+    // 和"对端死了"（永远不可写）。旧 alive() 两种都返回 false，无法区分（#1123）。
+    bool alive_for(const std::chrono::milliseconds& duration);
     void set_timeout(const std::chrono::milliseconds& timeout);
+
+    // 设置全局中断谓词：poll 每秒醒来时调它一次，返回 true 就放弃等待。
+    // 相当于给这个 Transceiver 的所有等待（send/recv/嵌套 send_and_recv）
+    // 装了一个总开关——AgentServer 在 start_up 时设置为"消息循环该停了吗"，
+    // 这样本地 ShutDown() 置 false 后，无论消息线程卡在哪个等待上，
+    // 最多 1 秒就会被唤醒并放弃。须在等待开始前设置（如线程启动前）。
+    void set_abort_pred(std::function<bool()> pred);
 
 private:
     void handle_image(const ImageHeader& header);
     void handle_image_encoded(const ImageEncodedHeader& header);
-    bool poll(zmq::pollitem_t& pollitem);
+    bool poll(zmq::pollitem_t& pollitem, const std::function<bool()>& abort_pred = nullptr);
 
 protected:
     // 返回实际绑定的端口号，如果传入 0 则自动选择可用端口
@@ -116,6 +130,9 @@ private:
     zmq::pollitem_t zmq_pollitem_send_ { };
     zmq::pollitem_t zmq_pollitem_recv_ { };
     std::chrono::milliseconds timeout_ = std::chrono::milliseconds::max();
+
+    // 全局等待中断谓词（set_abort_pred 设置，poll 统一检查；等待开始前设置、期间只读）
+    std::function<bool()> abort_pred_ = nullptr;
 };
 
 MAA_AGENT_NS_END

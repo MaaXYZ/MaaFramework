@@ -15,6 +15,10 @@
 
 MAA_AGENT_CLIENT_NS_BEGIN
 
+// disconnect 握手前等待对端可写的时限：对端活着但忙（HWM 打满）时足够等到排空，
+// 对端已死（PAIR 断连后永远不可写）时不至于无限阻塞。
+inline static constexpr std::chrono::milliseconds k_shutdown_handshake_alive_timeout { 5000 };
+
 AgentClient::AgentClient(const std::string& identifier)
 {
     LogFunc;
@@ -202,18 +206,35 @@ bool AgentClient::disconnect()
 {
     LogFunc << VAR(ipc_addr_);
 
+    // 先反注册自定义动作/识别器（纯本地操作，不涉及 IPC，无论后续握手
+    // 成败都要做；放在最前面还能尽早切断"资源侧再派发 custom → 向垂死
+    // 服务端 IPC"的入口）
     clear_custom_registration();
+
+    if (connected()) {
+        // 探活：最多等 5 秒看 socket 能不能写。
+        // 能写 → 对端活着（哪怕正忙），走正常关闭握手（发 ShutDownRequest、
+        //        等对方执行完关闭回调后回 ShutDownResponse）。
+        // 不能写 → 对端已死，跳过握手（发了也没人收）。
+        //
+        // 为什么不用旧的 alive()：它是 0 超时探测，对端"活着但忙"（消息队列
+        // 打满）时会误判为死、直接跳过握手——导致 ShutDownRequest 永远发不
+        // 出去、服务端 Join 永远不返回、进程残留（上游 #1123 就是这个问题）。
+        if (alive_for(k_shutdown_handshake_alive_timeout)) {
+            send_and_recv<ShutDownResponse>(ShutDownRequest { });
+        }
+        else {
+            LogWarn << "server is not alive, skip shutdown handshake" << VAR(ipc_addr_);
+        }
+    }
+
+    // 握手完成（或跳过）后才摘事件监听。旧代码是先摘再握手——握手期间
+    // 产生的终态事件（如 Tasker.Task.Failed）就没人转发了，直接丢失。
+    // 现在顺序反过来，事件能先于关闭请求送达服务端（尽力而为：事件由
+    // 后台线程异步发送，极端调度下仍可能晚到、被服务端丢弃）。
     clear_controller_sink();
     clear_resource_sink();
     clear_tasker_sink();
-
-    if (!connected()) {
-        return true;
-    }
-
-    if (alive()) {
-        send_and_recv<ShutDownResponse>(ShutDownRequest { });
-    }
 
     connected_ = false;
     return true;
