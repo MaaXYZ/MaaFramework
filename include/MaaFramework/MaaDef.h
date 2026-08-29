@@ -689,5 +689,6 @@ typedef MaaBool(MAA_CALL* MaaCustomActionCallback)(
 /// - Must not throw exceptions;
 /// - Should return as soon as possible (the client is synchronously waiting);
 /// - Must be set before MaaAgentServerStartUp (no synchronization between setting
-///   and the message loop reading it).
+///   and the message loop reading it);
+/// - Re-setting overwrites the previous callback; passing null does NOT clear it.
 typedef void(MAA_CALL* MaaShutdownCallback)(void* trans_arg);

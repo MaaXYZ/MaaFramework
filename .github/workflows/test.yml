@@ -140,6 +140,7 @@ jobs:
                   ./install/bin/PipelineTesting.exe ./install/test
 
             - name: Run Python testing
+              timeout-minutes: 30
               shell: bash
               run: |
                   python3 -m pip install ./source/binding/Python
@@ -147,13 +148,17 @@ jobs:
                   python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_tcp_main_test.py ./source/binding/Python ./install
+                  python3 ./test/agent/agent_dead_server_test.py ./source/binding/Python ./install
+                  python3 ./test/agent/agent_interrupt_main_test.py ./source/binding/Python ./install
 
             - name: Run NodeJS testing
+              timeout-minutes: 30
               shell: bash
               run: |
                   cd test/nodejs
                   pnpm i
                   node binding.ts
+                  node server.ts
 
             - uses: actions/upload-artifact@v7
               if: always()
@@ -340,6 +345,7 @@ jobs:
                   ./install/bin/PipelineTesting ./install/test
 
             - name: Run Python testing
+              timeout-minutes: 30
               shell: bash
               run: |
                   python3 -m venv .venv
@@ -349,13 +355,17 @@ jobs:
                   python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_tcp_main_test.py ./source/binding/Python ./install
+                  python3 ./test/agent/agent_dead_server_test.py ./source/binding/Python ./install
+                  python3 ./test/agent/agent_interrupt_main_test.py ./source/binding/Python ./install
 
             - name: Run NodeJS testing
+              timeout-minutes: 30
               shell: bash
               run: |
                   cd test/nodejs
                   pnpm i
                   node binding.ts
+                  node server.ts
 
             - uses: actions/upload-artifact@v7
               if: always()
@@ -470,6 +480,7 @@ jobs:
                   ./install/bin/PipelineTesting ./install/test
 
             - name: Run Python testing
+              timeout-minutes: 30
               shell: bash
               run: |
                   python3 -m venv .venv
@@ -479,13 +490,17 @@ jobs:
                   python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_tcp_main_test.py ./source/binding/Python ./install
+                  python3 ./test/agent/agent_dead_server_test.py ./source/binding/Python ./install
+                  python3 ./test/agent/agent_interrupt_main_test.py ./source/binding/Python ./install
 
             - name: Run NodeJS testing
+              timeout-minutes: 30
               shell: bash
               run: |
                   cd test/nodejs
                   pnpm i
                   node binding.ts
+                  node server.ts
 
             - uses: actions/upload-artifact@v7
               if: always()
