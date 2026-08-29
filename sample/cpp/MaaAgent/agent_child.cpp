@@ -36,6 +36,8 @@ MaaBool ChildCustomActionInnerCallback(
     const MaaRect* box,
     void* trans_arg);
 
+void ChildShutdownCallback(void* trans_arg);
+
 int main(int argc, char** argv)
 {
     std::string log_dir = "./debug";
@@ -46,6 +48,7 @@ int main(int argc, char** argv)
     MaaAgentServerRegisterCustomRecognition("ChildCustomRecognition", ChildCustomRecognitionCallback, nullptr);
     MaaAgentServerRegisterCustomAction("ChildCustomAction", ChildCustomActionCallback, nullptr);
     MaaAgentServerRegisterCustomAction("ChildCustomActionInner", ChildCustomActionInnerCallback, nullptr);
+    MaaAgentServerSetShutdownCallback(ChildShutdownCallback, nullptr);
 
     // from agent_main.cpp
     const char* identifier = argv[1];
@@ -56,6 +59,11 @@ int main(int argc, char** argv)
     MaaAgentServerShutDown();
 
     return 0;
+}
+
+void ChildShutdownCallback(void* /*trans_arg*/)
+{
+    std::cout << "at ChildShutdownCallback" << std::endl;
 }
 
 MaaBool ChildCustomActionCallback(

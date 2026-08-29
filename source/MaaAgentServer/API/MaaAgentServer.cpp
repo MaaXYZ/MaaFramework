@@ -37,6 +37,18 @@ void MaaAgentServerDetach()
     MAA_AGENT_SERVER_NS::AgentServer::get_instance().detach();
 }
 
+MaaBool MaaAgentServerSetShutdownCallback(MaaShutdownCallback callback, void* trans_arg)
+{
+    LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(trans_arg);
+
+    if (!callback) {
+        LogError << "callback is null";
+        return false;
+    }
+
+    return MAA_AGENT_SERVER_NS::AgentServer::get_instance().set_shutdown_callback(callback, trans_arg);
+}
+
 MaaBool MaaAgentServerRegisterCustomRecognition(const char* name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
     LogFunc << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);

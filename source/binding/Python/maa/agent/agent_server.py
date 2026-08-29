@@ -179,6 +179,61 @@ class AgentServer:
 
         Library.agent_server().MaaAgentServerDetach()
 
+    _shutdown_callback_holder: "MaaShutdownCallback | None" = None
+
+    @staticmethod
+    def set_shutdown_callback(callback: Callable[[], None]) -> bool:
+        """设置关闭回调 / Set shutdown callback
+
+        在 AgentServer 收到 ShutDownRequest 时、停止消息循环前调用；回调返回后服务端才会回复 ShutDownResponse。
+        Invoked when the AgentServer receives a ShutDownRequest, before the message loop stops; the ShutDownResponse is replied only after the callback returns.
+
+        回调在服务端消息线程内阻塞执行，须为零参数的同步函数（async 函数传入时只会创建协程、不会真正执行）；
+        回调内抛出的异常会被打印到 stderr 后忽略、关闭流程照常继续——清理逻辑失败不会被发现，须自行兜底。
+        勿在回调内调用 Join/ShutDown（会等待自身线程，属未定义行为，通常表现为抛异常并终止进程）。
+        须在 start_up 前注册（运行中注册会被拒绝），重复注册将覆盖。
+        The callback runs blocking on the server message thread, must be a zero-argument synchronous function
+        (an async function would only create a coroutine without executing it); exceptions raised inside are
+        printed to stderr and ignored while shutdown continues — cleanup failures go unnoticed, so handle them yourself.
+        Do not call Join/ShutDown inside (undefined behavior, typically throwing and terminating).
+        Must be set before start_up (rejected while the server is running); re-registration overwrites.
+
+        Args:
+            callback: 关闭回调函数 / Shutdown callback function
+
+        Returns:
+            bool: 是否成功 / Whether successful
+
+        Raises:
+            TypeError: callback 不可调用 / callback is not callable
+        """
+
+        if not callable(callback):
+            raise TypeError(f"callback must be callable, got {type(callback).__name__}")
+
+        AgentServer._set_api_properties()
+
+        @MaaShutdownCallback
+        def _c_callback(trans_arg):
+            callback()
+
+        # 先在 C++ 侧换指针，成功才替换 holder——两步顺序不能反：
+        #   1. 如果先换 holder 再调 C++：失败时（C++ 保留了旧回调 A 的指针），
+        #      Python 侧旧回调 A 已被丢弃 → GC 回收 A → C++ 手里是悬垂指针 → 崩溃
+        #   2. 现在的顺序：C++ 先换成新回调 B → Python 再丢弃 A 的引用 → 安全
+        ret = bool(
+            Library.agent_server().MaaAgentServerSetShutdownCallback(
+                _c_callback,
+                None,
+            )
+        )
+
+        # 只有注册成功才替换持有引用（防止 GC 把 C++ 还在用的旧回调回收掉）
+        if ret:
+            AgentServer._shutdown_callback_holder = _c_callback
+
+        return ret
+
     _sink_holder: dict[int, "EventSink"] = {}
 
     @staticmethod
@@ -351,5 +406,11 @@ class AgentServer:
         Library.agent_server().MaaAgentServerAddContextSink.restype = MaaSinkId
         Library.agent_server().MaaAgentServerAddContextSink.argtypes = [
             MaaEventCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.agent_server().MaaAgentServerSetShutdownCallback.restype = MaaBool
+        Library.agent_server().MaaAgentServerSetShutdownCallback.argtypes = [
+            MaaShutdownCallback,
             ctypes.c_void_p,
         ]

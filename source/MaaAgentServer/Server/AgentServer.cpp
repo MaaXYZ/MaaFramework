@@ -31,6 +31,12 @@ bool AgentServer::start_up(const std::string& identifier)
     }
 
     msg_loop_running_ = true;
+
+    // 覆盖消息线程全部等待路径（send/recv/嵌套 send_and_recv）的中断开关：
+    // 对端消失后 POLLOUT/POLLIN 永不就绪且 timeout_ 默认无限，没有它，
+    // 本地 ShutDown 的 join 会随任一等待永久挂死（须在消息线程启动前设置）
+    set_abort_pred([this] { return !msg_loop_running_.load(); });
+
     msg_thread_ = std::thread(&AgentServer::request_msg_loop, this);
     if (!msg_thread_.joinable()) {
         LogError << "failed to start msg_thread";
@@ -44,20 +50,28 @@ void AgentServer::shut_down()
 {
     LogFunc << VAR(ipc_addr_);
 
+    // 先置 false（锁外）：让消息线程的 poll 谓词立即看到"该停了"，
+    // 这样下面 join 最多等一个 poll 周期（约 1 秒）就能返回。
+    // 如果放在锁内：另一线程正在 join() 持锁等待 → 我们在这里等锁 →
+    // 消息线程收不到中断信号 → join 永远不返回 → 死锁。
     msg_loop_running_ = false;
 
-    if (msg_thread_.joinable()) {
-        msg_thread_.join();
-    }
+    {
+        std::lock_guard lock(msg_thread_mutex_);
+        if (msg_thread_.joinable()) {
+            msg_thread_.join();
+        }
 
-    zmq_sock_.close();
-    zmq_ctx_.close();
+        zmq_sock_.close();
+        zmq_ctx_.close();
+    }
 }
 
 void AgentServer::join()
 {
     LogFunc << VAR(ipc_addr_);
 
+    std::lock_guard lock(msg_thread_mutex_);
     if (!msg_thread_.joinable()) {
         LogError << "msg_thread is not joinable";
         return;
@@ -70,6 +84,7 @@ void AgentServer::detach()
 {
     LogFunc << VAR(ipc_addr_);
 
+    std::lock_guard lock(msg_thread_mutex_);
     if (!msg_thread_.joinable()) {
         LogError << "msg_thread is not joinable";
         return;
@@ -100,6 +115,27 @@ bool AgentServer::register_custom_action(const std::string& name, MaaCustomActio
     }
 
     return custom_actions_.insert_or_assign(name, CustomActionSession { action, trans_arg }).second;
+}
+
+bool AgentServer::set_shutdown_callback(MaaShutdownCallback callback, void* trans_arg)
+{
+    LogInfo << VAR_VOIDP(callback) << VAR_VOIDP(trans_arg);
+
+    if (callback == nullptr) {
+        LogError << "callback is null";
+        return false;
+    }
+
+    // 必须在 start_up 之前设置：运行中修改的话，消息线程正在读 shutdown_session_
+    // 而宿主线程同时在写——两边没有任何同步，并发读写是数据竞争（未定义行为）
+    if (msg_loop_running_) {
+        LogError << "server is running, set_shutdown_callback must be called before start_up";
+        return false;
+    }
+
+    // 直接覆盖：重复注册时后设置的回调替换先设置的，不会叠加调用
+    shutdown_session_ = ShutdownSession { callback, trans_arg };
+    return true;
 }
 
 MaaSinkId AgentServer::add_resource_sink(MaaEventCallback sink, void* trans_arg)
@@ -293,9 +329,24 @@ bool AgentServer::handle_shut_down_request(const json::value& j)
 
     LogInfo << VAR(ipc_addr_);
 
-    msg_loop_running_ = false;
+    // 先执行宿主注册的关闭回调，让 agent 有机会在退出前完成收尾
+    // （如冲走在途通知、写状态文件）——回调阻塞多久，响应就推迟多久
+    if (shutdown_session_.callback) {
+        LogInfo << "shutdown callback begin" << VAR_VOIDP(shutdown_session_.trans_arg);
+        shutdown_session_.callback(shutdown_session_.trans_arg);
+        LogInfo << "shutdown callback end";
+    }
 
+    // 先回响应再停循环。顺序不能反：poll() 每次醒来都会检查中断谓词
+    // （即 !msg_loop_running_），如果先置 false，下面这行 send 的 poll
+    // 会被自己的谓词掐断——响应永远发不出去，客户端的 disconnect()
+    // 只能等超时（默认无限）。
+    //
+    // 对端已死的情况：send 会等 POLLOUT（等不到），此时本地 ShutDown()
+    // 置 false 后谓词转为 true，send 被"合理地"打断——这正是我们想要的。
     send(ShutDownResponse { });
+
+    msg_loop_running_ = false;
 
     return true;
 }
@@ -370,8 +421,17 @@ void AgentServer::request_msg_loop()
     LogFunc << VAR(ipc_addr_);
 
     while (msg_loop_running_) {
-        auto msg_opt = recv();
+        // recv 传入"该不该停"的检查函数，poll 每秒醒来问一次：
+        // 本地 ShutDown() 置 false 后，最多 1 秒就能打断阻塞中的 recv。
+        // 没有它的话，客户端不发关闭请求就消失时，recv 会以默认无限
+        // 超时永远等下去——Join() 也跟着永远不返回，进程残留。
+        auto msg_opt = recv([this] { return !msg_loop_running_; });
         if (!msg_opt) {
+            // recv 失败有两种原因：被上面的谓词打断（正常关停，静默退出）
+            // 或真正的通信错误（打日志后退出）
+            if (!msg_loop_running_) {
+                return;
+            }
             LogError << "failed to recv msg" << VAR(ipc_addr_);
             return;
         }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -32,6 +34,12 @@ class AgentServer
         void* trans_arg = nullptr;
     };
 
+    struct ShutdownSession
+    {
+        MaaShutdownCallback callback = nullptr;
+        void* trans_arg = nullptr;
+    };
+
 public:
     ~AgentServer() = default;
 
@@ -42,6 +50,7 @@ public:
 
     bool register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg);
     bool register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg);
+    bool set_shutdown_callback(MaaShutdownCallback callback, void* trans_arg);
 
     MaaSinkId add_resource_sink(MaaEventCallback sink, void* trans_arg);
     MaaSinkId add_controller_sink(MaaEventCallback sink, void* trans_arg);
@@ -68,13 +77,22 @@ private:
     std::unordered_map<std::string, CustomRecognitionSession> custom_recognitions_;
     std::unordered_map<std::string, CustomActionSession> custom_actions_;
 
+    ShutdownSession shutdown_session_;
+
     EventDispatcher res_notifier_;
     EventDispatcher ctrl_notifier_ = EventDispatcher(false);
     EventDispatcher tasker_notifier_;
     EventDispatcher ctx_notifier_;
 
-    bool msg_loop_running_ = false;
+    // "消息循环是否该继续跑"的开关。宿主线程（ShutDown/本地关停）写 false，
+    // 消息线程（while 条件 + recv 的中断谓词）读。跨线程读写，用原子保证可见性。
+    std::atomic<bool> msg_loop_running_ = false;
     std::thread msg_thread_;
+    // shut_down / join / detach 可能从不同线程并发调用（典型场景：主线程
+    // 正在 join() 等待服务结束，另一个线程调用 ShutDown() 请求关停）。
+    // 这把锁保证 joinable() 检查和 join()/detach() 是原子的——没有它的话，
+    // 两个线程可能同时通过 joinable 检查、对同一线程 join 两次（未定义行为）。
+    std::mutex msg_thread_mutex_;
 };
 
 MAA_AGENT_SERVER_NS_END

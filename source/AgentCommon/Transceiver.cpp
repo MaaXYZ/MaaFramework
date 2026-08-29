@@ -258,17 +258,69 @@ bool Transceiver::alive()
     return zmq_sock_.handle() != nullptr && zmq::detail::poll(&zmq_pollitem_send_, 1, 0);
 }
 
+// 有界探活：在 duration 内等 socket 变为可写，用于区分两种"不可写"——
+// 对端活着但忙（HWM 打满，等一会儿就能写）和对端已死（断连后永远不可写）。
+// 旧的 alive() 是 0 超时探测，两种情况都返回 false，无法区分（见 #1123）。
+bool Transceiver::alive_for(const std::chrono::milliseconds& duration)
+{
+    std::unique_lock lock(socket_mutex_);
+
+    if (zmq_sock_.handle() == nullptr) {
+        return false;
+    }
+
+    const auto start_clock = std::chrono::steady_clock::now();
+
+    while (true) {
+        auto elapsed = duration_since(start_clock);
+        auto remaining_time = duration > elapsed ? duration - elapsed : std::chrono::milliseconds(0);
+        auto interval = std::min(remaining_time, std::chrono::milliseconds(1000));
+
+        try {
+            if (zmq::detail::poll(&zmq_pollitem_send_, 1, static_cast<long>(interval.count()))) {
+                return true;
+            }
+        }
+        catch (const zmq::error_t& e) {
+            // Android/Linux: signals may interrupt poll; retry with remaining time.
+            if (e.num() != EINTR) {
+                throw;
+            }
+        }
+
+        if (elapsed >= duration) {
+            return false;
+        }
+    }
+}
+
 void Transceiver::set_timeout(const std::chrono::milliseconds& timeout)
 {
     LogInfo << VAR(timeout) << VAR(ipc_addr_);
     timeout_ = timeout;
 }
 
-bool Transceiver::poll(zmq::pollitem_t& pollitem)
+void Transceiver::set_abort_pred(std::function<bool()> pred)
+{
+    LogInfo << VAR(ipc_addr_);
+    abort_pred_ = std::move(pred);
+}
+
+// 带中断的等待循环：每次醒来先问"该不该停"，再看事件有没有到。
+// 谓词有两道——调用者临时传的（如 recv 的 abort_pred 参数）和全局设的
+// （如 AgentServer 在 start_up 时设置的成员谓词），任一为真即放弃等待。
+bool Transceiver::poll(zmq::pollitem_t& pollitem, const std::function<bool()>& abort_pred)
 {
     const auto start_clock = std::chrono::steady_clock::now();
 
     while (true) {
+        if ((abort_pred && abort_pred()) || (abort_pred_ && abort_pred_())) {
+            // 被外部主动中断（如 AgentServer 本地 ShutDown）是预期中的退出路径，
+            // 不算异常，打 Info 而非 Error
+            LogInfo << "poll aborted" << VAR(ipc_addr_);
+            return false;
+        }
+
         auto elapsed = duration_since(start_clock);
         auto remaining_time = timeout_ > elapsed ? timeout_ - elapsed : std::chrono::milliseconds(0);
         auto interval = std::min(remaining_time, std::chrono::milliseconds(1000));
@@ -316,12 +368,18 @@ bool Transceiver::send(const json::value& j)
     return true;
 }
 
-std::optional<json::value> Transceiver::recv()
+std::optional<json::value> Transceiver::recv(const std::function<bool()>& abort_pred)
 {
     std::unique_lock lock(socket_mutex_);
 
-    if (!poll(zmq_pollitem_recv_)) {
-        LogError << "recv canceled";
+    if (!poll(zmq_pollitem_recv_, abort_pred)) {
+        if (abort_pred && abort_pred()) {
+            // 外部主动中断属预期路径，与真超时/错误的 Error 级区分
+            LogInfo << "recv aborted" << VAR(ipc_addr_);
+        }
+        else {
+            LogError << "recv canceled" << VAR(ipc_addr_);
+        }
         return std::nullopt;
     }
 

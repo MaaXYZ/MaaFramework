@@ -66,6 +66,7 @@ __all__ = [
     "MaaEventCallback",
     "MaaCustomRecognitionCallback",
     "MaaCustomActionCallback",
+    "MaaShutdownCallback",
     "MaaCustomControllerCallbacks",
     # Enums
     "MaaStatusEnum",
@@ -692,6 +693,8 @@ class MaaControllerFeatureEnum(IntEnum):
 FUNCTYPE = ctypes.WINFUNCTYPE if (platform.system() == "Windows") else ctypes.CFUNCTYPE
 
 MaaEventCallback = FUNCTYPE(None, ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p)
+
+MaaShutdownCallback = FUNCTYPE(None, ctypes.c_void_p)
 
 MaaCustomRecognitionCallback = FUNCTYPE(
     MaaBool,  # return value

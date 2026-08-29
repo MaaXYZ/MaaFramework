@@ -80,6 +80,18 @@ void ContextSink(void* context, const char* message, const char* details_json, v
     });
 }
 
+// 服务端关闭回调的 C++ 侧入口：把控制权交给 JS 层注册的回调函数。
+// ctx->Call 内部通过 ThreadSafeFunction 把调用转发到 JS 主线程，并阻塞
+// 等待（含 Promise settle）——所以 JS 侧的 async 回调真正执行完毕后，
+// 这里的 Call 才返回，ShutDownResponse 才会发出。
+void ShutdownCallback(void* trans_arg)
+{
+    auto ctx = reinterpret_cast<maajs::CallbackContext*>(trans_arg);
+    ctx->Call<void>([=](maajs::FunctionType fn) {
+        return fn.Call({ });
+    });
+}
+
 MaaBool CustomReco(
     MaaContext* context,
     MaaTaskId task_id,

@@ -128,6 +128,7 @@ export using ::MaaNotificationCallback;
 export using ::MaaEventCallback;
 export using ::MaaCustomRecognitionCallback;
 export using ::MaaCustomActionCallback;
+export using ::MaaShutdownCallback;
 
 // Instance/MaaContext.h
 
