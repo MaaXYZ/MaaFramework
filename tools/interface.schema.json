@@ -1227,6 +1227,13 @@
                             "minimum": 0,
                             "maximum": 1
                         },
+                        "failure_attachments_sample_rate": {
+                            "type": "number",
+                            "title": "失败诊断附件采样率",
+                            "description": "💡 v2.9.2 可选。取值 0~1，默认 1.0；仅控制随失败 / 错误事件上传的附件，不影响对应的 Error Event、Sentry Logs 或事务采样",
+                            "minimum": 0,
+                            "maximum": 1
+                        },
                         "environment": {
                             "type": "string",
                             "title": "环境标签",
