@@ -131,6 +131,18 @@ class MyRecognition(CustomRecognition):
         )
         print(f"  action_direct_detail: {action_direct_detail}")
 
+        # 失败动作也应保留 action_id 和动作类型，便于关联失败事件
+        failed_action_detail = context.run_action_direct(
+            JActionType.Click,
+            JClick(target="__missing_target__"),
+            (100, 100, 50, 50),
+            "",
+        )
+        assert failed_action_detail is not None
+        assert failed_action_detail.action_id != 0
+        assert failed_action_detail.action == JActionType.Click
+        assert not failed_action_detail.success
+
         # 测试 clone 和 override
         new_ctx = context.clone()
         new_ctx.override_pipeline({"TaskA": {}, "TaskB": {}})
