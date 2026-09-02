@@ -124,6 +124,45 @@ async function api_test() {
 
     resource.register_custom_action('MyAct', myAct)
     resource.register_custom_recognition('MyRec', myReco)
+    resource.register_custom_recognition('ResourceCaseSensitive', myReco)
+    resource.register_custom_action('resourcecasesensitive', myAct)
+
+    for (const { register, expectedMessage } of [
+        {
+            register: () => resource.register_custom_action('MyAct', myAct),
+            expectedMessage: "Custom name is already registered: 'MyAct'"
+        },
+        {
+            register: () => resource.register_custom_recognition('MyRec', myReco),
+            expectedMessage: "Custom name is already registered: 'MyRec'"
+        },
+        {
+            register: () => resource.register_custom_action('MyRec', myAct),
+            expectedMessage: "Custom name is already registered: 'MyRec'"
+        },
+        {
+            register: () => resource.register_custom_recognition('MyAct', myReco),
+            expectedMessage: "Custom name is already registered: 'MyAct'"
+        },
+        {
+            register: () => resource.register_custom_action('', myAct),
+            expectedMessage: 'Custom name must not be empty'
+        },
+        {
+            register: () => resource.register_custom_recognition('', myReco),
+            expectedMessage: 'Custom name must not be empty'
+        }
+    ]) {
+        let errorMessage = ''
+        try {
+            register()
+        } catch (error) {
+            errorMessage = error instanceof Error ? error.message : String(error)
+        }
+        if (!errorMessage.includes(expectedMessage)) {
+            throw new Error(`unexpected custom registration error: ${errorMessage}`)
+        }
+    }
 
     const ppover = {
         Entry: { next: 'Rec' },

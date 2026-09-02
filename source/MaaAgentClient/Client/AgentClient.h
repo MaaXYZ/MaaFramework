@@ -187,6 +187,7 @@ private:
     MaaSinkId reg_ctrl_sink_id_ = MaaInvalidId;
 
     bool connected_ = false;
+    bool remote_session_started_ = false;
     std::string identifier_;
 
     std::map<std::string, MaaContext*> context_map_;

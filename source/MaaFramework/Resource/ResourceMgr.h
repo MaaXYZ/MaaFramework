@@ -67,10 +67,10 @@ public: // MaaResource
     virtual bool override_image(const std::string& image_name, const cv::Mat& image) override;
     virtual std::optional<json::object> get_node_data(const std::string& node_name) const override;
 
-    virtual void register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg) override;
+    virtual bool register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg) override;
     virtual void unregister_custom_recognition(const std::string& name) override;
     virtual void clear_custom_recognition() override;
-    virtual void register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg) override;
+    virtual bool register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg) override;
     virtual void unregister_custom_action(const std::string& name) override;
     virtual void clear_custom_action() override;
 

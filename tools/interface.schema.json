@@ -79,7 +79,7 @@
                 "default": {
                     "type": "string",
                     "title": "默认值",
-                    "description": "输入字段的默认值"
+                    "description": "输入字段的默认值。💡 v2.10.0 password 为 true 时禁止设置此字段"
                 },
                 "pipeline_type": {
                     "type": "string",
@@ -100,12 +100,35 @@
                     "$ref": "#/definitions/i18nString",
                     "title": "校验错误信息",
                     "description": "正则校验用户输入错误时显示的信息"
+                },
+                "password": {
+                    "type": "boolean",
+                    "title": "密码字段",
+                    "description": "💡 v2.10.0 可选，默认 false。为 true 时 Client 应将该字段视为密码：UI 掩码显示，不得将原文写入日志/遥测；用户配置中须加密存储，仅在内存中解密供运行时使用。为 true 时禁止同时设置 default",
+                    "default": false
                 }
             },
             "required": [
                 "name"
             ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "if": {
+                "properties": {
+                    "password": {
+                        "const": true
+                    }
+                },
+                "required": [
+                    "password"
+                ]
+            },
+            "then": {
+                "not": {
+                    "required": [
+                        "default"
+                    ]
+                }
+            }
         },
         "hotkeyItem": {
             "type": "object",
@@ -1204,6 +1227,13 @@
                             "minimum": 0,
                             "maximum": 1
                         },
+                        "failure_attachments_sample_rate": {
+                            "type": "number",
+                            "title": "失败诊断附件采样率",
+                            "description": "💡 v2.9.2 可选。取值 0~1，默认 1.0；仅控制随失败 / 错误事件上传的附件，不影响对应的 Error Event、Sentry Logs 或事务采样",
+                            "minimum": 0,
+                            "maximum": 1
+                        },
                         "environment": {
                             "type": "string",
                             "title": "环境标签",
@@ -1364,7 +1394,7 @@
                                 "option": {
                                     "type": "object",
                                     "title": "任务选项预设值",
-                                    "description": "可选。该任务各配置项的预设值，键为顶层 option 中的键名。select/switch 类型填 case.name 字符串，checkbox 类型填 case.name 数组，input 类型填 record<string, string>",
+                                    "description": "可选。该任务各配置项的预设值，键为顶层 option 中的键名。select/switch 类型填 case.name 字符串，checkbox 类型填 case.name 数组，input 类型填 record<string, string>。💡 v2.10.0 资源作者不要把 password 为 true 的输入字段写入预设值",
                                     "additionalProperties": true
                                 }
                             },

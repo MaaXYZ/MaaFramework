@@ -15,6 +15,7 @@ from pathlib import Path
 import sys
 import json
 import io
+import tempfile
 
 # Fix encoding issues on Windows
 if sys.stdout.encoding != "utf-8":
@@ -143,6 +144,42 @@ def test_resource_node_list(resource: Resource):
 
     print(f"  Found {len(node_list)} nodes: {node_list[:5]}...")
     print("  PASS: resource.node_list")
+
+
+def test_color_match_dumper_roundtrip():
+    """空的 ColorMatch lower/upper 经过 dump 后仍然可以重新加载"""
+    print("\n=== test_color_match_dumper_roundtrip ===")
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_path = Path(tmp_dir)
+        source_dir = tmp_path / "source"
+        source_pipeline_dir = source_dir / "pipeline"
+        source_pipeline_dir.mkdir(parents=True)
+        with open(source_pipeline_dir / "source.json", "w", encoding="utf-8") as file:
+            json.dump(
+                {"ColorMatchDefault": {"recognition": "ColorMatch"}},
+                file,
+                indent=4,
+            )
+
+        resource = Resource()
+        resource.post_bundle(str(source_dir)).wait()
+        assert_true(resource.loaded, "source resource should load")
+
+        dumped = resource.get_node_data("ColorMatchDefault")
+        assert_not_none(dumped, "dumped ColorMatch node")
+
+        roundtrip_dir = tmp_path / "roundtrip"
+        roundtrip_pipeline_dir = roundtrip_dir / "pipeline"
+        roundtrip_pipeline_dir.mkdir(parents=True)
+        with open(roundtrip_pipeline_dir / "roundtrip.json", "w", encoding="utf-8") as file:
+            json.dump({"ColorMatchDefault": dumped}, file, indent=4)
+
+        roundtrip_resource = Resource()
+        roundtrip_resource.post_bundle(str(roundtrip_dir)).wait()
+        assert_true(roundtrip_resource.loaded, "dumped resource should load again")
+
+    print("  PASS: ColorMatch dumper/parser round-trip")
 
 
 # ============================================================================
@@ -1383,6 +1420,7 @@ def pipeline_node_test():
         test_resource_get_node_data(resource)
         test_resource_get_node_object(resource)
         test_resource_node_list(resource)
+        test_color_match_dumper_roundtrip()
 
         dbg_controller = DbgController(
             install_dir / "test" / "PipelineSmoking" / "Screenshot",
