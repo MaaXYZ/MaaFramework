@@ -880,6 +880,12 @@ def test_win32_interception_enum():
     print("  PASS: win32 interception enum")
 
 
+def test_win32_anchored_touch_enum():
+    print("\n=== test_win32_anchored_touch_enum ===")
+    assert int(MaaWin32InputMethodEnum.AnchoredTouch) == 1 << 10
+    print("  PASS: win32 anchored touch enum")
+
+
 # ============================================================================
 # 主入口
 # ============================================================================
@@ -918,6 +924,9 @@ if __name__ == "__main__":
 
     # 测试 Win32 Interception 枚举导出
     test_win32_interception_enum()
+
+    # 测试 Win32 AnchoredTouch 枚举导出
+    test_win32_anchored_touch_enum()
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")
