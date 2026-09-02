@@ -268,15 +268,13 @@ struct InterfaceData
         MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, MEO_OPT icon, task);
     };
 
-    using Welcome = std::variant<std::string, std::vector<std::string>>;
-
     int interface_version = 2;
     std::unordered_map<std::string, std::string> languages; // 语言代码 -> 翻译文件路径
     std::string name;
     std::string label;
     std::string title;
     std::string version;
-    Welcome welcome;
+    std::string welcome;
     std::string description;
     std::string contact;
     std::string license;
@@ -426,19 +424,6 @@ struct Configuration
     std::vector<Option> global_option;     // v2.3.0
     std::vector<Option> resource_option;   // v2.3.0
     std::vector<Option> controller_option; // v2.3.0
-    std::optional<InterfaceData::Welcome> last_welcome;
-    std::optional<InterfaceData::Welcome> last_resolved_welcome;
-
-    bool has_welcome_update(const InterfaceData::Welcome& welcome, const InterfaceData::Welcome& resolved_welcome) const
-    {
-        return !last_welcome || !last_resolved_welcome || *last_welcome != welcome || *last_resolved_welcome != resolved_welcome;
-    }
-
-    void acknowledge_welcome_update(const InterfaceData::Welcome& welcome, const InterfaceData::Welcome& resolved_welcome)
-    {
-        last_welcome = welcome;
-        last_resolved_welcome = resolved_welcome;
-    }
 
     MEO_JSONIZATION(
         controller,
@@ -452,9 +437,7 @@ struct Configuration
         task,
         MEO_OPT global_option,
         MEO_OPT resource_option,
-        MEO_OPT controller_option,
-        MEO_OPT last_welcome,
-        MEO_OPT last_resolved_welcome);
+        MEO_OPT controller_option);
 };
 
 struct RuntimeParam

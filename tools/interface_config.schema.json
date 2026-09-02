@@ -1,22 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
-    "definitions": {
-        "welcome": {
-            "oneOf": [
-                {
-                    "type": "string"
-                },
-                {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            ]
-        }
-    },
     "properties": {
         "controller": {
             "title": "激活的控制器",
@@ -131,28 +115,6 @@
                 },
                 "required": ["name"]
             }
-        },
-        "last_welcome": {
-            "title": "上次显示的公告声明",
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "$ref": "#/definitions/welcome"
-                }
-            ]
-        },
-        "last_resolved_welcome": {
-            "title": "上次显示的公告内容",
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "$ref": "#/definitions/welcome"
-                }
-            ]
         }
     },
     "required": ["controller", "resource", "task"]

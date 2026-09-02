@@ -1167,22 +1167,9 @@
             "description": "显示在「关于」页面。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
         },
         "welcome": {
+            "$ref": "#/definitions/i18nString",
             "title": "欢迎消息",
-            "description": "在用户首次使用时弹窗显示，亦可作为公告使用。💡 v2.10.0：支持字符串数组。系统会记录完整的有序内容，当内容更新时会再次弹窗显示",
-            "oneOf": [
-                {
-                    "$ref": "#/definitions/i18nString"
-                },
-                {
-                    "type": "array",
-                    "title": "公告列表",
-                    "description": "按数组顺序展示多条公告",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/i18nString"
-                    }
-                }
-            ]
+            "description": "在用户首次使用时弹窗显示，亦可作为公告使用。支持文件路径、URL 或直接文本，内容支持 Markdown 格式。系统会记录显示内容，当内容更新时会再次弹窗显示"
         },
         "description": {
             "$ref": "#/definitions/i18nString",

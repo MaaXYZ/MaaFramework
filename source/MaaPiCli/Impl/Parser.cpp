@@ -66,12 +66,6 @@ std::optional<InterfaceData> Parser::parse_interface(const json::value& json)
         return std::nullopt;
     }
 
-    if (const auto* welcome_items = std::get_if<std::vector<std::string>>(&data.welcome);
-        welcome_items && welcome_items->empty()) {
-        LogError << "Welcome cannot be an empty array";
-        return std::nullopt;
-    }
-
     // check option for task
     for (auto& task : data.task) {
         for (auto& option : task.option) {

@@ -48,7 +48,7 @@ add_subdirectory(MaaToolkit)
 
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaControlUnit" DESTINATION "include")
 
-if(BUILD_PICLI OR BUILD_PICLI_TESTING)
+if(BUILD_PICLI)
     add_subdirectory(MaaPiCli)
 endif()
 
