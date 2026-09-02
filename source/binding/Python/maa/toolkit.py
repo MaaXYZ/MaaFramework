@@ -50,6 +50,57 @@ class DesktopWindow:
     window_name: str
 
 
+@dataclass
+class GamescopeInstance:
+    """gamescope 实例信息 / gamescope instance info
+
+    通过 Toolkit.find_gamescope_instances 获取。
+    Obtained via Toolkit.find_gamescope_instances.
+
+    Attributes:
+        display_no: display 编号 (gamescope-<n> 的 n) / display number (n in gamescope-<n>)
+        pipewire_node_id: PipeWire 节点 ID (0 表示无可用截图节点) / PipeWire node ID (0 means no capture node)
+        eis_socket_path: EIS socket 路径 (空串表示无 EIS socket) / EIS socket path (empty means no EIS socket)
+    """
+
+    display_no: int
+    pipewire_node_id: int
+    eis_socket_path: str
+
+
+class PortalHelper:
+    _handle: MaaToolkitPortalHelperHandle
+
+    def __init__(self, handle: MaaToolkitPortalHelperHandle):
+        self._handle = handle
+
+    def __del__(self):
+        if self._handle:
+            Library.toolkit().MaaToolkitPortalHelperDestroy(self._handle)
+
+    def open_stream(self) -> bool:
+        return Library.toolkit().MaaToolkitPortalHelperOpenStream(self._handle)
+
+    def get_persist(self) -> bool:
+        return bool(Library.toolkit().MaaToolkitPortalHelperGetPersist(self._handle))
+
+    def set_persist(self, enable: bool):
+        Library.toolkit().MaaToolkitPortalHelperSetPersist(self._handle, enable)
+
+    def get_pipewire_fd(self) -> int:
+        return Library.toolkit().MaaToolkitPortalHelperGetPipeWireFD(self._handle)
+
+    def get_pipewire_node_id(self) -> int:
+        return Library.toolkit().MaaToolkitPortalHelperGetPipeWireNodeID(self._handle)
+
+    def get_restore_token(self) -> Optional[str]:
+        token = Library.toolkit().MaaToolkitPortalHelperGetRestoreToken(self._handle)
+        return token.decode() if token else None
+
+    def set_restore_token(self, token: str):
+        Library.toolkit().MaaToolkitPortalHelperSetRestoreToken(self._handle, token.encode("utf-8"))
+
+
 class Toolkit:
     """工具包 / Toolkit
 
@@ -155,6 +206,33 @@ class Toolkit:
         return windows
 
     @staticmethod
+    def find_gamescope_instances() -> list[GamescopeInstance]:
+        """查找 gamescope 实例 / Find gamescope instances
+
+        Returns:
+            List[GamescopeInstance]: 实例列表 (gamescope 未运行时为空) / Instance list (empty when gamescope is not running)
+        """
+        Toolkit._set_api_properties()
+
+        list_handle = Library.toolkit().MaaToolkitGamescopeInstanceListCreate()
+
+        Library.toolkit().MaaToolkitGamescopeInstanceFindAll(list_handle)
+
+        count = Library.toolkit().MaaToolkitGamescopeInstanceListSize(list_handle)
+
+        instances: list[GamescopeInstance] = []
+        for i in range(count):
+            instance_handle = Library.toolkit().MaaToolkitGamescopeInstanceListAt(list_handle, i)
+            display_no = Library.toolkit().MaaToolkitGamescopeInstanceGetDisplayNo(instance_handle)
+            node_id = Library.toolkit().MaaToolkitGamescopeInstanceGetPipeWireNodeId(instance_handle)
+            eis_socket_path = Library.toolkit().MaaToolkitGamescopeInstanceGetEisSocketPath(instance_handle).decode()
+
+            instances.append(GamescopeInstance(display_no, node_id, eis_socket_path))
+
+        Library.toolkit().MaaToolkitGamescopeInstanceListDestroy(list_handle)
+        return instances
+
+    @staticmethod
     def macos_check_permission(perm: MaaMacOSPermissionEnum) -> bool:
         """检查 macOS 权限 / Check macOS permission
 
@@ -205,6 +283,15 @@ class Toolkit:
         Toolkit._set_api_properties()
 
         return bool(Library.toolkit().MaaToolkitMacOSRevealPermissionSettings(perm))
+
+    @staticmethod
+    def portal_helper_create() -> PortalHelper:
+        Toolkit._set_api_properties()
+
+        portal_helper_handle = Library.toolkit().MaaToolkitPortalHelperCreate()
+        if not portal_helper_handle:
+            raise RuntimeError("Failed to create PortalHelper.")
+        return PortalHelper(portal_helper_handle)
 
     ### private ###
 
@@ -264,6 +351,30 @@ class Toolkit:
         Library.toolkit().MaaToolkitAdbDeviceGetConfig.restype = ctypes.c_char_p
         Library.toolkit().MaaToolkitAdbDeviceGetConfig.argtypes = [MaaToolkitAdbDeviceHandle]
 
+        Library.toolkit().MaaToolkitGamescopeInstanceListCreate.restype = MaaToolkitGamescopeInstanceListHandle
+        Library.toolkit().MaaToolkitGamescopeInstanceListCreate.argtypes = []
+
+        Library.toolkit().MaaToolkitGamescopeInstanceListDestroy.restype = None
+        Library.toolkit().MaaToolkitGamescopeInstanceListDestroy.argtypes = [MaaToolkitGamescopeInstanceListHandle]
+
+        Library.toolkit().MaaToolkitGamescopeInstanceFindAll.restype = MaaBool
+        Library.toolkit().MaaToolkitGamescopeInstanceFindAll.argtypes = [MaaToolkitGamescopeInstanceListHandle]
+
+        Library.toolkit().MaaToolkitGamescopeInstanceListSize.restype = MaaSize
+        Library.toolkit().MaaToolkitGamescopeInstanceListSize.argtypes = [MaaToolkitGamescopeInstanceListHandle]
+
+        Library.toolkit().MaaToolkitGamescopeInstanceListAt.restype = MaaToolkitGamescopeInstanceHandle
+        Library.toolkit().MaaToolkitGamescopeInstanceListAt.argtypes = [MaaToolkitGamescopeInstanceListHandle, MaaSize]
+
+        Library.toolkit().MaaToolkitGamescopeInstanceGetDisplayNo.restype = ctypes.c_uint32
+        Library.toolkit().MaaToolkitGamescopeInstanceGetDisplayNo.argtypes = [MaaToolkitGamescopeInstanceHandle]
+
+        Library.toolkit().MaaToolkitGamescopeInstanceGetPipeWireNodeId.restype = ctypes.c_uint32
+        Library.toolkit().MaaToolkitGamescopeInstanceGetPipeWireNodeId.argtypes = [MaaToolkitGamescopeInstanceHandle]
+
+        Library.toolkit().MaaToolkitGamescopeInstanceGetEisSocketPath.restype = ctypes.c_char_p
+        Library.toolkit().MaaToolkitGamescopeInstanceGetEisSocketPath.argtypes = [MaaToolkitGamescopeInstanceHandle]
+
         Library.toolkit().MaaToolkitDesktopWindowListCreate.restype = MaaToolkitDesktopWindowListHandle
         Library.toolkit().MaaToolkitDesktopWindowListCreate.argtypes = []
 
@@ -299,3 +410,30 @@ class Toolkit:
 
         Library.toolkit().MaaToolkitMacOSRevealPermissionSettings.restype = MaaBool
         Library.toolkit().MaaToolkitMacOSRevealPermissionSettings.argtypes = [MaaMacOSPermission]
+
+        Library.toolkit().MaaToolkitPortalHelperCreate.restype = MaaToolkitPortalHelperHandle
+        Library.toolkit().MaaToolkitPortalHelperCreate.argtypes = []
+
+        Library.toolkit().MaaToolkitPortalHelperDestroy.restype = None
+        Library.toolkit().MaaToolkitPortalHelperDestroy.argtypes = [MaaToolkitPortalHelperHandle]
+
+        Library.toolkit().MaaToolkitPortalHelperOpenStream.restype = MaaBool
+        Library.toolkit().MaaToolkitPortalHelperOpenStream.argtypes = [MaaToolkitPortalHelperHandle]
+
+        Library.toolkit().MaaToolkitPortalHelperGetPersist.restype = MaaBool
+        Library.toolkit().MaaToolkitPortalHelperGetPersist.argtypes = [MaaToolkitPortalHelperHandle]
+
+        Library.toolkit().MaaToolkitPortalHelperSetPersist.restype = None
+        Library.toolkit().MaaToolkitPortalHelperSetPersist.argtypes = [MaaToolkitPortalHelperHandle, MaaBool]
+
+        Library.toolkit().MaaToolkitPortalHelperGetPipeWireFD.restype = ctypes.c_int32
+        Library.toolkit().MaaToolkitPortalHelperGetPipeWireFD.argtypes = [MaaToolkitPortalHelperHandle]
+
+        Library.toolkit().MaaToolkitPortalHelperGetPipeWireNodeID.restype = ctypes.c_uint32
+        Library.toolkit().MaaToolkitPortalHelperGetPipeWireNodeID.argtypes = [MaaToolkitPortalHelperHandle]
+
+        Library.toolkit().MaaToolkitPortalHelperGetRestoreToken.restype = ctypes.c_char_p
+        Library.toolkit().MaaToolkitPortalHelperGetRestoreToken.argtypes = [MaaToolkitPortalHelperHandle]
+
+        Library.toolkit().MaaToolkitPortalHelperSetRestoreToken.restype = None
+        Library.toolkit().MaaToolkitPortalHelperSetRestoreToken.argtypes = [MaaToolkitPortalHelperHandle, ctypes.c_char_p]

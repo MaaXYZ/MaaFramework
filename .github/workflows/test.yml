@@ -55,23 +55,23 @@ jobs:
                   cd .
 
             - name: Windows runner hack (2)
-              uses: al-cheb/configure-pagefile-action@v1.4
+              uses: al-cheb/configure-pagefile-action@v1.5
               with:
                   minimum-size: 16GB
                   maximum-size: 16GB
                   disk-root: 'D:'
 
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   submodules: recursive
 
             - name: Setup Windows 10 SDK
-              uses: GuillaumeFalourd/setup-windows10-sdk-action@v2.2
+              uses: GuillaumeFalourd/setup-windows10-sdk-action@v2.5
               with:
                   sdk-version: 26100
 
             - name: Setup Python
-              uses: actions/setup-python@v5.2.0
+              uses: actions/setup-python@v6
               with:
                   python-version: '3.9'
 
@@ -81,12 +81,12 @@ jobs:
               run: |
                   python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows
 
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: latest
 
             - name: Use Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 24
 
@@ -154,14 +154,15 @@ jobs:
                   cd test/nodejs
                   pnpm i
                   node binding.ts
+                  node server.ts
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-text_log
                   path: 'install/bin/debug/*.log'
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-full
@@ -179,10 +180,21 @@ jobs:
             - name: Install dep
               run: |
                   sudo apt-get update -y
-                  sudo apt-get install -y ninja-build cmake ccache libpipewire-0.3-dev libdbus-1-dev
+                  sudo apt-get install -y ninja-build cmake ccache libpipewire-0.3-dev libdbus-1-dev meson python3-jinja2
+
+            # noble 自带 libei 1.2.1，缺少 1.6 才引入的文本输入；从源码构建 1.6.0 保证发布产物功能完整
+            - name: Build libei 1.6.0 (host)
+              run: |
+                  curl -fsSL -o /tmp/libei.tar.gz https://gitlab.freedesktop.org/libinput/libei/-/archive/1.6.0/libei-1.6.0.tar.gz
+                  tar xzf /tmp/libei.tar.gz -C /tmp
+                  # 只需要 ei 客户端库，去掉 tools 避免引入额外依赖
+                  sed -i "/subdir('tools')/d" /tmp/libei-1.6.0/meson.build
+                  meson setup /tmp/libei-1.6.0/build /tmp/libei-1.6.0 \
+                    -Dprefix=/usr -Dtests=disabled -Dliboeffis=disabled -Dlibeis=disabled -Ddocumentation= -Dbuildtype=release
+                  sudo meson install -C /tmp/libei-1.6.0/build
 
             # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   submodules: recursive
 
@@ -192,7 +204,7 @@ jobs:
                   remove_stale_cache: false
 
             - name: Setup Python
-              uses: actions/setup-python@v5.2.0
+              uses: actions/setup-python@v6
               with:
                   python-version: '3.9'
 
@@ -239,12 +251,37 @@ jobs:
                   sudo cp -r ./extracted/usr/include/* "$SYSROOT_DIR/usr/include/"
                   sudo cp -r ./extracted/usr/lib/aarch64-linux-gnu/* "$SYSROOT_DIR/usr/lib/"
 
-            - uses: pnpm/action-setup@v4
+                  # 交叉编译 libei 1.6.0 并安装进 sysroot（noble 的 1.2.1 缺少文本输入）
+                  LLVM_BIN_DIR="${GITHUB_WORKSPACE}/source/MaaUtils/MaaDeps/x-tools/llvm/bin"
+                  XTOOLS_DIR="${GITHUB_WORKSPACE}/source/MaaUtils/MaaDeps/x-tools/aarch64-linux-gnu"
+
+                  cat > /tmp/libei-arm64-cross.txt <<EOF
+                  [binaries]
+                  c = '$LLVM_BIN_DIR/clang'
+                  ar = '$LLVM_BIN_DIR/llvm-ar'
+                  strip = '$LLVM_BIN_DIR/llvm-strip'
+
+                  [host_machine]
+                  system = 'linux'
+                  cpu_family = 'aarch64'
+                  cpu = 'aarch64'
+                  endian = 'little'
+
+                  [built-in options]
+                  c_args = ['--target=aarch64-linux-gnu', '--sysroot=$SYSROOT_DIR', '--gcc-toolchain=$XTOOLS_DIR', '-fPIC']
+                  c_link_args = ['--target=aarch64-linux-gnu', '--sysroot=$SYSROOT_DIR', '--gcc-toolchain=$XTOOLS_DIR', '-fuse-ld=lld']
+                  EOF
+
+                  meson setup /tmp/libei-1.6.0/build-arm64 /tmp/libei-1.6.0 --cross-file /tmp/libei-arm64-cross.txt \
+                    -Dprefix=/usr -Dtests=disabled -Dliboeffis=disabled -Dlibeis=disabled -Ddocumentation= -Dbuildtype=release
+                  sudo env DESTDIR="$SYSROOT_DIR" meson install -C /tmp/libei-1.6.0/build-arm64
+
+            - uses: pnpm/action-setup@v6
               with:
                   version: latest
 
             - name: Use Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 24
 
@@ -320,14 +357,15 @@ jobs:
                   cd test/nodejs
                   pnpm i
                   node binding.ts
+                  node server.ts
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-text_log
                   path: 'install/bin/debug/*.log'
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-full
@@ -342,7 +380,7 @@ jobs:
         runs-on: macos-15
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   submodules: recursive
 
@@ -352,6 +390,7 @@ jobs:
 
             - name: Install dep
               run: |
+                  brew trust aws/tap 2>/dev/null || true
                   brew install ninja ccache
 
             - name: Setup ccache
@@ -360,7 +399,7 @@ jobs:
                   remove_stale_cache: false
 
             - name: Setup Python
-              uses: actions/setup-python@v5.2.0
+              uses: actions/setup-python@v6
               with:
                   python-version: '3.9'
 
@@ -370,12 +409,12 @@ jobs:
               run: |
                   python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
 
-            - uses: pnpm/action-setup@v4
+            - uses: pnpm/action-setup@v6
               with:
                   version: latest
 
             - name: Use Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 24
 
@@ -449,14 +488,15 @@ jobs:
                   cd test/nodejs
                   pnpm i
                   node binding.ts
+                  node server.ts
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-text_log
                   path: 'install/bin/debug/*.log'
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-full

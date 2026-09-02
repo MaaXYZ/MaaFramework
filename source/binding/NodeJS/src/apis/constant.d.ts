@@ -120,12 +120,16 @@ declare global {
          * | SendMessageWithWindowPos     | Medium        | Maybe         | No           | Yes                | Moves window to align target with cursor, then restores     |
          * | PostMessageWithWindowPos     | Medium        | Maybe         | No           | Yes                | Moves window to align target with cursor, then restores     |
          * | Interception                 | Medium        | Yes           | No           | No                 | Driver-level input injection via the Interception driver    |
+         * | AnchoredTouch                | Medium        | Maybe         | No           | Yes                | Injects synthetic touch points, never moves the cursor       |
          *
          * Note:
          * - Admin rights mainly depend on the target application's privilege level.
          *   If the target runs as admin, MaaFramework should also run as admin for compatibility.
          * - "WithCursorPos" methods briefly move the cursor to target position, send message,
          *   then restore cursor position. This "briefly" seizes the mouse but won't block user operations.
+         * - "AnchoredTouch" injects synthetic touch points, the target window receives WM_POINTER messages.
+         *   The target window is briefly raised to topmost while the target point is occluded.
+         *   Mouse only, select another method for keyboard input.
          */
         const Win32InputMethod: Record<
             | 'Seize'
@@ -137,7 +141,8 @@ declare global {
             | 'PostMessageWithCursorPos'
             | 'SendMessageWithWindowPos'
             | 'PostMessageWithWindowPos'
-            | 'Interception',
+            | 'Interception'
+            | 'AnchoredTouch',
             ScreencapOrInputMethods
         >
 
@@ -169,6 +174,45 @@ declare global {
         const MacOSInputMethod: Record<
             | 'GlobalEvent'
             | 'PostToPid',
+            ScreencapOrInputMethods
+        >
+
+        /**
+         * Linux screencap method.
+         *
+         * No bitwise OR, select ONE method only.
+         *
+         * No default value. Client should choose one as default.
+         *
+         * | Method    | Description                                                           |
+         * |-----------|-----------------------------------------------------------------------|
+         * | Wlr       | Screencap using `wlr-screencopy-unstable-v1` protocol                 |
+         * | PipeWire  | Screencap using PipeWire (portal fd or session-daemon node)           |
+         */
+        const LinuxScreencapMethod: Record<
+            | 'Wlr'
+            | 'ExtImage'
+            | 'PipeWire',
+            ScreencapOrInputMethods
+        >
+
+        /**
+         * Linux input method.
+         *
+         * No bitwise OR, select ONE method only.
+         *
+         * No default value. Client should choose one as default.
+         *
+         * | Method  | Description                                                                              |
+         * |---------|------------------------------------------------------------------------------------------|
+         * | Wlr     | Input using `virtual-keyboard-unstable-v1` and `wlr-virtual-pointer-unstable-v1` protocol |
+         * | UInput  | Input using `/dev/uinput`                                                                |
+         * | Libei   | Input using libei (EIS socket, e.g. the one provided by gamescope)                        |
+         */
+        const LinuxInputMethod: Record<
+            | 'Wlr'
+            | 'UInput'
+            | 'Libei',
             ScreencapOrInputMethods
         >
         const GamepadType: Record<'Xbox360' | 'DualShock4', Uint64>

@@ -128,6 +128,13 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         return { };
     }
 
+    if (result.action_id == MaaInvalidId) {
+        result.action_id = action_id_;
+        result.name = pipeline_data.name;
+        result.action = MAA_RES_NS::Action::kTypeNameMap.at(pipeline_data.action_type);
+        result.box = reco_hit;
+    }
+
     tasker_->runtime_cache().set_action_detail(result.action_id, result);
 
     return result;

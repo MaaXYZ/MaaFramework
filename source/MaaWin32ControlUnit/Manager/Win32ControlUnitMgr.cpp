@@ -6,6 +6,7 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Time.hpp"
 
+#include "Input/AnchoredTouchInput.h"
 #include "Input/BackgroundManagedKeyInput.h"
 #include "Input/InterceptionInput.h"
 #include "Input/LegacyEventInput.h"
@@ -157,13 +158,25 @@ std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(MaaWin32InputMethod m
     case MaaWin32InputMethod_SendMessageWithWindowPos:
         return std::make_shared<MessageInput>(
             hwnd_,
-            MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_window_pos = true, .block_input = false });
+            MessageInput::Config {
+                .mode = MessageInput::Mode::SendMessage,
+                .with_window_pos = true,
+                .track_hardware_mouse = false,
+                .block_input = false,
+            });
     case MaaWin32InputMethod_PostMessageWithWindowPos:
         return std::make_shared<MessageInput>(
             hwnd_,
-            MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_window_pos = true, .block_input = false });
+            MessageInput::Config {
+                .mode = MessageInput::Mode::PostMessage,
+                .with_window_pos = true,
+                .track_hardware_mouse = false,
+                .block_input = false,
+            });
     case MaaWin32InputMethod_Interception:
         return std::make_shared<InterceptionInput>(hwnd_);
+    case MaaWin32InputMethod_AnchoredTouch:
+        return std::make_shared<AnchoredTouchInput>(hwnd_);
     default:
         LogError << "Unknown input method: " << static_cast<int>(method);
         return nullptr;

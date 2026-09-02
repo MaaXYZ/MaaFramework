@@ -124,6 +124,45 @@ async function api_test() {
 
     resource.register_custom_action('MyAct', myAct)
     resource.register_custom_recognition('MyRec', myReco)
+    resource.register_custom_recognition('ResourceCaseSensitive', myReco)
+    resource.register_custom_action('resourcecasesensitive', myAct)
+
+    for (const { register, expectedMessage } of [
+        {
+            register: () => resource.register_custom_action('MyAct', myAct),
+            expectedMessage: "Custom name is already registered: 'MyAct'"
+        },
+        {
+            register: () => resource.register_custom_recognition('MyRec', myReco),
+            expectedMessage: "Custom name is already registered: 'MyRec'"
+        },
+        {
+            register: () => resource.register_custom_action('MyRec', myAct),
+            expectedMessage: "Custom name is already registered: 'MyRec'"
+        },
+        {
+            register: () => resource.register_custom_recognition('MyAct', myReco),
+            expectedMessage: "Custom name is already registered: 'MyAct'"
+        },
+        {
+            register: () => resource.register_custom_action('', myAct),
+            expectedMessage: 'Custom name must not be empty'
+        },
+        {
+            register: () => resource.register_custom_recognition('', myReco),
+            expectedMessage: 'Custom name must not be empty'
+        }
+    ]) {
+        let errorMessage = ''
+        try {
+            register()
+        } catch (error) {
+            errorMessage = error instanceof Error ? error.message : String(error)
+        }
+        if (!errorMessage.includes(expectedMessage)) {
+            throw new Error(`unexpected custom registration error: ${errorMessage}`)
+        }
+    }
 
     const ppover = {
         Entry: { next: 'Rec' },
@@ -156,6 +195,8 @@ async function api_test() {
     console.log('devices', devices)
     const desktop = await maa.Win32Controller.find()
     console.log('desktop', desktop)
+    const gamescope = await maa.LinuxController.find_gamescope_instances()
+    console.log('gamescope', gamescope)
 
     if (!analyzed || !runned) {
         console.log('failed to run custom recognition or action')
@@ -245,6 +286,26 @@ function win32_interception_enum_test() {
     console.log('test_win32_interception_enum')
     if (maa.Win32InputMethod.Interception !== String(1 << 9)) {
         console.log('unexpected Win32InputMethod.Interception', maa.Win32InputMethod.Interception)
+        process.exit(1)
+    }
+}
+
+function win32_anchored_touch_enum_test() {
+    console.log('test_win32_anchored_touch_enum')
+    if (maa.Win32InputMethod.AnchoredTouch !== String(1 << 10)) {
+        console.log('unexpected Win32InputMethod.AnchoredTouch', maa.Win32InputMethod.AnchoredTouch)
+        process.exit(1)
+    }
+}
+
+function linux_enum_test() {
+    console.log('test_linux_enum')
+    if (maa.LinuxScreencapMethod.PipeWire !== String(1 << 2)) {
+        console.log('unexpected LinuxScreencapMethod.PipeWire', maa.LinuxScreencapMethod.PipeWire)
+        process.exit(1)
+    }
+    if (maa.LinuxInputMethod.Libei !== String(1 << 2)) {
+        console.log('unexpected LinuxInputMethod.Libei', maa.LinuxInputMethod.Libei)
         process.exit(1)
     }
 }
@@ -372,6 +433,8 @@ async function main() {
     await api_test()
     await win32_relative_move_test()
     win32_interception_enum_test()
+    win32_anchored_touch_enum_test()
+    linux_enum_test()
     await custom_ctrl_test()
 
     process.exit(0)

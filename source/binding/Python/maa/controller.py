@@ -1,6 +1,7 @@
 import ctypes
 import json
 import os
+import warnings
 from abc import abstractmethod
 from collections.abc import Sequence
 from ctypes import c_int32
@@ -26,6 +27,7 @@ __all__ = [
     "KWinController",
     "GamepadController",
     "WlRootsController",
+    "LinuxController",
     "AndroidNativeController",
     "CustomController",
 ]
@@ -73,9 +75,9 @@ class Controller:
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -102,9 +104,9 @@ class Controller:
             x2: 终点 x 坐标 / End x coordinate
             y2: 终点 y 坐标 / End y coordinate
             duration: 滑动时长(毫秒) / Swipe duration in milliseconds
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -200,9 +202,9 @@ class Controller:
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -217,9 +219,9 @@ class Controller:
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -232,9 +234,9 @@ class Controller:
         """抬起 / Touch up
 
         Args:
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
 
         Returns:
             Job: 作业对象 / Job object
@@ -938,7 +940,11 @@ class MacOSController(Controller):
 
 
 class AndroidNativeController(Controller):
-    """Android Native 控制器 / Android native controller"""
+    """Android Native 控制器 / Android native controller
+
+    支持多指触控：contact 为手指编号（0 为第一根手指，取值 0–15）。
+    Multi-touch is supported: contact is the finger id (0 for the first finger, range 0–15).
+    """
 
     def __init__(
         self,
@@ -1031,6 +1037,9 @@ class WlRootsController(Controller):
     ):
         """创建 WlRoots 控制器 / Create WlRoots controller
 
+        . deprecated::
+            Use LinuxController instead.
+
         Args:
             wlr_socket_path: Wayland Socket 路径 / Wayland Socket Path
             use_win32_vk_code: 为 True 时按键被视为 Win32 VK 键码并转换为 Linux evdev 码；
@@ -1041,6 +1050,11 @@ class WlRootsController(Controller):
         Raises:
             RuntimeError: 如果创建失败
         """
+        warnings.warn(
+            "WlRootsController is deprecated, use LinuxController instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__()
         self._set_wlroots_api_properties()
 
@@ -1076,6 +1090,9 @@ class KWinController(Controller):
     ):
         """创建 KWin 控制器 / Create KWin controller
 
+        . deprecated::
+            Use LinuxController instead.
+
         Args:
             device_node: uinput 设备节点路径 (如 "/dev/uinput") / uinput device node path
             screen_width: 屏幕宽度（像素） / Screen width in pixels
@@ -1088,6 +1105,11 @@ class KWinController(Controller):
         Raises:
             RuntimeError: 如果创建失败
         """
+        warnings.warn(
+            "KWinController is deprecated, use LinuxController instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__()
         self._set_kwin_api_properties()
 
@@ -1113,6 +1135,53 @@ class KWinController(Controller):
             ctypes.c_int32,
             ctypes.c_int32,
             MaaBool,
+        ]
+
+
+class LinuxController(Controller):
+    """Linux 控制器 / Linux controller
+
+    通过 JSON 配置截图方式和输入方式，支持多种 Linux 显示服务器 (Wayland/X11) 和控制方式。
+    Configurable screencap and input methods via JSON for various Linux display servers.
+
+    窗口捕获 (gamescope 等): screencap_method 为 PipeWire 时设置 pw_node_id 直连会话 daemon 节点
+    (节点可用 MaaToolkitGamescopeInstanceFindAll 发现); 输入方式 Libei 需提供 eis_socket_path
+    (如 /run/user/1000/gamescope-0-ei)。
+    Window capture (gamescope etc.): with PipeWire screencap, set pw_node_id to attach to a
+    session-daemon node directly (discover nodes with MaaToolkitGamescopeInstanceFindAll); use
+    input_method Libei with eis_socket_path for libei (EIS) input.
+    """
+
+    def __init__(
+        self,
+        config: dict[str, Any],
+    ):
+        """创建 Linux 控制器 / Create Linux controller
+
+        Args:
+            config: 控制器配置 JSON 对象，包含 screencap_method、input_method 等字段
+                    Controller config JSON object, containing screencap_method, input_method, etc.
+                    gamescope 节点直连示例 / gamescope node example:
+                    {"screencap_method": 4, "input_method": 4, "pw_node_id": 70,
+                     "eis_socket_path": "/run/user/1000/gamescope-0-ei"}
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._set_linux_api_properties()
+
+        self._handle = Library.framework().MaaLinuxControllerCreate(
+            json.dumps(config, ensure_ascii=False).encode(),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create Linux controller.")
+
+    def _set_linux_api_properties(self):
+        Library.framework().MaaLinuxControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaLinuxControllerCreate.argtypes = [
+            ctypes.c_char_p,
         ]
 
 

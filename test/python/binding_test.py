@@ -131,6 +131,18 @@ class MyRecognition(CustomRecognition):
         )
         print(f"  action_direct_detail: {action_direct_detail}")
 
+        # 失败动作也应保留 action_id 和动作类型，便于关联失败事件
+        failed_action_detail = context.run_action_direct(
+            JActionType.Click,
+            JClick(target="__missing_target__"),
+            (100, 100, 50, 50),
+            "",
+        )
+        assert failed_action_detail is not None
+        assert failed_action_detail.action_id != 0
+        assert failed_action_detail.action == JActionType.Click
+        assert not failed_action_detail.success
+
         # 测试 clone 和 override
         new_ctx = context.clone()
         new_ctx.override_pipeline({"TaskA": {}, "TaskB": {}})
@@ -276,8 +288,40 @@ def test_resource_api():
     # 测试自定义识别/动作注册
     my_reco = MyRecognition()
     my_action = MyAction()
-    resource.register_custom_recognition("MyRec", my_reco)
-    resource.register_custom_action("MyAct", my_action)
+    assert resource.register_custom_recognition("MyRec", my_reco)
+    assert resource.register_custom_action("MyAct", my_action)
+
+    duplicate_reco = MyRecognition()
+    duplicate_action = MyAction()
+    assert not resource.register_custom_recognition("MyRec", duplicate_reco)
+    assert not resource.register_custom_action("MyAct", duplicate_action)
+    assert not resource.register_custom_action("MyRec", duplicate_action)
+    assert not resource.register_custom_recognition("MyAct", duplicate_reco)
+    assert resource._custom_recognition_holder["MyRec"] is my_reco
+    assert resource._custom_action_holder["MyAct"] is my_action
+    assert resource.register_custom_recognition("CaseSensitive", MyRecognition())
+    assert resource.register_custom_action("casesensitive", MyAction())
+    assert not resource.register_custom_recognition("", MyRecognition())
+    assert not resource.register_custom_action("", MyAction())
+
+    try:
+        resource.custom_recognition("MyAct")(MyRecognition)
+        assert False, "duplicate custom decorator should raise RuntimeError"
+    except RuntimeError as error:
+        assert str(error) == "Custom name is already registered: 'MyAct'"
+
+    try:
+        resource.custom_action("MyRec")(MyAction)
+        assert False, "duplicate custom decorator should raise RuntimeError"
+    except RuntimeError as error:
+        assert str(error) == "Custom name is already registered: 'MyRec'"
+
+    for custom_decorator in [resource.custom_recognition, resource.custom_action]:
+        try:
+            custom_decorator("")
+            assert False, "empty custom name should raise ValueError"
+        except ValueError as error:
+            assert str(error) == "Custom name must not be empty"
 
     # 测试 custom_recognition_list 和 custom_action_list
     reco_list = resource.custom_recognition_list
@@ -300,8 +344,8 @@ def test_resource_api():
     assert "MyAct" not in action_list_after, "MyAct should be unregistered"
 
     # 重新注册用于后续测试
-    resource.register_custom_recognition("MyRec", my_reco)
-    resource.register_custom_action("MyAct", my_action)
+    assert resource.register_custom_recognition("MyRec", my_reco)
+    assert resource.register_custom_action("MyAct", my_action)
 
     # 测试 override_pipeline (resource 级别)
     # 先创建被引用的节点
@@ -741,6 +785,11 @@ def test_toolkit():
     for win in desktop[:3]:
         print(f"    - {win.window_name[:30] if win.window_name else '(no name)'}")
 
+    instances = Toolkit.find_gamescope_instances()
+    print(f"  gamescope instances: {len(instances)}")
+    for inst in instances[:3]:
+        print(f"    - display_no={inst.display_no} node_id={inst.pipewire_node_id} eis={inst.eis_socket_path}")
+
     print("  PASS: toolkit")
 
 
@@ -875,6 +924,12 @@ def test_win32_interception_enum():
     print("  PASS: win32 interception enum")
 
 
+def test_win32_anchored_touch_enum():
+    print("\n=== test_win32_anchored_touch_enum ===")
+    assert int(MaaWin32InputMethodEnum.AnchoredTouch) == 1 << 10
+    print("  PASS: win32 anchored touch enum")
+
+
 # ============================================================================
 # 主入口
 # ============================================================================
@@ -913,6 +968,9 @@ if __name__ == "__main__":
 
     # 测试 Win32 Interception 枚举导出
     test_win32_interception_enum()
+
+    # 测试 Win32 AnchoredTouch 枚举导出
+    test_win32_anchored_touch_enum()
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")

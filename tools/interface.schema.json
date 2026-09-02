@@ -79,7 +79,7 @@
                 "default": {
                     "type": "string",
                     "title": "默认值",
-                    "description": "输入字段的默认值"
+                    "description": "输入字段的默认值。💡 v2.10.0 password 为 true 时禁止设置此字段"
                 },
                 "pipeline_type": {
                     "type": "string",
@@ -100,12 +100,35 @@
                     "$ref": "#/definitions/i18nString",
                     "title": "校验错误信息",
                     "description": "正则校验用户输入错误时显示的信息"
+                },
+                "password": {
+                    "type": "boolean",
+                    "title": "密码字段",
+                    "description": "💡 v2.10.0 可选，默认 false。为 true 时 Client 应将该字段视为密码：UI 掩码显示，不得将原文写入日志/遥测；用户配置中须加密存储，仅在内存中解密供运行时使用。为 true 时禁止同时设置 default",
+                    "default": false
                 }
             },
             "required": [
                 "name"
             ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "if": {
+                "properties": {
+                    "password": {
+                        "const": true
+                    }
+                },
+                "required": [
+                    "password"
+                ]
+            },
+            "then": {
+                "not": {
+                    "required": [
+                        "default"
+                    ]
+                }
+            }
         },
         "hotkeyItem": {
             "type": "object",
@@ -496,7 +519,7 @@
                         "MacOS",
                         "PlayCover",
                         "Gamepad",
-                        "WlRoots"
+                        "Linux"
                     ]
                 },
                 "display_short_side": {
@@ -572,7 +595,8 @@
                                 "PostMessageWithCursorPos",
                                 "SendMessageWithWindowPos",
                                 "PostMessageWithWindowPos",
-                                "Interception"
+                                "Interception",
+                                "AnchoredTouch"
                             ]
                         },
                         "keyboard": {
@@ -696,15 +720,39 @@
                     },
                     "additionalProperties": false
                 },
-                "wlroots": {
+                "linux": {
                     "type": "object",
-                    "title": "WlRoots 控制器配置",
-                    "description": "WlRoots 控制器的具体配置（仅 Linux）",
+                    "title": "Linux 控制器配置",
+                    "description": "Linux 控制器的具体配置",
                     "properties": {
-                        "wlr_socket_path": {
+                        "input": {
                             "type": "string",
-                            "title": "Wayland Socket 路径",
-                            "description": "可选。Wayland Socket 路径，不提供则使用默认"
+                            "title": "输入控制方式",
+                            "description": "可选。Linux 控制器的输入控制方式，不提供则使用默认",
+                            "enum": [
+                                "Wlr",
+                                "UInput",
+                                "Libei"
+                            ]
+                        },
+                        "screencap": {
+                            "type": "string",
+                            "title": "截图方式",
+                            "description": "可选。Linux 控制器的截图方式，不提供则使用默认",
+                            "enum": [
+                                "Wlr",
+                                "PipeWire"
+                            ]
+                        },
+                        "pipewire_source": {
+                            "type": "string",
+                            "title": "PipeWire 截图来源",
+                            "description": "可选。PipeWire 截图的流来源。Gamescope 直接连接 gamescope 节点（node id 运行时发现）；Portal 走 xdg-desktop-portal ScreenCast。仅当 screencap 为 PipeWire 时有效",
+                            "enum": [
+                                "Gamescope",
+                                "Portal"
+                            ],
+                            "default": "Gamescope"
                         },
                         "use_win32_vk_code": {
                             "type": "boolean",
@@ -1179,6 +1227,13 @@
                             "minimum": 0,
                             "maximum": 1
                         },
+                        "failure_attachments_sample_rate": {
+                            "type": "number",
+                            "title": "失败诊断附件采样率",
+                            "description": "💡 v2.9.2 可选。取值 0~1，默认 1.0；仅控制随失败 / 错误事件上传的附件，不影响对应的 Error Event、Sentry Logs 或事务采样",
+                            "minimum": 0,
+                            "maximum": 1
+                        },
                         "environment": {
                             "type": "string",
                             "title": "环境标签",
@@ -1339,7 +1394,7 @@
                                 "option": {
                                     "type": "object",
                                     "title": "任务选项预设值",
-                                    "description": "可选。该任务各配置项的预设值，键为顶层 option 中的键名。select/switch 类型填 case.name 字符串，checkbox 类型填 case.name 数组，input 类型填 record<string, string>",
+                                    "description": "可选。该任务各配置项的预设值，键为顶层 option 中的键名。select/switch 类型填 case.name 字符串，checkbox 类型填 case.name 数组，input 类型填 record<string, string>。💡 v2.10.0 资源作者不要把 password 为 true 的输入字段写入预设值",
                                     "additionalProperties": true
                                 }
                             },
