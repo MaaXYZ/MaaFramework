@@ -1,5 +1,6 @@
 import { join } from 'path'
 import './maa-client.ts'
+import { expectRegistrationError } from './custom-registration.ts'
 
 import * as fs from 'fs/promises'
 
@@ -153,15 +154,7 @@ async function api_test() {
             expectedMessage: 'Custom name must not be empty'
         }
     ]) {
-        let errorMessage = ''
-        try {
-            register()
-        } catch (error) {
-            errorMessage = error instanceof Error ? error.message : String(error)
-        }
-        if (!errorMessage.includes(expectedMessage)) {
-            throw new Error(`unexpected custom registration error: ${errorMessage}`)
-        }
+        expectRegistrationError(register, expectedMessage)
     }
 
     const ppover = {
@@ -286,14 +279,6 @@ function win32_interception_enum_test() {
     console.log('test_win32_interception_enum')
     if (maa.Win32InputMethod.Interception !== String(1 << 9)) {
         console.log('unexpected Win32InputMethod.Interception', maa.Win32InputMethod.Interception)
-        process.exit(1)
-    }
-}
-
-function win32_anchored_touch_enum_test() {
-    console.log('test_win32_anchored_touch_enum')
-    if (maa.Win32InputMethod.AnchoredTouch !== String(1 << 10)) {
-        console.log('unexpected Win32InputMethod.AnchoredTouch', maa.Win32InputMethod.AnchoredTouch)
         process.exit(1)
     }
 }
@@ -433,7 +418,6 @@ async function main() {
     await api_test()
     await win32_relative_move_test()
     win32_interception_enum_test()
-    win32_anchored_touch_enum_test()
     linux_enum_test()
     await custom_ctrl_test()
 

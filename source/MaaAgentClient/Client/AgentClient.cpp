@@ -15,6 +15,11 @@
 
 MAA_AGENT_CLIENT_NS_BEGIN
 
+namespace
+{
+constexpr std::chrono::milliseconds kShutdownSocketLinger { 200 };
+}
+
 AgentClient::AgentClient(const std::string& identifier)
 {
     LogFunc;
@@ -164,32 +169,33 @@ bool AgentClient::connect()
         return false;
     }
 
+    reset_socket_if_needed();
+
     clear_custom_registration();
     connected_ = false;
+    remote_session_may_have_started_ = true;
 
     auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest { });
 
     if (!resp_opt) {
         LogError << "failed to send_and_recv";
-        return false;
+        return abort_connect();
     }
     const auto& resp = *resp_opt;
     LogInfo << VAR(resp);
-    remote_session_started_ = true;
 
     if (resp.protocol != kProtocolVersion) {
         LogError << "Protocol version mismatch" << "client:" << VAR(MAA_VERSION) << VAR(kProtocolVersion) << "server:" << VAR(resp.version)
                  << VAR(resp.protocol) << VAR(ipc_addr_);
         LogError << "Please update" << (kProtocolVersion < resp.protocol ? "AgentClient" : "AgentServer");
-        return false;
+        return abort_connect();
     }
 
     for (const auto& reco : resp.recognitions) {
         LogInfo << "register recognition" << VAR(reco);
         if (!bound_res_->register_custom_recognition(reco, reco_agent, this)) {
             LogError << "failed to register recognition" << VAR(reco);
-            clear_custom_registration();
-            return false;
+            return abort_connect();
         }
         registered_recognitions_.emplace_back(reco);
     }
@@ -197,8 +203,7 @@ bool AgentClient::connect()
         LogInfo << "register action" << VAR(act);
         if (!bound_res_->register_custom_action(act, action_agent, this)) {
             LogError << "failed to register action" << VAR(act);
-            clear_custom_registration();
-            return false;
+            return abort_connect();
         }
         registered_actions_.emplace_back(act);
     }
@@ -216,16 +221,9 @@ bool AgentClient::disconnect()
     clear_resource_sink();
     clear_tasker_sink();
 
-    if (!remote_session_started_) {
-        return true;
-    }
-
-    if (alive()) {
-        send_and_recv<ShutDownResponse>(ShutDownRequest { });
-    }
-
     connected_ = false;
-    remote_session_started_ = false;
+    shutdown_remote_session(ShutdownMode::WaitForResponse);
+    reset_socket_if_needed();
     return true;
 }
 
@@ -237,6 +235,47 @@ bool AgentClient::connected()
 bool AgentClient::alive()
 {
     return Transceiver::alive();
+}
+
+bool AgentClient::abort_connect()
+{
+    clear_custom_registration();
+    connected_ = false;
+    const bool shutdown_queued = shutdown_remote_session(ShutdownMode::SendOnly);
+    // Give the queued one-way shutdown a bounded drain window before replacing the socket.
+    reset_socket_if_needed(shutdown_queued ? kShutdownSocketLinger : std::chrono::milliseconds(0));
+    return false;
+}
+
+bool AgentClient::shutdown_remote_session(ShutdownMode mode)
+{
+    if (!remote_session_may_have_started_) {
+        return false;
+    }
+
+    bool shutdown_queued = false;
+    if (alive()) {
+        if (mode == ShutdownMode::WaitForResponse) {
+            send_and_recv<ShutDownResponse>(ShutDownRequest { });
+        }
+        else {
+            shutdown_queued = send_no_wait(ShutDownRequest { });
+        }
+    }
+
+    remote_session_may_have_started_ = false;
+    socket_needs_reset_ = true;
+    return shutdown_queued;
+}
+
+void AgentClient::reset_socket_if_needed(std::chrono::milliseconds linger)
+{
+    if (!socket_needs_reset_) {
+        return;
+    }
+
+    reset_socket(linger);
+    socket_needs_reset_ = false;
 }
 
 void AgentClient::set_timeout(const std::chrono::milliseconds& timeout)
