@@ -189,7 +189,6 @@ bool get_and_check_array_or_2darray(
     return !output.empty();
 }
 
-
 bool PipelineParser::parse_node(
     const std::string& name,
     const json::value& input,
