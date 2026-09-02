@@ -4,7 +4,7 @@ MaaFramework 官方提供的命令行 ProjectInterface Client，用于通过终�
 
 ## 获取
 
-从 MaaFramework Release 下载对应平台的 `MAA-PiCli-<os>-<arch>` 独立包。`MaaPiCli` 不再包含在 `MAA-*` 主包中。
+从 MaaFramework Release 下载对应平台的 `MAA-MaaPiCli-<os>-<arch>` 独立包。`MaaPiCli` 不再包含在 `MAA-*` 主包中。
 
 ## PI 协议支持版本
 

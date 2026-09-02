@@ -179,7 +179,7 @@ jobs:
 
             - uses: actions/upload-artifact@v7
               with:
-                  name: MAA-PiCli-win-${{ matrix.arch }}
+                  name: MAA-MaaPiCli-win-${{ matrix.arch }}
                   path: 'picli-package'
 
             - name: Download Plugin
@@ -378,7 +378,7 @@ jobs:
 
             - uses: actions/upload-artifact@v7
               with:
-                  name: MAA-PiCli-linux-${{ matrix.arch }}
+                  name: MAA-MaaPiCli-linux-${{ matrix.arch }}
                   path: 'picli-package'
 
             - name: Download Plugin
@@ -510,7 +510,7 @@ jobs:
 
             - uses: actions/upload-artifact@v7
               with:
-                  name: MAA-PiCli-macos-${{ matrix.arch }}
+                  name: MAA-MaaPiCli-macos-${{ matrix.arch }}
                   path: 'picli-package'
 
             - name: Download Plugin
