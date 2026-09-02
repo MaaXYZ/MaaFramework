@@ -165,6 +165,7 @@ bool AgentClient::connect()
     }
 
     clear_custom_registration();
+    connected_ = false;
 
     auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest { });
 
@@ -174,6 +175,7 @@ bool AgentClient::connect()
     }
     const auto& resp = *resp_opt;
     LogInfo << VAR(resp);
+    remote_session_started_ = true;
 
     if (resp.protocol != kProtocolVersion) {
         LogError << "Protocol version mismatch" << "client:" << VAR(MAA_VERSION) << VAR(kProtocolVersion) << "server:" << VAR(resp.version)
@@ -184,15 +186,22 @@ bool AgentClient::connect()
 
     for (const auto& reco : resp.recognitions) {
         LogInfo << "register recognition" << VAR(reco);
-        bound_res_->register_custom_recognition(reco, reco_agent, this);
+        if (!bound_res_->register_custom_recognition(reco, reco_agent, this)) {
+            LogError << "failed to register recognition" << VAR(reco);
+            clear_custom_registration();
+            return false;
+        }
+        registered_recognitions_.emplace_back(reco);
     }
     for (const auto& act : resp.actions) {
         LogInfo << "register action" << VAR(act);
-        bound_res_->register_custom_action(act, action_agent, this);
+        if (!bound_res_->register_custom_action(act, action_agent, this)) {
+            LogError << "failed to register action" << VAR(act);
+            clear_custom_registration();
+            return false;
+        }
+        registered_actions_.emplace_back(act);
     }
-
-    registered_recognitions_ = resp.recognitions;
-    registered_actions_ = resp.actions;
 
     connected_ = true;
     return true;
@@ -207,7 +216,7 @@ bool AgentClient::disconnect()
     clear_resource_sink();
     clear_tasker_sink();
 
-    if (!connected()) {
+    if (!remote_session_started_) {
         return true;
     }
 
@@ -216,6 +225,7 @@ bool AgentClient::disconnect()
     }
 
     connected_ = false;
+    remote_session_started_ = false;
     return true;
 }
 
