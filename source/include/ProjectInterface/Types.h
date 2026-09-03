@@ -1,12 +1,12 @@
 #pragma once
 
+#include <array>
 #include <filesystem>
 #include <optional>
 #include <string>
 #include <unordered_map>
 #include <variant>
 #include <vector>
-#include <array>
 
 #include <meojson/json.hpp>
 
@@ -87,7 +87,7 @@ struct InterfaceData
         bool permission_required = false;
 
         // 分辨率设置，四者互斥
-        std::optional<int> display_short_side; // 默认720
+        std::optional<int> display_short_side;            // 默认720
         std::optional<int> display_long_side;
         std::optional<std::array<int, 2>> display_expand; // [width, height], Unity Canvas Scaler "Expand" 语义
         bool display_raw = false;
@@ -448,7 +448,7 @@ struct RuntimeParam
     // 分辨率设置，四者互斥
     struct DisplayConfig
     {
-        std::optional<int> short_side; // 默认720
+        std::optional<int> short_side;            // 默认720
         std::optional<int> long_side;
         std::optional<std::array<int, 2>> expand; // [width, height], Unity Canvas Scaler "Expand" 语义
         bool raw = false;
