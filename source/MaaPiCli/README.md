@@ -2,6 +2,10 @@
 
 MaaFramework 官方提供的命令行 ProjectInterface Client，用于通过终端交互加载 `interface.json`、配置任务并运行。
 
+## 获取
+
+从 MaaFramework Release 下载对应平台的 `MAA-MaaPiCli-<os>-<arch>` 独立包。`MaaPiCli` 不再包含在 `MAA-*` 主包中。
+
 ## PI 协议支持版本
 
 **已支持至 PI v2.5.0**（2026-03-23）

@@ -9,7 +9,6 @@
 #include "MaaFramework/MaaAPI.h"
 #include "MaaToolkit/MaaToolkitAPI.h"
 
-#include "Common/MaaTypes.h"
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/IOStream/BoostIO.hpp"
 #include "MaaUtils/Logger.h"
@@ -227,21 +226,21 @@ bool Runner::run(const RuntimeParam& param)
         MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetShortSide, &short_side, sizeof(short_side));
     }
 
-    MaaId cid = controller_handle->post_connection();
-    MaaId rid = 0;
+    MaaCtrlId cid = MaaControllerPostConnection(controller_handle);
+    MaaResId rid = 0;
     for (const auto& path : param.resource_path) {
-        rid = resource_handle->post_bundle(path);
+        rid = MaaResourcePostBundle(resource_handle, MAA_NS::path_to_utf8_string(path).c_str());
     }
 
-    tasker_handle->bind_controller(controller_handle);
-    tasker_handle->bind_resource(resource_handle);
+    MaaTaskerBindController(tasker_handle, controller_handle);
+    MaaTaskerBindResource(tasker_handle, resource_handle);
 
-    if (MaaStatus_Failed == controller_handle->wait(cid)) {
+    if (MaaStatus_Failed == MaaControllerWait(controller_handle, cid)) {
         LogError << "Failed to connect controller";
         return false;
     }
 
-    if (MaaStatus_Failed == resource_handle->wait(rid)) {
+    if (MaaStatus_Failed == MaaResourceWait(resource_handle, rid)) {
         LogError << "Failed to load resource";
         return false;
     }
@@ -281,12 +280,13 @@ bool Runner::run(const RuntimeParam& param)
         agents.emplace_back(agent);
     }
 
-    MaaId tid = 0;
+    MaaTaskId tid = 0;
     for (const auto& task : param.task) {
-        tid = tasker_handle->post_task(task.entry, task.pipeline_override);
+        const std::string pipeline_override = task.pipeline_override.dumps();
+        tid = MaaTaskerPostTask(tasker_handle, task.entry.c_str(), pipeline_override.c_str());
     }
 
-    tasker_handle->wait(tid);
+    MaaTaskerWait(tasker_handle, tid);
 
     for (auto* agent : agents) {
         MaaAgentClientDisconnect(agent);
