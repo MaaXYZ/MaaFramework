@@ -15,6 +15,11 @@
 
 MAA_AGENT_CLIENT_NS_BEGIN
 
+namespace
+{
+constexpr std::chrono::milliseconds kShutdownSocketLinger { 200 };
+}
+
 AgentClient::AgentClient(const std::string& identifier)
 {
     LogFunc;
@@ -164,13 +169,17 @@ bool AgentClient::connect()
         return false;
     }
 
+    reset_socket_if_needed();
+
     clear_custom_registration();
+    connected_ = false;
+    remote_session_may_have_started_ = true;
 
     auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest { });
 
     if (!resp_opt) {
         LogError << "failed to send_and_recv";
-        return false;
+        return abort_connect();
     }
     const auto& resp = *resp_opt;
     LogInfo << VAR(resp);
@@ -179,20 +188,25 @@ bool AgentClient::connect()
         LogError << "Protocol version mismatch" << "client:" << VAR(MAA_VERSION) << VAR(kProtocolVersion) << "server:" << VAR(resp.version)
                  << VAR(resp.protocol) << VAR(ipc_addr_);
         LogError << "Please update" << (kProtocolVersion < resp.protocol ? "AgentClient" : "AgentServer");
-        return false;
+        return abort_connect();
     }
 
     for (const auto& reco : resp.recognitions) {
         LogInfo << "register recognition" << VAR(reco);
-        bound_res_->register_custom_recognition(reco, reco_agent, this);
+        if (!bound_res_->register_custom_recognition(reco, reco_agent, this)) {
+            LogError << "failed to register recognition" << VAR(reco);
+            return abort_connect();
+        }
+        registered_recognitions_.emplace_back(reco);
     }
     for (const auto& act : resp.actions) {
         LogInfo << "register action" << VAR(act);
-        bound_res_->register_custom_action(act, action_agent, this);
+        if (!bound_res_->register_custom_action(act, action_agent, this)) {
+            LogError << "failed to register action" << VAR(act);
+            return abort_connect();
+        }
+        registered_actions_.emplace_back(act);
     }
-
-    registered_recognitions_ = resp.recognitions;
-    registered_actions_ = resp.actions;
 
     connected_ = true;
     return true;
@@ -207,15 +221,9 @@ bool AgentClient::disconnect()
     clear_resource_sink();
     clear_tasker_sink();
 
-    if (!connected()) {
-        return true;
-    }
-
-    if (alive()) {
-        send_and_recv<ShutDownResponse>(ShutDownRequest { });
-    }
-
     connected_ = false;
+    shutdown_remote_session(ShutdownMode::WaitForResponse);
+    reset_socket_if_needed();
     return true;
 }
 
@@ -227,6 +235,47 @@ bool AgentClient::connected()
 bool AgentClient::alive()
 {
     return Transceiver::alive();
+}
+
+bool AgentClient::abort_connect()
+{
+    clear_custom_registration();
+    connected_ = false;
+    const bool shutdown_queued = shutdown_remote_session(ShutdownMode::SendOnly);
+    // Give the queued one-way shutdown a bounded drain window before replacing the socket.
+    reset_socket_if_needed(shutdown_queued ? kShutdownSocketLinger : std::chrono::milliseconds(0));
+    return false;
+}
+
+bool AgentClient::shutdown_remote_session(ShutdownMode mode)
+{
+    if (!remote_session_may_have_started_) {
+        return false;
+    }
+
+    bool shutdown_queued = false;
+    if (alive()) {
+        if (mode == ShutdownMode::WaitForResponse) {
+            send_and_recv<ShutDownResponse>(ShutDownRequest { });
+        }
+        else {
+            shutdown_queued = send_no_wait(ShutDownRequest { });
+        }
+    }
+
+    remote_session_may_have_started_ = false;
+    socket_needs_reset_ = true;
+    return shutdown_queued;
+}
+
+void AgentClient::reset_socket_if_needed(std::chrono::milliseconds linger)
+{
+    if (!socket_needs_reset_) {
+        return;
+    }
+
+    reset_socket(linger);
+    socket_needs_reset_ = false;
 }
 
 void AgentClient::set_timeout(const std::chrono::milliseconds& timeout)
@@ -2479,6 +2528,28 @@ bool AgentClient::handle_controller_set_option(const json::value& j)
             break;
         }
         ret = controller->set_option(key, keys.data(), sizeof(int32_t) * keys.size());
+        break;
+    }
+    case MaaCtrlOption_ScreenshotTargetExpand: {
+        if (!req.value.is_array() || req.value.as_array().size() != 2) {
+            LogError << "ScreenshotTargetExpand value must be a 2-element array" << VAR(req.value.type_name());
+            break;
+        }
+        int32_t dims[2] = { 0, 0 };
+        const auto& arr = req.value.as_array();
+        bool ok = true;
+        for (size_t i = 0; i < 2; ++i) {
+            if (!arr[i].is_number()) {
+                LogError << "ScreenshotTargetExpand array element must be a number" << VAR(arr[i].type_name());
+                ok = false;
+                break;
+            }
+            dims[i] = static_cast<int32_t>(arr[i].as_integer());
+        }
+        if (!ok || dims[0] <= 0 || dims[1] <= 0) {
+            break;
+        }
+        ret = controller->set_option(key, dims, sizeof(dims));
         break;
     }
     default:
