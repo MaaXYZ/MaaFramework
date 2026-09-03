@@ -64,6 +64,8 @@ MessageInput::MessageInput(HWND hwnd, Config config)
 {
     if (config_.with_window_pos) {
         window_pos_guard_enabled_ = false;
+    }
+    if (config_.with_window_pos && config_.track_hardware_mouse) {
         tracking_thread_ = std::thread(&MessageInput::tracking_thread_func, this);
     }
 }
@@ -216,7 +218,6 @@ void MessageInput::restore_window_pos()
     if (!SetWindowPos(hwnd_, nullptr, left, top, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE)) {
         LogError << "SetWindowPos failed during restore" << VAR(hwnd_) << VAR(GetLastError());
     }
-    window_pos_saved_ = false;
 }
 
 void MessageInput::start_window_tracking(int x, int y)
@@ -525,7 +526,9 @@ bool MessageInput::prepare_mouse_position(int x, int y)
     }
 
     if (config_.with_window_pos) {
-        start_window_tracking(x, y);
+        if (config_.track_hardware_mouse) {
+            start_window_tracking(x, y);
+        }
 
         if (!move_window_to_align_cursor(x, y)) {
             return false;
@@ -828,6 +831,7 @@ void MessageInput::inactive()
     }
 
     restore_pos();
+    window_pos_saved_ = false;
     unblock_input();
 }
 
@@ -1037,11 +1041,6 @@ bool MessageInput::touch_up(int contact)
 
     OnScopeLeave([this]() { unblock_input(); });
 
-    if (reuse_gesture) {
-        bool use_post = (config_.mode == Mode::PostMessage);
-        ::MaaNS::CtrlUnitNs::send_activate_message(target, use_post);
-    }
-
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_up_message(contact, msg_info)) {
         LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "contact out of range"
@@ -1056,11 +1055,12 @@ bool MessageInput::touch_up(int contact)
         return false;
     }
 
-    // touch_up 后继续黏住窗口一小段时间，再由 tracking 线程自行结束。
-    if (config_.with_window_pos) {
+    // Match the tracked WindowPos lifecycle: successful gestures keep the window at its current
+    // offset. inactive(), destruction, and failure paths restore the saved position.
+    if (config_.with_window_pos && config_.track_hardware_mouse) {
         request_stop_window_tracking();
     }
-    else {
+    else if (!config_.with_window_pos) {
         finish_pos();
     }
 
@@ -1175,10 +1175,10 @@ bool MessageInput::scroll(int dx, int dy)
         success &= send_or_post_w(target, WM_MOUSEHWHEEL, wParam, lParam);
     }
 
-    if (config_.with_window_pos) {
+    if (config_.with_window_pos && config_.track_hardware_mouse) {
         request_stop_window_tracking();
     }
-    else {
+    else if (!config_.with_window_pos) {
         finish_pos();
     }
 

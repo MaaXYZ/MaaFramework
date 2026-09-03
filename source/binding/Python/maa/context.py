@@ -2,26 +2,26 @@ import ctypes
 import dataclasses
 import json
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 import numpy
 
-from .event_sink import EventSink, NotificationType
 from .buffer import ImageBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .define import *
-from .library import Library
-from .tasker import Tasker
+from .event_sink import EventSink, NotificationType
 from .job import TaskJob
+from .library import Library
 from .pipeline import (
+    JActionParam,
+    JActionType,
+    JNodeAttr,
     JPipelineData,
     JPipelineParser,
-    JNodeAttr,
-    JRecognitionType,
-    JActionType,
     JRecognitionParam,
-    JActionParam,
+    JRecognitionType,
     JWaitFreezes,
 )
+from .tasker import Tasker
 
 
 class Context:
@@ -42,9 +42,7 @@ class Context:
     def __del__(self):
         pass
 
-    def run_task(
-        self, entry: str, pipeline_override: Dict = {}
-    ) -> Optional[TaskDetail]:
+    def run_task(self, entry: str, pipeline_override: Optional[dict[str, Any]] = None) -> Optional[TaskDetail]:
         """同步执行任务 / Synchronously execute task
 
         Args:
@@ -54,10 +52,10 @@ class Context:
         Returns:
             Optional[TaskDetail]: 任务详情，执行失败则返回 None / Task detail, or None if execution failed
         """
+        if pipeline_override is None:
+            pipeline_override = {}
         task_id = int(
-            Library.framework().MaaContextRunTask(
-                self._handle, *Context._gen_post_param(entry, pipeline_override)
-            )
+            Library.framework().MaaContextRunTask(self._handle, *Context._gen_post_param(entry, pipeline_override))
         )
         if not task_id:
             return None
@@ -68,7 +66,7 @@ class Context:
         self,
         entry: str,
         image: numpy.ndarray,
-        pipeline_override: Dict = {},
+        pipeline_override: Optional[dict[str, Any]] = None,
     ) -> Optional[RecognitionDetail]:
         """同步执行识别逻辑 / Synchronously execute recognition logic
 
@@ -82,18 +80,23 @@ class Context:
 
         Returns:
             Optional[RecognitionDetail]: 识别结果。无论是否命中，只要尝试进行了识别，就会返回；
-            请通过 RecognitionDetail.hit 判断是否命中。只在未能启动识别流程时（如 entry 不存在、node disabled、image 为空等），才可能返回 None。
+            请通过 RecognitionDetail.hit 判断是否命中。只在未能启动识别流程时（如 entry 不存在、node disabled、image
+            为空等），才可能返回
+            None。
             Recognition detail. It always returns as long as recognition was attempted;
-            use RecognitionDetail.hit to determine hit. Only return None if the recognition process fails to start
+            use RecognitionDetail.hit to determine hit. Only return None if the recognition process
+            fails to start
             (e.g., entry does not exist, node is disabled, image is empty).
         """
+        if pipeline_override is None:
+            pipeline_override = {}
         image_buffer = ImageBuffer()
         image_buffer.set(image)
         reco_id = int(
             Library.framework().MaaContextRunRecognition(
                 self._handle,
                 *Context._gen_post_param(entry, pipeline_override),
-                image_buffer._handle
+                image_buffer._handle,
             )
         )
         if not reco_id:
@@ -106,7 +109,7 @@ class Context:
         entry: str,
         box: RectType = (0, 0, 0, 0),
         reco_detail: str = "",
-        pipeline_override: Dict = {},
+        pipeline_override: Optional[dict[str, Any]] = None,
     ) -> Optional[ActionDetail]:
         """同步执行操作逻辑 / Synchronously execute action logic
 
@@ -121,11 +124,15 @@ class Context:
 
         Returns:
             Optional[ActionDetail]: 操作结果。无论动作是否成功，只要尝试执行了动作，就会返回；
-            请通过 ActionDetail.success 判断是否执行成功。只在未能启动动作流程时（如 entry 不存在、node disabled 等），才可能返回 None。
+            请通过 ActionDetail.success 判断是否执行成功。只在未能启动动作流程时（如 entry 不存在、node disabled
+            等），才可能返回 None。
             Action detail. It always returns as long as the action was attempted;
-            use ActionDetail.success to determine success. Only return None if the action flow fails to start
+            use ActionDetail.success to determine success. Only return None if the action flow fails
+            to start
             (e.g., entry does not exist, node is disabled, etc.).
         """
+        if pipeline_override is None:
+            pipeline_override = {}
         rect = RectBuffer()
         rect.set(box)
 
@@ -134,7 +141,7 @@ class Context:
                 self._handle,
                 *Context._gen_post_param(entry, pipeline_override),
                 rect._handle,
-                reco_detail.encode()
+                reco_detail.encode(),
             )
         )
 
@@ -163,7 +170,8 @@ class Context:
             Optional[RecognitionDetail]: 识别结果。无论是否命中，只要尝试进行了识别，就会返回；
             请通过 RecognitionDetail.hit 判断是否命中。只在未能启动识别流程时才可能返回 None。
             Recognition detail. It always returns as long as recognition was attempted;
-            use RecognitionDetail.hit to determine hit. Only return None if the recognition process fails to start.
+            use RecognitionDetail.hit to determine hit. Only return None if the recognition process
+            fails to start.
         """
         img_buffer = ImageBuffer()
         img_buffer.set(image)
@@ -203,13 +211,12 @@ class Context:
             Optional[ActionDetail]: 操作结果。无论动作是否成功，只要尝试执行了动作，就会返回；
             请通过 ActionDetail.success 判断是否执行成功。只在未能启动动作流程时才可能返回 None。
             Action detail. It always returns as long as the action was attempted;
-            use ActionDetail.success to determine success. Only return None if the action flow fails to start.
+            use ActionDetail.success to determine success. Only return None if the action flow fails
+            to start.
         """
         rect_buffer = RectBuffer()
         rect_buffer.set(box)
-        action_param_json = json.dumps(
-            dataclasses.asdict(action_param), ensure_ascii=False
-        )
+        action_param_json = json.dumps(dataclasses.asdict(action_param), ensure_ascii=False)
         act_id = int(
             Library.framework().MaaContextRunActionDirect(
                 self._handle,
@@ -224,7 +231,7 @@ class Context:
 
         return self.tasker.get_action_detail(act_id)
 
-    def override_pipeline(self, pipeline_override: Dict) -> bool:
+    def override_pipeline(self, pipeline_override: dict[str, Any]) -> bool:
         """覆盖 pipeline / Override pipeline_override
 
         Args:
@@ -242,7 +249,7 @@ class Context:
             )
         )
 
-    def override_next(self, name: str, next_list: List[str]) -> bool:
+    def override_next(self, name: str, next_list: list[str]) -> bool:
         """覆盖任务的 next 列表 / Override the next list of task
 
         如果节点不存在，此方法会失败
@@ -258,11 +265,7 @@ class Context:
         list_buffer = StringListBuffer()
         list_buffer.set(next_list)
 
-        return bool(
-            Library.framework().MaaContextOverrideNext(
-                self._handle, name.encode(), list_buffer._handle
-            )
-        )
+        return bool(Library.framework().MaaContextOverrideNext(self._handle, name.encode(), list_buffer._handle))
 
     def override_image(self, image_name: str, image: numpy.ndarray) -> bool:
         """覆盖图片 / Override the image corresponding to image_name
@@ -278,12 +281,10 @@ class Context:
         image_buffer.set(image)
 
         return bool(
-            Library.framework().MaaContextOverrideImage(
-                self._handle, image_name.encode(), image_buffer._handle
-            )
+            Library.framework().MaaContextOverrideImage(self._handle, image_name.encode(), image_buffer._handle)
         )
 
-    def get_node_data(self, name: str) -> Optional[Dict]:
+    def get_node_data(self, name: str) -> Optional[dict[str, Any]]:
         """获取任务当前的定义 / Get the current definition of task
 
         Args:
@@ -293,9 +294,7 @@ class Context:
             Optional[Dict]: 任务定义字典，如果不存在则返回 None / Task definition dict, or None if not exists
         """
         string_buffer = StringBuffer()
-        if not Library.framework().MaaContextGetNodeData(
-            self._handle, name.encode(), string_buffer._handle
-        ):
+        if not Library.framework().MaaContextGetNodeData(self._handle, name.encode(), string_buffer._handle):
             return None
 
         data = string_buffer.get()
@@ -314,7 +313,8 @@ class Context:
             name: 任务名 / Task name
 
         Returns:
-            Optional[JPipelineData]: 任务定义对象，如果不存在则返回 None / Task definition object, or None if not exists
+            Optional[JPipelineData]: 任务定义对象，如果不存在则返回 None
+            Task definition object, or None if not exists
         """
         node_data = self.get_node_data(name)
 
@@ -372,11 +372,7 @@ class Context:
         Returns:
             bool: 是否成功 / Whether successful
         """
-        return bool(
-            Library.framework().MaaContextSetAnchor(
-                self._handle, anchor_name.encode(), node_name.encode()
-            )
-        )
+        return bool(Library.framework().MaaContextSetAnchor(self._handle, anchor_name.encode(), node_name.encode()))
 
     def get_anchor(self, anchor_name: str) -> Optional[str]:
         """获取锚点对应的节点名 / Get node name for anchor
@@ -388,9 +384,7 @@ class Context:
             Optional[str]: 节点名称，如果不存在则返回 None / Node name, or None if not exists
         """
         string_buffer = StringBuffer()
-        if not Library.framework().MaaContextGetAnchor(
-            self._handle, anchor_name.encode(), string_buffer._handle
-        ):
+        if not Library.framework().MaaContextGetAnchor(self._handle, anchor_name.encode(), string_buffer._handle):
             return None
 
         return string_buffer.get()
@@ -405,9 +399,7 @@ class Context:
             int: 命中计数 / Hit count
         """
         count = ctypes.c_uint64()
-        if not Library.framework().MaaContextGetHitCount(
-            self._handle, node_name.encode(), ctypes.byref(count)
-        ):
+        if not Library.framework().MaaContextGetHitCount(self._handle, node_name.encode(), ctypes.byref(count)):
             return 0
         return count.value
 
@@ -420,31 +412,32 @@ class Context:
         Returns:
             bool: 是否成功 / Whether successful
         """
-        return bool(
-            Library.framework().MaaContextClearHitCount(
-                self._handle, node_name.encode()
-            )
-        )
+        return bool(Library.framework().MaaContextClearHitCount(self._handle, node_name.encode()))
 
     def wait_freezes(
         self,
         time: int = 0,
-        box: Optional[Tuple[int, int, int, int]] = None,
+        box: Optional[tuple[int, int, int, int]] = None,
         wait_freezes_param: Optional[JWaitFreezes] = None,
     ) -> bool:
         """等待画面静止 / Wait for screen to stabilize (freeze)
 
         Args:
             time: 等待时间（毫秒） / Wait time in milliseconds
-            box: 识别命中的区域 (x, y, w, h)，用于 target 为 Self 时计算 ROI / Recognition hit box, used when target is Self to calculate ROI
-            wait_freezes_param: 等待参数，使用 JWaitFreezes。支持 time, target, target_offset, threshold, method, rate_limit, timeout
-                              / Wait parameters, use JWaitFreezes. Supports time, target, target_offset, threshold, method, rate_limit, timeout
+            box: 识别命中的区域 (x, y, w, h)，用于 target 为 Self 时计算 ROI
+            Recognition hit box, used when target is Self to calculate ROI
+            wait_freezes_param: 等待参数，使用 JWaitFreezes。支持 time, target, target_offset, threshold,
+            method, rate_limit, timeout
+
+                              Wait parameters, use JWaitFreezes. Supports time, target,
+                              target_offset, threshold, method, rate_limit, timeout
 
         Returns:
             bool: 是否成功 / Whether successful
 
         Note:
-            - time 和 wait_freezes_param.time 互斥，不能同时为非零或同时为零 / time and wait_freezes_param.time are mutually exclusive
+            - time 和 wait_freezes_param.time 互斥，不能同时为非零或同时为零
+            time and wait_freezes_param.time are mutually exclusive
         """
         rect_buffer = None
         if box:
@@ -475,7 +468,7 @@ class Context:
         self._tasker = Tasker(handle=tasker_handle)
 
     @staticmethod
-    def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
+    def _gen_post_param(entry: str, pipeline_override: dict[str, Any]) -> tuple[bytes, bytes]:
         pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
 
         return (
@@ -618,8 +611,8 @@ class ContextEventSink(EventSink):
         wf_id: int
         name: str
         phase: str
-        roi: Tuple[int, int, int, int]
-        param: Dict[str, Any]
+        roi: tuple[int, int, int, int]
+        param: dict[str, Any]
         reco_ids: list[int]
         elapsed: Optional[int]
         focus: Any
@@ -670,9 +663,7 @@ class ContextEventSink(EventSink):
         name: str
         focus: Any
 
-    def on_node_action(
-        self, context: Context, noti_type: NotificationType, detail: NodeActionDetail
-    ):
+    def on_node_action(self, context: Context, noti_type: NotificationType, detail: NodeActionDetail):
         pass
 
     @dataclass
@@ -720,11 +711,10 @@ class ContextEventSink(EventSink):
     ):
         pass
 
-    def on_raw_notification(self, context: Context, msg: str, details: dict):
+    def on_raw_notification(self, context: Context, msg: str, details: dict[str, Any]) -> None:
         pass
 
-    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
-
+    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict[str, Any]) -> None:
         context = Context(handle=handle)
         self.on_raw_notification(context, msg, details)
 

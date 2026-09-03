@@ -16,6 +16,8 @@ class MacOSControlUnitAPI;
 class GamepadControlUnitAPI;
 class CustomControlUnitAPI;
 class WlRootsControlUnitAPI;
+class KWinControlUnitAPI;
+class LinuxControlUnitAPI;
 class FullControlUnitAPI;
 class AndroidNativeControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
@@ -159,7 +161,7 @@ private:
 class WlRootsControlUnitLibraryHolder : public LibraryHolder<WlRootsControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::WlRootsControlUnitAPI>
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::LinuxControlUnitAPI>
         create_control_unit(const char* wlr_socket_path, MaaBool use_win32_vk_code);
 
 private:
@@ -167,6 +169,31 @@ private:
     inline static const std::string version_func_name_ = "MaaWlRootsControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaWlRootsControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaWlRootsControlUnitDestroy";
+};
+
+class LinuxControlUnitLibraryHolder : public LibraryHolder<LinuxControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::LinuxControlUnitAPI> create_control_unit(const char* config_json);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaLinuxControlUnit");
+    inline static const std::string version_func_name_ = "MaaLinuxControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaLinuxControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaLinuxControlUnitDestroy";
+};
+
+class KWinControlUnitLibraryHolder : public LibraryHolder<KWinControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::LinuxControlUnitAPI>
+        create_control_unit(const char* device_node, int screen_width, int screen_height, bool use_win32_vk_code);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaKWinControlUnit");
+    inline static const std::string version_func_name_ = "MaaKWinControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaKWinControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaKWinControlUnitDestroy";
 };
 
 MAA_NS_END

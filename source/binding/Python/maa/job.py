@@ -1,7 +1,9 @@
 import json
-from typing import Dict
+from typing import Any, Callable, Generic, Optional, TypeVar
 
 from .define import *
+
+TResult = TypeVar("TResult")
 
 
 class Job:
@@ -14,7 +16,12 @@ class Job:
 
     _job_id: MaaId
 
-    def __init__(self, job_id: MaaId, status_func, wait_func):
+    def __init__(
+        self,
+        job_id: MaaId,
+        status_func: Callable[[int], MaaStatus],
+        wait_func: Callable[[int], MaaStatus],
+    ) -> None:
         self._job_id = job_id
         self._status_func = status_func
         self._wait_func = wait_func
@@ -37,7 +44,7 @@ class Job:
         Returns:
             Job: 返回自身，支持链式调用 / Returns self for method chaining
         """
-        self._wait_func(self._job_id)
+        self._wait_func(int(self._job_id))
         return self
 
     @property
@@ -47,7 +54,7 @@ class Job:
         Returns:
             Status: 作业状态 / Job status
         """
-        return Status(self._status_func(self._job_id))
+        return Status(self._status_func(int(self._job_id)))
 
     @property
     def done(self) -> bool:
@@ -95,18 +102,24 @@ class Job:
         return self.status.running
 
 
-class JobWithResult(Job):
+class JobWithResult(Job, Generic[TResult]):
     """带结果的异步作业句柄 / Asynchronous job handle with result
 
     继承自 Job，额外提供获取作业结果的功能。
     Inherits from Job, additionally provides the ability to get job result.
     """
 
-    def __init__(self, job_id: MaaId, status_func, wait_func, get_func):
+    def __init__(
+        self,
+        job_id: MaaId,
+        status_func: Callable[[int], MaaStatus],
+        wait_func: Callable[[int], MaaStatus],
+        get_func: Callable[[int], TResult],
+    ) -> None:
         super().__init__(job_id, status_func, wait_func)
         self._get_func = get_func
 
-    def wait(self) -> "JobWithResult":
+    def wait(self) -> "JobWithResult[TResult]":
         """等待作业完成 / Wait for job completion
 
         Returns:
@@ -115,13 +128,14 @@ class JobWithResult(Job):
         super().wait()
         return self
 
-    def get(self, wait: bool = False):
+    def get(self, wait: bool = False) -> TResult:
         """获取作业结果 / Get job result
 
         Args:
             wait: 是否在获取结果前等待作业完成，默认为 False。建议先显式调用 wait()（或传入 wait=True），
                 确保异步操作已完成后再获取结果 / Whether to wait for job completion before getting result,
-                default is False. It's recommended to call wait() first (or pass wait=True) to ensure the
+                default is False. It's recommended to call wait() first (or pass wait=True) to
+                ensure the
                 async operation is finished before getting the result.
 
         Returns:
@@ -131,17 +145,24 @@ class JobWithResult(Job):
         if wait:
             self.wait()
 
-        return self._get_func(self._job_id)
+        return self._get_func(int(self._job_id))
 
 
-class TaskJob(JobWithResult):
+class TaskJob(JobWithResult[Optional["TaskDetail"]]):
     """任务作业句柄 / Task job handle
 
     继承自 JobWithResult，额外提供任务相关的操作。
     Inherits from JobWithResult, additionally provides task-related operations.
     """
 
-    def __init__(self, job_id: MaaId, status_func, wait_func, get_func, override_pipeline_func):
+    def __init__(
+        self,
+        job_id: MaaId,
+        status_func: Callable[[int], MaaStatus],
+        wait_func: Callable[[int], MaaStatus],
+        get_func: Callable[[int], Optional["TaskDetail"]],
+        override_pipeline_func: Callable[[int, bytes], bool],
+    ) -> None:
         super().__init__(job_id, status_func, wait_func, get_func)
         self._override_pipeline_func = override_pipeline_func
 
@@ -154,7 +175,7 @@ class TaskJob(JobWithResult):
         super().wait()
         return self
 
-    def override_pipeline(self, pipeline_override: Dict) -> bool:
+    def override_pipeline(self, pipeline_override: dict[str, Any]) -> bool:
         """覆盖此任务的 pipeline / Override pipeline for this task
 
         在任务执行期间动态修改 pipeline 配置
@@ -167,6 +188,6 @@ class TaskJob(JobWithResult):
             bool: 是否成功 / Whether successful
         """
         return self._override_pipeline_func(
-            self._job_id,
+            int(self._job_id),
             json.dumps(pipeline_override, ensure_ascii=False).encode(),
         )

@@ -7,6 +7,8 @@
 #include "MaaControlUnit/CustomControlUnitAPI.h"
 #include "MaaControlUnit/DbgControlUnitAPI.h"
 #include "MaaControlUnit/GamepadControlUnitAPI.h"
+#include "MaaControlUnit/KWinControlUnitAPI.h"
+#include "MaaControlUnit/LinuxControlUnitAPI.h"
 #include "MaaControlUnit/MacOSControlUnitAPI.h"
 #include "MaaControlUnit/PlayCoverControlUnitAPI.h"
 #include "MaaControlUnit/RecordControlUnitAPI.h"
@@ -328,7 +330,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>
     return std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::WlRootsControlUnitAPI>
+std::shared_ptr<MAA_CTRL_UNIT_NS::LinuxControlUnitAPI>
     WlRootsControlUnitLibraryHolder::create_control_unit(const char* wlr_socket_path, MaaBool use_win32_vk_code)
 {
     if (!load_library(library_dir() / libname_)) {
@@ -357,7 +359,38 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::WlRootsControlUnitAPI>
         return nullptr;
     }
 
-    return std::shared_ptr<MAA_CTRL_UNIT_NS::WlRootsControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::LinuxControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+}
+
+std::shared_ptr<MAA_CTRL_UNIT_NS::LinuxControlUnitAPI> LinuxControlUnitLibraryHolder::create_control_unit(const char* config_json)
+{
+    if (!load_library(library_dir() / libname_)) {
+        LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
+        return nullptr;
+    }
+
+    check_version<LinuxControlUnitLibraryHolder, decltype(MaaLinuxControlUnitGetVersion)>(version_func_name_);
+
+    auto create_control_unit_func = get_function<decltype(MaaLinuxControlUnitCreate)>(create_func_name_);
+    if (!create_control_unit_func) {
+        LogError << "Failed to get function create_control_unit";
+        return nullptr;
+    }
+
+    auto destroy_control_unit_func = get_function<decltype(MaaLinuxControlUnitDestroy)>(destroy_func_name_);
+    if (!destroy_control_unit_func) {
+        LogError << "Failed to get function destroy_control_unit";
+        return nullptr;
+    }
+
+    auto control_unit_handle = create_control_unit_func(config_json);
+
+    if (!control_unit_handle) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::LinuxControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI> MacOSControlUnitLibraryHolder::create_control_unit(
@@ -392,6 +425,38 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI> MacOSControlUnitLibraryHo
     }
 
     return std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+}
+
+std::shared_ptr<MAA_CTRL_UNIT_NS::LinuxControlUnitAPI>
+    KWinControlUnitLibraryHolder::create_control_unit(const char* device_node, int screen_width, int screen_height, bool use_win32_vk_code)
+{
+    if (!load_library(library_dir() / libname_)) {
+        LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
+        return nullptr;
+    }
+
+    check_version<KWinControlUnitLibraryHolder, decltype(MaaKWinControlUnitGetVersion)>(version_func_name_);
+
+    auto create_control_unit_func = get_function<decltype(MaaKWinControlUnitCreate)>(create_func_name_);
+    if (!create_control_unit_func) {
+        LogError << "Failed to get function create_control_unit";
+        return nullptr;
+    }
+
+    auto destroy_control_unit_func = get_function<decltype(MaaKWinControlUnitDestroy)>(destroy_func_name_);
+    if (!destroy_control_unit_func) {
+        LogError << "Failed to get function destroy_control_unit";
+        return nullptr;
+    }
+
+    auto control_unit_handle = create_control_unit_func(device_node, screen_width, screen_height, use_win32_vk_code);
+
+    if (!control_unit_handle) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::LinuxControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
 MAA_NS_END

@@ -1,8 +1,17 @@
 import ctypes
+from typing import TYPE_CHECKING, Callable
 
 from ..define import *
-from ..library import Library
 from ..event_sink import EventSink
+from ..library import Library
+
+if TYPE_CHECKING:
+    from ..context import ContextEventSink
+    from ..controller import ControllerEventSink
+    from ..custom_action import CustomAction
+    from ..custom_recognition import CustomRecognition
+    from ..resource import ResourceEventSink
+    from ..tasker import TaskerEventSink
 
 
 class AgentServer:
@@ -24,29 +33,41 @@ class AgentServer:
     """
 
     @staticmethod
-    def custom_recognition(name: str):
+    def custom_recognition(
+        name: str,
+    ) -> Callable[[type["CustomRecognition"]], type["CustomRecognition"]]:
         """自定义识别器装饰器 / Custom recognition decorator
 
         Args:
-            name: 识别器名称，需与 Pipeline 中的 custom_recognition 字段匹配 / Recognition name, should match the custom_recognition field in Pipeline
+            name: 识别器名称，需与 Pipeline 中的 custom_recognition 字段匹配
+            Recognition name, should match the custom_recognition field in Pipeline
 
         Returns:
             装饰器函数 / Decorator function
+
+        Raises:
+            ValueError: 名称为空 / The name is empty
+            RuntimeError: 名称已被注册 / The name is already registered
         """
 
-        def wrapper_recognition(recognition):
-            AgentServer.register_custom_recognition(
-                name=name, recognition=recognition()
-            )
+        if not name:
+            raise ValueError("Custom name must not be empty")
+
+        def wrapper_recognition(
+            recognition: type["CustomRecognition"],
+        ) -> type["CustomRecognition"]:
+            if not AgentServer.register_custom_recognition(name=name, recognition=recognition()):
+                raise RuntimeError(f"Custom name is already registered: {name!r}")
             return recognition
 
         return wrapper_recognition
 
-    _custom_recognition_holder = {}
+    _custom_recognition_holder: dict[str, "CustomRecognition"] = {}
 
     @staticmethod
     def register_custom_recognition(
-        name: str, recognition: "CustomRecognition"  # type: ignore
+        name: str,
+        recognition: "CustomRecognition",
     ) -> bool:
         """注册自定义识别器 / Register custom recognition
 
@@ -60,38 +81,51 @@ class AgentServer:
 
         AgentServer._set_api_properties()
 
-        # avoid gc
-        AgentServer._custom_recognition_holder[name] = recognition
-
-        return bool(
+        success = bool(
             Library.agent_server().MaaAgentServerRegisterCustomRecognition(
                 name.encode(),
                 recognition.c_handle,
                 recognition.c_arg,
             )
         )
+        if success:
+            # avoid gc
+            AgentServer._custom_recognition_holder[name] = recognition
+
+        return success
 
     @staticmethod
-    def custom_action(name: str):
+    def custom_action(
+        name: str,
+    ) -> Callable[[type["CustomAction"]], type["CustomAction"]]:
         """自定义动作装饰器 / Custom action decorator
 
         Args:
-            name: 动作名称，需与 Pipeline 中的 custom_action 字段匹配 / Action name, should match the custom_action field in Pipeline
+            name: 动作名称，需与 Pipeline 中的 custom_action 字段匹配
+            Action name, should match the custom_action field in Pipeline
 
         Returns:
             装饰器函数 / Decorator function
+
+        Raises:
+            ValueError: 名称为空 / The name is empty
+            RuntimeError: 名称已被注册 / The name is already registered
         """
 
-        def wrapper_action(action):
-            AgentServer.register_custom_action(name=name, action=action())
+        if not name:
+            raise ValueError("Custom name must not be empty")
+
+        def wrapper_action(action: type["CustomAction"]) -> type["CustomAction"]:
+            if not AgentServer.register_custom_action(name=name, action=action()):
+                raise RuntimeError(f"Custom name is already registered: {name!r}")
             return action
 
         return wrapper_action
 
-    _custom_action_holder = {}
+    _custom_action_holder: dict[str, "CustomAction"] = {}
 
     @staticmethod
-    def register_custom_action(name: str, action: "CustomAction") -> bool:  # type: ignore
+    def register_custom_action(name: str, action: "CustomAction") -> bool:
         """注册自定义动作 / Register custom action
 
         Args:
@@ -104,23 +138,26 @@ class AgentServer:
 
         AgentServer._set_api_properties()
 
-        # avoid gc
-        AgentServer._custom_action_holder[name] = action
-
-        return bool(
+        success = bool(
             Library.agent_server().MaaAgentServerRegisterCustomAction(
                 name.encode(),
                 action.c_handle,
                 action.c_arg,
             )
         )
+        if success:
+            # avoid gc
+            AgentServer._custom_action_holder[name] = action
+
+        return success
 
     @staticmethod
     def start_up(identifier: str) -> bool:
         """启动 Agent 服务 / Start Agent service
 
         Args:
-            identifier: 连接标识符，用于与 AgentClient 匹配 / Connection identifier for matching with AgentClient
+            identifier: 连接标识符，用于与 AgentClient 匹配
+            Connection identifier for matching with AgentClient
 
         Returns:
             bool: 是否成功 / Whether successful
@@ -162,17 +199,19 @@ class AgentServer:
 
         Library.agent_server().MaaAgentServerDetach()
 
-    _sink_holder: Dict[int, "EventSink"] = {}
+    _sink_holder: dict[int, "EventSink"] = {}
 
     @staticmethod
-    def resource_sink():
+    def resource_sink() -> Callable[[type["ResourceEventSink"]], type["ResourceEventSink"]]:
         """资源事件监听器装饰器 / Resource event sink decorator
 
         Returns:
             装饰器函数 / Decorator function
         """
 
-        def wrapper_sink(sink):
+        def wrapper_sink(
+            sink: type["ResourceEventSink"],
+        ) -> type["ResourceEventSink"]:
             AgentServer.add_resource_sink(sink=sink())
             return sink
 
@@ -185,25 +224,23 @@ class AgentServer:
         Args:
             sink: 资源事件监听器 / Resource event sink
         """
-        sink_id = int(
-            Library.agent_server().MaaAgentServerAddResourceSink(
-                *EventSink._gen_c_param(sink)
-            )
-        )
+        sink_id = int(Library.agent_server().MaaAgentServerAddResourceSink(*EventSink._gen_c_param(sink)))
         if sink_id == MaaInvalidId:
             return None
 
         AgentServer._sink_holder[sink_id] = sink
 
     @staticmethod
-    def controller_sink():
+    def controller_sink() -> Callable[[type["ControllerEventSink"]], type["ControllerEventSink"]]:
         """控制器事件监听器装饰器 / Controller event sink decorator
 
         Returns:
             装饰器函数 / Decorator function
         """
 
-        def wrapper_sink(sink):
+        def wrapper_sink(
+            sink: type["ControllerEventSink"],
+        ) -> type["ControllerEventSink"]:
             AgentServer.add_controller_sink(sink=sink())
             return sink
 
@@ -216,25 +253,21 @@ class AgentServer:
         Args:
             sink: 控制器事件监听器 / Controller event sink
         """
-        sink_id = int(
-            Library.agent_server().MaaAgentServerAddControllerSink(
-                *EventSink._gen_c_param(sink)
-            )
-        )
+        sink_id = int(Library.agent_server().MaaAgentServerAddControllerSink(*EventSink._gen_c_param(sink)))
         if sink_id == MaaInvalidId:
             return None
 
         AgentServer._sink_holder[sink_id] = sink
 
     @staticmethod
-    def tasker_sink():
+    def tasker_sink() -> Callable[[type["TaskerEventSink"]], type["TaskerEventSink"]]:
         """任务器事件监听器装饰器 / Tasker event sink decorator
 
         Returns:
             装饰器函数 / Decorator function
         """
 
-        def wrapper_sink(sink):
+        def wrapper_sink(sink: type["TaskerEventSink"]) -> type["TaskerEventSink"]:
             AgentServer.add_tasker_sink(sink=sink())
             return sink
 
@@ -247,25 +280,21 @@ class AgentServer:
         Args:
             sink: 任务器事件监听器 / Tasker event sink
         """
-        sink_id = int(
-            Library.agent_server().MaaAgentServerAddTaskerSink(
-                *EventSink._gen_c_param(sink)
-            )
-        )
+        sink_id = int(Library.agent_server().MaaAgentServerAddTaskerSink(*EventSink._gen_c_param(sink)))
         if sink_id == MaaInvalidId:
             return None
 
         AgentServer._sink_holder[sink_id] = sink
 
     @staticmethod
-    def context_sink():
+    def context_sink() -> Callable[[type["ContextEventSink"]], type["ContextEventSink"]]:
         """上下文事件监听器装饰器 / Context event sink decorator
 
         Returns:
             装饰器函数 / Decorator function
         """
 
-        def wrapper_sink(sink):
+        def wrapper_sink(sink: type["ContextEventSink"]) -> type["ContextEventSink"]:
             AgentServer.add_context_sink(sink=sink())
             return sink
 
@@ -278,11 +307,7 @@ class AgentServer:
         Args:
             sink: 上下文事件监听器 / Context event sink
         """
-        sink_id = int(
-            Library.agent_server().MaaAgentServerAddContextSink(
-                *EventSink._gen_c_param(sink)
-            )
-        )
+        sink_id = int(Library.agent_server().MaaAgentServerAddContextSink(*EventSink._gen_c_param(sink)))
         if sink_id == MaaInvalidId:
             return None
 

@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <variant>
 #include <vector>
+#include <array>
 
 #include <meojson/json.hpp>
 
@@ -56,11 +57,14 @@ struct InterfaceData
             MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT gamepad_type, MEO_OPT screencap);
         };
 
-        struct WlRootsConfig
+        struct LinuxConfig
         {
+            std::string screencap;
+            std::string input;
             bool use_win32_vk_code = false;
+            std::string pipewire_source = "Gamescope";
 
-            MEO_JSONIZATION(MEO_OPT use_win32_vk_code);
+            MEO_JSONIZATION(MEO_OPT screencap, MEO_OPT input, MEO_OPT use_win32_vk_code, MEO_OPT pipewire_source);
         };
 
         enum class Type
@@ -71,7 +75,7 @@ struct InterfaceData
             MacOS,
             PlayCover,
             Gamepad,
-            WlRoots,
+            Linux,
         };
 
         std::string name;
@@ -82,9 +86,10 @@ struct InterfaceData
         // 是否需要管理员权限（例如某些 Win32 输入方式需要更高权限）
         bool permission_required = false;
 
-        // 分辨率设置，三者互斥
+        // 分辨率设置，四者互斥
         std::optional<int> display_short_side; // 默认720
         std::optional<int> display_long_side;
+        std::optional<std::array<int, 2>> display_expand; // [width, height], Unity Canvas Scaler "Expand" 语义
         bool display_raw = false;
 
         // 附加资源路径，在 resource.path 加载完成后额外加载
@@ -97,7 +102,7 @@ struct InterfaceData
         MacOSConfig macos;
         PlayCoverConfig playcover;
         GamepadConfig gamepad;
-        WlRootsConfig wlroots;
+        LinuxConfig lnx;
 
         MEO_JSONIZATION(
             name,
@@ -107,6 +112,7 @@ struct InterfaceData
             MEO_OPT permission_required,
             MEO_OPT display_short_side,
             MEO_OPT display_long_side,
+            MEO_OPT display_expand,
             MEO_OPT display_raw,
             MEO_OPT attach_resource_path,
             MEO_OPT option,
@@ -114,7 +120,7 @@ struct InterfaceData
             MEO_OPT macos,
             MEO_OPT playcover,
             MEO_OPT gamepad,
-            MEO_OPT wlroots);
+            MEO_OPT lnx);
     };
 
     struct Resource
@@ -302,7 +308,7 @@ struct InterfaceData
         MEO_OPT github,
         controller,
         resource,
-        task,
+        MEO_OPT task,
         MEO_OPT option,
         MEO_OPT agent,
         MEO_OPT global_option,
@@ -380,11 +386,14 @@ struct Configuration
         MEO_JSONIZATION(MEO_OPT _placeholder, MEO_OPT gamepad_type);
     };
 
-    struct WlRootsConfig
+    struct LinuxConfig
     {
         std::string wlr_socket_path;
+        int uinput_screen_width = 0;
+        int uinput_screen_height = 0;
+        std::string eis_socket_path;
 
-        MEO_JSONIZATION(MEO_OPT wlr_socket_path);
+        MEO_JSONIZATION(MEO_OPT wlr_socket_path, MEO_OPT uinput_screen_width, MEO_OPT uinput_screen_height, MEO_OPT eis_socket_path);
     };
 
     struct Option
@@ -411,7 +420,7 @@ struct Configuration
     MacOSConfig macos;
     PlayCoverConfig playcover;
     GamepadConfig gamepad;
-    WlRootsConfig wlroots;
+    LinuxConfig lnx;
     std::string resource;
     std::vector<Task> task;
 
@@ -426,7 +435,7 @@ struct Configuration
         MEO_OPT macos,
         MEO_OPT playcover,
         MEO_OPT gamepad,
-        MEO_OPT wlroots,
+        MEO_OPT lnx,
         resource,
         task,
         MEO_OPT global_option,
@@ -436,11 +445,12 @@ struct Configuration
 
 struct RuntimeParam
 {
-    // 分辨率设置，三者互斥
+    // 分辨率设置，四者互斥
     struct DisplayConfig
     {
         std::optional<int> short_side; // 默认720
         std::optional<int> long_side;
+        std::optional<std::array<int, 2>> expand; // [width, height], Unity Canvas Scaler "Expand" 语义
         bool raw = false;
     };
 
@@ -483,9 +493,15 @@ struct RuntimeParam
         MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_None;
     };
 
-    struct WlRootsParam
+    struct LinuxParam
     {
+        MaaLinuxScreencapMethod screencap = MaaLinuxScreencapMethod_None;
+        MaaLinuxInputMethod input = MaaLinuxInputMethod_None;
+        std::string pipewire_source = "Gamescope";
         std::string wlr_socket_path;
+        int uinput_screen_width = 0;
+        int uinput_screen_height = 0;
+        std::string eis_socket_path;
         bool use_win32_vk_code = false;
     };
 
@@ -505,7 +521,7 @@ struct RuntimeParam
         std::unordered_map<std::string, std::string> env_vars; // v2.5.0: PI_* env vars
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param, MacOSParam, PlayCoverParam, GamepadParam, WlRootsParam> controller_param;
+    std::variant<std::monostate, AdbParam, Win32Param, MacOSParam, PlayCoverParam, GamepadParam, LinuxParam> controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;

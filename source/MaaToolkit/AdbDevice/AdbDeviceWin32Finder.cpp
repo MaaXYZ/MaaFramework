@@ -29,21 +29,21 @@ const AdbDeviceFinder::EmulatorConstDataMap& AdbDeviceWin32Finder::get_emulator_
             .adb_candidate_paths = { "nox_adb.exe"_path },
             .adb_common_serials = { "127.0.0.1:62001", "127.0.0.1:59865" } } },
 
-        { "MuMuPlayer6",
+        { "MuMuPlayer v3",
           { .keyword = "NemuPlayer",
             .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
                                      "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
                                      "adb.exe"_path },
             .adb_common_serials = { "127.0.0.1:7555" } } },
 
-        { "MuMuPlayer12",
+        { "MuMuPlayer v4",
           {
               .keyword = "MuMuPlayer.exe",
               .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
                                        "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
                                        "adb.exe"_path },
           } },
-        { "MuMuPlayer12 v5",
+        { "MuMuPlayer v5+",
           {
               .keyword = "MuMuNxDevice.exe",
               .adb_candidate_paths = { "..\\..\\..\\nx_main\\adb.exe"_path, "adb.exe"_path },
@@ -66,7 +66,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_by_emulator_tool(const Emulato
 {
     LogFunc << VAR(emulator.name);
 
-    if (emulator.name == "MuMuPlayer12" || emulator.name == "MuMuPlayer12 v5") {
+    if (emulator.name == "MuMuPlayer v4" || emulator.name == "MuMuPlayer v5+") {
         return find_mumu_devices(emulator);
     }
     else if (emulator.name == "LDPlayer") {
@@ -74,6 +74,56 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_by_emulator_tool(const Emulato
     }
 
     return { };
+}
+
+namespace
+{
+// EmulatorExtras input requires MuMuManager version >= 6.3.2.0
+bool mumu_supports_extras_input(const std::filesystem::path& mumu_mgr_path)
+{
+    static const std::vector<std::string> version_args = { "version" };
+    ChildPipeIOStream ios(mumu_mgr_path, version_args);
+    std::string output = ios.read();
+    LogDebug << VAR(mumu_mgr_path) << VAR(version_args) << VAR(output);
+
+    struct MumuVersion
+    {
+        std::string version;
+
+        MEO_JSONIZATION(version);
+    };
+
+    // { "version": "6.3.2.0" }
+    auto jopt = json::parse(output);
+    if (!jopt || !jopt->is<MumuVersion>()) {
+        LogWarn << "Parse MuMuManager version failed" << VAR(output);
+        return false;
+    }
+
+    std::string version = jopt->as<MumuVersion>().version;
+    if (version.empty()) {
+        LogWarn << "MuMuManager version field is empty" << VAR(output);
+        return false;
+    }
+
+    static constexpr int kMinVersion[] = { 6, 3, 2, 0 };
+    auto parts = string_split(version, '.');
+    for (size_t n = 0; n < std::size(kMinVersion); ++n) {
+        int value = 0;
+        if (n < parts.size()) {
+            const std::string& part = parts[n];
+            if (part.empty() || !std::ranges::all_of(part, [](unsigned char c) { return std::isdigit(c); })) {
+                LogWarn << "Invalid MuMuManager version" << VAR(version);
+                return false;
+            }
+            value = std::stoi(part);
+        }
+        if (value != kMinVersion[n]) {
+            return value > kMinVersion[n];
+        }
+    }
+    return true;
+}
 }
 
 std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& emulator) const
@@ -107,9 +157,9 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         std::string index;
         std::string name;
         std::string adb_host_ip;
-        int adb_port;
+        int adb_port = 0; // sentinel for absent JSON field, port 0 is reserved
 
-        MEO_JSONIZATION(index, name, adb_host_ip, adb_port);
+        MEO_JSONIZATION(index, name, MEO_OPT adb_host_ip, MEO_OPT adb_port);
     };
 
     json::value& jinfo = *jopt;
@@ -134,25 +184,74 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         return { };
     }
 
+    bool need_adb = info.empty() || std::ranges::any_of(info, [](const MumuInfo& i) { return i.adb_host_ip.empty(); });
+
+    struct MumuAdbInfo
+    {
+        std::string adb_host;
+        int adb_port;
+
+        MEO_JSONIZATION(adb_host, adb_port);
+    };
+
+    json::value jadb;
+    if (need_adb) {
+        static const std::vector<std::string> mumu_adb_args = { "adb", "--vmindex", "all" };
+        ChildPipeIOStream adb_ios(mumu_mgr_path, mumu_adb_args);
+        std::string adb_output = adb_ios.read();
+        LogDebug << VAR(mumu_mgr_path) << VAR(mumu_adb_args) << VAR(adb_output);
+
+        auto adb_jopt = json::parse(adb_output);
+        if (!adb_jopt || !adb_jopt->is_object()) {
+            LogError << "Parse MuMuManager adb failed" << VAR(adb_output);
+            return { };
+        }
+        jadb = std::move(*adb_jopt);
+    }
+
     std::filesystem::path dir;
-    if (emulator.name == "MuMuPlayer12 v5") {
-        // MuMuPlayer12 v5: C:\Program Files\Netease\MuMuPlayer-12.0\nx_device\12.0\shell\MuMuNxDevice.exe
+    if (emulator.name == "MuMuPlayer v5+") {
+        // MuMuPlayer v5+: C:\Program Files\Netease\MuMuPlayer-12.0\nx_device\12.0\shell\MuMuNxDevice.exe
         dir = emulator.process_path.parent_path().parent_path().parent_path().parent_path();
     }
     else {
-        // MuMuPlayer12: C:\Program Files\Netease\MuMuPlayer-12.0\shell\MuMuPlayer.exe
+        // MuMuPlayer v4: C:\Program Files\Netease\MuMuPlayer-12.0\shell\MuMuPlayer.exe
         dir = emulator.process_path.parent_path().parent_path();
     }
 
+    bool extras_input = mumu_supports_extras_input(mumu_mgr_path);
+    LogInfo << "MuMuManager supports extras input" << VAR(extras_input);
+
     std::vector<AdbDevice> result;
     for (const MumuInfo& i : info) {
+        std::string adb_host;
+        int adb_port;
+        if (!i.adb_host_ip.empty() && i.adb_port > 0) {
+            adb_host = i.adb_host_ip;
+            adb_port = i.adb_port;
+        }
+        else if (jadb.is<MumuAdbInfo>()) {
+            auto a = jadb.as<MumuAdbInfo>();
+            adb_host = a.adb_host;
+            adb_port = a.adb_port;
+        }
+        else if (jadb.contains(i.index) && jadb[i.index].is<MumuAdbInfo>()) {
+            auto a = jadb[i.index].as<MumuAdbInfo>();
+            adb_host = a.adb_host;
+            adb_port = a.adb_port;
+        }
+        else {
+            LogDebug << "No adb info for index" << VAR(i.index);
+            continue;
+        }
+
         AdbDevice device;
         device.name = std::format("{}-{}", i.name, emulator.name);
         device.adb_path = emulator.adb_path;
-        device.serial = std::format("{}:{}", i.adb_host_ip, i.adb_port);
+        device.serial = std::format("{}:{}", adb_host, adb_port);
 
         device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
-        device.input_methods = MaaAdbInputMethod_Default;
+        device.input_methods = extras_input ? (MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras) : MaaAdbInputMethod_Default;
 
         int index = 0;
         if (std::ranges::all_of(i.index, [](unsigned char c) { return std::isdigit(c); })) {

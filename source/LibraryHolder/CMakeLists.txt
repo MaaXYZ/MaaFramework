@@ -51,4 +51,8 @@ if(WITH_WLROOTS_CONTROLLER)
     add_dependencies(LibraryHolder MaaWlRootsControlUnit)
 endif()
 
+if(WITH_KWIN_CONTROLLER)
+    add_dependencies(LibraryHolder MaaKWinControlUnit)
+endif()
+
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${library_holder_src})

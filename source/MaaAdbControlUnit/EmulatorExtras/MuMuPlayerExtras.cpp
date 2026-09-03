@@ -573,7 +573,10 @@ int MuMuPlayerExtras::get_display_id()
         return 0;
     }
 
-    mumu_display_id_cache_ = display_id;
+    // only cache display_id when app_package is set, otherwise it may change when app is started/stopped
+    if (!mumu_app_package_.empty()) {
+        mumu_display_id_cache_ = display_id;
+    }
     return display_id;
 }
 

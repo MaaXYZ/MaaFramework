@@ -150,6 +150,7 @@ declare global {
 
             set screenshot_target_long_side(value: number)
             set screenshot_target_short_side(value: number)
+            set screenshot_target_expand(value: [number, number])
             set screenshot_use_raw_size(value: boolean)
             set screenshot_resize_method(value: number)
 
@@ -310,6 +311,15 @@ declare global {
 
         type WlRootsCompositor = [handle: DesktopHandle, class_name: string, window_name: string]
 
+        type GamescopeInstance = [
+            display_no: number,
+            pipewire_node_id: number,
+            eis_socket_path: string,
+        ]
+
+        /**
+         * @deprecated Use LinuxController instead.
+         */
         class WlRootsController extends Controller {
             /**
              * @param wlr_socket_path Wayland socket path (e.g. "/run/user/1000/wayland-0")
@@ -320,6 +330,89 @@ declare global {
             constructor(wlr_socket_path: string, use_win32_vk_code?: boolean)
 
             static find(): Promise<WlRootsCompositor[] | null>
+        }
+
+        /**
+         * @deprecated Use LinuxController instead.
+         */
+        class KWinController extends Controller {
+            /**
+             * @param device_node uinput device path (e.g. "/dev/uinput")
+             * @param screen_width Screen width in pixels
+             * @param screen_height Screen height in pixels
+             * @param use_win32_vk_code When true, key codes passed to click_key / key_down / key_up are
+             *   interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes internally.
+             *   Defaults to false (raw evdev codes).
+             */
+            constructor(
+                device_node: string,
+                screen_width: number,
+                screen_height: number,
+                use_win32_vk_code?: boolean,
+            )
+        }
+
+        /**
+         * Linux controller for native Linux applications.
+         *
+         * Configurable screencap and input methods via JSON config.
+         * Supports Wlroots (Wayland), PipeWire / xdg-desktop-portal, and UInput.
+         */
+        class LinuxController extends Controller {
+            /**
+             * @param config JSON config for the control unit. Required fields:
+             *   - screencap_method: screencap method to use.
+             *   - input_method: input method to use.
+             *
+             *   Wlroots required fields:
+             *   - wlr_socket_path: wayland socket path (e.g. "/run/user/1000/wayland-0").
+             *
+             *   PipeWire monitor capture (via xdg-desktop-portal):
+             *   - pw_socket_fd: The PipeWire socket FD (from the ScreenCast portal).
+             *   - pw_node_id: The PipeWire Node ID.
+             *
+             *   PipeWire session-daemon node capture (gamescope etc.):
+             *   - pw_node_id: attach to a session-daemon node directly; discover the node
+             *     with find_gamescope_instances().
+             *
+             *   UInput optional fields:
+             *   - uinput_path: The uinput device node path, default is "/dev/uinput".
+             *   - uinput_screen_width / uinput_screen_height: screen size for the uinput
+             *     absolute axis range.
+             *
+             *   Libei (EIS) required fields:
+             *   - eis_socket_path: the EIS socket path, e.g. "/run/user/1000/gamescope-0-ei".
+             *
+             *   Optional fields:
+             *   - use_win32_vk_code: If true, key codes passed to click_key / key_down / key_up are
+             *     interpreted as Win32 Virtual-Key codes (VK_*) and translated to Linux evdev codes
+             *     internally. If false, key codes are passed through as raw evdev codes.
+             */
+            constructor(config: string)
+
+            /**
+             * Create a PortalHelper for the PipeWire screencap method.
+             *
+             * Opens a xdg-desktop-portal ScreenCast session and exposes the resulting PipeWire
+             * FD and node ID, which can be fed into the LinuxController config
+             * (`pw_socket_fd` / `pw_node_id`).
+             */
+            static create_portal_helper(): PortalHelper
+
+            /**
+             * Find running gamescope instances.
+             *
+             * Scans $XDG_RUNTIME_DIR (falling back to /run/user/<uid>) for
+             * `gamescope-<n>` named Wayland sockets; each instance's PipeWire node ID
+             * is queried via the gamescope_pipewire protocol, and the EIS socket path
+             * is derived as `gamescope-<n>-ei`. Stale sockets that cannot be connected
+             * are discarded; a connected instance without PipeWire has node id 0.
+             *
+             * @returns instances sorted by display number, or null if the query failed
+             */
+            static find_gamescope_instances(): Promise<GamescopeInstance[] | null>
+
+            static find_wlr_compositor(): Promise<WlRootsCompositor[] | null>
         }
 
         interface CustomControllerActor {

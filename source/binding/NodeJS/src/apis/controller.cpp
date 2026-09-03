@@ -11,6 +11,7 @@
 #include "buffer.h"
 #include "callback.h"
 #include "ext.h"
+#include "portal.h"
 
 namespace
 {
@@ -122,6 +123,14 @@ void ControllerImpl::set_screenshot_target_short_side(int32_t value)
 {
     if (!MaaControllerSetOption(controller, MaaCtrlOption_ScreenshotTargetShortSide, &value, sizeof(value))) {
         throw maajs::MaaError { "Controller set screenshot_target_short_side failed" };
+    }
+}
+
+void ControllerImpl::set_screenshot_target_expand(std::tuple<int32_t, int32_t> value)
+{
+    int32_t arr[2] = { std::get<0>(value), std::get<1>(value) };
+    if (!MaaControllerSetOption(controller, MaaCtrlOption_ScreenshotTargetExpand, arr, sizeof(arr))) {
+        throw maajs::MaaError { "Controller set screenshot_target_expand failed" };
     }
 }
 
@@ -372,6 +381,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "remove_sink", ControllerImpl::remove_sink);
     MAA_BIND_SETTER(proto, "screenshot_target_long_side", ControllerImpl::set_screenshot_target_long_side);
     MAA_BIND_SETTER(proto, "screenshot_target_short_side", ControllerImpl::set_screenshot_target_short_side);
+    MAA_BIND_SETTER(proto, "screenshot_target_expand", ControllerImpl::set_screenshot_target_expand);
     MAA_BIND_SETTER(proto, "screenshot_use_raw_size", ControllerImpl::set_screenshot_use_raw_size);
     MAA_BIND_SETTER(proto, "screenshot_resize_method", ControllerImpl::set_screenshot_resize_method);
     MAA_BIND_FUNC(proto, "clear_sinks", ControllerImpl::clear_sinks);
@@ -732,6 +742,11 @@ WlRootsControllerImpl* WlRootsControllerImpl::ctor(const maajs::CallbackInfo& in
 
 maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
 {
+    return LinuxControllerImpl::find_wlr_compositor(env);
+}
+
+maajs::PromiseType LinuxControllerImpl::find_wlr_compositor(maajs::EnvType env)
+{
 #ifdef MAA_JS_WITH_TOOLKIT
     using Result = std::optional<std::vector<WlRootsCompositor>>;
     auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
@@ -760,8 +775,104 @@ maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
     return worker->Promise();
 #else
     std::ignore = env;
-    throw_toolkit_unavailable("WlRootsController.find");
+    throw_toolkit_unavailable("LinuxController.find_wlr_compositor");
 #endif
+}
+
+maajs::PromiseType LinuxControllerImpl::find_gamescope_instances(maajs::EnvType env)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    using Result = std::optional<std::vector<GamescopeInstance>>;
+    auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
+        auto lst = MaaToolkitGamescopeInstanceListCreate();
+        if (!MaaToolkitGamescopeInstanceFindAll(lst)) {
+            MaaToolkitGamescopeInstanceListDestroy(lst);
+            return std::nullopt;
+        }
+
+        std::vector<GamescopeInstance> result;
+        auto size = MaaToolkitGamescopeInstanceListSize(lst);
+        result.reserve(size);
+        for (size_t i = 0; i < size; i++) {
+            auto instance = MaaToolkitGamescopeInstanceListAt(lst, i);
+            result.push_back(
+                std::make_tuple(
+                    MaaToolkitGamescopeInstanceGetDisplayNo(instance),
+                    MaaToolkitGamescopeInstanceGetPipeWireNodeId(instance),
+                    std::string(MaaToolkitGamescopeInstanceGetEisSocketPath(instance))));
+        }
+        MaaToolkitGamescopeInstanceListDestroy(lst);
+
+        return result;
+    });
+    worker->Queue();
+    return worker->Promise();
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("LinuxController.find_gamescope_instances");
+#endif
+}
+
+KWinControllerImpl* KWinControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [device_node, screen_width, screen_height, use_win32_vk_code] = maajs::UnWrapArgs<KWinControllerCtorParam, void>(info);
+    auto ctrl = MaaKWinControllerCreate(device_node.c_str(), screen_width, screen_height, use_win32_vk_code.value_or(false));
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new KWinControllerImpl(ctrl, true);
+}
+
+void KWinControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+{
+}
+
+maajs::ValueType load_kwin_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<KWinControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->kwinControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
+LinuxControllerImpl* LinuxControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [config_json] = maajs::UnWrapArgs<LinuxControllerCtorParam, void>(info);
+    auto ctrl = MaaLinuxControllerCreate(config_json.c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new LinuxControllerImpl(ctrl, true);
+}
+
+maajs::ValueType LinuxControllerImpl::create_portal_helper(maajs::EnvType env)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    return maajs::CallCtorHelper(*ExtContext::get(env)->portalHelperCtor);
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("LinuxController.create_portal_helper");
+#endif
+}
+
+void LinuxControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
+{
+    MAA_BIND_FUNC(ctor, "find_wlr_compositor", find_wlr_compositor);
+    MAA_BIND_FUNC(ctor, "find_gamescope_instances", find_gamescope_instances);
+    MAA_BIND_FUNC(ctor, "create_portal_helper", create_portal_helper);
+}
+
+maajs::ValueType load_linux_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<LinuxControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->linuxControllerCtor = maajs::PersistentFunction(ctor);
+#ifdef MAA_JS_WITH_TOOLKIT
+    maajs::FunctionType helper_ctor;
+    maajs::NativeClass<PortalHelperImpl>::init(env, helper_ctor);
+    ExtContext::get(env)->portalHelperCtor = maajs::PersistentFunction(helper_ctor);
+#endif
+    return ctor;
 }
 
 void WlRootsControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)

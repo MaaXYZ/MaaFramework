@@ -40,13 +40,13 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource, ResourceEventSink
-from maa.controller import DbgController, CustomController, Win32Controller, ControllerEventSink
+from maa.controller import DbgController, CustomController, Win32Controller, KWinController, ControllerEventSink
 from maa.tasker import Tasker, TaskerEventSink
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.buffer import ImageBuffer
-from maa.define import LoggingLevelEnum
+from maa.define import LoggingLevelEnum, MaaWin32InputMethodEnum
 from maa.context import Context, ContextEventSink
 from maa.event_sink import EventSink
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
@@ -130,6 +130,18 @@ class MyRecognition(CustomRecognition):
             JActionType.Click, JClick(), (100, 100, 50, 50), ""
         )
         print(f"  action_direct_detail: {action_direct_detail}")
+
+        # 失败动作也应保留 action_id 和动作类型，便于关联失败事件
+        failed_action_detail = context.run_action_direct(
+            JActionType.Click,
+            JClick(target="__missing_target__"),
+            (100, 100, 50, 50),
+            "",
+        )
+        assert failed_action_detail is not None
+        assert failed_action_detail.action_id != 0
+        assert failed_action_detail.action == JActionType.Click
+        assert not failed_action_detail.success
 
         # 测试 clone 和 override
         new_ctx = context.clone()
@@ -276,8 +288,40 @@ def test_resource_api():
     # 测试自定义识别/动作注册
     my_reco = MyRecognition()
     my_action = MyAction()
-    resource.register_custom_recognition("MyRec", my_reco)
-    resource.register_custom_action("MyAct", my_action)
+    assert resource.register_custom_recognition("MyRec", my_reco)
+    assert resource.register_custom_action("MyAct", my_action)
+
+    duplicate_reco = MyRecognition()
+    duplicate_action = MyAction()
+    assert not resource.register_custom_recognition("MyRec", duplicate_reco)
+    assert not resource.register_custom_action("MyAct", duplicate_action)
+    assert not resource.register_custom_action("MyRec", duplicate_action)
+    assert not resource.register_custom_recognition("MyAct", duplicate_reco)
+    assert resource._custom_recognition_holder["MyRec"] is my_reco
+    assert resource._custom_action_holder["MyAct"] is my_action
+    assert resource.register_custom_recognition("CaseSensitive", MyRecognition())
+    assert resource.register_custom_action("casesensitive", MyAction())
+    assert not resource.register_custom_recognition("", MyRecognition())
+    assert not resource.register_custom_action("", MyAction())
+
+    try:
+        resource.custom_recognition("MyAct")(MyRecognition)
+        assert False, "duplicate custom decorator should raise RuntimeError"
+    except RuntimeError as error:
+        assert str(error) == "Custom name is already registered: 'MyAct'"
+
+    try:
+        resource.custom_action("MyRec")(MyAction)
+        assert False, "duplicate custom decorator should raise RuntimeError"
+    except RuntimeError as error:
+        assert str(error) == "Custom name is already registered: 'MyRec'"
+
+    for custom_decorator in [resource.custom_recognition, resource.custom_action]:
+        try:
+            custom_decorator("")
+            assert False, "empty custom name should raise ValueError"
+        except ValueError as error:
+            assert str(error) == "Custom name must not be empty"
 
     # 测试 custom_recognition_list 和 custom_action_list
     reco_list = resource.custom_recognition_list
@@ -300,8 +344,8 @@ def test_resource_api():
     assert "MyAct" not in action_list_after, "MyAct should be unregistered"
 
     # 重新注册用于后续测试
-    resource.register_custom_recognition("MyRec", my_reco)
-    resource.register_custom_action("MyAct", my_action)
+    assert resource.register_custom_recognition("MyRec", my_reco)
+    assert resource.register_custom_action("MyAct", my_action)
 
     # 测试 override_pipeline (resource 级别)
     # 先创建被引用的节点
@@ -472,7 +516,8 @@ def test_tasker_api(resource: Resource, controller: DbgController):
     # 测试全局选项 (静态方法)
     Tasker.set_save_draw(True)
     Tasker.set_stdout_level(LoggingLevelEnum.All)
-    Tasker.set_log_dir("debug")
+    log_dir = install_dir / "bin" / "debug" / "新建文件夹"
+    assert Tasker.set_log_dir(log_dir)
     Tasker.set_debug_mode(True)
     Tasker.set_save_on_error(True)
     Tasker.set_draw_quality(85)
@@ -740,6 +785,11 @@ def test_toolkit():
     for win in desktop[:3]:
         print(f"    - {win.window_name[:30] if win.window_name else '(no name)'}")
 
+    instances = Toolkit.find_gamescope_instances()
+    print(f"  gamescope instances: {len(instances)}")
+    for inst in instances[:3]:
+        print(f"    - display_no={inst.display_no} node_id={inst.pipewire_node_id} eis={inst.eis_socket_path}")
+
     print("  PASS: toolkit")
 
 
@@ -834,6 +884,52 @@ def test_win32_relative_move():
     print("  PASS: win32 relative_move")
 
 
+def test_kwin_controller_create():
+    print("\n=== test_kwin_controller_create ===")
+
+    # KWinController 仅在 Linux 上可用，且需要 MaaKWinControllerCreate API 存在
+    try:
+        controller = KWinController(
+            device_node="/dev/uinput",
+            screen_width=1920,
+            screen_height=1080,
+            use_win32_vk_code=False,
+        )
+        print(f"  KWinController created: {controller}")
+
+        # 检查连接前状态
+        print(f"  connected: {controller.connected}")
+        print(f"  uuid: {controller.uuid}")
+        print(f"  info: {controller.info}")
+
+        # 验证 info 中的类型
+        info = controller.info
+        assert isinstance(info, dict), "info should be a dict"
+        assert "type" in info, "info should contain 'type'"
+        assert info["type"] == "KWin", "KWin controller type should be 'KWin'"
+
+        # 测试 post_inactive (空操作，应总是成功)
+        controller.post_inactive().wait()
+
+        print("  PASS: KWinController creation")
+
+    except RuntimeError as e:
+        # KWin 控制器创建可能因 API 缺失或缺少 /dev/uinput 权限等环境问题失败
+        print(f"  SKIP: KWinController not available in this environment ({e})")
+
+
+def test_win32_interception_enum():
+    print("\n=== test_win32_interception_enum ===")
+    assert int(MaaWin32InputMethodEnum.Interception) == 1 << 9
+    print("  PASS: win32 interception enum")
+
+
+def test_win32_anchored_touch_enum():
+    print("\n=== test_win32_anchored_touch_enum ===")
+    assert int(MaaWin32InputMethodEnum.AnchoredTouch) == 1 << 10
+    print("  PASS: win32 anchored touch enum")
+
+
 # ============================================================================
 # 主入口
 # ============================================================================
@@ -866,6 +962,15 @@ if __name__ == "__main__":
 
     # 测试 Win32 relative_move 正路径
     test_win32_relative_move()
+
+    # 测试 KWinController 创建
+    test_kwin_controller_create()
+
+    # 测试 Win32 Interception 枚举导出
+    test_win32_interception_enum()
+
+    # 测试 Win32 AnchoredTouch 枚举导出
+    test_win32_anchored_touch_enum()
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")

@@ -30,13 +30,8 @@ std::vector<DesktopWindow> DesktopWindowMacOSFinder::find_all() const
                 return;
             }
 
-            // 枚举所有窗口
+            // 枚举所有窗口（包括其他 Space 的全屏窗口）
             for (SCWindow* window in content.windows) {
-                // 跳过不可见的窗口
-                if (!window.isOnScreen) {
-                    continue;
-                }
-
                 std::wstring class_name;
                 if (window.owningApplication) {
                     NSString* bundleId = window.owningApplication.bundleIdentifier ? window.owningApplication.bundleIdentifier : @"";

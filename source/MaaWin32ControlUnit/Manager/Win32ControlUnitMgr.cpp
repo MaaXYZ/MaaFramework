@@ -5,8 +5,13 @@
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Time.hpp"
+#include "MaaUtils/Encoding.h"
 
+#include <tlhelp32.h>
+
+#include "Input/AnchoredTouchInput.h"
 #include "Input/BackgroundManagedKeyInput.h"
+#include "Input/InterceptionInput.h"
 #include "Input/LegacyEventInput.h"
 #include "Input/MessageInput.h"
 #include "Input/SeizeInput.h"
@@ -39,6 +44,8 @@ bool Win32ControlUnitMgr::connect()
 {
     connected_ = false;
     screencap_.reset();
+    mouse_.reset();
+    keyboard_.reset();
 
 #ifndef MAA_WIN32_COMPATIBLE
     // 设置 Per-Monitor DPI Aware V2，确保 GetClientRect/GetWindowRect 等 API 返回物理像素。
@@ -154,11 +161,25 @@ std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(MaaWin32InputMethod m
     case MaaWin32InputMethod_SendMessageWithWindowPos:
         return std::make_shared<MessageInput>(
             hwnd_,
-            MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_window_pos = true, .block_input = false });
+            MessageInput::Config {
+                .mode = MessageInput::Mode::SendMessage,
+                .with_window_pos = true,
+                .track_hardware_mouse = false,
+                .block_input = false,
+            });
     case MaaWin32InputMethod_PostMessageWithWindowPos:
         return std::make_shared<MessageInput>(
             hwnd_,
-            MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_window_pos = true, .block_input = false });
+            MessageInput::Config {
+                .mode = MessageInput::Mode::PostMessage,
+                .with_window_pos = true,
+                .track_hardware_mouse = false,
+                .block_input = false,
+            });
+    case MaaWin32InputMethod_Interception:
+        return std::make_shared<InterceptionInput>(hwnd_);
+    case MaaWin32InputMethod_AnchoredTouch:
+        return std::make_shared<AnchoredTouchInput>(hwnd_);
     default:
         LogError << "Unknown input method: " << static_cast<int>(method);
         return nullptr;
@@ -247,18 +268,146 @@ MaaControllerFeature Win32ControlUnitMgr::get_features() const
 
 bool Win32ControlUnitMgr::start_app(const std::string& intent)
 {
-    // TODO
-    std::ignore = intent;
+    LogFunc << VAR(intent);
 
-    return false;
+    if (intent.empty()) {
+        LogError << "intent is empty";
+        return false;
+    }
+
+    std::wstring cmd = MAA_NS::to_u16(intent);
+
+    STARTUPINFOW si;
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+
+    if (CreateProcessW(nullptr, cmd.data(), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi)) {
+        LogInfo << "CreateProcessW succeeded, PID:" << pi.dwProcessId;
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+        return true;
+    }
+
+    DWORD err = GetLastError();
+    if (err != ERROR_ELEVATION_REQUIRED) {
+        LogError << "CreateProcessW failed, error:" << err;
+        return false;
+    }
+    LogInfo << "Elevation required. Falling back to ShellExecuteExW...";
+    std::wstring file = cmd;
+    std::wstring args;
+    // Parse
+    if (cmd[0] == L'\"') {
+        auto pos = cmd.find(L'\"', 1);
+        if (pos == std::wstring::npos) {
+            LogError << "Mismatched quotes in command, cannot parse file and arguments";
+            return false;
+        }
+        file = cmd.substr(1, pos - 1);
+        if (pos + 1 < cmd.length()) {
+            args = cmd.substr(pos + 1);
+            args.erase(0, args.find_first_not_of(L" \t"));
+        }
+    } else if (auto pos = cmd.find(L' '); pos != std::wstring::npos) {
+        file = cmd.substr(0, pos);
+        args = cmd.substr(pos + 1);
+        args.erase(0, args.find_first_not_of(L" \t"));
+    }
+    // execute
+    SHELLEXECUTEINFOW sei = { sizeof(sei) };
+    sei.fMask = SEE_MASK_NOCLOSEPROCESS;
+    sei.lpVerb = L"runas";
+    sei.lpFile = file.c_str();
+    sei.lpParameters = args.empty() ? nullptr : args.c_str();
+    sei.nShow = SW_SHOWNORMAL;
+    if (!ShellExecuteExW(&sei)) {
+        LogError << "ShellExecuteExW failed, error:" << GetLastError();
+        return false;
+    }
+    LogInfo << "ShellExecuteExW succeeded.";
+    if (sei.hProcess) {
+        CloseHandle(sei.hProcess);
+    }
+    return true;
 }
 
 bool Win32ControlUnitMgr::stop_app(const std::string& intent)
 {
-    // TODO
-    std::ignore = intent;
+    LogFunc << VAR(intent);
 
-    return false;
+    if (intent.empty()) {
+        if (!hwnd_ || !IsWindow(hwnd_)) {
+            LogError << "hwnd_ is invalid and intent is empty";
+            return false;
+        }
+
+        DWORD processId = 0;
+        GetWindowThreadProcessId(hwnd_, &processId);
+        if (processId == 0) {
+            LogError << "GetWindowThreadProcessId failed, error:" << GetLastError();
+            return false;
+        }
+
+        HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, processId);
+        if (!hProcess) {
+            LogError << "OpenProcess failed, error:" << GetLastError();
+            return false;
+        }
+
+        if (!TerminateProcess(hProcess, 0)) {
+            LogError << "TerminateProcess failed, error:" << GetLastError();
+            CloseHandle(hProcess);
+            return false;
+        }
+
+        CloseHandle(hProcess);
+        LogInfo << "Process" << processId << "terminated successfully by hwnd";
+        return true;
+    }
+
+    std::wstring target_exe = MAA_NS::to_u16(intent);
+    HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnap == INVALID_HANDLE_VALUE) {
+        LogError << "CreateToolhelp32Snapshot failed, error:" << GetLastError();
+        return false;
+    }
+
+    PROCESSENTRY32W pe;
+    pe.dwSize = sizeof(pe);
+    bool terminated_any = false;
+
+    if (!Process32FirstW(hSnap, &pe)) {
+        LogError << "Process32FirstW failed, error:" << GetLastError();
+        CloseHandle(hSnap);
+        return false;
+    }
+
+    do {
+        if (target_exe != pe.szExeFile) {
+            continue;
+        }
+
+        HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe.th32ProcessID);
+        if (!hProcess) {
+            LogError << "OpenProcess failed for PID" << pe.th32ProcessID << "error:" << GetLastError();
+            continue;
+        }
+
+        if (TerminateProcess(hProcess, 0)) {
+            LogInfo << "Process" << pe.th32ProcessID << "terminated successfully by intent matching";
+            terminated_any = true;
+        } else {
+            LogError << "TerminateProcess failed for PID" << pe.th32ProcessID << "error:" << GetLastError();
+        }
+
+        CloseHandle(hProcess);
+
+    } while (Process32NextW(hSnap, &pe));
+    CloseHandle(hSnap);
+
+    return terminated_any;
 }
 
 bool Win32ControlUnitMgr::screencap(cv::Mat& image)

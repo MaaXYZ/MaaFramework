@@ -35,6 +35,7 @@ struct ControllerImpl : public maajs::NativeClassBase
     void clear_sinks();
     void set_screenshot_target_long_side(int32_t value);
     void set_screenshot_target_short_side(int32_t value);
+    void set_screenshot_target_expand(std::tuple<int32_t, int32_t> value);
     void set_screenshot_use_raw_size(bool value);
     void set_screenshot_resize_method(int32_t value);
     maajs::ValueType post_connection(maajs::ValueType self, maajs::EnvType env);
@@ -200,6 +201,8 @@ struct GamepadControllerImpl : public ControllerImpl
 using WlRootsCompositor = std::tuple<uint64_t, std::string, std::string>;
 using WlRootsControllerCtorParam = std::tuple<std::string, maajs::OptionalParam<bool>>;
 
+using GamescopeInstance = std::tuple<uint32_t, uint32_t, std::string>;
+
 struct WlRootsControllerImpl : public ControllerImpl
 {
     using ControllerImpl::ControllerImpl;
@@ -209,6 +212,36 @@ struct WlRootsControllerImpl : public ControllerImpl
     constexpr static char name[] = "WlRootsController";
 
     static WlRootsControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
+using KWinControllerCtorParam = std::tuple<std::string, int, int, maajs::OptionalParam<bool>>;
+
+struct KWinControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    constexpr static char name[] = "KWinController";
+
+    static KWinControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
+using LinuxControllerCtorParam = std::tuple<std::string>;
+
+struct LinuxControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    static maajs::PromiseType find_wlr_compositor(maajs::EnvType env);
+
+    static maajs::PromiseType find_gamescope_instances(maajs::EnvType env);
+
+    static maajs::ValueType create_portal_helper(maajs::EnvType env);
+
+    constexpr static char name[] = "LinuxController";
+
+    static LinuxControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 

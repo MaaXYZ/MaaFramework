@@ -1,11 +1,9 @@
 import ctypes
 import json
-from abc import ABC
-from typing import Tuple
 from enum import IntEnum
+from typing import Any
 
 from .define import MaaEventCallback
-
 
 # class NotificationEvent(IntEnum):
 #     ResourceLoading = 1
@@ -35,16 +33,17 @@ class NotificationType(IntEnum):
     Failed = 3
 
 
-class EventSink(ABC):
+class EventSink:
     """事件监听器基类 / Event sink base class
 
-    用于接收 MaaFramework 各种事件回调的抽象基类。
+    用于接收 MaaFramework 各种事件回调的基类。
     派生类包括 ResourceEventSink、ControllerEventSink、TaskerEventSink、ContextEventSink。
-    Abstract base class for receiving various event callbacks from MaaFramework.
-    Derived classes include ResourceEventSink, ControllerEventSink, TaskerEventSink, ContextEventSink.
+    Base class for receiving various event callbacks from MaaFramework.
+    Derived classes include ResourceEventSink, ControllerEventSink, TaskerEventSink,
+    ContextEventSink.
     """
 
-    def on_unknown_notification(self, instance, msg: str, details: dict):
+    def on_unknown_notification(self, instance: Any, msg: str, details: dict[str, Any]) -> None:
         """处理未知类型的通知 / Handle unknown notification
 
         当收到无法识别的通知时调用。
@@ -57,11 +56,11 @@ class EventSink(ABC):
         """
         pass
 
-    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
+    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict[str, Any]) -> None:
         pass
 
     @property
-    def c_callback(self) -> MaaEventCallback:
+    def c_callback(self) -> Any:
         return self._c_sink_agent
 
     @property
@@ -71,7 +70,7 @@ class EventSink(ABC):
     @staticmethod
     def _gen_c_param(
         sink: "EventSink",
-    ) -> Tuple[MaaEventCallback, ctypes.c_void_p]:
+    ) -> tuple[Any, ctypes.c_void_p]:
         return sink.c_callback, sink.c_callback_arg
 
     @staticmethod
@@ -89,15 +88,13 @@ class EventSink(ABC):
     @MaaEventCallback
     def _c_sink_agent(
         handle: ctypes.c_void_p,
-        msg: ctypes.c_char_p,
-        details_json: ctypes.c_char_p,
+        msg: bytes,
+        details_json: bytes,
         callback_arg: ctypes.c_void_p,
-    ):
+    ) -> None:
         if not callback_arg:
             return
 
         self: EventSink = ctypes.cast(callback_arg, ctypes.py_object).value
 
-        self._on_raw_notification(
-            handle, msg.decode(), json.loads(details_json.decode())
-        )
+        self._on_raw_notification(handle, msg.decode(), json.loads(details_json.decode()))

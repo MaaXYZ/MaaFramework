@@ -1,10 +1,11 @@
 import json
 from dataclasses import dataclass, field
-from typing import Any, List, Optional, Tuple, Union, Dict
+from typing import Any, Optional, Union, cast
+
 from strenum import StrEnum
 
 # Type aliases to match C++ std::variant types
-JRect = Tuple[int, int, int, int]  # std::array<int, 4>
+JRect = tuple[int, int, int, int]  # std::array<int, 4>
 JTarget = Union[bool, str, JRect]  # std::variant<bool, std::string, JRect>
 
 
@@ -55,10 +56,10 @@ class JDirectHit:
 
 @dataclass
 class JTemplateMatch:
-    template: List[str]  # 必选
+    template: list[str]  # 必选
     roi: JTarget = (0, 0, 0, 0)
     roi_offset: JRect = (0, 0, 0, 0)
-    threshold: List[float] = field(default_factory=lambda: [0.7])
+    threshold: list[float] = field(default_factory=lambda: [0.7])
     order_by: str = "Horizontal"
     index: int = 0
     method: int = 5
@@ -67,7 +68,7 @@ class JTemplateMatch:
 
 @dataclass
 class JFeatureMatch:
-    template: List[str]  # 必选
+    template: list[str]  # 必选
     roi: JTarget = (0, 0, 0, 0)
     roi_offset: JRect = (0, 0, 0, 0)
     detector: str = "SIFT"
@@ -80,8 +81,8 @@ class JFeatureMatch:
 
 @dataclass
 class JColorMatch:
-    lower: List[List[int]]  # 必选
-    upper: List[List[int]]  # 必选
+    lower: list[list[int]]  # 必选
+    upper: list[list[int]]  # 必选
     roi: JTarget = (0, 0, 0, 0)
     roi_offset: JRect = (0, 0, 0, 0)
     order_by: str = "Horizontal"
@@ -93,11 +94,11 @@ class JColorMatch:
 
 @dataclass
 class JOCR:
-    expected: List[str] = field(default_factory=list)
+    expected: list[str] = field(default_factory=lambda: [])
     roi: JTarget = (0, 0, 0, 0)
     roi_offset: JRect = (0, 0, 0, 0)
     threshold: float = 0.3
-    replace: List[List[str]] = field(default_factory=list)
+    replace: list[list[str]] = field(default_factory=lambda: [])
     order_by: str = "Horizontal"
     index: int = 0
     only_rec: bool = False
@@ -108,10 +109,10 @@ class JOCR:
 @dataclass
 class JNeuralNetworkClassify:
     model: str  # 必选
-    expected: List[int] = field(default_factory=list)
+    expected: list[int] = field(default_factory=lambda: [])
     roi: JTarget = (0, 0, 0, 0)
     roi_offset: JRect = (0, 0, 0, 0)
-    labels: List[str] = field(default_factory=list)
+    labels: list[str] = field(default_factory=lambda: [])
     order_by: str = "Horizontal"
     index: int = 0
 
@@ -119,11 +120,11 @@ class JNeuralNetworkClassify:
 @dataclass
 class JNeuralNetworkDetect:
     model: str  # 必选
-    expected: List[int] = field(default_factory=list)
+    expected: list[int] = field(default_factory=lambda: [])
     roi: JTarget = (0, 0, 0, 0)
     roi_offset: JRect = (0, 0, 0, 0)
-    labels: List[str] = field(default_factory=list)
-    threshold: List[float] = field(default_factory=lambda: [0.3])
+    labels: list[str] = field(default_factory=lambda: [])
+    threshold: list[float] = field(default_factory=lambda: [0.3])
     order_by: str = "Horizontal"
     index: int = 0
 
@@ -141,7 +142,7 @@ class JAnd:
     # all_of: List of sub-recognitions. Each element can be:
     #   - str: node name reference (uses that node's recognition params)
     #   - dict/object: inline recognition definition
-    all_of: List[Any] = field(default_factory=list)
+    all_of: list[Any] = field(default_factory=lambda: [])
     box_index: int = 0
 
 
@@ -150,7 +151,7 @@ class JOr:
     # any_of: List of sub-recognitions. Each element can be:
     #   - str: node name reference (uses that node's recognition params)
     #   - dict/object: inline recognition definition
-    any_of: List[Any] = field(default_factory=list)
+    any_of: list[Any] = field(default_factory=lambda: [])
 
 
 # Recognition parameter union type
@@ -196,10 +197,10 @@ class JSwipe:
     starting: int = 0  # MultiSwipe 中使用
     begin: JTarget = True
     begin_offset: JRect = (0, 0, 0, 0)
-    end: List[JTarget] = field(default_factory=lambda: [True])
-    end_offset: List[JRect] = field(default_factory=lambda: [(0, 0, 0, 0)])
-    end_hold: List[int] = field(default_factory=lambda: [0])
-    duration: List[int] = field(default_factory=lambda: [200])
+    end: list[JTarget] = field(default_factory=lambda: [True])
+    end_offset: list[JRect] = field(default_factory=lambda: [(0, 0, 0, 0)])
+    end_hold: list[int] = field(default_factory=lambda: [0])
+    duration: list[int] = field(default_factory=lambda: [200])
     only_hover: bool = False
     contact: int = 0
     pressure: int = 1
@@ -207,7 +208,7 @@ class JSwipe:
 
 @dataclass
 class JMultiSwipe:
-    swipes: List[JSwipe]
+    swipes: list[JSwipe]
 
 
 @dataclass
@@ -225,12 +226,12 @@ class JTouchUp:
 
 @dataclass
 class JClickKey:
-    key: List[int]
+    key: list[int]
 
 
 @dataclass
 class JLongPressKey:
-    key: List[int]  # 必选
+    key: list[int]  # 必选
     duration: int = 1000
 
 
@@ -270,7 +271,7 @@ class JScroll:
 @dataclass
 class JCommand:
     exec: str  # 必选
-    args: List[str] = field(default_factory=list)
+    args: list[str] = field(default_factory=lambda: [])
     detach: bool = False
 
 
@@ -354,11 +355,11 @@ class JWaitFreezes:
 class JPipelineData:
     recognition: JRecognition  # 必选
     action: JAction  # 必选
-    next: List[JNodeAttr] = field(default_factory=list)
+    next: list[JNodeAttr] = field(default_factory=lambda: [])
     rate_limit: int = 1000
     timeout: int = 20000
-    on_error: List[JNodeAttr] = field(default_factory=list)
-    anchor: Dict[str, str] = field(default_factory=dict)
+    on_error: list[JNodeAttr] = field(default_factory=lambda: [])
+    anchor: dict[str, str] = field(default_factory=lambda: {})
     inverse: bool = False
     enabled: bool = True
     pre_delay: int = 200
@@ -370,29 +371,29 @@ class JPipelineData:
     repeat_wait_freezes: Optional[JWaitFreezes] = None
     max_hit: int = 4294967295  # UINT_MAX
     focus: Any = None
-    attach: Dict = field(default_factory=dict)
+    attach: dict[str, Any] = field(default_factory=lambda: {})
 
 
 class JPipelineParser:
     @staticmethod
-    def _parse_wait_freezes(data: dict) -> JWaitFreezes:
+    def _parse_wait_freezes(data: dict[str, Any]) -> JWaitFreezes:
         """Convert wait freezes with proper defaults"""
         return JWaitFreezes(
-            time=data.get("time"),
-            target=data.get("target"),  # type: ignore
-            target_offset=data.get("target_offset"),  # type: ignore
-            threshold=data.get("threshold"),
-            method=data.get("method"),
-            rate_limit=data.get("rate_limit"),
-            timeout=data.get("timeout"),
+            time=cast(int, data.get("time")),
+            target=cast(JTarget, data.get("target")),
+            target_offset=cast(JRect, data.get("target_offset")),
+            threshold=cast(float, data.get("threshold")),
+            method=cast(int, data.get("method")),
+            rate_limit=cast(int, data.get("rate_limit")),
+            timeout=cast(int, data.get("timeout")),
         )
 
     @classmethod
     def _parse_param(
         cls,
         param_type: Union[JRecognitionType, JActionType],
-        param_data: dict,
-        param_type_map: dict,
+        param_data: dict[str, Any],
+        param_type_map: dict[Any, type[Any]],
     ) -> Union[JRecognitionParam, JActionParam]:
         """Generic function to parse parameters based on type map."""
         param_class = param_type_map.get(param_type)
@@ -402,15 +403,11 @@ class JPipelineParser:
         try:
             return param_class(**param_data)
         except TypeError as e:
-            print(
-                f"Warning: Failed to create {param_class.__name__} with data {param_data}: {e}"
-            )
+            print(f"Warning: Failed to create {param_class.__name__} with data {param_data}: {e}")
             return param_class()
 
     @classmethod
-    def _parse_recognition_param(
-        cls, param_type: JRecognitionType, param_data: dict
-    ) -> JRecognitionParam:
+    def _parse_recognition_param(cls, param_type: JRecognitionType, param_data: dict[str, Any]) -> JRecognitionParam:
         """Convert dict to appropriate JRecognitionParam variant based on type."""
         param_type_map = {
             JRecognitionType.DirectHit: JDirectHit,
@@ -424,12 +421,10 @@ class JPipelineParser:
             JRecognitionType.Or: JOr,
             JRecognitionType.Custom: JCustomRecognition,
         }
-        return cls._parse_param(param_type, param_data, param_type_map)
+        return cast(JRecognitionParam, cls._parse_param(param_type, param_data, param_type_map))
 
     @classmethod
-    def _parse_action_param(
-        cls, param_type: JActionType, param_data: dict
-    ) -> JActionParam:
+    def _parse_action_param(cls, param_type: JActionType, param_data: dict[str, Any]) -> JActionParam:
         """Convert dict to appropriate JActionParam variant based on type."""
         param_type_map = {
             JActionType.DoNothing: JDoNothing,
@@ -455,74 +450,68 @@ class JPipelineParser:
             JActionType.Custom: JCustomAction,
         }
 
-        return cls._parse_param(param_type, param_data, param_type_map)
+        return cast(JActionParam, cls._parse_param(param_type, param_data, param_type_map))
 
     @classmethod
-    def parse_pipeline_data(cls, pipeline_data: Union[str, Dict]) -> JPipelineData:
+    def parse_pipeline_data(cls, pipeline_data: Union[str, dict[str, Any]]) -> JPipelineData:
         """Parse JSON string to JPipelineData dataclass with proper variant types."""
         if isinstance(pipeline_data, dict):
             data = pipeline_data
-        elif isinstance(pipeline_data, str):
-            try:
-                data: dict = json.loads(pipeline_data)
-            except json.JSONDecodeError as e:
-                raise ValueError(f"Invalid JSON format: {e}")
         else:
-            raise TypeError("Input must be a JSON string or a dict.")
+            try:
+                data = cast(dict[str, Any], json.loads(pipeline_data))
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Invalid JSON format: {e}") from e
 
         # Convert recognition
-        recognition_data: dict = data.get("recognition")
-        recognition_type: JRecognitionType = JRecognitionType(
-            recognition_data.get("type")
-        )
-        recognition_param_data: dict = recognition_data.get("param")
-        recognition_param = cls._parse_recognition_param(
-            recognition_type, recognition_param_data
-        )
+        recognition_data = cast(dict[str, Any], data.get("recognition"))
+        recognition_type: JRecognitionType = JRecognitionType(recognition_data.get("type"))
+        recognition_param_data = cast(dict[str, Any], recognition_data.get("param"))
+        recognition_param = cls._parse_recognition_param(recognition_type, recognition_param_data)
         recognition = JRecognition(type=recognition_type, param=recognition_param)
 
         # Convert action
-        action_data: dict = data.get("action")
+        action_data = cast(dict[str, Any], data.get("action"))
         action_type: JActionType = JActionType(action_data.get("type"))
-        action_param_data = action_data.get("param")
+        action_param_data = cast(dict[str, Any], action_data.get("param"))
         action_param = cls._parse_action_param(action_type, action_param_data)
         action = JAction(type=action_type, param=action_param)
 
-        pre_wait_freezes = cls._parse_wait_freezes(data.get("pre_wait_freezes"))  # type: ignore
-        post_wait_freezes = cls._parse_wait_freezes(data.get("post_wait_freezes"))  # type: ignore
-        repeat_wait_freezes = cls._parse_wait_freezes(data.get("repeat_wait_freezes"))  # type: ignore
+        pre_wait_freezes = cls._parse_wait_freezes(cast(dict[str, Any], data.get("pre_wait_freezes")))
+        post_wait_freezes = cls._parse_wait_freezes(cast(dict[str, Any], data.get("post_wait_freezes")))
+        repeat_wait_freezes = cls._parse_wait_freezes(cast(dict[str, Any], data.get("repeat_wait_freezes")))
 
         # Create JPipelineData with converted data
         return JPipelineData(
             recognition=recognition,
             action=action,
-            next=cls._parse_node_attr_list(data.get("next")),
-            rate_limit=data.get("rate_limit"),
-            timeout=data.get("timeout"),
-            on_error=cls._parse_node_attr_list(data.get("on_error")),
-            anchor=data.get("anchor", {}),
-            inverse=data.get("inverse"),
-            enabled=data.get("enabled"),
-            pre_delay=data.get("pre_delay"),
-            post_delay=data.get("post_delay"),
-            pre_wait_freezes=pre_wait_freezes,  # type: ignore
-            post_wait_freezes=post_wait_freezes,  # type: ignore
-            repeat=data.get("repeat"),
-            repeat_delay=data.get("repeat_delay"),
-            repeat_wait_freezes=repeat_wait_freezes,  # type: ignore
-            max_hit=data.get("max_hit"),
+            next=cls._parse_node_attr_list(cast(list[dict[str, Any]], data.get("next"))),
+            rate_limit=cast(int, data.get("rate_limit")),
+            timeout=cast(int, data.get("timeout")),
+            on_error=cls._parse_node_attr_list(cast(list[dict[str, Any]], data.get("on_error"))),
+            anchor=cast(dict[str, str], data.get("anchor", {})),
+            inverse=cast(bool, data.get("inverse")),
+            enabled=cast(bool, data.get("enabled")),
+            pre_delay=cast(int, data.get("pre_delay")),
+            post_delay=cast(int, data.get("post_delay")),
+            pre_wait_freezes=pre_wait_freezes,
+            post_wait_freezes=post_wait_freezes,
+            repeat=cast(int, data.get("repeat")),
+            repeat_delay=cast(int, data.get("repeat_delay")),
+            repeat_wait_freezes=repeat_wait_freezes,
+            max_hit=cast(int, data.get("max_hit")),
             focus=data.get("focus"),
-            attach=data.get("attach"),
+            attach=cast(dict[str, Any], data.get("attach")),
         )
 
     @staticmethod
-    def _parse_node_attr_list(data: List[dict]) -> List[JNodeAttr]:
+    def _parse_node_attr_list(data: list[dict[str, Any]]) -> list[JNodeAttr]:
         """Convert list of dicts to list of JNodeAttr."""
         return [
             JNodeAttr(
-                name=item.get("name"),
-                jump_back=item.get("jump_back", False),
-                anchor=item.get("anchor", False),
+                name=cast(str, item.get("name")),
+                jump_back=cast(bool, item.get("jump_back", False)),
+                anchor=cast(bool, item.get("anchor", False)),
             )
             for item in data
         ]

@@ -1,12 +1,12 @@
 import ctypes
-from typing import List
+from typing import Optional
 
+from .buffer import StringBuffer, StringListBuffer
+from .controller import Controller
 from .define import *
 from .library import Library
 from .resource import Resource
-from .controller import Controller
 from .tasker import Tasker
-from .buffer import StringBuffer, StringListBuffer
 
 
 class AgentClient:
@@ -14,13 +14,19 @@ class AgentClient:
 
     用于连接到 AgentServer，将自定义识别器和动作的执行委托给独立进程。
     这允许将 MaaFW 本体与 Custom 逻辑分离至独立进程运行。
-    Used to connect to AgentServer, delegating custom recognition and action execution to a separate process.
+    Used to connect to AgentServer, delegating custom recognition and action execution to a separate
+    process.
     This allows separating MaaFW core from Custom logic into independent processes.
     """
 
     _handle: MaaAgentClientHandle
 
-    def __init__(self, identifier: Optional[str] = None, *, _handle: MaaAgentClientHandle = None):
+    def __init__(
+        self,
+        identifier: Optional[str] = None,
+        *,
+        _handle: Optional[MaaAgentClientHandle] = None,
+    ):
         """创建 Agent 客户端 / Create Agent client
 
         默认使用 IPC 模式；如果 identifier 为纯数字字符串，则会将其视为 TCP 端口号并监听 127.0.0.1。
@@ -60,7 +66,8 @@ class AgentClient:
 
         客户端会监听 127.0.0.1 上的指定端口。如果传入 0 则自动选择可用端口。
         AgentServer 端使用 identifier 属性获取的端口号作为 identifier 即可通过 TCP 连接。
-        The client listens on 127.0.0.1 at the specified port. If 0 is passed, an available port is automatically selected.
+        The client listens on 127.0.0.1 at the specified port. If 0 is passed, an available port is
+        automatically selected.
         AgentServer can use the port number from the identifier property to connect via TCP.
 
         Args:
@@ -74,9 +81,7 @@ class AgentClient:
             ValueError: 如果端口号无效
         """
         if not (0 <= port <= 65535):
-            raise ValueError(
-                f"Invalid port number: {port}. Must be between 0 and 65535."
-            )
+            raise ValueError(f"Invalid port number: {port}. Must be between 0 and 65535.")
 
         cls._set_api_properties()
 
@@ -98,9 +103,7 @@ class AgentClient:
             Optional[str]: 连接标识符，如果未设置则返回 None / Connection identifier, or None if not set
         """
         id_buffer = StringBuffer()
-        if not Library.agent_client().MaaAgentClientIdentifier(
-            self._handle, id_buffer._handle
-        ):
+        if not Library.agent_client().MaaAgentClientIdentifier(self._handle, id_buffer._handle):
             return None
 
         return id_buffer.get()
@@ -120,15 +123,9 @@ class AgentClient:
         # avoid gc
         self._resource = resource
 
-        return bool(
-            Library.agent_client().MaaAgentClientBindResource(
-                self._handle, resource._handle
-            )
-        )
+        return bool(Library.agent_client().MaaAgentClientBindResource(self._handle, resource._handle))
 
-    def register_sink(
-        self, resource: Resource, controller: Controller, tasker: Tasker
-    ) -> bool:
+    def register_sink(self, resource: Resource, controller: Controller, tasker: Tasker) -> bool:
         """注册事件监听器 / Register event sinks
 
         将资源、控制器、任务器的事件转发给 AgentServer。
@@ -146,21 +143,9 @@ class AgentClient:
         self._sinks = [resource, controller, tasker]
 
         return (
-            bool(
-                Library.agent_client().MaaAgentClientRegisterResourceSink(
-                    self._handle, resource._handle
-                )
-            )
-            and bool(
-                Library.agent_client().MaaAgentClientRegisterControllerSink(
-                    self._handle, controller._handle
-                )
-            )
-            and bool(
-                Library.agent_client().MaaAgentClientRegisterTaskerSink(
-                    self._handle, tasker._handle
-                )
-            )
+            bool(Library.agent_client().MaaAgentClientRegisterResourceSink(self._handle, resource._handle))
+            and bool(Library.agent_client().MaaAgentClientRegisterControllerSink(self._handle, controller._handle))
+            and bool(Library.agent_client().MaaAgentClientRegisterTaskerSink(self._handle, tasker._handle))
         )
 
     def connect(self) -> bool:
@@ -206,14 +191,10 @@ class AgentClient:
         Returns:
             bool: 是否成功 / Whether successful
         """
-        return bool(
-            Library.agent_client().MaaAgentClientSetTimeout(
-                self._handle, ctypes.c_int64(milliseconds)
-            )
-        )
+        return bool(Library.agent_client().MaaAgentClientSetTimeout(self._handle, ctypes.c_int64(milliseconds)))
 
     @property
-    def custom_recognition_list(self) -> List[str]:
+    def custom_recognition_list(self) -> list[str]:
         """获取已注册的自定义识别器列表 / Get registered custom recognizer list
 
         Returns:
@@ -223,14 +204,12 @@ class AgentClient:
             RuntimeError: 如果获取失败
         """
         buffer = StringListBuffer()
-        if not Library.agent_client().MaaAgentClientGetCustomRecognitionList(
-            self._handle, buffer._handle
-        ):
+        if not Library.agent_client().MaaAgentClientGetCustomRecognitionList(self._handle, buffer._handle):
             raise RuntimeError("Failed to get custom recognition list.")
         return buffer.get()
 
     @property
-    def custom_action_list(self) -> List[str]:
+    def custom_action_list(self) -> list[str]:
         """获取已注册的自定义操作列表 / Get registered custom action list
 
         Returns:
@@ -240,9 +219,7 @@ class AgentClient:
             RuntimeError: 如果获取失败
         """
         buffer = StringListBuffer()
-        if not Library.agent_client().MaaAgentClientGetCustomActionList(
-            self._handle, buffer._handle
-        ):
+        if not Library.agent_client().MaaAgentClientGetCustomActionList(self._handle, buffer._handle):
             raise RuntimeError("Failed to get custom action list.")
         return buffer.get()
 
