@@ -125,18 +125,11 @@ bool PlayCoverControlUnitMgr::touch_down(int contact, int x, int y, int pressure
 
     std::ignore = pressure;
 
-    if (contact != 0) {
-        LogWarn << "PlayCover only supports single touch, contact:" << contact;
+    if (!client_->touch(PlayToolsClient::TouchPhase::Began, x, y, contact)) {
         return false;
     }
 
-    if (!client_->touch(PlayToolsClient::TouchPhase::Began, x, y)) {
-        return false;
-    }
-
-    last_touch_x_ = x;
-    last_touch_y_ = y;
-    has_last_touch_point_ = true;
+    last_touch_points_[contact] = { x, y };
     return true;
 }
 
@@ -149,18 +142,11 @@ bool PlayCoverControlUnitMgr::touch_move(int contact, int x, int y, int pressure
 
     std::ignore = pressure;
 
-    if (contact != 0) {
-        LogWarn << "PlayCover only supports single touch, contact:" << contact;
+    if (!client_->touch(PlayToolsClient::TouchPhase::Moved, x, y, contact)) {
         return false;
     }
 
-    if (!client_->touch(PlayToolsClient::TouchPhase::Moved, x, y)) {
-        return false;
-    }
-
-    last_touch_x_ = x;
-    last_touch_y_ = y;
-    has_last_touch_point_ = true;
+    last_touch_points_[contact] = { x, y };
     return true;
 }
 
@@ -171,28 +157,23 @@ bool PlayCoverControlUnitMgr::touch_up(int contact)
         return false;
     }
 
-    if (contact != 0) {
-        LogWarn << "PlayCover only supports single touch, contact:" << contact;
-        return false;
-    }
-
     int up_x = 0;
     int up_y = 0;
-    if (has_last_touch_point_) {
-        up_x = last_touch_x_;
-        up_y = last_touch_y_;
-    }
-    else {
+    const auto it = last_touch_points_.find(contact);
+    if (it != last_touch_points_.end()) {
+        up_x = it->second.first;
+        up_y = it->second.second;
+    } else {
         auto [width, height] = client_->screen_size();
         up_x = width / 2;
         up_y = height / 2;
     }
 
-    if (!client_->touch(PlayToolsClient::TouchPhase::Ended, up_x, up_y)) {
+    if (!client_->touch(PlayToolsClient::TouchPhase::Ended, up_x, up_y, contact)) {
         return false;
     }
 
-    has_last_touch_point_ = false;
+    last_touch_points_.erase(contact);
     return true;
 }
 

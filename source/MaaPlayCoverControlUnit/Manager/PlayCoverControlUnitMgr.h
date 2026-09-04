@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
 #include "MaaControlUnit/ControlUnitAPI.h"
@@ -52,9 +53,7 @@ private:
     std::unique_ptr<PlayToolsClient> client_;
     std::string address_;
     std::string uuid_;
-    int last_touch_x_ = 0;
-    int last_touch_y_ = 0;
-    bool has_last_touch_point_ = false;
+    std::unordered_map<int, std::pair<int, int>> last_touch_points_;
 };
 
 MAA_CTRL_UNIT_NS_END
