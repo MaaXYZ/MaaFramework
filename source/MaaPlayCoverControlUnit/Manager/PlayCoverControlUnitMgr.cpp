@@ -163,7 +163,8 @@ bool PlayCoverControlUnitMgr::touch_up(int contact)
     if (it != last_touch_points_.end()) {
         up_x = it->second.first;
         up_y = it->second.second;
-    } else {
+    }
+    else {
         auto [width, height] = client_->screen_size();
         up_x = width / 2;
         up_y = height / 2;
