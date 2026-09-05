@@ -2,7 +2,6 @@
 
 #include <filesystem>
 #include <ranges>
-#include <unordered_set>
 
 #ifdef _WIN32
 #include "MaaUtils/SafeWindows.hpp"
@@ -19,47 +18,43 @@ ONNXResMgr::ONNXResMgr()
 {
 }
 
-// ONNXResMgr::~ONNXResMgr()
-//{
-//      if (gpu_device_id_) {
-//          LogWarn << "GPU is enabled, leaking resources";
-//
-//         // FIXME: intentionally leak ort objects to avoid crash (double free?)
-//         // https://github.com/microsoft/onnxruntime/issues/15174
-//         for (auto& session : classifiers_ | std::views::values) {
-//             auto leak_session = new Ort::Session(nullptr);
-//             *leak_session = std::move(*session);
-//         }
-//         for (auto& session : detectors_ | std::views::values) {
-//             auto leak_session = new Ort::Session(nullptr);
-//             *leak_session = std::move(*session);
-//         }
-//
-//         auto leak_options = new Ort::SessionOptions(nullptr);
-//         *leak_options = std::move(options_);
-//     }
-// }
-
 void ONNXResMgr::use_cpu()
 {
     LogInfo;
+    std::scoped_lock lock(mutex_);
+
+    constexpr BackendState requested { .type = BackendType::CPU };
+    if (backend_ == requested) {
+        return;
+    }
 
     options_ = { };
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+    backend_ = requested;
+    invalidate_detector_models();
 }
 
 void ONNXResMgr::use_cuda(int device_id)
 {
     LogInfo << VAR(device_id);
+    std::scoped_lock lock(mutex_);
 
-    options_ = { };
+    const BackendState requested { .type = BackendType::CUDA, .argument = device_id };
+    if (backend_ == requested) {
+        return;
+    }
+
+    Ort::SessionOptions options;
     OrtCUDAProviderOptions cuda_options { };
     cuda_options.device_id = device_id;
-    options_.AppendExecutionProvider_CUDA(cuda_options);
+    options.AppendExecutionProvider_CUDA(cuda_options);
 
     // Input tensors are created from std::vector<float> (host memory).
     // Keep CPU memory info here and let ORT move data to CUDA EP internally.
+    options_ = std::move(options);
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+    backend_ = requested;
+    invalidate_detector_models();
 
     LogInfo << "Using CUDA execution provider with device_id" << device_id;
 }
@@ -67,17 +62,26 @@ void ONNXResMgr::use_cuda(int device_id)
 void ONNXResMgr::use_directml(int device_id)
 {
     LogInfo << VAR(device_id);
+    std::scoped_lock lock(mutex_);
 
 #ifdef MAA_WITH_DML
 
-    options_ = { };
-    auto status = OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id);
+    const BackendState requested { .type = BackendType::DirectML, .argument = device_id };
+    if (backend_ == requested) {
+        return;
+    }
+
+    Ort::SessionOptions options;
+    auto status = OrtSessionOptionsAppendExecutionProvider_DML(options, device_id);
     if (!Ort::Status(status).IsOK()) {
         LogError << "Failed to append DML execution provider with device_id" << device_id;
         return;
     }
 
+    options_ = std::move(options);
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+    backend_ = requested;
+    invalidate_detector_models();
 
     LogInfo << "Using DML execution provider with device_id" << device_id;
 
@@ -91,16 +95,26 @@ void ONNXResMgr::use_directml(int device_id)
 void ONNXResMgr::use_coreml(uint32_t coreml_flag)
 {
     LogInfo << VAR(coreml_flag);
+    std::scoped_lock lock(mutex_);
 
 #ifdef MAA_WITH_COREML
 
-    options_ = { };
-    auto status = OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options_, coreml_flag);
-    if (!Ort::Status(status).IsOK()) {
-        LogError << "Failed to append CoreML execution provider";
+    const BackendState requested { .type = BackendType::CoreML, .argument = coreml_flag };
+    if (backend_ == requested) {
+        return;
     }
 
+    Ort::SessionOptions options;
+    auto status = OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options, coreml_flag);
+    if (!Ort::Status(status).IsOK()) {
+        LogError << "Failed to append CoreML execution provider";
+        return;
+    }
+
+    options_ = std::move(options);
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+    backend_ = requested;
+    invalidate_detector_models();
 
     LogInfo << "Using CoreML execution provider";
 
@@ -123,8 +137,10 @@ bool ONNXResMgr::lazy_load_classifier(const std::filesystem::path& path)
 bool ONNXResMgr::lazy_load_detector(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
+    std::scoped_lock lock(mutex_);
 
     detector_roots_.emplace_back(path);
+    detector_models_.clear();
 
     return true;
 }
@@ -132,11 +148,12 @@ bool ONNXResMgr::lazy_load_detector(const std::filesystem::path& path)
 void ONNXResMgr::clear()
 {
     LogFunc;
+    std::scoped_lock lock(mutex_);
 
     classifier_roots_.clear();
     detector_roots_.clear();
     classifiers_.clear();
-    detectors_.clear();
+    detector_models_.clear();
 }
 
 std::shared_ptr<Ort::Session> ONNXResMgr::classifier(const std::string& name)
@@ -153,18 +170,89 @@ std::shared_ptr<Ort::Session> ONNXResMgr::classifier(const std::string& name)
     return session;
 }
 
-std::shared_ptr<Ort::Session> ONNXResMgr::detector(const std::string& name)
+MAA_VISION_NS::NeuralNetworkDetector::ModelLoadResult ONNXResMgr::detector_model(const std::string& name)
 {
-    if (auto iter = detectors_.find(name); iter != detectors_.end()) {
+    std::scoped_lock lock(mutex_);
+
+    struct Layer
+    {
+        std::filesystem::path onnx_path;
+        bool onnx_exists = false;
+        bool descriptor_exists = false;
+    };
+
+    std::vector<Layer> layers;
+    layers.reserve(detector_roots_.size());
+    for (const auto& root : detector_roots_) {
+        const std::filesystem::path onnx_path = root / MAA_NS::path(name);
+        auto descriptor_path = onnx_path;
+        descriptor_path.replace_extension(".json");
+        std::error_code error;
+        auto absolute_path = std::filesystem::absolute(onnx_path, error);
+        if (error) {
+            return { .error = "failed to resolve detector model path: " + error.message() };
+        }
+        const bool onnx_exists = std::filesystem::exists(onnx_path, error);
+        if (error) {
+            return { .error = "failed to inspect detector model path: " + error.message() };
+        }
+        const bool descriptor_exists = std::filesystem::exists(descriptor_path, error);
+        if (error) {
+            return { .error = "failed to inspect detector descriptor path: " + error.message() };
+        }
+        layers.emplace_back(
+            Layer {
+                .onnx_path = absolute_path.lexically_normal(),
+                .onnx_exists = onnx_exists,
+                .descriptor_exists = descriptor_exists,
+            });
+    }
+
+    std::optional<size_t> selected_index;
+    for (size_t index = layers.size(); index > 0; --index) {
+        if (layers[index - 1].onnx_exists) {
+            selected_index = index - 1;
+            break;
+        }
+    }
+
+    if (!selected_index) {
+        const std::string key = "missing:" + name + '#' + std::to_string(backend_generation_);
+        if (auto iterator = detector_models_.find(key); iterator != detector_models_.end()) {
+            return iterator->second;
+        }
+        auto result = MAA_VISION_NS::NeuralNetworkDetector::ModelLoadResult { .error = "detector model not found: " + name };
+        detector_models_.emplace(key, result);
+        return result;
+    }
+
+    for (size_t index = *selected_index + 1; index < layers.size(); ++index) {
+        if (!layers[index].onnx_exists && layers[index].descriptor_exists) {
+            auto descriptor_path = layers[index].onnx_path;
+            descriptor_path.replace_extension(".json");
+            LogWarn << "Ignoring detector sidecar without a model in the same Bundle layer" << VAR(descriptor_path);
+        }
+    }
+
+    const auto& selected = layers[*selected_index];
+    const std::string key = selected.onnx_path.generic_string() + '#' + std::to_string(backend_generation_);
+    if (auto iter = detector_models_.find(key); iter != detector_models_.end()) {
         return iter->second;
     }
 
-    auto session = load(name, detector_roots_);
-    if (session) {
-        detectors_.emplace(name, session);
+    MAA_VISION_NS::NeuralNetworkDetector::ModelLoadResult result;
+    try {
+        auto session = std::make_shared<Ort::Session>(env_, selected.onnx_path.c_str(), options_);
+        result = MAA_VISION_NS::NeuralNetworkDetector::load_model(selected.onnx_path, std::move(session));
     }
-
-    return session;
+    catch (const Ort::Exception& exception) {
+        result.error = std::string("ONNX Runtime error: ") + exception.what();
+    }
+    catch (const std::exception& exception) {
+        result.error = std::string("failed to create detector Session: ") + exception.what();
+    }
+    detector_models_.emplace(key, result);
+    return result;
 }
 
 const Ort::MemoryInfo& ONNXResMgr::memory_info() const
@@ -188,6 +276,12 @@ std::shared_ptr<Ort::Session> ONNXResMgr::load(const std::string& name, const st
     }
 
     return nullptr;
+}
+
+void ONNXResMgr::invalidate_detector_models()
+{
+    ++backend_generation_;
+    detector_models_.clear();
 }
 
 MAA_RES_NS_END
