@@ -46,6 +46,29 @@
             }
         }
     },
+    "focus_v2": {
+        "focus": {
+            "Node.Action.Starting": "{name} 开始执行",
+            "Node.Action.Failed": {
+                "content": "{name} 执行失败",
+                "display": [
+                    "log",
+                    "modal"
+                ],
+                "trace": true
+            },
+            "Node.PipelineNode.Succeeded": {
+                "trace": true
+            },
+            "Node.RecognitionNode.Starting": {
+                "display": []
+            },
+            "Node.WaitFreezes.Failed": "$focus.wait_freezes_failed"
+        }
+    },
+    "focus_null": {
+        "focus": null
+    },
     "pipeline_override_recognition_v1": {
         "roi": "[]"
     },
