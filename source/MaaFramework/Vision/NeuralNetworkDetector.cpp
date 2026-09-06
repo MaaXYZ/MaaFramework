@@ -364,11 +364,11 @@ void NeuralNetworkDetector::init_expected_indices(const std::vector<std::string>
         if (std::holds_alternative<int>(item)) {
             int idx = std::get<int>(item);
             // 校验索引有效性
-            if (idx >= 0 && idx < static_cast<int>(labels.size())) {
+            if (idx >= 0) {
                 expected_indices_.push_back(idx);
             }
             else {
-                LogWarn << "Invalid index in expected" << VAR(idx) << VAR(labels.size());
+                LogWarn << "Invalid index in expected" << VAR(idx);
             }
         }
         else if (std::holds_alternative<std::string>(item)) {
