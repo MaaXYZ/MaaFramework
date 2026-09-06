@@ -43,17 +43,21 @@ private:
 
     Result classify() const;
 
-    void add_results(ResultsVec results, const std::vector<int>& expected);
+    void add_results(ResultsVec results, const std::vector<std::variant<int, std::string>>& expected);
     void cherry_pick();
 
 private:
     cv::Mat draw_result(const Result& res) const;
     void sort_(ResultsVec& results) const;
 
+    void init_expected_indices();
+
 private:
     const NeuralNetworkClassifierParam param_;
     std::shared_ptr<Ort::Session> session_ = nullptr;
     const Ort::MemoryInfo& memory_info_;
+
+    std::vector<int> expected_indices_;
 };
 
 MAA_VISION_NS_END

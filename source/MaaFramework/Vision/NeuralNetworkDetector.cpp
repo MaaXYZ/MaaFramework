@@ -43,6 +43,9 @@ void NeuralNetworkDetector::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     auto labels = param_.labels.empty() ? parse_labels_from_metadata() : param_.labels;
+
+    init_expected_indices(labels);
+
     while (next_roi()) {
         auto results = detect(labels);
         add_results(std::move(results), param_.expected, param_.thresholds);
@@ -174,7 +177,10 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
     return nms_results;
 }
 
-void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<int>& expected, const std::vector<double>& thresholds)
+void NeuralNetworkDetector::add_results(
+    ResultsVec results,
+    const std::vector<std::variant<int, std::string>>& expected,
+    const std::vector<double>& thresholds)
 {
     if (expected.empty()) {
         // expected 为空时，所有结果均可用，但仍需满足默认阈值
@@ -186,13 +192,13 @@ void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<in
         return;
     }
 
-    if (expected.size() != thresholds.size()) {
+    if (expected_indices_.size() != thresholds.size()) {
         LogError << name_ << "expected.size() != thresholds.size()" << VAR(expected) << VAR(thresholds);
         return;
     }
 
-    for (size_t i = 0; i != expected.size(); ++i) {
-        int exp = expected.at(i);
+    for (size_t i = 0; i != expected_indices_.size(); ++i) {
+        int exp = expected_indices_.at(i);
         auto it = std::ranges::find(results, exp, std::mem_fn(&Result::cls_index));
         if (it == results.end()) {
             continue;
@@ -261,7 +267,7 @@ void NeuralNetworkDetector::sort_(ResultsVec& results) const
         sort_by_random_(results);
         break;
     case ResultOrderBy::Expected:
-        sort_by_expected_index_(results, param_.expected);
+        sort_by_expected_index_(results, expected_indices_);
         break;
     default:
         LogError << "Not supported order by" << VAR(param_.order_by);
@@ -347,6 +353,36 @@ std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() con
 
     LogDebug << name_ << "Parsed labels from metadata" << VAR(labels.size());
     return labels;
+}
+
+void NeuralNetworkDetector::init_expected_indices(const std::vector<std::string>& labels)
+{
+    expected_indices_.clear();
+    expected_indices_.reserve(param_.expected.size());
+
+    for (const auto& item : param_.expected) {
+        if (std::holds_alternative<int>(item)) {
+            int idx = std::get<int>(item);
+            // 校验索引有效性
+            if (idx >= 0 && idx < static_cast<int>(labels.size())) {
+                expected_indices_.push_back(idx);
+            }
+            else {
+                LogWarn << "Invalid index in expected" << VAR(idx) << VAR(labels.size());
+            }
+        }
+        else if (std::holds_alternative<std::string>(item)) {
+            const std::string& label = std::get<std::string>(item);
+            auto it = std::find(labels.begin(), labels.end(), label);
+            if (it != labels.end()) {
+                int idx = static_cast<int>(std::distance(labels.begin(), it));
+                expected_indices_.push_back(idx);
+            }
+            else {
+                LogWarn << "Label not found in labels list" << VAR(label);
+            }
+        }
+    }
 }
 
 MAA_VISION_NS_END
