@@ -255,34 +255,6 @@
         "jsonDefaultObject": {
             "default": {}
         },
-        "FocusMessageEnum": {
-            "title": "Focus Message Enum",
-            "description": "focus 支持的节点回调消息类型。",
-            "type": "string",
-            "enum": [
-                "Node.PipelineNode.Starting",
-                "Node.PipelineNode.Succeeded",
-                "Node.PipelineNode.Failed",
-                "Node.RecognitionNode.Starting",
-                "Node.RecognitionNode.Succeeded",
-                "Node.RecognitionNode.Failed",
-                "Node.ActionNode.Starting",
-                "Node.ActionNode.Succeeded",
-                "Node.ActionNode.Failed",
-                "Node.NextList.Starting",
-                "Node.NextList.Succeeded",
-                "Node.NextList.Failed",
-                "Node.Recognition.Starting",
-                "Node.Recognition.Succeeded",
-                "Node.Recognition.Failed",
-                "Node.Action.Starting",
-                "Node.Action.Succeeded",
-                "Node.Action.Failed",
-                "Node.WaitFreezes.Starting",
-                "Node.WaitFreezes.Succeeded",
-                "Node.WaitFreezes.Failed"
-            ]
-        },
         "FocusDisplayEnum": {
             "title": "Focus Display Enum",
             "description": "消息展示渠道。",
@@ -354,25 +326,92 @@
             ],
             "markdownDescription": "*string* | *object*\n\n消息模板。字符串等价于只设置 `content` 且 `display` 为 `\"log\"`；对象可设置 `content`、`display` 和 `trace`。"
         },
+        "FocusTemplateMap": {
+            "title": "Focus Template Map",
+            "description": "PI 对象模板映射。Pipeline 的 focus 字段不强制该结构，因为回调协议定义为任意 JSON。",
+            "type": "object",
+            "properties": {
+                "Node.PipelineNode.Starting": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.PipelineNode.Succeeded": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.PipelineNode.Failed": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.RecognitionNode.Starting": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.RecognitionNode.Succeeded": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.RecognitionNode.Failed": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.ActionNode.Starting": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.ActionNode.Succeeded": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.ActionNode.Failed": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.NextList.Starting": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.NextList.Succeeded": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.NextList.Failed": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.Recognition.Starting": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.Recognition.Succeeded": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.Recognition.Failed": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.Action.Starting": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.Action.Succeeded": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.Action.Failed": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.WaitFreezes.Starting": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.WaitFreezes.Succeeded": {
+                    "$ref": "#/$defs/FocusTemplate"
+                },
+                "Node.WaitFreezes.Failed": {
+                    "$ref": "#/$defs/FocusTemplate"
+                }
+            },
+            "unevaluatedProperties": false,
+            "markdownDescription": "*object*\n\nPI 对象模板映射，键为节点回调消息类型。Pipeline 的 `focus` 字段不强制该结构，因为回调协议定义为任意 JSON。"
+        },
         "Focus": {
             "title": "Focus",
-            "description": "节点消息模板映射。",
+            "description": "焦点相关数据。回调协议定义为任意 JSON，Pipeline 原样透传。",
             "default": null,
             "anyOf": [
                 {
-                    "type": "null"
+                    "$ref": "#/$defs/FocusTemplateMap"
                 },
                 {
-                    "type": "object",
-                    "propertyNames": {
-                        "$ref": "#/$defs/FocusMessageEnum"
-                    },
-                    "additionalProperties": {
-                        "$ref": "#/$defs/FocusTemplate"
-                    }
+                    "title": "Legacy Focus",
+                    "description": "兼容旧版或自定义 focus 值，不限制 JSON 类型。"
                 }
             ],
-            "markdownDescription": "*object* | *null*\n\n节点消息模板映射，键为节点回调消息类型，值为消息模板。可选，默认 `null`。"
+            "markdownDescription": "*any*\n\n焦点相关数据。回调协议定义为任意 JSON，Pipeline 原样透传。可选，默认 `null`。"
         },
         "jsonStringStringPair": {
             "type": "array",
@@ -3304,7 +3343,11 @@
                     "title": "Format Property",
                     "description": "图片格式。可选，默认 \"png\"。",
                     "type": "string",
-                    "enum": ["png", "jpg", "jpeg"],
+                    "enum": [
+                        "png",
+                        "jpg",
+                        "jpeg"
+                    ],
                     "default": "png",
                     "markdownDescription": "*string*\n\n图片格式。可选，默认 `\"png\"`（无损）。\n\n可选值：`\"png\"` | `\"jpg\"` | `\"jpeg\"`"
                 },
@@ -4382,9 +4425,26 @@
                 },
                 "focus": {
                     "title": "Focus Property",
-                    "description": "关注节点，配置节点回调消息模板。可选，默认 null，不产生回调消息。",
+                    "description": "关注节点，透传焦点相关数据。可选，默认 null，不产生回调消息。",
                     "$ref": "#/$defs/Focus",
-                    "markdownDescription": "*object* | *null*\n\n关注节点，配置节点回调消息模板。可选，默认 null，不产生回调消息。\n\n详见 [节点通知](#节点通知)。"
+                    "markdownDescription": "*any*\n\n关注节点，透传焦点相关数据。可选，默认 null，不产生回调消息。\n\n详见 [节点通知](#节点通知)。",
+                    "defaultSnippets": [
+                        {
+                            "label": "Node action messages",
+                            "description": "Insert common node action focus templates.",
+                            "body": {
+                                "Node.Action.Starting": "${1:Node starting}",
+                                "Node.Action.Failed": {
+                                    "content": "${2:Node failed}",
+                                    "display": [
+                                        "log",
+                                        "toast"
+                                    ],
+                                    "trace": true
+                                }
+                            }
+                        }
+                    ]
                 },
                 "attach": {
                     "title": "Attach Property",
