@@ -55,8 +55,8 @@ var NAVTREEINDEX =
 [
 "AdbControlUnitAPI_8h.html",
 "MaaDef_8h.html#a3e188bedbcb7fa30364a87af9d2a5ad3",
-"MaaToolkitAdbDevice_8h.html#ad070aa284e3208b7c1a93aa40fe8e2e9",
-"structMaaRect.html"
+"MaaToolkitAdbDevice_8h.html#ab8dc9a69e2a1d91dc9f04e1a0c3b0dc5",
+"structMaaCustomControllerCallbacks.html#af0a00cdd379be8608bf360acfdfde4ea"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -513,6 +513,8 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="#ac9daa36008267a26662244d2f5570003adb1dd8b0b6088d34886dc81f6fef505c">MaaCtrlOption_ScreenshotResizeMethod</a> = 6
 , <br />
 &#160;&#160;<a class="el" href="#ac9daa36008267a26662244d2f5570003acbaa16432d44e9676b61a9acfce010e1">MaaCtrlOption_BackgroundManagedKeys</a> = 7
+, <br />
+&#160;&#160;<a class="el" href="#ac9daa36008267a26662244d2f5570003a4604a6ffd857e28a942e01c11a2ba949">MaaCtrlOption_ScreenshotTargetExpand</a> = 8
 <br />
  }</td></tr>
 <tr class="memdesc:ac9daa36008267a26662244d2f5570003"><td class="mdescLeft">&#160;</td><td class="mdescRight">Option keys for controller instance options. See <a class="el" href="MaaController_8h.html#ac0247a25f33dfbc7bd3a0183a669aad3">MaaControllerSetOption()</a>.  <a href="#ac9daa36008267a26662244d2f5570003">More...</a><br /></td></tr>
@@ -693,7 +695,7 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    (<a class="code hl_define" href="#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~MaaAdbScreencapMethod_RawByNetcat) &amp; (~MaaAdbScreencapMethod_MinicapDirect) \</div>
 <div class="line">     &amp; (~MaaAdbScreencapMethod_MinicapStream))</div>
-<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:286</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:296</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2879,6 +2881,9 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003acbaa16432d44e9676b61a9acfce010e1" name="ac9daa36008267a26662244d2f5570003acbaa16432d44e9676b61a9acfce010e1"></a>MaaCtrlOption_BackgroundManagedKeys&#160;</td><td class="fielddoc"><p>Configure background managed key domain for Win32 controllers. Must be set before connection. After setting, matching ClickKey / LongPressKey / KeyDown / KeyUp operations automatically route through the background guardian path. Only supported by Win32 controllers; other controllers will fail.</p>
 <p>value: int32_t array of virtual key codes; val_size: sizeof(int32_t) * count </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003a4604a6ffd857e28a942e01c11a2ba949" name="ac9daa36008267a26662244d2f5570003a4604a6ffd857e28a942e01c11a2ba949"></a>MaaCtrlOption_ScreenshotTargetExpand&#160;</td><td class="fielddoc"><p>Scale screenshot to fit a reference (width, height) using Unity Canvas Scaler "Expand" semantics: scale = max(W / raw_width, H / raw_height), applied uniformly to both axes so the source aspect ratio is preserved and both output dimensions are &gt;= the reference (W, H). Mutually exclusive with ScreenshotTargetLongSide / ScreenshotTargetShortSide; setting any of these resets the others. Ignored when ScreenshotUseRawSize is true.</p>
+<p>value: int32_t[2] = { width, height }; val_size: sizeof(int32_t) * 2 </p>
+</td></tr>
 </table>
 
 </div>
@@ -2906,7 +2911,7 @@ Enumerations</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Wed Sep 2 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
+    <li class="footer">Generated on Mon Sep 7 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
 </body>

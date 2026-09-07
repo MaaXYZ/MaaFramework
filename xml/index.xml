@@ -594,6 +594,7 @@
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003aac6a4d810461a9730c85dff6574c22bd" kind="enumvalue"><name>MaaCtrlOption_MouseLockFollow</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003adb1dd8b0b6088d34886dc81f6fef505c" kind="enumvalue"><name>MaaCtrlOption_ScreenshotResizeMethod</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003acbaa16432d44e9676b61a9acfce010e1" kind="enumvalue"><name>MaaCtrlOption_BackgroundManagedKeys</name></member>
+    <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a4604a6ffd857e28a942e01c11a2ba949" kind="enumvalue"><name>MaaCtrlOption_ScreenshotTargetExpand</name></member>
     <member refid="MaaDef_8h_1a7ce6a82a2484734da58c3c422d19a9b1" kind="enum"><name>MaaTaskerOptionEnum</name></member>
     <member refid="MaaDef_8h_1a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa" kind="enumvalue"><name>MaaTaskerOption_Invalid</name></member>
     <member refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kind="typedef"><name>MaaBool</name></member>

@@ -104,6 +104,7 @@ var NAVTREEINDEX1 =
 "MaaDef_8h.html#ac8dc1b4410fe6a3ff2d62f5a2ee803ec":[4,0,0,3,4,90],
 "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003":[4,0,0,3,4,145],
 "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105":[4,0,0,3,4,145,3],
+"MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a4604a6ffd857e28a942e01c11a2ba949":[4,0,0,3,4,145,7],
 "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f":[4,0,0,3,4,145,0],
 "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3":[4,0,0,3,4,145,2],
 "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75":[4,0,0,3,4,145,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "MaaToolkitAdbDevice_8h.html#a855bc06b45b35869ca230a2d45bfcd9d":[4,0,0,4,0,0,7],
 "MaaToolkitAdbDevice_8h.html#a856f8504c46e4bda4981b6183f4e6b99":[4,0,0,4,0,0,1],
 "MaaToolkitAdbDevice_8h.html#aac2fef51776f6d5d726862ad0650987c":[4,0,0,4,0,0,11],
-"MaaToolkitAdbDevice_8h.html#ab564cccebb4128e18de3f561a2058786":[4,0,0,4,0,0,5],
-"MaaToolkitAdbDevice_8h.html#ab8dc9a69e2a1d91dc9f04e1a0c3b0dc5":[4,0,0,4,0,0,0]
+"MaaToolkitAdbDevice_8h.html#ab564cccebb4128e18de3f561a2058786":[4,0,0,4,0,0,5]
 };
