@@ -564,19 +564,29 @@
             ],
             "default": true
         },
-        "jsonInt32StringList": {
-            "type": "array",
-            "items": {
-                "anyOf": [
-                    {
-                        "type": "integer"
-                    },
-                    {
-                        "type": "string"
+        "jsonInt32OrStringOrList": {
+            "anyOf": [
+                {
+                    "type": "integer"
+                },
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
                     }
-                ]
-            },
-            "default": []
+                }
+            ],
+            "default": 0
         },
         "TypeWithDependent": {
             "anyOf": [
@@ -1141,7 +1151,7 @@
                 "expected": {
                     "title": "Expected Property",
                     "description": "期望的分类下标或类别名称（字符串）, 列表内可混合整数和字符串。可选，默认匹配所有结果。",
-                    "$ref": "#/$defs/jsonInt32StringList",
+                    "$ref": "#/$defs/jsonInt32OrStringOrList",
                     "markdownDescription": "*int* | *string* | *list<int | string>*\n\n期望的分类下标或类别名称（字符串）, 列表内可混合整数和字符串。可选，默认匹配所有结果。"
                 },
                 "order_by": {
@@ -1236,7 +1246,7 @@
                 "expected": {
                     "title": "Expected Property",
                     "description": "期望的分类下标或类别名称（字符串）, 列表内可混合整数和字符串。可选，默认匹配所有结果。",
-                    "$ref": "#/$defs/jsonInt32StringList",
+                    "$ref": "#/$defs/jsonInt32OrStringOrList",
                     "markdownDescription": "*int* | *string* | *list<int | string>*\n\n期望的分类下标或类别名称（字符串）, 列表内可混合整数和字符串。可选，默认匹配所有结果。"
                 },
                 "threshold": {
