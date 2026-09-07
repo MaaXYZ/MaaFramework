@@ -33,6 +33,22 @@
             "param": {}
         }
     },
+    "focus_v2": {
+        "focus": {
+            "Node.Action.Starting": {
+                "content": "{name} 开始执行",
+                "display": [
+                    "log",
+                    "invalid"
+                ],
+                "trace": "true"
+            },
+            "Node.Action.Succeeded": {
+                "contents": "{name} 执行成功"
+            },
+            "Unknown.Message": "{name} 未知消息"
+        }
+    },
     "pipeline_override_recognition_v1": {
         "roi": 0
     },

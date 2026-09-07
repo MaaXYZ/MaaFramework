@@ -255,6 +255,125 @@
         "jsonDefaultObject": {
             "default": {}
         },
+        "FocusMessageEnum": {
+            "title": "Focus Message Enum",
+            "description": "focus 支持的节点回调消息类型。",
+            "type": "string",
+            "enum": [
+                "Node.PipelineNode.Starting",
+                "Node.PipelineNode.Succeeded",
+                "Node.PipelineNode.Failed",
+                "Node.RecognitionNode.Starting",
+                "Node.RecognitionNode.Succeeded",
+                "Node.RecognitionNode.Failed",
+                "Node.ActionNode.Starting",
+                "Node.ActionNode.Succeeded",
+                "Node.ActionNode.Failed",
+                "Node.NextList.Starting",
+                "Node.NextList.Succeeded",
+                "Node.NextList.Failed",
+                "Node.Recognition.Starting",
+                "Node.Recognition.Succeeded",
+                "Node.Recognition.Failed",
+                "Node.Action.Starting",
+                "Node.Action.Succeeded",
+                "Node.Action.Failed",
+                "Node.WaitFreezes.Starting",
+                "Node.WaitFreezes.Succeeded",
+                "Node.WaitFreezes.Failed"
+            ]
+        },
+        "FocusDisplayEnum": {
+            "title": "Focus Display Enum",
+            "description": "消息展示渠道。",
+            "type": "string",
+            "enum": [
+                "log",
+                "toast",
+                "notification",
+                "dialog",
+                "modal"
+            ],
+            "default": "log",
+            "markdownDescription": "*string*\n\n消息展示渠道。可选，默认 `\"log\"`。\n\n可选值：`\"log\"` | `\"toast\"` | `\"notification\"` | `\"dialog\"` | `\"modal\"`"
+        },
+        "FocusDisplay": {
+            "title": "Focus Display",
+            "description": "消息展示渠道，支持单个渠道或渠道数组。",
+            "default": "log",
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/FocusDisplayEnum"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/FocusDisplayEnum"
+                    }
+                }
+            ],
+            "markdownDescription": "*string* | *string array*\n\n消息展示渠道，支持单个渠道或渠道数组。可选，默认 `\"log\"`。\n\n可选值：`\"log\"` | `\"toast\"` | `\"notification\"` | `\"dialog\"` | `\"modal\"`"
+        },
+        "FocusTemplateObject": {
+            "title": "Focus Template Object",
+            "description": "消息模板完整写法。",
+            "type": "object",
+            "unevaluatedProperties": false,
+            "properties": {
+                "content": {
+                    "title": "Content Property",
+                    "description": "消息模板内容，支持直接文本、文件路径、URL 和国际化键。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n消息模板内容，支持直接文本、文件路径、URL 和国际化键。内容支持 Markdown 和 `{name}` 等占位符。"
+                },
+                "display": {
+                    "title": "Display Property",
+                    "description": "消息展示渠道，支持单个渠道或渠道数组。可选，默认 \"log\"。",
+                    "$ref": "#/$defs/FocusDisplay",
+                    "markdownDescription": "*string* | *string array*\n\n消息展示渠道，支持单个渠道或渠道数组。可选，默认 `\"log\"`。"
+                },
+                "trace": {
+                    "title": "Trace Property",
+                    "description": "是否上传本次节点结果到遥测平台。可选，默认值与消息类型相关。",
+                    "type": "boolean",
+                    "markdownDescription": "*bool*\n\n是否上传本次节点结果到遥测平台。可选，默认值与消息类型相关。"
+                }
+            }
+        },
+        "FocusTemplate": {
+            "title": "Focus Template",
+            "description": "消息模板，支持字符串简写或对象完整写法。",
+            "default": "",
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/$defs/FocusTemplateObject"
+                }
+            ],
+            "markdownDescription": "*string* | *object*\n\n消息模板。字符串等价于只设置 `content` 且 `display` 为 `\"log\"`；对象可设置 `content`、`display` 和 `trace`。"
+        },
+        "Focus": {
+            "title": "Focus",
+            "description": "节点消息模板映射。",
+            "default": null,
+            "anyOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "object",
+                    "propertyNames": {
+                        "$ref": "#/$defs/FocusMessageEnum"
+                    },
+                    "additionalProperties": {
+                        "$ref": "#/$defs/FocusTemplate"
+                    }
+                }
+            ],
+            "markdownDescription": "*object* | *null*\n\n节点消息模板映射，键为节点回调消息类型，值为消息模板。可选，默认 `null`。"
+        },
         "jsonStringStringPair": {
             "type": "array",
             "items": false,
@@ -4263,9 +4382,9 @@
                 },
                 "focus": {
                     "title": "Focus Property",
-                    "description": "关注节点，会额外产生部分回调消息。可选，默认 null，不产生回调消息。",
-                    "$ref": "#/$defs/jsonDefaultNull",
-                    "markdownDescription": "*any*\n\n关注节点，会额外产生部分回调消息。可选，默认 null，不产生回调消息。\n\n详见 [节点通知](#节点通知)。"
+                    "description": "关注节点，配置节点回调消息模板。可选，默认 null，不产生回调消息。",
+                    "$ref": "#/$defs/Focus",
+                    "markdownDescription": "*object* | *null*\n\n关注节点，配置节点回调消息模板。可选，默认 null，不产生回调消息。\n\n详见 [节点通知](#节点通知)。"
                 },
                 "attach": {
                     "title": "Attach Property",
