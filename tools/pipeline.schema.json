@@ -564,6 +564,20 @@
             ],
             "default": true
         },
+        "jsonInt32StringList": {
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "type": "integer"
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            },
+            "default": []
+        },
         "TypeWithDependent": {
             "anyOf": [
                 {
@@ -1126,9 +1140,9 @@
                 },
                 "expected": {
                     "title": "Expected Property",
-                    "description": "期望的分类下标。可选，默认匹配所有结果。",
-                    "$ref": "#/$defs/jsonInt32OrList",
-                    "markdownDescription": "*int* | *list<int, >*\n\n期望的分类下标。可选，默认匹配所有结果。"
+                    "description": "期望的分类下标或类别名称（字符串）, 列表内可混合整数和字符串。可选，默认匹配所有结果。",
+                    "$ref": "#/$defs/jsonInt32StringOrList",
+                    "markdownDescription": "*int* | *string* | *list<int | string>*\n\n期望的分类下标或类别名称（字符串）, 列表内可混合整数和字符串。可选，默认匹配所有结果。"
                 },
                 "order_by": {
                     "title": "Order By Property",
@@ -1221,9 +1235,9 @@
                 },
                 "expected": {
                     "title": "Expected Property",
-                    "description": "期望的分类下标。可选，默认匹配所有结果。",
-                    "$ref": "#/$defs/jsonInt32OrList",
-                    "markdownDescription": "*int* | *list<int, >*\n\n期望的分类下标。可选，默认匹配所有结果。"
+                    "description": "期望的分类下标或类别名称（字符串）, 列表内可混合整数和字符串。可选，默认匹配所有结果。",
+                    "$ref": "#/$defs/jsonInt32StringOrList",
+                    "markdownDescription": "*int* | *string* | *list<int | string>*\n\n期望的分类下标或类别名称（字符串）, 列表内可混合整数和字符串。可选，默认匹配所有结果。"
                 },
                 "threshold": {
                     "title": "Threshold Property",
@@ -3185,7 +3199,11 @@
                     "title": "Format Property",
                     "description": "图片格式。可选，默认 \"png\"。",
                     "type": "string",
-                    "enum": ["png", "jpg", "jpeg"],
+                    "enum": [
+                        "png",
+                        "jpg",
+                        "jpeg"
+                    ],
                     "default": "png",
                     "markdownDescription": "*string*\n\n图片格式。可选，默认 `\"png\"`（无损）。\n\n可选值：`\"png\"` | `\"jpg\"` | `\"jpeg\"`"
                 },
