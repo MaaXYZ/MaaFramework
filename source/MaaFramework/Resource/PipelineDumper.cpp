@@ -202,6 +202,8 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .model = p.model,
             .expected = p.expected,
             .threshold = p.thresholds,
+            .multi_label = p.multi_label,
+            .input_size = p.input_size ? std::make_optional(PipelineV2::JSize { p.input_size->width, p.input_size->height }) : std::nullopt,
             .order_by = dump_order_by(p.order_by),
             .index = p.result_index,
         };

@@ -126,7 +126,9 @@ declare global {
                 labels?: string[]
                 model?: string
                 expected?: MaybeArray<number, Mode>
-                threshold?: number
+                threshold?: MaybeArray<number, Mode>
+                multi_label?: boolean
+                input_size?: [number, number]
                 order_by?: OrderByMap['NeuralNetworkDetect']
                 index?: number
             },

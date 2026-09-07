@@ -2,6 +2,7 @@
 
 #include <array>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,6 +14,7 @@ MAA_RES_NS_BEGIN
 
 namespace PipelineV2
 {
+using JSize = std::array<int, 2>;
 using JRect = std::array<int, 4>;
 using JTarget = std::variant<bool, std::string, JRect>;
 
@@ -105,10 +107,12 @@ struct JNeuralNetworkDetect
     std::string model;
     std::vector<int> expected;
     std::vector<double> threshold;
+    bool multi_label = true;
+    std::optional<JSize> input_size;
     std::string order_by;
     int index = 0;
 
-    MEO_TOJSON(roi, roi_offset, labels, model, expected, threshold, order_by, index);
+    MEO_TOJSON(roi, roi_offset, labels, model, expected, threshold, multi_label, input_size, order_by, index);
 };
 
 struct JCustomRecognition

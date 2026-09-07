@@ -1211,13 +1211,13 @@
                     "title": "Labels Property",
                     "description": "标注，即每个分类的名字。可选。",
                     "$ref": "#/$defs/jsonStringList",
-                    "markdownDescription": "*list<string, >*\n\n标注，即每个分类的名字。可选。\n\n仅影响调试图片及日志等。若未填写，会自动从模型 metadata 中读取（支持从 `names`、`name`、`labels`、`class_names` 字段读取），一般无需手动设置。若模型 metadata 中也没有，则会填充 \"Unknown\" 。"
+                    "markdownDescription": "*list<string, >*\n\n标注，即每个分类的名字。可选。\n\n仅影响调试图片及日志等。标签按 Pipeline、ONNX metadata、模型同名 JSON 的顺序读取；均未提供时生成 `Unknown_<class_id>`。"
                 },
                 "model": {
                     "title": "Model Property",
                     "description": "模型文件路径。使用 `model/detect` 文件夹的相对路径。必选。",
                     "type": "string",
-                    "markdownDescription": "*string*\n\n模型文件路径。使用 `model/detect` 文件夹的相对路径。必选。\n\n目前支持由 YOLOv8 和 YOLOv11 导出的 ONNX 格式的模型，其他同样输入输出的 Yolo 模型理论上也可以支持，但未经测试。\n\n训练参考 [NNDetect 食谱](https://github.com/MaaXYZ/MaaNeuralNetworkCookbook/tree/main/NeuralNetworkDetect)。"
+                    "markdownDescription": "*string*\n\n模型文件路径。使用 `model/detect` 文件夹的相对路径并包含 `.onnx` 扩展名。必选。\n\n使用 `Detect` head 的官方 Ultralytics 模型以及 RT-DETR 可通过 metadata 自动识别；其他模型必须使用同名 JSON 补全预处理和输出协议。无法形成完整协议时返回 ModelError。\n\n训练参考 [NNDetect 食谱](https://github.com/MaaXYZ/MaaNeuralNetworkCookbook/tree/main/NeuralNetworkDetect)。"
                 },
                 "expected": {
                     "title": "Expected Property",
@@ -1231,6 +1231,31 @@
                     "$ref": "#/$defs/jsonNumber01OrList",
                     "markdownDescription": "*double* | *list<double, >*\n\n模型置信度阈值。可选，默认 0.3 。\n\n若为数组，长度需和 `expected` 数组长度相同。",
                     "default": 0.3
+                },
+                "multi_label": {
+                    "title": "Multi Label Property",
+                    "description": "是否为每个候选框保留所有合格类别。可选，默认 true。",
+                    "type": "boolean",
+                    "markdownDescription": "*boolean*\n\n是否为每个带分类分数的 proposal/query 保留所有合格类别。`false` 时仅保留最高分类别；已携带 class_id 的输出不受影响。可选，默认 `true`。",
+                    "default": true
+                },
+                "input_size": {
+                    "title": "Input Size Property",
+                    "description": "动态模型输入尺寸，顺序为 [width, height]。可选。",
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "prefixItems": [
+                        {
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    ],
+                    "markdownDescription": "*array<int, 2>*\n\n动态模型输入尺寸，顺序为 `[width, height]`。仅覆盖 ModelProto 中的动态 H/W；静态维度始终优先。"
                 },
                 "order_by": {
                     "title": "Order By Property",
@@ -1593,6 +1618,12 @@
                             "$ref": "#/$defs/NeuralNetworkDetect/properties/threshold"
                         }
                     ]
+                },
+                "multi_label": {
+                    "$ref": "#/$defs/NeuralNetworkDetect/properties/multi_label"
+                },
+                "input_size": {
+                    "$ref": "#/$defs/NeuralNetworkDetect/properties/input_size"
                 },
                 "order_by": {
                     "anyOf": [

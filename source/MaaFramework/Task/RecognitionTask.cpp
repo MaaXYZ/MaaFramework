@@ -50,7 +50,7 @@ MaaRecoId RecognitionTask::run_impl()
 
     auto reco = run_recognition(image_, cur_node);
 
-    bool hit = reco.box.has_value();
+    bool hit = reco.status == RecognitionStatus::Matched;
     NodeDetail result {
         .node_id = node_id,
         .name = entry_,

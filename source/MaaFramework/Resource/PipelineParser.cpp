@@ -1,5 +1,7 @@
 #include "PipelineParser.h"
 
+#include <cmath>
+
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
@@ -834,6 +836,29 @@ bool PipelineParser::parse_nn_detector_param(
 
     if (!get_and_check_value_or_array(input, "threshold", output.thresholds, default_value.thresholds)) {
         LogError << "failed to get_and_check_value_or_array threshold" << VAR(input);
+        return false;
+    }
+    if (!get_and_check_value(input, "multi_label", output.multi_label, default_value.multi_label)) {
+        LogError << "failed to get_and_check_value multi_label" << VAR(input);
+        return false;
+    }
+    if (auto input_size = input.find<std::array<int, 2>>("input_size")) {
+        if ((*input_size)[0] <= 0 || (*input_size)[1] <= 0) {
+            LogError << "input_size must contain positive width and height" << VAR(*input_size);
+            return false;
+        }
+        output.input_size = cv::Size { (*input_size)[0], (*input_size)[1] };
+    }
+    else if (input.exists("input_size")) {
+        LogError << "input_size must be [width, height]" << VAR(input);
+        return false;
+    }
+    else {
+        output.input_size = default_value.input_size;
+    }
+
+    if (input.exists("nms") || input.exists("nms_threshold")) {
+        LogError << "NeuralNetworkDetect NMS must be configured in the model descriptor";
         return false;
     }
 

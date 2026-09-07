@@ -711,6 +711,8 @@ class PipelineTestRecognition(CustomRecognition):
                     "model": "detect.onnx",
                     "expected": [1],
                     "threshold": [0.5],
+                    "multi_label": False,
+                    "input_size": [640, 384],
                 }
             }
         )
@@ -723,6 +725,8 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(param.model, "detect.onnx", "model")
         assert_eq(param.expected, [1], "expected")
         assert_eq(param.threshold, [0.5], "threshold")
+        assert_eq(param.multi_label, False, "multi_label")
+        assert_eq(param.input_size, [640, 384], "input_size")
 
         # Custom
         new_ctx.override_pipeline(

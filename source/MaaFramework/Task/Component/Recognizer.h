@@ -43,6 +43,7 @@ private:
 
     template <typename Analyzer>
     RecoResult build_result(const std::string& name, const std::string& algorithm, Analyzer&& analyzer);
+    RecoResult build_error(const std::string& name, const std::string& algorithm, std::string message);
 
     std::vector<cv::Rect> get_rois(const MAA_VISION_NS::Target& roi, bool use_best = false);
     std::vector<cv::Rect> get_rois_from_pretask(const std::string& name, bool use_best);

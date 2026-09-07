@@ -81,13 +81,13 @@ RecoResult TaskBase::run_recognition(
 
     RecoResult result = recognizer.recognize(data.reco_type, data.reco_param, data.name);
 
-    if (data.inverse) {
+    if (data.inverse && result.status != RecognitionStatus::Error) {
         LogDebug << "pipeline_data.inverse is true, reverse the result" << VAR(data.name) << VAR(result.box);
-        result.box = result.box ? std::nullopt : std::make_optional<cv::Rect>();
+        apply_recognition_inverse(result);
     }
 
     cb_detail["reco_details"] = result;
-    notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, cb_detail);
+    notify(result.status == RecognitionStatus::Matched ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, cb_detail);
 
     return result;
 }

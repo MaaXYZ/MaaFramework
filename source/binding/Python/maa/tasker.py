@@ -157,7 +157,7 @@ class Tasker:
         """
         img_buffer = ImageBuffer()
         img_buffer.set(image)
-        reco_param_json = json.dumps(dataclasses.asdict(reco_param), ensure_ascii=False)
+        reco_param_json = Tasker._gen_param_json(reco_param)
         taskid = Library.framework().MaaTaskerPostRecognition(
             self._handle,
             reco_type.encode(),
@@ -346,6 +346,14 @@ class Tasker:
         return (
             entry.encode(),
             pipeline_json.encode(),
+        )
+
+    @staticmethod
+    def _gen_param_json(param: Any) -> str:
+        values = dataclasses.asdict(param)
+        return json.dumps(
+            {key: value for key, value in values.items() if value is not None},
+            ensure_ascii=False,
         )
 
     def _gen_task_job(self, taskid: MaaTaskId) -> TaskJob:
