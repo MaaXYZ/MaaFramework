@@ -3,13 +3,11 @@
 #include <algorithm>
 #include <cctype>
 #include <cerrno>
-#include <chrono>
 #include <cstdlib>
 #include <format>
 #include <fstream>
 #include <optional>
 #include <string_view>
-#include <thread>
 
 #ifdef _WIN32
 #include "MaaUtils/SafeWindows.hpp"
@@ -105,40 +103,6 @@ void Transceiver::create_pair_socket()
     zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
     zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
     zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
-}
-
-bool Transceiver::bind_or_connect_socket()
-{
-    constexpr int kMaxAttempts = 20;
-    constexpr auto kRetryInterval = std::chrono::milliseconds(50);
-
-    for (int attempt = 1; attempt <= kMaxAttempts; ++attempt) {
-        try {
-            if (is_bound_) {
-                zmq_sock_.bind(ipc_addr_);
-            }
-            else {
-                zmq_sock_.connect(ipc_addr_);
-            }
-            return true;
-        }
-        catch (const zmq::error_t& e) {
-            LogWarn << "failed to" << (is_bound_ ? "bind" : "connect") << "socket" << VAR(e.what()) << VAR(e.num())
-                    << VAR(ipc_addr_) << VAR(attempt);
-            if (attempt == kMaxAttempts) {
-                LogError << "socket bind/connect failed after retries" << VAR(ipc_addr_);
-                return false;
-            }
-            if (is_bound_ && !is_tcp_) {
-                std::error_code ec;
-                std::filesystem::remove(ipc_path_, ec);
-            }
-            std::this_thread::sleep_for(kRetryInterval);
-            create_pair_socket();
-        }
-    }
-
-    return false;
 }
 
 void Transceiver::init_socket(const std::string& identifier, bool bind)
@@ -287,41 +251,6 @@ void Transceiver::uninit_socket()
         std::error_code ec;
         std::filesystem::remove(ipc_path_, ec);
     }
-}
-
-void Transceiver::reset_socket(std::chrono::milliseconds linger)
-{
-    std::unique_lock lock(socket_mutex_);
-
-    try {
-        zmq_sock_.set(zmq::sockopt::linger, static_cast<int>(linger.count()));
-    }
-    catch (const zmq::error_t& e) {
-        LogWarn << "failed to set linger" << VAR(e.what()) << VAR(e.num()) << VAR(ipc_addr_);
-    }
-
-    try {
-        if (is_bound_) {
-            zmq_sock_.unbind(ipc_addr_);
-        }
-        else {
-            zmq_sock_.disconnect(ipc_addr_);
-        }
-    }
-    catch (const zmq::error_t& e) {
-        LogWarn << "failed to" << (is_bound_ ? "unbind" : "disconnect") << "socket" << VAR(e.what()) << VAR(e.num())
-                << VAR(ipc_addr_);
-    }
-
-    zmq_sock_.close();
-
-    if (is_bound_ && !is_tcp_) {
-        std::error_code ec;
-        std::filesystem::remove(ipc_path_, ec);
-    }
-
-    create_pair_socket();
-    bind_or_connect_socket();
 }
 
 bool Transceiver::alive()

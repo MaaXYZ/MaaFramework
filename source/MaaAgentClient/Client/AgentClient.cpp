@@ -15,11 +15,6 @@
 
 MAA_AGENT_CLIENT_NS_BEGIN
 
-namespace
-{
-constexpr std::chrono::milliseconds kShutdownSocketLinger { 200 };
-}
-
 AgentClient::AgentClient(const std::string& identifier)
 {
     LogFunc;
@@ -169,10 +164,6 @@ bool AgentClient::connect()
         return false;
     }
 
-    // ZMQ PAIR cannot accept a new peer after the previous session occupied it.
-    // Recreate the listener here, not on the failed connect path.
-    reset_socket_if_needed();
-
     clear_custom_registration();
     connected_ = false;
 
@@ -245,11 +236,7 @@ bool AgentClient::abort_connect()
 {
     clear_custom_registration();
     connected_ = false;
-    const bool shutdown_queued = shutdown_remote_session(ShutdownMode::SendOnly);
-    // Keep the listener. Recreate PAIR on the next connect() if this session occupied it.
-    if (socket_needs_reset_ && shutdown_queued) {
-        pending_reset_with_linger_ = true;
-    }
+    shutdown_remote_session(ShutdownMode::SendOnly);
     return false;
 }
 
@@ -270,20 +257,7 @@ bool AgentClient::shutdown_remote_session(ShutdownMode mode)
     }
 
     remote_session_may_have_started_ = false;
-    socket_needs_reset_ = true;
     return shutdown_queued;
-}
-
-void AgentClient::reset_socket_if_needed()
-{
-    if (!socket_needs_reset_) {
-        return;
-    }
-
-    const auto linger = pending_reset_with_linger_ ? kShutdownSocketLinger : std::chrono::milliseconds(0);
-    pending_reset_with_linger_ = false;
-    reset_socket(linger);
-    socket_needs_reset_ = false;
 }
 
 void AgentClient::set_timeout(const std::chrono::milliseconds& timeout)

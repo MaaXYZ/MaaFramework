@@ -176,7 +176,6 @@ private:
 
     bool abort_connect();
     bool shutdown_remote_session(ShutdownMode mode);
-    void reset_socket_if_needed();
 
 public:
     static void res_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg);
@@ -199,8 +198,6 @@ private:
 
     bool connected_ = false;
     bool remote_session_may_have_started_ = false;
-    bool socket_needs_reset_ = false;
-    bool pending_reset_with_linger_ = false;
     std::string identifier_;
 
     std::map<std::string, MaaContext*> context_map_;
