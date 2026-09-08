@@ -276,7 +276,17 @@ bool EiInput::send(F&& emit)
 
 bool EiInput::pointer(EventPhase phase, int x, int y, int contact)
 {
-    int btn = (contact == 1) ? BTN_LEFT : (contact == 2) ? BTN_RIGHT : (contact == 3) ? BTN_MIDDLE : BTN_LEFT;
+    int btn = BTN_LEFT;
+    switch (contact) {
+    case 1:
+        btn = BTN_RIGHT;
+        break;
+    case 2:
+        btn = BTN_MIDDLE;
+        break;
+    default:
+        break;
+    }
 
     return send([phase, x, y, btn](struct ei_device* d) {
         switch (phase) {
