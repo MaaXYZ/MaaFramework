@@ -29,6 +29,8 @@ public:
 
     bool is_pseudo_minimized() const { return pseudo_minimized_; }
 
+    // 只恢复扩展样式与不透明度，不恢复最小化状态。窗口在此之后是完整显示的，
+    // 调用方若要保留用户原本的最小化意图，需自行补一次 ShowWindow(SW_MINIMIZE)，见 stop()
     void revert_pseudo_minimize();
 
 private:

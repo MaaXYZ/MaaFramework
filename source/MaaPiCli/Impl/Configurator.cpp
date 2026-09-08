@@ -43,6 +43,7 @@ MaaWin32InputMethod parse_win32_input_method(const std::string& method)
         { "SendMessageWithWindowPos", MaaWin32InputMethod_SendMessageWithWindowPos },
         { "PostMessageWithWindowPos", MaaWin32InputMethod_PostMessageWithWindowPos },
         { "Interception", MaaWin32InputMethod_Interception },
+        { "AnchoredTouch", MaaWin32InputMethod_AnchoredTouch },
     };
 
     if (auto it = mapping.find(method); it != mapping.end()) {
@@ -364,6 +365,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     // 设置分辨率配置
     runtime.display_config.short_side = controller.display_short_side;
     runtime.display_config.long_side = controller.display_long_side;
+    runtime.display_config.expand = controller.display_expand;
     runtime.display_config.raw = controller.display_raw;
 
     std::vector<InterfaceData::Agent> agents = std::visit(

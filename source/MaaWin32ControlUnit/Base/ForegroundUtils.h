@@ -25,9 +25,11 @@ inline void ensure_foreground_and_topmost(HWND hwnd)
         SetForegroundWindow(hwnd);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-        // 再次检查，如果仍然不在前台，再次置顶
+        // 再次检查，如果仍然不在前台，临时置顶再取消，强制提到 Z 序最前
+        // SetForegroundWindow 可能被系统前台限制拒绝，但 TOPMOST 切换不受此限制
         if (hwnd != GetForegroundWindow()) {
-            SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
     }

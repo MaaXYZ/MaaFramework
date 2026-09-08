@@ -222,8 +222,9 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             else {
                 const auto& inline_sub = std::get<Recognition::InlineSubRecognition>(sub);
                 auto sub_reco = dump_reco(inline_sub.type, inline_sub.param);
-                json::object sub_json = sub_reco.to_json().as_object();
+                json::object sub_json;
                 sub_json["sub_name"] = inline_sub.sub_name;
+                sub_json["recognition"] = sub_reco.to_json();
                 all_list.emplace_back(json::value(std::move(sub_json)));
             }
         }
@@ -249,8 +250,9 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             else {
                 const auto& inline_sub = std::get<Recognition::InlineSubRecognition>(sub);
                 auto sub_reco = dump_reco(inline_sub.type, inline_sub.param);
-                json::object sub_json = sub_reco.to_json().as_object();
+                json::object sub_json;
                 sub_json["sub_name"] = inline_sub.sub_name;
+                sub_json["recognition"] = sub_reco.to_json();
                 any_list.emplace_back(json::value(std::move(sub_json)));
             }
         }

@@ -229,19 +229,25 @@ bool PlayToolsClient::screencap(std::vector<uint8_t>& buffer, int& width, int& h
     return true;
 }
 
-bool PlayToolsClient::touch(TouchPhase phase, int x, int y)
+bool PlayToolsClient::touch(TouchPhase phase, int x, int y, int contact)
 {
+    // PlayTools carries the contact in a single byte
+    if (contact < 0 || contact > 0xFF) {
+        LogWarn << "invalid touch contact" << VAR(contact);
+        return false;
+    }
+
     if (!open()) {
         return false;
     }
 
     uint16_t nx = htons(static_cast<uint16_t>(x));
     uint16_t ny = htons(static_cast<uint16_t>(y));
-    uint8_t payload[5] = { static_cast<uint8_t>(phase), 0, 0, 0, 0 };
+    uint8_t payload[6] = { static_cast<uint8_t>(phase), 0, 0, 0, 0, static_cast<uint8_t>(contact) };
     std::memcpy(payload + 1, &nx, sizeof(nx));
     std::memcpy(payload + 3, &ny, sizeof(ny));
 
-    constexpr char request[6] = { 0, 9, 'T', 'U', 'C', 'H' };
+    constexpr char request[6] = { 0, 10, 'T', 'U', 'C', 'H' };
     boost::system::error_code ec;
     boost::asio::write(socket_, boost::asio::buffer(request), ec);
     if (ec) {
@@ -249,7 +255,7 @@ bool PlayToolsClient::touch(TouchPhase phase, int x, int y)
         close();
         return false;
     }
-    boost::asio::write(socket_, boost::asio::buffer(payload, 5), ec);
+    boost::asio::write(socket_, boost::asio::buffer(payload, 6), ec);
     if (ec) {
         LogError << "Cannot send touch payload:" << ec.message();
         close();

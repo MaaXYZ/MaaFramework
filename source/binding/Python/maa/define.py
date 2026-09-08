@@ -281,6 +281,14 @@ class MaaCtrlOptionEnum(IntEnum):
     # value: int32_t array of virtual key codes; val_size: sizeof(int32_t) * count
     BackgroundManagedKeys = 7
 
+    # Scale screenshot to fit a reference (width, height) using Unity Canvas
+    # Scaler "Expand" semantics: scale = max(W / raw_width, H / raw_height),
+    # applied uniformly so the source aspect ratio is preserved and both
+    # output dimensions are >= the reference (W, H).
+    # Mutually exclusive with ScreenshotTargetLongSide / ScreenshotTargetShortSide.
+    # value: int32_t[2] = (width, height); val_size: sizeof(int32_t) * 2
+    ScreenshotTargetExpand = 8
+
 
 class MaaInferenceDeviceEnum(IntEnum):
     CPU = -2
@@ -473,6 +481,7 @@ class MaaWin32InputMethodEnum(IntEnum):
     | SendMessageWithWindowPos | Medium | Maybe | No          | Yes| Moves window to align w/ cursor, rest.|
     | PostMessageWithWindowPos | Medium | Maybe | No          | Yes| Moves window to align w/ cursor, rest.|
     | Interception             | Medium | Yes   | No          | No | Driver-level input injection via Interception driver |
+    | AnchoredTouch            | Medium | Maybe | No          | Yes| Injects synthetic touch points, never moves the cursor |
 
     Note:
     - Admin rights mainly depend on the target application's privilege level.
@@ -481,6 +490,9 @@ class MaaWin32InputMethodEnum(IntEnum):
       then restore cursor position. This "briefly" seizes the mouse but won't block user operations.
     - "WithWindowPos" methods briefly move the window so the target aligns with the current cursor
       position, send message, then restore the window position. The cursor is not moved.
+    - "AnchoredTouch" injects synthetic touch points, the target window receives WM_POINTER messages.
+      The target window is briefly raised to topmost while the target point is occluded.
+      Mouse only, select another method for keyboard input.
     """
 
     Null = 0
@@ -495,6 +507,7 @@ class MaaWin32InputMethodEnum(IntEnum):
     SendMessageWithWindowPos = 1 << 7
     PostMessageWithWindowPos = 1 << 8
     Interception = 1 << 9
+    AnchoredTouch = 1 << 10
 
 
 MaaMacOSScreencapMethod = ctypes.c_uint64
