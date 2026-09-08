@@ -173,6 +173,7 @@ def run_connected_agent_test(
                     print(
                         f"  action_detail: name={action_detail.name}, success={action_detail.success}"
                     )
+                    assert action_detail.success, "custom action should succeed"
 
         assert agent.disconnect()
         child_process.wait(timeout=PROCESS_TIMEOUT_SECONDS)
