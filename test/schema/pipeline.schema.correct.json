@@ -69,6 +69,27 @@
     "focus_null": {
         "focus": null
     },
+    "focus_legacy_string": {
+        "focus": "{name} 开始执行"
+    },
+    "focus_legacy_bool": {
+        "focus": true
+    },
+    "focus_legacy_number": {
+        "focus": 123
+    },
+    "focus_legacy_array": {
+        "focus": [
+            "value"
+        ]
+    },
+    "focus_legacy_object": {
+        "focus": {
+            "Unknown.Message": {
+                "content": 123
+            }
+        }
+    },
     "pipeline_override_recognition_v1": {
         "roi": "[]"
     },
