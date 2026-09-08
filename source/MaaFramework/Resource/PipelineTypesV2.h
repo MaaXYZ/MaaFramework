@@ -90,7 +90,7 @@ struct JNeuralNetworkClassify
     JRect roi_offset;
     std::vector<std::string> labels;
     std::string model;
-    std::vector<int> expected;
+    std::vector<std::variant<int, std::string>> expected;
     std::string order_by;
     int index = 0;
 
@@ -103,7 +103,7 @@ struct JNeuralNetworkDetect
     JRect roi_offset;
     std::vector<std::string> labels;
     std::string model;
-    std::vector<int> expected;
+    std::vector<std::variant<int, std::string>> expected;
     std::vector<double> threshold;
     std::string order_by;
     int index = 0;

@@ -84,6 +84,53 @@ bool get_and_check_value_or_array(
     return true;
 }
 
+template <>
+bool get_and_check_value_or_array<std::variant<int, std::string>>(
+    const json::value& input,
+    const std::string& key,
+    std::vector<std::variant<int, std::string>>& output,
+    const std::vector<std::variant<int, std::string>>& default_value)
+{
+    output.clear();
+
+    auto opt = input.find(key);
+    if (!opt) {
+        output = default_value;
+        return true;
+    }
+
+    // 处理单个值
+    if (opt->is<int>()) {
+        output = { opt->as<int>() };
+        return true;
+    }
+    else if (opt->is<std::string>()) {
+        output = { opt->as<std::string>() };
+        return true;
+    }
+    // 处理数组
+    else if (opt->is_array()) {
+        for (const auto& item : opt->as_array()) {
+            if (item.is<int>()) {
+                output.emplace_back(item.as<int>());
+            }
+            else if (item.is<std::string>()) {
+                output.emplace_back(item.as<std::string>());
+            }
+            else {
+                // 不支持的类型
+                LogError << "type error" << VAR(key) << VAR(input);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // 单个值且是不支持类型
+    LogError << "type error" << VAR(key) << VAR(input);
+    return false;
+}
+
 template <typename OutT>
 bool get_multi_keys_and_check_value_or_array(
     const json::value& input,
@@ -188,7 +235,6 @@ bool get_and_check_array_or_2darray(
 
     return !output.empty();
 }
-
 
 bool PipelineParser::parse_node(
     const std::string& name,

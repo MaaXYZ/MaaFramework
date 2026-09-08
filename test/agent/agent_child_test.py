@@ -46,6 +46,7 @@ from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.library import Library
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
+from agent_test_utils import record_sink_event, signal_server_ready
 
 
 analyzed: bool = False
@@ -58,7 +59,8 @@ def main():
         exit(1)
 
     socket_id = sys.argv[-1]
-    AgentServer.start_up(socket_id)
+    assert AgentServer.start_up(socket_id)
+    signal_server_ready()
     AgentServer.join()
     AgentServer.shut_down()
 
@@ -273,7 +275,7 @@ class MyAction(CustomAction):
         assert isinstance(info, dict), "info should be a dict"
         assert "type" in info, "info should contain 'type'"
         assert isinstance(info["type"], str), "info['type'] should be a str"
-        assert info["type"] == "replay", "info['type'] should be 'replay'"
+        assert info["type"] == "dbg", "info['type'] should be 'dbg'"
         assert (
             "image_count" in info or "record_count" in info
         ), "info should contain at least 'image_count' or 'record_count'"
@@ -423,24 +425,28 @@ for custom_decorator in [AgentServer.custom_recognition, AgentServer.custom_acti
 @AgentServer.resource_sink()
 class MyResSink(ResourceEventSink):
     def on_raw_notification(self, resource, msg: str, details: dict):
+        record_sink_event("resource")
         print(f"[ResourceSink] msg: {msg}")
 
 
 @AgentServer.controller_sink()
 class MyCtrlSink(ControllerEventSink):
     def on_raw_notification(self, controller, msg: str, details: dict):
+        record_sink_event("controller")
         print(f"[ControllerSink] msg: {msg}")
 
 
 @AgentServer.tasker_sink()
 class MyTaskerSink(TaskerEventSink):
     def on_raw_notification(self, tasker, msg: str, details: dict):
+        record_sink_event("tasker")
         print(f"[TaskerSink] msg: {msg}")
 
 
 @AgentServer.context_sink()
 class MyCtxSink(ContextEventSink):
     def on_raw_notification(self, context, msg: str, details: dict):
+        record_sink_event("context")
         print(f"[ContextSink] msg: {msg}")
 
 

@@ -25,12 +25,12 @@ declare global {
             OCR: 'Horizontal' | 'Vertical' | 'Area' | 'Length' | 'Random' | 'Expected'
             NeuralNetworkClassify: 'Horizontal' | 'Vertical' | 'Score' | 'Random' | 'Expected'
             NeuralNetworkDetect:
-                | 'Horizontal'
-                | 'Vertical'
-                | 'Score'
-                | 'Area'
-                | 'Random'
-                | 'Expected'
+            | 'Horizontal'
+            | 'Vertical'
+            | 'Score'
+            | 'Area'
+            | 'Random'
+            | 'Expected'
         }
 
         type RecognitionDirectHit = {
@@ -74,23 +74,23 @@ declare global {
             roi_offset?: Rect
         } & RequiredIfStrict<
             | {
-                  method?: 4 | 40
-                  lower?: MaybeArray<FixedArray<number, 3>, Mode>
-                  upper?: MaybeArray<FixedArray<number, 3>, Mode>
-              }
+                method?: 4 | 40
+                lower?: MaybeArray<FixedArray<number, 3>, Mode>
+                upper?: MaybeArray<FixedArray<number, 3>, Mode>
+            }
             | {
-                  method: 6
-                  lower?: MaybeArray<FixedArray<number, 1>, Mode>
-                  upper?: MaybeArray<FixedArray<number, 1>, Mode>
-              },
+                method: 6
+                lower?: MaybeArray<FixedArray<number, 1>, Mode>
+                upper?: MaybeArray<FixedArray<number, 1>, Mode>
+            },
             'lower' | 'upper',
             Mode
         > & {
-                count?: number
-                order_by?: OrderByMap['ColorMatch']
-                index?: number
-                connected?: boolean
-            }
+            count?: number
+            order_by?: OrderByMap['ColorMatch']
+            index?: number
+            connected?: boolean
+        }
 
         type RecognitionOCR<Mode> = {
             roi?: Rect | NodeName
@@ -111,7 +111,7 @@ declare global {
                 roi_offset?: Rect
                 labels?: string[]
                 model?: string
-                expected?: MaybeArray<number, Mode>
+                expected?: MaybeArray<number | string, Mode>
                 order_by?: OrderByMap['NeuralNetworkClassify']
                 index?: number
             },
@@ -125,7 +125,7 @@ declare global {
                 roi_offset?: Rect
                 labels?: string[]
                 model?: string
-                expected?: MaybeArray<number, Mode>
+                expected?: MaybeArray<number | string, Mode>
                 threshold?: number
                 order_by?: OrderByMap['NeuralNetworkDetect']
                 index?: number
@@ -164,17 +164,17 @@ declare global {
 
         type MixReco<Type extends string, Param, Mode> =
             | {
-                  recognition: {
-                      type: Type
-                      param?: Param
-                  }
-              }
+                recognition: {
+                    type: Type
+                    param?: Param
+                }
+            }
             | RemoveIfDump<
-                  {
-                      recognition: Type
-                  } & Param,
-                  Mode
-              >
+                {
+                    recognition: Type
+                } & Param,
+                Mode
+            >
 
         type RecognitionType =
             | 'DirectHit'
@@ -190,14 +190,14 @@ declare global {
 
         type Recognition<Mode> =
             | RemoveIfDump<
-                  {
-                      recognition?: {
-                          type?: never
-                          param?: never
-                      }
-                  },
-                  Mode
-              >
+                {
+                    recognition?: {
+                        type?: never
+                        param?: never
+                    }
+                },
+                Mode
+            >
             | MixReco<'DirectHit', RecognitionDirectHit, Mode>
             | MixReco<'TemplateMatch', RecognitionTemplateMatch<Mode>, Mode>
             | MixReco<'FeatureMatch', RecognitionFeatureMatch<Mode>, Mode>
@@ -369,17 +369,17 @@ declare global {
 
         type MixAct<Type extends string, Param, Mode> =
             | RemoveIfDump<
-                  {
-                      action: Type
-                  } & Param,
-                  Mode
-              >
+                {
+                    action: Type
+                } & Param,
+                Mode
+            >
             | {
-                  action: {
-                      type: Type
-                      param?: Param
-                  }
-              }
+                action: {
+                    type: Type
+                    param?: Param
+                }
+            }
 
         type ActionType =
             | 'DoNothing'
@@ -407,14 +407,14 @@ declare global {
 
         type Action<Mode> =
             | RemoveIfDump<
-                  {
-                      action?: {
-                          type?: never
-                          param?: never
-                      }
-                  },
-                  Mode
-              >
+                {
+                    action?: {
+                        type?: never
+                        param?: never
+                    }
+                },
+                Mode
+            >
             | MixAct<'DoNothing', ActionDoNothing, Mode>
             | MixAct<'Click', ActionClick, Mode>
             | MixAct<'LongPress', ActionLongPress, Mode>
@@ -483,10 +483,10 @@ declare global {
 
         type RecursiveRequired<T> =
             T extends Record<string, unknown>
-                ? {
-                      [key in keyof T]: NonNullable<RecursiveRequired<T[key]>>
-                  }
-                : T
+            ? {
+                [key in keyof T]: NonNullable<RecursiveRequired<T[key]>>
+            }
+            : T
 
         type DumpTask = RecursiveRequired<
             Recognition<ModeDump> & Action<ModeDump> & General<ModeDump>
@@ -494,4 +494,4 @@ declare global {
     }
 }
 
-export {}
+export { }

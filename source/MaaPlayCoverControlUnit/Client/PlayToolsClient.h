@@ -33,7 +33,7 @@ public:
     bool connected() const;
 
     bool screencap(std::vector<uint8_t>& buffer, int& width, int& height);
-    bool touch(TouchPhase phase, int x, int y);
+    bool touch(TouchPhase phase, int x, int y, int contact);
     bool terminate();
 
     std::pair<int, int> screen_size() const;

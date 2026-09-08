@@ -98,6 +98,13 @@ static std::optional<uint16_t> parse_port_string(std::string_view port_str)
     return static_cast<uint16_t>(port);
 }
 
+void Transceiver::create_pair_socket()
+{
+    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
+    zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
+    zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
+}
+
 void Transceiver::init_socket(const std::string& identifier, bool bind)
 {
     LogFunc << VAR(bind);
@@ -111,10 +118,7 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
 
     LogInfo << VAR(ipc_addr_) << VAR(identifier);
 
-    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
-
-    zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
-    zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
+    create_pair_socket();
 
     is_bound_ = bind;
 
@@ -148,10 +152,7 @@ uint16_t Transceiver::init_tcp_socket(uint16_t port, bool bind)
 
     is_tcp_ = true;
 
-    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
-
-    zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
-    zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
+    create_pair_socket();
 
     is_bound_ = bind;
 
@@ -252,6 +253,36 @@ void Transceiver::uninit_socket()
     }
 }
 
+void Transceiver::reset_socket(std::chrono::milliseconds linger)
+{
+    std::unique_lock lock(socket_mutex_);
+
+    zmq_sock_.set(zmq::sockopt::linger, static_cast<int>(linger.count()));
+
+    if (is_bound_) {
+        zmq_sock_.unbind(ipc_addr_);
+    }
+    else {
+        zmq_sock_.disconnect(ipc_addr_);
+    }
+
+    zmq_sock_.close();
+
+    if (is_bound_ && !is_tcp_) {
+        std::error_code ec;
+        std::filesystem::remove(ipc_path_, ec);
+    }
+
+    create_pair_socket();
+
+    if (is_bound_) {
+        zmq_sock_.bind(ipc_addr_);
+    }
+    else {
+        zmq_sock_.connect(ipc_addr_);
+    }
+}
+
 bool Transceiver::alive()
 {
     std::unique_lock lock(socket_mutex_);
@@ -261,6 +292,7 @@ bool Transceiver::alive()
 void Transceiver::set_timeout(const std::chrono::milliseconds& timeout)
 {
     LogInfo << VAR(timeout) << VAR(ipc_addr_);
+    // This timeout controls Transceiver::poll and therefore survives socket recreation.
     timeout_ = timeout;
 }
 
@@ -305,6 +337,17 @@ bool Transceiver::send(const json::value& j)
         return false;
     }
 
+    return send_impl(j);
+}
+
+bool Transceiver::send_no_wait(const json::value& j)
+{
+    std::unique_lock lock(socket_mutex_);
+    return send_impl(j);
+}
+
+bool Transceiver::send_impl(const json::value& j)
+{
     std::string jstr = j.dumps();
     zmq::message_t msg(jstr.data(), jstr.size());
 

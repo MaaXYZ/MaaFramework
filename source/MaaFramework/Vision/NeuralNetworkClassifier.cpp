@@ -33,6 +33,8 @@ void NeuralNetworkClassifier::analyze()
     }
     auto start_time = std::chrono::steady_clock::now();
 
+    init_expected_indices();
+
     while (next_roi()) {
         auto res = classify();
         add_results({ std::move(res) }, param_.expected);
@@ -97,7 +99,7 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
     return res;
 }
 
-void NeuralNetworkClassifier::add_results(ResultsVec results, const std::vector<int>& expected)
+void NeuralNetworkClassifier::add_results(ResultsVec results, const std::vector<std::variant<int, std::string>>& expected)
 {
     if (expected.empty()) {
         // expected 为空时，所有结果均可用
@@ -105,7 +107,7 @@ void NeuralNetworkClassifier::add_results(ResultsVec results, const std::vector<
     }
     else {
         std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
-            return std::ranges::find(expected, res.cls_index) != expected.end();
+            return std::ranges::find(expected_indices_, res.cls_index) != expected_indices_.end();
         });
     }
 
@@ -153,11 +155,41 @@ void NeuralNetworkClassifier::sort_(ResultsVec& results) const
         sort_by_random_(results);
         break;
     case ResultOrderBy::Expected:
-        sort_by_expected_index_(results, param_.expected);
+        sort_by_expected_index_(results, expected_indices_);
         break;
     default:
         LogError << "Not supported order by" << VAR(param_.order_by);
         break;
+    }
+}
+
+void NeuralNetworkClassifier::init_expected_indices()
+{
+    expected_indices_.clear();
+    expected_indices_.reserve(param_.expected.size());
+
+    for (const auto& item : param_.expected) {
+        if (std::holds_alternative<int>(item)) {
+            int idx = std::get<int>(item);
+            // 校验索引有效性
+            if (idx >= 0) {
+                expected_indices_.push_back(idx);
+            }
+            else {
+                LogWarn << "Invalid index in expected" << VAR(idx);
+            }
+        }
+        else if (std::holds_alternative<std::string>(item)) {
+            const std::string& label = std::get<std::string>(item);
+            auto it = std::find(param_.labels.begin(), param_.labels.end(), label);
+            if (it != param_.labels.end()) {
+                int idx = static_cast<int>(std::distance(param_.labels.begin(), it));
+                expected_indices_.push_back(idx);
+            }
+            else {
+                LogWarn << "Label not found in labels list" << VAR(label);
+            }
+        }
     }
 }
 

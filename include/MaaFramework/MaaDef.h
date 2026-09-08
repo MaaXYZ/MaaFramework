@@ -242,6 +242,16 @@ enum MaaCtrlOptionEnum
     ///
     /// value: int32_t array of virtual key codes; val_size: sizeof(int32_t) * count
     MaaCtrlOption_BackgroundManagedKeys = 7,
+
+    /// Scale screenshot to fit a reference (width, height) using Unity Canvas
+    /// Scaler "Expand" semantics: scale = max(W / raw_width, H / raw_height),
+    /// applied uniformly to both axes so the source aspect ratio is preserved
+    /// and both output dimensions are >= the reference (W, H).
+    /// Mutually exclusive with ScreenshotTargetLongSide / ScreenshotTargetShortSide;
+    /// setting any of these resets the others. Ignored when ScreenshotUseRawSize is true.
+    ///
+    /// value: int32_t[2] = { width, height }; val_size: sizeof(int32_t) * 2
+    MaaCtrlOption_ScreenshotTargetExpand = 8,
 };
 
 typedef MaaOption MaaTaskerOption;

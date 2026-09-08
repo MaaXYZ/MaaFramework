@@ -412,10 +412,23 @@
                         "default_case": {
                             "type": "array",
                             "title": "默认选中项",
-                            "description": "💡 v2.3.0 默认选中的选项名称数组，Client 使用该值作为多选框的初始选中值",
+                            "description": "💡 v2.3.0 默认选中的选项名称数组，Client 使用该值作为多选框的初始选中值。💡 v2.10.1 元素数量应满足 min_count / max_count（若已设置）",
                             "items": {
                                 "type": "string"
                             }
+                        },
+                        "min_count": {
+                            "type": "integer",
+                            "title": "最小选择数量",
+                            "description": "💡 v2.10.1 可选，默认 0。用户至少需要选中的 case 数量。为 0 时允许不选。不应大于 cases 长度；若同时设置 max_count，则不应大于 max_count",
+                            "minimum": 0,
+                            "default": 0
+                        },
+                        "max_count": {
+                            "type": "integer",
+                            "title": "最大选择数量",
+                            "description": "💡 v2.10.1 可选。用户最多可以选中的 case 数量。不设置表示不限制（最多可选中全部 case）。不应大于 cases 长度；若同时设置 min_count，则不应小于 min_count",
+                            "minimum": 0
                         }
                     },
                     "required": [
@@ -531,7 +544,17 @@
                 "display_long_side": {
                     "type": "number",
                     "title": "长边分辨率",
-                    "description": "默认缩放分辨率的长边长度，用于屏幕适配。与 display_short_side 和 display_raw 互斥"
+                    "description": "默认缩放分辨率的长边长度，用于屏幕适配。与 display_short_side、display_expand 和 display_raw 互斥"
+                },
+                "display_expand": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    },
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "title": "Unity Expand 参考分辨率",
+                    "description": "按 Unity Canvas Scaler 的 Expand 语义缩放：scale = max(width / raw_width, height / raw_height)，保持源宽高比，输出两边均不小于参考。格式 [width, height]。与 display_short_side、display_long_side 和 display_raw 互斥"
                 },
                 "display_raw": {
                     "type": "boolean",
