@@ -169,18 +169,23 @@ bool AgentClient::connect()
         return false;
     }
 
+    // ZMQ PAIR cannot accept a new peer after the previous session occupied it.
+    // Recreate the listener here, not on the failed connect path.
     reset_socket_if_needed();
 
     clear_custom_registration();
     connected_ = false;
-    remote_session_may_have_started_ = true;
 
     auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest { });
 
     if (!resp_opt) {
         LogError << "failed to send_and_recv";
+        if (alive()) {
+            remote_session_may_have_started_ = true;
+        }
         return abort_connect();
     }
+    remote_session_may_have_started_ = true;
     const auto& resp = *resp_opt;
     LogInfo << VAR(resp);
 
@@ -223,7 +228,6 @@ bool AgentClient::disconnect()
 
     connected_ = false;
     shutdown_remote_session(ShutdownMode::WaitForResponse);
-    reset_socket_if_needed();
     return true;
 }
 
@@ -242,8 +246,10 @@ bool AgentClient::abort_connect()
     clear_custom_registration();
     connected_ = false;
     const bool shutdown_queued = shutdown_remote_session(ShutdownMode::SendOnly);
-    // Give the queued one-way shutdown a bounded drain window before replacing the socket.
-    reset_socket_if_needed(shutdown_queued ? kShutdownSocketLinger : std::chrono::milliseconds(0));
+    // Keep the listener. Recreate PAIR on the next connect() if this session occupied it.
+    if (socket_needs_reset_ && shutdown_queued) {
+        pending_reset_with_linger_ = true;
+    }
     return false;
 }
 
@@ -268,12 +274,14 @@ bool AgentClient::shutdown_remote_session(ShutdownMode mode)
     return shutdown_queued;
 }
 
-void AgentClient::reset_socket_if_needed(std::chrono::milliseconds linger)
+void AgentClient::reset_socket_if_needed()
 {
     if (!socket_needs_reset_) {
         return;
     }
 
+    const auto linger = pending_reset_with_linger_ ? kShutdownSocketLinger : std::chrono::milliseconds(0);
+    pending_reset_with_linger_ = false;
     reset_socket(linger);
     socket_needs_reset_ = false;
 }
