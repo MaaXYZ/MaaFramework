@@ -258,20 +258,15 @@ void Transceiver::reset_socket(std::chrono::milliseconds linger)
     std::unique_lock lock(socket_mutex_);
 
     zmq_sock_.set(zmq::sockopt::linger, static_cast<int>(linger.count()));
-
-    if (is_bound_) {
-        zmq_sock_.unbind(ipc_addr_);
-    }
-    else {
-        zmq_sock_.disconnect(ipc_addr_);
-    }
-
     zmq_sock_.close();
 
     if (is_bound_ && !is_tcp_) {
         std::error_code ec;
         std::filesystem::remove(ipc_path_, ec);
     }
+
+    zmq_ctx_.close(); // 同步等待 socket 销毁完成
+    zmq_ctx_ = zmq::context_t();
 
     create_pair_socket();
 
