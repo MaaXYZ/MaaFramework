@@ -8,6 +8,7 @@ declare global {
 
         type RemoveIfDump<T, Mode> = Mode extends ModeDump ? never : T
         type MaybeArray<T, Mode> = T[] | RemoveIfDump<T, Mode>
+        type Duration = number | [number, number]
         type FixedArray<T, K extends number, A extends T[] = []> = A['length'] extends K
             ? A
             : FixedArray<T, K, [...A, T]>
@@ -221,7 +222,7 @@ declare global {
         type ActionLongPress = {
             target?: true | NodeName | Rect
             target_offset?: Rect
-            duration?: number
+            duration?: Duration
             contact?: number
         }
 
@@ -230,8 +231,8 @@ declare global {
             begin_offset?: Rect
             end?: true | NodeName | Rect | (true | NodeName | Rect)[]
             end_offset?: Rect | Rect[]
-            duration?: number | number[]
-            end_hold?: number | number[]
+            duration?: Duration | Duration[]
+            end_hold?: Duration | Duration[]
             only_hover?: boolean
             contact?: number
         }
@@ -239,13 +240,13 @@ declare global {
         type ActionMultiSwipe<Mode> = RequiredIfStrict<
             {
                 swipes?: {
-                    starting?: number
+                    starting?: Duration
                     begin?: true | NodeName | Rect
                     begin_offset?: Rect
                     end?: true | NodeName | Rect | (true | NodeName | Rect)[]
                     end_offset?: Rect | Rect[]
-                    duration?: number | number[]
-                    end_hold?: number | number[]
+                    duration?: Duration | Duration[]
+                    end_hold?: Duration | Duration[]
                     only_hover?: boolean
                     contact?: number
                 }[]
@@ -284,7 +285,7 @@ declare global {
         type ActionLongPressKey<Mode> = RequiredIfStrict<
             {
                 key?: number
-                duration?: number
+                duration?: Duration
             },
             'key',
             Mode
@@ -344,7 +345,8 @@ declare global {
         type ActionShell<Mode> = RequiredIfStrict<
             {
                 cmd?: string
-                timeout?: number
+                timeout?: Duration
+                shell_timeout?: Duration
             },
             'cmd',
             Mode
@@ -449,31 +451,31 @@ declare global {
         >
 
         type WaitFreeze = {
-            time?: number
+            time?: Duration
             target?: true | NodeName | Rect
             target_offset?: Rect
             threshold?: number
             method?: 1 | 3 | 5
-            rate_limit?: number
-            timeout?: number
+            rate_limit?: Duration
+            timeout?: Duration
         }
 
         type General<Mode> = {
             next?: MaybeArray<RemoveIfDump<NodeName, Mode> | NodeAttr<Mode>, Mode>
-            rate_limit?: number
-            timeout?: number
+            rate_limit?: Duration
+            timeout?: Duration
             on_error?: MaybeArray<RemoveIfDump<NodeName, Mode> | NodeAttr<Mode>, Mode>
             anchor?: RemoveIfDump<NodeName | NodeName[], Mode> | Record<NodeName, NodeName>
             inverse?: boolean
             enabled?: boolean
             max_hit?: number
-            pre_delay?: number
-            post_delay?: number
-            pre_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
-            post_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
+            pre_delay?: Duration
+            post_delay?: Duration
+            pre_wait_freezes?: RemoveIfDump<Duration, Mode> | WaitFreeze
+            post_wait_freezes?: RemoveIfDump<Duration, Mode> | WaitFreeze
             repeat?: number
-            repeat_delay?: number
-            repeat_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
+            repeat_delay?: Duration
+            repeat_wait_freezes?: RemoveIfDump<Duration, Mode> | WaitFreeze
             focus?: unknown
             attach?: Record<string, unknown>
         }
