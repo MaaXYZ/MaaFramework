@@ -76,7 +76,7 @@ bool EiInput::init()
     }
 
     if (!connected_) {
-        LogError << (device_ ? "EiInput init timed out" : "No device with keyboard and pointer capabilities");
+        LogError << (device_ ? "EiInput init timed out" : "No device with keyboard and absolute pointer capabilities");
         return cleanup();
     }
 
@@ -161,12 +161,16 @@ bool EiInput::key_up(int key)
 bool EiInput::scroll(int dx, int dy)
 {
     // 对 dy 取反，在行为上和 Win32 保持一致
-    return send([dx, dy](struct ei_device* d) { ei_device_scroll_delta(d, static_cast<double>(dx), static_cast<double>(-dy)); });
+    return send({ EI_DEVICE_CAP_SCROLL }, [dx, dy](struct ei_device* d) {
+        ei_device_scroll_delta(d, static_cast<double>(dx), static_cast<double>(-dy));
+    });
 }
 
 bool EiInput::relative_move(int dx, int dy)
 {
-    return send([dx, dy](struct ei_device* d) { ei_device_pointer_motion(d, static_cast<double>(dx), static_cast<double>(dy)); });
+    return send({ EI_DEVICE_CAP_POINTER }, [dx, dy](struct ei_device* d) {
+        ei_device_pointer_motion(d, static_cast<double>(dx), static_cast<double>(dy));
+    });
 }
 
 int EiInput::poll_and_dispatch(int timeout_ms)
@@ -207,7 +211,7 @@ void EiInput::handle_event(struct ei_event* event)
     }
     case EI_EVENT_DEVICE_ADDED: {
         struct ei_device* dev = ei_event_get_device(event);
-        if (ei_device_has_capability(dev, EI_DEVICE_CAP_KEYBOARD) && ei_device_has_capability(dev, EI_DEVICE_CAP_POINTER)) {
+        if (ei_device_has_capability(dev, EI_DEVICE_CAP_KEYBOARD) && ei_device_has_capability(dev, EI_DEVICE_CAP_POINTER_ABSOLUTE)) {
             if (device_) {
                 ei_device_unref(device_);
             }
@@ -257,7 +261,7 @@ void EiInput::handle_event(struct ei_event* event)
 }
 
 template <typename F>
-bool EiInput::send(F&& emit)
+bool EiInput::send(std::initializer_list<enum ei_device_capability> required_caps, F&& emit)
 {
     if (!device_ || !ei_) {
         LogError << "send called without a valid device/ei";
@@ -269,6 +273,12 @@ bool EiInput::send(F&& emit)
         LogError << "device removed or disconnected";
         return false;
     }
+    for (enum ei_device_capability cap : required_caps) {
+        if (!ei_device_has_capability(device_, cap)) {
+            LogError << "device lacks required capability" << VAR(static_cast<int>(cap));
+            return false;
+        }
+    }
     emit(device_);
     ei_device_frame(device_, ei_now(ei_));
     return true;
@@ -276,9 +286,19 @@ bool EiInput::send(F&& emit)
 
 bool EiInput::pointer(EventPhase phase, int x, int y, int contact)
 {
-    int btn = (contact == 1) ? BTN_LEFT : (contact == 2) ? BTN_RIGHT : (contact == 3) ? BTN_MIDDLE : BTN_LEFT;
+    int btn = BTN_LEFT;
+    switch (contact) {
+    case 1:
+        btn = BTN_RIGHT;
+        break;
+    case 2:
+        btn = BTN_MIDDLE;
+        break;
+    default:
+        break;
+    }
 
-    return send([phase, x, y, btn](struct ei_device* d) {
+    auto emit = [phase, x, y, btn](struct ei_device* d) {
         switch (phase) {
         case EventPhase::Began:
             ei_device_pointer_motion_absolute(d, static_cast<double>(x), static_cast<double>(y));
@@ -291,17 +311,31 @@ bool EiInput::pointer(EventPhase phase, int x, int y, int contact)
             ei_device_button_button(d, btn, false);
             break;
         }
-    });
+    };
+
+    switch (phase) {
+    case EventPhase::Began:
+        return send({ EI_DEVICE_CAP_POINTER_ABSOLUTE, EI_DEVICE_CAP_BUTTON }, emit);
+    case EventPhase::Moved:
+        return send({ EI_DEVICE_CAP_POINTER_ABSOLUTE }, emit);
+    case EventPhase::Ended:
+        return send({ EI_DEVICE_CAP_BUTTON }, emit);
+    default:
+        break;
+    }
+    return false;
 }
 
 bool EiInput::keyboard_key(EventPhase phase, int evdev_key)
 {
-    return send([phase, evdev_key](struct ei_device* d) { ei_device_keyboard_key(d, evdev_key, phase != EventPhase::Ended); });
+    return send({ EI_DEVICE_CAP_KEYBOARD }, [phase, evdev_key](struct ei_device* d) {
+        ei_device_keyboard_key(d, evdev_key, phase != EventPhase::Ended);
+    });
 }
 
 bool EiInput::text_utf8(const std::string& text)
 {
-    return send([&text](struct ei_device* d) { ei_device_text_utf8(d, text.c_str()); });
+    return send({ EI_DEVICE_CAP_TEXT }, [&text](struct ei_device* d) { ei_device_text_utf8(d, text.c_str()); });
 }
 
 MAA_CTRL_UNIT_NS_END
