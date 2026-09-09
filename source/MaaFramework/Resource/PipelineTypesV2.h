@@ -214,8 +214,9 @@ struct JTouch
     JTarget target;
     JRect target_offset { };
     int32_t pressure = 0;
+    bool auto_up = true;
 
-    MEO_TOJSON(contact, target, target_offset, pressure);
+    MEO_TOJSON(contact, target, target_offset, pressure, auto_up);
 };
 
 struct JTouchUp
@@ -243,8 +244,9 @@ struct JLongPressKey
 struct JKey
 {
     int key = 0;
+    bool auto_up = true;
 
-    MEO_TOJSON(key);
+    MEO_TOJSON(key, auto_up);
 };
 
 struct JInputText

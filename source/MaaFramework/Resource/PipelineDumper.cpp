@@ -356,6 +356,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
             .target = dump_target(p.target),
             .target_offset = dump_rect(p.target.offset),
             .pressure = p.pressure,
+            .auto_up = p.auto_up,
         };
     } break;
 
@@ -386,6 +387,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         const auto& p = std::get<Action::KeyParam>(param);
         act.param = PipelineV2::JKey {
             .key = p.key,
+            .auto_up = p.auto_up,
         };
     } break;
 

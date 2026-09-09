@@ -2603,6 +2603,13 @@
                     "$ref": "#/$defs/jsonInt32",
                     "markdownDescription": "*int*\n\n触控压力，范围取决于控制器实现。可选，默认 0 。",
                     "default": 0
+                },
+                "auto_up": {
+                    "title": "Auto Up Property",
+                    "description": "任务停止或结束时是否自动抬起仍按住的触点。可选，默认 true 。仅对 TouchDown 生效。",
+                    "$ref": "#/$defs/jsonBooleanTrue",
+                    "markdownDescription": "*bool*\n\n任务停止或结束时是否自动抬起仍按住的触点。可选，默认 true 。\n\n仅对 `TouchDown` 生效。若用户中途停止任务或任务正常结束时仍未 `TouchUp`，将自动抬起以免设备保持按下。设为 false 可保持按下状态。",
+                    "default": true
                 }
             }
         },
@@ -2783,6 +2790,13 @@
                     "description": "与 `key` 相同，向下兼容字段。",
                     "$ref": "#/$defs/jsonInt32",
                     "markdownDescription": "*int*\n\n与 `key` 相同，向下兼容字段。"
+                },
+                "auto_up": {
+                    "title": "Auto Up Property",
+                    "description": "任务停止或结束时是否自动抬起仍按下的按键。可选，默认 true 。",
+                    "$ref": "#/$defs/jsonBooleanTrue",
+                    "markdownDescription": "*bool*\n\n任务停止或结束时是否自动抬起仍按下的按键。可选，默认 true 。\n\n若用户中途停止任务或任务正常结束时仍未 `KeyUp`，将自动抬起以免设备保持按下。设为 false 可保持按下状态。",
+                    "default": true
                 }
             },
             "anyOf": [
@@ -2847,6 +2861,13 @@
                     "description": "与 `key` 相同，向下兼容字段。",
                     "$ref": "#/$defs/jsonInt32",
                     "markdownDescription": "*int*\n\n与 `key` 相同，向下兼容字段。"
+                },
+                "auto_up": {
+                    "title": "Auto Up Property",
+                    "description": "仅对 KeyDown 生效，KeyUp 忽略该字段。可选，默认 true 。",
+                    "$ref": "#/$defs/jsonBooleanTrue",
+                    "markdownDescription": "*bool*\n\n仅对 `KeyDown` 生效，`KeyUp` 忽略该字段。可选，默认 true 。",
+                    "default": true
                 }
             },
             "anyOf": [
@@ -3749,6 +3770,16 @@
                     "anyOf": [
                         {
                             "$ref": "#/$defs/Swipe/properties/only_hover"
+                        }
+                    ]
+                },
+                "auto_up": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Touch/properties/auto_up"
+                        },
+                        {
+                            "$ref": "#/$defs/KeyDown/properties/auto_up"
                         }
                     ]
                 }
