@@ -401,6 +401,7 @@ typedef uint64_t MaaWin32ScreencapMethod;
  * - "WithWindowPos" methods briefly move the window so the target aligns with the current cursor
  *   position, send message, then restore the window position. The cursor is not moved.
  * - "AnchoredTouch" injects synthetic touch points, the target window receives WM_POINTER messages.
+ *   Each target point must be on an existing monitor; off-screen points are rejected.
  *   The cursor is never moved and the foreground window is never changed. Since synthetic pointers
  *   are dispatched by desktop Z-order, the target window is briefly raised to topmost while
  *   the target point is occluded, and restored once all contacts are released. If raising does not

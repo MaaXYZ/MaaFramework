@@ -53,6 +53,14 @@ CreateSyntheticPointerDeviceFunc g_create_device = nullptr;
 InjectSyntheticPointerInputFunc g_inject_input = nullptr;
 DestroySyntheticPointerDeviceFunc g_destroy_device = nullptr;
 
+// 注入点必须落在真实存在的显示器上。目标窗口被拖出屏幕后，由客户区换算出的坐标会落在桌面之外，
+// 而合成指针打不到不存在的位置，系统会把越界的点钳到屏幕边缘，落在任务栏之类的地方。
+// 用 MonitorFromPoint 判断目标点是否位于实际显示器范围内。
+bool point_on_desktop(POINT screen)
+{
+    return MonitorFromPoint(screen, MONITOR_DEFAULTTONULL) != nullptr;
+}
+
 POINTER_TYPE_INFO make_touch_info(uint32_t id, POINT point, UINT32 flags)
 {
     POINTER_TYPE_INFO info = { };
@@ -179,6 +187,13 @@ bool AnchoredTouchInput::touch_move(int contact, int x, int y, [[maybe_unused]] 
 
     POINT point = { };
     if (!to_screen(x, y, point)) {
+        return false;
+    }
+
+    // 滑动中途移出桌面同样不能注入。这里不更新坐标，接触点留在上一个有效位置，
+    // 由上层判定这一步失败，而不是把它抬起在屏幕外
+    if (!point_on_desktop(point)) {
+        LogError << "the target point is outside the desktop" << VAR(point.x) << VAR(point.y);
         return false;
     }
 
@@ -949,6 +964,14 @@ bool AnchoredTouchInput::ensure_hittable(POINT screen)
     std::lock_guard lock(window_mutex_);
 
     if (!hwnd_) {
+        return false;
+    }
+
+    // 本函数其余部分只回答「有没有被别的窗口遮挡」，越界的点两种形态都会被放行：
+    // 点仍在目标窗口矩形内时 WindowFromPoint 返回目标窗口自己，判为无需提升；
+    // 落在所有窗口之外时返回空，判为被遮挡，提升之后照样注入
+    if (!point_on_desktop(screen)) {
+        LogError << "the target point is outside the desktop" << VAR(screen.x) << VAR(screen.y);
         return false;
     }
 

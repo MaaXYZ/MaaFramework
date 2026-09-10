@@ -33,6 +33,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 // 见 ensure_hittable / release_window_locked。借用不成功时 touch_down 直接失败，绝不注入，
 // 否则输入会落到遮挡目标的那个窗口上。
 //
+// 目标操作点必须落在实际显示器范围内，按下与移动均会校验，见 point_on_desktop()。
+//
 // 为省掉每次借用都要切换扩展样式引起的闪烁，WS_EX_LAYERED 一旦挂上就保留到 inactive()
 // 或空闲退出，由 unprepare_window() 清除。该样式随时可能被目标程序自己重设掉，
 // 因此每次借用前都要重新确认，缺了就补挂；补不上或压不低不透明度时一律不提升，
