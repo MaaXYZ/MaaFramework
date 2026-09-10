@@ -32,6 +32,10 @@ constexpr BYTE kDimAlpha = 1;
 // 最近的前序窗口可能在触控期间关闭，因此保留其他候选。
 constexpr size_t kMaxPrevSiblings = 8;
 
+// WS_EX_NOACTIVATE 用于抑制触控期间的点击激活。
+// 同时设置 WS_EX_APPWINDOW，避免目标窗口的任务栏按钮因样式变化而消失。
+constexpr LONG_PTR kActivationStyles = WS_EX_NOACTIVATE | WS_EX_APPWINDOW;
+
 // 注入帧间隔。实测超过约 400ms 不提交新帧，系统会回收接触点
 constexpr int kTickMs = 12;
 
@@ -157,9 +161,15 @@ bool AnchoredTouchInput::touch_down(int contact, int x, int y, [[maybe_unused]] 
         return false;
     }
 
+    // 必须赶在 ensure_hittable() 之前挂上：提升目标窗口这个动作本身就会引起激活，
+    // 而提升就发生在它里面。未走借用的点击同样会被注入激活，所以每次都挂。
+    // 挂不上也不拦截注入，让点击照常进行
+    suppress_activation();
+
     // 目标点打不中目标窗口就不能注入，否则输入会落到遮挡它的那个窗口上
     if (!ensure_hittable(point)) {
         release_window_if_idle();
+        restore_activation_if_idle();
         return false;
     }
 
@@ -177,6 +187,7 @@ bool AnchoredTouchInput::touch_down(int contact, int x, int y, [[maybe_unused]] 
         contacts_.erase(contact);
         lock.unlock();
         release_window_if_idle();
+        restore_activation_if_idle();
         return false;
     }
 
@@ -232,16 +243,25 @@ bool AnchoredTouchInput::touch_up(int contact)
         LogError << "contact is not down" << VAR(contact);
         lock.unlock();
         release_window_if_idle();
+        restore_activation_if_idle();
         return false;
     }
 
     it->second.pending_up = true;
 
     bool ok = wait_for_contact_released(lock, contact);
+
+    // 只有最后一个操作点释放后，锚点才会释放。
+    // 其他操作点仍存在时，继续保留锚点和激活样式。
+    if (contacts_.empty()) {
+        wait_for_anchor_released(lock);
+    }
+
     lock.unlock();
 
     // 必须等所有接触点都抬起后再归还窗口，否则剩下的接触点会在触控序列中途丢失命中
     release_window_if_idle();
+    restore_activation_if_idle();
 
     return ok;
 }
@@ -654,6 +674,20 @@ bool AnchoredTouchInput::wait_for_contact_released(std::unique_lock<std::mutex>&
     }
 
     return running_;
+}
+
+// 锚点由注入线程按 contacts_ 是否为空自行按下与松开，比最后一个接触点晚一帧。
+// 等待锚点释放后再摘除激活样式，避免操作点抬起后、锚点释放前出现保护空档。
+bool AnchoredTouchInput::wait_for_anchor_released(std::unique_lock<std::mutex>& lock)
+{
+    bool done = cv_.wait_for(lock, kWaitTimeout, [this] { return !running_ || !anchor_down_; });
+
+    if (!done) {
+        LogError << "timed out waiting for the anchor to be released";
+        return false;
+    }
+
+    return !anchor_down_;
 }
 
 bool AnchoredTouchInput::wait_for_frames(std::unique_lock<std::mutex>& lock, int frames)
@@ -1118,6 +1152,84 @@ void AnchoredTouchInput::release_window_locked()
     }
 }
 
+bool AnchoredTouchInput::suppress_activation()
+{
+    // 目标窗口已经在前台时不必压制：所谓被夺前台指的是它从后台跳到最前，已经在最前就没有
+    // 可见变化。这一支同时让开了用户正在使用目标窗口的整段时间，期间不去动它的样式
+    if (GetForegroundWindow() == hwnd_) {
+        return true;
+    }
+
+    std::lock_guard lock(window_mutex_);
+
+    if (activation_styles_applied_ != 0 || !hwnd_) {
+        return true;
+    }
+
+    SetLastError(0);
+    LONG_PTR exstyle = GetWindowLongPtrW(hwnd_, GWL_EXSTYLE);
+    if (exstyle == 0 && GetLastError() != 0) {
+        LogError << "GetWindowLongPtrW failed" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
+        return false;
+    }
+
+    // 目标窗口自带的位不记账也不动，免得归还时把它本来就有的东西摘掉
+    LONG_PTR missing = kActivationStyles & ~exstyle;
+    if (missing == 0) {
+        return true;
+    }
+
+    SetLastError(0);
+    if (SetWindowLongPtrW(hwnd_, GWL_EXSTYLE, exstyle | missing) == 0 && GetLastError() != 0) {
+        LogError << "failed to suppress activation on the target window" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
+        return false;
+    }
+
+    activation_styles_applied_ = missing;
+    return true;
+}
+
+void AnchoredTouchInput::restore_activation_locked()
+{
+    if (activation_styles_applied_ == 0 || !hwnd_) {
+        return;
+    }
+
+    SetLastError(0);
+    LONG_PTR exstyle = GetWindowLongPtrW(hwnd_, GWL_EXSTYLE);
+    if (exstyle == 0 && GetLastError() != 0) {
+        LogError << "GetWindowLongPtrW failed" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
+        return;
+    }
+
+    SetLastError(0);
+    if (SetWindowLongPtrW(hwnd_, GWL_EXSTYLE, exstyle & ~activation_styles_applied_) == 0 && GetLastError() != 0) {
+        LogError << "failed to restore the target window ex-style" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
+        return;
+    }
+
+    activation_styles_applied_ = 0;
+}
+
+void AnchoredTouchInput::restore_activation()
+{
+    std::lock_guard lock(window_mutex_);
+
+    restore_activation_locked();
+}
+
+void AnchoredTouchInput::restore_activation_if_idle()
+{
+    {
+        std::lock_guard lock(mutex_);
+        if (!contacts_.empty()) {
+            return;
+        }
+    }
+
+    restore_activation();
+}
+
 void AnchoredTouchInput::release_window()
 {
     std::lock_guard lock(window_mutex_);
@@ -1140,6 +1252,10 @@ void AnchoredTouchInput::release_window_if_idle()
 void AnchoredTouchInput::unprepare_window()
 {
     std::lock_guard lock(window_mutex_);
+
+    // 压制激活与借用各自记账：没走过借用路径的点击也会挂它，
+    // 所以要放在 window_prepared_ 判断之前，否则会残留在目标窗口上
+    restore_activation_locked();
 
     if (!window_prepared_ || !hwnd_) {
         return;

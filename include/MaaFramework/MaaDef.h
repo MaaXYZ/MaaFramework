@@ -400,7 +400,11 @@ typedef uint64_t MaaWin32ScreencapMethod;
  *   then restore cursor position. This "briefly" seizes the mouse but won't block user operations.
  * - "WithWindowPos" methods briefly move the window so the target aligns with the current cursor
  *   position, send message, then restore the window position. The cursor is not moved.
- * - "AnchoredTouch" injects synthetic touch points, the target window receives WM_POINTER messages.
+ * - "AnchoredTouch" injects synthetic touch points without moving the cursor or the target window.
+ *   The target receives WM_POINTER messages. Activation is suppressed during a touch sequence, but
+ *   the target application can still bring itself to the foreground. Its existing window styles
+ *   are preserved when the temporary activation styles are removed after the anchor is released.
+ *   A target already in the foreground is not given these temporary activation styles.
  *   Each target point must be on an existing monitor; off-screen points are rejected.
  *   When the target point is occluded, the window is temporarily raised and made nearly invisible.
  *   While raised, it can take mouse clicks inside its rectangle from the windows underneath.
