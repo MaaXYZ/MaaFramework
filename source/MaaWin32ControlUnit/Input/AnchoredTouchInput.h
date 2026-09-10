@@ -8,6 +8,7 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include <vector>
 
 #include "MaaControlUnit/ControlUnitAPI.h"
 
@@ -32,6 +33,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 // 所以按下前会把目标窗口提到 topmost 并降到最低分层透明度，所有接触点抬起后还原，
 // 见 ensure_hittable / release_window_locked。借用不成功时 touch_down 直接失败，绝不注入，
 // 否则输入会落到遮挡目标的那个窗口上。
+// 当前实现借用期间会接走矩形内的鼠标点击，因此序列结束后立即归还，见 release_window_locked()。
 //
 // 目标操作点必须落在实际显示器范围内，按下与移动均会校验，见 point_on_desktop()。
 //
@@ -170,7 +172,14 @@ private:
     bool dimmed_ = false;
     bool raised_ = false;
     bool transparent_suppressed_ = false;
-    HWND prev_sibling_ = nullptr;
+
+    // 借用前目标窗口在 Z 序中的前序兄弟，由近及远。归还时插回其中一个即可回到原位；
+    // 只记最近的那一个时，它一旦在借用期间被关掉就只剩 HWND_NOTOPMOST 可用，
+    // 而那个值会把目标窗口推到非置顶层的最前面
+    std::vector<HWND> prev_siblings_;
+
+    // 借用开始时的前台窗口，用于决定归还时是否恢复原 Z 序，见 release_window_locked()。
+    HWND foreground_at_borrow_ = nullptr;
 
     // dim_window() 实际写入目标窗口的分层属性，供 check_borrow_mark() 核对
     COLORREF mark_color_key_ = 0;

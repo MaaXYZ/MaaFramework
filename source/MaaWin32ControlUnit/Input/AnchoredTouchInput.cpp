@@ -28,6 +28,10 @@ constexpr BYTE kAnchorAlpha = 1;
 // 借用目标窗口期间同样降到最低 alpha，肉眼几乎看不到画面变化，但命中判定仍然有效
 constexpr BYTE kDimAlpha = 1;
 
+// 保存多个前序窗口，供还原 Z 序时选择。
+// 最近的前序窗口可能在触控期间关闭，因此保留其他候选。
+constexpr size_t kMaxPrevSiblings = 8;
+
 // 注入帧间隔。实测超过约 400ms 不提交新帧，系统会回收接触点
 constexpr int kTickMs = 12;
 
@@ -823,7 +827,15 @@ void AnchoredTouchInput::begin_borrow()
     }
 
     borrowed_ = true;
-    prev_sibling_ = GetWindow(hwnd_, GW_HWNDPREV);
+
+    prev_siblings_.clear();
+    for (HWND sibling = GetWindow(hwnd_, GW_HWNDPREV); sibling && prev_siblings_.size() < kMaxPrevSiblings;
+         sibling = GetWindow(sibling, GW_HWNDPREV)) {
+        prev_siblings_.emplace_back(sibling);
+    }
+
+    // 归还时据此区分「目标窗口本来就在前台」与「借用期间才变成前台」，见 release_window_locked()
+    foreground_at_borrow_ = GetForegroundWindow();
 
     // 置顶状态与分层属性一样按次读取，跨借用沿用会写回过期的值
     original_topmost_ = (GetWindowLongPtrW(hwnd_, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0;
@@ -1038,15 +1050,26 @@ void AnchoredTouchInput::release_window_locked()
     bool restored = true;
 
     if (raised_) {
-        // 把 topmost 窗口插到非 topmost 窗口之后会剥掉它的 topmost 属性，
-        // 因此只有前序兄弟与目标窗口的 topmost 状态一致时才用它还原
+        // HWND_NOTOPMOST 会使窗口位于非置顶窗口的最前面。
+        // 还原时优先使用保存的前序窗口，避免目标窗口因取消置顶而改变原来的遮挡关系。
         HWND insert_after = original_topmost_ ? HWND_TOPMOST : HWND_NOTOPMOST;
-        if (prev_sibling_ && IsWindow(prev_sibling_) && GetForegroundWindow() != hwnd_) {
-            // 用户在借用期间把窗口调到了前台，插回原来的兄弟之后会把它压到别的窗口下面。
-            // 这种情况下只摘掉 topmost 属性，不再恢复具体位置
-            bool sibling_topmost = (GetWindowLongPtrW(prev_sibling_, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0;
-            if (sibling_topmost == original_topmost_) {
-                insert_after = prev_sibling_;
+
+        // 借用前后目标窗口均处于前台时，不恢复此前保存的 Z 序。
+        // 其他情况下仍尝试恢复，避免触控期间发生的激活使目标窗口留在最前面。
+        bool foreground_owned_by_user = GetForegroundWindow() == hwnd_ && foreground_at_borrow_ == hwnd_;
+
+        if (!foreground_owned_by_user) {
+            // 按记录顺序选择仍存在且置顶状态匹配的前序窗口。
+            // 将置顶窗口插入非置顶窗口之后会取消其置顶状态，因此不能使用状态不匹配的候选。
+            for (HWND sibling : prev_siblings_) {
+                if (!IsWindow(sibling)) {
+                    continue;
+                }
+
+                if (((GetWindowLongPtrW(sibling, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0) == original_topmost_) {
+                    insert_after = sibling;
+                    break;
+                }
             }
         }
 
@@ -1090,7 +1113,8 @@ void AnchoredTouchInput::release_window_locked()
 
     if (restored) {
         borrowed_ = false;
-        prev_sibling_ = nullptr;
+        prev_siblings_.clear();
+        foreground_at_borrow_ = nullptr;
     }
 }
 
@@ -1140,7 +1164,7 @@ void AnchoredTouchInput::unprepare_window()
         // 这份已经挂好的样式，把不透明度压到 0 并加上 WS_EX_TRANSPARENT。此时摘掉样式，
         // 那份不透明度会随之失效，本该隐形的窗口整个显出来，对方也再无从还原。
         // 因此只在这份分层状态没有被别人占用时才清，否则留着，等下一次调用再试。
-        // Win32ControlUnitMgr::inactive() 先停截图侧再停输入侧，任务结束时的那一次重试即可清干净。
+        // 宿主调用 Win32ControlUnitMgr::inactive() 时会先停截图侧再停输入侧，为清理提供一次重试机会。
         // 样式已经不在则不算被占用——截图侧的还原是整份写回扩展样式，会把我们加的这一位一并抹掉，
         // 此时下面的清除退化成空操作，照常销账即可
         COLORREF color_key = 0;
