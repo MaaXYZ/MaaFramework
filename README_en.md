@@ -245,7 +245,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
     A Brown Dust 2 assistant. Image technology + simulation control, freeing your hands! Supports PC, emulator and PlayCover. Powered by MaaFramework!
 
 - [MaaWoA](https://github.com/huzesama/MaaWoA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/huzesama/MaaWoA) ![activity](https://img.shields.io/github/commit-activity/m/huzesama/MaaWoA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/huzesama/MaaWoA?style=social)  
-    A assistant for World of Airports. Image technology + simulation control, freeing your hands! Powered by MaaFramework!
+    An assistant for World of Airports. Image technology + simulation control, freeing your hands! Powered by MaaFramework!
 
 ## Eco-Building
 
