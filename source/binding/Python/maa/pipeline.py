@@ -217,6 +217,7 @@ class JTouch:
     target: JTarget = True
     target_offset: JRect = (0, 0, 0, 0)
     pressure: int = 0
+    auto_up: bool = True
 
 
 @dataclass
@@ -238,6 +239,7 @@ class JLongPressKey:
 @dataclass
 class JKey:
     key: int
+    auto_up: bool = True
 
 
 @dataclass

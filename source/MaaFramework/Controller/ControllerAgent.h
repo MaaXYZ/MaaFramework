@@ -65,8 +65,9 @@ struct TouchParam
     int contact = 0;
     cv::Point point { };
     int pressure = 0;
+    bool auto_up = false;
 
-    MEO_TOJSON(contact, point, pressure);
+    MEO_TOJSON(contact, point, pressure, auto_up);
 };
 
 struct RelativeMoveParam
@@ -80,8 +81,9 @@ struct RelativeMoveParam
 struct ClickKeyParam
 {
     std::vector<int> keycode;
+    bool auto_up = false;
 
-    MEO_TOJSON(keycode);
+    MEO_TOJSON(keycode, auto_up);
 };
 
 struct LongPressKeyParam
@@ -220,6 +222,7 @@ public: // MaaController
 
 public: // for Actuator
     void post_stop();
+    void auto_release_pressed();
 
     bool click(ClickParam p);
     bool long_press(LongPressParam p);
@@ -271,6 +274,11 @@ private:
     bool handle_shell(const ShellParam& param);
     bool handle_inactive();
 
+    void remember_touch_down(int contact, bool auto_up);
+    void remember_touch_up(int contact);
+    void remember_key_down(int keycode, bool auto_up);
+    void remember_key_up(int keycode);
+
     MaaCtrlId post(Action action);
     MaaCtrlId focus_id(MaaCtrlId id);
     bool check_stop();
@@ -295,6 +303,10 @@ private: // options
 
 private:
     bool need_to_stop_ = false;
+
+    std::mutex pressed_mutex_;
+    std::set<int> auto_up_contacts_;
+    std::set<int> auto_up_keys_;
 
 private:
     const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;

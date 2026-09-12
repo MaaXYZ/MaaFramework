@@ -64,6 +64,7 @@ from maa.pipeline import (
     JLongPress,
     JSwipe,
     JMultiSwipe,
+    JTouch,
     JInputText,
     JStartApp,
     JStopApp,
@@ -73,6 +74,7 @@ from maa.pipeline import (
     JScreencap,
     JCustomAction,
     JNodeAttr,
+    JKey,
 )
 
 
@@ -940,6 +942,54 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(param.target_offset, [10, 10, 0, 0], "target_offset")
         assert_eq(param.dx, 0, "dx")
         assert_eq(param.dy, -360, "dy")
+
+        # TouchDown
+        new_ctx.override_pipeline(
+            {
+                "ActTouchDown": {
+                    "action": "TouchDown",
+                    "target": [100, 200, 50, 50],
+                    "contact": 1,
+                    "pressure": 2,
+                    "auto_up": False,
+                }
+            }
+        )
+        obj = new_ctx.get_node_object("ActTouchDown")
+        assert_eq(obj.action.type, JActionType.TouchDown, "TouchDown type")
+        param = obj.action.param
+        assert_true(isinstance(param, JTouch), "TouchDown param")
+        assert_eq(param.contact, 1, "contact")
+        assert_eq(param.pressure, 2, "pressure")
+        assert_eq(param.auto_up, False, "auto_up")
+
+        # TouchDown default auto_up
+        new_ctx.override_pipeline({"ActTouchDownDefault": {"action": "TouchDown"}})
+        obj = new_ctx.get_node_object("ActTouchDownDefault")
+        assert_eq(obj.action.type, JActionType.TouchDown, "TouchDown default type")
+        param = obj.action.param
+        assert_true(isinstance(param, JTouch), "TouchDown default param")
+        assert_eq(param.auto_up, True, "default auto_up")
+
+        # KeyDown
+        new_ctx.override_pipeline(
+            {"ActKeyDown": {"action": "KeyDown", "key": 65, "auto_up": False}}
+        )
+        obj = new_ctx.get_node_object("ActKeyDown")
+        assert_eq(obj.action.type, JActionType.KeyDown, "KeyDown type")
+        param = obj.action.param
+        assert_true(isinstance(param, JKey), "KeyDown param")
+        assert_eq(param.key, 65, "key")
+        assert_eq(param.auto_up, False, "auto_up")
+
+        # KeyDown default auto_up
+        new_ctx.override_pipeline({"ActKeyDownDefault": {"action": "KeyDown", "key": 66}})
+        obj = new_ctx.get_node_object("ActKeyDownDefault")
+        assert_eq(obj.action.type, JActionType.KeyDown, "KeyDown default type")
+        param = obj.action.param
+        assert_true(isinstance(param, JKey), "KeyDown default param")
+        assert_eq(param.key, 66, "key")
+        assert_eq(param.auto_up, True, "default auto_up")
 
         print("    PASS: action types parsing")
 
