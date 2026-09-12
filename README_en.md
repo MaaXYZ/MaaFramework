@@ -247,6 +247,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaWoA](https://github.com/huzesama/MaaWoA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/huzesama/MaaWoA) ![activity](https://img.shields.io/github/commit-activity/m/huzesama/MaaWoA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/huzesama/MaaWoA?style=social)  
     An assistant for World of Airports. Image technology + simulation control, freeing your hands! Powered by MaaFramework!
 
+- [MAES](https://github.com/Guili-Ad/MAES) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Guili-Ad/MAES) ![activity](https://img.shields.io/github/commit-activity/m/Guili-Ad/MAES?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Guili-Ad/MAES?style=social)  
+    Ensemble Stars!! Music auto-play helper focused on temporary music play and lane calibration. Powered by MaaFramework.
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
