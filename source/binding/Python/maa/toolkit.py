@@ -301,8 +301,16 @@ class Toolkit:
     def _set_api_properties():
         if Toolkit._api_properties_initialized:
             return
-        Toolkit._api_properties_initialized = True
 
+        with Library._api_lock:
+            if Toolkit._api_properties_initialized:
+                return
+
+            Toolkit._assign_api_properties()
+            Toolkit._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         Library.toolkit().MaaToolkitConfigInitOption.restype = MaaBool
         Library.toolkit().MaaToolkitConfigInitOption.argtypes = [
             ctypes.c_char_p,

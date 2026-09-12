@@ -483,8 +483,15 @@ class Context:
         if Context._api_properties_initialized:
             return
 
-        Context._api_properties_initialized = True
+        with Library._api_lock:
+            if Context._api_properties_initialized:
+                return
 
+            Context._assign_api_properties()
+            Context._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         Library.framework().MaaContextRunTask.restype = MaaTaskId
         Library.framework().MaaContextRunTask.argtypes = [
             MaaContextHandle,
