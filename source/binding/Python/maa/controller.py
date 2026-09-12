@@ -623,8 +623,16 @@ class Controller:
     def _set_api_properties():
         if Controller._api_properties_initialized:
             return
-        Controller._api_properties_initialized = True
 
+        with Library._api_lock:
+            if Controller._api_properties_initialized:
+                return
+
+            Controller._assign_api_properties()
+            Controller._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         Library.framework().MaaControllerDestroy.restype = None
         Library.framework().MaaControllerDestroy.argtypes = [MaaControllerHandle]
 

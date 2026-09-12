@@ -81,8 +81,16 @@ class StringBuffer:
     def _set_api_properties():
         if StringBuffer._api_properties_initialized:
             return
-        StringBuffer._api_properties_initialized = True
 
+        with Library._api_lock:
+            if StringBuffer._api_properties_initialized:
+                return
+
+            StringBuffer._assign_api_properties()
+            StringBuffer._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         Library.framework().MaaStringBufferCreate.restype = MaaStringBufferHandle
         Library.framework().MaaStringBufferCreate.argtypes = []
 
@@ -209,8 +217,16 @@ class StringListBuffer:
     def _set_api_properties():
         if StringListBuffer._api_properties_initialized:
             return
-        StringListBuffer._api_properties_initialized = True
 
+        with Library._api_lock:
+            if StringListBuffer._api_properties_initialized:
+                return
+
+            StringListBuffer._assign_api_properties()
+            StringListBuffer._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         Library.framework().MaaStringListBufferCreate.restype = MaaStringListBufferHandle
         Library.framework().MaaStringListBufferCreate.argtypes = []
 
@@ -355,8 +371,16 @@ class ImageBuffer:
     def _set_api_properties():
         if ImageBuffer._api_properties_initialized:
             return
-        ImageBuffer._api_properties_initialized = True
 
+        with Library._api_lock:
+            if ImageBuffer._api_properties_initialized:
+                return
+
+            ImageBuffer._assign_api_properties()
+            ImageBuffer._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         Library.framework().MaaImageBufferCreate.restype = MaaImageBufferHandle
         Library.framework().MaaImageBufferCreate.argtypes = []
 
@@ -495,8 +519,16 @@ class ImageListBuffer:
     def _set_api_properties():
         if ImageListBuffer._api_properties_initialized:
             return
-        ImageListBuffer._api_properties_initialized = True
 
+        with Library._api_lock:
+            if ImageListBuffer._api_properties_initialized:
+                return
+
+            ImageListBuffer._assign_api_properties()
+            ImageListBuffer._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         Library.framework().MaaImageListBufferCreate.restype = MaaImageListBufferHandle
         Library.framework().MaaImageListBufferCreate.argtypes = []
 
@@ -609,8 +641,16 @@ class RectBuffer:
     def _set_api_properties():
         if RectBuffer._api_properties_initialized:
             return
-        RectBuffer._api_properties_initialized = True
 
+        with Library._api_lock:
+            if RectBuffer._api_properties_initialized:
+                return
+
+            RectBuffer._assign_api_properties()
+            RectBuffer._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         Library.framework().MaaRectCreate.restype = MaaRectHandle
         Library.framework().MaaRectCreate.argtypes = []
 
