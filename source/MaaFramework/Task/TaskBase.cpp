@@ -110,7 +110,7 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
     }
 
     wait_freezes(data.pre_wait_freezes, *reco.box, data.name, "pre", data.focus);
-    sleep(data.pre_delay);
+    sleep(data.pre_delay.random());
 
     Actuator actuator(tasker_, *context_);
     json::value cb_detail {
@@ -126,7 +126,7 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
     for (uint i = 0; i < data.repeat; ++i) {
         if (i > 0) {
             wait_freezes(data.repeat_wait_freezes, *reco.box, data.name, "repeat", data.focus);
-            sleep(data.repeat_delay);
+            sleep(data.repeat_delay.random());
         }
 
         if (context_->need_to_stop()) {
@@ -146,7 +146,7 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
 
     if (!context_->need_to_stop()) {
         wait_freezes(data.post_wait_freezes, *reco.box, data.name, "post", data.focus);
-        sleep(data.post_delay);
+        sleep(data.post_delay.random());
     }
 
     return result;

@@ -4,6 +4,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <random>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -16,6 +17,88 @@
 #include "Vision/VisionTypes.h"
 
 MAA_RES_NS_BEGIN
+
+// Pipeline 时间字段：单个值或 [min, max] 区间，运行时在闭区间内均匀随机
+struct DurationRange
+{
+    int64_t min = 0;
+    int64_t max = 0;
+
+    DurationRange() = default;
+
+    DurationRange(int64_t v)
+        : min(v)
+        , max(v)
+    {
+    }
+
+    DurationRange(int64_t lo, int64_t hi)
+        : min(lo)
+        , max(hi)
+    {
+    }
+
+    DurationRange(std::chrono::milliseconds v)
+        : DurationRange(v.count())
+    {
+    }
+
+    bool is_zero() const { return min == 0 && max == 0; }
+
+    std::chrono::milliseconds random() const
+    {
+        if (min >= max) {
+            return std::chrono::milliseconds(min);
+        }
+
+        static thread_local std::mt19937 engine { std::random_device {}() };
+        std::uniform_int_distribution<int64_t> dist(min, max);
+        return std::chrono::milliseconds(dist(engine));
+    }
+
+    json::value to_json() const
+    {
+        if (min == max) {
+            return min;
+        }
+        return json::array { min, max };
+    }
+
+    bool check_json(const json::value& value) const
+    {
+        DurationRange tmp;
+        return tmp.from_json(value);
+    }
+
+    bool from_json(const json::value& value)
+    {
+        int64_t lo = 0;
+        int64_t hi = 0;
+
+        if (value.is_number()) {
+            lo = hi = value.as_long_long();
+        }
+        else if (value.is_array()) {
+            const auto& arr = value.as_array();
+            if (arr.size() != 2 || !arr[0].is_number() || !arr[1].is_number()) {
+                return false;
+            }
+            lo = arr[0].as_long_long();
+            hi = arr[1].as_long_long();
+        }
+        else {
+            return false;
+        }
+
+        if (lo > hi) {
+            return false;
+        }
+
+        min = lo;
+        max = hi;
+        return true;
+    }
+};
 
 namespace Recognition
 {
@@ -156,7 +239,7 @@ struct ClickParam
 struct LongPressParam
 {
     Target target;
-    uint duration = 1000;
+    DurationRange duration = 1000;
     uint contact = 0;
     int pressure = 1;
 };
@@ -166,12 +249,12 @@ struct SwipeParam
     Target begin;
     std::vector<TargetObj> end = { { } };
     std::vector<cv::Rect> end_offset;
-    std::vector<uint> end_hold;
-    std::vector<uint> duration = { 200 };
+    std::vector<DurationRange> end_hold;
+    std::vector<DurationRange> duration = { 200 };
 
     bool only_hover = false;
 
-    uint starting = 0; // only for MultiSwipe
+    DurationRange starting = 0; // only for MultiSwipe
     uint contact = 0;
     int pressure = 1;
 };
@@ -206,7 +289,7 @@ struct ClickKeyParam
 struct LongPressKeyParam
 {
     std::vector<int> keys;
-    uint duration = 1000;
+    DurationRange duration = 1000;
 };
 
 struct InputTextParam
@@ -229,7 +312,7 @@ struct ScrollParam
 struct ShellParam
 {
     std::string cmd;
-    int64_t shell_timeout = 20000;
+    DurationRange shell_timeout = 20000;
 };
 
 struct CommandParam
@@ -338,14 +421,14 @@ inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
 
 struct WaitFreezesParam
 {
-    std::chrono::milliseconds time = std::chrono::milliseconds(0);
+    DurationRange time = 0;
 
     Action::Target target;
 
     double threshold = 0.95;
     int method = MAA_VISION_NS::TemplateMatcherParam::kDefaultMethod;
-    std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
-    std::chrono::milliseconds timeout = std::chrono::milliseconds(20 * 1000);
+    DurationRange rate_limit = 1000;
+    DurationRange timeout = 20 * 1000;
 };
 
 struct NodeAttr
@@ -376,17 +459,17 @@ struct PipelineData
     std::vector<NodeAttr> next;
     std::vector<NodeAttr> on_error;
     std::map<std::string, std::string> anchor;
-    std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
-    std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
+    DurationRange rate_limit = 1000;
+    DurationRange reco_timeout = 20 * 1000;
 
-    std::chrono::milliseconds pre_delay = std::chrono::milliseconds(200);
-    std::chrono::milliseconds post_delay = std::chrono::milliseconds(200);
+    DurationRange pre_delay = 200;
+    DurationRange post_delay = 200;
 
     WaitFreezesParam pre_wait_freezes;
     WaitFreezesParam post_wait_freezes;
 
     uint repeat = 1;
-    std::chrono::milliseconds repeat_delay = std::chrono::milliseconds(0);
+    DurationRange repeat_delay = 0;
     WaitFreezesParam repeat_wait_freezes;
 
     uint max_hit = std::numeric_limits<uint>::max();

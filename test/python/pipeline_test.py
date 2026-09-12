@@ -1283,6 +1283,115 @@ def test_repeat_params(context: Context):
 
 
 # ============================================================================
+# 时间字段随机区间测试
+# ============================================================================
+
+
+def test_duration_range(context: Context):
+    """测试 delay/timeout/duration 等时间字段支持 [min, max] 随机区间"""
+    print("\n=== test_duration_range ===")
+
+    new_ctx = context.clone()
+
+    assert_true(
+        new_ctx.override_pipeline(
+            {
+                "DurationRangeNode": {
+                    "timeout": [5000, 8000],
+                    "rate_limit": [400, 600],
+                    "pre_delay": [100, 200],
+                    "post_delay": [200, 300],
+                    "repeat_delay": [10, 20],
+                    "pre_wait_freezes": [50, 80],
+                    "post_wait_freezes": {"time": [30, 40], "timeout": [1000, 2000]},
+                    "action": "LongPress",
+                    "duration": [800, 1200],
+                }
+            }
+        ),
+        "override duration range",
+    )
+
+    obj = new_ctx.get_node_object("DurationRangeNode")
+    assert_eq(obj.timeout, [5000, 8000], "timeout range")
+    assert_eq(obj.rate_limit, [400, 600], "rate_limit range")
+    assert_eq(obj.pre_delay, [100, 200], "pre_delay range")
+    assert_eq(obj.post_delay, [200, 300], "post_delay range")
+    assert_eq(obj.repeat_delay, [10, 20], "repeat_delay range")
+    assert_eq(obj.pre_wait_freezes.time, [50, 80], "pre_wait_freezes range")
+    assert_eq(obj.post_wait_freezes.time, [30, 40], "post_wait_freezes.time range")
+    assert_eq(obj.post_wait_freezes.timeout, [1000, 2000], "post_wait_freezes.timeout range")
+    assert_true(isinstance(obj.action.param, JLongPress), "LongPress param")
+    assert_eq(obj.action.param.duration, [800, 1200], "longpress duration range")
+
+    # 标量仍保持兼容
+    new_ctx.override_pipeline({"DurationScalarNode": {"pre_delay": 150, "timeout": 12345}})
+    obj = new_ctx.get_node_object("DurationScalarNode")
+    assert_eq(obj.pre_delay, 150, "pre_delay scalar")
+    assert_eq(obj.timeout, 12345, "timeout scalar")
+
+    # Swipe: [a, b] 仍是两段；[[a, b]] 才是单段随机
+    new_ctx.override_pipeline(
+        {
+            "SwipeRange": {
+                "action": "Swipe",
+                "duration": [[100, 200], 300],
+                "end_hold": [10, [20, 30]],
+            }
+        }
+    )
+    param = new_ctx.get_node_object("SwipeRange").action.param
+    assert_true(isinstance(param, JSwipe), "Swipe param")
+    assert_eq(param.duration, [[100, 200], 300], "swipe duration mixed")
+    assert_eq(param.end_hold, [10, [20, 30]], "swipe end_hold mixed")
+
+    new_ctx.override_pipeline(
+        {
+            "LongPressKeyRange": {
+                "action": "LongPressKey",
+                "key": 66,
+                "duration": [500, 700],
+            },
+            "ShellRange": {
+                "action": "Shell",
+                "cmd": "echo",
+                "shell_timeout": [1000, 3000],
+            },
+            "MultiSwipeRange": {
+                "action": "MultiSwipe",
+                "swipes": [{"starting": [0, 50], "begin": [0, 0], "end": [1, 1]}],
+            },
+        }
+    )
+    assert_eq(
+        new_ctx.get_node_object("LongPressKeyRange").action.param.duration,
+        [500, 700],
+        "longpresskey duration range",
+    )
+    assert_eq(
+        new_ctx.get_node_object("ShellRange").action.param.shell_timeout,
+        [1000, 3000],
+        "shell_timeout range",
+    )
+    assert_eq(
+        new_ctx.get_node_object("MultiSwipeRange").action.param.swipes[0]["starting"],
+        [0, 50],
+        "multiswipe starting range",
+    )
+
+    assert_true(
+        not new_ctx.override_pipeline({"BadRange": {"pre_delay": [300, 100]}}),
+        "min>max should fail",
+    )
+    assert_true(
+        not new_ctx.override_pipeline({"BadRange2": {"pre_delay": [1, 2, 3]}}),
+        "3-element array should fail",
+    )
+
+    print("  PASS: duration range")
+
+
+# ============================================================================
 # 负数 roi 和 target 参数测试
 # ============================================================================
 
@@ -1502,6 +1611,7 @@ def pipeline_node_test():
             def analyze(self, context, argv):
                 test_wait_freezes(context)
                 test_repeat_params(context)
+                test_duration_range(context)
                 test_negative_roi_and_target(context)
                 return CustomRecognition.AnalyzeResult(
                     box=(0, 0, 10, 10), detail="done"

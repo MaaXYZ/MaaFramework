@@ -67,16 +67,34 @@ std::string dump_order_by(MAA_VISION_NS::ResultOrderBy order_by)
     return order_by_map.at(order_by);
 }
 
+PipelineV2::JDuration dump_duration(const DurationRange& r)
+{
+    if (r.min == r.max) {
+        return r.min;
+    }
+    return std::array<int64_t, 2> { r.min, r.max };
+}
+
+std::vector<PipelineV2::JDuration> dump_duration_array(const std::vector<DurationRange>& vec)
+{
+    std::vector<PipelineV2::JDuration> result;
+    result.reserve(vec.size());
+    for (const auto& r : vec) {
+        result.emplace_back(dump_duration(r));
+    }
+    return result;
+}
+
 PipelineV2::JWaitFreezes dump_wait_freezes(const WaitFreezesParam& param)
 {
     return PipelineV2::JWaitFreezes {
-        .time = param.time.count(),
+        .time = dump_duration(param.time),
         .target = dump_target(param.target),
         .target_offset = dump_rect(param.target.offset),
         .threshold = param.threshold,
         .method = param.method,
-        .rate_limit = param.rate_limit.count(),
-        .timeout = param.timeout.count(),
+        .rate_limit = dump_duration(param.rate_limit),
+        .timeout = dump_duration(param.timeout),
     };
 }
 
@@ -305,7 +323,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         act.param = PipelineV2::JLongPress {
             .target = dump_target(p.target),
             .target_offset = dump_rect(p.target.offset),
-            .duration = p.duration,
+            .duration = dump_duration(p.duration),
             .contact = p.contact,
             .pressure = p.pressure,
         };
@@ -314,13 +332,13 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
     case Action::Type::Swipe: {
         const auto& p = std::get<Action::SwipeParam>(param);
         act.param = PipelineV2::JSwipe {
-            .starting = 0,
+            .starting = int64_t { 0 },
             .begin = dump_target(p.begin),
             .begin_offset = dump_rect(p.begin.offset),
             .end = dump_target_obj_array(p.end),
             .end_offset = dump_rect_array(p.end_offset),
-            .end_hold = p.end_hold,
-            .duration = p.duration,
+            .end_hold = dump_duration_array(p.end_hold),
+            .duration = dump_duration_array(p.duration),
             .only_hover = p.only_hover,
             .contact = p.contact,
             .pressure = p.pressure,
@@ -333,13 +351,13 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         for (const auto& s : p.swipes) {
             jswipes.swipes.emplace_back(
                 PipelineV2::JSwipe {
-                    .starting = s.starting,
+                    .starting = dump_duration(s.starting),
                     .begin = dump_target(s.begin),
                     .begin_offset = dump_rect(s.begin.offset),
                     .end = dump_target_obj_array(s.end),
                     .end_offset = dump_rect_array(s.end_offset),
-                    .end_hold = s.end_hold,
-                    .duration = s.duration,
+                    .end_hold = dump_duration_array(s.end_hold),
+                    .duration = dump_duration_array(s.duration),
                     .only_hover = s.only_hover,
                     .contact = s.contact,
                     .pressure = s.pressure,
@@ -377,7 +395,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         const auto& p = std::get<Action::LongPressKeyParam>(param);
         act.param = PipelineV2::JLongPressKey {
             .key = p.keys,
-            .duration = p.duration,
+            .duration = dump_duration(p.duration),
         };
     } break;
 
@@ -438,7 +456,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         const auto& p = std::get<Action::ShellParam>(param);
         act.param = PipelineV2::JShell {
             .cmd = p.cmd,
-            .shell_timeout = p.shell_timeout,
+            .shell_timeout = dump_duration(p.shell_timeout),
         };
     } break;
 
@@ -474,14 +492,14 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     PipelineV2::JPipelineData data;
 
     data.next = pp.next;
-    data.rate_limit = pp.rate_limit.count();
-    data.timeout = pp.reco_timeout.count();
+    data.rate_limit = dump_duration(pp.rate_limit);
+    data.timeout = dump_duration(pp.reco_timeout);
     data.on_error = pp.on_error;
     data.anchor = pp.anchor;
     data.inverse = pp.inverse;
     data.enabled = pp.enabled;
-    data.pre_delay = pp.pre_delay.count();
-    data.post_delay = pp.post_delay.count();
+    data.pre_delay = dump_duration(pp.pre_delay);
+    data.post_delay = dump_duration(pp.post_delay);
     data.focus = pp.focus;
 
     data.recognition = dump_reco(pp.reco_type, pp.reco_param);
@@ -491,7 +509,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     data.post_wait_freezes = dump_wait_freezes(pp.post_wait_freezes);
 
     data.repeat = pp.repeat;
-    data.repeat_delay = pp.repeat_delay.count();
+    data.repeat_delay = dump_duration(pp.repeat_delay);
     data.repeat_wait_freezes = dump_wait_freezes(pp.repeat_wait_freezes);
 
     data.max_hit = pp.max_hit;

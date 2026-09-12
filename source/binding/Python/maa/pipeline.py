@@ -7,6 +7,7 @@ from strenum import StrEnum
 # Type aliases to match C++ std::variant types
 JRect = tuple[int, int, int, int]  # std::array<int, 4>
 JTarget = Union[bool, str, JRect]  # std::variant<bool, std::string, JRect>
+JDuration = Union[int, list[int]]  # int | [min, max]
 
 
 # strenum
@@ -187,20 +188,20 @@ class JClick:
 class JLongPress:
     target: JTarget = True
     target_offset: JRect = (0, 0, 0, 0)
-    duration: int = 1000
+    duration: JDuration = 1000
     contact: int = 0
     pressure: int = 1
 
 
 @dataclass
 class JSwipe:
-    starting: int = 0  # MultiSwipe 中使用
+    starting: JDuration = 0  # MultiSwipe 中使用
     begin: JTarget = True
     begin_offset: JRect = (0, 0, 0, 0)
     end: list[JTarget] = field(default_factory=lambda: [True])
     end_offset: list[JRect] = field(default_factory=lambda: [(0, 0, 0, 0)])
-    end_hold: list[int] = field(default_factory=lambda: [0])
-    duration: list[int] = field(default_factory=lambda: [200])
+    end_hold: list[JDuration] = field(default_factory=lambda: [0])
+    duration: list[JDuration] = field(default_factory=lambda: [200])
     only_hover: bool = False
     contact: int = 0
     pressure: int = 1
@@ -232,7 +233,7 @@ class JClickKey:
 @dataclass
 class JLongPressKey:
     key: list[int]  # 必选
-    duration: int = 1000
+    duration: JDuration = 1000
 
 
 @dataclass
@@ -278,7 +279,7 @@ class JCommand:
 @dataclass
 class JShell:
     cmd: str  # 必选
-    shell_timeout: int = 20000
+    shell_timeout: JDuration = 20000
 
 
 @dataclass
@@ -342,13 +343,13 @@ class JNodeAttr:
 
 @dataclass
 class JWaitFreezes:
-    time: int = 1
+    time: JDuration = 1
     target: JTarget = True
     target_offset: JRect = (0, 0, 0, 0)
     threshold: float = 0.95
     method: int = 5
-    rate_limit: int = 1000
-    timeout: int = 20000
+    rate_limit: JDuration = 1000
+    timeout: JDuration = 20000
 
 
 @dataclass
@@ -356,18 +357,18 @@ class JPipelineData:
     recognition: JRecognition  # 必选
     action: JAction  # 必选
     next: list[JNodeAttr] = field(default_factory=lambda: [])
-    rate_limit: int = 1000
-    timeout: int = 20000
+    rate_limit: JDuration = 1000
+    timeout: JDuration = 20000
     on_error: list[JNodeAttr] = field(default_factory=lambda: [])
     anchor: dict[str, str] = field(default_factory=lambda: {})
     inverse: bool = False
     enabled: bool = True
-    pre_delay: int = 200
-    post_delay: int = 200
+    pre_delay: JDuration = 200
+    post_delay: JDuration = 200
     pre_wait_freezes: Optional[JWaitFreezes] = None
     post_wait_freezes: Optional[JWaitFreezes] = None
     repeat: int = 1
-    repeat_delay: int = 0
+    repeat_delay: JDuration = 0
     repeat_wait_freezes: Optional[JWaitFreezes] = None
     max_hit: int = 4294967295  # UINT_MAX
     focus: Any = None
@@ -379,13 +380,13 @@ class JPipelineParser:
     def _parse_wait_freezes(data: dict[str, Any]) -> JWaitFreezes:
         """Convert wait freezes with proper defaults"""
         return JWaitFreezes(
-            time=cast(int, data.get("time")),
+            time=cast(JDuration, data.get("time")),
             target=cast(JTarget, data.get("target")),
             target_offset=cast(JRect, data.get("target_offset")),
             threshold=cast(float, data.get("threshold")),
             method=cast(int, data.get("method")),
-            rate_limit=cast(int, data.get("rate_limit")),
-            timeout=cast(int, data.get("timeout")),
+            rate_limit=cast(JDuration, data.get("rate_limit")),
+            timeout=cast(JDuration, data.get("timeout")),
         )
 
     @classmethod
@@ -486,18 +487,18 @@ class JPipelineParser:
             recognition=recognition,
             action=action,
             next=cls._parse_node_attr_list(cast(list[dict[str, Any]], data.get("next"))),
-            rate_limit=cast(int, data.get("rate_limit")),
-            timeout=cast(int, data.get("timeout")),
+            rate_limit=cast(JDuration, data.get("rate_limit")),
+            timeout=cast(JDuration, data.get("timeout")),
             on_error=cls._parse_node_attr_list(cast(list[dict[str, Any]], data.get("on_error"))),
             anchor=cast(dict[str, str], data.get("anchor", {})),
             inverse=cast(bool, data.get("inverse")),
             enabled=cast(bool, data.get("enabled")),
-            pre_delay=cast(int, data.get("pre_delay")),
-            post_delay=cast(int, data.get("post_delay")),
+            pre_delay=cast(JDuration, data.get("pre_delay")),
+            post_delay=cast(JDuration, data.get("post_delay")),
             pre_wait_freezes=pre_wait_freezes,
             post_wait_freezes=post_wait_freezes,
             repeat=cast(int, data.get("repeat")),
-            repeat_delay=cast(int, data.get("repeat_delay")),
+            repeat_delay=cast(JDuration, data.get("repeat_delay")),
             repeat_wait_freezes=repeat_wait_freezes,
             max_hit=cast(int, data.get("max_hit")),
             focus=data.get("focus"),

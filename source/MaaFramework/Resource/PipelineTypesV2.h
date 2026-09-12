@@ -3,6 +3,7 @@
 #include <array>
 #include <map>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include <meojson/json.hpp>
@@ -15,6 +16,7 @@ namespace PipelineV2
 {
 using JRect = std::array<int, 4>;
 using JTarget = std::variant<bool, std::string, JRect>;
+using JDuration = std::variant<int64_t, std::array<int64_t, 2>>;
 
 struct JDirectHit
 {
@@ -180,7 +182,7 @@ struct JLongPress
 {
     JTarget target;
     JRect target_offset { };
-    uint32_t duration = 0;
+    JDuration duration = int64_t { 0 };
     uint32_t contact = 0;
     int32_t pressure = 1;
     MEO_TOJSON(target, target_offset, duration, contact, pressure);
@@ -188,13 +190,13 @@ struct JLongPress
 
 struct JSwipe
 {
-    uint32_t starting = 0;
+    JDuration starting = int64_t { 0 };
     JTarget begin;
     JRect begin_offset { };
     std::vector<JTarget> end;
     std::vector<JRect> end_offset;
-    std::vector<uint32_t> end_hold;
-    std::vector<uint32_t> duration;
+    std::vector<JDuration> end_hold;
+    std::vector<JDuration> duration;
     bool only_hover = false;
     uint32_t contact = 0;
     int32_t pressure = 1;
@@ -235,7 +237,7 @@ struct JClickKey
 struct JLongPressKey
 {
     std::vector<int> key;
-    uint32_t duration = 0;
+    JDuration duration = int64_t { 0 };
 
     MEO_TOJSON(key, duration);
 };
@@ -295,7 +297,7 @@ struct JCommand
 struct JShell
 {
     std::string cmd;
-    int64_t shell_timeout = 20000;
+    JDuration shell_timeout = int64_t { 20000 };
 
     MEO_TOJSON(cmd, shell_timeout);
 };
@@ -350,13 +352,13 @@ struct JAction
 
 struct JWaitFreezes
 {
-    int64_t time = 0;
+    JDuration time = int64_t { 0 };
     JTarget target;
     JRect target_offset { };
     double threshold = 0;
     int method = 0;
-    int64_t rate_limit = 0;
-    int64_t timeout = 0;
+    JDuration rate_limit = int64_t { 0 };
+    JDuration timeout = int64_t { 0 };
 
     MEO_TOJSON(time, target, target_offset, threshold, method, rate_limit, timeout);
 };
@@ -366,18 +368,18 @@ struct JPipelineData
     JRecognition recognition;
     JAction action;
     std::vector<NodeAttr> next;
-    int64_t rate_limit = 0;
-    int64_t timeout = 0;
+    JDuration rate_limit = int64_t { 0 };
+    JDuration timeout = int64_t { 0 };
     std::vector<NodeAttr> on_error;
     std::map<std::string, std::string> anchor;
     bool inverse = false;
     bool enabled = false;
-    int64_t pre_delay = 0;
-    int64_t post_delay = 0;
+    JDuration pre_delay = int64_t { 0 };
+    JDuration post_delay = int64_t { 0 };
     JWaitFreezes pre_wait_freezes;
     JWaitFreezes post_wait_freezes;
     uint32_t repeat = 0;
-    int64_t repeat_delay = 0;
+    JDuration repeat_delay = int64_t { 0 };
     JWaitFreezes repeat_wait_freezes;
     uint32_t max_hit = 0;
     json::value focus;
