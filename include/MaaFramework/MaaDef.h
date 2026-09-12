@@ -400,24 +400,22 @@ typedef uint64_t MaaWin32ScreencapMethod;
  *   then restore cursor position. This "briefly" seizes the mouse but won't block user operations.
  * - "WithWindowPos" methods briefly move the window so the target aligns with the current cursor
  *   position, send message, then restore the window position. The cursor is not moved.
- * - "AnchoredTouch" injects synthetic touch points, the target window receives WM_POINTER messages.
- *   The cursor is never moved and the foreground window is never changed. Since synthetic pointers
- *   are dispatched by desktop Z-order, the target window is briefly raised to topmost while
- *   the target point is occluded, and restored once all contacts are released. If raising does not
- *   take effect, the operation fails instead of injecting into the window that occludes the target.
- *   Raising requires WS_EX_LAYERED on the target window, which is added on the first raise, verified
- *   before every raise, and removed when the controller goes idle unless another module is relying on
- *   that layered state by then. If the style cannot be kept or the
- *   opacity cannot be lowered, the operation fails rather than raising the target window visibly.
- *   Windows layered via UpdateLayeredWindow are not supported. CS_OWNDC / CS_CLASSDC window classes
- *   are documented as incompatible with WS_EX_LAYERED, but that restriction does not always hold in
- *   practice, so such classes only produce a warning and the actual API results decide.
- *   A minimized target window is not supported and the operation fails, since its client area is
- *   off-screen and raising does not change that. Screencap methods with pseudo-minimize take the
- *   window out of that state before every capture, so this does not occur with them.
- *   WS_EX_TRANSPARENT is temporarily removed while the window is borrowed, since it lets input pass
- *   through to the windows underneath. Because the screencap side writes the same window state,
- *   the borrowed attributes are verified before being restored, and left alone once taken over.
+ * - "AnchoredTouch" injects synthetic touch points without moving the cursor or the target window.
+ *   The target receives WM_POINTER messages. Activation is suppressed during a touch sequence, but
+ *   the target application can still bring itself to the foreground. Its existing window styles
+ *   are preserved when the temporary activation styles are removed after the anchor is released.
+ *   A target already in the foreground is not given these temporary activation styles.
+ *   Each target point must be on an existing monitor; off-screen points are rejected.
+ *   When the target point is occluded, the window is temporarily raised and made nearly invisible.
+ *   While raised, it can take mouse clicks inside its rectangle from the windows underneath.
+ *   The window is restored after the touch sequence. If it cannot be raised and made hit-testable
+ *   at low opacity, the operation fails.
+ *   Raising requires WS_EX_LAYERED. Windows layered via UpdateLayeredWindow are not supported.
+ *   CS_OWNDC / CS_CLASSDC window classes produce a compatibility warning; the actual API results
+ *   determine whether raising can proceed. Layered style added by this method may remain until
+ *   inactive() or idle shutdown, and is retained if another module is using it.
+ *   A minimized target must be restored before input. Screencap methods with pseudo-minimize do
+ *   this before capture and can be used with AnchoredTouch.
  *   Clicking and swiping only. Keyboard can be routed to another method, but scroll cannot:
  *   it always goes through the mouse method and a synthetic touch device has no wheel.
  */

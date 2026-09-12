@@ -8,6 +8,7 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include <vector>
 
 #include "MaaControlUnit/ControlUnitAPI.h"
 
@@ -32,6 +33,14 @@ MAA_CTRL_UNIT_NS_BEGIN
 // 所以按下前会把目标窗口提到 topmost 并降到最低分层透明度，所有接触点抬起后还原，
 // 见 ensure_hittable / release_window_locked。借用不成功时 touch_down 直接失败，绝不注入，
 // 否则输入会落到遮挡目标的那个窗口上。
+// 当前实现借用期间会接走矩形内的鼠标点击，因此序列结束后立即归还，见 release_window_locked()。
+//
+// 目标操作点必须落在实际显示器范围内，按下与移动均会校验，见 point_on_desktop()。
+//
+// 触控序列期间通过 WS_EX_NOACTIVATE 抑制点击激活，并以 WS_EX_APPWINDOW 保留任务栏按钮。
+// 无需提升窗口的点击同样适用；目标窗口已在前台时跳过添加。
+// 等待锚点释放后再摘除激活样式，且仅移除本方式添加的位，保留目标窗口原有的样式。
+// 目标进程仍可能显式调用激活 API，因此不能保证前台窗口始终不变。
 //
 // 为省掉每次借用都要切换扩展样式引起的闪烁，WS_EX_LAYERED 一旦挂上就保留到 inactive()
 // 或空闲退出，由 unprepare_window() 清除。该样式随时可能被目标程序自己重设掉，
@@ -105,6 +114,7 @@ private:
     bool wait_for_frames(std::unique_lock<std::mutex>& lock, int frames);
     bool wait_for_contact_active(std::unique_lock<std::mutex>& lock, int contact);
     bool wait_for_contact_released(std::unique_lock<std::mutex>& lock, int contact);
+    bool wait_for_anchor_released(std::unique_lock<std::mutex>& lock);
 
     bool to_screen(int x, int y, POINT& out) const;
     POINT compute_anchor_origin() const;
@@ -127,6 +137,12 @@ private:
     void release_window_if_idle();
     void unprepare_window();
 
+    // 通过窗口样式抑制点击激活；目标进程显式调用激活 API 不在此控制范围内。
+    bool suppress_activation();
+    void restore_activation_locked(); // 需要在持有 window_mutex_ 的情况下调用
+    void restore_activation();
+    void restore_activation_if_idle();
+
 private:
     HWND hwnd_ = nullptr;
 
@@ -144,9 +160,10 @@ private:
     // 注入线程创建与销毁，调用线程在提升目标窗口时需要一并把它压回最上层
     std::atomic<HWND> anchor_hwnd_ = nullptr;
 
-    // 以下仅注入线程访问
+    // 合成设备与锚点位置由注入线程维护。
     void* device_ = nullptr;
     POINT anchor_pos_ = { };
+    // 注入线程更新；调用线程持有 mutex_ 等待释放，启动前由 ensure_worker() 初始化。
     bool anchor_down_ = false;
     RECT last_target_rect_ = { };
     std::wstring class_name_;
@@ -168,11 +185,22 @@ private:
     bool dimmed_ = false;
     bool raised_ = false;
     bool transparent_suppressed_ = false;
-    HWND prev_sibling_ = nullptr;
+
+    // 借用前目标窗口在 Z 序中的前序兄弟，由近及远。归还时插回其中一个即可回到原位；
+    // 只记最近的那一个时，它一旦在借用期间被关掉就只剩 HWND_NOTOPMOST 可用，
+    // 而那个值会把目标窗口推到非置顶层的最前面
+    std::vector<HWND> prev_siblings_;
+
+    // 借用开始时的前台窗口，用于决定归还时是否恢复原 Z 序，见 release_window_locked()。
+    HWND foreground_at_borrow_ = nullptr;
 
     // dim_window() 实际写入目标窗口的分层属性，供 check_borrow_mark() 核对
     COLORREF mark_color_key_ = 0;
     DWORD mark_layered_flags_ = LWA_ALPHA;
+
+    // kActivationStyles 中由本方式挂上去的那几位，归还时按此摘除。
+    // 目标窗口自带的位不计入，也就不会被摘掉
+    LONG_PTR activation_styles_applied_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

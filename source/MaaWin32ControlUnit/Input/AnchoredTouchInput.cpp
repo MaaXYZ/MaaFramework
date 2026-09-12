@@ -28,6 +28,14 @@ constexpr BYTE kAnchorAlpha = 1;
 // 借用目标窗口期间同样降到最低 alpha，肉眼几乎看不到画面变化，但命中判定仍然有效
 constexpr BYTE kDimAlpha = 1;
 
+// 保存多个前序窗口，供还原 Z 序时选择。
+// 最近的前序窗口可能在触控期间关闭，因此保留其他候选。
+constexpr size_t kMaxPrevSiblings = 8;
+
+// WS_EX_NOACTIVATE 用于抑制触控期间的点击激活。
+// 同时设置 WS_EX_APPWINDOW，避免目标窗口的任务栏按钮因样式变化而消失。
+constexpr LONG_PTR kActivationStyles = WS_EX_NOACTIVATE | WS_EX_APPWINDOW;
+
 // 注入帧间隔。实测超过约 400ms 不提交新帧，系统会回收接触点
 constexpr int kTickMs = 12;
 
@@ -52,6 +60,14 @@ std::once_flag g_api_once;
 CreateSyntheticPointerDeviceFunc g_create_device = nullptr;
 InjectSyntheticPointerInputFunc g_inject_input = nullptr;
 DestroySyntheticPointerDeviceFunc g_destroy_device = nullptr;
+
+// 注入点必须落在真实存在的显示器上。目标窗口被拖出屏幕后，由客户区换算出的坐标会落在桌面之外，
+// 而合成指针打不到不存在的位置，系统会把越界的点钳到屏幕边缘，落在任务栏之类的地方。
+// 用 MonitorFromPoint 判断目标点是否位于实际显示器范围内。
+bool point_on_desktop(POINT screen)
+{
+    return MonitorFromPoint(screen, MONITOR_DEFAULTTONULL) != nullptr;
+}
 
 POINTER_TYPE_INFO make_touch_info(uint32_t id, POINT point, UINT32 flags)
 {
@@ -145,9 +161,15 @@ bool AnchoredTouchInput::touch_down(int contact, int x, int y, [[maybe_unused]] 
         return false;
     }
 
+    // 必须赶在 ensure_hittable() 之前挂上：提升目标窗口这个动作本身就会引起激活，
+    // 而提升就发生在它里面。未走借用的点击同样会被注入激活，所以每次都挂。
+    // 挂不上也不拦截注入，让点击照常进行
+    suppress_activation();
+
     // 目标点打不中目标窗口就不能注入，否则输入会落到遮挡它的那个窗口上
     if (!ensure_hittable(point)) {
         release_window_if_idle();
+        restore_activation_if_idle();
         return false;
     }
 
@@ -165,6 +187,7 @@ bool AnchoredTouchInput::touch_down(int contact, int x, int y, [[maybe_unused]] 
         contacts_.erase(contact);
         lock.unlock();
         release_window_if_idle();
+        restore_activation_if_idle();
         return false;
     }
 
@@ -179,6 +202,13 @@ bool AnchoredTouchInput::touch_move(int contact, int x, int y, [[maybe_unused]] 
 
     POINT point = { };
     if (!to_screen(x, y, point)) {
+        return false;
+    }
+
+    // 滑动中途移出桌面同样不能注入。这里不更新坐标，接触点留在上一个有效位置，
+    // 由上层判定这一步失败，而不是把它抬起在屏幕外
+    if (!point_on_desktop(point)) {
+        LogError << "the target point is outside the desktop" << VAR(point.x) << VAR(point.y);
         return false;
     }
 
@@ -213,16 +243,25 @@ bool AnchoredTouchInput::touch_up(int contact)
         LogError << "contact is not down" << VAR(contact);
         lock.unlock();
         release_window_if_idle();
+        restore_activation_if_idle();
         return false;
     }
 
     it->second.pending_up = true;
 
     bool ok = wait_for_contact_released(lock, contact);
+
+    // 只有最后一个操作点释放后，锚点才会释放。
+    // 其他操作点仍存在时，继续保留锚点和激活样式。
+    if (contacts_.empty()) {
+        wait_for_anchor_released(lock);
+    }
+
     lock.unlock();
 
     // 必须等所有接触点都抬起后再归还窗口，否则剩下的接触点会在触控序列中途丢失命中
     release_window_if_idle();
+    restore_activation_if_idle();
 
     return ok;
 }
@@ -637,6 +676,20 @@ bool AnchoredTouchInput::wait_for_contact_released(std::unique_lock<std::mutex>&
     return running_;
 }
 
+// 锚点由注入线程按 contacts_ 是否为空自行按下与松开，比最后一个接触点晚一帧。
+// 等待锚点释放后再摘除激活样式，避免操作点抬起后、锚点释放前出现保护空档。
+bool AnchoredTouchInput::wait_for_anchor_released(std::unique_lock<std::mutex>& lock)
+{
+    bool done = cv_.wait_for(lock, kWaitTimeout, [this] { return !running_ || !anchor_down_; });
+
+    if (!done) {
+        LogError << "timed out waiting for the anchor to be released";
+        return false;
+    }
+
+    return !anchor_down_;
+}
+
 bool AnchoredTouchInput::wait_for_frames(std::unique_lock<std::mutex>& lock, int frames)
 {
     uint64_t target = frame_count_ + static_cast<uint64_t>(frames);
@@ -808,7 +861,15 @@ void AnchoredTouchInput::begin_borrow()
     }
 
     borrowed_ = true;
-    prev_sibling_ = GetWindow(hwnd_, GW_HWNDPREV);
+
+    prev_siblings_.clear();
+    for (HWND sibling = GetWindow(hwnd_, GW_HWNDPREV); sibling && prev_siblings_.size() < kMaxPrevSiblings;
+         sibling = GetWindow(sibling, GW_HWNDPREV)) {
+        prev_siblings_.emplace_back(sibling);
+    }
+
+    // 归还时据此区分「目标窗口本来就在前台」与「借用期间才变成前台」，见 release_window_locked()
+    foreground_at_borrow_ = GetForegroundWindow();
 
     // 置顶状态与分层属性一样按次读取，跨借用沿用会写回过期的值
     original_topmost_ = (GetWindowLongPtrW(hwnd_, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0;
@@ -952,6 +1013,14 @@ bool AnchoredTouchInput::ensure_hittable(POINT screen)
         return false;
     }
 
+    // 本函数其余部分只回答「有没有被别的窗口遮挡」，越界的点两种形态都会被放行：
+    // 点仍在目标窗口矩形内时 WindowFromPoint 返回目标窗口自己，判为无需提升；
+    // 落在所有窗口之外时返回空，判为被遮挡，提升之后照样注入
+    if (!point_on_desktop(screen)) {
+        LogError << "the target point is outside the desktop" << VAR(screen.x) << VAR(screen.y);
+        return false;
+    }
+
     // 锚点是 topmost 的，目标点落进它的矩形里就永远打不中目标窗口
     if (anchor_covers(screen)) {
         LogError << "the target point is covered by the anchor window" << VAR(screen.x) << VAR(screen.y);
@@ -1015,15 +1084,26 @@ void AnchoredTouchInput::release_window_locked()
     bool restored = true;
 
     if (raised_) {
-        // 把 topmost 窗口插到非 topmost 窗口之后会剥掉它的 topmost 属性，
-        // 因此只有前序兄弟与目标窗口的 topmost 状态一致时才用它还原
+        // HWND_NOTOPMOST 会使窗口位于非置顶窗口的最前面。
+        // 还原时优先使用保存的前序窗口，避免目标窗口因取消置顶而改变原来的遮挡关系。
         HWND insert_after = original_topmost_ ? HWND_TOPMOST : HWND_NOTOPMOST;
-        if (prev_sibling_ && IsWindow(prev_sibling_) && GetForegroundWindow() != hwnd_) {
-            // 用户在借用期间把窗口调到了前台，插回原来的兄弟之后会把它压到别的窗口下面。
-            // 这种情况下只摘掉 topmost 属性，不再恢复具体位置
-            bool sibling_topmost = (GetWindowLongPtrW(prev_sibling_, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0;
-            if (sibling_topmost == original_topmost_) {
-                insert_after = prev_sibling_;
+
+        // 借用前后目标窗口均处于前台时，不恢复此前保存的 Z 序。
+        // 其他情况下仍尝试恢复，避免触控期间发生的激活使目标窗口留在最前面。
+        bool foreground_owned_by_user = GetForegroundWindow() == hwnd_ && foreground_at_borrow_ == hwnd_;
+
+        if (!foreground_owned_by_user) {
+            // 按记录顺序选择仍存在且置顶状态匹配的前序窗口。
+            // 将置顶窗口插入非置顶窗口之后会取消其置顶状态，因此不能使用状态不匹配的候选。
+            for (HWND sibling : prev_siblings_) {
+                if (!IsWindow(sibling)) {
+                    continue;
+                }
+
+                if (((GetWindowLongPtrW(sibling, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0) == original_topmost_) {
+                    insert_after = sibling;
+                    break;
+                }
             }
         }
 
@@ -1067,8 +1147,87 @@ void AnchoredTouchInput::release_window_locked()
 
     if (restored) {
         borrowed_ = false;
-        prev_sibling_ = nullptr;
+        prev_siblings_.clear();
+        foreground_at_borrow_ = nullptr;
     }
+}
+
+bool AnchoredTouchInput::suppress_activation()
+{
+    // 目标窗口已经在前台时不必压制：所谓被夺前台指的是它从后台跳到最前，已经在最前就没有
+    // 可见变化。这一支同时让开了用户正在使用目标窗口的整段时间，期间不去动它的样式
+    if (GetForegroundWindow() == hwnd_) {
+        return true;
+    }
+
+    std::lock_guard lock(window_mutex_);
+
+    if (activation_styles_applied_ != 0 || !hwnd_) {
+        return true;
+    }
+
+    SetLastError(0);
+    LONG_PTR exstyle = GetWindowLongPtrW(hwnd_, GWL_EXSTYLE);
+    if (exstyle == 0 && GetLastError() != 0) {
+        LogError << "GetWindowLongPtrW failed" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
+        return false;
+    }
+
+    // 目标窗口自带的位不记账也不动，免得归还时把它本来就有的东西摘掉
+    LONG_PTR missing = kActivationStyles & ~exstyle;
+    if (missing == 0) {
+        return true;
+    }
+
+    SetLastError(0);
+    if (SetWindowLongPtrW(hwnd_, GWL_EXSTYLE, exstyle | missing) == 0 && GetLastError() != 0) {
+        LogError << "failed to suppress activation on the target window" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
+        return false;
+    }
+
+    activation_styles_applied_ = missing;
+    return true;
+}
+
+void AnchoredTouchInput::restore_activation_locked()
+{
+    if (activation_styles_applied_ == 0 || !hwnd_) {
+        return;
+    }
+
+    SetLastError(0);
+    LONG_PTR exstyle = GetWindowLongPtrW(hwnd_, GWL_EXSTYLE);
+    if (exstyle == 0 && GetLastError() != 0) {
+        LogError << "GetWindowLongPtrW failed" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
+        return;
+    }
+
+    SetLastError(0);
+    if (SetWindowLongPtrW(hwnd_, GWL_EXSTYLE, exstyle & ~activation_styles_applied_) == 0 && GetLastError() != 0) {
+        LogError << "failed to restore the target window ex-style" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
+        return;
+    }
+
+    activation_styles_applied_ = 0;
+}
+
+void AnchoredTouchInput::restore_activation()
+{
+    std::lock_guard lock(window_mutex_);
+
+    restore_activation_locked();
+}
+
+void AnchoredTouchInput::restore_activation_if_idle()
+{
+    {
+        std::lock_guard lock(mutex_);
+        if (!contacts_.empty()) {
+            return;
+        }
+    }
+
+    restore_activation();
 }
 
 void AnchoredTouchInput::release_window()
@@ -1094,6 +1253,10 @@ void AnchoredTouchInput::unprepare_window()
 {
     std::lock_guard lock(window_mutex_);
 
+    // 压制激活与借用各自记账：没走过借用路径的点击也会挂它，
+    // 所以要放在 window_prepared_ 判断之前，否则会残留在目标窗口上
+    restore_activation_locked();
+
     if (!window_prepared_ || !hwnd_) {
         return;
     }
@@ -1117,7 +1280,7 @@ void AnchoredTouchInput::unprepare_window()
         // 这份已经挂好的样式，把不透明度压到 0 并加上 WS_EX_TRANSPARENT。此时摘掉样式，
         // 那份不透明度会随之失效，本该隐形的窗口整个显出来，对方也再无从还原。
         // 因此只在这份分层状态没有被别人占用时才清，否则留着，等下一次调用再试。
-        // Win32ControlUnitMgr::inactive() 先停截图侧再停输入侧，任务结束时的那一次重试即可清干净。
+        // 宿主调用 Win32ControlUnitMgr::inactive() 时会先停截图侧再停输入侧，为清理提供一次重试机会。
         // 样式已经不在则不算被占用——截图侧的还原是整份写回扩展样式，会把我们加的这一位一并抹掉，
         // 此时下面的清除退化成空操作，照常销账即可
         COLORREF color_key = 0;
