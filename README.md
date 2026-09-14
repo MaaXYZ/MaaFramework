@@ -123,6 +123,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [Everything-Maa](https://github.com/KhazixW2/Everything-Maa) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black) ![license](https://img.shields.io/github/license/KhazixW2/Everything-Maa) ![activity](https://img.shields.io/github/commit-activity/m/KhazixW2/Everything-Maa?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/KhazixW2/Everything-Maa?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/everything-maa)  
     面向 AI 辅助开发的 MaaFramework 工具集，提供可复用 Skills、版本化 MCP 配置与 CLI 安装器，覆盖项目创建、Pipeline 编写、测试和分析
 
+- [MaaCtl](https://github.com/TanyaShue/MaaCtl) ![Go](https://img.shields.io/badge/Go-007d9c?logo=go) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaCtl?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaCtl?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/maactl) [![release](https://img.shields.io/github/v/release/TanyaShue/MaaCtl?display_name=tag)](https://github.com/TanyaShue/MaaCtl/releases)  
+    MaaFramework / ProjectInterface v2 命令行客户端，纯参数化运行 PI 项目与 Pipeline 节点，提供 Go 单文件可执行程序与 npm（npx/全局安装）分发
+
 ### 应用程序
 
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
