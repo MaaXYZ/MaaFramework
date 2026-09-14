@@ -1,6 +1,7 @@
 import ctypes
 import pathlib
 import platform
+import threading
 from typing import Optional
 
 from .define import *
@@ -12,6 +13,17 @@ class Library:
     管理 MaaFramework 各动态库的加载和访问。
     Manages loading and access to MaaFramework dynamic libraries.
     """
+
+    # 保护各绑定类 ctypes argtypes/restype 的一次性初始化（见 #629）。
+    #
+    # 这些赋值必须在 _api_properties_initialized 置位之前全部完成：初始化的
+    # 第一条语句就会触发下方动态库的懒加载，而 WinDLL()/CDLL() 会执行磁盘 I/O
+    # 并释放 GIL。若先置位，另一线程会在此刻跳过初始化，转而调用 argtypes 仍为
+    # None 的函数——ctypes 按 32 位 c_int 处理，64 位句柄或抛 OverflowError，
+    # 或被静默截断后由 C 侧解引用。
+    #
+    # 用 RLock 而非 Lock：初始化路径若将来出现嵌套，死锁远比多余的可重入性难查。
+    _api_lock: threading.RLock = threading.RLock()
 
     _is_agent_server: bool = False
 
@@ -196,7 +208,11 @@ class Library:
         if cls._api_properties_initialized:
             return
 
-        cls._api_properties_initialized = True
+        with cls._api_lock:
+            if cls._api_properties_initialized:
+                return
 
-        cls.framework().MaaVersion.restype = ctypes.c_char_p
-        cls.framework().MaaVersion.argtypes = []
+            cls.framework().MaaVersion.restype = ctypes.c_char_p
+            cls.framework().MaaVersion.argtypes = []
+
+            cls._api_properties_initialized = True

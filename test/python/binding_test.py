@@ -14,7 +14,9 @@ Python binding API 测试
 
 import os
 from pathlib import Path
+import subprocess
 import sys
+import textwrap
 import numpy
 import io
 
@@ -935,6 +937,68 @@ def test_win32_anchored_touch_enum():
 # ============================================================================
 
 
+def test_binding_init_thread_safety():
+    """并发初始化回归测试 / Concurrent initialisation regression test (#629)
+
+    ctypes 的 argtypes/restype 是进程级一次性初始化，必须在子进程中验证：
+    父进程早已完成初始化，竞态窗口不复存在。
+    """
+    print("\n=== test_binding_init_thread_safety ===")
+
+    child = textwrap.dedent(
+        """
+        import ctypes, sys, threading
+        from maa.controller import AdbController
+
+        N = 8
+        barrier, errors = threading.Barrier(N), []
+
+        def worker(i):
+            barrier.wait()          # 最大化重叠在动态库懒加载上
+            try:
+                ctrl = AdbController(adb_path="adb", address=f"127.0.0.1:{16384 + i * 32}")
+                ctrl.post_connection().wait()
+            except (ctypes.ArgumentError, OSError) as e:
+                errors.append(f"{type(e).__name__}: {e}")
+            except Exception:
+                pass                # 连接失败是预期的，与本测试无关
+
+        ts = [threading.Thread(target=worker, args=(i,)) for i in range(N)]
+        for t in ts: t.start()
+        for t in ts: t.join()
+
+        if errors:
+            print("RACE " + errors[0])
+            sys.exit(1)
+        sys.exit(0)
+        """
+    )
+
+    env = dict(
+        os.environ,
+        MAAFW_BINARY_PATH=str(install_dir / "bin"),
+        PYTHONPATH=str(binding_dir),
+    )
+
+    # 竞态是概率性的（单次命中率约 95%），重复几次把漏报压到千分之一以下
+    for _ in range(3):
+        proc = subprocess.run(
+            [sys.executable, "-c", child],
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+        if proc.returncode == 0:
+            continue
+        race = [l for l in proc.stdout.splitlines() if l.startswith("RACE ")]
+        detail = race[0][5:] if race else f"child exited {proc.returncode} (crashed?)"
+        print(f"  FAIL: concurrent binding init is not thread-safe -- {detail}")
+        raise RuntimeError(f"binding init race (#629): {detail}")
+
+    print("  PASS: 8 threads initialised the binding concurrently")
+
+
 if __name__ == "__main__":
     print(f"MaaFw Version: {Library.version()}")
 
@@ -971,6 +1035,9 @@ if __name__ == "__main__":
 
     # 测试 Win32 AnchoredTouch 枚举导出
     test_win32_anchored_touch_enum()
+
+    # 回归：并发初始化线程安全 (#629)
+    test_binding_init_thread_safety()
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")

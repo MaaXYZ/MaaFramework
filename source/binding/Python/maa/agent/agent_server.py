@@ -320,8 +320,15 @@ class AgentServer:
         if AgentServer._api_properties_initialized:
             return
 
-        AgentServer._api_properties_initialized = True
+        with Library._api_lock:
+            if AgentServer._api_properties_initialized:
+                return
 
+            AgentServer._assign_api_properties()
+            AgentServer._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         Library.agent_server().MaaAgentServerRegisterCustomRecognition.restype = MaaBool
         Library.agent_server().MaaAgentServerRegisterCustomRecognition.argtypes = [
             ctypes.c_char_p,
