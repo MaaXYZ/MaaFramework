@@ -11,6 +11,7 @@
 #include "MaaUtils/Logger.h"
 
 #include "InputUtils.h"
+#include "InterceptionKeyboardSelector.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -22,7 +23,6 @@ constexpr DWORD kOpenExisting = 3;
 
 constexpr int kMaxDeviceCount = 20;
 constexpr int kKeyboardDeviceCount = 10;
-constexpr int kPreferredKeyboardDevice = 1;
 constexpr int kMouseDeviceStart = 10;
 constexpr int kMouseDeviceEnd = 19;
 
@@ -122,26 +122,9 @@ void close_device_handle(HANDLE& device_handle, HANDLE& event_handle)
     }
 }
 
-bool can_open_device(int index)
+bool query_hardware_id(HANDLE device_handle, std::wstring& hardware_id)
 {
-    HANDLE device_handle = INVALID_HANDLE_VALUE;
-    HANDLE event_handle = nullptr;
-    if (!open_device_handle(index, device_handle, event_handle)) {
-        return false;
-    }
-
-    close_device_handle(device_handle, event_handle);
-    return true;
-}
-
-bool query_hardware_id(int index, std::wstring& hardware_id)
-{
-    HANDLE device_handle = INVALID_HANDLE_VALUE;
-    HANDLE event_handle = nullptr;
-    if (!open_device_handle(index, device_handle, event_handle)) {
-        return false;
-    }
-
+    hardware_id.clear();
     std::array<wchar_t, 256> buffer { };
     DWORD bytes_returned = 0;
     const BOOL ok = DeviceIoControl(
@@ -154,15 +137,27 @@ bool query_hardware_id(int index, std::wstring& hardware_id)
         &bytes_returned,
         nullptr);
 
-    close_device_handle(device_handle, event_handle);
-
-    if (!ok || bytes_returned == 0) {
+    if (!ok || bytes_returned < sizeof(wchar_t) || buffer.front() == L'\0') {
         return false;
     }
 
-    size_t char_count = std::min<size_t>(buffer.size() - 1, bytes_returned / sizeof(wchar_t));
-    hardware_id.assign(buffer.data(), char_count);
+    // GET_HARDWARE_ID returns a MULTI_SZ. Use its first, most specific ID.
+    buffer.back() = L'\0';
+    hardware_id.assign(buffer.data());
     return !hardware_id.empty();
+}
+
+bool query_hardware_id(int index, std::wstring& hardware_id)
+{
+    // Hardware discovery must not register an event on a second handle.
+    HANDLE device_handle = CreateFileW(device_path(index).c_str(), kGenericRead, 0, nullptr, kOpenExisting, 0, nullptr);
+    if (device_handle == INVALID_HANDLE_VALUE) {
+        hardware_id.clear();
+        return false;
+    }
+    const bool ok = query_hardware_id(device_handle, hardware_id);
+    CloseHandle(device_handle);
+    return ok;
 }
 
 std::optional<int> find_mouse_device_index()
@@ -176,21 +171,15 @@ std::optional<int> find_mouse_device_index()
     return std::nullopt;
 }
 
-std::optional<int> find_keyboard_device_index()
+std::optional<std::wstring> keyboard_device_selector()
 {
-    if (can_open_device(kPreferredKeyboardDevice)) {
-        return kPreferredKeyboardDevice;
+    std::array<wchar_t, 512> buffer {};
+    const DWORD size = GetEnvironmentVariableW(L"MAA_INTERCEPTION_KEYBOARD_DEVICE", buffer.data(), static_cast<DWORD>(buffer.size()));
+    if (size >= buffer.size()) {
+        LogError << "MAA_INTERCEPTION_KEYBOARD_DEVICE is too long";
+        return std::nullopt;
     }
-
-    for (int index = 0; index < kKeyboardDeviceCount; ++index) {
-        if (index == kPreferredKeyboardDevice) {
-            continue;
-        }
-        if (can_open_device(index)) {
-            return index;
-        }
-    }
-    return std::nullopt;
+    return std::wstring(buffer.data(), size);
 }
 
 bool contact_to_interception_button(int contact, bool button_down, uint16_t& button_flag)
@@ -226,6 +215,7 @@ InterceptionInput::InterceptionInput(HWND hwnd)
 
 InterceptionInput::~InterceptionInput()
 {
+    release_keyboard_keys();
     destroy_mouse_device();
     destroy_keyboard_device();
 }
@@ -337,19 +327,34 @@ bool InterceptionInput::key_down(int key)
     ensure_foreground();
 
     LogInfo << VAR(key) << VAR(keyboard_device_index_) << VAR_VOIDP(hwnd_);
-    return send_key(key, false);
+    if (!send_key(key, false)) {
+        return false;
+    }
+    pressed_keys_.insert(key);
+    return true;
 }
 
 bool InterceptionInput::key_up(int key)
 {
-    if (!ensure_keyboard_ready()) {
+    // Never send the release of a held key to a newly selected keyboard.
+    if (!pressed_keys_.empty() && !keyboard_device_attached()) {
+        LogError << "Interception keyboard disconnected before key release" << VAR(keyboard_device_index_) << VAR(key);
+        pressed_keys_.erase(key);
+        destroy_keyboard_device();
+        return false;
+    }
+    if (pressed_keys_.empty() && !ensure_keyboard_ready()) {
         return false;
     }
 
     ensure_foreground();
 
     LogInfo << VAR(key) << VAR(keyboard_device_index_) << VAR_VOIDP(hwnd_);
-    return send_key(key, true);
+    if (!send_key(key, true)) {
+        return false;
+    }
+    pressed_keys_.erase(key);
+    return true;
 }
 
 bool InterceptionInput::scroll(int dx, int dy)
@@ -377,6 +382,7 @@ bool InterceptionInput::scroll(int dx, int dy)
 
 void InterceptionInput::inactive()
 {
+    release_keyboard_keys();
     destroy_mouse_device();
     destroy_keyboard_device();
 }
@@ -391,10 +397,45 @@ bool InterceptionInput::ensure_mouse_ready()
 
 bool InterceptionInput::ensure_keyboard_ready()
 {
-    if (keyboard_device_handle_ != INVALID_HANDLE_VALUE && is_valid_keyboard_index(keyboard_device_index_)) {
+    if (!pressed_keys_.empty()) {
+        return !keyboard_write_failed_ && keyboard_device_attached();
+    }
+    const auto selector = keyboard_device_selector();
+    if (!selector) {
+        return false;
+    }
+    InterceptionDetail::KeyboardHardwareIds hardware_ids;
+    for (int index = 0; index < kKeyboardDeviceCount; ++index) {
+        query_hardware_id(index, hardware_ids[index]);
+    }
+    const auto index = InterceptionDetail::select_keyboard(
+        hardware_ids, *selector, keyboard_device_index_, keyboard_hardware_id_);
+    if (!index) {
+        LogError << "No attached Interception keyboard matches selection" << VAR(*selector);
+        destroy_keyboard_device();
+        return false;
+    }
+    if (*index == keyboard_device_index_ && !keyboard_write_failed_ && keyboard_device_attached()) {
         return true;
     }
-    return initialize_keyboard_device();
+    return initialize_keyboard_device(*index, hardware_ids[*index]);
+}
+
+bool InterceptionInput::keyboard_device_attached() const
+{
+    std::wstring hardware_id;
+    return keyboard_device_handle_ != INVALID_HANDLE_VALUE && is_valid_keyboard_index(keyboard_device_index_)
+           && query_hardware_id(keyboard_device_handle_, hardware_id) && hardware_id == keyboard_hardware_id_;
+}
+
+void InterceptionInput::release_keyboard_keys()
+{
+    if (!pressed_keys_.empty() && keyboard_device_attached()) {
+        for (const int key : pressed_keys_) {
+            send_key(key, true);
+        }
+    }
+    pressed_keys_.clear();
 }
 
 bool InterceptionInput::initialize_mouse_device()
@@ -418,24 +459,23 @@ bool InterceptionInput::initialize_mouse_device()
     return true;
 }
 
-bool InterceptionInput::initialize_keyboard_device()
+bool InterceptionInput::initialize_keyboard_device(int index, const std::wstring& hardware_id)
 {
     destroy_keyboard_device();
 
-    auto keyboard_index = find_keyboard_device_index();
-    if (!keyboard_index) {
-        LogError << "Interception driver not found or no keyboard device available";
-        return false;
-    }
-
-    if (!open_device_handle(*keyboard_index, keyboard_device_handle_, keyboard_event_handle_)) {
-        LogError << "Failed to open Interception keyboard device" << VAR(*keyboard_index) << VAR(GetLastError());
+    if (!open_device_handle(index, keyboard_device_handle_, keyboard_event_handle_)) {
+        LogError << "Failed to open Interception keyboard device" << VAR(index) << VAR(GetLastError());
         destroy_keyboard_device();
         return false;
     }
 
-    keyboard_device_index_ = *keyboard_index;
-    LogInfo << "Interception keyboard device initialized" << VAR(keyboard_device_index_);
+    keyboard_device_index_ = index;
+    keyboard_hardware_id_ = hardware_id;
+    if (!keyboard_device_attached()) {
+        destroy_keyboard_device();
+        return false;
+    }
+    LogInfo << "Interception keyboard device initialized" << VAR(keyboard_device_index_) << VAR(keyboard_hardware_id_);
     return true;
 }
 
@@ -449,6 +489,8 @@ void InterceptionInput::destroy_keyboard_device()
 {
     close_device_handle(keyboard_device_handle_, keyboard_event_handle_);
     keyboard_device_index_ = -1;
+    keyboard_hardware_id_.clear();
+    keyboard_write_failed_ = false;
 }
 
 bool InterceptionInput::ensure_foreground()
@@ -511,6 +553,12 @@ bool InterceptionInput::send_keyboard_stroke(const KeyboardStroke& stroke)
 
     if (!ok) {
         LogError << "Interception keyboard DeviceIoControl(IOCTL_WRITE) failed" << VAR(GetLastError()) << VAR(keyboard_device_index_);
+        // Do not replay an uncertain write on another device. Keep a held key's
+        // binding for release; otherwise reopen the endpoint on the next action.
+        keyboard_write_failed_ = true;
+        if (pressed_keys_.empty()) {
+            destroy_keyboard_device();
+        }
         return false;
     }
 
