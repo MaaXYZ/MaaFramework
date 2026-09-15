@@ -29,8 +29,8 @@ inline std::optional<int> select_keyboard(
         }
         return std::nullopt;
     }
-    if (previous_index >= 0 && previous_index < static_cast<int>(hardware_ids.size())
-        && !previous_hardware_id.empty() && hardware_ids[previous_index] == previous_hardware_id) {
+    if (previous_index >= 0 && previous_index < static_cast<int>(hardware_ids.size()) && !previous_hardware_id.empty()
+        && hardware_ids[previous_index] == previous_hardware_id) {
         return previous_index;
     }
     for (int index = 0; index < static_cast<int>(hardware_ids.size()); ++index) {

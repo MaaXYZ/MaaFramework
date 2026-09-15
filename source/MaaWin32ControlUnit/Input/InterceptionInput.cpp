@@ -173,7 +173,7 @@ std::optional<int> find_mouse_device_index()
 
 std::optional<std::wstring> keyboard_device_selector()
 {
-    std::array<wchar_t, 512> buffer {};
+    std::array<wchar_t, 512> buffer { };
     const DWORD size = GetEnvironmentVariableW(L"MAA_INTERCEPTION_KEYBOARD_DEVICE", buffer.data(), static_cast<DWORD>(buffer.size()));
     if (size >= buffer.size()) {
         LogError << "MAA_INTERCEPTION_KEYBOARD_DEVICE is too long";
@@ -408,8 +408,7 @@ bool InterceptionInput::ensure_keyboard_ready()
     for (int index = 0; index < kKeyboardDeviceCount; ++index) {
         query_hardware_id(index, hardware_ids[index]);
     }
-    const auto index = InterceptionDetail::select_keyboard(
-        hardware_ids, *selector, keyboard_device_index_, keyboard_hardware_id_);
+    const auto index = InterceptionDetail::select_keyboard(hardware_ids, *selector, keyboard_device_index_, keyboard_hardware_id_);
     if (!index) {
         LogError << "No attached Interception keyboard matches selection" << VAR(*selector);
         destroy_keyboard_device();
