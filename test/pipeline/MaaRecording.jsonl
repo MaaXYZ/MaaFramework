@@ -1,0 +1,40 @@
+{"cost": 534, "success": true, "type": "connect", "uuid": "123456", "version": "v1.2.0", "timestamp": 567892874310300, "width": 1280, "height": 720}
+{"cost": 519, "path": "Screenshot/2023.10.25-23.45.28.3289226.png", "success": true, "type": "screencap", "timestamp": 567895418893400}
+{"cost": 502, "path": "Screenshot/2023.10.25-23.45.29.9700669.png", "success": true, "type": "screencap", "timestamp": 567897077505400}
+{"cost": 0, "success": true, "type": "click", "x": 1276, "y": 1080, "timestamp": 567898419923100}
+{"cost": 210, "path": "Screenshot/2023.10.25-23.45.31.5761778.png", "success": true, "type": "screencap", "timestamp": 567898921284800}
+{"cost": 347, "path": "Screenshot/2023.10.25-23.45.32.4707734.png", "success": true, "type": "screencap", "timestamp": 567899713028900}
+{"cost": 365, "path": "Screenshot/2023.10.25-23.45.33.4435677.png", "success": true, "type": "screencap", "timestamp": 567900668889300}
+{"cost": 522, "path": "Screenshot/2023.10.25-23.45.35.0652649.png", "success": true, "type": "screencap", "timestamp": 567902151574000}
+{"cost": 574, "path": "Screenshot/2023.10.25-23.45.36.2283961.png", "success": true, "type": "screencap", "timestamp": 567903263539200}
+{"cost": 552, "path": "Screenshot/2023.10.25-23.45.38.0039480.png", "success": true, "type": "screencap", "timestamp": 567905060375100}
+{"cost": 0, "success": true, "type": "click", "x": 1982, "y": 828, "timestamp": 567905871631300}
+{"cost": 361, "path": "Screenshot/2023.10.25-23.45.39.1447220.png", "success": true, "type": "screencap", "timestamp": 567906373173500}
+{"cost": 358, "path": "Screenshot/2023.10.25-23.45.40.0195577.png", "success": true, "type": "screencap", "timestamp": 567907251450400}
+{"cost": 407, "path": "Screenshot/2023.10.25-23.45.41.6781154.png", "success": true, "type": "screencap", "timestamp": 567908861376900}
+{"cost": 732, "path": "Screenshot/2023.10.25-23.45.43.6047412.png", "success": true, "type": "screencap", "timestamp": 567910489876600}
+{"cost": 0, "success": true, "type": "click", "x": 1048, "y": 316, "timestamp": 567911515715600}
+{"cost": 739, "path": "Screenshot/2023.10.25-23.45.44.6351516.png", "success": true, "type": "screencap", "timestamp": 567911517117900}
+{"cost": 737, "path": "Screenshot/2023.10.25-23.45.45.3810039.png", "success": true, "type": "screencap", "timestamp": 567912257924700}
+{"cost": 743, "path": "Screenshot/2023.10.25-23.45.46.1271796.png", "success": true, "type": "screencap", "timestamp": 567912998438700}
+{"cost": 716, "path": "Screenshot/2023.10.25-23.45.46.8465719.png", "success": true, "type": "screencap", "timestamp": 567913744795000}
+{"cost": 717, "path": "Screenshot/2023.10.25-23.45.47.5672607.png", "success": true, "type": "screencap", "timestamp": 567914463606200}
+{"cost": 751, "path": "Screenshot/2023.10.25-23.45.48.3166531.png", "success": true, "type": "screencap", "timestamp": 567915184325200}
+{"cost": 702, "path": "Screenshot/2023.10.25-23.45.49.5268108.png", "success": true, "type": "screencap", "timestamp": 567916441865200}
+{"cost": 0, "success": true, "type": "click", "x": 1514, "y": 176, "timestamp": 567917382136500}
+{"cost": 722, "path": "Screenshot/2023.10.25-23.45.50.4812998.png", "success": true, "type": "screencap", "timestamp": 567917383633700}
+{"cost": 706, "path": "Screenshot/2023.10.25-23.45.51.1973572.png", "success": true, "type": "screencap", "timestamp": 567918107265000}
+{"cost": 734, "path": "Screenshot/2023.10.25-23.45.51.9335974.png", "success": true, "type": "screencap", "timestamp": 567918816067300}
+{"cost": 750, "path": "Screenshot/2023.10.25-23.45.52.6884492.png", "success": true, "type": "screencap", "timestamp": 567919553150100}
+{"cost": 740, "path": "Screenshot/2023.10.25-23.45.53.4296270.png", "success": true, "type": "screencap", "timestamp": 567920306308900}
+{"cost": 692, "path": "Screenshot/2023.10.25-23.45.54.1263685.png", "success": true, "type": "screencap", "timestamp": 567921049098000}
+{"cost": 716, "path": "Screenshot/2023.10.25-23.45.55.3463665.png", "success": true, "type": "screencap", "timestamp": 567922246381800}
+{"cost": 0, "success": true, "type": "click", "x": 104, "y": 392, "timestamp": 567923290094700}
+{"cost": 749, "path": "Screenshot/2023.10.25-23.45.56.9282696.png", "success": true, "type": "screencap", "timestamp": 567923792133000}
+{"cost": 0, "success": true, "type": "click", "x": 112, "y": 408, "timestamp": 567931348933800}
+{"cost": 636, "path": "Screenshot/2023.10.25-23.46.04.8792205.png", "success": true, "type": "screencap", "timestamp": 567931850592500}
+{"cost": 0, "success": true, "type": "click", "x": 282, "y": 92, "timestamp": 567933550537900}
+{"cost": 348, "path": "Screenshot/2023.10.25-23.46.06.8140911.png", "success": true, "type": "screencap", "timestamp": 567934052532300}
+{"cost": 414, "path": "Screenshot/2023.10.25-23.46.08.1114948.png", "success": true, "type": "screencap", "timestamp": 567935287346300}
+{"cost": 603, "path": "Screenshot/2023.10.25-23.46.09.5488338.png", "success": true, "type": "screencap", "timestamp": 567936559055900}
+{"cost": 572, "path": "Screenshot/2023.10.25-23.46.11.0874212.png", "success": true, "type": "screencap", "timestamp": 567938126065100}

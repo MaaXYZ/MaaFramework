@@ -121,13 +121,24 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         return { };
     }
 
-    bool valid = std::ranges::any_of(next, [&](const MAA_RES_NS::NodeAttr& node) {
+    bool valid = false;
+    bool need_screencap = false;
+    for (const auto& node : next) {
         auto data_opt = context_->get_pipeline_data(node);
-        return data_opt && data_opt->enabled;
-    });
+        if (!data_opt || !data_opt->enabled) {
+            continue;
+        }
+        valid = true;
+        if (data_opt->reco_type != MAA_RES_NS::Recognition::Type::DirectHit) {
+            need_screencap = true;
+        }
+    }
     if (!valid) {
         LogInfo << "no valid/enabled node in next" << VAR(next);
         return { };
+    }
+    if (!need_screencap) {
+        LogDebug << "skip screencap, all enabled next nodes are DirectHit" << VAR(next);
     }
 
     auto node_id = generate_node_id();
@@ -163,9 +174,9 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 
     while (!context_->need_to_stop()) {
         auto current_clock = std::chrono::steady_clock::now();
-        cv::Mat image = screencap();
+        cv::Mat image = need_screencap ? screencap() : cv::Mat {};
 
-        if (image.empty()) {
+        if (need_screencap && image.empty()) {
             LogWarn << "screencap failed, skip recognition" << VAR(pretask.name);
             if (!check_timeout_and_sleep(current_clock)) {
                 break;

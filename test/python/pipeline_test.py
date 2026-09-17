@@ -16,6 +16,7 @@ import sys
 import json
 import io
 import tempfile
+import numpy
 
 # Fix encoding issues on Windows
 if sys.stdout.encoding != "utf-8":
@@ -39,7 +40,7 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource
-from maa.controller import DbgController, ReplayController
+from maa.controller import DbgController, ReplayController, CustomController
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
@@ -1565,6 +1566,98 @@ def pipeline_smoking():
     print("pipeline_smoking test passed!")
 
 
+class DirectHitSkipScreencapController(CustomController):
+    def __init__(self):
+        super().__init__()
+        self.screencap_count = 0
+
+    def connect(self) -> bool:
+        return True
+
+    def request_uuid(self) -> str:
+        return "directhit-skip-screencap"
+
+    def start_app(self, intent: str) -> bool:
+        return True
+
+    def stop_app(self, intent: str) -> bool:
+        return True
+
+    def screencap(self) -> numpy.ndarray:
+        self.screencap_count += 1
+        return numpy.zeros((720, 1280, 3), dtype=numpy.uint8)
+
+    def click(self, x: int, y: int) -> bool:
+        return True
+
+    def swipe(self, x1: int, y1: int, x2: int, y2: int, duration: int) -> bool:
+        return True
+
+    def touch_down(self, contact: int, x: int, y: int, pressure: int) -> bool:
+        return True
+
+    def touch_move(self, contact: int, x: int, y: int, pressure: int) -> bool:
+        return True
+
+    def touch_up(self, contact: int) -> bool:
+        return True
+
+    def click_key(self, keycode: int) -> bool:
+        return True
+
+    def input_text(self, text: str) -> bool:
+        return True
+
+    def key_down(self, keycode: int) -> bool:
+        return True
+
+    def key_up(self, keycode: int) -> bool:
+        return True
+
+
+def test_directhit_skip_screencap():
+    print("\n" + "=" * 50)
+    print("Running DirectHit skip-screencap test...")
+    print("=" * 50)
+
+    controller = DirectHitSkipScreencapController()
+    controller.post_connection().wait()
+
+    resource = Resource()
+    tasker = Tasker()
+    tasker.bind(resource, controller)
+    if not tasker.inited:
+        print("Failed to init tasker")
+        sys.exit(1)
+
+    direct_job = tasker.post_task("DirectHitOnly", {"DirectHitOnly": {"action": "DoNothing"}}).wait()
+    if not direct_job.succeeded:
+        print("DirectHit-only task failed")
+        sys.exit(1)
+    if controller.screencap_count != 0:
+        print(f"DirectHit-only next should skip screencap, got {controller.screencap_count}")
+        sys.exit(1)
+
+    mixed_override = {
+        "MixedEntry": {"next": ["NeedImage"], "timeout": 0},
+        "NeedImage": {
+            "recognition": "ColorMatch",
+            "lower": [0, 0, 0],
+            "upper": [1, 1, 1],
+        },
+    }
+    mixed_job = tasker.post_task("MixedEntry", mixed_override).wait()
+    if mixed_job.succeeded:
+        print("mixed next task unexpectedly succeeded")
+        sys.exit(1)
+    if controller.screencap_count < 1:
+        print(f"mixed next should still screencap, got {controller.screencap_count}")
+        sys.exit(1)
+
+    print("DirectHit skip-screencap test passed!")
+
+
 if __name__ == "__main__":
     pipeline_node_test()
+    test_directhit_skip_screencap()
     pipeline_smoking()

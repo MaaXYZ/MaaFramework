@@ -14,6 +14,11 @@ set_target_properties(PipelineTesting PROPERTIES FOLDER Testing)
 
 install(TARGETS PipelineTesting RUNTIME DESTINATION bin)
 
+# Overlay the Replay recording so DirectHit-only entry nodes no longer expect a
+# screencap. The corresponding change belongs in MaaXYZ/MaaFrameworkTesting;
+# this file keeps PipelineTesting green until that submodule commit is published.
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/MaaRecording.jsonl DESTINATION test/PipelineSmoking)
+
 if(WIN32)
     install(FILES $<TARGET_PDB_FILE:PipelineTesting> DESTINATION symbol OPTIONAL)
 endif()
