@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+#include <chrono>
 #include <memory>
 #include <mutex>
 #include <set>
@@ -65,7 +67,7 @@ struct TouchParam
     int contact = 0;
     cv::Point point { };
     int pressure = 0;
-    bool auto_up = false;
+    bool auto_up = true;
 
     MEO_TOJSON(contact, point, pressure, auto_up);
 };
@@ -81,7 +83,7 @@ struct RelativeMoveParam
 struct ClickKeyParam
 {
     std::vector<int> keycode;
-    bool auto_up = false;
+    bool auto_up = true;
 
     MEO_TOJSON(keycode, auto_up);
 };
@@ -275,9 +277,12 @@ private:
     bool handle_inactive();
 
     void remember_touch_down(int contact, bool auto_up);
-    void remember_touch_up(int contact);
+    bool take_touch(int contact);
+    bool release_touch_if_held(int contact);
     void remember_key_down(int keycode, bool auto_up);
-    void remember_key_up(int keycode);
+    bool take_key(int keycode);
+    bool release_key_if_held(int keycode);
+    void sleep_interruptible(std::chrono::milliseconds duration);
 
     MaaCtrlId post(Action action);
     MaaCtrlId focus_id(MaaCtrlId id);
@@ -302,10 +307,12 @@ private: // options
     bool set_background_managed_keys_option(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
-    bool need_to_stop_ = false;
+    std::atomic<bool> need_to_stop_ = false;
 
     std::mutex pressed_mutex_;
+    std::set<int> held_contacts_;
     std::set<int> auto_up_contacts_;
+    std::set<int> held_keys_;
     std::set<int> auto_up_keys_;
 
 private:

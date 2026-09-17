@@ -2606,9 +2606,9 @@
                 },
                 "auto_up": {
                     "title": "Auto Up Property",
-                    "description": "任务停止或结束时是否自动抬起仍按住的触点。可选，默认 true 。仅对 TouchDown 生效。",
+                    "description": "任务停止、结束或控制器销毁时是否自动抬起仍按住的触点。可选，默认 true 。仅对 TouchDown 生效。",
                     "$ref": "#/$defs/jsonBooleanTrue",
-                    "markdownDescription": "*bool*\n\n任务停止或结束时是否自动抬起仍按住的触点。可选，默认 true 。\n\n仅对 `TouchDown` 生效。若用户中途停止任务或任务正常结束时仍未 `TouchUp`，将自动抬起以免设备保持按下。设为 false 可保持按下状态。",
+                    "markdownDescription": "*bool*\n\n任务停止、结束或控制器销毁时是否自动抬起仍按住的触点。可选，默认 true 。\n\n仅对 `TouchDown` 生效。若用户中途停止任务、任务正常结束或控制器销毁时仍未 `TouchUp`，将自动抬起以免设备保持按下。已配对 `TouchUp` 的不会再自动抬一次。设为 false 可保持按下状态。",
                     "default": true
                 }
             }
@@ -2793,9 +2793,9 @@
                 },
                 "auto_up": {
                     "title": "Auto Up Property",
-                    "description": "任务停止或结束时是否自动抬起仍按下的按键。可选，默认 true 。",
+                    "description": "任务停止、结束或控制器销毁时是否自动抬起仍按下的按键。可选，默认 true 。",
                     "$ref": "#/$defs/jsonBooleanTrue",
-                    "markdownDescription": "*bool*\n\n任务停止或结束时是否自动抬起仍按下的按键。可选，默认 true 。\n\n若用户中途停止任务或任务正常结束时仍未 `KeyUp`，将自动抬起以免设备保持按下。设为 false 可保持按下状态。",
+                    "markdownDescription": "*bool*\n\n任务停止、结束或控制器销毁时是否自动抬起仍按下的按键。可选，默认 true 。\n\n若用户中途停止任务、任务正常结束或控制器销毁时仍未 `KeyUp`，将自动抬起以免设备保持按下。已配对 `KeyUp` 的不会再自动抬一次。设为 false 可保持按下状态。",
                     "default": true
                 }
             },
