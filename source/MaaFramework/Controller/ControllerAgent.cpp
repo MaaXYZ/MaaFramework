@@ -457,7 +457,7 @@ bool ControllerAgent::handle_click(const ClickParam& param)
     if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
         remember_touch_down(param.contact, true);
         ret &= control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
-        sleep_interruptible(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         ret &= release_touch_if_held(param.contact);
     }
     else {
@@ -480,7 +480,7 @@ bool ControllerAgent::handle_long_press(const LongPressParam& param)
     if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
         remember_touch_down(param.contact, true);
         ret &= control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
-        sleep_interruptible(std::chrono::milliseconds(param.duration));
+        std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
         ret &= release_touch_if_held(param.contact);
     }
     else {
@@ -565,7 +565,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
             ret &= control_unit_->swipe(begin.x, begin.y, end.x, end.y, duration);
         }
 
-        sleep_interruptible(std::chrono::milliseconds(end_hold));
+        std::this_thread::sleep_for(std::chrono::milliseconds(end_hold));
         if (need_to_stop_) {
             stopped = true;
             break;
@@ -796,7 +796,7 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
         if (use_key_down_up) {
             remember_key_down(keycode, true);
             ret &= control_unit_->key_down(keycode);
-            sleep_interruptible(std::chrono::milliseconds(50));
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
             ret &= release_key_if_held(keycode);
         }
         else {
@@ -826,7 +826,7 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
         if (use_key_down_up) {
             remember_key_down(keycode, true);
             ret &= control_unit_->key_down(keycode);
-            sleep_interruptible(std::chrono::milliseconds(param.duration));
+            std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
             ret &= release_key_if_held(keycode);
         }
         else {
@@ -1061,19 +1061,6 @@ bool ControllerAgent::release_key_if_held(int keycode)
     }
 
     return control_unit_->key_up(keycode);
-}
-
-void ControllerAgent::sleep_interruptible(std::chrono::milliseconds duration)
-{
-    const auto deadline = std::chrono::steady_clock::now() + duration;
-    while (!need_to_stop_) {
-        const auto now = std::chrono::steady_clock::now();
-        if (now >= deadline) {
-            return;
-        }
-        const auto remain = std::chrono::duration_cast<std::chrono::milliseconds>(deadline - now);
-        std::this_thread::sleep_for(remain < std::chrono::milliseconds(10) ? remain : std::chrono::milliseconds(10));
-    }
 }
 
 void ControllerAgent::auto_release_pressed()

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <atomic>
-#include <chrono>
 #include <memory>
 #include <mutex>
 #include <set>
@@ -282,7 +281,6 @@ private:
     void remember_key_down(int keycode, bool auto_up);
     bool take_key(int keycode);
     bool release_key_if_held(int keycode);
-    void sleep_interruptible(std::chrono::milliseconds duration);
 
     MaaCtrlId post(Action action);
     MaaCtrlId focus_id(MaaCtrlId id);
