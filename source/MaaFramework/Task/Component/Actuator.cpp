@@ -339,7 +339,12 @@ ActionResult Actuator::touch_down(const MAA_RES_NS::Action::TouchParam& param, c
         return { };
     }
     cv::Point point = rand_point(target_rect);
-    MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
+    MAA_CTRL_NS::TouchParam ctrl_param {
+        .contact = static_cast<int>(param.contact),
+        .point = point,
+        .pressure = param.pressure,
+        .auto_up = param.auto_up,
+    };
     bool ret = controller()->touch_down(ctrl_param);
 
     return ActionResult {
@@ -365,7 +370,12 @@ ActionResult Actuator::touch_move(const MAA_RES_NS::Action::TouchParam& param, c
         return { };
     }
     cv::Point point = rand_point(target_rect);
-    MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
+    MAA_CTRL_NS::TouchParam ctrl_param {
+        .contact = static_cast<int>(param.contact),
+        .point = point,
+        .pressure = param.pressure,
+        .auto_up = param.auto_up,
+    };
     bool ret = controller()->touch_move(ctrl_param);
 
     return ActionResult {
@@ -445,7 +455,7 @@ ActionResult Actuator::key_down(const MAA_RES_NS::Action::KeyParam& param, const
         return { };
     }
 
-    MAA_CTRL_NS::ClickKeyParam ctrl_param { .keycode = { param.key } };
+    MAA_CTRL_NS::ClickKeyParam ctrl_param { .keycode = { param.key }, .auto_up = param.auto_up };
     bool ret = controller()->key_down(ctrl_param);
 
     return ActionResult {
