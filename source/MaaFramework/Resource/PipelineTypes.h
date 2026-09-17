@@ -72,6 +72,12 @@ struct DurationRange
 
     bool from_json(const json::value& value)
     {
+        return parse(value, *this, false);
+    }
+
+    // allow_negative：timeout / shell_timeout 允许 -1（无限等待）
+    static bool parse(const json::value& value, DurationRange& out, bool allow_negative)
+    {
         int64_t lo = 0;
         int64_t hi = 0;
 
@@ -93,9 +99,12 @@ struct DurationRange
         if (lo > hi) {
             return false;
         }
+        if (!allow_negative && lo < 0) {
+            return false;
+        }
 
-        min = lo;
-        max = hi;
+        out.min = lo;
+        out.max = hi;
         return true;
     }
 };

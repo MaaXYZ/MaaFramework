@@ -1,5 +1,7 @@
 #include "Actuator.h"
 
+#include <limits>
+
 #include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
@@ -17,7 +19,16 @@ namespace
 
 uint sample_uint(const MAA_RES_NS::DurationRange& r)
 {
-    return static_cast<uint>(r.random().count());
+    const auto ms = r.random().count();
+    if (ms <= 0) {
+        return 0;
+    }
+
+    constexpr auto kMax = static_cast<int64_t>(std::numeric_limits<uint>::max());
+    if (ms >= kMax) {
+        return std::numeric_limits<uint>::max();
+    }
+    return static_cast<uint>(ms);
 }
 
 std::vector<uint> sample_uint_vec(const std::vector<MAA_RES_NS::DurationRange>& vec)

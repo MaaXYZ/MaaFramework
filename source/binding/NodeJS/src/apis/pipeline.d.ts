@@ -345,8 +345,8 @@ declare global {
         type ActionShell<Mode> = RequiredIfStrict<
             {
                 cmd?: string
-                timeout?: Duration
                 shell_timeout?: Duration
+                timeout?: RemoveIfDump<Duration, Mode>
             },
             'cmd',
             Mode

@@ -26,6 +26,28 @@ bool get_and_check_value(const json::value& input, const std::string& key, OutT&
     return true;
 }
 
+bool get_and_check_duration(
+    const json::value& input,
+    const std::string& key,
+    DurationRange& output,
+    const DurationRange& default_val,
+    bool allow_negative)
+{
+    auto opt = input.find(key);
+    if (!opt) {
+        output = default_val;
+        return true;
+    }
+
+    DurationRange tmp;
+    if (!DurationRange::parse(*opt, tmp, allow_negative)) {
+        LogError << "type error" << VAR(key) << VAR(input);
+        return false;
+    }
+    output = tmp;
+    return true;
+}
+
 // for compatibility
 template <typename OutT>
 bool get_multi_keys_and_check_value(const json::value& input, const std::vector<std::string>& keys, OutT& output, const OutT& default_val)
@@ -318,7 +340,7 @@ bool PipelineParser::parse_node(
         return false;
     }
 
-    if (!get_and_check_value(input, "timeout", data.reco_timeout, default_value.reco_timeout)) {
+    if (!get_and_check_duration(input, "timeout", data.reco_timeout, default_value.reco_timeout, true)) {
         LogError << "failed to get_and_check_value timeout" << VAR(input);
         return false;
     }
@@ -1498,7 +1520,7 @@ bool PipelineParser::parse_shell(const json::value& input, Action::ShellParam& o
         return false;
     }
 
-    if (!get_and_check_value(input, "shell_timeout", output.shell_timeout, default_value.shell_timeout)) {
+    if (!get_and_check_duration(input, "shell_timeout", output.shell_timeout, default_value.shell_timeout, true)) {
         LogError << "failed to get_and_check_value shell_timeout" << VAR(input);
         return false;
     }
@@ -1613,7 +1635,7 @@ bool PipelineParser::parse_wait_freezes_value(const json::value& input, WaitFree
         return false;
     }
 
-    if (!get_and_check_value(input, "timeout", output.timeout, default_value.timeout)) {
+    if (!get_and_check_duration(input, "timeout", output.timeout, default_value.timeout, true)) {
         LogError << "failed to parse_wait_freezes_value timeout" << VAR(input);
         return false;
     }
