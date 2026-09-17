@@ -1387,6 +1387,28 @@ def test_duration_range(context: Context):
         not new_ctx.override_pipeline({"BadRange2": {"pre_delay": [1, 2, 3]}}),
         "3-element array should fail",
     )
+    assert_true(
+        not new_ctx.override_pipeline({"BadNegDelay": {"pre_delay": -1}}),
+        "negative delay should fail",
+    )
+    assert_true(
+        not new_ctx.override_pipeline({"BadNegDuration": {"action": "LongPress", "duration": -1}}),
+        "negative duration should fail",
+    )
+    assert_true(
+        not new_ctx.override_pipeline({"BadNegRange": {"pre_delay": [-1, 100]}}),
+        "negative delay range should fail",
+    )
+
+    # timeout / shell_timeout 仍支持 -1（无限等待）
+    assert_true(
+        new_ctx.override_pipeline({"TimeoutNeg": {"timeout": -1, "action": "Shell", "cmd": "echo", "shell_timeout": -1}}),
+        "timeout -1 should succeed",
+    )
+    obj = new_ctx.get_node_object("TimeoutNeg")
+    assert_eq(obj.timeout, -1, "timeout -1")
+    assert_true(isinstance(obj.action.param, JShell), "Shell param")
+    assert_eq(obj.action.param.shell_timeout, -1, "shell_timeout -1")
 
     print("  PASS: duration range")
 

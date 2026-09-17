@@ -204,7 +204,7 @@
             "maximum": 9223372036854775807,
             "default": 0
         },
-        "jsonDuration": {
+        "jsonTimeRange": {
             "anyOf": [
                 {
                     "$ref": "#/$defs/jsonNInt64"
@@ -220,7 +220,7 @@
             ],
             "default": 0
         },
-        "jsonDurationInt64": {
+        "jsonTimeRangeInt64": {
             "anyOf": [
                 {
                     "$ref": "#/$defs/jsonInt64"
@@ -236,15 +236,15 @@
             ],
             "default": 0
         },
-        "jsonDurationOrList": {
+        "jsonTimeRangeOrList": {
             "anyOf": [
                 {
-                    "$ref": "#/$defs/jsonDuration"
+                    "$ref": "#/$defs/jsonTimeRange"
                 },
                 {
                     "type": "array",
                     "items": {
-                        "$ref": "#/$defs/jsonDuration"
+                        "$ref": "#/$defs/jsonTimeRange"
                     }
                 }
             ],
@@ -2393,7 +2393,7 @@
                 "duration": {
                     "title": "Duration Property",
                     "description": "长按持续时间，单位毫秒。可选，默认 1000 。",
-                    "$ref": "#/$defs/jsonDuration",
+                    "$ref": "#/$defs/jsonTimeRange",
                     "markdownDescription": "*uint* | *array<uint, 2>*\n\n长按持续时间，单位毫秒。可选，默认 1000 。\n\n若为 `[min, max]`，运行时在区间内均匀随机取值。",
                     "default": 1000
                 },
@@ -2473,14 +2473,14 @@
                 "duration": {
                     "title": "Duration Property",
                     "description": "滑动持续时间，单位毫秒。可选，默认 200 。",
-                    "$ref": "#/$defs/jsonDurationOrList",
+                    "$ref": "#/$defs/jsonTimeRangeOrList",
                     "markdownDescription": "*uint* | *array<uint, 2>* | *list<uint | array<uint, 2>,>*\n\n滑动持续时间，单位毫秒。可选，默认 200 。\n\n每个元素支持单个值或 `[min, max]` 随机区间。由于 `[a, b]` 表示两段滑动时长，单段随机请写成 `[[a, b]]`。",
                     "default": 200
                 },
                 "end_hold": {
                     "title": "End Hold Property",
                     "description": "滑动到终点后，额外等待一定时间再抬起，单位 ms。可选，默认 0。",
-                    "$ref": "#/$defs/jsonDurationOrList",
+                    "$ref": "#/$defs/jsonTimeRangeOrList",
                     "markdownDescription": "*uint* | *array<uint, 2>* | *list<uint | array<uint, 2>,>*\n\n滑动到终点后，额外等待一定时间再抬起，单位 ms。可选，默认 0。\n\n每个元素支持单个值或 `[min, max]` 随机区间。由于 `[a, b]` 表示两段等待时长，单段随机请写成 `[[a, b]]`。",
                     "default": 0
                 },
@@ -2542,7 +2542,7 @@
                 "starting": {
                     "title": "Starting Property",
                     "description": "滑动起始时间，单位毫秒。可选，默认 0 。",
-                    "$ref": "#/$defs/jsonDuration",
+                    "$ref": "#/$defs/jsonTimeRange",
                     "markdownDescription": "*uint* | *array<uint, 2>*\n\n滑动起始时间，单位毫秒。可选，默认 0 。\n\n`MultiSwipe` 额外字段，该滑动会在本 action 中第 `starting` 毫秒才开始。\n\n若为 `[min, max]`，运行时在区间内均匀随机取值。"
                 }
             },
@@ -3013,7 +3013,7 @@
                 "duration": {
                     "title": "Duration Property",
                     "description": "长按持续时间，单位毫秒。可选，默认 1000 。",
-                    "$ref": "#/$defs/jsonDuration",
+                    "$ref": "#/$defs/jsonTimeRange",
                     "markdownDescription": "*uint* | *array<uint, 2>*\n\n长按持续时间，单位毫秒。可选，默认 1000 。\n\n若为 `[min, max]`，运行时在区间内均匀随机取值。",
                     "default": 1000
                 }
@@ -3356,7 +3356,7 @@
                 "shell_timeout": {
                     "title": "Shell Timeout Property",
                     "description": "超时时间（毫秒）。可选，默认 20000 (20秒)。设置为 -1 表示无限等待。",
-                    "$ref": "#/$defs/jsonDurationInt64",
+                    "$ref": "#/$defs/jsonTimeRangeInt64",
                     "default": 20000,
                     "markdownDescription": "*int* | *array<int, 2>*\n\n超时时间（毫秒）。可选，默认 20000 (20秒)。\n\n设置为 -1 表示无限等待，永不超时。\n\n若为 `[min, max]`，运行时在区间内均匀随机取值。"
                 }
@@ -4272,7 +4272,7 @@
                 "time": {
                     "title": "Time Property",
                     "description": "连续 `time` 毫秒 画面 **没有较大变化** 才会退出动作。可选，默认 1 。",
-                    "$ref": "#/$defs/jsonDuration",
+                    "$ref": "#/$defs/jsonTimeRange",
                     "markdownDescription": "*uint* | *array<uint, 2>*\n\n连续 `time` 毫秒 画面 **没有较大变化** 才会退出动作。可选，默认 1 。\n\n若为 `[min, max]`，运行时在区间内均匀随机取值。",
                     "default": 1
                 },
@@ -4323,14 +4323,14 @@
                 "rate_limit": {
                     "title": "Rate Limit Property",
                     "description": "识别速率限制，单位毫秒。可选，默认 1000 。",
-                    "$ref": "#/$defs/jsonDuration",
+                    "$ref": "#/$defs/jsonTimeRange",
                     "markdownDescription": "*uint* | *array<uint, 2>*\n\n识别速率限制，单位毫秒。可选，默认 1000 。\n\n每次识别最低消耗 `rate_limit` 毫秒，不足的时间将会 sleep 等待。\n\n若为 `[min, max]`，运行时在区间内均匀随机取值。",
                     "default": 1000
                 },
                 "timeout": {
                     "title": "Timeout Property",
                     "description": "识别超时时间，毫秒。可选，默认 20 * 1000 。设置为 -1 表示无限等待。",
-                    "$ref": "#/$defs/jsonDurationInt64",
+                    "$ref": "#/$defs/jsonTimeRangeInt64",
                     "markdownDescription": "*int* | *array<int, 2>*\n\n识别超时时间，毫秒。可选，默认 20 * 1000 。\n\n设置为 -1 表示无限等待，永不超时。\n\n若为 `[min, max]`，运行时在区间内均匀随机取值。",
                     "default": 20000
                 }
@@ -4345,7 +4345,7 @@
             ],
             "anyOf": [
                 {
-                    "$ref": "#/$defs/jsonDuration"
+                    "$ref": "#/$defs/jsonTimeRange"
                 },
                 {
                     "$ref": "#/$defs/WaitFreezes"
@@ -4406,14 +4406,14 @@
                 "rate_limit": {
                     "title": "Rate Limit Property",
                     "description": "识别速率限制，单位毫秒。可选，默认 1000 。",
-                    "$ref": "#/$defs/jsonDuration",
+                    "$ref": "#/$defs/jsonTimeRange",
                     "default": 1000,
                     "markdownDescription": "*uint* | *array<uint, 2>*\n\n识别速率限制，单位毫秒。可选，默认 1000 。\n\n每轮识别最低消耗 `rate_limit` 毫秒，不足的时间将会 sleep 等待。\n\n若为 `[min, max]`，运行时在区间内均匀随机取值。"
                 },
                 "timeout": {
                     "title": "Timeout Property",
                     "description": "识别超时时间，毫秒。可选，默认 20 * 1000 。设置为 -1 表示无限等待。",
-                    "$ref": "#/$defs/jsonDurationInt64",
+                    "$ref": "#/$defs/jsonTimeRangeInt64",
                     "default": 20000,
                     "markdownDescription": "*int* | *array<int, 2>*\n\n识别超时时间，毫秒。可选，默认 20 * 1000 。\n\n设置为 -1 表示无限等待，永不超时。\n\n具体逻辑为 `while(!timeout) { foreach(next); sleep_until(rate_limit); }` 。\n\n若为 `[min, max]`，运行时在区间内均匀随机取值。"
                 },
@@ -4450,14 +4450,14 @@
                 "pre_delay": {
                     "title": "Pre Delay Property",
                     "description": "识别到 到 执行动作前 的延迟，毫秒。可选，默认 200 。",
-                    "$ref": "#/$defs/jsonDuration",
+                    "$ref": "#/$defs/jsonTimeRange",
                     "default": 200,
                     "markdownDescription": "*uint* | *array<uint, 2>*\n\n识别到 到 执行动作前 的延迟，毫秒。可选，默认 200 。\n\n推荐尽可能增加中间过程节点，少用延迟，不然既慢还不稳定。\n\n若为 `[min, max]`，运行时在区间内均匀随机取值。"
                 },
                 "post_delay": {
                     "title": "Post Delay Property",
                     "description": "执行动作后 到 识别 next 的延迟，毫秒。可选，默认 200 。",
-                    "$ref": "#/$defs/jsonDuration",
+                    "$ref": "#/$defs/jsonTimeRange",
                     "default": 200,
                     "markdownDescription": "*uint* | *array<uint, 2>*\n\n执行动作后 到 识别 next 的延迟，毫秒。可选，默认 200 。\n\n推荐尽可能增加中间过程节点，少用延迟，不然既慢还不稳定。\n\n若为 `[min, max]`，运行时在区间内均匀随机取值。"
                 },
@@ -4483,7 +4483,7 @@
                 "repeat_delay": {
                     "title": "Repeat Delay Property",
                     "description": "每次重复动作之间的延迟，毫秒。可选，默认 0 。",
-                    "$ref": "#/$defs/jsonDuration",
+                    "$ref": "#/$defs/jsonTimeRange",
                     "default": 0,
                     "markdownDescription": "*uint* | *array<uint, 2>*\n\n每次重复动作之间的延迟，毫秒。可选，默认 0 。\n\n仅当 `repeat` > 1 时生效，在第二次及之后的每次动作执行前等待。\n\n若为 `[min, max]`，运行时在区间内均匀随机取值。"
                 },

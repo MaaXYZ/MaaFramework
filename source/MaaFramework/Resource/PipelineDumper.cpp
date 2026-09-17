@@ -69,6 +69,7 @@ std::string dump_order_by(MAA_VISION_NS::ResultOrderBy order_by)
 
 PipelineV2::JDuration dump_duration(const DurationRange& r)
 {
+    // [x, x] 与标量 x 运行时语义相同，归一为标量，避免无意义的区间形式
     if (r.min == r.max) {
         return r.min;
     }
