@@ -186,7 +186,7 @@ struct TouchParam
     uint contact = 0;
     Target target;
     int pressure = 0;
-    bool auto_up = true;
+    bool auto_up = false;
 };
 
 struct TouchUpParam
@@ -197,7 +197,7 @@ struct TouchUpParam
 struct KeyParam
 {
     int key = 0;
-    bool auto_up = true;
+    bool auto_up = false;
 };
 
 struct ClickKeyParam

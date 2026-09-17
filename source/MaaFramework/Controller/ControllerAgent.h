@@ -66,7 +66,7 @@ struct TouchParam
     int contact = 0;
     cv::Point point { };
     int pressure = 0;
-    bool auto_up = true;
+    bool auto_up = false;
 
     MEO_TOJSON(contact, point, pressure, auto_up);
 };
@@ -82,7 +82,7 @@ struct RelativeMoveParam
 struct ClickKeyParam
 {
     std::vector<int> keycode;
-    bool auto_up = true;
+    bool auto_up = false;
 
     MEO_TOJSON(keycode, auto_up);
 };

@@ -951,7 +951,7 @@ class PipelineTestRecognition(CustomRecognition):
                     "target": [100, 200, 50, 50],
                     "contact": 1,
                     "pressure": 2,
-                    "auto_up": False,
+                    "auto_up": True,
                 }
             }
         )
@@ -961,7 +961,7 @@ class PipelineTestRecognition(CustomRecognition):
         assert_true(isinstance(param, JTouch), "TouchDown param")
         assert_eq(param.contact, 1, "contact")
         assert_eq(param.pressure, 2, "pressure")
-        assert_eq(param.auto_up, False, "auto_up")
+        assert_eq(param.auto_up, True, "auto_up")
 
         # TouchDown default auto_up
         new_ctx.override_pipeline({"ActTouchDownDefault": {"action": "TouchDown"}})
@@ -969,18 +969,18 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(obj.action.type, JActionType.TouchDown, "TouchDown default type")
         param = obj.action.param
         assert_true(isinstance(param, JTouch), "TouchDown default param")
-        assert_eq(param.auto_up, True, "default auto_up")
+        assert_eq(param.auto_up, False, "default auto_up")
 
         # KeyDown
         new_ctx.override_pipeline(
-            {"ActKeyDown": {"action": "KeyDown", "key": 65, "auto_up": False}}
+            {"ActKeyDown": {"action": "KeyDown", "key": 65, "auto_up": True}}
         )
         obj = new_ctx.get_node_object("ActKeyDown")
         assert_eq(obj.action.type, JActionType.KeyDown, "KeyDown type")
         param = obj.action.param
         assert_true(isinstance(param, JKey), "KeyDown param")
         assert_eq(param.key, 65, "key")
-        assert_eq(param.auto_up, False, "auto_up")
+        assert_eq(param.auto_up, True, "auto_up")
 
         # KeyDown default auto_up
         new_ctx.override_pipeline({"ActKeyDownDefault": {"action": "KeyDown", "key": 66}})
@@ -989,7 +989,7 @@ class PipelineTestRecognition(CustomRecognition):
         param = obj.action.param
         assert_true(isinstance(param, JKey), "KeyDown default param")
         assert_eq(param.key, 66, "key")
-        assert_eq(param.auto_up, True, "default auto_up")
+        assert_eq(param.auto_up, False, "default auto_up")
 
         print("    PASS: action types parsing")
 
