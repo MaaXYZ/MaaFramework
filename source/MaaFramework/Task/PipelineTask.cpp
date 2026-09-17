@@ -168,7 +168,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 
     while (!context_->need_to_stop()) {
         auto current_clock = std::chrono::steady_clock::now();
-        cv::Mat image = need_screencap ? screencap() : cv::Mat {};
+        cv::Mat image = need_screencap ? screencap() : cv::Mat { };
 
         if (need_screencap && image.empty()) {
             LogWarn << "screencap failed, skip recognition" << VAR(pretask.name);
