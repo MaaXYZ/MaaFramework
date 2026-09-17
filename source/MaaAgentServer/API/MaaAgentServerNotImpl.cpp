@@ -62,7 +62,19 @@ MaaController* MaaPlayCoverControllerCreate(const char*, const char*)
     return nullptr;
 }
 
-MaaController* MaaWlRootsControllerCreate(const char*)
+MaaController* MaaWlRootsControllerCreate(const char*, MaaBool)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
+MaaController* MaaKWinControllerCreate(const char*, int, int, MaaBool)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
+MaaController* MaaLinuxControllerCreate(const char*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return nullptr;

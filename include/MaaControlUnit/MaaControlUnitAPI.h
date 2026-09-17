@@ -10,6 +10,7 @@
 #include "CustomControlUnitAPI.h"
 #include "DbgControlUnitAPI.h"
 #include "GamepadControlUnitAPI.h"
+#include "KWinControlUnitAPI.h"
 #include "MacOSControlUnitAPI.h"
 #include "PlayCoverControlUnitAPI.h"
 #include "RecordControlUnitAPI.h"

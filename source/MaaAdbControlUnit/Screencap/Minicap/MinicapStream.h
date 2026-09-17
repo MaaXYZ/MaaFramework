@@ -2,6 +2,7 @@
 
 #include "MinicapBase.h"
 
+#include <atomic>
 #include <condition_variable>
 #include <thread>
 
@@ -27,7 +28,8 @@ public: // from ScreencapBase
     virtual std::optional<cv::Mat> screencap() override;
 
 private:
-    std::optional<std::string> read(size_t count);
+    std::optional<std::string> read_exact(size_t count);
+    std::optional<cv::Mat> read_frame();
     void create_thread();
     void release_thread();
     bool connect_and_check();
@@ -37,7 +39,7 @@ private:
     ProcessArgvGenerator forward_argv_;
     int port_ = 0;
 
-    bool quit_ = true;
+    std::atomic_bool quit_ = true;
     std::mutex mutex_;
     cv::Mat image_;
     std::condition_variable cond_;

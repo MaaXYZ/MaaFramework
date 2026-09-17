@@ -1,5 +1,11 @@
 file(GLOB_RECURSE maa_toolkit_src *.h *.hpp *.cpp)
 
+if(LINUX)
+    # gamescope_pipewire 协议（仅 Linux, 生成代码依赖 wayland-util.h）
+    file(GLOB_RECURSE maa_toolkit_protocol_c Gamescope/Protocol/*.c)
+    list(APPEND maa_toolkit_src ${maa_toolkit_protocol_c})
+endif()
+
 if(APPLE)
     file(GLOB_RECURSE maa_toolkit_objc_src *.mm)
     list(APPEND maa_toolkit_src ${maa_toolkit_objc_src})
@@ -18,11 +24,32 @@ target_compile_definitions(MaaToolkit PRIVATE MAA_TOOLKIT_EXPORTS)
 
 target_link_libraries(MaaToolkit PRIVATE MaaUtils MaaFramework LibraryHolder Boost::system ${OpenCV_LIBS})
 
-if(LINUX)
+if (LINUX)
+    set(DBUS_ABS_LIB)
+    find_package(PkgConfig QUIET)
+    if (PkgConfig_FOUND)
+        pkg_check_modules(DBUS QUIET dbus-1)
+    endif ()
+    if (DBUS_FOUND)
+        # Search inside the sysroot (default CMAKE_FIND_ROOT_PATH behavior). In CI,
+        # the ARM64 .deb packages are extracted and injected directly into the x-tools
+        # sysroot, so the libraries are found naturally under <sysroot>/usr/lib/.
+        find_library(DBUS_ABS_LIB
+                NAMES dbus-1
+                PATHS ${DBUS_LIBRARY_DIRS} /usr/lib)
+    endif ()
+    if (DBUS_ABS_LIB)
+        message(STATUS "MaaToolkit: DBus absolute path: ${DBUS_ABS_LIB}")
+        target_include_directories(MaaToolkit PRIVATE ${DBUS_INCLUDE_DIRS})
+        target_link_libraries(MaaToolkit PRIVATE ${DBUS_ABS_LIB})
+    else ()
+        message(FATAL_ERROR "MaaToolkit: DBus not found on this platform")
+    endif ()
+
     find_library(Wayland_LIBS wayland-client)
     find_library(FFI_LIBS ffi)
     target_link_libraries(MaaToolkit PRIVATE pthread dl ${Wayland_LIBS} ${FFI_LIBS})
-endif()
+endif ()
 
 if(APPLE)
     # macOS frameworks for ScreenCaptureKit

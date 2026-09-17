@@ -14,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
-inline static constexpr int kProtocolVersion = 7;
+inline static constexpr int kProtocolVersion = 8;
 
 struct StartUpRequest
 {

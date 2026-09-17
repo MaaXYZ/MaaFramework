@@ -234,6 +234,24 @@ enum MaaCtrlOptionEnum
     ///
     /// value: int, eg: 3; val_size: sizeof(int)
     MaaCtrlOption_ScreenshotResizeMethod = 6,
+
+    /// Configure background managed key domain for Win32 controllers.
+    /// Must be set before connection. After setting, matching ClickKey / LongPressKey / KeyDown / KeyUp
+    /// operations automatically route through the background guardian path.
+    /// Only supported by Win32 controllers; other controllers will fail.
+    ///
+    /// value: int32_t array of virtual key codes; val_size: sizeof(int32_t) * count
+    MaaCtrlOption_BackgroundManagedKeys = 7,
+
+    /// Scale screenshot to fit a reference (width, height) using Unity Canvas
+    /// Scaler "Expand" semantics: scale = max(W / raw_width, H / raw_height),
+    /// applied uniformly to both axes so the source aspect ratio is preserved
+    /// and both output dimensions are >= the reference (W, H).
+    /// Mutually exclusive with ScreenshotTargetLongSide / ScreenshotTargetShortSide;
+    /// setting any of these resets the others. Ignored when ScreenshotUseRawSize is true.
+    ///
+    /// value: int32_t[2] = { width, height }; val_size: sizeof(int32_t) * 2
+    MaaCtrlOption_ScreenshotTargetExpand = 8,
 };
 
 typedef MaaOption MaaTaskerOption;
@@ -360,18 +378,20 @@ typedef uint64_t MaaWin32ScreencapMethod;
  *
  * Different applications process input differently, there is no universal solution.
  *
- * | Method                       | Compatibility | Require Admin | Seize Mouse  | Background Support | Notes |
- * |------------------------------|---------------|---------------|--------------|--------------------|-------------------------------------------------------------
- * | | Seize                        | High          | No            | Yes          | No                 | | | SendMessage                  |
- * Medium        | Maybe         | No           | Yes                |                                                             | |
- * PostMessage                  | Medium        | Maybe         | No           | Yes                | | | LegacyEvent                  | Low
- * | No            | Yes          | No                 |                                                             | | PostThreadMessage
- * | Low           | Maybe         | No           | Yes                |                                                             | |
- * SendMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Moves cursor to target position, then
- * restores              | | PostMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Moves cursor
- * to target position, then restores              | | SendMessageWithWindowPos     | Medium        | Maybe         | No           | Yes |
- * Moves window to align target with cursor, then restores     | | PostMessageWithWindowPos     | Medium        | Maybe         | No | Yes |
- * Moves window to align target with cursor, then restores     |
+ * | Method                       | Compatibility | Require Admin | Seize Mouse | Background Support | Notes |
+ * |------------------------------|---------------|---------------|-------------|--------------------|-------------------------------------------------------------|
+ * | Seize                        | High          | No            | Yes         | No                 | | | SendMessage                  |
+ * Medium        | Maybe         | No          | Yes                |                                                             | |
+ * PostMessage                  | Medium        | Maybe         | No          | Yes                | | | LegacyEvent                  | Low
+ * | No            | Yes         | No                 |                                                             | | PostThreadMessage |
+ * Low           | Maybe         | No          | Yes                | Deprecated                                                  | |
+ * SendMessageWithCursorPos     | Medium        | Maybe         | Briefly     | Yes                | Moves cursor to target position, then
+ * restores              | | PostMessageWithCursorPos     | Medium        | Maybe         | Briefly     | Yes                | Moves cursor
+ * to target position, then restores              | | SendMessageWithWindowPos     | Medium        | Maybe         | No          | Yes |
+ * Moves window to align target with cursor, then restores     | | PostMessageWithWindowPos     | Medium        | Maybe         | No | Yes
+ * | Moves window to align target with cursor, then restores     | | Interception                 | Medium        | Yes           | No | No
+ * | Driver-level input injection via the Interception driver    | | AnchoredTouch                | Medium        | Maybe         | No
+ * | Yes                | Injects synthetic touch points, never moves the cursor       |
  *
  * Note:
  * - Admin rights mainly depend on the target application's privilege level.
@@ -380,6 +400,24 @@ typedef uint64_t MaaWin32ScreencapMethod;
  *   then restore cursor position. This "briefly" seizes the mouse but won't block user operations.
  * - "WithWindowPos" methods briefly move the window so the target aligns with the current cursor
  *   position, send message, then restore the window position. The cursor is not moved.
+ * - "AnchoredTouch" injects synthetic touch points without moving the cursor or the target window.
+ *   The target receives WM_POINTER messages. Activation is suppressed during a touch sequence, but
+ *   the target application can still bring itself to the foreground. Its existing window styles
+ *   are preserved when the temporary activation styles are removed after the anchor is released.
+ *   A target already in the foreground is not given these temporary activation styles.
+ *   Each target point must be on an existing monitor; off-screen points are rejected.
+ *   When the target point is occluded, the window is temporarily raised and made nearly invisible.
+ *   While raised, it can take mouse clicks inside its rectangle from the windows underneath.
+ *   The window is restored after the touch sequence. If it cannot be raised and made hit-testable
+ *   at low opacity, the operation fails.
+ *   Raising requires WS_EX_LAYERED. Windows layered via UpdateLayeredWindow are not supported.
+ *   CS_OWNDC / CS_CLASSDC window classes produce a compatibility warning; the actual API results
+ *   determine whether raising can proceed. Layered style added by this method may remain until
+ *   inactive() or idle shutdown, and is retained if another module is using it.
+ *   A minimized target must be restored before input. Screencap methods with pseudo-minimize do
+ *   this before capture and can be used with AnchoredTouch.
+ *   Clicking and swiping only. Keyboard can be routed to another method, but scroll cannot:
+ *   it always goes through the mouse method and a synthetic touch device has no wheel.
  */
 typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_None 0ULL
@@ -392,6 +430,8 @@ typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_PostMessageWithCursorPos (1ULL << 6)
 #define MaaWin32InputMethod_SendMessageWithWindowPos (1ULL << 7)
 #define MaaWin32InputMethod_PostMessageWithWindowPos (1ULL << 8)
+#define MaaWin32InputMethod_Interception (1ULL << 9)
+#define MaaWin32InputMethod_AnchoredTouch (1ULL << 10)
 
 // MaaMacOSScreencapMethod:
 /**
@@ -423,6 +463,41 @@ typedef uint64_t MaaMacOSInputMethod;
 #define MaaMacOSInputMethod_None 0ULL
 #define MaaMacOSInputMethod_GlobalEvent 1ULL
 #define MaaMacOSInputMethod_PostToPid (1ULL << 1)
+
+// MaaLinuxScreencapMethod:
+/**
+ * @brief Linux Screencap method
+ *
+ * Select ONE method only.
+ *
+ * | Method          | Description                                                              |
+ * |-----------------|--------------------------------------------------------------------------|
+ * | Wlr             | Screencap using `wlr-screencopy-unstable-v1` protocol                    |
+ * | PipeWire        | Screencap using PipeWire (portal fd or session-daemon node)              |
+ */
+typedef uint64_t MaaLinuxScreencapMethod;
+#define MaaLinuxScreencapMethod_None 0ULL
+#define MaaLinuxScreencapMethod_Wlr 1ULL
+#define MaaLinuxScreencapMethod_ExtImage (1ULL << 1)
+#define MaaLinuxScreencapMethod_PipeWire (1ULL << 2)
+
+// MaaLinuxInputMethod:
+/**
+ * @brief Linux Input method
+ *
+ * Select ONE method only.
+ *
+ * | Method          | Description                                                                               |
+ * |-----------------|-------------------------------------------------------------------------------------------|
+ * | Wlr             | Input using `virtual-keyboard-unstable-v1` and `wlr-virtual-pointer-unstable-v1` protocol |
+ * | UInput          | Input using `/dev/uinput`                                                                 |
+ * | Libei           | Input using libei (EIS socket, e.g. the one provided by gamescope)                        |
+ */
+typedef uint64_t MaaLinuxInputMethod;
+#define MaaLinuxInputMethod_None 0ULL
+#define MaaLinuxInputMethod_Wlr 1ULL
+#define MaaLinuxInputMethod_UInput (1ULL << 1)
+#define MaaLinuxInputMethod_Libei (1ULL << 2)
 
 // MaaGamepadType:
 /**

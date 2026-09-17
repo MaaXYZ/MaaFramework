@@ -277,7 +277,8 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
     notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
 
     auto batch_plan = prepare_batch_ocr(list);
-    auto ocr_cache = batch_plan ? std::make_shared<MAA_VISION_NS::OCRCache>() : nullptr;
+    auto ocr_cache =
+        batch_plan ? std::make_shared<MAA_VISION_NS::OCRCache>(MAA_VISION_NS::OCRCache { .model = batch_plan->model }) : nullptr;
     bool batch_triggered = false;
 
     for (const auto& node : list) {
@@ -293,7 +294,7 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
         }
         const auto& pipeline_data = *node_opt;
 
-        if (batch_plan && !batch_triggered && batch_plan->node_names.contains(pipeline_data.name)) {
+        if (batch_plan && !batch_triggered && batch_plan->owner_node_names.contains(pipeline_data.name)) {
             batch_triggered = true;
 
             Recognizer recognizer(tasker_, *context_, image, ocr_cache);
@@ -360,24 +361,16 @@ std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const 
             continue;
         }
 
+        const auto old_size = ctx.plan.entries.size();
         collect_ocr_from_reco(ctx, data.name, data.reco_type, data.reco_param);
-    }
-
-    if (ctx.plan.node_names.size() < 2) {
-        LogDebug << "batch OCR not needed, eligible OCR nodes < 2" << VAR(ctx.plan.node_names.size());
-        return std::nullopt;
-    }
-
-    for (const auto& name : ctx.plan.node_names) {
-        auto node_opt = context_->get_pipeline_data(name);
-        if (!node_opt) {
-            continue;
+        if (ctx.plan.entries.size() > old_size) {
+            ctx.plan.owner_node_names.emplace(data.name);
         }
-        ctx.plan.entries.emplace_back(
-            BatchOCREntry {
-                .name = name,
-                .param = std::get<MAA_VISION_NS::OCRerParam>(node_opt->reco_param),
-            });
+    }
+
+    if (ctx.plan.entries.size() < 2) {
+        LogDebug << "batch OCR not needed, eligible OCR nodes < 2" << VAR(ctx.plan.entries.size());
+        return std::nullopt;
     }
 
     LogInfo << "prepared batch OCR plan" << VAR(ctx.plan.node_names) << VAR(ctx.plan.model);
@@ -415,6 +408,7 @@ void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& n
     }
 
     ctx.plan.node_names.emplace(name);
+    ctx.plan.entries.emplace_back(BatchOCREntry { .name = name, .param = param });
 }
 
 void PipelineTask::collect_ocr_from_reco(

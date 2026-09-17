@@ -39,12 +39,16 @@ bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOpt
         return set_image_target_long_side(value, val_size);
     case MaaCtrlOption_ScreenshotTargetShortSide:
         return set_image_target_short_side(value, val_size);
+    case MaaCtrlOption_ScreenshotTargetExpand:
+        return set_image_target_expand(value, val_size);
     case MaaCtrlOption_ScreenshotUseRawSize:
         return set_image_use_raw_size(value, val_size);
     case MaaCtrlOption_MouseLockFollow:
         return set_mouse_lock_follow_option(value, val_size);
     case MaaCtrlOption_ScreenshotResizeMethod:
         return set_screenshot_resize_method(value, val_size);
+    case MaaCtrlOption_BackgroundManagedKeys:
+        return set_background_managed_keys_option(value, val_size);
 
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
@@ -1095,6 +1099,16 @@ bool ControllerAgent::calc_target_image_size()
         return true;
     }
 
+    if (image_target_expand_width_ > 0 && image_target_expand_height_ > 0) {
+        double sx = static_cast<double>(image_target_expand_width_) / image_raw_width_;
+        double sy = static_cast<double>(image_target_expand_height_) / image_raw_height_;
+        double scale = std::max(sx, sy);
+        image_target_width_ = static_cast<int>(std::round(image_raw_width_ * scale));
+        image_target_height_ = static_cast<int>(std::round(image_raw_height_ * scale));
+        LogInfo << "expand" << VAR(scale) << VAR(image_target_width_) << VAR(image_target_height_);
+        return true;
+    }
+
     if (image_target_long_side_ == 0 && image_target_short_side_ == 0) {
         LogError << "Invalid image target size";
         return false;
@@ -1166,6 +1180,8 @@ bool ControllerAgent::set_image_target_long_side(MaaOptionValue value, MaaOption
     }
     image_target_long_side_ = *reinterpret_cast<const int32_t*>(value);
     image_target_short_side_ = 0;
+    image_target_expand_width_ = 0;
+    image_target_expand_height_ = 0;
 
     clear_target_image_size();
 
@@ -1183,10 +1199,36 @@ bool ControllerAgent::set_image_target_short_side(MaaOptionValue value, MaaOptio
     }
     image_target_long_side_ = 0;
     image_target_short_side_ = *reinterpret_cast<const int32_t*>(value);
+    image_target_expand_width_ = 0;
+    image_target_expand_height_ = 0;
 
     clear_target_image_size();
 
     LogInfo << "image_target_height_ = " << image_target_short_side_;
+    return true;
+}
+
+bool ControllerAgent::set_image_target_expand(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogDebug;
+
+    if (val_size != sizeof(int32_t) * 2) {
+        LogError << "invalid value size: " << val_size;
+        return false;
+    }
+    auto* arr = reinterpret_cast<const int32_t*>(value);
+    if (arr[0] <= 0 || arr[1] <= 0) {
+        LogError << "invalid expand size" << VAR(arr[0]) << VAR(arr[1]);
+        return false;
+    }
+    image_target_expand_width_ = arr[0];
+    image_target_expand_height_ = arr[1];
+    image_target_long_side_ = 0;
+    image_target_short_side_ = 0;
+
+    clear_target_image_size();
+
+    LogInfo << VAR(image_target_expand_width_) << VAR(image_target_expand_height_);
     return true;
 }
 
@@ -1248,6 +1290,32 @@ bool ControllerAgent::set_screenshot_resize_method(MaaOptionValue value, MaaOpti
     image_resize_method_ = raw;
     LogInfo << "image_resize_method_ = " << image_resize_method_;
     return true;
+}
+
+bool ControllerAgent::set_background_managed_keys_option(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogDebug;
+
+    if (val_size != 0 && val_size % sizeof(int32_t) != 0) {
+        LogError << "invalid value size: " << val_size;
+        return false;
+    }
+
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    auto win32_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_);
+    if (!win32_unit) {
+        LogError << "Background managed keys is only supported for Win32 controllers.";
+        return false;
+    }
+
+    size_t count = val_size / sizeof(int32_t);
+    auto keycodes = reinterpret_cast<const int32_t*>(value);
+
+    return win32_unit->set_background_managed_keys_option(keycodes, count);
 }
 
 MAA_CTRL_NS_END

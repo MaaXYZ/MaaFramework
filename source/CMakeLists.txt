@@ -38,9 +38,9 @@ if(WITH_RECORD_CONTROLLER)
     add_subdirectory(MaaRecordControlUnit)
 endif()
 
-if(WITH_WLROOTS_CONTROLLER)
-    add_subdirectory(MaaWlRootsControlUnit)
-endif()
+if (WITH_LINUX_CONTROLLER)
+    add_subdirectory(MaaLinuxControlUnit)
+endif ()
 
 add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)

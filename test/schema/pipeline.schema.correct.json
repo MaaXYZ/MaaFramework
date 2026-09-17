@@ -46,6 +46,50 @@
             }
         }
     },
+    "focus_v2": {
+        "focus": {
+            "Node.Action.Starting": "{name} 开始执行",
+            "Node.Action.Failed": {
+                "content": "{name} 执行失败",
+                "display": [
+                    "log",
+                    "modal"
+                ],
+                "trace": true
+            },
+            "Node.PipelineNode.Succeeded": {
+                "trace": true
+            },
+            "Node.RecognitionNode.Starting": {
+                "display": []
+            },
+            "Node.WaitFreezes.Failed": "$focus.wait_freezes_failed"
+        }
+    },
+    "focus_null": {
+        "focus": null
+    },
+    "focus_legacy_string": {
+        "focus": "{name} 开始执行"
+    },
+    "focus_legacy_bool": {
+        "focus": true
+    },
+    "focus_legacy_number": {
+        "focus": 123
+    },
+    "focus_legacy_array": {
+        "focus": [
+            "value"
+        ]
+    },
+    "focus_legacy_object": {
+        "focus": {
+            "Unknown.Message": {
+                "content": 123
+            }
+        }
+    },
     "pipeline_override_recognition_v1": {
         "roi": "[]"
     },

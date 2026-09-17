@@ -16,6 +16,7 @@ public:
         MinitouchAndAdbKey,
         Maatouch,
         MuMuPlayerExtras,
+        AndrowsExtras,
     };
 
 public:

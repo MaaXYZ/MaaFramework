@@ -5,6 +5,7 @@
 /// <reference path="./global.d.ts" />
 /// <reference path="./job.d.ts" />
 /// <reference path="./pipeline.d.ts" />
+/// <reference path="./portal.d.ts" />
 /// <reference path="./resource.d.ts" />
 /// <reference path="./tasker.d.ts" />
 /// <reference path="./types.d.ts" />

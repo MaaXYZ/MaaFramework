@@ -1,12 +1,9 @@
 #include "MaatouchInput.h"
 
-#include <array>
 #include <cmath>
 #include <format>
-#include <ranges>
 
 #include "MaaUtils/Logger.h"
-#include "MaaUtils/Platform.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -140,13 +137,6 @@ bool MaatouchInput::invoke_and_read_info()
     }
 
     return read_info();
-}
-
-void MaatouchInput::remove_binary()
-{
-    LogTrace;
-
-    invoke_app_->remove();
 }
 
 MAA_CTRL_UNIT_NS_END

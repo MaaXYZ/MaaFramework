@@ -14,7 +14,9 @@ Python binding API 测试
 
 import os
 from pathlib import Path
+import subprocess
 import sys
+import textwrap
 import numpy
 import io
 
@@ -40,13 +42,13 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource, ResourceEventSink
-from maa.controller import DbgController, CustomController, Win32Controller, ControllerEventSink
+from maa.controller import DbgController, CustomController, Win32Controller, KWinController, ControllerEventSink
 from maa.tasker import Tasker, TaskerEventSink
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.buffer import ImageBuffer
-from maa.define import LoggingLevelEnum
+from maa.define import LoggingLevelEnum, MaaWin32InputMethodEnum
 from maa.context import Context, ContextEventSink
 from maa.event_sink import EventSink
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
@@ -130,6 +132,18 @@ class MyRecognition(CustomRecognition):
             JActionType.Click, JClick(), (100, 100, 50, 50), ""
         )
         print(f"  action_direct_detail: {action_direct_detail}")
+
+        # 失败动作也应保留 action_id 和动作类型，便于关联失败事件
+        failed_action_detail = context.run_action_direct(
+            JActionType.Click,
+            JClick(target="__missing_target__"),
+            (100, 100, 50, 50),
+            "",
+        )
+        assert failed_action_detail is not None
+        assert failed_action_detail.action_id != 0
+        assert failed_action_detail.action == JActionType.Click
+        assert not failed_action_detail.success
 
         # 测试 clone 和 override
         new_ctx = context.clone()
@@ -276,8 +290,40 @@ def test_resource_api():
     # 测试自定义识别/动作注册
     my_reco = MyRecognition()
     my_action = MyAction()
-    resource.register_custom_recognition("MyRec", my_reco)
-    resource.register_custom_action("MyAct", my_action)
+    assert resource.register_custom_recognition("MyRec", my_reco)
+    assert resource.register_custom_action("MyAct", my_action)
+
+    duplicate_reco = MyRecognition()
+    duplicate_action = MyAction()
+    assert not resource.register_custom_recognition("MyRec", duplicate_reco)
+    assert not resource.register_custom_action("MyAct", duplicate_action)
+    assert not resource.register_custom_action("MyRec", duplicate_action)
+    assert not resource.register_custom_recognition("MyAct", duplicate_reco)
+    assert resource._custom_recognition_holder["MyRec"] is my_reco
+    assert resource._custom_action_holder["MyAct"] is my_action
+    assert resource.register_custom_recognition("CaseSensitive", MyRecognition())
+    assert resource.register_custom_action("casesensitive", MyAction())
+    assert not resource.register_custom_recognition("", MyRecognition())
+    assert not resource.register_custom_action("", MyAction())
+
+    try:
+        resource.custom_recognition("MyAct")(MyRecognition)
+        assert False, "duplicate custom decorator should raise RuntimeError"
+    except RuntimeError as error:
+        assert str(error) == "Custom name is already registered: 'MyAct'"
+
+    try:
+        resource.custom_action("MyRec")(MyAction)
+        assert False, "duplicate custom decorator should raise RuntimeError"
+    except RuntimeError as error:
+        assert str(error) == "Custom name is already registered: 'MyRec'"
+
+    for custom_decorator in [resource.custom_recognition, resource.custom_action]:
+        try:
+            custom_decorator("")
+            assert False, "empty custom name should raise ValueError"
+        except ValueError as error:
+            assert str(error) == "Custom name must not be empty"
 
     # 测试 custom_recognition_list 和 custom_action_list
     reco_list = resource.custom_recognition_list
@@ -300,8 +346,8 @@ def test_resource_api():
     assert "MyAct" not in action_list_after, "MyAct should be unregistered"
 
     # 重新注册用于后续测试
-    resource.register_custom_recognition("MyRec", my_reco)
-    resource.register_custom_action("MyAct", my_action)
+    assert resource.register_custom_recognition("MyRec", my_reco)
+    assert resource.register_custom_action("MyAct", my_action)
 
     # 测试 override_pipeline (resource 级别)
     # 先创建被引用的节点
@@ -472,7 +518,8 @@ def test_tasker_api(resource: Resource, controller: DbgController):
     # 测试全局选项 (静态方法)
     Tasker.set_save_draw(True)
     Tasker.set_stdout_level(LoggingLevelEnum.All)
-    Tasker.set_log_dir("debug")
+    log_dir = install_dir / "bin" / "debug" / "新建文件夹"
+    assert Tasker.set_log_dir(log_dir)
     Tasker.set_debug_mode(True)
     Tasker.set_save_on_error(True)
     Tasker.set_draw_quality(85)
@@ -740,7 +787,70 @@ def test_toolkit():
     for win in desktop[:3]:
         print(f"    - {win.window_name[:30] if win.window_name else '(no name)'}")
 
+    instances = Toolkit.find_gamescope_instances()
+    print(f"  gamescope instances: {len(instances)}")
+    for inst in instances[:3]:
+        print(f"    - display_no={inst.display_no} node_id={inst.pipewire_node_id} eis={inst.eis_socket_path}")
+
     print("  PASS: toolkit")
+
+
+def test_background_managed_keys_api():
+    print("\n=== test_background_managed_keys_api ===")
+
+    # Test with DbgController (non-Win32, should fail)
+    dbg_controller = DbgController(
+        install_dir / "test" / "PipelineSmoking" / "Screenshot",
+    )
+    dbg_ret = dbg_controller.set_background_managed_keys([0x57, 0x41])
+    print(f"  dbg_controller set_background_managed_keys: {dbg_ret}")
+    assert not dbg_ret, "DbgController should not support BackgroundManagedKeys"
+
+    # Test with Win32 controller if available
+    desktop_windows = Toolkit.find_desktop_windows()
+    if desktop_windows:
+        win32_controller = None
+        for window in desktop_windows:
+            try:
+                win32_controller = Win32Controller(window.hwnd)
+                break
+            except RuntimeError:
+                continue
+
+        if win32_controller is not None:
+            # Set option before connection
+            ret = win32_controller.set_background_managed_keys([0x57, 0x41])
+            print(
+                f"  win32_controller set_background_managed_keys (before connection): {ret}"
+            )
+            assert (
+                ret
+            ), "Win32Controller should support BackgroundManagedKeys before connection"
+
+            # After connection, setting non-empty array should succeed
+            win32_controller.post_connection().wait()
+            ret_post = win32_controller.set_background_managed_keys([0x57, 0x41])
+            print(
+                f"  win32_controller set_background_managed_keys (after connection): {ret_post}"
+            )
+            assert (
+                ret_post
+            ), "Win32Controller should support BackgroundManagedKeys after connection"
+
+            # Empty array should clear managed keys
+            ret_clear = win32_controller.set_background_managed_keys([])
+            print(
+                f"  win32_controller set_background_managed_keys (clear with empty): {ret_clear}"
+            )
+            assert (
+                ret_clear
+            ), "Win32Controller should support clearing BackgroundManagedKeys with empty array"
+        else:
+            print("  SKIP: failed to create Win32 controller")
+    else:
+        print("  SKIP: no desktop windows found for Win32 test")
+
+    print("  PASS: background managed keys API")
 
 
 def test_win32_relative_move():
@@ -776,9 +886,117 @@ def test_win32_relative_move():
     print("  PASS: win32 relative_move")
 
 
+def test_kwin_controller_create():
+    print("\n=== test_kwin_controller_create ===")
+
+    # KWinController 仅在 Linux 上可用，且需要 MaaKWinControllerCreate API 存在
+    try:
+        controller = KWinController(
+            device_node="/dev/uinput",
+            screen_width=1920,
+            screen_height=1080,
+            use_win32_vk_code=False,
+        )
+        print(f"  KWinController created: {controller}")
+
+        # 检查连接前状态
+        print(f"  connected: {controller.connected}")
+        print(f"  uuid: {controller.uuid}")
+        print(f"  info: {controller.info}")
+
+        # 验证 info 中的类型
+        info = controller.info
+        assert isinstance(info, dict), "info should be a dict"
+        assert "type" in info, "info should contain 'type'"
+        assert info["type"] == "KWin", "KWin controller type should be 'KWin'"
+
+        # 测试 post_inactive (空操作，应总是成功)
+        controller.post_inactive().wait()
+
+        print("  PASS: KWinController creation")
+
+    except RuntimeError as e:
+        # KWin 控制器创建可能因 API 缺失或缺少 /dev/uinput 权限等环境问题失败
+        print(f"  SKIP: KWinController not available in this environment ({e})")
+
+
+def test_win32_interception_enum():
+    print("\n=== test_win32_interception_enum ===")
+    assert int(MaaWin32InputMethodEnum.Interception) == 1 << 9
+    print("  PASS: win32 interception enum")
+
+
+def test_win32_anchored_touch_enum():
+    print("\n=== test_win32_anchored_touch_enum ===")
+    assert int(MaaWin32InputMethodEnum.AnchoredTouch) == 1 << 10
+    print("  PASS: win32 anchored touch enum")
+
+
 # ============================================================================
 # 主入口
 # ============================================================================
+
+
+def test_binding_init_thread_safety():
+    """并发初始化回归测试 / Concurrent initialisation regression test (#629)
+
+    ctypes 的 argtypes/restype 是进程级一次性初始化，必须在子进程中验证：
+    父进程早已完成初始化，竞态窗口不复存在。
+    """
+    print("\n=== test_binding_init_thread_safety ===")
+
+    child = textwrap.dedent(
+        """
+        import ctypes, sys, threading
+        from maa.controller import AdbController
+
+        N = 8
+        barrier, errors = threading.Barrier(N), []
+
+        def worker(i):
+            barrier.wait()          # 最大化重叠在动态库懒加载上
+            try:
+                ctrl = AdbController(adb_path="adb", address=f"127.0.0.1:{16384 + i * 32}")
+                ctrl.post_connection().wait()
+            except (ctypes.ArgumentError, OSError) as e:
+                errors.append(f"{type(e).__name__}: {e}")
+            except Exception:
+                pass                # 连接失败是预期的，与本测试无关
+
+        ts = [threading.Thread(target=worker, args=(i,)) for i in range(N)]
+        for t in ts: t.start()
+        for t in ts: t.join()
+
+        if errors:
+            print("RACE " + errors[0])
+            sys.exit(1)
+        sys.exit(0)
+        """
+    )
+
+    env = dict(
+        os.environ,
+        MAAFW_BINARY_PATH=str(install_dir / "bin"),
+        PYTHONPATH=str(binding_dir),
+    )
+
+    # 竞态是概率性的（单次命中率约 95%），重复几次把漏报压到千分之一以下
+    for _ in range(3):
+        proc = subprocess.run(
+            [sys.executable, "-c", child],
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+        if proc.returncode == 0:
+            continue
+        race = [l for l in proc.stdout.splitlines() if l.startswith("RACE ")]
+        detail = race[0][5:] if race else f"child exited {proc.returncode} (crashed?)"
+        print(f"  FAIL: concurrent binding init is not thread-safe -- {detail}")
+        raise RuntimeError(f"binding init race (#629): {detail}")
+
+    print("  PASS: 8 threads initialised the binding concurrently")
 
 
 if __name__ == "__main__":
@@ -803,8 +1021,23 @@ if __name__ == "__main__":
     # 测试 Toolkit
     test_toolkit()
 
+    # 测试 BackgroundManagedKeys 选项
+    test_background_managed_keys_api()
+
     # 测试 Win32 relative_move 正路径
     test_win32_relative_move()
+
+    # 测试 KWinController 创建
+    test_kwin_controller_create()
+
+    # 测试 Win32 Interception 枚举导出
+    test_win32_interception_enum()
+
+    # 测试 Win32 AnchoredTouch 枚举导出
+    test_win32_anchored_touch_enum()
+
+    # 回归：并发初始化线程安全 (#629)
+    test_binding_init_thread_safety()
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")

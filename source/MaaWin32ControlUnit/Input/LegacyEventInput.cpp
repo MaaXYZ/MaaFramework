@@ -161,7 +161,7 @@ bool LegacyEventInput::key_down(int key)
 
     // check_and_block_input();
 
-    keybd_event(static_cast<BYTE>(key), 0, 0, 0);
+    keybd_event(static_cast<BYTE>(key), static_cast<BYTE>(MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC)), 0, 0);
 
     return true;
 }
@@ -175,7 +175,7 @@ bool LegacyEventInput::key_up(int key)
 
     // OnScopeLeave([this]() { unblock_input(); });
 
-    keybd_event(static_cast<BYTE>(key), 0, KEYEVENTF_KEYUP, 0);
+    keybd_event(static_cast<BYTE>(key), static_cast<BYTE>(MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC)), KEYEVENTF_KEYUP, 0);
 
     return true;
 }

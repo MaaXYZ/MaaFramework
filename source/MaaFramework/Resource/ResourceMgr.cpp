@@ -283,15 +283,22 @@ std::optional<json::object> ResourceMgr::get_node_data(const std::string& node_n
     return PipelineDumper::dump(it->second);
 }
 
-void ResourceMgr::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)
+bool ResourceMgr::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
     LogDebug << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);
 
     if (name.empty() || !recognition) {
         LogError << "empty name or handle";
-        return;
+        return false;
     }
-    custom_recognition_sessions_.insert_or_assign(name, CustomRecognitionSession { .recognition = recognition, .trans_arg = trans_arg });
+
+    if (custom_recognition_sessions_.contains(name) || custom_action_sessions_.contains(name)) {
+        LogError << "custom name already registered" << VAR(name);
+        return false;
+    }
+
+    return custom_recognition_sessions_.emplace(name, CustomRecognitionSession { .recognition = recognition, .trans_arg = trans_arg })
+        .second;
 }
 
 void ResourceMgr::unregister_custom_recognition(const std::string& name)
@@ -312,15 +319,21 @@ void ResourceMgr::clear_custom_recognition()
     custom_recognition_sessions_.clear();
 }
 
-void ResourceMgr::register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg)
+bool ResourceMgr::register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg)
 {
     LogDebug << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(trans_arg);
 
     if (name.empty() || !action) {
         LogError << "empty name or handle";
-        return;
+        return false;
     }
-    custom_action_sessions_.insert_or_assign(name, CustomActionSession { .action = action, .trans_arg = trans_arg });
+
+    if (custom_recognition_sessions_.contains(name) || custom_action_sessions_.contains(name)) {
+        LogError << "custom name already registered" << VAR(name);
+        return false;
+    }
+
+    return custom_action_sessions_.emplace(name, CustomActionSession { .action = action, .trans_arg = trans_arg }).second;
 }
 
 void ResourceMgr::unregister_custom_action(const std::string& name)

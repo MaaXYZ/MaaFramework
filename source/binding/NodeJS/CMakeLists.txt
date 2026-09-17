@@ -13,7 +13,7 @@ set(MAA_JS_COMMON_SOURCES
     src/apis/callback.cpp
     src/apis/constant.cpp)
 
-set(MAA_JS_CLIENT_SOURCES src/apis/client.cpp)
+set(MAA_JS_CLIENT_SOURCES src/apis/client.cpp src/apis/portal.cpp)
 set(MAA_JS_SERVER_SOURCES src/apis/server.cpp)
 set(MAA_JS_PLUGIN_SOURCES src/apis/plugin.cpp)
 

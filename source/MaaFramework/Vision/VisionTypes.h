@@ -105,7 +105,9 @@ struct NeuralNetworkClassifierParam : public RoiTargetParamBase
 {
     std::string model;
     std::vector<std::string> labels; // only for output and debug
-    std::vector</*result_index*/ int> expected;
+
+    // result_index or result_name
+    std::vector<std::variant<int, std::string>> expected;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
@@ -123,7 +125,10 @@ struct NeuralNetworkDetectorParam : public RoiTargetParamBase
     std::string model;
     Net net = kDefaultNet;
     std::vector<std::string> labels; // only for output and debug
-    std::vector</*result_index*/ int> expected;
+
+    // result_index or result_name
+    std::vector<std::variant<int, std::string>> expected;
+
     std::vector<double> thresholds = { kDefaultThreshold };
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;

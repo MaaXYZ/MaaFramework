@@ -1,7 +1,8 @@
 import ctypes
 import json
-from dataclasses import dataclass
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import Any, Optional, Union
 
 import numpy
 
@@ -15,8 +16,10 @@ class CustomRecognition(ABC):
 
     用于实现自定义的 Pipeline 识别算法。继承此类并实现 analyze 方法，
     然后通过 Resource.register_custom_recognition 或 AgentServer.register_custom_recognition 注册。
-    Used to implement custom Pipeline recognition algorithms. Inherit this class and implement the analyze method,
-    then register via Resource.register_custom_recognition or AgentServer.register_custom_recognition.
+    Used to implement custom Pipeline recognition algorithms. Inherit this class and implement the
+    analyze method,
+    then register via Resource.register_custom_recognition or
+    AgentServer.register_custom_recognition.
 
     Example:
         class MyRecognition(CustomRecognition):
@@ -25,7 +28,7 @@ class CustomRecognition(ABC):
                 return (100, 100, 50, 50)
     """
 
-    _handle: MaaCustomRecognitionCallback
+    _handle: Any
 
     def __init__(self):
         self._handle = self._c_analyze_agent
@@ -38,7 +41,8 @@ class CustomRecognition(ABC):
             task_detail: 当前任务详情 / Current task detail
             node_name: 当前节点名 / Current node name
             custom_recognition_name: 自定义识别器名 / Custom recognition name
-            custom_recognition_param: 自定义识别器参数 (JSON 字符串) / Custom recognition parameter (JSON string)
+            custom_recognition_param: 自定义识别器参数 (JSON 字符串)
+            Custom recognition parameter (JSON string)
             image: 待识别的图像 (BGR 格式) / Image to recognize (BGR format)
             roi: 识别区域 / Recognition region of interest
         """
@@ -60,7 +64,7 @@ class CustomRecognition(ABC):
         """
 
         box: Optional[RectType]
-        detail: dict
+        detail: dict[str, Any]
 
     @abstractmethod
     def analyze(
@@ -83,7 +87,7 @@ class CustomRecognition(ABC):
         raise NotImplementedError
 
     @property
-    def c_handle(self) -> MaaCustomRecognitionCallback:
+    def c_handle(self) -> Any:
         return self._handle
 
     @property
@@ -95,9 +99,9 @@ class CustomRecognition(ABC):
     def _c_analyze_agent(
         c_context: MaaContextHandle,
         c_task_id: MaaTaskId,
-        c_node_name: ctypes.c_char_p,
-        c_custom_reco_name: ctypes.c_char_p,
-        c_custom_reco_param: ctypes.c_char_p,
+        c_node_name: bytes,
+        c_custom_reco_name: bytes,
+        c_custom_reco_param: bytes,
         c_image: MaaImageBufferHandle,
         c_roi: MaaRectHandle,
         c_transparent_arg: ctypes.c_void_p,
@@ -116,18 +120,16 @@ class CustomRecognition(ABC):
 
         image = ImageBuffer(c_image).get()
 
-        result: Union[CustomRecognition.AnalyzeResult, Optional[RectType]] = (
-            self.analyze(
-                context,
-                CustomRecognition.AnalyzeArg(
-                    task_detail=task_detail,
-                    node_name=c_node_name.decode(),
-                    custom_recognition_name=c_custom_reco_name.decode(),
-                    custom_recognition_param=c_custom_reco_param.decode(),
-                    image=image,
-                    roi=RectBuffer(c_roi).get(),
-                ),
-            )
+        result: Union[CustomRecognition.AnalyzeResult, Optional[RectType]] = self.analyze(
+            context,
+            CustomRecognition.AnalyzeArg(
+                task_detail=task_detail,
+                node_name=c_node_name.decode(),
+                custom_recognition_name=c_custom_reco_name.decode(),
+                custom_recognition_param=c_custom_reco_param.decode(),
+                image=image,
+                roi=RectBuffer(c_roi).get(),
+            ),
         )
 
         rect_buffer = RectBuffer(c_out_box)
@@ -142,17 +144,9 @@ class CustomRecognition(ABC):
         # RectType
         elif (
             isinstance(result, Rect)
-            or (
-                isinstance(result, list)
-                and len(result) == 4
-                and all(isinstance(x, int) for x in result)
-            )
+            or (isinstance(result, list) and len(result) == 4)
             or (isinstance(result, numpy.ndarray) and result.size == 4)
-            or (
-                isinstance(result, tuple)
-                and len(result) == 4
-                and all(isinstance(x, int) for x in result)
-            )
+            or (isinstance(result, tuple) and len(result) == 4)
         ):
             rect_buffer.set(result)
             return int(True)

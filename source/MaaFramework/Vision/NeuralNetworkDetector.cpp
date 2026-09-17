@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cmath>
 #include <map>
 #include <ranges>
 #include <sstream>
@@ -42,6 +43,9 @@ void NeuralNetworkDetector::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     auto labels = param_.labels.empty() ? parse_labels_from_metadata() : param_.labels;
+
+    init_expected_indices(labels);
+
     while (next_roi()) {
         auto results = detect(labels);
         add_results(std::move(results), param_.expected, param_.thresholds);
@@ -72,7 +76,28 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
     cv::Mat image = image_with_roi();
     cv::Size raw_roi_size(image.cols, image.rows);
     cv::Size input_image_size(static_cast<int>(input_shape[3]), static_cast<int>(input_shape[2]));
-    cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
+    const double scale = std::min(
+        std::min(
+            static_cast<double>(input_image_size.width) / raw_roi_size.width,
+            static_cast<double>(input_image_size.height) / raw_roi_size.height),
+        1.0);
+    cv::Size resized_image_size(
+        static_cast<int>(std::floor(raw_roi_size.width * scale)),
+        static_cast<int>(std::floor(raw_roi_size.height * scale)));
+    cv::resize(image, image, resized_image_size, 0, 0, cv::INTER_AREA);
+    const int pad_width = input_image_size.width - resized_image_size.width;
+    const int pad_height = input_image_size.height - resized_image_size.height;
+    const int pad_left = pad_width / 2;
+    const int pad_top = pad_height / 2;
+    cv::copyMakeBorder(
+        image,
+        image,
+        pad_top,
+        pad_height - pad_top,
+        pad_left,
+        pad_width - pad_left,
+        cv::BORDER_CONSTANT,
+        cv::Scalar(114, 114, 114));
     std::vector<float> input = image_to_tensor(image);
 
     Ort::Value input_tensor =
@@ -109,9 +134,6 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
 
     ResultsVec raw_results;
     const size_t output_size = output.back().size();
-    double width_ratio = 1.0 * raw_roi_size.width / input_image_size.width;
-    double height_ratio = 1.0 * raw_roi_size.height / input_image_size.height;
-
     for (size_t i = 0; i < output_size; ++i) {
         constexpr size_t kConfidenceIndex = 4;
         for (size_t j = kConfidenceIndex; j < output.size(); ++j) {
@@ -121,18 +143,18 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
                 continue;
             }
 
-            int center_x = static_cast<int>(output[0][i]);
-            int center_y = static_cast<int>(output[1][i]);
-            int w = static_cast<int>(output[2][i]);
-            int h = static_cast<int>(output[3][i]);
+            const double center_x = output[0][i];
+            const double center_y = output[1][i];
+            const double w = output[2][i];
+            const double h = output[3][i];
 
-            int x = center_x - w / 2;
-            int y = center_y - h / 2;
+            int x = static_cast<int>((center_x - w / 2 - pad_left) / scale);
+            int y = static_cast<int>((center_y - h / 2 - pad_top) / scale);
             cv::Rect box {
-                static_cast<int>(x * width_ratio) + roi_.x,
-                static_cast<int>(y * height_ratio) + roi_.y,
-                static_cast<int>(w * width_ratio),
-                static_cast<int>(h * height_ratio),
+                x + roi_.x,
+                y + roi_.y,
+                static_cast<int>(w / scale),
+                static_cast<int>(h / scale),
             };
 
             Result res;
@@ -155,7 +177,10 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
     return nms_results;
 }
 
-void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<int>& expected, const std::vector<double>& thresholds)
+void NeuralNetworkDetector::add_results(
+    ResultsVec results,
+    const std::vector<std::variant<int, std::string>>& expected,
+    const std::vector<double>& thresholds)
 {
     if (expected.empty()) {
         // expected 为空时，所有结果均可用，但仍需满足默认阈值
@@ -167,13 +192,13 @@ void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<in
         return;
     }
 
-    if (expected.size() != thresholds.size()) {
+    if (expected_indices_.size() != thresholds.size()) {
         LogError << name_ << "expected.size() != thresholds.size()" << VAR(expected) << VAR(thresholds);
         return;
     }
 
-    for (size_t i = 0; i != expected.size(); ++i) {
-        int exp = expected.at(i);
+    for (size_t i = 0; i != expected_indices_.size(); ++i) {
+        int exp = expected_indices_.at(i);
         auto it = std::ranges::find(results, exp, std::mem_fn(&Result::cls_index));
         if (it == results.end()) {
             continue;
@@ -242,7 +267,7 @@ void NeuralNetworkDetector::sort_(ResultsVec& results) const
         sort_by_random_(results);
         break;
     case ResultOrderBy::Expected:
-        sort_by_expected_index_(results, param_.expected);
+        sort_by_expected_index_(results, expected_indices_);
         break;
     default:
         LogError << "Not supported order by" << VAR(param_.order_by);
@@ -328,6 +353,36 @@ std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() con
 
     LogDebug << name_ << "Parsed labels from metadata" << VAR(labels.size());
     return labels;
+}
+
+void NeuralNetworkDetector::init_expected_indices(const std::vector<std::string>& labels)
+{
+    expected_indices_.clear();
+    expected_indices_.reserve(param_.expected.size());
+
+    for (const auto& item : param_.expected) {
+        if (std::holds_alternative<int>(item)) {
+            int idx = std::get<int>(item);
+            // 校验索引有效性
+            if (idx >= 0) {
+                expected_indices_.push_back(idx);
+            }
+            else {
+                LogWarn << "Invalid index in expected" << VAR(idx);
+            }
+        }
+        else if (std::holds_alternative<std::string>(item)) {
+            const std::string& label = std::get<std::string>(item);
+            auto it = std::find(labels.begin(), labels.end(), label);
+            if (it != labels.end()) {
+                int idx = static_cast<int>(std::distance(labels.begin(), it));
+                expected_indices_.push_back(idx);
+            }
+            else {
+                LogWarn << "Label not found in labels list" << VAR(label);
+            }
+        }
+    }
 }
 
 MAA_VISION_NS_END

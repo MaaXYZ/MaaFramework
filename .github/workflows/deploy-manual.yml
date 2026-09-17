@@ -19,12 +19,12 @@ jobs:
         permissions:
             contents: write
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   fetch-depth: 0
 
             - name: Build Doxygen
-              uses: mattnotmitt/doxygen-action@v1.9
+              uses: mattnotmitt/doxygen-action@v1
               with:
                   doxyfile-path: tools/Doxygen/Doxyfile
 

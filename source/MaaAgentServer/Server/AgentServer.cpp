@@ -87,7 +87,12 @@ bool AgentServer::register_custom_recognition(const std::string& name, MaaCustom
         return false;
     }
 
-    return custom_recognitions_.insert_or_assign(name, CustomRecognitionSession { recognition, trans_arg }).second;
+    if (custom_recognitions_.contains(name) || custom_actions_.contains(name)) {
+        LogError << "custom name already registered" << VAR(name);
+        return false;
+    }
+
+    return custom_recognitions_.emplace(name, CustomRecognitionSession { recognition, trans_arg }).second;
 }
 
 bool AgentServer::register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg)
@@ -99,7 +104,12 @@ bool AgentServer::register_custom_action(const std::string& name, MaaCustomActio
         return false;
     }
 
-    return custom_actions_.insert_or_assign(name, CustomActionSession { action, trans_arg }).second;
+    if (custom_recognitions_.contains(name) || custom_actions_.contains(name)) {
+        LogError << "custom name already registered" << VAR(name);
+        return false;
+    }
+
+    return custom_actions_.emplace(name, CustomActionSession { action, trans_arg }).second;
 }
 
 MaaSinkId AgentServer::add_resource_sink(MaaEventCallback sink, void* trans_arg)

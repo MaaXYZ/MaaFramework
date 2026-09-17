@@ -2,6 +2,7 @@
 
 #if MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
 
+#include <dwmapi.h>
 #include <windows.graphics.capture.interop.h>
 #include <windows.graphics.directx.direct3d11.interop.h>
 #include <winrt/Windows.Foundation.Metadata.h>
@@ -110,46 +111,33 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
 
     cv::Mat raw(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
 
-    // 先按 alpha 通道裁剪掉四周 alpha != 255 的边框
-    cv::Mat alpha_channel;
-    cv::extractChannel(raw, alpha_channel, 3);
-
-    cv::Mat alpha_bin;
-    cv::threshold(alpha_channel, alpha_bin, UCHAR_MAX - 1, UCHAR_MAX, cv::THRESH_BINARY);
-
-    cv::Rect alpha_roi = cv::boundingRect(alpha_bin);
-    if (alpha_roi.empty()) {
-        LogError << "No opaque pixels found";
-        return std::nullopt;
-    }
-    cv::Mat trimmed = raw(alpha_roi);
-
-    // 获取窗口客户区矩形（相对于窗口）
     RECT client_rect = { 0 };
     if (!GetClientRect(hwnd_, &client_rect)) {
         LogError << "GetClientRect failed";
         return std::nullopt;
     }
 
-    // 将客户区左上角转换为屏幕坐标
     POINT client_top_left = { client_rect.left, client_rect.top };
     if (!ClientToScreen(hwnd_, &client_top_left)) {
         LogError << "ClientToScreen failed";
         return std::nullopt;
     }
 
-    // 获取窗口矩形（屏幕坐标）
-    RECT window_rect = { 0 };
-    if (!GetWindowRect(hwnd_, &window_rect)) {
-        LogError << "GetWindowRect failed";
-        return std::nullopt;
+    // 使用 DWM 实际可视帧边界，排除 GetWindowRect 中包含的不可见 DWM 阴影区域，
+    // 以正确计算 WGC 捕获画面中的边框偏移
+    RECT frame_rect = { 0 };
+    HRESULT hr = DwmGetWindowAttribute(hwnd_, DWMWA_EXTENDED_FRAME_BOUNDS, &frame_rect, sizeof(frame_rect));
+    if (FAILED(hr)) {
+        LogWarn << "DwmGetWindowAttribute failed, falling back to GetWindowRect" << VAR(hr);
+        if (!GetWindowRect(hwnd_, &frame_rect)) {
+            LogError << "GetWindowRect failed";
+            return std::nullopt;
+        }
     }
 
-    // 计算边框位置，减去 alpha 裁剪的偏移
-    int border_left = client_top_left.x - window_rect.left - alpha_roi.x;
-    int border_top = client_top_left.y - window_rect.top - alpha_roi.y;
+    int border_left = client_top_left.x - frame_rect.left;
+    int border_top = client_top_left.y - frame_rect.top;
 
-    // 获取客户区大小
     int client_width = client_rect.right - client_rect.left;
     int client_height = client_rect.bottom - client_rect.top;
 
@@ -159,22 +147,21 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     if (border_top < 0) {
         border_top = 0;
     }
-    if (client_width > trimmed.cols) {
-        client_width = trimmed.cols;
+    if (client_width > raw.cols) {
+        client_width = raw.cols;
     }
-    if (border_left + client_width > trimmed.cols) {
-        border_left = trimmed.cols - client_width;
+    if (border_left + client_width > raw.cols) {
+        border_left = raw.cols - client_width;
     }
-    if (client_height > trimmed.rows) {
-        client_height = trimmed.rows;
+    if (client_height > raw.rows) {
+        client_height = raw.rows;
     }
-    if (border_top + client_height > trimmed.rows) {
-        border_top = trimmed.rows - client_height;
+    if (border_top + client_height > raw.rows) {
+        border_top = raw.rows - client_height;
     }
 
-    // 裁剪出客户区（去掉边框）
     cv::Rect client_roi(border_left, border_top, client_width, client_height);
-    cv::Mat image = trimmed(client_roi);
+    cv::Mat image = raw(client_roi);
 
     cv::Mat result = bgra_to_bgr(image);
     cached_image_ = result.clone();

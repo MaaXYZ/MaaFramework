@@ -1,8 +1,6 @@
 #pragma once
 
-#include <chrono>
-#include <thread>
-
+#include "Base/ForegroundUtils.h"
 #include "Common/Conf.h"
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/SafeWindows.hpp"
@@ -27,29 +25,25 @@ inline void send_activate_message(HWND hwnd, bool use_post = false)
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
-// 窗口激活并置顶工具函数（强化版本，用于需要前台的物理输入方式）
-// 用于 LegacyEventInput 和 SeizeInput，因为它们使用 SendInput/mouse_event 等物理输入 API
-inline void ensure_foreground_and_topmost(HWND hwnd)
+// 检查鼠标左右按键是否被交换
+inline bool IsMouseButtonSwapped()
 {
-    if (!hwnd) {
-        return;
+    return GetSystemMetrics(SM_SWAPBUTTON) != 0;
+}
+
+// 获取兼容鼠标左右按键交换后的鼠标按键映射
+inline int GetMappedContact(int original_contact)
+{
+    if (!IsMouseButtonSwapped()) {
+        return original_contact;
     }
-
-    // 如果窗口不在前台，先将其置顶
-    if (hwnd != GetForegroundWindow()) {
-        // 将窗口移到 Z 序顶部
-        SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-
-        // 尝试设置为前台窗口
-        SetForegroundWindow(hwnd);
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-        // 再次检查，如果仍然不在前台，再次置顶
-        if (hwnd != GetForegroundWindow()) {
-            SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-            std::this_thread::sleep_for(std::chrono::milliseconds(5));
-        }
+    switch (original_contact) {
+    case 0:
+        return 1;
+    case 1:
+        return 0;
+    default:
+        return original_contact;
     }
 }
 
@@ -63,7 +57,8 @@ struct MouseMessageInfo
 // 将 contact ID 转换为鼠标按下消息
 inline bool contact_to_mouse_down_message(int contact, MouseMessageInfo& info)
 {
-    switch (contact) {
+    int mapped_contact = GetMappedContact(contact);
+    switch (mapped_contact) {
     case 0:
         info.message = WM_LBUTTONDOWN;
         info.w_param = MK_LBUTTON;
@@ -92,7 +87,8 @@ inline bool contact_to_mouse_down_message(int contact, MouseMessageInfo& info)
 // 将 contact ID 转换为鼠标移动消息
 inline bool contact_to_mouse_move_message(int contact, MouseMessageInfo& info)
 {
-    switch (contact) {
+    int mapped_contact = GetMappedContact(contact);
+    switch (mapped_contact) {
     case 0:
         info.message = WM_MOUSEMOVE;
         info.w_param = MK_LBUTTON;
@@ -121,7 +117,8 @@ inline bool contact_to_mouse_move_message(int contact, MouseMessageInfo& info)
 // 将 contact ID 转换为鼠标抬起消息
 inline bool contact_to_mouse_up_message(int contact, MouseMessageInfo& info)
 {
-    switch (contact) {
+    int mapped_contact = GetMappedContact(contact);
+    switch (mapped_contact) {
     case 0:
         info.message = WM_LBUTTONUP;
         info.w_param = 0;

@@ -12,10 +12,60 @@ std::optional<cv::Mat> PrintWindowScreencap::screencap()
         return std::nullopt;
     }
 
+    auto image = capture_window(hwnd_);
+    if (!image) {
+        return std::nullopt;
+    }
+
+    HWND root = GetAncestor(hwnd_, GA_ROOTOWNER);
+    if (!root) {
+        root = hwnd_;
+    }
+
+    HWND popup = GetLastActivePopup(root);
+    if (!popup || popup == hwnd_ || popup == root || !IsWindow(popup) || !IsWindowVisible(popup)) {
+        return image;
+    }
+
+    auto popup_image = capture_window(popup);
+    if (!popup_image) {
+        LogWarn << "Failed to capture active popup, returning main window image" << VAR(popup);
+        return image;
+    }
+
+    POINT main_origin = { 0, 0 };
+    POINT popup_origin = { 0, 0 };
+    if (!ClientToScreen(hwnd_, &main_origin) || !ClientToScreen(popup, &popup_origin)) {
+        LogWarn << "Failed to locate active popup, returning main window image" << VAR(popup) << VAR(GetLastError());
+        return image;
+    }
+
+    const int offset_x = popup_origin.x - main_origin.x;
+    const int offset_y = popup_origin.y - main_origin.y;
+    const cv::Rect canvas_rect(0, 0, image->cols, image->rows);
+    const cv::Rect popup_rect(offset_x, offset_y, popup_image->cols, popup_image->rows);
+    const cv::Rect dst_rect = canvas_rect & popup_rect;
+    if (dst_rect.empty()) {
+        LogWarn << "Active popup is outside the main client area" << VAR(popup) << VAR(offset_x) << VAR(offset_y);
+        return image;
+    }
+
+    const cv::Rect src_rect(dst_rect.x - offset_x, dst_rect.y - offset_y, dst_rect.width, dst_rect.height);
+    (*popup_image)(src_rect).copyTo((*image)(dst_rect));
+    return image;
+}
+
+std::optional<cv::Mat> PrintWindowScreencap::capture_window(HWND capture_hwnd)
+{
+    if (!capture_hwnd || !IsWindow(capture_hwnd)) {
+        LogError << "Invalid capture window" << VAR(capture_hwnd);
+        return std::nullopt;
+    }
+
     // 确定要捕获的区域大小
     // 使用PW_CLIENTONLY标志，只获取客户端区域（不含窗口边框）
     RECT rect = { 0 };
-    if (!GetClientRect(hwnd_, &rect)) {
+    if (!GetClientRect(capture_hwnd, &rect)) {
         LogError << "GetClientRect failed, error code: " << GetLastError();
         return std::nullopt;
     }
@@ -44,12 +94,12 @@ std::optional<cv::Mat> PrintWindowScreencap::screencap()
             DeleteDC(mem_dc);
         }
         if (hdc) {
-            ReleaseDC(hwnd_, hdc);
+            ReleaseDC(capture_hwnd, hdc);
         }
     });
 
     // 创建与窗口兼容的 DC
-    hdc = GetDC(hwnd_);
+    hdc = GetDC(capture_hwnd);
     if (!hdc) {
         LogError << "GetDC failed, error code: " << GetLastError();
         return std::nullopt;
@@ -78,7 +128,7 @@ std::optional<cv::Mat> PrintWindowScreencap::screencap()
     // - PW_CLIENTONLY (0x1): 只获取客户端区域
     // - PW_RENDERFULLCONTENT (0x2): 捕获非最小化后台窗口
     constexpr UINT nFlags = PW_CLIENTONLY | PW_RENDERFULLCONTENT;
-    if (!PrintWindow(hwnd_, mem_dc, nFlags)) {
+    if (!PrintWindow(capture_hwnd, mem_dc, nFlags)) {
         LogError << "PrintWindow failed, error code: " << GetLastError();
         return std::nullopt;
     }
@@ -102,4 +152,3 @@ std::optional<cv::Mat> PrintWindowScreencap::screencap()
 }
 
 MAA_CTRL_UNIT_NS_END
-

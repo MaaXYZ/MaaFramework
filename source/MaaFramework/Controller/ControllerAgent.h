@@ -287,9 +287,11 @@ private:
 private: // options
     bool set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_image_target_expand(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_image_use_raw_size(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_mouse_lock_follow_option(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_screenshot_resize_method(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_background_managed_keys_option(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     bool need_to_stop_ = false;
@@ -306,6 +308,8 @@ private:
     bool image_use_raw_size_ = false;
     int image_target_long_side_ = 0;
     int image_target_short_side_ = 720;
+    int image_target_expand_width_ = 0;
+    int image_target_expand_height_ = 0;
     int image_target_width_ = 0;
     int image_target_height_ = 0;
     int image_raw_width_ = 0;

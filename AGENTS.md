@@ -61,7 +61,7 @@ MaaFramework/
 ### 术语定义
 
 | 术语 | 说明 |
-|------|------|
+| ------ | ------ |
 | **Node（节点）** | Pipeline JSON 中的一个完整对象，包含识别、动作、后继节点等配置 |
 | **Task（任务）** | 若干 Node 按顺序相连的逻辑流程 |
 | **Entry（入口）** | Task 中的第一个 Node |
@@ -91,7 +91,7 @@ MaaFramework/
 ### 识别算法类型
 
 | 类型 | 说明 | 关键参数 |
-|------|------|----------|
+| ------ | ------ | ---------- |
 | `DirectHit` | 直接命中，不进行识别 | - |
 | `TemplateMatch` | 模板匹配（找图） | `template`, `threshold`, `roi` |
 | `FeatureMatch` | 特征匹配（抗透视） | `template`, `count`, `detector` |
@@ -104,7 +104,7 @@ MaaFramework/
 ### 动作类型
 
 | 类型 | 说明 | 关键参数 |
-|------|------|----------|
+| ------ | ------ | ---------- |
 | `DoNothing` | 不执行任何操作 | - |
 | `Click` | 点击 | `target`, `target_offset` |
 | `LongPress` | 长按 | `target`, `duration` |

@@ -64,7 +64,21 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ
     }
 
     cv::Mat matched;
-    cv::matchTemplate(image, templ, matched, method, create_mask(templ, param_.green_mask));
+    cv::Mat mask;
+    if (param_.green_mask) {
+        mask = create_mask(templ, true);
+
+        if (!mask.empty() && cv::countNonZero(mask) == mask.rows * mask.cols) {
+            mask.release();
+        }
+    }
+
+    if (mask.empty()) {
+        cv::matchTemplate(image, templ, matched, method);
+    }
+    else {
+        cv::matchTemplate(image, templ, matched, method, mask);
+    }
 
     if (invert_score) {
         matched = 1.0f - matched;

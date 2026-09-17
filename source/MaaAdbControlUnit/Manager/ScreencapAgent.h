@@ -23,6 +23,7 @@ public:
         MuMuPlayerExtras,
         LDPlayerExtras,
         AVDExtras,
+        AndrowsExtras,
     };
 
 public:

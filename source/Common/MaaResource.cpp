@@ -50,8 +50,7 @@ MaaBool MaaResourceRegisterCustomRecognition(MaaResource* res, const char* name,
         return false;
     }
 
-    res->register_custom_recognition(name, recognition, trans_arg);
-    return true;
+    return res->register_custom_recognition(name, recognition, trans_arg);
 }
 
 MaaBool MaaResourceUnregisterCustomRecognition(MaaResource* res, const char* name)
@@ -89,8 +88,7 @@ MaaBool MaaResourceRegisterCustomAction(MaaResource* res, const char* name, MaaC
         return false;
     }
 
-    res->register_custom_action(name, action, trans_arg);
-    return true;
+    return res->register_custom_action(name, action, trans_arg);
 }
 
 MaaBool MaaResourceUnregisterCustomAction(MaaResource* res, const char* name)

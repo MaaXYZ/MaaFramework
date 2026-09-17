@@ -47,6 +47,7 @@ private:
     std::vector<cv::Rect> get_rois(const MAA_VISION_NS::Target& roi, bool use_best = false);
     std::vector<cv::Rect> get_rois_from_pretask(const std::string& name, bool use_best);
     void save_draws(const std::string& node_name, const RecoResult& result) const;
+    void register_sub_result_in_cache(const RecoResult& res);
 
 private:
     bool debug_mode() const;

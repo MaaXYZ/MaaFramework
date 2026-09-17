@@ -86,7 +86,6 @@
             "name": "MSVC 2022",
             "displayName": "MSVC 2022",
             "description": "MSVC 2022",
-            "generator": "Visual Studio 17 2022",
             "binaryDir": "${sourceDir}/build",
             "condition": {
                 "type": "equals",
@@ -98,7 +97,6 @@
             "name": "MSVC 2022 ARM",
             "displayName": "MSVC 2022 ARM",
             "description": "MSVC 2022 ARM",
-            "generator": "Visual Studio 17 2022",
             "binaryDir": "${sourceDir}/build",
             "condition": {
                 "type": "equals",
