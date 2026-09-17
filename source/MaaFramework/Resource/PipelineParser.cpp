@@ -1410,6 +1410,12 @@ bool PipelineParser::parse_key_param(const json::value& input, Action::KeyParam&
     }
 
     output.key = key;
+
+    if (!get_and_check_value(input, "auto_up", output.auto_up, default_value.auto_up)) {
+        LogError << "failed to get_and_check_value auto_up" << VAR(input);
+        return false;
+    }
+
     return true;
 }
 
@@ -1427,6 +1433,11 @@ bool PipelineParser::parse_touch(const json::value& input, Action::TouchParam& o
 
     if (!get_and_check_value(input, "pressure", output.pressure, default_value.pressure)) {
         LogError << "failed to get_and_check_value pressure" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "auto_up", output.auto_up, default_value.auto_up)) {
+        LogError << "failed to get_and_check_value auto_up" << VAR(input);
         return false;
     }
 

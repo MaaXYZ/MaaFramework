@@ -230,10 +230,17 @@ class AgentClient:
         if AgentClient._api_properties_initialized:
             return
 
+        with Library._api_lock:
+            if AgentClient._api_properties_initialized:
+                return
+
+            AgentClient._assign_api_properties()
+            AgentClient._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         if Library.is_agent_server():
             raise RuntimeError("AgentClient is not available in AgentServer.")
-
-        AgentClient._api_properties_initialized = True
 
         Library.agent_client().MaaAgentClientCreateV2.restype = MaaAgentClientHandle
         Library.agent_client().MaaAgentClientCreateV2.argtypes = [

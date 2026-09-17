@@ -646,8 +646,16 @@ class Resource:
     def _set_api_properties():
         if Resource._api_properties_initialized:
             return
-        Resource._api_properties_initialized = True
 
+        with Library._api_lock:
+            if Resource._api_properties_initialized:
+                return
+
+            Resource._assign_api_properties()
+            Resource._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         Library.framework().MaaResourceCreate.restype = MaaResourceHandle
         Library.framework().MaaResourceCreate.argtypes = []
 

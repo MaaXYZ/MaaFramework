@@ -261,6 +261,7 @@ declare global {
                 target?: true | NodeName | Rect
                 target_offset?: Rect
                 pressure?: number
+                auto_up?: boolean
             },
             never,
             Mode
@@ -294,6 +295,7 @@ declare global {
         type ActionSingleKey<Mode> = RequiredIfStrict<
             {
                 key?: number
+                auto_up?: boolean
             },
             'key',
             Mode

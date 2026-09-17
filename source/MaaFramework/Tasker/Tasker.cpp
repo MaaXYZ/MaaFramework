@@ -352,6 +352,10 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
 
     bool ret = task_ptr->run();
 
+    if (controller_) {
+        controller_->auto_release_pressed();
+    }
+
     LogInfo << "task end:" << VAR(cb_detail) << VAR(ret);
     {
         // value_or 的默认值用于 run 到一半调用方手动 clear cache 了的情况
