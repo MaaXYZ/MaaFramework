@@ -150,14 +150,17 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 
     notify(MaaMsg_Node_PipelineNode_Starting, node_cb_detail);
 
+    const auto timeout = pretask.reco_timeout.random();
+
     auto check_timeout_and_sleep = [&](std::chrono::steady_clock::time_point current_clock) {
-        if (pretask.reco_timeout >= std::chrono::milliseconds(0) && duration_since(start_clock) > pretask.reco_timeout) {
-            LogWarn << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout);
+        if (timeout >= std::chrono::milliseconds(0) && duration_since(start_clock) > timeout) {
+            LogWarn << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(timeout);
             return false;
         }
 
-        LogDebug << "sleep_until" << VAR(pretask.rate_limit);
-        std::this_thread::sleep_until(current_clock + pretask.rate_limit);
+        const auto rate_limit = pretask.rate_limit.random();
+        LogDebug << "sleep_until" << VAR(rate_limit);
+        std::this_thread::sleep_until(current_clock + rate_limit);
         return true;
     };
 

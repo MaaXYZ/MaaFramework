@@ -26,6 +26,28 @@ bool get_and_check_value(const json::value& input, const std::string& key, OutT&
     return true;
 }
 
+bool get_and_check_duration(
+    const json::value& input,
+    const std::string& key,
+    DurationRange& output,
+    const DurationRange& default_val,
+    bool allow_negative)
+{
+    auto opt = input.find(key);
+    if (!opt) {
+        output = default_val;
+        return true;
+    }
+
+    DurationRange tmp;
+    if (!DurationRange::parse(*opt, tmp, allow_negative)) {
+        LogError << "type error" << VAR(key) << VAR(input);
+        return false;
+    }
+    output = tmp;
+    return true;
+}
+
 // for compatibility
 template <typename OutT>
 bool get_multi_keys_and_check_value(const json::value& input, const std::vector<std::string>& keys, OutT& output, const OutT& default_val)
@@ -313,33 +335,25 @@ bool PipelineParser::parse_node(
         return false;
     }
 
-    auto rate_limit = default_value.rate_limit.count();
-    if (!get_and_check_value(input, "rate_limit", rate_limit, rate_limit)) {
+    if (!get_and_check_value(input, "rate_limit", data.rate_limit, default_value.rate_limit)) {
         LogError << "failed to get_and_check_value rate_limit" << VAR(input);
         return false;
     }
-    data.rate_limit = std::chrono::milliseconds(rate_limit);
 
-    auto timeout = default_value.reco_timeout.count();
-    if (!get_and_check_value(input, "timeout", timeout, timeout)) {
+    if (!get_and_check_duration(input, "timeout", data.reco_timeout, default_value.reco_timeout, true)) {
         LogError << "failed to get_and_check_value timeout" << VAR(input);
         return false;
     }
-    data.reco_timeout = std::chrono::milliseconds(timeout);
 
-    auto pre_delay = default_value.pre_delay.count();
-    if (!get_and_check_value(input, "pre_delay", pre_delay, pre_delay)) {
+    if (!get_and_check_value(input, "pre_delay", data.pre_delay, default_value.pre_delay)) {
         LogError << "failed to get_and_check_value pre_delay" << VAR(input);
         return false;
     }
-    data.pre_delay = std::chrono::milliseconds(pre_delay);
 
-    auto post_delay = default_value.post_delay.count();
-    if (!get_and_check_value(input, "post_delay", post_delay, post_delay)) {
+    if (!get_and_check_value(input, "post_delay", data.post_delay, default_value.post_delay)) {
         LogError << "failed to get_and_check_value post_delay" << VAR(input);
         return false;
     }
-    data.post_delay = std::chrono::milliseconds(post_delay);
 
     if (!parse_wait_freezes_param(input, "pre_wait_freezes", data.pre_wait_freezes, default_value.pre_wait_freezes)) {
         LogError << "failed to pre_wait_freezes" << VAR(input);
@@ -356,12 +370,10 @@ bool PipelineParser::parse_node(
         return false;
     }
 
-    auto repeat_delay = default_value.repeat_delay.count();
-    if (!get_and_check_value(input, "repeat_delay", repeat_delay, repeat_delay)) {
+    if (!get_and_check_value(input, "repeat_delay", data.repeat_delay, default_value.repeat_delay)) {
         LogError << "failed to get_and_check_value repeat_delay" << VAR(input);
         return false;
     }
-    data.repeat_delay = std::chrono::milliseconds(repeat_delay);
 
     if (!parse_wait_freezes_param(input, "repeat_wait_freezes", data.repeat_wait_freezes, default_value.repeat_wait_freezes)) {
         LogError << "failed to repeat_wait_freezes" << VAR(input);
@@ -1519,7 +1531,7 @@ bool PipelineParser::parse_shell(const json::value& input, Action::ShellParam& o
         return false;
     }
 
-    if (!get_and_check_value(input, "shell_timeout", output.shell_timeout, default_value.shell_timeout)) {
+    if (!get_and_check_duration(input, "shell_timeout", output.shell_timeout, default_value.shell_timeout, true)) {
         LogError << "failed to get_and_check_value shell_timeout" << VAR(input);
         return false;
     }
@@ -1600,23 +1612,19 @@ bool PipelineParser::parse_custom_action_param(
 
 bool PipelineParser::parse_wait_freezes_value(const json::value& input, WaitFreezesParam& output, const WaitFreezesParam& default_value)
 {
-    if (input.is_number()) {
+    if (!input.is_object()) {
         output = default_value;
-        output.time = std::chrono::milliseconds(input.as_unsigned());
+        if (!output.time.from_json(input)) {
+            LogError << "invalid wait_freezes_param, expected number, [min, max] or object" << VAR(input);
+            return false;
+        }
         return true;
     }
 
-    if (!input.is_object()) {
-        LogError << "invalid wait_freezes_param, expected number or object" << VAR(input);
-        return false;
-    }
-
-    auto time = default_value.time.count();
-    if (!get_and_check_value(input, "time", time, time)) {
+    if (!get_and_check_value(input, "time", output.time, default_value.time)) {
         LogError << "failed to parse_wait_freezes_value time" << VAR(input);
         return false;
     }
-    output.time = std::chrono::milliseconds(time);
 
     if (!parse_action_target(input, "target", output.target, default_value.target)) {
         LogError << "failed to parse_wait_freezes_value parse_action_target" << VAR(input);
@@ -1633,19 +1641,15 @@ bool PipelineParser::parse_wait_freezes_value(const json::value& input, WaitFree
         return false;
     }
 
-    auto rate_limit = default_value.rate_limit.count();
-    if (!get_and_check_value(input, "rate_limit", rate_limit, rate_limit)) {
+    if (!get_and_check_value(input, "rate_limit", output.rate_limit, default_value.rate_limit)) {
         LogError << "failed to parse_wait_freezes_value rate_limit" << VAR(input);
         return false;
     }
-    output.rate_limit = std::chrono::milliseconds(rate_limit);
 
-    auto timeout = default_value.timeout.count();
-    if (!get_and_check_value(input, "timeout", timeout, timeout)) {
+    if (!get_and_check_duration(input, "timeout", output.timeout, default_value.timeout, true)) {
         LogError << "failed to parse_wait_freezes_value timeout" << VAR(input);
         return false;
     }
-    output.timeout = std::chrono::milliseconds(timeout);
 
     return true;
 }
