@@ -157,6 +157,11 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
                 static_cast<int>(h / scale),
             };
 
+            box &= roi_;
+            if (box.empty()) {
+                continue;
+            }
+
             Result res;
             res.cls_index = j - kConfidenceIndex;
             res.label = res.cls_index < labels.size() ? labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
