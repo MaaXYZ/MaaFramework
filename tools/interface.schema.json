@@ -634,7 +634,8 @@
                                 "SendMessageWithCursorPos",
                                 "PostMessageWithCursorPos",
                                 "SendMessageWithWindowPos",
-                                "PostMessageWithWindowPos"
+                                "PostMessageWithWindowPos",
+                                "Interception"
                             ]
                         },
                         "screencap": {
