@@ -322,6 +322,8 @@ bool AgentServer::handle_resource_event(const json::value& j)
     RemoteResource resource(*this, req.resource_id);
     res_notifier_.notify(&resource, req.message, req.details);
 
+    // TEMP for A/B: keep EventResponse so flood regression can reproduce the deadlock.
+    // Client fire-and-forget sinks do not wait for these; remove after confirming the test fails.
     send(ResourceEventResponse { });
 
     return true;
@@ -338,6 +340,7 @@ bool AgentServer::handle_controller_event(const json::value& j)
     RemoteController controller(*this, req.controller_id);
     ctrl_notifier_.notify(&controller, req.message, req.details);
 
+    // TEMP for A/B: see handle_resource_event.
     send(ControllerEventResponse { });
 
     return true;
@@ -354,6 +357,7 @@ bool AgentServer::handle_tasker_event(const json::value& j)
     RemoteTasker tasker(*this, req.tasker_id);
     tasker_notifier_.notify(&tasker, req.message, req.details);
 
+    // TEMP for A/B: see handle_resource_event.
     send(TaskerEventResponse { });
 
     return true;

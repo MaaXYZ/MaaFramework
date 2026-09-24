@@ -215,6 +215,7 @@ def run_tcp_flow(
         resource,
         tasker,
         install_dir / "test" / "PipelineSmoking" / "resource" / "pipeline",
+        dbg_controller,
     )
 
     # 验证断开连接后的状态

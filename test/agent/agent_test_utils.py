@@ -113,6 +113,58 @@ def assert_sink_events(report_file: Path) -> None:
     )
 
 
+# ZMQ pair default HWM is 1000; each screencap emits multiple controller events.
+# Flood past that so unused Server EventResponse ACKs would fill the client inbox
+# and block a later CustomAction send_and_recv (issue MaaEnd#5623 / Agent deadlock).
+CONTROLLER_EVENT_FLOOD_COUNT = 1500
+CONTROLLER_EVENT_FLOOD_TIMEOUT_MS = 15000
+
+
+def run_controller_event_flood_then_custom_action(
+    agent,
+    controller,
+    tasker,
+) -> None:
+    print(
+        f"flooding controller events via screencap x{CONTROLLER_EVENT_FLOOD_COUNT}..."
+    )
+    for i in range(CONTROLLER_EVENT_FLOOD_COUNT):
+        controller.post_screencap().wait()
+        if (i + 1) % 500 == 0:
+            print(f"  screencap {i + 1}/{CONTROLLER_EVENT_FLOOD_COUNT}")
+
+    assert agent.set_timeout(CONTROLLER_EVENT_FLOOD_TIMEOUT_MS)
+    try:
+        pipeline_override = {
+            "Entry": {"next": "AfterFlood"},
+            "AfterFlood": {
+                "recognition": "DirectHit",
+                "action": "Custom",
+                "custom_action": "MyAct",
+                "custom_action_param": "after-controller-event-flood",
+            },
+        }
+        detail = tasker.post_task("Entry", pipeline_override).wait().get()
+        if not detail:
+            raise RuntimeError("custom action after controller event flood failed")
+
+        print(
+            f"after-flood pipeline: entry={detail.entry}, status={detail.status}, "
+            f"nodes={len(detail.nodes)}"
+        )
+        assert detail.nodes, "after-flood pipeline should produce nodes"
+        action = detail.nodes[0].action
+        assert action is not None, "after-flood node should have an action"
+        action_detail = tasker.get_action_detail(action.action_id)
+        assert action_detail is not None, "after-flood action detail missing"
+        assert action_detail.success, (
+            "custom action after controller event flood should succeed "
+            "(EventResponse pile-up must not block Agent IPC)"
+        )
+    finally:
+        assert agent.set_timeout(-1)
+
+
 def run_connected_agent_test(
     agent,
     command: list[str],
@@ -120,6 +172,7 @@ def run_connected_agent_test(
     resource,
     tasker,
     pipeline_path: Path,
+    controller=None,
 ) -> None:
     child_process = connect_agent_server(agent, command, sink_report_file)
     try:
@@ -174,6 +227,9 @@ def run_connected_agent_test(
                         f"  action_detail: name={action_detail.name}, success={action_detail.success}"
                     )
                     assert action_detail.success, "custom action should succeed"
+
+        if controller is not None:
+            run_controller_event_flood_then_custom_action(agent, controller, tasker)
 
         assert agent.disconnect()
         child_process.wait(timeout=PROCESS_TIMEOUT_SECONDS)
