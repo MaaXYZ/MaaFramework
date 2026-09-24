@@ -130,11 +130,10 @@ bool UInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    if (!pointer_down_) {
-        LogError << "Pointer is not down, cannot move";
-        return false;
-    }
-
+    // When the pointer is not pressed, degrade to an absolute move instead of
+    // failing. Some callers issue TouchMove right after a Click (e.g. MaaEnd's
+    // "move the mouse away" step) and must not break just because no button is
+    // currently down.
     return send_pointer_move(x, y);
 }
 
