@@ -12,6 +12,22 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
+namespace
+{
+void append_unique_devices(
+    std::vector<AdbDevice>& result,
+    std::unordered_set<std::string>& accurate_serials,
+    std::vector<AdbDevice> devices)
+{
+    for (auto& dev : devices) {
+        if (!accurate_serials.emplace(dev.serial).second) {
+            continue;
+        }
+        result.emplace_back(std::move(dev));
+    }
+}
+} // namespace
+
 std::vector<AdbDevice> AdbDeviceFinder::find() const
 {
     LogFunc;
@@ -23,10 +39,7 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
     for (const Emulator& e : all_emulators) {
         auto res = find_by_emulator_tool(e);
         bool found = !res.empty();
-        for (auto& dev : res) {
-            accurate_serials.emplace(dev.serial);
-            result.emplace_back(std::move(dev));
-        }
+        append_unique_devices(result, accurate_serials, std::move(res));
         if (found) {
             continue;
         }
@@ -36,23 +49,12 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
             continue;
         }
 
-        res = find_specified(e.adb_path, accurate_serials, e);
-        for (auto& dev : res) {
-            if (accurate_serials.count(dev.serial)) {
-                continue;
-            }
-            result.emplace_back(std::move(dev));
-        }
+        append_unique_devices(result, accurate_serials, find_specified(e.adb_path, accurate_serials, e));
+        append_unique_devices(result, accurate_serials, find_by_common_serials(e.adb_path, accurate_serials, e));
     }
 
     if (auto env_adb = boost::process::search_path("adb"); std::filesystem::exists(env_adb)) {
-        auto res = find_specified(env_adb, accurate_serials);
-        for (auto& dev : res) {
-            if (accurate_serials.count(dev.serial)) {
-                continue;
-            }
-            result.emplace_back(std::move(dev));
-        }
+        append_unique_devices(result, accurate_serials, find_specified(env_adb, accurate_serials));
     }
 
     LogInfo << VAR(result);
@@ -73,6 +75,32 @@ std::vector<AdbDevice> AdbDeviceFinder::find_specified(
     for (const std::string& ser : serials) {
         if (exclude_serials.count(ser)) {
             LogInfo << "skip excluded serial" << VAR(ser);
+            continue;
+        }
+        auto res_opt = try_device(adb_path, ser, emulator);
+        if (!res_opt) {
+            continue;
+        }
+        result.emplace_back(std::move(*res_opt));
+    }
+
+    LogInfo << VAR(result);
+    return result;
+}
+
+std::vector<AdbDevice> AdbDeviceFinder::find_by_common_serials(
+    const std::filesystem::path& adb_path,
+    const std::unordered_set<std::string>& exclude_serials,
+    const Emulator& emulator) const
+{
+    LogFunc << VAR(adb_path) << VAR(emulator.common_serials);
+
+    std::vector<AdbDevice> result;
+
+    // adb server 与模拟器之间的 TCP 会话可能已断开（模拟器进程与端口仍在），此时 adb devices 不会列出设备，
+    // 需要按已知端口重新 connect 一次；未监听的端口会快速失败。
+    for (const std::string& ser : emulator.common_serials) {
+        if (exclude_serials.count(ser)) {
             continue;
         }
         auto res_opt = try_device(adb_path, ser, emulator);
@@ -356,6 +384,7 @@ std::vector<AdbDeviceFinder::Emulator> AdbDeviceFinder::find_emulators() const
             .name = find_it->first,
             .process_path = *process_path,
             .adb_path = adb_path,
+            .common_serials = find_it->second.adb_common_serials,
         };
         result.emplace_back(std::move(emulator));
     }
