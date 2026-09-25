@@ -271,7 +271,7 @@ jobs:
               if: fromJSON(steps.find-issues.outputs.issue) == null
               run: gh issue create --title "$ISSUE_TITLE" --body "$ISSUE_BODY"
             - name: Reopen issue
-              if: fromJSON(steps.find-issues.outputs.issue).state == 'closed'
+              if: fromJSON(steps.find-issues.outputs.issue).state == 'CLOSED'
               run: gh issue reopen ${{ fromJSON(steps.find-issues.outputs.issue).number }}
             - name: Add comment
               if: fromJSON(steps.find-issues.outputs.issue) != null
