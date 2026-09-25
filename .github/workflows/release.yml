@@ -230,7 +230,11 @@ jobs:
                 needs.github.outputs.result != 'success' ||
                 needs.mirrorchyan.outputs.result != 'success'
             )
+        permissions:
+            issues: write
         env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GH_REPO: ${{ github.repository }}
             ISSUE_TITLE: "${{ needs.meta.outputs.tag }} failed to release"
             ISSUE_BODY: |
                 A new release attempt for tag ${{ needs.meta.outputs.tag }} failed.
@@ -255,30 +259,20 @@ jobs:
 
                 cc @MistEO
         steps:
-            - name: find issues
+            - name: Find issue
               id: find-issues
-              uses: actions-cool/issues-helper@v3
-              with:
-                  actions: "find-issues"
-                  issue-state: "all"
-                  title-includes: "${{ env.ISSUE_TITLE }}"
+              run: |
+                  issue=$(gh issue list --state all --limit 100 \
+                    --search "in:title \"$ISSUE_TITLE\"" \
+                    --json number,state,title \
+                    --jq 'map(select(.title | contains(env.ISSUE_TITLE))) | .[0] // null')
+                  echo "issue=$issue" >> "$GITHUB_OUTPUT"
             - name: Create issue
-              if: ${{ fromJSON(steps.find-issues.outputs.issues)[0] == null }}
-              uses: actions-cool/issues-helper@v3
-              with:
-                  actions: "create-issue"
-                  title: ${{ env.ISSUE_TITLE }}
-                  body: ${{ env.ISSUE_BODY }}
-            - name: Open issue
-              if: ${{ fromJSON(steps.find-issues.outputs.issues)[0].state == 'closed' }}
-              uses: actions-cool/issues-helper@v3
-              with:
-                  actions: "open-issue"
-                  issue-number: ${{ fromJSON(steps.find-issues.outputs.issues)[0].number }}
+              if: fromJSON(steps.find-issues.outputs.issue) == null
+              run: gh issue create --title "$ISSUE_TITLE" --body "$ISSUE_BODY"
+            - name: Reopen issue
+              if: fromJSON(steps.find-issues.outputs.issue).state == 'CLOSED'
+              run: gh issue reopen ${{ fromJSON(steps.find-issues.outputs.issue).number }}
             - name: Add comment
-              if: ${{ fromJSON(steps.find-issues.outputs.issues)[0] != null }}
-              uses: actions-cool/issues-helper@v3
-              with:
-                  actions: "create-comment"
-                  issue-number: ${{ fromJSON(steps.find-issues.outputs.issues)[0].number }}
-                  body: ${{ env.ISSUE_BODY }}
+              if: fromJSON(steps.find-issues.outputs.issue) != null
+              run: gh issue comment ${{ fromJSON(steps.find-issues.outputs.issue).number }} --body "$ISSUE_BODY"
