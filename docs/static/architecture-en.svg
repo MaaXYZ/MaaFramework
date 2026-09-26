@@ -17,9 +17,9 @@
   <text x="780.0" y="144" font-size="13" fill="#334155" text-anchor="middle" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">Defines the execution logic</text>
   <text x="780.0" y="166" font-size="13" fill="#334155" text-anchor="middle" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">interface.json (PI protocol)</text>
   <text x="780.0" y="188" font-size="13" fill="#334155" text-anchor="middle" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">pipeline/ · model/ · image/</text>
-  <rect x="60" y="300" width="880" height="104" rx="12" fill="#E0E7FF" stroke="#6366F1" stroke-width="2"/>
-  <text x="500.0" y="334" font-size="17" fill="#312E81" text-anchor="middle" font-weight="600" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">MaaFramework Core</text>
-  <text x="500.0" y="366" font-size="13.5" fill="#3730A3" text-anchor="middle" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">Does the work: recognize images · control the device</text>
+  <rect x="100" y="300" width="840" height="104" rx="12" fill="#E0E7FF" stroke="#6366F1" stroke-width="2"/>
+  <text x="520.0" y="334" font-size="17" fill="#312E81" text-anchor="middle" font-weight="600" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">MaaFramework Core</text>
+  <text x="520.0" y="366" font-size="13.5" fill="#3730A3" text-anchor="middle" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">Does the work: recognize images · control the device</text>
   <rect x="60" y="464" width="440" height="118" rx="10" fill="#FEF9C3" stroke="#CA8A04" stroke-width="1.6" stroke-dasharray="7,5"/>
   <text x="280.0" y="494" font-size="16" fill="#854D0E" text-anchor="middle" font-weight="600" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">Agent (separate process)</text>
   <text x="280.0" y="520" font-size="13" fill="#334155" text-anchor="middle" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">Extends custom logic</text>
@@ -32,8 +32,11 @@
   <text x="750.0" y="740" font-size="13" fill="#334155" text-anchor="middle" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">PlayCover (macOS)</text>
   <polyline points="380,150 620,150" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
   <text x="500.0" y="138" font-size="13" fill="#475569" text-anchor="middle" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">Reads interface.json</text>
-  <polyline points="220,212 220,300" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
-  <text x="234" y="261.0" font-size="13" fill="#475569" text-anchor="start" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">Calls · runs tasks</text>
+  <polyline points="320,212 320,300" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="334" y="272" font-size="13" fill="#475569" text-anchor="start" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">Calls · runs tasks</text>
+  <polyline points="80,212 80,464" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="94" y="232" font-size="12.5" fill="#475569" text-anchor="start" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">Spawns the agent process</text>
+  <text x="94" y="254" font-size="12.5" fill="#475569" text-anchor="start" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">per agent config in interface.json</text>
   <polyline points="780,234 780,300" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
   <text x="794" y="272.0" font-size="13" fill="#475569" text-anchor="start" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif">Loads</text>
   <polyline points="280,404 280,464" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
