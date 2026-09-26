@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="780" viewBox="0 0 1000 780">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="780" fill="#FFFFFF"/>
+  <rect x="20" y="20" width="960" height="580" rx="12" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.8"/>
+  <text x="44" y="52" font-size="15" fill="#475569" text-anchor="start" font-weight="600" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">一个基于 MaaFramework 的项目</text>
+  <rect x="60" y="88" width="320" height="124" rx="10" fill="#DBEAFE" stroke="#3B82F6" stroke-width="1.6"/>
+  <text x="220.0" y="118" font-size="16" fill="#1E3A8A" text-anchor="middle" font-weight="600" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">UI</text>
+  <text x="220.0" y="144" font-size="13" fill="#334155" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">提供交互界面</text>
+  <text x="220.0" y="166" font-size="13" fill="#334155" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">按 interface.json 构建配置项</text>
+  <text x="220.0" y="188" font-size="13" fill="#334155" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">社区通用 UI 或自行开发</text>
+  <rect x="620" y="88" width="320" height="146" rx="10" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.6"/>
+  <text x="780.0" y="118" font-size="16" fill="#92400E" text-anchor="middle" font-weight="600" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">项目资源</text>
+  <text x="780.0" y="144" font-size="13" fill="#334155" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">定义项目具体执行逻辑</text>
+  <text x="780.0" y="166" font-size="13" fill="#334155" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">interface.json（PI 协议）</text>
+  <text x="780.0" y="188" font-size="13" fill="#334155" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">pipeline/ · model/ · image/</text>
+  <rect x="60" y="300" width="880" height="104" rx="12" fill="#E0E7FF" stroke="#6366F1" stroke-width="2"/>
+  <text x="500.0" y="334" font-size="17" fill="#312E81" text-anchor="middle" font-weight="600" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">MaaFramework 本体</text>
+  <text x="500.0" y="366" font-size="13.5" fill="#3730A3" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">负责执行：识别图像 · 操控设备</text>
+  <rect x="60" y="464" width="440" height="118" rx="10" fill="#FEF9C3" stroke="#CA8A04" stroke-width="1.6" stroke-dasharray="7,5"/>
+  <text x="280.0" y="494" font-size="16" fill="#854D0E" text-anchor="middle" font-weight="600" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">Agent（独立子进程）</text>
+  <text x="280.0" y="520" font-size="13" fill="#334155" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">扩展自定义逻辑</text>
+  <text x="280.0" y="542" font-size="13" fill="#334155" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">自定义识别 · 自定义动作</text>
+  <text x="280.0" y="564" font-size="13" fill="#334155" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">可用任意语言编写</text>
+  <rect x="560" y="640" width="380" height="116" rx="10" fill="#F1F5F9" stroke="#64748B" stroke-width="1.6"/>
+  <text x="750.0" y="670" font-size="16" fill="#1E293B" text-anchor="middle" font-weight="600" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">设备（被控端）</text>
+  <text x="750.0" y="696" font-size="13" fill="#334155" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">Android 模拟器 / 真机</text>
+  <text x="750.0" y="718" font-size="13" fill="#334155" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">桌面窗口（Win32）</text>
+  <text x="750.0" y="740" font-size="13" fill="#334155" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">PlayCover（macOS）</text>
+  <polyline points="380,150 620,150" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="500.0" y="138" font-size="13" fill="#475569" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">读取 interface.json</text>
+  <polyline points="220,212 220,300" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="234" y="261.0" font-size="13" fill="#475569" text-anchor="start" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">调用 · 启动任务</text>
+  <polyline points="780,234 780,300" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="794" y="272.0" font-size="13" fill="#475569" text-anchor="start" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">加载</text>
+  <polyline points="280,404 280,464" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="294" y="439.0" font-size="13" fill="#475569" text-anchor="start" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">调用自定义逻辑</text>
+  <polyline points="760,404 760,640" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="774" y="520" font-size="13" fill="#475569" text-anchor="start" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif">点击 · 滑动 · 截图</text>
+  </svg>
