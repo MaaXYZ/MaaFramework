@@ -141,6 +141,8 @@ jobs:
         env:
             PYPI_REPOSITORY: ${{ inputs.dry-run && 'testpypi' || 'pypi' }}
         steps:
+            - uses: actions/checkout@v7
+
             - uses: dawidd6/action-download-artifact@v21
               with:
                   workflow: build.yml
@@ -150,10 +152,26 @@ jobs:
                   check_artifacts: true
                   if_no_artifact_found: fail
 
+            # 上传前删掉一个旧版本腾配额。PyPI 没有删除 API，需账号密码 + TOTP；
+            # GitHub runner IP 每次都变，新设备确认信要靠 IMAP 读。
             - name: Publish Pip Packages
               id: publish
+              env:
+                  PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
+                  PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+                  PYPI_TOTP_SECRET: ${{ secrets.PYPI_TOTP_SECRET }}
+                  PYPI_IMAP_HOST: ${{ secrets.PYPI_IMAP_HOST }}
+                  PYPI_IMAP_USER: ${{ secrets.PYPI_IMAP_USER }}
+                  PYPI_IMAP_PASSWORD: ${{ secrets.PYPI_IMAP_PASSWORD }}
+                  PYPI_IMAP_MAILBOX: ${{ secrets.PYPI_IMAP_MAILBOX }}
+                  PYPI_IMAP_PORT: ${{ secrets.PYPI_IMAP_PORT }}
               run: |
-                  pip install --upgrade twine packaging
+                  pip install --upgrade twine packaging requests pyotp
+                  if [ "${{ inputs.dry-run }}" != "true" ]; then
+                    python tools/pip_pack/pypi_prune_one.py --wheels assets/pkgs-pip
+                  else
+                    echo "Dry run: skip deleting a PyPI release."
+                  fi
                   python -m twine upload \
                     assets/pkgs-pip/*.whl \
                     --repository ${{ env.PYPI_REPOSITORY }} \
