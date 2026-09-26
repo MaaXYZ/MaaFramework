@@ -21,7 +21,8 @@ bool ActionHelper::wait_freezes(
     const cv::Rect& ref_box,
     const WaitFreezesNotifyContext& noti_ctx)
 {
-    if (param.time <= std::chrono::milliseconds(0)) {
+    const auto time = param.time.random();
+    if (time <= std::chrono::milliseconds(0)) {
         return true;
     }
 
@@ -38,8 +39,10 @@ bool ActionHelper::wait_freezes(
 
     using namespace MAA_VISION_NS;
 
-    LogTrace << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.timeout) << VAR(param.threshold)
-             << VAR(param.method);
+    const auto timeout = param.timeout.random();
+    const auto rate_limit = std::min(param.rate_limit.random(), time);
+
+    LogTrace << "Wait freezes:" << VAR(time) << VAR(rate_limit) << VAR(timeout) << VAR(param.threshold) << VAR(param.method);
 
     const MaaWfId wf_id = generate_wf_id();
 
@@ -51,11 +54,11 @@ bool ActionHelper::wait_freezes(
         { "roi", roi },
         { "param",
           {
-              { "time", param.time.count() },
+              { "time", time.count() },
               { "threshold", param.threshold },
               { "method", param.method },
-              { "rate_limit", param.rate_limit.count() },
-              { "timeout", param.timeout.count() },
+              { "rate_limit", rate_limit.count() },
+              { "timeout", timeout.count() },
           } },
         { "focus", noti_ctx.focus },
     };
@@ -88,8 +91,6 @@ bool ActionHelper::wait_freezes(
         return success;
     };
 
-    auto rate_limit = std::min(param.rate_limit, param.time);
-
     auto screencap_clock = std::chrono::steady_clock::now();
     cv::Mat pre_image = controller()->screencap();
 
@@ -110,8 +111,8 @@ bool ActionHelper::wait_freezes(
         LogDebug << "sleep_until" << VAR(rate_limit);
         std::this_thread::sleep_until(screencap_clock + rate_limit);
 
-        if (param.timeout >= std::chrono::milliseconds(0) && duration_since(start_clock) > param.timeout) {
-            LogWarn << "Wait freezes timeout" << VAR(duration_since(start_clock)) << VAR(param.timeout);
+        if (timeout >= std::chrono::milliseconds(0) && duration_since(start_clock) > timeout) {
+            LogWarn << "Wait freezes timeout" << VAR(duration_since(start_clock)) << VAR(timeout);
             return finish(false);
         }
 
@@ -153,7 +154,7 @@ bool ActionHelper::wait_freezes(
             continue;
         }
 
-        if (duration_since(pre_image_clock) > param.time) {
+        if (duration_since(pre_image_clock) > time) {
             break;
         }
     }
