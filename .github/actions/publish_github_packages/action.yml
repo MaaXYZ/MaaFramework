@@ -25,7 +25,11 @@ runs:
         - uses: actions/setup-node@v6
           with:
               node-version: "24"
+        # Each package is published independently, so one failing package does not skip the
+        # remaining ones. The action still fails overall, because the failed step keeps its
+        # failure result.
         - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
           with:
               package: ${{ inputs.path }}/maa-node
               registry: https://npm.pkg.github.com
@@ -33,6 +37,7 @@ runs:
               tag: ${{ inputs.tag }}
               dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
           with:
               package: ${{ inputs.path }}/maa-node-win32-x64
               registry: https://npm.pkg.github.com
@@ -40,6 +45,7 @@ runs:
               tag: ${{ inputs.tag }}
               dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
           with:
               package: ${{ inputs.path }}/maa-node-win32-arm64
               registry: https://npm.pkg.github.com
@@ -47,6 +53,7 @@ runs:
               tag: ${{ inputs.tag }}
               dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
           with:
               package: ${{ inputs.path }}/maa-node-linux-x64
               registry: https://npm.pkg.github.com
@@ -54,6 +61,7 @@ runs:
               tag: ${{ inputs.tag }}
               dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
           with:
               package: ${{ inputs.path }}/maa-node-linux-arm64
               registry: https://npm.pkg.github.com
@@ -61,6 +69,7 @@ runs:
               tag: ${{ inputs.tag }}
               dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
           with:
               package: ${{ inputs.path }}/maa-node-darwin-x64
               registry: https://npm.pkg.github.com
@@ -68,6 +77,7 @@ runs:
               tag: ${{ inputs.tag }}
               dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
           with:
               package: ${{ inputs.path }}/maa-node-darwin-arm64
               registry: https://npm.pkg.github.com
