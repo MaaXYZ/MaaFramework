@@ -8,6 +8,7 @@
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
 #include "Controller/ControllerAgent.h"
+#include "MaaUtils/PreventSleep.h"
 #include "Resource/ResourceMgr.h"
 #include "RuntimeCache.h"
 #include "Utils/EventDispatcher.hpp"
@@ -85,6 +86,9 @@ private:
     MAA_CTRL_NS::ControllerAgent* controller_ = nullptr;
 
     bool need_to_stop_ = false;
+
+    // Only accessed on the task runner thread; must be declared before task_runner_ so that it outlives the thread.
+    std::unique_ptr<PreventSleep> prevent_sleep_ = nullptr;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
     EventDispatcher notifier_;

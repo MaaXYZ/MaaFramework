@@ -350,6 +350,10 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     }
     notifier_.notify(this, MaaMsg_Tasker_Task_Starting, cb_detail);
 
+    if (!prevent_sleep_) {
+        prevent_sleep_ = std::make_unique<PreventSleep>("MaaFramework task running");
+    }
+
     bool ret = task_ptr->run();
 
     if (controller_) {
@@ -365,8 +369,12 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     }
     notifier_.notify(this, ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 
-    if (controller_ && !task_runner_->pending()) {
-        controller_->wait(controller_->post_inactive());
+    if (!task_runner_->pending()) {
+        prevent_sleep_.reset();
+
+        if (controller_) {
+            controller_->wait(controller_->post_inactive());
+        }
     }
 
     return ret;
