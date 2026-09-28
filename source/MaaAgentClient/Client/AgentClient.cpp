@@ -574,7 +574,8 @@ bool AgentClient::handle_context_run_task(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextRunTaskReverseResponse { });
+        return true;
     }
 
     auto task_id = context->run_task(req.entry, req.pipeline_override);
@@ -599,7 +600,8 @@ bool AgentClient::handle_context_run_recognition(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextRunRecognitionReverseResponse { });
+        return true;
     }
 
     MaaRecoId reco_id = context->run_recognition(req.entry, req.pipeline_override, get_image_cache(req.image));
@@ -624,7 +626,8 @@ bool AgentClient::handle_context_run_action(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextRunActionReverseResponse { });
+        return true;
     }
 
     MaaActId act_id =
@@ -650,7 +653,8 @@ bool AgentClient::handle_context_run_recognition_direct(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextRunRecognitionDirectReverseResponse { });
+        return true;
     }
 
     MaaRecoId reco_id = context->run_recognition_direct(req.reco_type, req.reco_param, get_image_cache(req.image));
@@ -675,7 +679,8 @@ bool AgentClient::handle_context_run_action_direct(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextRunActionDirectReverseResponse { });
+        return true;
     }
 
     MaaActId act_id = context->run_action_direct(
@@ -704,7 +709,8 @@ bool AgentClient::handle_context_override_pipeline(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextOverridePipelineReverseResponse { });
+        return true;
     }
 
     bool ret = context->override_pipeline(req.pipeline_override);
@@ -729,7 +735,8 @@ bool AgentClient::handle_context_override_next(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextOverrideNextReverseResponse { });
+        return true;
     }
 
     bool ret = context->override_next(req.node_name, req.next);
@@ -754,7 +761,8 @@ bool AgentClient::handle_context_override_image(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextOverrideImageReverseResponse { });
+        return true;
     }
 
     cv::Mat image = get_image_cache(req.image);
@@ -780,7 +788,8 @@ bool AgentClient::handle_context_get_node_data(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextGetNodeDataReverseResponse { });
+        return true;
     }
 
     auto opt = context->get_node_data(req.node_name);
@@ -806,7 +815,8 @@ bool AgentClient::handle_context_clone(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextCloneReverseResponse { });
+        return true;
     }
 
     MaaContext* clone = context->clone();
@@ -831,7 +841,8 @@ bool AgentClient::handle_context_task_id(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextTaskIdReverseResponse { });
+        return true;
     }
 
     MaaTaskId task_id = context->task_id();
@@ -856,7 +867,8 @@ bool AgentClient::handle_context_tasker(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextTaskerReverseResponse { });
+        return true;
     }
 
     MaaTasker* tasker = context->tasker();
@@ -880,7 +892,8 @@ bool AgentClient::handle_context_set_anchor(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextSetAnchorReverseResponse { });
+        return true;
     }
 
     context->set_anchor(req.anchor_name, req.node_name);
@@ -902,7 +915,8 @@ bool AgentClient::handle_context_get_anchor(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextGetAnchorReverseResponse { });
+        return true;
     }
 
     auto opt = context->get_anchor(req.anchor_name);
@@ -927,7 +941,8 @@ bool AgentClient::handle_context_get_hit_count(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextGetHitCountReverseResponse { });
+        return true;
     }
 
     size_t count = context->get_hit_count(req.node_name);
@@ -951,7 +966,8 @@ bool AgentClient::handle_context_clear_hit_count(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextClearHitCountReverseResponse { });
+        return true;
     }
 
     context->clear_hit_count(req.node_name);
@@ -973,7 +989,8 @@ bool AgentClient::handle_context_wait_freezes(const json::value& j)
     MaaContext* context = query_context(req.context_id);
     if (!context) {
         LogError << "context not found" << VAR(req.context_id);
-        return false;
+        send(ContextWaitFreezesReverseResponse { });
+        return true;
     }
 
     cv::Rect box { req.box[0], req.box[1], req.box[2], req.box[3] };
@@ -2624,6 +2641,7 @@ MaaBool AgentClient::reco_agent(
 
     if (!resp_opt) {
         LogError << "failed to send_and_recv" << VAR(req);
+        pthis->abandon_context(req.context_id);
         return false;
     }
     const CustomRecognitionResponse& resp = *resp_opt;
@@ -2674,6 +2692,7 @@ MaaBool AgentClient::action_agent(
     auto resp_opt = pthis->send_and_recv<CustomActionResponse>(req);
     if (!resp_opt) {
         LogError << "failed to send_and_recv" << VAR(req);
+        pthis->abandon_context(req.context_id);
         return false;
     }
 
@@ -2685,22 +2704,47 @@ MaaBool AgentClient::action_agent(
 
 std::string AgentClient::context_id(MaaContext* context)
 {
+    std::unique_lock lock(context_mutex_);
+
+    if (auto it = context_current_ids_.find(context); it != context_current_ids_.end()) {
+        return it->second;
+    }
+
     std::stringstream ss;
-    ss << context;
+    ss << context << "#" << ++context_id_seq_;
     std::string id = std::move(ss).str();
 
     context_map_.insert_or_assign(id, context);
+    context_current_ids_.insert_or_assign(context, id);
     return id;
 }
 
 MaaContext* AgentClient::query_context(const std::string& context_id)
 {
+    std::unique_lock lock(context_mutex_);
+
     auto it = context_map_.find(context_id);
     if (it == context_map_.end()) {
         LogError << "context not found" << VAR(context_id);
         return nullptr;
     }
     return it->second;
+}
+
+void AgentClient::abandon_context(const std::string& context_id)
+{
+    LogWarn << "abandon context" << VAR(context_id) << VAR(ipc_addr_);
+
+    std::unique_lock lock(context_mutex_);
+
+    auto it = context_map_.find(context_id);
+    if (it == context_map_.end()) {
+        return;
+    }
+    if (auto cur = context_current_ids_.find(it->second); cur != context_current_ids_.end() && cur->second == context_id) {
+        context_current_ids_.erase(cur);
+    }
+    context_map_.erase(it);
 }
 
 std::string AgentClient::tasker_id(MaaTasker* tasker)

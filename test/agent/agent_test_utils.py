@@ -11,6 +11,8 @@ SERVER_READY_FILE_ENV = "MAAFW_AGENT_SERVER_READY_FILE"
 SINK_REPORT_FILE_ENV = "MAAFW_AGENT_SINK_REPORT_FILE"
 CONNECT_TIMEOUT_MS = 5000
 PROCESS_TIMEOUT_SECONDS = 10
+SLOW_REC_SECONDS = 1.5
+FAST_REC_BOX = (1, 2, 3, 4)
 
 
 def create_marker_path(name: str) -> Path:
@@ -113,6 +115,38 @@ def assert_sink_events(report_file: Path) -> None:
     )
 
 
+def run_custom_recognition(tasker, reco_name: str):
+    pipeline_override = {
+        "Entry": {"next": "StaleProbe", "timeout": 0},
+        "StaleProbe": {"recognition": "Custom", "custom_recognition": reco_name},
+    }
+    detail = tasker.post_task("Entry", pipeline_override).wait().get()
+    if not detail:
+        return None
+    node = next((n for n in detail.nodes if n.name == "StaleProbe"), None)
+    if not node or not node.recognition or not node.recognition.box:
+        return None
+    box = node.recognition.box
+    return (box.x, box.y, box.w, box.h)
+
+
+def assert_stale_response_dropped(agent, tasker, report_file: Path) -> None:
+    # SlowRec 超时被放弃后，agent 仍会带着旧 context 反调并迟到回包；后续调用必须拿到自己的结果
+    assert agent.set_timeout(int(SLOW_REC_SECONDS * 1000 / 3))
+    try:
+        assert run_custom_recognition(tasker, "SlowRec") is None
+    finally:
+        assert agent.set_timeout(-1)
+    time.sleep(SLOW_REC_SECONDS + 0.5)
+
+    for _ in range(2):
+        box = run_custom_recognition(tasker, "FastRec")
+        assert box == FAST_REC_BOX, f"got a stale response: {box}"
+
+    records = report_file.read_text(encoding="utf-8").splitlines()
+    assert "slow_rec_node_data:none" in records, f"abandoned context should not resolve: {records}"
+
+
 def run_connected_agent_test(
     agent,
     command: list[str],
@@ -174,6 +208,8 @@ def run_connected_agent_test(
                         f"  action_detail: name={action_detail.name}, success={action_detail.success}"
                     )
                     assert action_detail.success, "custom action should succeed"
+
+        assert_stale_response_dropped(agent, tasker, sink_report_file)
 
         assert agent.disconnect()
         child_process.wait(timeout=PROCESS_TIMEOUT_SECONDS)

@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import sys
 import io
+import time
 import numpy
 
 # Fix encoding issues on Windows (cp1252 cannot encode some Unicode characters)
@@ -46,7 +47,12 @@ from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.library import Library
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
-from agent_test_utils import record_sink_event, signal_server_ready
+from agent_test_utils import (
+    FAST_REC_BOX,
+    SLOW_REC_SECONDS,
+    record_sink_event,
+    signal_server_ready,
+)
 
 
 analyzed: bool = False
@@ -382,6 +388,29 @@ class MyAction(CustomAction):
         runned = True
 
         return CustomAction.RunResult(success=True)
+
+
+@AgentServer.custom_recognition("SlowRec")
+class SlowRecognition(CustomRecognition):
+    def analyze(
+        self,
+        context: Context,
+        argv: CustomRecognition.AnalyzeArg,
+    ) -> CustomRecognition.AnalyzeResult:
+        time.sleep(SLOW_REC_SECONDS)
+        node_data = context.get_node_data("Entry")
+        record_sink_event(f"slow_rec_node_data:{'none' if node_data is None else 'value'}")
+        return CustomRecognition.AnalyzeResult(box=(9, 9, 9, 9), detail="slow")
+
+
+@AgentServer.custom_recognition("FastRec")
+class FastRecognition(CustomRecognition):
+    def analyze(
+        self,
+        context: Context,
+        argv: CustomRecognition.AnalyzeArg,
+    ) -> CustomRecognition.AnalyzeResult:
+        return CustomRecognition.AnalyzeResult(box=FAST_REC_BOX, detail="fast")
 
 
 original_reco = AgentServer._custom_recognition_holder["MyRec"]

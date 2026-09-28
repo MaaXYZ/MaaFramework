@@ -166,7 +166,7 @@ MaaContext* RemoteContext::clone() const
     };
 
     auto resp_opt = server_.send_and_recv<ContextCloneReverseResponse>(req);
-    if (!resp_opt) {
+    if (!resp_opt || resp_opt->clone_id.empty()) {
         return nullptr;
     }
 
@@ -201,7 +201,7 @@ MaaTasker* RemoteContext::tasker() const
     };
 
     auto resp_opt = server_.send_and_recv<ContextTaskerReverseResponse>(req);
-    if (!resp_opt) {
+    if (!resp_opt || resp_opt->tasker_id.empty()) {
         return nullptr;
     }
 

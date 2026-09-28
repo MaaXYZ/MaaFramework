@@ -332,7 +332,64 @@ bool Transceiver::send(const json::value& j)
         return false;
     }
 
-    return send_impl(j);
+    const bool tag = !s_handling_requests_.empty() && s_handling_requests_.back().owner == this && s_handling_requests_.back().req_id
+                     && is_response(j);
+    if (!tag) {
+        return send_impl(j);
+    }
+
+    json::value tagged = j;
+    tagged[kRespIdKey] = *s_handling_requests_.back().req_id;
+    return send_impl(tagged);
+}
+
+bool Transceiver::is_response(const json::value& j)
+{
+    // 消息靠 _XxxResponse / _XxxRequest 占位字段区分类型
+    if (!j.is_object()) {
+        return false;
+    }
+    return std::ranges::any_of(j.as_object(), [](const auto& kv) { return kv.first.starts_with('_') && kv.first.ends_with("Response"); });
+}
+
+std::optional<json::value> Transceiver::take_pending_response(int64_t req_id)
+{
+    std::unique_lock lock(pending_mutex_);
+
+    auto node = pending_responses_.extract(req_id);
+    if (node.empty()) {
+        return std::nullopt;
+    }
+    return std::move(node.mapped());
+}
+
+void Transceiver::stash_response(int64_t resp_id, const json::value& msg)
+{
+    std::unique_lock lock(pending_mutex_);
+
+    if (abandoned_req_ids_.erase(resp_id)) {
+        LogWarn << "drop stale response" << VAR(resp_id) << VAR(ipc_addr_);
+        return;
+    }
+    pending_responses_.insert_or_assign(resp_id, msg);
+}
+
+void Transceiver::abandon_request(int64_t req_id)
+{
+    std::unique_lock lock(pending_mutex_);
+    abandoned_req_ids_.emplace(req_id);
+}
+
+bool Transceiver::dispatch_inserted_request(const json::value& j)
+{
+    s_handling_requests_.push_back({ .owner = this, .req_id = j.find<int64_t>(kReqIdKey) });
+
+    struct PopGuard
+    {
+        ~PopGuard() { s_handling_requests_.pop_back(); }
+    } pop_guard;
+
+    return handle_inserted_request(j);
 }
 
 bool Transceiver::send_no_wait(const json::value& j)
