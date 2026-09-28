@@ -322,7 +322,9 @@ bool AgentServer::handle_resource_event(const json::value& j)
     RemoteResource resource(*this, req.resource_id);
     res_notifier_.notify(&resource, req.message, req.details);
 
-    send(ResourceEventResponse { });
+    // FIXME: Client 对 Resource/Controller/Tasker 事件是单向 send、不等回包；这里若继续 ACK，
+    // EventResponse 会堆在 Client 收件箱，打满 ZMQ 后两端互相阻塞，表现为 Agent IPC 死锁（MaaEnd#5623）。
+    // send(ResourceEventResponse { });
 
     return true;
 }
@@ -338,7 +340,8 @@ bool AgentServer::handle_controller_event(const json::value& j)
     RemoteController controller(*this, req.controller_id);
     ctrl_notifier_.notify(&controller, req.message, req.details);
 
-    send(ControllerEventResponse { });
+    // FIXME: 见 handle_resource_event
+    // send(ControllerEventResponse { });
 
     return true;
 }
@@ -354,7 +357,8 @@ bool AgentServer::handle_tasker_event(const json::value& j)
     RemoteTasker tasker(*this, req.tasker_id);
     tasker_notifier_.notify(&tasker, req.message, req.details);
 
-    send(TaskerEventResponse { });
+    // FIXME: 见 handle_resource_event
+    // send(TaskerEventResponse { });
 
     return true;
 }
