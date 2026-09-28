@@ -48,7 +48,7 @@ from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.define import LoggingLevelEnum
-from maa.context import Context
+from maa.context import Context, ContextEventSink
 from maa.pipeline import (
     JPipelineData,
     JRecognitionType,
@@ -78,6 +78,7 @@ from maa.pipeline import (
     JCustomAction,
     JNodeAttr,
     JKey,
+    JWaitFreezes,
 )
 
 
@@ -1345,6 +1346,7 @@ class TargetController(CustomController):
         super().__init__()
         self.screenshot_count = 0
         self.image_available = False
+        self.image_shape = (720, 1280, 3)
         self.scale_points = False
         self.use_touch = False
         self.inputs = []
@@ -1361,7 +1363,7 @@ class TargetController(CustomController):
 
     def screencap(self):
         self.screenshot_count += 1
-        shape = (720, 1280, 3) if self.image_available else (0, 0, 3)
+        shape = self.image_shape if self.image_available else (0, 0, 3)
         return np.zeros(shape, dtype=np.uint8)
 
     def click(self, x, y):
@@ -1414,6 +1416,30 @@ class TargetAction(CustomAction):
     def run(self, context, argv):
         self.boxes.append([argv.box.x, argv.box.y, argv.box.w, argv.box.h])
         return True
+
+
+class WaitFreezesAction(CustomAction):
+    def __init__(self, param, box=None):
+        super().__init__()
+        self.param = param
+        self.box = box
+        self.result = None
+
+    def run(self, context, argv):
+        self.result = context.wait_freezes(
+            box=self.box, wait_freezes_param=self.param
+        )
+        return True
+
+
+class WaitFreezesSink(ContextEventSink):
+    def __init__(self):
+        super().__init__()
+        self.succeeded = []
+
+    def on_raw_notification(self, context, msg, details):
+        if msg == "Node.WaitFreezes.Succeeded":
+            self.succeeded.append(details)
 
 
 class DirectHitTargetTest(unittest.TestCase):
@@ -1714,6 +1740,95 @@ class DirectHitTargetTest(unittest.TestCase):
         self.assertTrue(all(n.completed for n in detail.nodes))
         self.assertTrue(output.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
         self.assertEqual(self.controller.screenshot_count, 1)
+
+    def check_wait_freezes(self, param, expected, box=None):
+        action = WaitFreezesAction(
+            JWaitFreezes(time=10, rate_limit=10, timeout=1000, **param), box
+        )
+        self.assertTrue(self.resource.register_custom_action("FreezeProbe", action))
+        sink = WaitFreezesSink()
+        sink_id = self.tasker.add_context_sink(sink)
+        before = self.controller.screenshot_count
+        try:
+            self.run_node({"action": "Custom", "custom_action": "FreezeProbe"})
+            self.assertEqual(action.result, expected is not None)
+            if expected is None:
+                self.assertEqual(sink.succeeded, [])
+                return
+            self.assertEqual(len(sink.succeeded), 1)
+            detail = sink.succeeded[0]
+            self.assertEqual(detail["roi"], expected)
+            self.assertTrue(detail["reco_ids"])
+            self.assertEqual(
+                self.controller.screenshot_count - before,
+                1 + len(detail["reco_ids"]),
+            )
+            for reco_id in detail["reco_ids"]:
+                box = self.tasker.get_recognition_detail(reco_id).box
+                self.assertEqual([box.x, box.y, box.w, box.h], expected)
+        finally:
+            self.tasker.remove_context_sink(sink_id)
+            self.resource.unregister_custom_action("FreezeProbe")
+
+    def test_wait_freezes_resolves_target_after_capture(self):
+        cases = [
+            ({"target": [0, 0, 0, 0]}, [0, 0, 1280, 720]),
+            ({"target": [100, 200, -50, -60]}, [50, 140, 50, 60]),
+            ({"target": [-100, -100, 50, 60]}, [1180, 620, 50, 60]),
+            (
+                {"target": [5, 5, 10, 10], "target_offset": [-10, -10, 0, 0]},
+                [0, 0, 10, 10],
+            ),
+        ]
+        for param, expected in cases:
+            for cached in (False, True):
+                with self.subTest(param=param, cached=cached):
+                    self.controller.image_available = cached
+                    self.controller.post_screencap().wait()
+                    self.controller.image_available = True
+                    before = self.controller.screenshot_count
+                    self.check_wait_freezes(param, expected)
+                    self.assertGreaterEqual(self.controller.screenshot_count - before, 2)
+
+    def test_wait_freezes_uses_new_image_size(self):
+        self.controller.image_available = True
+        self.assertTrue(self.controller.post_screencap().wait().succeeded)
+        self.controller.image_shape = (1280, 720, 3)
+        self.check_wait_freezes({"target": [0, 0, 0, 0]}, [0, 0, 720, 1280])
+
+    def test_wait_freezes_empty_self_and_invalid_targets(self):
+        self.controller.image_available = True
+        for param in ({}, {"target": "MissingNode"}, {"target": "[Anchor]Missing"}):
+            with self.subTest(param=param):
+                self.check_wait_freezes(param, None)
+        self.check_wait_freezes({}, [100, 200, 50, 60], box=(100, 200, 50, 60))
+        self.controller.image_available = False
+        self.check_wait_freezes({"target": [100, 200, 50, 60]}, None)
+
+    def test_pipeline_wait_freezes_phases(self):
+        sink = WaitFreezesSink()
+        self.tasker.add_context_sink(sink)
+        for phase in ("pre", "post", "repeat"):
+            with self.subTest(phase=phase):
+                self.controller.image_available = False
+                self.controller.post_screencap().wait()
+                self.controller.image_available = True
+                sink.succeeded.clear()
+                node = {
+                    "action": "DoNothing",
+                    phase + "_wait_freezes": {
+                        "time": 10,
+                        "target": [0, 0, 0, 0],
+                        "rate_limit": 10,
+                        "timeout": 1000,
+                    },
+                }
+                if phase == "repeat":
+                    node.update(repeat=2, repeat_delay=0)
+                self.run_node(node)
+                self.assertEqual(len(sink.succeeded), 1)
+                self.assertEqual(sink.succeeded[0]["phase"], phase)
+                self.assertEqual(sink.succeeded[0]["roi"], [0, 0, 1280, 720])
 
     def test_mixed_next_still_captures(self):
         self.controller.image_available = True

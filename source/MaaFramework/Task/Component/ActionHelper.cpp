@@ -25,14 +25,19 @@ bool ActionHelper::wait_freezes(
         return true;
     }
 
-    auto roi = get_target_rect(param.target, ref_box);
-    if (roi.empty()) {
-        LogError << "failed to get target rect for wait_freezes" << VAR(noti_ctx.name);
+    if (!controller()) {
+        LogError << "Controller is null";
         return false;
     }
 
-    if (!controller()) {
-        LogError << "Controller is null";
+    const auto start_clock = std::chrono::steady_clock::now();
+    auto screencap_clock = start_clock;
+    // 使用首帧尺寸解析目标，避免依赖空缓存或旧尺寸。
+    cv::Mat pre_image = controller()->screencap();
+
+    auto roi = get_target_rect(param.target, ref_box);
+    if (roi.empty()) {
+        LogError << "failed to get target rect for wait_freezes" << VAR(noti_ctx.name);
         return false;
     }
 
@@ -61,7 +66,6 @@ bool ActionHelper::wait_freezes(
     };
     notify(MaaMsg_Node_WaitFreezes_Starting, cb_detail);
 
-    const auto start_clock = std::chrono::steady_clock::now();
     std::vector<MaaRecoId> reco_ids;
 
     auto finish = [&](bool success) {
@@ -89,9 +93,6 @@ bool ActionHelper::wait_freezes(
     };
 
     auto rate_limit = std::min(param.rate_limit, param.time);
-
-    auto screencap_clock = std::chrono::steady_clock::now();
-    cv::Mat pre_image = controller()->screencap();
 
     auto corrected_roi = correct_roi(roi, pre_image);
     if (!corrected_roi) {
