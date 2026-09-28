@@ -174,14 +174,14 @@ bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, 
     }
 
     // 校验并合并 time：两者互斥
-    if (time > std::chrono::milliseconds(0) && param.time > std::chrono::milliseconds(0)) {
+    if (time > std::chrono::milliseconds(0) && !param.time.is_zero()) {
         LogError << "time and wait_freezes_param.time are mutually exclusive, both are non-zero" << VAR(time) << VAR(param.time);
         return false;
     }
     if (time > std::chrono::milliseconds(0)) {
-        param.time = time;
+        param.time = MAA_RES_NS::DurationRange { time.count() };
     }
-    if (param.time <= std::chrono::milliseconds(0)) {
+    if (param.time.is_zero()) {
         LogError << "time is required but not provided" << VAR(time) << VAR(param.time);
         return false;
     }

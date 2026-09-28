@@ -1,5 +1,7 @@
 #include "Actuator.h"
 
+#include <limits>
+
 #include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
@@ -11,6 +13,35 @@
 #include "Vision/VisionUtils.hpp"
 
 MAA_TASK_NS_BEGIN
+
+namespace
+{
+
+uint sample_uint(const MAA_RES_NS::DurationRange& r)
+{
+    const auto ms = r.random().count();
+    if (ms <= 0) {
+        return 0;
+    }
+
+    constexpr auto kMax = static_cast<int64_t>(std::numeric_limits<uint>::max());
+    if (ms >= kMax) {
+        return std::numeric_limits<uint>::max();
+    }
+    return static_cast<uint>(ms);
+}
+
+std::vector<uint> sample_uint_vec(const std::vector<MAA_RES_NS::DurationRange>& vec)
+{
+    std::vector<uint> out;
+    out.reserve(vec.size());
+    for (const auto& r : vec) {
+        out.emplace_back(sample_uint(r));
+    }
+    return out;
+}
+
+} // namespace
 
 std::mt19937 Actuator::rand_engine_(std::random_device { }());
 
@@ -212,7 +243,11 @@ ActionResult Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& para
         return { };
     }
     cv::Point point = rand_point(target_rect);
-    MAA_CTRL_NS::LongPressParam ctrl_param { .point = point, .duration = param.duration, .contact = static_cast<int>(param.contact) };
+    MAA_CTRL_NS::LongPressParam ctrl_param {
+        .point = point,
+        .duration = sample_uint(param.duration),
+        .contact = static_cast<int>(param.contact),
+    };
     bool ret = controller()->long_press(ctrl_param);
 
     return ActionResult {
@@ -256,10 +291,10 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
 
     MAA_CTRL_NS::SwipeParam ctrl_param { .begin = begin,
                                          .end = std::move(end),
-                                         .end_hold = param.end_hold,
-                                         .duration = param.duration,
+                                         .end_hold = sample_uint_vec(param.end_hold),
+                                         .duration = sample_uint_vec(param.duration),
                                          .only_hover = param.only_hover,
-                                         .starting = param.starting,
+                                         .starting = sample_uint(param.starting),
                                          .contact = static_cast<int>(param.contact) };
     bool ret = controller()->swipe(ctrl_param);
 
@@ -306,10 +341,10 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
         swipes.push_back(
             { .begin = begin,
               .end = std::move(end),
-              .end_hold = swipe.end_hold,
-              .duration = swipe.duration,
+              .end_hold = sample_uint_vec(swipe.end_hold),
+              .duration = sample_uint_vec(swipe.duration),
               .only_hover = swipe.only_hover,
-              .starting = swipe.starting,
+              .starting = sample_uint(swipe.starting),
               .contact = static_cast<int>(swipe.contact) });
     }
 
@@ -435,7 +470,7 @@ ActionResult Actuator::long_press_key(const MAA_RES_NS::Action::LongPressKeyPara
         return { };
     }
 
-    MAA_CTRL_NS::LongPressKeyParam ctrl_param { .keycode = param.keys, .duration = param.duration };
+    MAA_CTRL_NS::LongPressKeyParam ctrl_param { .keycode = param.keys, .duration = sample_uint(param.duration) };
     bool ret = controller()->long_press_key(ctrl_param);
 
     return ActionResult {
@@ -541,15 +576,16 @@ ActionResult Actuator::shell(const MAA_RES_NS::Action::ShellParam& param, const 
         return { };
     }
 
+    const auto shell_timeout = param.shell_timeout.random().count();
     std::string output;
-    bool ret = controller()->shell(param.cmd, output, param.shell_timeout);
+    bool ret = controller()->shell(param.cmd, output, shell_timeout);
 
-    LogDebug << "Shell command executed" << VAR(param.cmd) << VAR(param.shell_timeout) << VAR(ret);
+    LogDebug << "Shell command executed" << VAR(param.cmd) << VAR(shell_timeout) << VAR(ret);
     if (!output.empty()) {
         LogTrace << "Shell output:" << output;
     }
 
-    json::object detail { { "cmd", param.cmd }, { "shell_timeout", param.shell_timeout }, { "success", ret }, { "output", output } };
+    json::object detail { { "cmd", param.cmd }, { "shell_timeout", shell_timeout }, { "success", ret }, { "output", output } };
 
     return ActionResult {
         .action_id = action_id_,
