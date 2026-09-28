@@ -210,17 +210,16 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
         return { };
     }
 
-    // 无 controller 时跳过边界检查，直接返回 raw + offset
-    if (!controller()) {
-        LogDebug << "controller not bound, skip image boundary check";
+    auto image = controller() ? controller()->cached_image() : cv::Mat { };
+    // 无缓存图像时跳过归一化和边界检查，直接返回 raw + offset
+    if (image.empty()) {
+        LogDebug << "no cached image, skip target normalization and boundary check";
         return cv::Rect(
             raw.x + target.offset.x,
             raw.y + target.offset.y,
             raw.width + target.offset.width,
             raw.height + target.offset.height);
     }
-
-    auto image = controller()->cached_image();
 
     // Region 类型支持负数坐标和尺寸
     if (target.type == Target::Type::Region) {
