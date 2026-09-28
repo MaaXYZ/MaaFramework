@@ -1442,6 +1442,7 @@ class DirectHitTargetTest(unittest.TestCase):
         detail = job.get()
         self.assertIsNotNone(detail)
         self.assertTrue(all(n.completed for n in detail.nodes), detail.nodes)
+        return detail
 
     def check_custom(self, param, expected, v2=False, entry="Target", extra=None):
         action_param = {"custom_action": "TargetProbe", **param}
@@ -1607,6 +1608,111 @@ class DirectHitTargetTest(unittest.TestCase):
         self.controller.image_available = True
         self.run_node({"action": "Click", "target": [100, 200]})
         self.assertEqual(self.controller.inputs, [("click", 100, 200)])
+        self.assertEqual(self.controller.screenshot_count, 1)
+
+    def test_screencap_without_cached_image(self):
+        self.controller.image_available = True
+        output = Path(self.bundle.name) / "capture.png"
+        detail = self.run_node(
+            {"action": "Screencap", "filename": str(output.with_suffix(""))}
+        )
+        self.assertEqual(self.controller.screenshot_count, 1)
+        self.assertTrue(output.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertEqual(Path(detail.nodes[0].action.raw_detail["filepath"]), output)
+        self.assertEqual(detail.nodes[0].recognition.box.w, 0)
+
+    def test_screencap_reuses_cached_image(self):
+        self.controller.image_available = True
+        self.assertTrue(self.controller.post_screencap().wait().succeeded)
+        self.controller.image_available = False
+        output = Path(self.bundle.name) / "cached.png"
+        self.run_node({"action": "Screencap", "filename": str(output.with_suffix(""))})
+        self.assertTrue(output.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertEqual(self.controller.screenshot_count, 1)
+
+    def test_command_image_without_cache_and_reuses_cache(self):
+        self.controller.image_available = True
+        output = Path(self.bundle.name) / "command.png"
+        script = (
+            "import shutil,sys; "
+            "assert sys.argv[1] == sys.argv[2]; "
+            "shutil.copyfile(sys.argv[1], sys.argv[3])"
+        )
+        param = {
+            "exec": sys.executable,
+            "args": ["-c", script, "{IMAGE}", "{IMAGE}", str(output)],
+        }
+        for cached in (False, True):
+            with self.subTest(cached=cached):
+                if cached:
+                    output.unlink()
+                    self.controller.image_available = False
+                self.run_node({"action": {"type": "Command", "param": param}})
+                self.assertTrue(output.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
+                self.assertEqual(self.controller.screenshot_count, 1)
+        reference = Path(self.bundle.name) / "reference.png"
+        self.run_node(
+            {"action": "Screencap", "filename": str(reference.with_suffix(""))}
+        )
+        self.assertEqual(output.read_bytes(), reference.read_bytes())
+        self.assertEqual(self.controller.screenshot_count, 1)
+
+    def test_command_without_image_does_not_capture(self):
+        output = Path(self.bundle.name) / "command.txt"
+        self.run_node(
+            {
+                "action": "Command",
+                "exec": sys.executable,
+                "args": [
+                    "-c",
+                    "import pathlib,sys; pathlib.Path(sys.argv[1]).write_text(sys.argv[2])",
+                    str(output),
+                    "{BOX}",
+                ],
+            }
+        )
+        self.assertEqual(output.read_text(), "[0,0,0,0]")
+        self.assertEqual(self.controller.screenshot_count, 0)
+
+    def test_image_actions_fail_when_capture_fails(self):
+        output = Path(self.bundle.name) / "unexpected.txt"
+        command = {
+            "action": "Command",
+            "exec": sys.executable,
+            "args": [
+                "-c",
+                "import pathlib,sys; pathlib.Path(sys.argv[1]).touch()",
+                str(output),
+                "prefix-{IMAGE}-suffix",
+            ],
+        }
+        cases = [
+            {"action": "Screencap", "filename": str(output)},
+            command,
+            {"action": "Command", "exec": "prefix-{IMAGE}-suffix"},
+        ]
+        for node in cases:
+            with self.subTest(node=node):
+                before = self.controller.screenshot_count
+                detail = self.tasker.post_task(
+                    "Probe", {"Probe": {"pre_delay": 0, "post_delay": 0, **node}}
+                ).wait().get()
+                self.assertIsNotNone(detail)
+                self.assertEqual(len(detail.nodes), 1)
+                self.assertFalse(detail.nodes[0].completed)
+                self.assertFalse(detail.nodes[0].action.success)
+                self.assertEqual(self.controller.screenshot_count, before + 1)
+                self.assertFalse(output.exists())
+        self.check_custom({"target": [100, 200]}, [100, 200, 1, 1])
+
+    def test_direct_screencap_action_without_cache(self):
+        self.controller.image_available = True
+        output = Path(self.bundle.name) / "direct.png"
+        detail = self.tasker.post_action(
+            "Screencap", JScreencap(filename=str(output.with_suffix("")))
+        ).wait().get()
+        self.assertTrue(all(n.completed for n in detail.nodes))
+        self.assertTrue(output.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
         self.assertEqual(self.controller.screenshot_count, 1)
 
     def test_mixed_next_still_captures(self):
