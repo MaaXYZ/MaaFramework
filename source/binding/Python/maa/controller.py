@@ -767,6 +767,19 @@ class Controller:
             MaaControllerHandle,
         ]
 
+        Library.framework().MaaControllerPostShell.restype = MaaCtrlId
+        Library.framework().MaaControllerPostShell.argtypes = [
+            MaaControllerHandle,
+            ctypes.c_char_p,
+            ctypes.c_int64,
+        ]
+
+        Library.framework().MaaControllerGetShellOutput.restype = MaaBool
+        Library.framework().MaaControllerGetShellOutput.argtypes = [
+            MaaControllerHandle,
+            MaaStringBufferHandle,
+        ]
+
         Library.framework().MaaControllerStatus.restype = MaaStatus
         Library.framework().MaaControllerStatus.argtypes = [
             MaaControllerHandle,

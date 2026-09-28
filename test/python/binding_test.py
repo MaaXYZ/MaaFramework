@@ -17,8 +17,10 @@ from pathlib import Path
 import subprocess
 import sys
 import textwrap
+import ctypes
 import numpy
 import io
+from typing import Optional
 
 # Fix encoding issues on Windows
 if sys.stdout.encoding != "utf-8":
@@ -48,7 +50,14 @@ from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.buffer import ImageBuffer
-from maa.define import LoggingLevelEnum, MaaWin32InputMethodEnum
+from maa.define import (
+    LoggingLevelEnum,
+    MaaWin32InputMethodEnum,
+    MaaBool,
+    MaaControllerHandle,
+    MaaCtrlId,
+    MaaStringBufferHandle,
+)
 from maa.context import Context, ContextEventSink
 from maa.event_sink import EventSink
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
@@ -721,6 +730,11 @@ class MyController(CustomController):
         self.count += 1
         return True
 
+    def shell(self, cmd: str, timeout: int) -> Optional[str]:
+        print(f"  on MyController.shell: {cmd}, {timeout}")
+        self.count += 1
+        return f"shell_output:{cmd}"
+
     def get_custom_info(self) -> dict:
         return {
             "custom_key": "custom_value",
@@ -765,8 +779,65 @@ def test_custom_controller():
     ret &= controller.post_scroll(0, 120).wait().succeeded
     ret &= controller.post_inactive().wait().succeeded
 
+    shell_job = controller.post_shell("echo hello", 5000).wait()
+    assert shell_job.done, "post_shell job must complete"
+    print(f"  post_shell status: {shell_job.status}, output: {controller.shell_output!r}")
+
     print(f"  controller.count: {controller.count}, ret: {ret}")
     print("  PASS: custom controller")
+
+
+def _ctypes_type_name(ctypes_type):
+    """取 ctypes 类型名；restype 可能为 None（void），此时回退到 repr。"""
+    return getattr(ctypes_type, "__name__", repr(ctypes_type))
+
+
+def _assert_ctypes_signature(name, func, argtypes, restype):
+    """断言 ctypes 函数签名逐项匹配，失败时给出具体位置。"""
+    assert func.argtypes is not None, f"{name}.argtypes must be declared"
+    assert len(func.argtypes) == len(argtypes), (
+        f"{name}.argtypes: expected {len(argtypes)} args, got {len(func.argtypes)}"
+    )
+    for index, (got, want) in enumerate(zip(func.argtypes, argtypes)):
+        assert got is want, (
+            f"{name}.argtypes[{index}]: expected"
+            f" {_ctypes_type_name(want)}, got {_ctypes_type_name(got)}"
+        )
+    assert func.restype is restype, (
+        f"{name}.restype: expected"
+        f" {_ctypes_type_name(restype)}, got {_ctypes_type_name(func.restype)}"
+    )
+
+
+def test_shell_api_declarations():
+    """回归守卫：shell API 的 ctypes 签名必须与 C 头文件一致。
+
+    仅断言「已声明」不足以拦截错误的宽度——把 64 位句柄或 timeout 误声明为
+    c_int 同样会溢出，而 ctypes 在 argtypes 缺失时也正是按 32 位 int 编组。
+    因此逐项断言完整签名。声明缺失导致的溢出/返回值截断取决于句柄/ID 数值，
+    调用式测试无法确定性复现。
+    """
+    print("\n=== test_shell_api_declarations ===")
+
+    framework = Library.framework()
+
+    # MaaCtrlId MaaControllerPostShell(MaaController*, const char*, int64_t)
+    _assert_ctypes_signature(
+        "MaaControllerPostShell",
+        framework.MaaControllerPostShell,
+        [MaaControllerHandle, ctypes.c_char_p, ctypes.c_int64],
+        MaaCtrlId,
+    )
+
+    # MaaBool MaaControllerGetShellOutput(const MaaController*, MaaStringBuffer*)
+    _assert_ctypes_signature(
+        "MaaControllerGetShellOutput",
+        framework.MaaControllerGetShellOutput,
+        [MaaControllerHandle, MaaStringBufferHandle],
+        MaaBool,
+    )
+
+    print("  PASS: shell API ctypes signatures match the C header")
 
 
 # ============================================================================
@@ -1017,6 +1088,9 @@ if __name__ == "__main__":
 
     # 测试 CustomController
     test_custom_controller()
+
+    # shell API 的 ctypes 声明
+    test_shell_api_declarations()
 
     # 测试 Toolkit
     test_toolkit()
