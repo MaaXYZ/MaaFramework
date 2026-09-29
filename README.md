@@ -84,7 +84,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
     MaaFramework Pipeline 调试器
 
 - [maa-support-extension](https://github.com/neko-para/maa-support-extension) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/neko-para/maa-support-extension?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/neko-para/maa-support-extension?style=social) [![marketplace](https://img.shields.io/badge/Visual%20Studio%20Marketplace-black?logo=vscodium&logoColor=#2F80ED)](https://marketplace.visualstudio.com/items?itemName=nekosu.maa-support)  
-    MaaFramework VSCode 插件，支持补全、跳转与错误检查，任务运行与执行流程可视化，截图工具包与图形化编辑
+    MaaFramework VSCode 插件，支持补全、跳转与错误检查，任务运行与流程可视化，截图工具包与图形化编辑
 
 - [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![Golang](https://img.shields.io/badge/Go-007d9c?logo=go) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social) [![website](https://img.shields.io/badge/https://mpe.codax.site-%234285F4)](https://mpe.codax.site/stable/)  
     可视化阅读与构建 Pipeline，[功能完备](https://github.com/kqcoxn/MaaPipelineEditor?tab=readme-ov-file#%E4%BA%AE%E7%82%B9)，极致轻量跨平台，提供渐进式[本地功能扩展](https://mpe.codax.site/docs/guide/server/deploy.html)，无缝兼容新旧项目
