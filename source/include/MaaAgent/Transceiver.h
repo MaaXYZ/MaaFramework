@@ -31,6 +31,17 @@ public:
     {
         auto req_id = ++s_req_id_;
 
+        // 等回包期间登记为活跃；无论怎样离开（含异常）都注销，迟到的回包据此丢弃
+        begin_request(req_id);
+
+        struct EndGuard
+        {
+            Transceiver* self;
+            int64_t req_id;
+
+            ~EndGuard() { self->end_request(req_id); }
+        } end_guard { this, req_id };
+
         // LogFunc << VAR(req_id);
         json::value req_json = req;
         req_json[kReqIdKey] = req_id;
@@ -55,7 +66,6 @@ public:
             auto msg_opt = recv();
             if (!msg_opt) {
                 LogError << "failed to recv resp" << VAR(req_id) << VAR(loop_count);
-                abandon_request(req_id);
                 return std::nullopt;
             }
             const json::value& msg = *msg_opt;
@@ -116,9 +126,10 @@ private:
     bool poll(zmq::pollitem_t& pollitem);
 
     static bool is_response(const json::value& j);
+    void begin_request(int64_t req_id);
+    void end_request(int64_t req_id);
     std::optional<json::value> take_pending_response(int64_t req_id);
     void stash_response(int64_t resp_id, const json::value& msg);
-    void abandon_request(int64_t req_id);
 
 protected:
     // 返回实际绑定的端口号，如果传入 0 则自动选择可用端口
@@ -156,9 +167,10 @@ private:
 
     inline static thread_local std::vector<HandlingRequest> s_handling_requests_;
 
+    // 只为仍在等待的请求暂存回包，两张表的大小都受限于同时在等的请求数
     std::mutex pending_mutex_;
+    std::set<int64_t> active_req_ids_;
     std::map<int64_t, json::value> pending_responses_;
-    std::set<int64_t> abandoned_req_ids_;
 
     bool is_bound_ = false;
 

@@ -276,11 +276,6 @@ void Transceiver::reset_socket(std::chrono::milliseconds linger)
     else {
         zmq_sock_.connect(ipc_addr_);
     }
-
-    // 旧连接上的回包不会再到达，留着只会一直占用
-    std::unique_lock pending_lock(pending_mutex_);
-    pending_responses_.clear();
-    abandoned_req_ids_.clear();
 }
 
 bool Transceiver::alive()
@@ -357,6 +352,19 @@ bool Transceiver::is_response(const json::value& j)
     return std::ranges::any_of(j.as_object(), [](const auto& kv) { return kv.first.starts_with('_') && kv.first.ends_with("Response"); });
 }
 
+void Transceiver::begin_request(int64_t req_id)
+{
+    std::unique_lock lock(pending_mutex_);
+    active_req_ids_.emplace(req_id);
+}
+
+void Transceiver::end_request(int64_t req_id)
+{
+    std::unique_lock lock(pending_mutex_);
+    active_req_ids_.erase(req_id);
+    pending_responses_.erase(req_id);
+}
+
 std::optional<json::value> Transceiver::take_pending_response(int64_t req_id)
 {
     std::unique_lock lock(pending_mutex_);
@@ -372,17 +380,12 @@ void Transceiver::stash_response(int64_t resp_id, const json::value& msg)
 {
     std::unique_lock lock(pending_mutex_);
 
-    if (abandoned_req_ids_.erase(resp_id)) {
+    // 超时放弃、异常退出或对端乱发的编号都没人再取，不暂存
+    if (!active_req_ids_.contains(resp_id)) {
         LogWarn << "drop stale response" << VAR(resp_id) << VAR(ipc_addr_);
         return;
     }
     pending_responses_.insert_or_assign(resp_id, msg);
-}
-
-void Transceiver::abandon_request(int64_t req_id)
-{
-    std::unique_lock lock(pending_mutex_);
-    abandoned_req_ids_.emplace(req_id);
 }
 
 bool Transceiver::dispatch_inserted_request(const json::value& j)
