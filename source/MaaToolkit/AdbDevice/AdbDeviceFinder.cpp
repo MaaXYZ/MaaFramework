@@ -125,6 +125,39 @@ bool try_adb_connect(const std::filesystem::path& adb_path, const std::string& s
 
     return output.find(kConnectedFlag) != std::string::npos;
 }
+
+// 同一设备的串号常有多种写法：adb devices 注册的是 emulator-5554，常量表和手动 connect 常用
+// 127.0.0.1:5555 / localhost:5555。把已知别名归一成同一个键，用于判断"候选串口是否已被枚举结果覆盖"；
+// 只在 find_by_common_serials 的候选过滤里使用，返回给上层的 serial 保持原样，
+// MaaPiCli / 通用 GUI 按原始串号保存设备身份的行为不受影响。
+std::string canonical_serial(const std::string& serial)
+{
+    std::string_view view(serial);
+
+    // 模拟器 console N / adb N+1 的固定约定（AVD 表内两种写法并存即来源于此）
+    constexpr std::string_view kEmulatorPrefix = "emulator-";
+    if (view.starts_with(kEmulatorPrefix)) {
+        std::string_view num = view.substr(kEmulatorPrefix.size());
+        int port = 0;
+        auto [ptr, ec] = std::from_chars(num.data(), num.data() + num.size(), port);
+        if (ec == std::errc { } && ptr == num.data() + num.size() && port > 0 && port < 65535) {
+            return std::format("127.0.0.1:{}", port + 1);
+        }
+        return serial;
+    }
+
+    auto colon = view.rfind(':');
+    if (colon == std::string_view::npos) {
+        return serial;
+    }
+
+    std::string host(view.substr(0, colon));
+    tolowers_(host);
+    if (host == "localhost" || host == "::1" || host == "[::1]") {
+        host = "127.0.0.1";
+    }
+    return std::format("{}:{}", host, view.substr(colon + 1));
+}
 } // namespace
 
 std::vector<AdbDevice> AdbDeviceFinder::find() const
@@ -194,14 +227,25 @@ std::vector<AdbDevice> AdbDeviceFinder::find_by_common_serials(
 {
     LogFunc << VAR(adb_path) << VAR(emulator.common_serials);
 
-    std::vector<std::string> candidates;
-    for (const std::string& ser : emulator.common_serials) {
-        if (!exclude_serials.count(ser)) {
-            candidates.emplace_back(ser);
-        }
+    std::vector<AdbDevice> result;
+
+    // 已枚举到的串号按规范化键排除：adb devices 列出的是 emulator-5554、常量表写的是 127.0.0.1:5555 时，
+    // 两者是同一设备，不能再 connect 一次在结果里多出一条别名。规范化副本只在函数内使用，
+    // accurate_serials 与返回给上层的 serial 仍保持原始写法。
+    std::unordered_set<std::string> exclude_canonical;
+    exclude_canonical.reserve(exclude_serials.size());
+    for (const std::string& ser : exclude_serials) {
+        exclude_canonical.emplace(canonical_serial(ser));
     }
 
-    std::vector<AdbDevice> result;
+    std::vector<std::string> candidates;
+    for (const std::string& ser : emulator.common_serials) {
+        if (exclude_canonical.count(canonical_serial(ser))) {
+            LogInfo << "skip excluded serial" << VAR(ser);
+            continue;
+        }
+        candidates.emplace_back(ser);
+    }
 
     // adb server 与模拟器之间的 TCP 会话可能已断开（模拟器进程与端口仍在），此时 adb devices 不会列出设备，
     // 需要按已知端口重新 connect 一次。
