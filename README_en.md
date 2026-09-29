@@ -80,14 +80,13 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 ### Development Tool
 
-- [MaaDebugger](https://github.com/MaaXYZ/MaaDebugger) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MaaDebugger) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaDebugger?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaDebugger?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/MaaDebugger/)  
+#### Editing & Debugging
+
+- [MaaDebugger](https://github.com/MaaXYZ/MaaDebugger/tree/rft/nodejs) ![Go](https://img.shields.io/badge/Go-007d9c?logo=go) ![Vue](https://img.shields.io/badge/Vue-1867C0?logo=vuedotjs) ![license](https://img.shields.io/github/license/MaaXYZ/MaaDebugger) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaDebugger?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaDebugger?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/@weinibuliu/maa-debugger)  
     MaaFramework Pipeline Debugger
 
 - [maa-support-extension](https://github.com/neko-para/maa-support-extension) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/neko-para/maa-support-extension?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/neko-para/maa-support-extension?style=social) [![marketplace](https://img.shields.io/badge/Visual%20Studio%20Marketplace-black?logo=vscodium&logoColor=#2F80ED)](https://marketplace.visualstudio.com/items?itemName=nekosu.maa-support)  
-    MaaFramework VSCode Extension
-
-- [MFAToolsPlus](https://github.com/SweetSmellFox/MFAToolsPlus) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAToolsPlus) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAToolsPlus?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAToolsPlus?style=social)  
-    A cross-platform development toolbox built on the Avalonia framework, providing convenient data acquisition and simulation testing methods.
+    A MaaFramework VSCode extension: task/image-path completion, navigation and error checking, direct task running with embedded MaaLogAnalyzer to visualize execution flows, screenshot & crop tooling, and MaaPipelineEditor graphical editing.
 
 - [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![Golang](https://img.shields.io/badge/Go-007d9c?logo=go) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social) [![website](https://img.shields.io/badge/https://mpe.codax.site-%234285F4)](https://mpe.codax.site/stable/)  
     Visual reading and construction Pipeline, [fully functional](https://github.com/kqcoxn/MaaPipelineEditor?tab=readme-ov-file#%E4%BA%AE%E7%82%B9), extremely lightweight cross-platform, progressive [local function extension](https://mpe.codax.site/docs/guide/server/deploy.html), seamless compatibility between old and new projects.
@@ -95,26 +94,29 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaInspector](https://github.com/TanyaShue/MaaInspector) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaInspector?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaInspector?style=social)  
     A visual editor based on vue-flow — a simple and user-friendly MaaFramework Pipeline Editor that integrates node preview, editing, and debugging all in one.
 
-- [MaaLogAnalyzer](https://github.com/MaaXYZ/MaaLogAnalyzer) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MAALogAnalyzer) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MAALogAnalyzer?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MAALogAnalyzer?style=social) [![vscode](https://img.shields.io/badge/VSCode-0f81c2?style=plastic&logo=data:image/svg+xml)](https://marketplace.visualstudio.com/items?itemName=Windsland52.maa-log-analyzer) [![website](https://img.shields.io/badge/https://mla.maafw.com-%234285F4)](https://mla.maafw.com/)  
-    MaaFramework log analysis tool, providing user-friendly, multi-perspective visual analysis of task execution processes.
+#### Asset & Resource Production
 
-- [MaaLogs](https://github.com/amiliyaai/MaaLogs) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/amiliyaai/MaaLogs) ![activity](https://img.shields.io/github/commit-activity/m/amiliyaai/MaaLogs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/amiliyaai/MaaLogs?style=social) [![website](https://img.shields.io/badge/https://maalogs.maafw.com-%234285F4)](https://maalogs.maafw.com/)  
-    MaaFramework log analysis tool that supports multi-project log parsing, visual task processes, and AI intelligent analysis.
-
-- [prettier-plugin-maafw-sort](https://github.com/neko-para/maa-support-extension/tree/main/pkgs/prettier-plugin-maafw-sort) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/neko-para/maa-support-extension) ![activity](https://img.shields.io/github/commit-activity/m/neko-para/maa-support-extension?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/neko-para/maa-support-extension?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/@nekosu/prettier-plugin-maafw-sort)  
-    Prettier plugin that sorts pipeline keys according to lifecycle order.
+- [MFAToolsPlus](https://github.com/SweetSmellFox/MFAToolsPlus) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAToolsPlus) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAToolsPlus?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAToolsPlus?style=social)  
+    A cross-platform development toolbox built on the Avalonia framework, providing convenient data acquisition and simulation testing methods.
 
 - [Auto Green Background](https://github.com/Joe-Bao/Auto-Green-Background) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust) ![activity](https://img.shields.io/github/commit-activity/m/Joe-Bao/Auto-Green-Background?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Joe-Bao/Auto-Green-Background?style=social) [![release](https://img.shields.io/github/v/release/Joe-Bao/Auto-Green-Background?display_name=tag)](https://github.com/Joe-Bao/Auto-Green-Background/releases)  
     An automatic green screen painting tool (Python/OpenCV, for TemplateMatch), supporting multi-algorithm segmentation, fixed canvas output, real-time preview, and a portable, out-of-the-box package.
-  
+
+- [MaaOWM](https://github.com/sunyink/MaaOWM) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/sunyink/MaaOWM) ![activity](https://img.shields.io/github/commit-activity/m/sunyink/MaaOWM?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/sunyink/MaaOWM?style=social)  
+    A MaaFramework multi-resource-pack development tool. Mount: merges base+mod into a full-field workspace; Unmount: diffs out a minimal mod delta.
+
+#### Log Analysis
+
+- [MaaLogAnalyzer](https://github.com/MaaXYZ/MaaLogAnalyzer) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MAALogAnalyzer) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MAALogAnalyzer?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MAALogAnalyzer?style=social) [![vscode](https://img.shields.io/badge/VSCode-0f81c2?style=plastic&logo=data:image/svg+xml)](https://marketplace.visualstudio.com/items?itemName=Windsland52.maa-log-analyzer) [![website](https://img.shields.io/badge/https://mla.maafw.com-%234285F4)](https://mla.maafw.com/)  
+    MaaFramework log analysis tool, providing user-friendly, multi-perspective visual analysis of task execution processes.
+
+#### AI-Assisted Development
+
 - [maafw-cli](https://github.com/otowa-kotori/maafw-cli) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/otowa-kotori/maafw-cli) ![activity](https://img.shields.io/github/commit-activity/m/otowa-kotori/maafw-cli?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/otowa-kotori/maafw-cli?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/maafw-cli/)  
     A MaaFramework command-line interface (CLI) for AI Agents.
 
 - [maaframework-skills](https://github.com/Kutius/maaframework-skills) ![license](https://img.shields.io/github/license/Kutius/maaframework-skills) ![activity](https://img.shields.io/github/commit-activity/m/Kutius/maaframework-skills?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Kutius/maaframework-skills?style=social)  
     Claude Code skill for MaaFramework — structured reference docs for AI-assisted pipeline development.
-
-- [MaaOWM](https://github.com/sunyink/MaaOWM) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/sunyink/MaaOWM) ![activity](https://img.shields.io/github/commit-activity/m/sunyink/MaaOWM?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/sunyink/MaaOWM?style=social)  
-    A MaaFramework multi-resource-pack development tool. Mount: merges base+mod into a full-field workspace; Unmount: diffs out a minimal mod delta.
 
 - [create-maa-project](https://github.com/Windsland52/create-maa-project) ![TypeScript](https://img.shields.io/badge/TypeScript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/create-maa-project) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/create-maa-project?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/create-maa-project?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/create-maa-project) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/create-maa-project/)  
     MaaFW project scaffolding CLI & MCP Server for interactive creation and incremental maintenance of Pipeline / Agent projects.
@@ -127,6 +129,11 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [MaaCtl](https://github.com/TanyaShue/MaaCtl) ![Go](https://img.shields.io/badge/Go-007d9c?logo=go) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaCtl?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaCtl?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/maactl)  
     A command-line client for MaaFramework / ProjectInterface v2, running PI projects and Pipeline nodes in a fully parameterized way, distributed as a Go single-file executable and an npm (npx / global install) package.
+
+#### Others
+
+- [prettier-plugin-maafw-sort](https://github.com/neko-para/maa-support-extension/tree/main/pkgs/prettier-plugin-maafw-sort) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/neko-para/maa-support-extension) ![activity](https://img.shields.io/github/commit-activity/m/neko-para/maa-support-extension?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/neko-para/maa-support-extension?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/@nekosu/prettier-plugin-maafw-sort)  
+    Prettier plugin that sorts pipeline keys according to lifecycle order.
 
 ### Application
 
