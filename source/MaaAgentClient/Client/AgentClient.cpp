@@ -820,9 +820,14 @@ bool AgentClient::handle_context_clone(const json::value& j)
     }
 
     MaaContext* clone = context->clone();
+    std::string clone_id = context_id(clone);
+    {
+        std::unique_lock lock(context_mutex_);
+        context_clone_ids_[req.context_id].emplace(clone_id);
+    }
 
     ContextCloneReverseResponse resp {
-        .clone_id = context_id(clone),
+        .clone_id = std::move(clone_id),
     };
     send(resp);
 
@@ -2737,14 +2742,24 @@ void AgentClient::abandon_context(const std::string& context_id)
 
     std::unique_lock lock(context_mutex_);
 
-    auto it = context_map_.find(context_id);
-    if (it == context_map_.end()) {
-        return;
+    std::vector<std::string> ids { context_id };
+    while (!ids.empty()) {
+        std::string id = std::move(ids.back());
+        ids.pop_back();
+
+        if (auto clones = context_clone_ids_.extract(id); !clones.empty()) {
+            ids.insert(ids.end(), clones.mapped().begin(), clones.mapped().end());
+        }
+
+        auto it = context_map_.find(id);
+        if (it == context_map_.end()) {
+            continue;
+        }
+        if (auto cur = context_current_ids_.find(it->second); cur != context_current_ids_.end() && cur->second == id) {
+            context_current_ids_.erase(cur);
+        }
+        context_map_.erase(it);
     }
-    if (auto cur = context_current_ids_.find(it->second); cur != context_current_ids_.end() && cur->second == context_id) {
-        context_current_ids_.erase(cur);
-    }
-    context_map_.erase(it);
 }
 
 std::string AgentClient::tasker_id(MaaTasker* tasker)

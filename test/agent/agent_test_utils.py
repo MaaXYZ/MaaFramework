@@ -13,6 +13,8 @@ CONNECT_TIMEOUT_MS = 5000
 PROCESS_TIMEOUT_SECONDS = 10
 SLOW_REC_SECONDS = 1.5
 FAST_REC_BOX = (1, 2, 3, 4)
+NESTED_REC_BOX = (5, 6, 7, 8)
+NESTED_REC_TIMEOUT_MS = 5000
 
 
 def create_marker_path(name: str) -> Path:
@@ -147,6 +149,22 @@ def assert_stale_response_dropped(agent, tasker, report_file: Path) -> None:
     assert "slow_rec_node_data:none" in records, f"abandoned context should not resolve: {records}"
 
 
+def assert_nested_response_kept(agent, tasker, report_file: Path) -> None:
+    # NestedRec 等 controller wait 回包时，controller 事件回调又发起反调；
+    # wait 的回包会先落到内层等待里，必须留给外层而不是丢掉。限时是为了回归时失败而不是卡死
+    assert agent.set_timeout(NESTED_REC_TIMEOUT_MS)
+    try:
+        box = run_custom_recognition(tasker, "NestedRec")
+    finally:
+        assert agent.set_timeout(-1)
+    assert box == NESTED_REC_BOX, f"outer reverse call lost its response: {box}"
+
+    records = report_file.read_text(encoding="utf-8").splitlines()
+    assert "nested_sink_connected:True" in records, (
+        f"inner reverse call in sink should succeed: {records}"
+    )
+
+
 def run_connected_agent_test(
     agent,
     command: list[str],
@@ -210,6 +228,7 @@ def run_connected_agent_test(
                     assert action_detail.success, "custom action should succeed"
 
         assert_stale_response_dropped(agent, tasker, sink_report_file)
+        assert_nested_response_kept(agent, tasker, sink_report_file)
 
         assert agent.disconnect()
         child_process.wait(timeout=PROCESS_TIMEOUT_SECONDS)

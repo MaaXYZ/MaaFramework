@@ -276,6 +276,11 @@ void Transceiver::reset_socket(std::chrono::milliseconds linger)
     else {
         zmq_sock_.connect(ipc_addr_);
     }
+
+    // 旧连接上的回包不会再到达，留着只会一直占用
+    std::unique_lock pending_lock(pending_mutex_);
+    pending_responses_.clear();
+    abandoned_req_ids_.clear();
 }
 
 bool Transceiver::alive()
