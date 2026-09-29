@@ -61,10 +61,10 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 ### 通用 UI
 
-- [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAAvalonia) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAAvalonia?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAAvalonia?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
+- [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAAvalonia) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAAvalonia?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAAvalonia?style=social)  
     基于 Avalonia 的 通用 GUI。由 MaaFramework 强力驱动！
 
-- [MFW-CFA](https://github.com/overflow65537/MFW-PyQt6) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/overflow65537/MFW-PyQt6) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MFW-PyQt6?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MFW-PyQt6?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
+- [MFW-CFA](https://github.com/overflow65537/MFW-PyQt6) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/overflow65537/MFW-PyQt6) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MFW-PyQt6?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MFW-PyQt6?style=social)  
     基于 PySide6 的通用 GUI。由 MaaFramework 强力驱动！
 
 - [MXU](https://github.com/MistEO/MXU) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white) ![license](https://img.shields.io/github/license/MistEO/MXU) ![activity](https://img.shields.io/github/commit-activity/m/MistEO/MXU?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MistEO/MXU?style=social)  
