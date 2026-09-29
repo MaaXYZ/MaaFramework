@@ -787,6 +787,64 @@ def test_custom_controller():
     print("  PASS: custom controller")
 
 
+def _new_command_image_tasker() -> Tasker:
+    resource = Resource()
+    resource.post_bundle(install_dir / "test" / "PipelineSmoking" / "resource").wait()
+    controller = MyController()
+    assert controller.post_connection().wait().succeeded
+    tasker = Tasker()
+    tasker.bind(resource, controller)
+    assert tasker.inited
+    return tasker
+
+
+def _run_command_image(tasker: Tasker, marker: Path):
+    marker.unlink(missing_ok=True)
+    script = "import os,sys; open(sys.argv[2],'w').write(str(os.path.isfile(sys.argv[1])))"
+    detail = (
+        tasker.post_task(
+            "CommandImage",
+            {
+                "CommandImage": {
+                    "action": "Command",
+                    "exec": sys.executable,
+                    "args": ["-c", script, "{IMAGE}", str(marker)],
+                }
+            },
+        )
+        .wait()
+        .get()
+    )
+    assert detail and detail.nodes, "CommandImage task should have node detail"
+    return detail.nodes[0].action.success
+
+
+def test_command_image_placeholder():
+    """回归：{IMAGE} 在第二个 Tasker 上崩溃（static 表绑定悬空 this）；无截图时 OpenCV 断言终止进程"""
+    print("\n=== test_command_image_placeholder ===")
+
+    import tempfile
+
+    marker = Path(tempfile.gettempdir()) / "maafw_command_image_marker.txt"
+
+    # 无截图：应正常失败而不是终止进程
+    no_shot = _new_command_image_tasker()
+    assert not _run_command_image(no_shot, marker), "no cached image should fail"
+    assert not marker.exists(), "command should not run without cached image"
+
+    # 同一进程内多个 Tasker（旧的保持存活）都应能使用 {IMAGE}
+    alive = []
+    for i in range(3):
+        tasker = _new_command_image_tasker()
+        alive.append(tasker)
+        assert tasker.controller.post_screencap().wait().succeeded
+        assert _run_command_image(tasker, marker), f"tasker #{i} Command {{IMAGE}} failed"
+        assert marker.read_text() == "True", f"tasker #{i} image file should exist"
+
+    marker.unlink(missing_ok=True)
+    print("  PASS: Command {IMAGE} placeholder")
+
+
 def _ctypes_type_name(ctypes_type):
     """取 ctypes 类型名；restype 可能为 None（void），此时回退到 repr。"""
     return getattr(ctypes_type, "__name__", repr(ctypes_type))
@@ -1088,6 +1146,9 @@ if __name__ == "__main__":
 
     # 测试 CustomController
     test_custom_controller()
+
+    # 回归：Command 动作 {IMAGE} 占位符
+    test_command_image_placeholder()
 
     # shell API 的 ctypes 声明
     test_shell_api_declarations()
