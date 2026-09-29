@@ -4,12 +4,16 @@
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
+#include <memory>
+#include <optional>
 #include <ranges>
+#include <thread>
 #include <unordered_set>
 
 #include "LibraryHolder/ControlUnit.h"
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/IOStream/BoostIO.hpp"
+#include "MaaUtils/IOStream/ChildPipeIOStream.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/StringMisc.hpp"
 
@@ -30,39 +34,96 @@ void append_unique_devices(
     }
 }
 
-// 端口被防火墙丢包时 adb connect 不会立刻失败，而是等到 Connection::connect_remote() 的 60s 超时；
-// 枚举阶段先用短超时探一次，避免一次扫描被多个无响应端口卡住。
-bool is_tcp_port_open(const std::string& serial)
+std::optional<boost::asio::ip::tcp::endpoint> parse_tcp_endpoint(const std::string& serial)
 {
     std::string_view view(serial);
     auto colon = view.rfind(':');
     if (colon == std::string_view::npos) {
-        return true; // emulator-5554 之类的名字没有端口可探测，交给 adb 自行判断
+        return std::nullopt; // emulator-5554 之类的名字没有端口可探测，交给 adb 自行判断
     }
 
     boost::system::error_code ec;
     auto address = boost::asio::ip::make_address(view.substr(0, colon), ec);
     if (ec) {
-        return true; // 不认识的地址形式不做拦截
+        return std::nullopt; // 不认识的地址形式不做拦截
     }
 
     auto port_view = view.substr(colon + 1);
     int port = 0;
     auto [ptr, port_ec] = std::from_chars(port_view.data(), port_view.data() + port_view.size(), port);
     if (port_ec != std::errc { } || ptr != port_view.data() + port_view.size() || port <= 0 || port > 65535) {
-        return true;
+        return std::nullopt;
     }
 
-    constexpr auto kProbeTimeout = std::chrono::milliseconds(500);
+    return boost::asio::ip::tcp::endpoint(address, static_cast<std::uint16_t>(port));
+}
+
+// 端口没人监听时 adb connect 要等到自己的超时（Connection::connect_remote() 给的是 60s），
+// 枚举阶段先用一次 TCP 可达性筛选。拒绝和丢包都可能被防火墙/VPN 拖慢，所以所有候选串口并行探测、
+// 共用同一个预算，单个串口不会各自吃掉一份超时。
+std::vector<std::string> filter_reachable_serials(const std::vector<std::string>& serials)
+{
+    constexpr auto kProbeBudget = std::chrono::milliseconds(500);
 
     boost::asio::io_context context;
-    boost::asio::ip::tcp::socket socket(context);
-    bool open = false;
-    socket.async_connect(
-        boost::asio::ip::tcp::endpoint(address, static_cast<std::uint16_t>(port)),
-        [&](const boost::system::error_code& connect_ec) { open = !connect_ec; });
-    context.run_for(kProbeTimeout);
-    return open;
+    std::vector<std::unique_ptr<boost::asio::ip::tcp::socket>> sockets;
+    std::vector<bool> reachable(serials.size(), true);
+
+    for (size_t i = 0; i < serials.size(); ++i) {
+        auto endpoint = parse_tcp_endpoint(serials[i]);
+        if (!endpoint) {
+            continue;
+        }
+
+        reachable[i] = false;
+        sockets.emplace_back(std::make_unique<boost::asio::ip::tcp::socket>(context));
+        sockets.back()->async_connect(*endpoint, [&reachable, i](const boost::system::error_code& connect_ec) {
+            reachable[i] = !connect_ec;
+        });
+    }
+
+    if (!sockets.empty()) {
+        context.run_for(kProbeBudget);
+    }
+
+    std::vector<std::string> result;
+    for (size_t i = 0; i < serials.size(); ++i) {
+        if (reachable[i]) {
+            result.emplace_back(serials[i]);
+        }
+        else {
+            LogInfo << "skip unreachable common serial" << VAR(serials[i]);
+        }
+    }
+    return result;
+}
+
+// 探测只能证明端口有人接 TCP，接的人是不是 adb 只有 adb 自己知道；被中间设备接管或 adbd 半死时
+// adb connect 会卡到 Connection::connect_remote() 的 60s 上限，枚举阶段用短超时直接放弃这个串口。
+bool try_adb_connect(const std::filesystem::path& adb_path, const std::string& serial)
+{
+    using namespace std::chrono_literals;
+    constexpr auto kConnectTimeout = 3s;
+    constexpr auto kPollInterval = 20ms;
+    // adb connect 的退出码无论成败都是 0，只能看输出，成功时是 "connected to" / "already connected to"
+    constexpr std::string_view kConnectedFlag = "connected to";
+
+    ChildPipeIOStream ios(adb_path, { "connect", serial });
+
+    auto deadline = std::chrono::steady_clock::now() + kConnectTimeout;
+    while (ios.running() && std::chrono::steady_clock::now() < deadline) {
+        std::this_thread::sleep_for(kPollInterval);
+    }
+
+    if (ios.running()) {
+        LogWarn << "adb connect timeout" << VAR(adb_path) << VAR(serial);
+        return false;
+    }
+
+    auto output = ios.read();
+    LogDebug << VAR(adb_path) << VAR(serial) << VAR(output);
+
+    return output.find(kConnectedFlag) != std::string::npos;
 }
 } // namespace
 
@@ -133,18 +194,23 @@ std::vector<AdbDevice> AdbDeviceFinder::find_by_common_serials(
 {
     LogFunc << VAR(adb_path) << VAR(emulator.common_serials);
 
+    std::vector<std::string> candidates;
+    for (const std::string& ser : emulator.common_serials) {
+        if (!exclude_serials.count(ser)) {
+            candidates.emplace_back(ser);
+        }
+    }
+
     std::vector<AdbDevice> result;
 
     // adb server 与模拟器之间的 TCP 会话可能已断开（模拟器进程与端口仍在），此时 adb devices 不会列出设备，
     // 需要按已知端口重新 connect 一次。
-    for (const std::string& ser : emulator.common_serials) {
-        if (exclude_serials.count(ser)) {
+    for (const std::string& ser : filter_reachable_serials(candidates)) {
+        // adb connect 只对 ip:port 形式有意义，emulator-5554 这类名字交给 try_device 自行判断
+        if (ser.find(':') != std::string::npos && !try_adb_connect(adb_path, ser)) {
             continue;
         }
-        if (!is_tcp_port_open(ser)) {
-            LogInfo << "skip unreachable common serial" << VAR(ser);
-            continue;
-        }
+
         auto res_opt = try_device(adb_path, ser, emulator);
         if (!res_opt) {
             continue;
