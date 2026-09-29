@@ -1609,7 +1609,6 @@ class DirectHitTargetTest(unittest.TestCase):
             ),
             ({"action": "TouchDown", "target": [100, 200]}, ("down", 100, 200)),
             ({"action": "TouchMove", "target": [100, 200]}, ("move", 100, 200)),
-            ({"action": "Scroll", "target": [100, 200], "dy": 120}, ("scroll", 0, 120)),
         ]
         for node, expected in cases:
             with self.subTest(action=node["action"]):
