@@ -25,14 +25,19 @@ bool ActionHelper::wait_freezes(
         return true;
     }
 
-    auto roi = get_target_rect(param.target, ref_box);
-    if (roi.empty()) {
-        LogError << "failed to get target rect for wait_freezes" << VAR(noti_ctx.name);
+    if (!controller()) {
+        LogError << "Controller is null";
         return false;
     }
 
-    if (!controller()) {
-        LogError << "Controller is null";
+    const auto start_clock = std::chrono::steady_clock::now();
+    auto screencap_clock = start_clock;
+    // 使用首帧尺寸解析目标，避免依赖空缓存或旧尺寸。
+    cv::Mat pre_image = controller()->screencap();
+
+    auto roi = get_target_rect(param.target, ref_box);
+    if (roi.empty()) {
+        LogError << "failed to get target rect for wait_freezes" << VAR(noti_ctx.name);
         return false;
     }
 
@@ -61,7 +66,6 @@ bool ActionHelper::wait_freezes(
     };
     notify(MaaMsg_Node_WaitFreezes_Starting, cb_detail);
 
-    const auto start_clock = std::chrono::steady_clock::now();
     std::vector<MaaRecoId> reco_ids;
 
     auto finish = [&](bool success) {
@@ -89,9 +93,6 @@ bool ActionHelper::wait_freezes(
     };
 
     auto rate_limit = std::min(param.rate_limit, param.time);
-
-    auto screencap_clock = std::chrono::steady_clock::now();
-    cv::Mat pre_image = controller()->screencap();
 
     auto corrected_roi = correct_roi(roi, pre_image);
     if (!corrected_roi) {
@@ -210,17 +211,16 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
         return { };
     }
 
-    // 无 controller 时跳过边界检查，直接返回 raw + offset
-    if (!controller()) {
-        LogDebug << "controller not bound, skip image boundary check";
+    auto image = controller() ? controller()->cached_image() : cv::Mat { };
+    // 无缓存图像时跳过归一化和边界检查，直接返回 raw + offset
+    if (image.empty()) {
+        LogDebug << "no cached image, skip target normalization and boundary check";
         return cv::Rect(
             raw.x + target.offset.x,
             raw.y + target.offset.y,
             raw.width + target.offset.width,
             raw.height + target.offset.height);
     }
-
-    auto image = controller()->cached_image();
 
     // Region 类型支持负数坐标和尺寸
     if (target.type == Target::Type::Region) {
