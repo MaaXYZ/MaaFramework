@@ -50,6 +50,16 @@ private:
     void register_sub_result_in_cache(const RecoResult& res);
 
 private:
+    struct BatchOcrCluster
+    {
+        cv::Rect union_roi;
+        std::string batch_name;
+        std::unordered_map<std::string, std::vector<cv::Rect>> node_rois;
+    };
+
+    std::vector<BatchOcrCluster> cluster_batch_ocr(const std::vector<BatchOCREntry>& entries, int max_side_len);
+
+private:
     bool debug_mode() const;
     MAA_RES_NS::ResourceMgr* resource();
 
