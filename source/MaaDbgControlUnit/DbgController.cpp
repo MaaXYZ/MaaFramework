@@ -17,7 +17,7 @@ namespace
 bool is_image_extension(std::string_view ext)
 {
     static const std::unordered_set<std::string> kExts = {
-        ".png", ".jpg", ".jpeg", ".bmp", ".webp", ".tif", ".tiff",
+        ".png", ".jpg", ".jpeg", ".bmp", ".webp",
     };
     std::string lower(ext.begin(), ext.end());
     for (char& c : lower) {
