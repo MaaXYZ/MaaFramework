@@ -1,5 +1,6 @@
 #include <filesystem>
 
+#include "module/BatchOcrRepro.h"
 #include "module/PipelineSmoking.h"
 #include "module/RunWithoutFile.h"
 
@@ -24,6 +25,9 @@ int main([[maybe_unused]] int argc, char** argv)
         return -1;
     }
     if (!pipeline_smoking(testset_dir)) {
+        return -1;
+    }
+    if (!batch_ocr_repro(testset_dir)) {
         return -1;
     }
 
