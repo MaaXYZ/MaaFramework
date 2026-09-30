@@ -820,17 +820,17 @@ def _run_command_image(tasker: Tasker, marker: Path):
 
 
 def test_command_image_placeholder():
-    """回归：{IMAGE} 在第二个 Tasker 上崩溃（static 表绑定悬空 this）；无截图时 OpenCV 断言终止进程"""
+    """回归：{IMAGE} 在第二个 Tasker 上崩溃（static 表绑定悬空 this）；无缓存截图时 OpenCV 断言终止进程"""
     print("\n=== test_command_image_placeholder ===")
 
     import tempfile
 
     marker = Path(tempfile.gettempdir()) / "maafw_command_image_marker.txt"
 
-    # 无截图：应正常失败而不是终止进程
+    # 无缓存截图：应按需补截图，而不是让 imwrite 断言终止进程
     no_shot = _new_command_image_tasker()
-    assert not _run_command_image(no_shot, marker), "no cached image should fail"
-    assert not marker.exists(), "command should not run without cached image"
+    assert _run_command_image(no_shot, marker), "no cached image should screencap on demand"
+    assert marker.read_text() == "True", "image file should exist after on-demand screencap"
 
     # 同一进程内多个 Tasker（旧的保持存活）都应能使用 {IMAGE}
     alive = []
