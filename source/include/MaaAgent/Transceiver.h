@@ -4,7 +4,6 @@
 #include <map>
 #include <mutex>
 #include <optional>
-#include <set>
 #include <vector>
 
 #include <meojson/json.hpp>
@@ -29,71 +28,15 @@ public:
     template <typename ResponseT, typename RequestT>
     std::optional<ResponseT> send_and_recv(const RequestT& req)
     {
-        auto req_id = ++s_req_id_;
-
-        // 等回包期间登记为活跃；无论怎样离开（含异常）都注销，迟到的回包据此丢弃
-        begin_request(req_id);
-
-        struct EndGuard
-        {
-            Transceiver* self;
-            int64_t req_id;
-
-            ~EndGuard() { self->end_request(req_id); }
-        } end_guard { this, req_id };
-
-        // LogFunc << VAR(req_id);
-        json::value req_json = req;
-        req_json[kReqIdKey] = req_id;
-        bool sent = send(req_json);
-        if (!sent) {
-            LogError << "failed to send req" << VAR(req_id);
+        std::optional<json::value> resp_opt = send_and_recv_impl(req, [](const json::value& j) { return j.is<ResponseT>(); });
+        if (!resp_opt) {
             return std::nullopt;
         }
-
-        for (int64_t loop_count = 0;; ++loop_count) {
-            // LogTrace << "enter loop" << VAR(req_id) << VAR(loop_count);
-
-            // 嵌套等待时外层请求的回包可能落到内层循环里，由内层暂存
-            if (auto pending = take_pending_response(req_id)) {
-                if (!pending->is<ResponseT>()) {
-                    LogError << "response type mismatch" << VAR(req_id) << VAR(*pending);
-                    return std::nullopt;
-                }
-                return pending->as<ResponseT>();
-            }
-
-            auto msg_opt = recv();
-            if (!msg_opt) {
-                LogError << "failed to recv resp" << VAR(req_id) << VAR(loop_count);
-                return std::nullopt;
-            }
-            const json::value& msg = *msg_opt;
-            if (auto resp_id = msg.find<int64_t>(kRespIdKey)) {
-                if (*resp_id == req_id && msg.is<ResponseT>()) {
-                    return msg.as<ResponseT>();
-                }
-                stash_response(*resp_id, msg);
-                continue;
-            }
-            // 对端不带编号（老版本）时按类型认
-            if (msg.is<ResponseT>()) {
-                // LogTrace << "response" << VAR(req_id) << VAR(loop_count);
-                return msg.as<ResponseT>();
-            }
-            else if (msg.is<ImageHeader>()) {
-                handle_image(msg.as<ImageHeader>());
-            }
-            else if (msg.is<ImageEncodedHeader>()) {
-                handle_image_encoded(msg.as<ImageEncodedHeader>());
-            }
-            else {
-                // LogTrace << "inserted request" << VAR(req_id) << VAR(loop_count);
-                dispatch_inserted_request(msg);
-            }
+        if (!resp_opt->is<ResponseT>()) {
+            LogError << "response type mismatch" << VAR(*resp_opt);
+            return std::nullopt;
         }
-        // unreachable code
-        // return std::nullopt;
+        return resp_opt->as<ResponseT>();
     }
 
     std::string send_image(const cv::Mat& mat);
@@ -125,11 +68,11 @@ private:
     void handle_image_encoded(const ImageEncodedHeader& header);
     bool poll(zmq::pollitem_t& pollitem);
 
+    // is_untagged_response 只用于认领不带 _resp_id 的回包（老版本对端）
+    std::optional<json::value> send_and_recv_impl(json::value req, bool (*is_untagged_response)(const json::value&));
     static bool is_response(const json::value& j);
-    void begin_request(int64_t req_id);
-    void end_request(int64_t req_id);
     std::optional<json::value> take_pending_response(int64_t req_id);
-    void stash_response(int64_t resp_id, const json::value& msg);
+    void stash_response(int64_t resp_id, json::value msg);
 
 protected:
     // 返回实际绑定的端口号，如果传入 0 则自动选择可用端口
@@ -167,10 +110,10 @@ private:
 
     inline static thread_local std::vector<HandlingRequest> s_handling_requests_;
 
-    // 只为仍在等待的请求暂存回包，两张表的大小都受限于同时在等的请求数
+    // key 仅在该请求等待期间存在，迟到的回包据此丢弃，表大小受限于同时在等的请求数；
+    // value 是嵌套等待时被内层循环收到、留给外层取的回包
     std::mutex pending_mutex_;
-    std::set<int64_t> active_req_ids_;
-    std::map<int64_t, json::value> pending_responses_;
+    std::map<int64_t, std::optional<json::value>> pending_responses_;
 
     bool is_bound_ = false;
 
