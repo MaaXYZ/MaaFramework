@@ -66,6 +66,10 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
         return false;
     }
 
+#if !MAAUTILS_HAS_BOOST_PROCESS
+    LogError << "Boost.Process is not available in this build";
+    return false;
+#else
     std::string conv_exec = gen_runtime(command.exec);
     std::filesystem::path exec = boost::process::search_path(path(conv_exec));
     if (!std::filesystem::exists(exec)) {
@@ -99,6 +103,7 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
         child.join();
     }
     return true;
+#endif
 }
 
 std::string CommandAction::get_entry_name(const Runtime& runtime)

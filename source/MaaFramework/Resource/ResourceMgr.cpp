@@ -663,7 +663,9 @@ bool ResourceMgr::use_webgpu()
         return false;
     }
 
-    onnx_res_.use_webgpu(device_id);
+    if (!onnx_res_.use_webgpu(device_id)) {
+        return false;
+    }
     ocr_res_.use_webgpu(device_id);
     return true;
 }

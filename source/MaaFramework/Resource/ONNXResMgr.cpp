@@ -90,22 +90,32 @@ void ONNXResMgr::use_directml(int device_id)
 #endif
 }
 
-void ONNXResMgr::use_webgpu(int device_id)
+bool ONNXResMgr::use_webgpu(int device_id)
 {
     LogInfo << VAR(device_id);
 
-    options_ = { };
-    // OrtSessionOptionsAppendExecutionProvider prefixes each key with
-    // "ep.webgpuexecutionprovider.". The EP reads "deviceId"; device 0 is the default.
-    std::unordered_map<std::string, std::string> webgpu_options;
-    if (device_id > 0) {
-        webgpu_options.emplace("deviceId", std::to_string(device_id));
+    try {
+        options_ = { };
+        // OrtSessionOptionsAppendExecutionProvider prefixes each key with
+        // "ep.webgpuexecutionprovider.". The EP reads "deviceId"; device 0 is the default.
+        std::unordered_map<std::string, std::string> webgpu_options;
+        if (device_id > 0) {
+            webgpu_options.emplace("deviceId", std::to_string(device_id));
+        }
+        options_.AppendExecutionProvider("WebGPU", webgpu_options);
     }
-    options_.AppendExecutionProvider("WebGPU", webgpu_options);
+    catch (const Ort::Exception& e) {
+        // A CPU-only machine still reports the EP, then throws when no adapter exists.
+        LogError << "Failed to append WebGPU execution provider" << e.what();
+        options_ = { };
+        memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+        return false;
+    }
 
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using WebGPU execution provider with device_id" << device_id;
+    return true;
 }
 
 void ONNXResMgr::use_coreml(uint32_t coreml_flag)

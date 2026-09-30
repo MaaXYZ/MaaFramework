@@ -160,7 +160,12 @@ enum MaaInferenceExecutionProviderEnum
     // The value is kept so existing callers still compile. MaaResOption_InferenceDevice
     // used to be a coreml_flag from
     // https://github.com/microsoft/onnxruntime/blob/main/include/onnxruntime/core/providers/coreml/coreml_provider_factory.h
-    MaaInferenceExecutionProvider_CoreML MAA_DEPRECATED = 3,
+    // [[deprecated]] is C++ only. __declspec(deprecated) cannot follow an enumerator name on MSVC.
+#if defined(__cplusplus)
+    MaaInferenceExecutionProvider_CoreML [[deprecated]] = 3,
+#else
+    MaaInferenceExecutionProvider_CoreML = 3,
+#endif
 
     // MaaResOption_InferenceDevice will be used to set NVIDIA GPU ID
     // TODO!
