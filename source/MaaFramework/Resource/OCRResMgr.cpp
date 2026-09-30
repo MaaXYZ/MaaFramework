@@ -45,14 +45,17 @@ void OCRResMgr::use_directml(int device_id)
     rec_option_.UseDirectML(device_id);
 }
 
+void OCRResMgr::use_webgpu(int device_id)
+{
+    LogInfo << VAR(device_id);
+
+    det_option_.UseWebGPU(device_id);
+    rec_option_.UseWebGPU(device_id);
+}
+
 void OCRResMgr::use_coreml(uint32_t coreml_flag)
 {
-    LogInfo << VAR(coreml_flag);
-
-    // det_option_.UseCoreML(coreml_flag);
-    // rec_option_.UseCoreML(coreml_flag);
-
-    LogWarn << "OCR with CoreML is very poor. I don’t know the reason yet. Roll back to using CPU";
+    LogWarn << "CoreML is deprecated and no longer shipped. OCR falls back to CPU; use WebGPU instead" << VAR(coreml_flag);
 
     use_cpu();
 }

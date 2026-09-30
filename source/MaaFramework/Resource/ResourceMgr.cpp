@@ -11,6 +11,28 @@
 #include "PipelineDumper.h"
 #include "PipelineParser.h"
 
+namespace
+{
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif
+constexpr MaaInferenceExecutionProvider kCoreMLProvider = MaaInferenceExecutionProvider_CoreML;
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(_MSC_VER)
+#pragma warning(pop)
+#endif
+} // namespace
+
 MAA_RES_NS_BEGIN
 
 ResourceMgr::ResourceMgr()
@@ -397,13 +419,16 @@ const std::unordered_set<MaaInferenceExecutionProvider>& ResourceMgr::available_
         }
         else if (name == "CoreMLExecutionProvider") {
 #ifdef MAA_WITH_COREML
-            s_provider_cache.emplace(MaaInferenceExecutionProvider_CoreML);
+            s_provider_cache.emplace(kCoreMLProvider);
 #else
             LogDebug << "MaaFW built without CoreML";
 #endif
         }
         else if (name == "CUDAExecutionProvider") {
             s_provider_cache.emplace(MaaInferenceExecutionProvider_CUDA);
+        }
+        else if (name == "WebGpuExecutionProvider") {
+            s_provider_cache.emplace(MaaInferenceExecutionProvider_WebGPU);
         }
         else {
             LogDebug << "unsupported provider" << VAR(name);
@@ -467,8 +492,14 @@ bool ResourceMgr::check_and_set_inference_device()
     case MaaInferenceExecutionProvider_DirectML:
         ret = use_directml();
         break;
-    case MaaInferenceExecutionProvider_CoreML:
+    case kCoreMLProvider:
         ret = use_coreml();
+        break;
+    case MaaInferenceExecutionProvider_CUDA:
+        ret = use_cuda();
+        break;
+    case MaaInferenceExecutionProvider_WebGPU:
+        ret = use_webgpu();
         break;
     default:
         LogError << "invalid inference execution provider" << VAR(inference_ep_);
@@ -493,7 +524,10 @@ bool ResourceMgr::use_auto_ep()
     else if (providers.contains(MaaInferenceExecutionProvider_DirectML)) {
         return use_directml();
     }
-    else if (providers.contains(MaaInferenceExecutionProvider_CoreML)) {
+    else if (providers.contains(MaaInferenceExecutionProvider_WebGPU)) {
+        return use_webgpu();
+    }
+    else if (providers.contains(kCoreMLProvider)) {
         return use_coreml();
     }
     else {
@@ -544,8 +578,10 @@ bool ResourceMgr::use_directml()
 
 bool ResourceMgr::use_coreml()
 {
+    LogWarn << "CoreML execution provider is deprecated and is no longer shipped. Use WebGPU instead";
+
     const auto& providers = available_providers();
-    if (!providers.contains(MaaInferenceExecutionProvider_CoreML)) {
+    if (!providers.contains(kCoreMLProvider)) {
         LogError << "CoreML is not available";
         return false;
     }
@@ -600,6 +636,35 @@ bool ResourceMgr::use_cuda()
 
     onnx_res_.use_cuda(device_id);
     ocr_res_.use_cuda(device_id);
+    return true;
+}
+
+bool ResourceMgr::use_webgpu()
+{
+    const auto& providers = available_providers();
+    if (!providers.contains(MaaInferenceExecutionProvider_WebGPU)) {
+        LogError << "WebGPU is not available";
+        return false;
+    }
+
+    int device_id = 0;
+    if (inference_device_ == MaaInferenceDevice_CPU) {
+        LogError << "Invalid device: MaaInferenceDevice_CPU for WebGPU";
+        return false;
+    }
+    else if (inference_device_ == MaaInferenceDevice_Auto) {
+        device_id = 0;
+    }
+    else if (inference_device_ >= MaaInferenceDevice_0) {
+        device_id = inference_device_;
+    }
+    else {
+        LogError << "invalid inference device" << VAR(inference_device_);
+        return false;
+    }
+
+    onnx_res_.use_webgpu(device_id);
+    ocr_res_.use_webgpu(device_id);
     return true;
 }
 

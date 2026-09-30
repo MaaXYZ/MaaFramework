@@ -2,6 +2,8 @@
 
 #include <filesystem>
 #include <ranges>
+#include <string>
+#include <unordered_map>
 #include <unordered_set>
 
 #ifdef _WIN32
@@ -88,9 +90,27 @@ void ONNXResMgr::use_directml(int device_id)
 #endif
 }
 
+void ONNXResMgr::use_webgpu(int device_id)
+{
+    LogInfo << VAR(device_id);
+
+    options_ = { };
+    // OrtSessionOptionsAppendExecutionProvider prefixes each key with
+    // "ep.webgpuexecutionprovider.". The EP reads "deviceId"; device 0 is the default.
+    std::unordered_map<std::string, std::string> webgpu_options;
+    if (device_id > 0) {
+        webgpu_options.emplace("deviceId", std::to_string(device_id));
+    }
+    options_.AppendExecutionProvider("WebGPU", webgpu_options);
+
+    memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+
+    LogInfo << "Using WebGPU execution provider with device_id" << device_id;
+}
+
 void ONNXResMgr::use_coreml(uint32_t coreml_flag)
 {
-    LogInfo << VAR(coreml_flag);
+    LogWarn << "CoreML execution provider is deprecated and is no longer shipped. Use WebGPU instead" << VAR(coreml_flag);
 
 #ifdef MAA_WITH_COREML
 

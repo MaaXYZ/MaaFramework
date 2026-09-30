@@ -271,6 +271,8 @@ This project is open-sourced under the [`LGPL-3.0`](./LICENSE.md) license.
 
 This project supports GPU acceleration, which relies on an independent component provided by Microsoft: [DirectML](https://learn.microsoft.com/en-us/windows/ai/directml/) for the Windows platform. DirectML is not part of this project's open-source codebase and is not governed by the LGPL-3.0 license. For user convenience, an unmodified copy of the DirectML.dll file is included in the installation package. If GPU acceleration is not required, you may safely delete this DLL file without affecting the core functionality of the software.
 
+The Windows, Linux and macOS prebuilt dependencies also include a WebGPU inference library based on [Dawn](https://dawn.googlesource.com/dawn) (`libwebgpu_dawn`). macOS no longer ships CoreML.
+
 ### Disclaimer
 
 #### Intended Use
