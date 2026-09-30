@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <map>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <thread>
 #include <vector>
@@ -117,7 +118,7 @@ private:
     bool wait_for_anchor_released(std::unique_lock<std::mutex>& lock);
 
     bool to_screen(int x, int y, POINT& out) const;
-    POINT compute_anchor_origin() const;
+    std::optional<POINT> compute_anchor_origin() const;
 
     bool is_occluded(POINT screen) const;
     bool anchor_covers(POINT screen) const;
