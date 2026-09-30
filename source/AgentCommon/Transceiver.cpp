@@ -8,6 +8,7 @@
 #include <fstream>
 #include <optional>
 #include <string_view>
+#include <utility>
 
 #ifdef _WIN32
 #include "MaaUtils/SafeWindows.hpp"
@@ -18,6 +19,7 @@
 #endif
 
 #include "MaaUtils/Platform.h"
+#include "MaaUtils/ScopeLeave.hpp"
 #include "MaaUtils/StringMisc.hpp"
 #include "MaaUtils/Uuid.h"
 
@@ -332,7 +334,122 @@ bool Transceiver::send(const json::value& j)
         return false;
     }
 
-    return send_impl(j);
+    const bool tag = !s_handling_requests_.empty() && s_handling_requests_.back().owner == this && s_handling_requests_.back().req_id
+                     && is_response(j);
+    if (!tag) {
+        return send_impl(j);
+    }
+
+    json::value tagged = j;
+    tagged[kRespIdKey] = *s_handling_requests_.back().req_id;
+    return send_impl(tagged);
+}
+
+bool Transceiver::is_response(const json::value& j)
+{
+    // 消息靠 _XxxResponse / _XxxRequest 占位字段区分类型
+    if (!j.is_object()) {
+        return false;
+    }
+    return std::ranges::any_of(j.as_object(), [](const auto& kv) { return kv.first.starts_with('_') && kv.first.ends_with("Response"); });
+}
+
+std::optional<json::value> Transceiver::send_and_recv_impl(json::value req, bool (*is_untagged_response)(const json::value&))
+{
+    const int64_t req_id = ++s_req_id_;
+
+    {
+        std::unique_lock lock(pending_mutex_);
+        pending_responses_.emplace(req_id, std::nullopt);
+    }
+    // poll() 可能抛异常，任何退出路径都要注销
+    OnScopeLeave([&]() {
+        std::unique_lock lock(pending_mutex_);
+        pending_responses_.erase(req_id);
+    });
+
+    // LogFunc << VAR(req_id);
+    req[kReqIdKey] = req_id;
+    bool sent = send(req);
+    if (!sent) {
+        LogError << "failed to send req" << VAR(req_id);
+        return std::nullopt;
+    }
+
+    for (int64_t loop_count = 0;; ++loop_count) {
+        // LogTrace << "enter loop" << VAR(req_id) << VAR(loop_count);
+
+        if (auto pending = take_pending_response(req_id)) {
+            return pending;
+        }
+
+        auto msg_opt = recv();
+        if (!msg_opt) {
+            LogError << "failed to recv resp" << VAR(req_id) << VAR(loop_count);
+            return std::nullopt;
+        }
+        json::value& msg = *msg_opt;
+        if (auto resp_id = msg.find<int64_t>(kRespIdKey)) {
+            if (*resp_id == req_id) {
+                return std::move(msg);
+            }
+            // 嵌套等待时外层请求的回包可能先落到内层循环里
+            stash_response(*resp_id, std::move(msg));
+            continue;
+        }
+        if (is_untagged_response(msg)) {
+            // LogTrace << "response" << VAR(req_id) << VAR(loop_count);
+            return std::move(msg);
+        }
+        else if (msg.is<ImageHeader>()) {
+            handle_image(msg.as<ImageHeader>());
+        }
+        else if (msg.is<ImageEncodedHeader>()) {
+            handle_image_encoded(msg.as<ImageEncodedHeader>());
+        }
+        else {
+            // LogTrace << "inserted request" << VAR(req_id) << VAR(loop_count);
+            dispatch_inserted_request(msg);
+        }
+    }
+    // unreachable code
+    // return std::nullopt;
+}
+
+std::optional<json::value> Transceiver::take_pending_response(int64_t req_id)
+{
+    std::unique_lock lock(pending_mutex_);
+
+    auto it = pending_responses_.find(req_id);
+    if (it == pending_responses_.end()) {
+        return std::nullopt;
+    }
+    return std::exchange(it->second, std::nullopt);
+}
+
+void Transceiver::stash_response(int64_t resp_id, json::value msg)
+{
+    std::unique_lock lock(pending_mutex_);
+
+    // 超时放弃、异常退出或对端乱发的编号都没人再取，不暂存
+    auto it = pending_responses_.find(resp_id);
+    if (it == pending_responses_.end()) {
+        LogWarn << "drop stale response" << VAR(resp_id) << VAR(ipc_addr_);
+        return;
+    }
+    it->second = std::move(msg);
+}
+
+bool Transceiver::dispatch_inserted_request(const json::value& j)
+{
+    s_handling_requests_.push_back({ .owner = this, .req_id = j.find<int64_t>(kReqIdKey) });
+
+    struct PopGuard
+    {
+        ~PopGuard() { s_handling_requests_.pop_back(); }
+    } pop_guard;
+
+    return handle_inserted_request(j);
 }
 
 bool Transceiver::send_no_wait(const json::value& j)
