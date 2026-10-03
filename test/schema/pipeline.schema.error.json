@@ -76,5 +76,10 @@
                 }
             }
         }
+    },
+    "custom_recognition_order_by": {
+        "recognition": "Custom",
+        "custom_recognition": "<custom_1>",
+        "order_by": "Horizontal"
     }
 }

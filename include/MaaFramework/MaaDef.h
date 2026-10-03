@@ -664,6 +664,10 @@ typedef void(MAA_CALL* MaaNotificationCallback)(const char* message, const char*
 /// - MaaContext* for MaaContext event
 typedef void(MAA_CALL* MaaEventCallback)(void* handle, const char* message, const char* details_json, void* trans_arg);
 
+/// out_box is the final (single) result; out_detail carries arbitrary callback data.
+/// To return multiple results, write a JSON object into out_detail with the reserved keys
+/// "$all" / "$filtered", each an array of {"box": [x, y, w, h], "detail": any}; the framework
+/// keeps the callback's own order and selects the final box with the node's "index".
 typedef MaaBool(MAA_CALL* MaaCustomRecognitionCallback)(
     MaaContext* context,
     MaaTaskId task_id,

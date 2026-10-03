@@ -1635,6 +1635,12 @@
                     "description": "识别参数，任意类型，会通过 `MaaCustomRecognitionCallback`.`custom_recognition_param` 传出。可选，默认 `null` 。",
                     "$ref": "#/$defs/jsonDefaultObject",
                     "markdownDescription": "*any*\n\n识别参数，任意类型，会通过 `MaaCustomRecognitionCallback`.`custom_recognition_param` 传出。可选，默认 `null` 。"
+                },
+                "index": {
+                    "title": "Index Property",
+                    "description": "命中第几个结果。可选，默认 0 。",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n自定义识别可在 `MaaCustomRecognitionCallback`.`out_detail` 中写入一个多结果 JSON 对象，即 `{\"$all\": [{\"box\": [x, y, w, h], \"detail\": any}, ...]}` 形式，`$filtered` 同理。结果顺序由回调自行决定，框架不排序。假设返回了 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。"
                 }
             },
             "allOf": [
