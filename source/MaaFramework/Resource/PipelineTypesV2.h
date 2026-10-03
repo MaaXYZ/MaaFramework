@@ -117,8 +117,9 @@ struct JCustomRecognition
     JRect roi_offset;
     std::string custom_recognition;
     json::value custom_recognition_param;
+    int index = 0;
 
-    MEO_TOJSON(roi, roi_offset, custom_recognition, custom_recognition_param);
+    MEO_TOJSON(roi, roi_offset, custom_recognition, custom_recognition_param, index);
 };
 
 struct JSubRecognition;

@@ -50,6 +50,7 @@ declare global {
 
         type CustomCallback<Self, Ret> = (this: Self, self: Self) => MaybePromise<Ret>
 
+        // out_detail 写入 $all / $filtered 多结果 JSON 对象可返回多个结果，框架按节点的 index 选取最终 box
         type CustomRecognitionCallback = CustomCallback<
             CustomRecognitionSelf,
             [out_box: Rect, out_detail: string] | null
