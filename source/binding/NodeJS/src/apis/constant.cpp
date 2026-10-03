@@ -82,6 +82,7 @@ static maajs::ValueType load_win32_input_method(maajs::EnvType env)
     DEM(MaaWin32InputMethod, SendMessageWithWindowPos);
     DEM(MaaWin32InputMethod, PostMessageWithWindowPos);
     DEM(MaaWin32InputMethod, Interception);
+    DEM(MaaWin32InputMethod, AnchoredTouch);
 
     return obj;
 }
@@ -167,6 +168,28 @@ static maajs::ValueType load_macos_input_method(maajs::EnvType env)
     return obj;
 }
 
+static maajs::ValueType load_linux_screencap_method(maajs::EnvType env)
+{
+    auto obj = maajs::ObjectType::New(env);
+
+    DEM(MaaLinuxScreencapMethod, Wlr);
+    DEM(MaaLinuxScreencapMethod, ExtImage);
+    DEM(MaaLinuxScreencapMethod, PipeWire);
+
+    return obj;
+}
+
+static maajs::ValueType load_linux_input_method(maajs::EnvType env)
+{
+    auto obj = maajs::ObjectType::New(env);
+
+    DEM(MaaLinuxInputMethod, Wlr);
+    DEM(MaaLinuxInputMethod, UInput);
+    DEM(MaaLinuxInputMethod, Libei);
+
+    return obj;
+}
+
 std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env)
 {
     return {
@@ -177,6 +200,8 @@ std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env)
         { "Win32InputMethod", load_win32_input_method(env) },
         { "MacOSScreencapMethod", load_macos_screencap_method(env) },
         { "MacOSInputMethod", load_macos_input_method(env) },
+        { "LinuxScreencapMethod", load_linux_screencap_method(env) },
+        { "LinuxInputMethod", load_linux_input_method(env) },
         { "GamepadType", load_gamepad_type(env) },
         { "GamepadButton", load_gamepad_button(env) },
         { "GamepadContact", load_gamepad_contact(env) },

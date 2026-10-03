@@ -15,6 +15,8 @@ from pathlib import Path
 import sys
 import json
 import io
+import tempfile
+import unittest
 
 # Fix encoding issues on Windows
 if sys.stdout.encoding != "utf-8":
@@ -36,15 +38,17 @@ print(f"install_dir: {install_dir}")
 if str(binding_dir) not in sys.path:
     sys.path.insert(0, str(binding_dir))
 
+import numpy as np
+
 from maa.library import Library
 from maa.resource import Resource
-from maa.controller import DbgController, ReplayController
+from maa.controller import CustomController, DbgController, ReplayController
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.define import LoggingLevelEnum
-from maa.context import Context
+from maa.context import Context, ContextEventSink
 from maa.pipeline import (
     JPipelineData,
     JRecognitionType,
@@ -63,6 +67,7 @@ from maa.pipeline import (
     JLongPress,
     JSwipe,
     JMultiSwipe,
+    JTouch,
     JInputText,
     JStartApp,
     JStopApp,
@@ -72,6 +77,8 @@ from maa.pipeline import (
     JScreencap,
     JCustomAction,
     JNodeAttr,
+    JKey,
+    JWaitFreezes,
 )
 
 
@@ -143,6 +150,94 @@ def test_resource_node_list(resource: Resource):
 
     print(f"  Found {len(node_list)} nodes: {node_list[:5]}...")
     print("  PASS: resource.node_list")
+
+
+def test_and_sub_recognition_dumper_roundtrip():
+    """And 内联子识别经过 dump 后仍然可以重新加载"""
+    print("\n=== test_and_sub_recognition_dumper_roundtrip ===")
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_path = Path(tmp_dir)
+        source_dir = tmp_path / "source"
+        source_pipeline_dir = source_dir / "pipeline"
+        source_pipeline_dir.mkdir(parents=True)
+        with open(source_pipeline_dir / "source.json", "w", encoding="utf-8") as file:
+            json.dump(
+                {
+                    "AndTask": {
+                        "recognition": {
+                            "type": "And",
+                            "param": {
+                                "all_of": [
+                                    {
+                                        "sub_name": "OCR1",
+                                        "recognition": {
+                                            "type": "OCR",
+                                            "param": {"expected": ["test"]},
+                                        },
+                                    }
+                                ]
+                            },
+                        }
+                    }
+                },
+                file,
+                indent=4,
+            )
+
+        resource = Resource()
+        resource.post_bundle(str(source_dir)).wait()
+        assert_true(resource.loaded, "source resource should load")
+
+        dumped = resource.get_node_data("AndTask")
+        assert_not_none(dumped, "dumped And node")
+
+        roundtrip_dir = tmp_path / "roundtrip"
+        roundtrip_pipeline_dir = roundtrip_dir / "pipeline"
+        roundtrip_pipeline_dir.mkdir(parents=True)
+        with open(roundtrip_pipeline_dir / "roundtrip.json", "w", encoding="utf-8") as file:
+            json.dump({"AndTask": dumped}, file, indent=4)
+
+        roundtrip_resource = Resource()
+        roundtrip_resource.post_bundle(str(roundtrip_dir)).wait()
+        assert_true(roundtrip_resource.loaded, "dumped resource should load again")
+
+    print("  PASS: And sub-recognition dumper/parser round-trip")
+
+def test_color_match_dumper_roundtrip():
+    """空的 ColorMatch lower/upper 经过 dump 后仍然可以重新加载"""
+    print("\n=== test_color_match_dumper_roundtrip ===")
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_path = Path(tmp_dir)
+        source_dir = tmp_path / "source"
+        source_pipeline_dir = source_dir / "pipeline"
+        source_pipeline_dir.mkdir(parents=True)
+        with open(source_pipeline_dir / "source.json", "w", encoding="utf-8") as file:
+            json.dump(
+                {"ColorMatchDefault": {"recognition": "ColorMatch"}},
+                file,
+                indent=4,
+            )
+
+        resource = Resource()
+        resource.post_bundle(str(source_dir)).wait()
+        assert_true(resource.loaded, "source resource should load")
+
+        dumped = resource.get_node_data("ColorMatchDefault")
+        assert_not_none(dumped, "dumped ColorMatch node")
+
+        roundtrip_dir = tmp_path / "roundtrip"
+        roundtrip_pipeline_dir = roundtrip_dir / "pipeline"
+        roundtrip_pipeline_dir.mkdir(parents=True)
+        with open(roundtrip_pipeline_dir / "roundtrip.json", "w", encoding="utf-8") as file:
+            json.dump({"ColorMatchDefault": dumped}, file, indent=4)
+
+        roundtrip_resource = Resource()
+        roundtrip_resource.post_bundle(str(roundtrip_dir)).wait()
+        assert_true(roundtrip_resource.loaded, "dumped resource should load again")
+
+    print("  PASS: ColorMatch dumper/parser round-trip")
 
 
 # ============================================================================
@@ -852,6 +947,54 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(param.dx, 0, "dx")
         assert_eq(param.dy, -360, "dy")
 
+        # TouchDown
+        new_ctx.override_pipeline(
+            {
+                "ActTouchDown": {
+                    "action": "TouchDown",
+                    "target": [100, 200, 50, 50],
+                    "contact": 1,
+                    "pressure": 2,
+                    "auto_up": True,
+                }
+            }
+        )
+        obj = new_ctx.get_node_object("ActTouchDown")
+        assert_eq(obj.action.type, JActionType.TouchDown, "TouchDown type")
+        param = obj.action.param
+        assert_true(isinstance(param, JTouch), "TouchDown param")
+        assert_eq(param.contact, 1, "contact")
+        assert_eq(param.pressure, 2, "pressure")
+        assert_eq(param.auto_up, True, "auto_up")
+
+        # TouchDown default auto_up
+        new_ctx.override_pipeline({"ActTouchDownDefault": {"action": "TouchDown"}})
+        obj = new_ctx.get_node_object("ActTouchDownDefault")
+        assert_eq(obj.action.type, JActionType.TouchDown, "TouchDown default type")
+        param = obj.action.param
+        assert_true(isinstance(param, JTouch), "TouchDown default param")
+        assert_eq(param.auto_up, False, "default auto_up")
+
+        # KeyDown
+        new_ctx.override_pipeline(
+            {"ActKeyDown": {"action": "KeyDown", "key": 65, "auto_up": True}}
+        )
+        obj = new_ctx.get_node_object("ActKeyDown")
+        assert_eq(obj.action.type, JActionType.KeyDown, "KeyDown type")
+        param = obj.action.param
+        assert_true(isinstance(param, JKey), "KeyDown param")
+        assert_eq(param.key, 65, "key")
+        assert_eq(param.auto_up, True, "auto_up")
+
+        # KeyDown default auto_up
+        new_ctx.override_pipeline({"ActKeyDownDefault": {"action": "KeyDown", "key": 66}})
+        obj = new_ctx.get_node_object("ActKeyDownDefault")
+        assert_eq(obj.action.type, JActionType.KeyDown, "KeyDown default type")
+        param = obj.action.param
+        assert_true(isinstance(param, JKey), "KeyDown default param")
+        assert_eq(param.key, 66, "key")
+        assert_eq(param.auto_up, False, "default auto_up")
+
         print("    PASS: action types parsing")
 
     def _test_node_attributes(self, context: Context):
@@ -1198,6 +1341,527 @@ def test_repeat_params(context: Context):
 # ============================================================================
 
 
+class TargetController(CustomController):
+    def __init__(self):
+        super().__init__()
+        self.screenshot_count = 0
+        self.image_available = False
+        self.image_shape = (720, 1280, 3)
+        self.scale_points = False
+        self.use_touch = False
+        self.inputs = []
+
+    def connect(self):
+        return True
+
+    def request_uuid(self):
+        return "directhit-target-test"
+
+    def get_features(self):
+        # 禁用坐标缩放，避免其初始化截图干扰目标解析测试。
+        return (0 if self.scale_points else 1 << 2) | int(self.use_touch)
+
+    def screencap(self):
+        self.screenshot_count += 1
+        shape = self.image_shape if self.image_available else (0, 0, 3)
+        return np.zeros(shape, dtype=np.uint8)
+
+    def click(self, x, y):
+        self.inputs.append(("click", x, y))
+        return True
+
+    def swipe(self, x1, y1, x2, y2, duration):
+        self.inputs.append(("swipe", x1, y1, x2, y2))
+        return True
+
+    def touch_down(self, contact, x, y, pressure):
+        self.inputs.append(("down", x, y))
+        return True
+
+    def touch_move(self, contact, x, y, pressure):
+        self.inputs.append(("move", x, y))
+        return True
+
+    def touch_up(self, contact):
+        return True
+
+    def scroll(self, dx, dy):
+        self.inputs.append(("scroll", dx, dy))
+        return True
+
+    def start_app(self, intent):
+        return True
+
+    def stop_app(self, intent):
+        return True
+
+    def click_key(self, keycode):
+        return True
+
+    def input_text(self, text):
+        return True
+
+    def key_down(self, keycode):
+        return True
+
+    def key_up(self, keycode):
+        return True
+
+
+class TargetAction(CustomAction):
+    def __init__(self):
+        super().__init__()
+        self.boxes = []
+
+    def run(self, context, argv):
+        self.boxes.append([argv.box.x, argv.box.y, argv.box.w, argv.box.h])
+        return True
+
+
+class WaitFreezesAction(CustomAction):
+    def __init__(self, param, box=None):
+        super().__init__()
+        self.param = param
+        self.box = box
+        self.result = None
+
+    def run(self, context, argv):
+        self.result = context.wait_freezes(
+            box=self.box, wait_freezes_param=self.param
+        )
+        return True
+
+
+class WaitFreezesSink(ContextEventSink):
+    def __init__(self):
+        super().__init__()
+        self.succeeded = []
+
+    def on_raw_notification(self, context, msg, details):
+        if msg == "Node.WaitFreezes.Succeeded":
+            self.succeeded.append(details)
+
+
+class DirectHitTargetTest(unittest.TestCase):
+    def setUp(self):
+        self.bundle = tempfile.TemporaryDirectory()
+        self.addCleanup(self.bundle.cleanup)
+        pipeline_dir = Path(self.bundle.name) / "pipeline"
+        pipeline_dir.mkdir()
+        (pipeline_dir / "test.json").write_text("{}", encoding="utf-8")
+        self.resource = Resource()
+        self.assertTrue(self.resource.post_bundle(self.bundle.name).wait().succeeded)
+        self.action = TargetAction()
+        self.assertTrue(
+            self.resource.register_custom_action("TargetProbe", self.action)
+        )
+        self.controller = TargetController()
+        self.assertTrue(self.controller.post_connection().wait().succeeded)
+        self.tasker = Tasker()
+        self.assertTrue(self.tasker.bind(self.resource, self.controller))
+
+    def run_node(self, node, entry="Target", extra=None):
+        node = {"recognition": "DirectHit", "pre_delay": 0, "post_delay": 0, **node}
+        pipeline = {"Target": node, **(extra or {})}
+        job = self.tasker.post_task(entry, pipeline).wait()
+        self.assertTrue(job.succeeded)
+        detail = job.get()
+        self.assertIsNotNone(detail)
+        self.assertTrue(all(n.completed for n in detail.nodes), detail.nodes)
+        return detail
+
+    def check_custom(self, param, expected, v2=False, entry="Target", extra=None):
+        action_param = {"custom_action": "TargetProbe", **param}
+        node = {"roi": [100, 200, 50, 60]}
+        if v2:
+            node["action"] = {"type": "Custom", "param": action_param}
+        else:
+            node.update({"action": "Custom", **action_param})
+        before = len(self.action.boxes)
+        self.run_node(node, entry, extra)
+        self.assertEqual(self.action.boxes[before:], [expected])
+
+    def test_custom_without_screenshot(self):
+        cases = [
+            ({"target": [100, 200, 50, 60]}, [100, 200, 50, 60]),
+            ({"target": [100, 200]}, [100, 200, 1, 1]),
+            (
+                {"target": [100, 200, 50, 60], "target_offset": [5, -10, 2, 3]},
+                [105, 190, 52, 63],
+            ),
+            ({"target": True}, [100, 200, 50, 60]),
+            ({}, [100, 200, 50, 60]),
+        ]
+        for v2 in (False, True):
+            for param, expected in cases:
+                with self.subTest(v2=v2, param=param):
+                    self.check_custom(param, expected, v2)
+        self.assertEqual(self.controller.screenshot_count, 0)
+
+    def test_no_controller_uses_same_target_semantics(self):
+        cases = [
+            (
+                {"target": [100, 200, 50, 60], "target_offset": [5, -10, 2, 3]},
+                [105, 190, 52, 63],
+            ),
+            ({"target": [-10, -20, 5, 6]}, [-10, -20, 5, 6]),
+            ({"target": [100, 200, 0, 0]}, [100, 200, 0, 0]),
+            ({"target": [100, 200, -50, -60]}, [100, 200, -50, -60]),
+            ({"target": True, "target_offset": [0, 0, -80, -90]}, [100, 200, -30, -30]),
+            ({"target": [5000, 5000, 10, 10]}, [5000, 5000, 10, 10]),
+        ]
+        for with_controller in (True, False):
+            if not with_controller:
+                self.tasker = Tasker()
+                self.assertTrue(
+                    Library.framework().MaaTaskerBindResource(
+                        self.tasker._handle, self.resource._handle
+                    )
+                )
+            for param, expected in cases:
+                with self.subTest(with_controller=with_controller, param=param):
+                    self.check_custom(param, expected)
+        self.assertEqual(self.controller.screenshot_count, 0)
+
+    def test_default_directhit_box_stays_empty(self):
+        for warm_cache in (False, True):
+            if warm_cache:
+                self.controller.image_available = True
+                self.assertTrue(self.controller.post_screencap().wait().succeeded)
+            with self.subTest(warm_cache=warm_cache):
+                self.run_node({"action": "Custom", "custom_action": "TargetProbe"})
+                self.assertEqual(self.action.boxes[-1], [0, 0, 0, 0])
+                self.assertEqual(self.controller.screenshot_count, int(warm_cache))
+
+    def test_targets_after_failed_screenshot(self):
+        self.controller.image_available = True
+        self.assertTrue(self.controller.post_screencap().wait().succeeded)
+        self.controller.image_available = False
+        self.assertTrue(self.controller.post_screencap().wait().failed)
+        before = self.controller.screenshot_count
+        self.check_custom({"target": [100, 200, 50, 60]}, [100, 200, 50, 60])
+        self.assertEqual(self.controller.screenshot_count, before)
+
+    def test_previous_node_and_anchor_without_screenshot(self):
+        source = {
+            "Source": {
+                "recognition": "DirectHit",
+                "roi": [100, 200, 50, 60],
+                "anchor": {"KnownTarget": "Source"},
+                "next": ["Target"],
+                "pre_delay": 0,
+                "post_delay": 0,
+            }
+        }
+        for target in ("Source", "[Anchor]KnownTarget"):
+            with self.subTest(target=target):
+                self.check_custom(
+                    {"target": target, "target_offset": [5, -10, 2, 3]},
+                    [105, 190, 52, 63],
+                    entry="Source",
+                    extra=source,
+                )
+        self.assertEqual(self.controller.screenshot_count, 0)
+
+    def test_cached_image_normalization_is_preserved(self):
+        self.controller.image_available = True
+        self.assertTrue(self.controller.post_screencap().wait().succeeded)
+        cases = [
+            ({"target": [1270, 710, 50, 60]}, [1270, 710, 10, 10]),
+            ({"target": [-10, -20, 5, 6]}, [1270, 700, 5, 6]),
+            ({"target": [100, 200, 0, 0]}, [100, 200, 1180, 520]),
+            ({"target": [100, 200, -50, -60]}, [50, 140, 50, 60]),
+            ({"target": True, "target_offset": [0, 0, -80, -90]}, [70, 170, 30, 30]),
+            (
+                {"target": [5, 5, 10, 10], "target_offset": [-10, -10, 0, 0]},
+                [0, 0, 10, 10],
+            ),
+        ]
+        for param, expected in cases:
+            with self.subTest(param=param):
+                self.check_custom(param, expected)
+        self.assertEqual(self.controller.screenshot_count, 1)
+
+    def test_input_actions_without_screenshot(self):
+        cases = [
+            ({"action": "Click", "target": [100, 200]}, ("click", 100, 200)),
+            (
+                {"action": "LongPress", "target": [100, 200], "duration": 1},
+                ("down", 100, 200),
+            ),
+            (
+                {
+                    "action": "Swipe",
+                    "begin": [100, 200],
+                    "end": [300, 400],
+                    "duration": 1,
+                },
+                ("swipe", 100, 200, 300, 400),
+            ),
+            (
+                {
+                    "action": "MultiSwipe",
+                    "swipes": [
+                        {"begin": [100, 200], "end": [300, 400], "duration": 20}
+                    ],
+                },
+                ("down", 100, 200),
+            ),
+            ({"action": "TouchDown", "target": [100, 200]}, ("down", 100, 200)),
+            ({"action": "TouchMove", "target": [100, 200]}, ("move", 100, 200)),
+        ]
+        for node, expected in cases:
+            with self.subTest(action=node["action"]):
+                self.controller.use_touch = node["action"] in (
+                    "LongPress",
+                    "MultiSwipe",
+                )
+                before = len(self.controller.inputs)
+                self.run_node(node)
+                self.assertIn(expected, self.controller.inputs[before:])
+        self.assertEqual(self.controller.screenshot_count, 0)
+
+    def test_direct_action_without_screenshot(self):
+        job = self.tasker.post_action("Click", JClick(target=(100, 200, 1, 1))).wait()
+        self.assertTrue(job.succeeded)
+        self.assertTrue(all(n.completed for n in job.get().nodes))
+        self.assertEqual(self.controller.inputs, [("click", 100, 200)])
+        self.assertEqual(self.controller.screenshot_count, 0)
+
+    def test_input_scaling_remains_lazy(self):
+        self.controller.scale_points = True
+        self.controller.image_available = True
+        self.run_node({"action": "Click", "target": [100, 200]})
+        self.assertEqual(self.controller.inputs, [("click", 100, 200)])
+        self.assertEqual(self.controller.screenshot_count, 1)
+
+    def test_screencap_without_cached_image(self):
+        self.controller.image_available = True
+        output = Path(self.bundle.name) / "capture.png"
+        detail = self.run_node(
+            {"action": "Screencap", "filename": str(output.with_suffix(""))}
+        )
+        self.assertEqual(self.controller.screenshot_count, 1)
+        self.assertTrue(output.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertEqual(Path(detail.nodes[0].action.raw_detail["filepath"]), output)
+        self.assertEqual(detail.nodes[0].recognition.box.w, 0)
+
+    def test_screencap_reuses_cached_image(self):
+        self.controller.image_available = True
+        self.assertTrue(self.controller.post_screencap().wait().succeeded)
+        self.controller.image_available = False
+        output = Path(self.bundle.name) / "cached.png"
+        self.run_node({"action": "Screencap", "filename": str(output.with_suffix(""))})
+        self.assertTrue(output.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertEqual(self.controller.screenshot_count, 1)
+
+    def test_command_image_without_cache_and_reuses_cache(self):
+        self.controller.image_available = True
+        output = Path(self.bundle.name) / "command.png"
+        script = (
+            "import shutil,sys; "
+            "assert sys.argv[1] == sys.argv[2]; "
+            "shutil.copyfile(sys.argv[1], sys.argv[3])"
+        )
+        param = {
+            "exec": sys.executable,
+            "args": ["-c", script, "{IMAGE}", "{IMAGE}", str(output)],
+        }
+        for cached in (False, True):
+            with self.subTest(cached=cached):
+                if cached:
+                    output.unlink()
+                    self.controller.image_available = False
+                self.run_node({"action": {"type": "Command", "param": param}})
+                self.assertTrue(output.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
+                self.assertEqual(self.controller.screenshot_count, 1)
+        reference = Path(self.bundle.name) / "reference.png"
+        self.run_node(
+            {"action": "Screencap", "filename": str(reference.with_suffix(""))}
+        )
+        self.assertEqual(output.read_bytes(), reference.read_bytes())
+        self.assertEqual(self.controller.screenshot_count, 1)
+
+    def test_command_without_image_does_not_capture(self):
+        output = Path(self.bundle.name) / "command.txt"
+        self.run_node(
+            {
+                "action": "Command",
+                "exec": sys.executable,
+                "args": [
+                    "-c",
+                    "import pathlib,sys; pathlib.Path(sys.argv[1]).write_text(sys.argv[2])",
+                    str(output),
+                    "{BOX}",
+                ],
+            }
+        )
+        self.assertEqual(output.read_text(), "[0,0,0,0]")
+        self.assertEqual(self.controller.screenshot_count, 0)
+
+    def test_image_actions_fail_when_capture_fails(self):
+        output = Path(self.bundle.name) / "unexpected.txt"
+        command = {
+            "action": "Command",
+            "exec": sys.executable,
+            "args": [
+                "-c",
+                "import pathlib,sys; pathlib.Path(sys.argv[1]).touch()",
+                str(output),
+                "prefix-{IMAGE}-suffix",
+            ],
+        }
+        cases = [
+            {"action": "Screencap", "filename": str(output)},
+            command,
+            {"action": "Command", "exec": "prefix-{IMAGE}-suffix"},
+        ]
+        for node in cases:
+            with self.subTest(node=node):
+                before = self.controller.screenshot_count
+                detail = self.tasker.post_task(
+                    "Probe", {"Probe": {"pre_delay": 0, "post_delay": 0, **node}}
+                ).wait().get()
+                self.assertIsNotNone(detail)
+                self.assertEqual(len(detail.nodes), 1)
+                self.assertFalse(detail.nodes[0].completed)
+                self.assertFalse(detail.nodes[0].action.success)
+                self.assertEqual(self.controller.screenshot_count, before + 1)
+                self.assertFalse(output.exists())
+        self.check_custom({"target": [100, 200]}, [100, 200, 1, 1])
+
+    def test_direct_screencap_action_without_cache(self):
+        self.controller.image_available = True
+        output = Path(self.bundle.name) / "direct.png"
+        detail = self.tasker.post_action(
+            "Screencap", JScreencap(filename=str(output.with_suffix("")))
+        ).wait().get()
+        self.assertTrue(all(n.completed for n in detail.nodes))
+        self.assertTrue(output.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertEqual(self.controller.screenshot_count, 1)
+
+    def check_wait_freezes(self, param, expected, box=None):
+        action = WaitFreezesAction(
+            JWaitFreezes(time=10, rate_limit=10, timeout=1000, **param), box
+        )
+        self.assertTrue(self.resource.register_custom_action("FreezeProbe", action))
+        sink = WaitFreezesSink()
+        sink_id = self.tasker.add_context_sink(sink)
+        before = self.controller.screenshot_count
+        try:
+            self.run_node({"action": "Custom", "custom_action": "FreezeProbe"})
+            self.assertEqual(action.result, expected is not None)
+            if expected is None:
+                self.assertEqual(sink.succeeded, [])
+                return
+            self.assertEqual(len(sink.succeeded), 1)
+            detail = sink.succeeded[0]
+            self.assertEqual(detail["roi"], expected)
+            self.assertTrue(detail["reco_ids"])
+            self.assertEqual(
+                self.controller.screenshot_count - before,
+                1 + len(detail["reco_ids"]),
+            )
+            for reco_id in detail["reco_ids"]:
+                box = self.tasker.get_recognition_detail(reco_id).box
+                self.assertEqual([box.x, box.y, box.w, box.h], expected)
+        finally:
+            self.tasker.remove_context_sink(sink_id)
+            self.resource.unregister_custom_action("FreezeProbe")
+
+    def test_wait_freezes_resolves_target_after_capture(self):
+        cases = [
+            ({"target": [0, 0, 0, 0]}, [0, 0, 1280, 720]),
+            ({"target": [100, 200, -50, -60]}, [50, 140, 50, 60]),
+            ({"target": [-100, -100, 50, 60]}, [1180, 620, 50, 60]),
+            (
+                {"target": [5, 5, 10, 10], "target_offset": [-10, -10, 0, 0]},
+                [0, 0, 10, 10],
+            ),
+        ]
+        for param, expected in cases:
+            for cached in (False, True):
+                with self.subTest(param=param, cached=cached):
+                    self.controller.image_available = cached
+                    self.controller.post_screencap().wait()
+                    self.controller.image_available = True
+                    before = self.controller.screenshot_count
+                    self.check_wait_freezes(param, expected)
+                    self.assertGreaterEqual(self.controller.screenshot_count - before, 2)
+
+    def test_wait_freezes_uses_new_image_size(self):
+        self.controller.image_available = True
+        self.assertTrue(self.controller.post_screencap().wait().succeeded)
+        self.controller.image_shape = (1280, 720, 3)
+        self.check_wait_freezes({"target": [0, 0, 0, 0]}, [0, 0, 720, 1280])
+
+    def test_wait_freezes_empty_self_and_invalid_targets(self):
+        self.controller.image_available = True
+        for param in ({}, {"target": "MissingNode"}, {"target": "[Anchor]Missing"}):
+            with self.subTest(param=param):
+                self.check_wait_freezes(param, None)
+        self.check_wait_freezes({}, [100, 200, 50, 60], box=(100, 200, 50, 60))
+        self.controller.image_available = False
+        self.check_wait_freezes({"target": [100, 200, 50, 60]}, None)
+
+    def test_pipeline_wait_freezes_phases(self):
+        sink = WaitFreezesSink()
+        self.tasker.add_context_sink(sink)
+        for phase in ("pre", "post", "repeat"):
+            with self.subTest(phase=phase):
+                self.controller.image_available = False
+                self.controller.post_screencap().wait()
+                self.controller.image_available = True
+                sink.succeeded.clear()
+                node = {
+                    "action": "DoNothing",
+                    phase + "_wait_freezes": {
+                        "time": 10,
+                        "target": [0, 0, 0, 0],
+                        "rate_limit": 10,
+                        "timeout": 1000,
+                    },
+                }
+                if phase == "repeat":
+                    node.update(repeat=2, repeat_delay=0)
+                self.run_node(node)
+                self.assertEqual(len(sink.succeeded), 1)
+                self.assertEqual(sink.succeeded[0]["phase"], phase)
+                self.assertEqual(sink.succeeded[0]["roi"], [0, 0, 1280, 720])
+
+    def test_mixed_next_still_captures(self):
+        self.controller.image_available = True
+        self.run_node(
+            {
+                "action": "Custom",
+                "custom_action": "TargetProbe",
+                "target": [100, 200, 50, 60],
+            },
+            entry="Entry",
+            extra={
+                "Entry": {
+                    "next": ["Visual", "Target"],
+                    "pre_delay": 0,
+                    "post_delay": 0,
+                },
+                "Visual": {
+                    "recognition": "ColorMatch",
+                    "lower": [255, 255, 255],
+                    "upper": [255, 255, 255],
+                },
+            },
+        )
+        self.assertEqual(self.action.boxes, [[100, 200, 50, 60]])
+        self.assertEqual(self.controller.screenshot_count, 1)
+
+
+def run_directhit_target_tests():
+    suite = unittest.defaultTestLoader.loadTestsFromTestCase(DirectHitTargetTest)
+    result = unittest.TextTestRunner(verbosity=2).run(suite)
+    if not result.wasSuccessful():
+        raise AssertionError("DirectHit target regression tests failed")
+
+
 def test_negative_roi_and_target(context: Context):
     """测试负数 roi 和 target 参数的解析"""
     print("\n=== test_negative_roi_and_target ===")
@@ -1383,6 +2047,8 @@ def pipeline_node_test():
         test_resource_get_node_data(resource)
         test_resource_get_node_object(resource)
         test_resource_node_list(resource)
+        test_and_sub_recognition_dumper_roundtrip()
+        test_color_match_dumper_roundtrip()
 
         dbg_controller = DbgController(
             install_dir / "test" / "PipelineSmoking" / "Screenshot",
@@ -1475,5 +2141,6 @@ def pipeline_smoking():
 
 
 if __name__ == "__main__":
+    run_directhit_target_tests()
     pipeline_node_test()
     pipeline_smoking()

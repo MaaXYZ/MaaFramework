@@ -1,5 +1,7 @@
 #include "MinicapStream.h"
 
+#include <algorithm>
+#include <cstring>
 #include <format>
 
 #include "MaaUtils/Logger.h"
@@ -60,7 +62,7 @@ std::optional<cv::Mat> MinicapStream::screencap()
     return image_.empty() ? std::nullopt : std::make_optional(image_.clone());
 }
 
-std::optional<std::string> MinicapStream::read(size_t count)
+std::optional<std::string> MinicapStream::read_exact(size_t count)
 {
     if (!sock_ios_) {
         LogError << "sock_ios_ is nullptr";
@@ -68,7 +70,35 @@ std::optional<std::string> MinicapStream::read(size_t count)
     }
 
     using namespace std::chrono_literals;
-    return sock_ios_->read_some(count, 1s);
+    auto data = sock_ios_->read_some(count, 1s);
+    return data.size() == count ? std::make_optional(std::move(data)) : std::nullopt;
+}
+
+std::optional<cv::Mat> MinicapStream::read_frame()
+{
+    constexpr uint64_t kBytesPerPixel = 4;
+
+    auto size_data = read_exact(sizeof(uint32_t));
+    if (!size_data) {
+        return std::nullopt;
+    }
+
+    uint32_t size = 0;
+    std::memcpy(&size, size_data->data(), sizeof(size));
+
+    const auto max_size = static_cast<uint64_t>(display_width_) * static_cast<uint64_t>(display_height_) * kBytesPerPixel;
+    if (size == 0 || size > max_size) {
+        LogError << "invalid minicap frame size" << VAR(size) << VAR(max_size);
+        quit_ = true;
+        return std::nullopt;
+    }
+
+    auto data = read_exact(size);
+    if (!data) {
+        return std::nullopt;
+    }
+
+    return screencap_helper_.decode_jpg(*data, false);
 }
 
 void MinicapStream::create_thread()
@@ -80,6 +110,7 @@ void MinicapStream::create_thread()
 void MinicapStream::release_thread()
 {
     quit_ = true;
+    cond_.notify_all();
     if (pull_thread_.joinable()) {
         pull_thread_.join();
     }
@@ -134,12 +165,12 @@ bool MinicapStream::connect_and_check()
     // TODO: 解决大端底的情况
     MinicapHeader header;
 
-    auto data = read(sizeof(header));
+    auto data = read_exact(sizeof(header));
     if (!data) {
         LogError << "read header failed";
         return false;
     }
-    header = *reinterpret_cast<const MinicapHeader*>(data->data());
+    std::memcpy(&header, data->data(), sizeof(header));
 
     LogInfo << VAR(header.version) << VAR(header.size) << VAR(header.pid) << VAR(header.real_width) << VAR(header.real_height)
             << VAR(header.virt_width) << VAR(header.virt_height) << VAR(header.orientation) << VAR(header.flags);
@@ -148,7 +179,7 @@ bool MinicapStream::connect_and_check()
         return false;
     }
 
-    if (!read(header.size - sizeof(header))) {
+    if (!read_exact(header.size - sizeof(header))) {
         LogError << "read header failed";
         return false;
     }
@@ -160,36 +191,54 @@ void MinicapStream::pulling()
 {
     LogFunc;
 
+    using namespace std::chrono_literals;
+
+    constexpr auto kBackoffBase = 10ms;
+    constexpr auto kBackoffMax = 1000ms;
+    constexpr auto kLogInterval = 1min;
+
+    size_t consecutive_failures = 0;
+    auto backoff = kBackoffBase;
+    auto next_log_time = std::chrono::steady_clock::time_point::min();
+
     while (!quit_) {
-        auto size_opt = read(4);
-        if (!size_opt) {
-            LogError << "read size failed";
-            std::unique_lock locker(mutex_);
-            image_ = cv::Mat();
-            continue;
-        }
-        auto size = *reinterpret_cast<const uint32_t*>(size_opt->data());
+        auto image = read_frame();
+        if (image && !image->empty()) {
+            consecutive_failures = 0;
+            backoff = kBackoffBase;
 
-        auto data_opt = read(size);
-        if (!data_opt) {
-            LogError << "read data failed";
-            std::unique_lock locker(mutex_);
-            image_ = cv::Mat();
+            {
+                std::unique_lock locker(mutex_);
+                image_ = std::move(*image);
+            }
+            cond_.notify_all();
             continue;
         }
 
-        auto img_opt = screencap_helper_.decode_jpg(*data_opt);
-
-        if (!img_opt || img_opt->empty()) {
-            LogError << "decode jpg failed";
+        {
             std::unique_lock locker(mutex_);
-            image_ = cv::Mat();
-            continue;
+            image_.release();
+        }
+        cond_.notify_all();
+
+        if (quit_) {
+            break;
+        }
+
+        ++consecutive_failures;
+        auto now = std::chrono::steady_clock::now();
+        if (consecutive_failures == 1) {
+            LogError << "minicap stream read/decode failed, retrying with backoff";
+            next_log_time = now + kLogInterval;
+        }
+        else if (now >= next_log_time) {
+            LogError << "minicap stream still failing" << VAR(consecutive_failures);
+            next_log_time = now + kLogInterval;
         }
 
         std::unique_lock locker(mutex_);
-        image_ = std::move(*img_opt);
-        cond_.notify_all();
+        cond_.wait_for(locker, backoff, [this]() { return quit_.load(); });
+        backoff = std::min(backoff * 2, kBackoffMax);
     }
 }
 

@@ -139,9 +139,9 @@ std::optional<cv::Mat> ScreencapHelper::trunc_decode_jpg(const std::string& buff
     return decode_jpg(truncbuf);
 }
 
-std::optional<cv::Mat> ScreencapHelper::decode_jpg(const std::string& buffer)
+std::optional<cv::Mat> ScreencapHelper::decode_jpg(const std::string& buffer, bool log_error)
 {
-    if (!check_head_tail(buffer, "\xFF\xD8\xFF", "\xFF\xD9")) {
+    if (!check_head_tail(buffer, "\xFF\xD8\xFF", "\xFF\xD9", log_error)) {
         return std::nullopt;
     }
     return decode(buffer);
@@ -188,15 +188,19 @@ bool ScreencapHelper::clean_cr(std::string& buffer)
     return true;
 }
 
-bool ScreencapHelper::check_head_tail(std::string_view input, std::string_view head, std::string_view tail)
+bool ScreencapHelper::check_head_tail(std::string_view input, std::string_view head, std::string_view tail, bool log_error)
 {
     if (input.size() < head.size() || input.size() < tail.size()) {
-        LogError << "input too short" << VAR(input) << VAR(head) << VAR(tail);
+        if (log_error) {
+            LogError << "input too short" << VAR(input) << VAR(head) << VAR(tail);
+        }
         return false;
     }
 
     if (input.substr(0, head.size()) != head || input.substr(input.size() - tail.size(), tail.size()) != tail) {
-        LogError << "head or tail mismatch" << VAR(input) << VAR(head) << VAR(tail);
+        if (log_error) {
+            LogError << "head or tail mismatch" << VAR(input) << VAR(head) << VAR(tail);
+        }
         return false;
     }
 

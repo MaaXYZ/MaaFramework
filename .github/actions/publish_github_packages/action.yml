@@ -1,0 +1,86 @@
+name: publish packages to GitHub Packages
+description: publish nodejs packages to GitHub Packages
+# Mirrors the packages published to npmjs.com into GitHub Packages. GitHub Packages only
+# accepts packages scoped to the publishing account, and @maaxyz is this organization, so the
+# same tarballs are published as-is; GITHUB_TOKEN is enough and no long-lived token is needed.
+inputs:
+    token:
+        description: The GitHub token to use when publishing
+        required: true
+    path:
+        description: The path to the package directory.
+        required: false
+        default: "."
+    tag:
+        description: The tag to use when publishing the package.
+        required: false
+        default: "latest"
+    dry-run:
+        description: Run npm with the --dry-run flag to avoid actually publishing anything.
+        required: false
+
+runs:
+    using: "composite"
+    steps:
+        - uses: actions/setup-node@v6
+          with:
+              node-version: "24"
+        # Each package is published independently, so one failing package does not skip the
+        # remaining ones. The action still fails overall, because the failed step keeps its
+        # failure result.
+        - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
+          with:
+              package: ${{ inputs.path }}/maa-node
+              registry: https://npm.pkg.github.com
+              token: ${{ inputs.token }}
+              tag: ${{ inputs.tag }}
+              dry-run: ${{ inputs.dry-run }}
+        - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
+          with:
+              package: ${{ inputs.path }}/maa-node-win32-x64
+              registry: https://npm.pkg.github.com
+              token: ${{ inputs.token }}
+              tag: ${{ inputs.tag }}
+              dry-run: ${{ inputs.dry-run }}
+        - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
+          with:
+              package: ${{ inputs.path }}/maa-node-win32-arm64
+              registry: https://npm.pkg.github.com
+              token: ${{ inputs.token }}
+              tag: ${{ inputs.tag }}
+              dry-run: ${{ inputs.dry-run }}
+        - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
+          with:
+              package: ${{ inputs.path }}/maa-node-linux-x64
+              registry: https://npm.pkg.github.com
+              token: ${{ inputs.token }}
+              tag: ${{ inputs.tag }}
+              dry-run: ${{ inputs.dry-run }}
+        - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
+          with:
+              package: ${{ inputs.path }}/maa-node-linux-arm64
+              registry: https://npm.pkg.github.com
+              token: ${{ inputs.token }}
+              tag: ${{ inputs.tag }}
+              dry-run: ${{ inputs.dry-run }}
+        - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
+          with:
+              package: ${{ inputs.path }}/maa-node-darwin-x64
+              registry: https://npm.pkg.github.com
+              token: ${{ inputs.token }}
+              tag: ${{ inputs.tag }}
+              dry-run: ${{ inputs.dry-run }}
+        - uses: JS-DevTools/npm-publish@v4
+          if: ${{ !cancelled() }}
+          with:
+              package: ${{ inputs.path }}/maa-node-darwin-arm64
+              registry: https://npm.pkg.github.com
+              token: ${{ inputs.token }}
+              tag: ${{ inputs.tag }}
+              dry-run: ${{ inputs.dry-run }}

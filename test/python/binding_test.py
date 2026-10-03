@@ -14,9 +14,13 @@ Python binding API 测试
 
 import os
 from pathlib import Path
+import subprocess
 import sys
+import textwrap
+import ctypes
 import numpy
 import io
+from typing import Optional
 
 # Fix encoding issues on Windows
 if sys.stdout.encoding != "utf-8":
@@ -46,7 +50,14 @@ from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.buffer import ImageBuffer
-from maa.define import LoggingLevelEnum, MaaWin32InputMethodEnum
+from maa.define import (
+    LoggingLevelEnum,
+    MaaWin32InputMethodEnum,
+    MaaBool,
+    MaaControllerHandle,
+    MaaCtrlId,
+    MaaStringBufferHandle,
+)
 from maa.context import Context, ContextEventSink
 from maa.event_sink import EventSink
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
@@ -130,6 +141,18 @@ class MyRecognition(CustomRecognition):
             JActionType.Click, JClick(), (100, 100, 50, 50), ""
         )
         print(f"  action_direct_detail: {action_direct_detail}")
+
+        # 失败动作也应保留 action_id 和动作类型，便于关联失败事件
+        failed_action_detail = context.run_action_direct(
+            JActionType.Click,
+            JClick(target="__missing_target__"),
+            (100, 100, 50, 50),
+            "",
+        )
+        assert failed_action_detail is not None
+        assert failed_action_detail.action_id != 0
+        assert failed_action_detail.action == JActionType.Click
+        assert not failed_action_detail.success
 
         # 测试 clone 和 override
         new_ctx = context.clone()
@@ -276,8 +299,40 @@ def test_resource_api():
     # 测试自定义识别/动作注册
     my_reco = MyRecognition()
     my_action = MyAction()
-    resource.register_custom_recognition("MyRec", my_reco)
-    resource.register_custom_action("MyAct", my_action)
+    assert resource.register_custom_recognition("MyRec", my_reco)
+    assert resource.register_custom_action("MyAct", my_action)
+
+    duplicate_reco = MyRecognition()
+    duplicate_action = MyAction()
+    assert not resource.register_custom_recognition("MyRec", duplicate_reco)
+    assert not resource.register_custom_action("MyAct", duplicate_action)
+    assert not resource.register_custom_action("MyRec", duplicate_action)
+    assert not resource.register_custom_recognition("MyAct", duplicate_reco)
+    assert resource._custom_recognition_holder["MyRec"] is my_reco
+    assert resource._custom_action_holder["MyAct"] is my_action
+    assert resource.register_custom_recognition("CaseSensitive", MyRecognition())
+    assert resource.register_custom_action("casesensitive", MyAction())
+    assert not resource.register_custom_recognition("", MyRecognition())
+    assert not resource.register_custom_action("", MyAction())
+
+    try:
+        resource.custom_recognition("MyAct")(MyRecognition)
+        assert False, "duplicate custom decorator should raise RuntimeError"
+    except RuntimeError as error:
+        assert str(error) == "Custom name is already registered: 'MyAct'"
+
+    try:
+        resource.custom_action("MyRec")(MyAction)
+        assert False, "duplicate custom decorator should raise RuntimeError"
+    except RuntimeError as error:
+        assert str(error) == "Custom name is already registered: 'MyRec'"
+
+    for custom_decorator in [resource.custom_recognition, resource.custom_action]:
+        try:
+            custom_decorator("")
+            assert False, "empty custom name should raise ValueError"
+        except ValueError as error:
+            assert str(error) == "Custom name must not be empty"
 
     # 测试 custom_recognition_list 和 custom_action_list
     reco_list = resource.custom_recognition_list
@@ -300,8 +355,8 @@ def test_resource_api():
     assert "MyAct" not in action_list_after, "MyAct should be unregistered"
 
     # 重新注册用于后续测试
-    resource.register_custom_recognition("MyRec", my_reco)
-    resource.register_custom_action("MyAct", my_action)
+    assert resource.register_custom_recognition("MyRec", my_reco)
+    assert resource.register_custom_action("MyAct", my_action)
 
     # 测试 override_pipeline (resource 级别)
     # 先创建被引用的节点
@@ -675,6 +730,11 @@ class MyController(CustomController):
         self.count += 1
         return True
 
+    def shell(self, cmd: str, timeout: int) -> Optional[str]:
+        print(f"  on MyController.shell: {cmd}, {timeout}")
+        self.count += 1
+        return f"shell_output:{cmd}"
+
     def get_custom_info(self) -> dict:
         return {
             "custom_key": "custom_value",
@@ -719,8 +779,123 @@ def test_custom_controller():
     ret &= controller.post_scroll(0, 120).wait().succeeded
     ret &= controller.post_inactive().wait().succeeded
 
+    shell_job = controller.post_shell("echo hello", 5000).wait()
+    assert shell_job.done, "post_shell job must complete"
+    print(f"  post_shell status: {shell_job.status}, output: {controller.shell_output!r}")
+
     print(f"  controller.count: {controller.count}, ret: {ret}")
     print("  PASS: custom controller")
+
+
+def _new_command_image_tasker() -> Tasker:
+    resource = Resource()
+    resource.post_bundle(install_dir / "test" / "PipelineSmoking" / "resource").wait()
+    controller = MyController()
+    assert controller.post_connection().wait().succeeded
+    tasker = Tasker()
+    tasker.bind(resource, controller)
+    assert tasker.inited
+    return tasker
+
+
+def _run_command_image(tasker: Tasker, marker: Path):
+    marker.unlink(missing_ok=True)
+    script = "import os,sys; open(sys.argv[2],'w').write(str(os.path.isfile(sys.argv[1])))"
+    detail = (
+        tasker.post_task(
+            "CommandImage",
+            {
+                "CommandImage": {
+                    "action": "Command",
+                    "exec": sys.executable,
+                    "args": ["-c", script, "{IMAGE}", str(marker)],
+                }
+            },
+        )
+        .wait()
+        .get()
+    )
+    assert detail and detail.nodes, "CommandImage task should have node detail"
+    return detail.nodes[0].action.success
+
+
+def test_command_image_placeholder():
+    """回归：{IMAGE} 在第二个 Tasker 上崩溃（static 表绑定悬空 this）；无缓存截图时 OpenCV 断言终止进程"""
+    print("\n=== test_command_image_placeholder ===")
+
+    import tempfile
+
+    marker = Path(tempfile.gettempdir()) / "maafw_command_image_marker.txt"
+
+    # 无缓存截图：应按需补截图，而不是让 imwrite 断言终止进程
+    no_shot = _new_command_image_tasker()
+    assert _run_command_image(no_shot, marker), "no cached image should screencap on demand"
+    assert marker.read_text() == "True", "image file should exist after on-demand screencap"
+
+    # 同一进程内多个 Tasker（旧的保持存活）都应能使用 {IMAGE}
+    alive = []
+    for i in range(3):
+        tasker = _new_command_image_tasker()
+        alive.append(tasker)
+        assert tasker.controller.post_screencap().wait().succeeded
+        assert _run_command_image(tasker, marker), f"tasker #{i} Command {{IMAGE}} failed"
+        assert marker.read_text() == "True", f"tasker #{i} image file should exist"
+
+    marker.unlink(missing_ok=True)
+    print("  PASS: Command {IMAGE} placeholder")
+
+
+def _ctypes_type_name(ctypes_type):
+    """取 ctypes 类型名；restype 可能为 None（void），此时回退到 repr。"""
+    return getattr(ctypes_type, "__name__", repr(ctypes_type))
+
+
+def _assert_ctypes_signature(name, func, argtypes, restype):
+    """断言 ctypes 函数签名逐项匹配，失败时给出具体位置。"""
+    assert func.argtypes is not None, f"{name}.argtypes must be declared"
+    assert len(func.argtypes) == len(argtypes), (
+        f"{name}.argtypes: expected {len(argtypes)} args, got {len(func.argtypes)}"
+    )
+    for index, (got, want) in enumerate(zip(func.argtypes, argtypes)):
+        assert got is want, (
+            f"{name}.argtypes[{index}]: expected"
+            f" {_ctypes_type_name(want)}, got {_ctypes_type_name(got)}"
+        )
+    assert func.restype is restype, (
+        f"{name}.restype: expected"
+        f" {_ctypes_type_name(restype)}, got {_ctypes_type_name(func.restype)}"
+    )
+
+
+def test_shell_api_declarations():
+    """回归守卫：shell API 的 ctypes 签名必须与 C 头文件一致。
+
+    仅断言「已声明」不足以拦截错误的宽度——把 64 位句柄或 timeout 误声明为
+    c_int 同样会溢出，而 ctypes 在 argtypes 缺失时也正是按 32 位 int 编组。
+    因此逐项断言完整签名。声明缺失导致的溢出/返回值截断取决于句柄/ID 数值，
+    调用式测试无法确定性复现。
+    """
+    print("\n=== test_shell_api_declarations ===")
+
+    framework = Library.framework()
+
+    # MaaCtrlId MaaControllerPostShell(MaaController*, const char*, int64_t)
+    _assert_ctypes_signature(
+        "MaaControllerPostShell",
+        framework.MaaControllerPostShell,
+        [MaaControllerHandle, ctypes.c_char_p, ctypes.c_int64],
+        MaaCtrlId,
+    )
+
+    # MaaBool MaaControllerGetShellOutput(const MaaController*, MaaStringBuffer*)
+    _assert_ctypes_signature(
+        "MaaControllerGetShellOutput",
+        framework.MaaControllerGetShellOutput,
+        [MaaControllerHandle, MaaStringBufferHandle],
+        MaaBool,
+    )
+
+    print("  PASS: shell API ctypes signatures match the C header")
 
 
 # ============================================================================
@@ -740,6 +915,11 @@ def test_toolkit():
     print(f"  desktop windows: {len(desktop)}")
     for win in desktop[:3]:
         print(f"    - {win.window_name[:30] if win.window_name else '(no name)'}")
+
+    instances = Toolkit.find_gamescope_instances()
+    print(f"  gamescope instances: {len(instances)}")
+    for inst in instances[:3]:
+        print(f"    - display_no={inst.display_no} node_id={inst.pipewire_node_id} eis={inst.eis_socket_path}")
 
     print("  PASS: toolkit")
 
@@ -875,9 +1055,77 @@ def test_win32_interception_enum():
     print("  PASS: win32 interception enum")
 
 
+def test_win32_anchored_touch_enum():
+    print("\n=== test_win32_anchored_touch_enum ===")
+    assert int(MaaWin32InputMethodEnum.AnchoredTouch) == 1 << 10
+    print("  PASS: win32 anchored touch enum")
+
+
 # ============================================================================
 # 主入口
 # ============================================================================
+
+
+def test_binding_init_thread_safety():
+    """并发初始化回归测试 / Concurrent initialisation regression test (#629)
+
+    ctypes 的 argtypes/restype 是进程级一次性初始化，必须在子进程中验证：
+    父进程早已完成初始化，竞态窗口不复存在。
+    """
+    print("\n=== test_binding_init_thread_safety ===")
+
+    child = textwrap.dedent(
+        """
+        import ctypes, sys, threading
+        from maa.controller import AdbController
+
+        N = 8
+        barrier, errors = threading.Barrier(N), []
+
+        def worker(i):
+            barrier.wait()          # 最大化重叠在动态库懒加载上
+            try:
+                ctrl = AdbController(adb_path="adb", address=f"127.0.0.1:{16384 + i * 32}")
+                ctrl.post_connection().wait()
+            except (ctypes.ArgumentError, OSError) as e:
+                errors.append(f"{type(e).__name__}: {e}")
+            except Exception:
+                pass                # 连接失败是预期的，与本测试无关
+
+        ts = [threading.Thread(target=worker, args=(i,)) for i in range(N)]
+        for t in ts: t.start()
+        for t in ts: t.join()
+
+        if errors:
+            print("RACE " + errors[0])
+            sys.exit(1)
+        sys.exit(0)
+        """
+    )
+
+    env = dict(
+        os.environ,
+        MAAFW_BINARY_PATH=str(install_dir / "bin"),
+        PYTHONPATH=str(binding_dir),
+    )
+
+    # 竞态是概率性的（单次命中率约 95%），重复几次把漏报压到千分之一以下
+    for _ in range(3):
+        proc = subprocess.run(
+            [sys.executable, "-c", child],
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+        if proc.returncode == 0:
+            continue
+        race = [l for l in proc.stdout.splitlines() if l.startswith("RACE ")]
+        detail = race[0][5:] if race else f"child exited {proc.returncode} (crashed?)"
+        print(f"  FAIL: concurrent binding init is not thread-safe -- {detail}")
+        raise RuntimeError(f"binding init race (#629): {detail}")
+
+    print("  PASS: 8 threads initialised the binding concurrently")
 
 
 if __name__ == "__main__":
@@ -899,6 +1147,12 @@ if __name__ == "__main__":
     # 测试 CustomController
     test_custom_controller()
 
+    # 回归：Command 动作 {IMAGE} 占位符
+    test_command_image_placeholder()
+
+    # shell API 的 ctypes 声明
+    test_shell_api_declarations()
+
     # 测试 Toolkit
     test_toolkit()
 
@@ -913,6 +1167,12 @@ if __name__ == "__main__":
 
     # 测试 Win32 Interception 枚举导出
     test_win32_interception_enum()
+
+    # 测试 Win32 AnchoredTouch 枚举导出
+    test_win32_anchored_touch_enum()
+
+    # 回归：并发初始化线程安全 (#629)
+    test_binding_init_thread_safety()
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")

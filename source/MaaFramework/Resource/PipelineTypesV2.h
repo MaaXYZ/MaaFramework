@@ -90,7 +90,7 @@ struct JNeuralNetworkClassify
     JRect roi_offset;
     std::vector<std::string> labels;
     std::string model;
-    std::vector<int> expected;
+    std::vector<std::variant<int, std::string>> expected;
     std::string order_by;
     int index = 0;
 
@@ -103,7 +103,7 @@ struct JNeuralNetworkDetect
     JRect roi_offset;
     std::vector<std::string> labels;
     std::string model;
-    std::vector<int> expected;
+    std::vector<std::variant<int, std::string>> expected;
     std::vector<double> threshold;
     std::string order_by;
     int index = 0;
@@ -214,8 +214,9 @@ struct JTouch
     JTarget target;
     JRect target_offset { };
     int32_t pressure = 0;
+    bool auto_up = false;
 
-    MEO_TOJSON(contact, target, target_offset, pressure);
+    MEO_TOJSON(contact, target, target_offset, pressure, auto_up);
 };
 
 struct JTouchUp
@@ -243,8 +244,9 @@ struct JLongPressKey
 struct JKey
 {
     int key = 0;
+    bool auto_up = false;
 
-    MEO_TOJSON(key);
+    MEO_TOJSON(key, auto_up);
 };
 
 struct JInputText

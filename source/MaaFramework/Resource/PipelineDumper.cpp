@@ -222,8 +222,9 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             else {
                 const auto& inline_sub = std::get<Recognition::InlineSubRecognition>(sub);
                 auto sub_reco = dump_reco(inline_sub.type, inline_sub.param);
-                json::object sub_json = sub_reco.to_json().as_object();
+                json::object sub_json;
                 sub_json["sub_name"] = inline_sub.sub_name;
+                sub_json["recognition"] = sub_reco.to_json();
                 all_list.emplace_back(json::value(std::move(sub_json)));
             }
         }
@@ -249,8 +250,9 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             else {
                 const auto& inline_sub = std::get<Recognition::InlineSubRecognition>(sub);
                 auto sub_reco = dump_reco(inline_sub.type, inline_sub.param);
-                json::object sub_json = sub_reco.to_json().as_object();
+                json::object sub_json;
                 sub_json["sub_name"] = inline_sub.sub_name;
+                sub_json["recognition"] = sub_reco.to_json();
                 any_list.emplace_back(json::value(std::move(sub_json)));
             }
         }
@@ -354,6 +356,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
             .target = dump_target(p.target),
             .target_offset = dump_rect(p.target.offset),
             .pressure = p.pressure,
+            .auto_up = p.auto_up,
         };
     } break;
 
@@ -384,6 +387,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         const auto& p = std::get<Action::KeyParam>(param);
         act.param = PipelineV2::JKey {
             .key = p.key,
+            .auto_up = p.auto_up,
         };
     } break;
 

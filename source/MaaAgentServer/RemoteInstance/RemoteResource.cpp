@@ -192,9 +192,10 @@ std::optional<json::object> RemoteResource::get_node_data(const std::string& nod
     return resp_opt->node_data;
 }
 
-void RemoteResource::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)
+bool RemoteResource::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
     LogError << "Can NOT register custom recognition at remote resource" << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);
+    return false;
 }
 
 void RemoteResource::unregister_custom_recognition(const std::string& name)
@@ -207,9 +208,10 @@ void RemoteResource::clear_custom_recognition()
     LogError << "Can NOT clear custom recognition at remote resource";
 }
 
-void RemoteResource::register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg)
+bool RemoteResource::register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg)
 {
     LogError << "Can NOT register custom action at remote resource" << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(trans_arg);
+    return false;
 }
 
 void RemoteResource::unregister_custom_action(const std::string& name)

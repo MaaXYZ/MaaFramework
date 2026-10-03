@@ -1,6 +1,8 @@
 #pragma once
 
 #include <optional>
+#include <set>
+#include <string>
 #include <utility>
 
 #include "MaaControlUnit/ControlUnitAPI.h"
@@ -63,7 +65,9 @@ private:
     bool ensure_mouse_ready();
     bool ensure_keyboard_ready();
     bool initialize_mouse_device();
-    bool initialize_keyboard_device();
+    bool initialize_keyboard_device(int index, const std::wstring& hardware_id);
+    bool keyboard_device_attached() const;
+    void release_keyboard_keys();
     void destroy_mouse_device();
     void destroy_keyboard_device();
 
@@ -87,6 +91,9 @@ private:
     HANDLE keyboard_device_handle_ = INVALID_HANDLE_VALUE;
     HANDLE keyboard_event_handle_ = nullptr;
     int keyboard_device_index_ = -1;
+    std::wstring keyboard_hardware_id_;
+    std::set<int> pressed_keys_;
+    bool keyboard_write_failed_ = false;
 
     std::pair<int, int> last_pos_ { 0, 0 };
     bool last_pos_set_ = false;

@@ -75,9 +75,9 @@ class Controller:
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -104,9 +104,9 @@ class Controller:
             x2: 终点 x 坐标 / End x coordinate
             y2: 终点 y 坐标 / End y coordinate
             duration: 滑动时长(毫秒) / Swipe duration in milliseconds
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -202,9 +202,9 @@ class Controller:
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -219,9 +219,9 @@ class Controller:
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
             pressure: 触点力度 / Contact pressure
 
         Returns:
@@ -234,9 +234,9 @@ class Controller:
         """抬起 / Touch up
 
         Args:
-            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键)
-            Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left,
-            1:right, 2:middle)
+            contact: 触点编号 (Adb: 手指编号; Android Native: 手指编号 0–15; Win32: 鼠标按键 0:左键, 1:右键, 2:中键)
+            Contact number (Adb: finger number; Android Native: finger id 0–15; Win32: mouse
+            button 0:left, 1:right, 2:middle)
 
         Returns:
             Job: 作业对象 / Job object
@@ -497,6 +497,30 @@ class Controller:
             )
         )
 
+    def set_screenshot_target_expand(self, width: int, height: int) -> bool:
+        """以 Unity Canvas Scaler 的 Expand 语义按参考分辨率缩放截图 /
+        Scale screenshot to reference (width, height) using Unity Expand semantics
+
+        scale = max(width / raw_width, height / raw_height)，保持源宽高比，
+        输出两边均 >= 参考。与长/短边模式互斥。
+
+        Args:
+            width: 参考宽 / Reference width
+            height: 参考高 / Reference height
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        arr = (ctypes.c_int32 * 2)(width, height)
+        return bool(
+            Library.framework().MaaControllerSetOption(
+                self._handle,
+                MaaOption(MaaCtrlOptionEnum.ScreenshotTargetExpand),
+                arr,
+                ctypes.sizeof(arr),
+            )
+        )
+
     def set_screenshot_use_raw_size(self, enable: bool) -> bool:
         """设置截图不缩放 / Set screenshot use raw size without scaling
 
@@ -599,8 +623,16 @@ class Controller:
     def _set_api_properties():
         if Controller._api_properties_initialized:
             return
-        Controller._api_properties_initialized = True
 
+        with Library._api_lock:
+            if Controller._api_properties_initialized:
+                return
+
+            Controller._assign_api_properties()
+            Controller._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         Library.framework().MaaControllerDestroy.restype = None
         Library.framework().MaaControllerDestroy.argtypes = [MaaControllerHandle]
 
@@ -733,6 +765,19 @@ class Controller:
         Library.framework().MaaControllerPostInactive.restype = MaaCtrlId
         Library.framework().MaaControllerPostInactive.argtypes = [
             MaaControllerHandle,
+        ]
+
+        Library.framework().MaaControllerPostShell.restype = MaaCtrlId
+        Library.framework().MaaControllerPostShell.argtypes = [
+            MaaControllerHandle,
+            ctypes.c_char_p,
+            ctypes.c_int64,
+        ]
+
+        Library.framework().MaaControllerGetShellOutput.restype = MaaBool
+        Library.framework().MaaControllerGetShellOutput.argtypes = [
+            MaaControllerHandle,
+            MaaStringBufferHandle,
         ]
 
         Library.framework().MaaControllerStatus.restype = MaaStatus
@@ -940,7 +985,11 @@ class MacOSController(Controller):
 
 
 class AndroidNativeController(Controller):
-    """Android Native 控制器 / Android native controller"""
+    """Android Native 控制器 / Android native controller
+
+    支持多指触控：contact 为手指编号（0 为第一根手指，取值 0–15）。
+    Multi-touch is supported: contact is the finger id (0 for the first finger, range 0–15).
+    """
 
     def __init__(
         self,
@@ -1139,6 +1188,13 @@ class LinuxController(Controller):
 
     通过 JSON 配置截图方式和输入方式，支持多种 Linux 显示服务器 (Wayland/X11) 和控制方式。
     Configurable screencap and input methods via JSON for various Linux display servers.
+
+    窗口捕获 (gamescope 等): screencap_method 为 PipeWire 时设置 pw_node_id 直连会话 daemon 节点
+    (节点可用 MaaToolkitGamescopeInstanceFindAll 发现); 输入方式 Libei 需提供 eis_socket_path
+    (如 /run/user/1000/gamescope-0-ei)。
+    Window capture (gamescope etc.): with PipeWire screencap, set pw_node_id to attach to a
+    session-daemon node directly (discover nodes with MaaToolkitGamescopeInstanceFindAll); use
+    input_method Libei with eis_socket_path for libei (EIS) input.
     """
 
     def __init__(
@@ -1150,6 +1206,9 @@ class LinuxController(Controller):
         Args:
             config: 控制器配置 JSON 对象，包含 screencap_method、input_method 等字段
                     Controller config JSON object, containing screencap_method, input_method, etc.
+                    gamescope 节点直连示例 / gamescope node example:
+                    {"screencap_method": 4, "input_method": 4, "pw_node_id": 70,
+                     "eis_socket_path": "/run/user/1000/gamescope-0-ei"}
 
         Raises:
             RuntimeError: 如果创建失败

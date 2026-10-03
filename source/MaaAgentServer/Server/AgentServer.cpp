@@ -87,7 +87,12 @@ bool AgentServer::register_custom_recognition(const std::string& name, MaaCustom
         return false;
     }
 
-    return custom_recognitions_.insert_or_assign(name, CustomRecognitionSession { recognition, trans_arg }).second;
+    if (custom_recognitions_.contains(name) || custom_actions_.contains(name)) {
+        LogError << "custom name already registered" << VAR(name);
+        return false;
+    }
+
+    return custom_recognitions_.emplace(name, CustomRecognitionSession { recognition, trans_arg }).second;
 }
 
 bool AgentServer::register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg)
@@ -99,7 +104,12 @@ bool AgentServer::register_custom_action(const std::string& name, MaaCustomActio
         return false;
     }
 
-    return custom_actions_.insert_or_assign(name, CustomActionSession { action, trans_arg }).second;
+    if (custom_recognitions_.contains(name) || custom_actions_.contains(name)) {
+        LogError << "custom name already registered" << VAR(name);
+        return false;
+    }
+
+    return custom_actions_.emplace(name, CustomActionSession { action, trans_arg }).second;
 }
 
 MaaSinkId AgentServer::add_resource_sink(MaaEventCallback sink, void* trans_arg)
@@ -312,7 +322,9 @@ bool AgentServer::handle_resource_event(const json::value& j)
     RemoteResource resource(*this, req.resource_id);
     res_notifier_.notify(&resource, req.message, req.details);
 
-    send(ResourceEventResponse { });
+    // FIXME: Client 对 Resource/Controller/Tasker 事件是单向 send、不等回包；这里若继续 ACK，
+    // EventResponse 会堆在 Client 收件箱，打满 ZMQ 后两端互相阻塞，表现为 Agent IPC 死锁（MaaEnd#5623）。
+    // send(ResourceEventResponse { });
 
     return true;
 }
@@ -328,7 +340,8 @@ bool AgentServer::handle_controller_event(const json::value& j)
     RemoteController controller(*this, req.controller_id);
     ctrl_notifier_.notify(&controller, req.message, req.details);
 
-    send(ControllerEventResponse { });
+    // FIXME: 见 handle_resource_event
+    // send(ControllerEventResponse { });
 
     return true;
 }
@@ -344,7 +357,8 @@ bool AgentServer::handle_tasker_event(const json::value& j)
     RemoteTasker tasker(*this, req.tasker_id);
     tasker_notifier_.notify(&tasker, req.message, req.details);
 
-    send(TaskerEventResponse { });
+    // FIXME: 见 handle_resource_event
+    // send(TaskerEventResponse { });
 
     return true;
 }
@@ -376,7 +390,7 @@ void AgentServer::request_msg_loop()
             return;
         }
         const json::value& j = *msg_opt;
-        handle_inserted_request(j);
+        dispatch_inserted_request(j);
     }
 }
 

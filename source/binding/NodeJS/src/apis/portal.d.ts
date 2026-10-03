@@ -5,6 +5,7 @@ declare global {
             open_stream(): Promise<boolean>
 
             set persist(value: boolean)
+            get persist(): boolean
             get pipewire_fd(): number
             get pipewire_node_id(): number
             get restore_token(): string | null

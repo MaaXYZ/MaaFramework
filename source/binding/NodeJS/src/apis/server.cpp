@@ -1,5 +1,7 @@
 #include "loader.h"
 
+#include <format>
+
 #include <MaaAgentServer/MaaAgentServerAPI.h>
 
 #include "../foundation/spec.h"
@@ -8,18 +10,26 @@
 
 static void register_custom_recognition(maajs::EnvType env, std::string key, maajs::FunctionType func)
 {
+    if (key.empty()) {
+        throw maajs::MaaError { "Custom name must not be empty" };
+    }
+
     auto ctx = std::make_unique<maajs::CallbackContext>(func, "CustomReco");
     if (!MaaAgentServerRegisterCustomRecognition(key.c_str(), CustomReco, ctx.get())) {
-        throw maajs::MaaError { "Server register_custom_recognition failed" };
+        throw maajs::MaaError { std::format("Custom name is already registered: '{}'", key) };
     }
     ExtContext::get(env)->globalCallbacks.push_back(std::move(ctx));
 }
 
 static void register_custom_action(maajs::EnvType env, std::string key, maajs::FunctionType func)
 {
+    if (key.empty()) {
+        throw maajs::MaaError { "Custom name must not be empty" };
+    }
+
     auto ctx = std::make_unique<maajs::CallbackContext>(func, "CustomAct");
     if (!MaaAgentServerRegisterCustomAction(key.c_str(), CustomAct, ctx.get())) {
-        throw maajs::MaaError { "Server register_custom_action failed" };
+        throw maajs::MaaError { std::format("Custom name is already registered: '{}'", key) };
     }
     ExtContext::get(env)->globalCallbacks.push_back(std::move(ctx));
 }

@@ -1,7 +1,10 @@
 #pragma once
 
+#include <atomic>
+#include <map>
 #include <mutex>
 #include <optional>
+#include <vector>
 
 #include <meojson/json.hpp>
 #include <zmq.hpp>
@@ -25,41 +28,15 @@ public:
     template <typename ResponseT, typename RequestT>
     std::optional<ResponseT> send_and_recv(const RequestT& req)
     {
-        auto req_id = ++s_req_id_;
-
-        // LogFunc << VAR(req_id);
-        bool sent = send(req);
-        if (!sent) {
-            LogError << "failed to send req" << VAR(req_id);
+        std::optional<json::value> resp_opt = send_and_recv_impl(req, [](const json::value& j) { return j.is<ResponseT>(); });
+        if (!resp_opt) {
             return std::nullopt;
         }
-
-        for (int64_t loop_count = 0;; ++loop_count) {
-            // LogTrace << "enter loop" << VAR(req_id) << VAR(loop_count);
-
-            auto msg_opt = recv();
-            if (!msg_opt) {
-                LogError << "failed to recv resp" << VAR(req_id) << VAR(loop_count);
-                return std::nullopt;
-            }
-            const json::value& msg = *msg_opt;
-            if (msg.is<ResponseT>()) {
-                // LogTrace << "response" << VAR(req_id) << VAR(loop_count);
-                return msg.as<ResponseT>();
-            }
-            else if (msg.is<ImageHeader>()) {
-                handle_image(msg.as<ImageHeader>());
-            }
-            else if (msg.is<ImageEncodedHeader>()) {
-                handle_image_encoded(msg.as<ImageEncodedHeader>());
-            }
-            else {
-                // LogTrace << "inserted request" << VAR(req_id) << VAR(loop_count);
-                handle_inserted_request(msg);
-            }
+        if (!resp_opt->is<ResponseT>()) {
+            LogError << "response type mismatch" << VAR(*resp_opt);
+            return std::nullopt;
         }
-        // unreachable code
-        // return std::nullopt;
+        return resp_opt->as<ResponseT>();
     }
 
     std::string send_image(const cv::Mat& mat);
@@ -69,22 +46,33 @@ public:
 
 protected:
     virtual bool handle_inserted_request(const json::value& j) = 0;
+    bool dispatch_inserted_request(const json::value& j);
     bool handle_image_header(const json::value& j);
     bool handle_image_encoded_header(const json::value& j);
 
     void init_socket(const std::string& identifier, bool bind);
     void uninit_socket();
+    void reset_socket(std::chrono::milliseconds linger = std::chrono::milliseconds(0));
 
     bool send(const json::value& j);
+    bool send_no_wait(const json::value& j);
     std::optional<json::value> recv();
 
     bool alive();
     void set_timeout(const std::chrono::milliseconds& timeout);
 
 private:
+    void create_pair_socket();
+    bool send_impl(const json::value& j);
     void handle_image(const ImageHeader& header);
     void handle_image_encoded(const ImageEncodedHeader& header);
     bool poll(zmq::pollitem_t& pollitem);
+
+    // is_untagged_response 只用于认领不带 _resp_id 的回包（老版本对端）
+    std::optional<json::value> send_and_recv_impl(json::value req, bool (*is_untagged_response)(const json::value&));
+    static bool is_response(const json::value& j);
+    std::optional<json::value> take_pending_response(int64_t req_id);
+    void stash_response(int64_t resp_id, json::value msg);
 
 protected:
     // 返回实际绑定的端口号，如果传入 0 则自动选择可用端口
@@ -109,7 +97,25 @@ protected:
     std::map<std::string /* uuid */, ImageEncodedBuffer> recved_images_encoded_;
 
 private:
-    inline static int64_t s_req_id_ = 0;
+    static constexpr const char* kReqIdKey = "_req_id";
+    static constexpr const char* kRespIdKey = "_resp_id";
+
+    inline static std::atomic<int64_t> s_req_id_ = 0;
+
+    // 本线程正在处理的对端请求（嵌套时压栈），栈顶所属实例发出的回包带上其编号
+    struct HandlingRequest
+    {
+        const Transceiver* owner = nullptr;
+        std::optional<int64_t> req_id;
+    };
+
+    inline static thread_local std::vector<HandlingRequest> s_handling_requests_;
+
+    // key 仅在该请求等待期间存在，迟到的回包据此丢弃，表大小受限于同时在等的请求数；
+    // value 是嵌套等待时被内层循环收到、留给外层取的回包
+    std::mutex pending_mutex_;
+    std::map<int64_t, std::optional<json::value>> pending_responses_;
+
     bool is_bound_ = false;
 
     std::mutex socket_mutex_;

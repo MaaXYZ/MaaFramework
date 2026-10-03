@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+project(InterceptionKeyboardSelectorTest LANGUAGES CXX)
+
+enable_testing()
+add_executable(interception_keyboard_selector_test ../interception_keyboard_selector_test.cpp)
+target_compile_features(interception_keyboard_selector_test PRIVATE cxx_std_17)
+add_test(NAME interception_keyboard_selector COMMAND interception_keyboard_selector_test)

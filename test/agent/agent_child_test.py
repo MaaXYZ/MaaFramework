@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import sys
 import io
+import time
 import numpy
 
 # Fix encoding issues on Windows (cp1252 cannot encode some Unicode characters)
@@ -46,6 +47,13 @@ from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.library import Library
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
+from agent_test_utils import (
+    FAST_REC_BOX,
+    NESTED_REC_BOX,
+    SLOW_REC_SECONDS,
+    record_sink_event,
+    signal_server_ready,
+)
 
 
 analyzed: bool = False
@@ -58,7 +66,8 @@ def main():
         exit(1)
 
     socket_id = sys.argv[-1]
-    AgentServer.start_up(socket_id)
+    assert AgentServer.start_up(socket_id)
+    signal_server_ready()
     AgentServer.join()
     AgentServer.shut_down()
 
@@ -273,7 +282,7 @@ class MyAction(CustomAction):
         assert isinstance(info, dict), "info should be a dict"
         assert "type" in info, "info should contain 'type'"
         assert isinstance(info["type"], str), "info['type'] should be a str"
-        assert info["type"] == "replay", "info['type'] should be 'replay'"
+        assert info["type"] == "dbg", "info['type'] should be 'dbg'"
         assert (
             "image_count" in info or "record_count" in info
         ), "info should contain at least 'image_count' or 'record_count'"
@@ -382,6 +391,83 @@ class MyAction(CustomAction):
         return CustomAction.RunResult(success=True)
 
 
+@AgentServer.custom_recognition("SlowRec")
+class SlowRecognition(CustomRecognition):
+    def analyze(
+        self,
+        context: Context,
+        argv: CustomRecognition.AnalyzeArg,
+    ) -> CustomRecognition.AnalyzeResult:
+        time.sleep(SLOW_REC_SECONDS)
+        node_data = context.get_node_data("Entry")
+        record_sink_event(f"slow_rec_node_data:{'none' if node_data is None else 'value'}")
+        return CustomRecognition.AnalyzeResult(box=(9, 9, 9, 9), detail="slow")
+
+
+@AgentServer.custom_recognition("FastRec")
+class FastRecognition(CustomRecognition):
+    def analyze(
+        self,
+        context: Context,
+        argv: CustomRecognition.AnalyzeArg,
+    ) -> CustomRecognition.AnalyzeResult:
+        return CustomRecognition.AnalyzeResult(box=FAST_REC_BOX, detail="fast")
+
+
+# 置位期间，controller 事件回调会在 NestedRec 等 wait 回包时再发起一次反调
+nested_probe_armed: bool = False
+
+
+@AgentServer.custom_recognition("NestedRec")
+class NestedRecognition(CustomRecognition):
+    def analyze(
+        self,
+        context: Context,
+        argv: CustomRecognition.AnalyzeArg,
+    ) -> CustomRecognition.AnalyzeResult:
+        global nested_probe_armed
+        controller = context.tasker.controller
+        nested_probe_armed = True
+        try:
+            controller.post_click(1, 1).wait()
+        finally:
+            nested_probe_armed = False
+        return CustomRecognition.AnalyzeResult(box=NESTED_REC_BOX, detail="nested")
+
+
+original_reco = AgentServer._custom_recognition_holder["MyRec"]
+original_action = AgentServer._custom_action_holder["MyAct"]
+assert not AgentServer.register_custom_recognition("MyRec", MyRecognition())
+assert not AgentServer.register_custom_action("MyAct", MyAction())
+assert not AgentServer.register_custom_action("MyRec", MyAction())
+assert not AgentServer.register_custom_recognition("MyAct", MyRecognition())
+assert AgentServer._custom_recognition_holder["MyRec"] is original_reco
+assert AgentServer._custom_action_holder["MyAct"] is original_action
+assert AgentServer.register_custom_recognition("CaseSensitive", MyRecognition())
+assert AgentServer.register_custom_action("casesensitive", MyAction())
+assert not AgentServer.register_custom_recognition("", MyRecognition())
+assert not AgentServer.register_custom_action("", MyAction())
+
+try:
+    AgentServer.custom_recognition("MyAct")(MyRecognition)
+    assert False, "duplicate custom decorator should raise RuntimeError"
+except RuntimeError as error:
+    assert str(error) == "Custom name is already registered: 'MyAct'"
+
+try:
+    AgentServer.custom_action("MyRec")(MyAction)
+    assert False, "duplicate custom decorator should raise RuntimeError"
+except RuntimeError as error:
+    assert str(error) == "Custom name is already registered: 'MyRec'"
+
+for custom_decorator in [AgentServer.custom_recognition, AgentServer.custom_action]:
+    try:
+        custom_decorator("")
+        assert False, "empty custom name should raise ValueError"
+    except ValueError as error:
+        assert str(error) == "Custom name must not be empty"
+
+
 # ============================================================================
 # Event Sink 装饰器方式注册
 # ============================================================================
@@ -390,24 +476,32 @@ class MyAction(CustomAction):
 @AgentServer.resource_sink()
 class MyResSink(ResourceEventSink):
     def on_raw_notification(self, resource, msg: str, details: dict):
+        record_sink_event("resource")
         print(f"[ResourceSink] msg: {msg}")
 
 
 @AgentServer.controller_sink()
 class MyCtrlSink(ControllerEventSink):
     def on_raw_notification(self, controller, msg: str, details: dict):
+        global nested_probe_armed
+        record_sink_event("controller")
         print(f"[ControllerSink] msg: {msg}")
+        if nested_probe_armed:
+            nested_probe_armed = False
+            record_sink_event(f"nested_sink_connected:{controller.connected}")
 
 
 @AgentServer.tasker_sink()
 class MyTaskerSink(TaskerEventSink):
     def on_raw_notification(self, tasker, msg: str, details: dict):
+        record_sink_event("tasker")
         print(f"[TaskerSink] msg: {msg}")
 
 
 @AgentServer.context_sink()
 class MyCtxSink(ContextEventSink):
     def on_raw_notification(self, context, msg: str, details: dict):
+        record_sink_event("context")
         print(f"[ContextSink] msg: {msg}")
 
 

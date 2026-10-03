@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <filesystem>
 #include <optional>
 #include <string>
@@ -61,8 +62,9 @@ struct InterfaceData
             std::string screencap;
             std::string input;
             bool use_win32_vk_code = false;
+            std::string pipewire_source = "Gamescope";
 
-            MEO_JSONIZATION(MEO_OPT screencap, MEO_OPT input, MEO_OPT use_win32_vk_code);
+            MEO_JSONIZATION(MEO_OPT screencap, MEO_OPT input, MEO_OPT use_win32_vk_code, MEO_OPT pipewire_source);
         };
 
         enum class Type
@@ -84,9 +86,10 @@ struct InterfaceData
         // 是否需要管理员权限（例如某些 Win32 输入方式需要更高权限）
         bool permission_required = false;
 
-        // 分辨率设置，三者互斥
-        std::optional<int> display_short_side; // 默认720
+        // 分辨率设置，四者互斥
+        std::optional<int> display_short_side;            // 默认720
         std::optional<int> display_long_side;
+        std::optional<std::array<int, 2>> display_expand; // [width, height], Unity Canvas Scaler "Expand" 语义
         bool display_raw = false;
 
         // 附加资源路径，在 resource.path 加载完成后额外加载
@@ -109,6 +112,7 @@ struct InterfaceData
             MEO_OPT permission_required,
             MEO_OPT display_short_side,
             MEO_OPT display_long_side,
+            MEO_OPT display_expand,
             MEO_OPT display_raw,
             MEO_OPT attach_resource_path,
             MEO_OPT option,
@@ -384,20 +388,12 @@ struct Configuration
 
     struct LinuxConfig
     {
-        std::string screencap;
-        std::string input;
         std::string wlr_socket_path;
-        int pw_screen_width = 0;
-        int pw_screen_height = 0;
-        bool use_win32_vk_code = false;
+        int uinput_screen_width = 0;
+        int uinput_screen_height = 0;
+        std::string eis_socket_path;
 
-        MEO_JSONIZATION(
-            MEO_OPT screencap,
-            MEO_OPT input,
-            MEO_OPT wlr_socket_path,
-            MEO_OPT pw_screen_width,
-            MEO_OPT pw_screen_height,
-            MEO_OPT use_win32_vk_code);
+        MEO_JSONIZATION(MEO_OPT wlr_socket_path, MEO_OPT uinput_screen_width, MEO_OPT uinput_screen_height, MEO_OPT eis_socket_path);
     };
 
     struct Option
@@ -449,11 +445,12 @@ struct Configuration
 
 struct RuntimeParam
 {
-    // 分辨率设置，三者互斥
+    // 分辨率设置，四者互斥
     struct DisplayConfig
     {
-        std::optional<int> short_side; // 默认720
+        std::optional<int> short_side;            // 默认720
         std::optional<int> long_side;
+        std::optional<std::array<int, 2>> expand; // [width, height], Unity Canvas Scaler "Expand" 语义
         bool raw = false;
     };
 
@@ -500,9 +497,11 @@ struct RuntimeParam
     {
         MaaLinuxScreencapMethod screencap = MaaLinuxScreencapMethod_None;
         MaaLinuxInputMethod input = MaaLinuxInputMethod_None;
+        std::string pipewire_source = "Gamescope";
         std::string wlr_socket_path;
-        int pw_screen_width = 0;
-        int pw_screen_height = 0;
+        int uinput_screen_width = 0;
+        int uinput_screen_height = 0;
+        std::string eis_socket_path;
         bool use_win32_vk_code = false;
     };
 

@@ -2,8 +2,6 @@
 
 #include <meojson/json.hpp>
 
-#include <optional>
-
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
 
@@ -25,7 +23,9 @@ public:
     virtual ~ScreencapBase() = default;
 
 public:
-    virtual std::optional<cv::Mat> screencap() = 0;
+    virtual bool init() { return true; }
+
+    virtual bool screencap(/*out*/ cv::Mat& image) = 0;
 
     virtual void inactive() { }
 };
@@ -36,6 +36,8 @@ public:
     virtual ~InputBase() = default;
 
 public:
+    virtual bool init() { return true; }
+
     virtual MaaControllerFeature get_features() const = 0;
 
     virtual bool click(int x, int y) = 0;

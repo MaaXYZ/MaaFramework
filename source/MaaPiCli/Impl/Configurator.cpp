@@ -43,6 +43,7 @@ MaaWin32InputMethod parse_win32_input_method(const std::string& method)
         { "SendMessageWithWindowPos", MaaWin32InputMethod_SendMessageWithWindowPos },
         { "PostMessageWithWindowPos", MaaWin32InputMethod_PostMessageWithWindowPos },
         { "Interception", MaaWin32InputMethod_Interception },
+        { "AnchoredTouch", MaaWin32InputMethod_AnchoredTouch },
     };
 
     if (auto it = mapping.find(method); it != mapping.end()) {
@@ -109,6 +110,7 @@ MaaLinuxInputMethod parse_linux_input_method(const std::string& method)
     static const std::unordered_map<std::string, MaaLinuxInputMethod> mapping = {
         { "Wlr", MaaLinuxInputMethod_Wlr },
         { "UInput", MaaLinuxInputMethod_UInput },
+        { "Libei", MaaLinuxInputMethod_Libei },
     };
 
     if (auto it = mapping.find(method); it != mapping.end()) {
@@ -328,6 +330,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
 
         lnx.wlr_socket_path = config_.lnx.wlr_socket_path;
         lnx.use_win32_vk_code = controller.lnx.use_win32_vk_code;
+        lnx.pipewire_source = controller.lnx.pipewire_source.empty() ? "Gamescope" : controller.lnx.pipewire_source;
         if (!controller.lnx.screencap.empty()) {
             lnx.screencap = parse_linux_screencap_method(controller.lnx.screencap);
         }
@@ -346,8 +349,9 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
             lnx.wlr_socket_path = config_.lnx.wlr_socket_path;
         }
 
-        lnx.pw_screen_height = config_.lnx.pw_screen_height;
-        lnx.pw_screen_width = config_.lnx.pw_screen_width;
+        lnx.uinput_screen_height = config_.lnx.uinput_screen_height;
+        lnx.uinput_screen_width = config_.lnx.uinput_screen_width;
+        lnx.eis_socket_path = config_.lnx.eis_socket_path;
 
         runtime.controller_param = std::move(lnx);
     } break;
@@ -361,6 +365,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     // 设置分辨率配置
     runtime.display_config.short_side = controller.display_short_side;
     runtime.display_config.long_side = controller.display_long_side;
+    runtime.display_config.expand = controller.display_expand;
     runtime.display_config.raw = controller.display_raw;
 
     std::vector<InterfaceData::Agent> agents = std::visit(

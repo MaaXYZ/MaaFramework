@@ -1,15 +1,17 @@
 #include "WlrScreencap.h"
 
+#include <optional>
+
 #include <opencv2/imgproc.hpp>
 
 #include "MaaUtils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-std::optional<cv::Mat> WlrScreencap::screencap()
+bool WlrScreencap::screencap(cv::Mat& image)
 {
     if (!client_->connected()) {
-        return std::nullopt;
+        return false;
     }
 
     std::unique_ptr<zwlr_screencopy_frame_v1> screencopy_frame;
@@ -73,13 +75,13 @@ std::optional<cv::Mat> WlrScreencap::screencap()
 
     while (capture_waiting_) {
         if (!client_->process_requests()) {
-            return std::nullopt;
+            return false;
         }
     }
 
     if (!capture_successful_) {
         LogError << "Failed to capture frame";
-        return std::nullopt;
+        return false;
     }
 
     std::optional<int> cvt_mode;
@@ -106,19 +108,18 @@ std::optional<cv::Mat> WlrScreencap::screencap()
         break;
     default:
         LogError << "Unsupported wl_shm_format" << VAR(buffer_format_);
-        return std::nullopt;
+        return false;
     }
 
     cv::Mat raw(buffer_height_, buffer_width_, cv_format, buffer_->ptr());
-    cv::Mat target;
     if (cvt_mode.has_value()) {
         LogDebug << "Converting buffer" << VAR(buffer_format_) << VAR(cvt_mode.value());
-        cv::cvtColor(raw, target, cvt_mode.value());
+        cv::cvtColor(raw, image, cvt_mode.value());
     }
     else {
-        raw.copyTo(target);
+        raw.copyTo(image);
     }
-    return target;
+    return true;
 }
 
 bool WlrScreencap::check_buffer(int format, int width, int height, int stride) const

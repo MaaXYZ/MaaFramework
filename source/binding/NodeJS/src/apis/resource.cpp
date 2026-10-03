@@ -134,13 +134,20 @@ void ResourceImpl::set_inference_execution_provider(std::string provider)
 
 void ResourceImpl::register_custom_recognition(std::string key, maajs::FunctionType func)
 {
+    if (!resource) {
+        throw maajs::MaaError { "Resource has been destroyed" };
+    }
+    if (key.empty()) {
+        throw maajs::MaaError { "Custom name must not be empty" };
+    }
+
     auto ctx = new maajs::CallbackContext(func, "CustomReco");
     if (MaaResourceRegisterCustomRecognition(resource, key.c_str(), CustomReco, ctx)) {
         recos[key] = ctx;
     }
     else {
         delete ctx;
-        throw maajs::MaaError { "Resource register_custom_recognition failed" };
+        throw maajs::MaaError { std::format("Custom name is already registered: '{}'", key) };
     }
 }
 
@@ -169,13 +176,20 @@ void ResourceImpl::clear_custom_recognition()
 
 void ResourceImpl::register_custom_action(std::string key, maajs::FunctionType func)
 {
+    if (!resource) {
+        throw maajs::MaaError { "Resource has been destroyed" };
+    }
+    if (key.empty()) {
+        throw maajs::MaaError { "Custom name must not be empty" };
+    }
+
     auto ctx = new maajs::CallbackContext(func, "CustomAct");
     if (MaaResourceRegisterCustomAction(resource, key.c_str(), CustomAct, ctx)) {
         acts[key] = ctx;
     }
     else {
         delete ctx;
-        throw maajs::MaaError { "Resource register_custom_action failed" };
+        throw maajs::MaaError { std::format("Custom name is already registered: '{}'", key) };
     }
 }
 

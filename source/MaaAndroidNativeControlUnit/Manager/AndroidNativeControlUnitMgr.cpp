@@ -152,7 +152,6 @@ bool AndroidNativeControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int dura
 bool AndroidNativeControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     LogFunc << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
-    (void)pressure;
 
     if (!connected()) {
         LogError << "controller is not connected";
@@ -172,6 +171,7 @@ bool AndroidNativeControlUnitMgr::touch_down(int contact, int x, int y, int pres
     param.display_id = config_.display_id;
     param.method = TOUCH_DOWN;
     param.args.touch.p = { mapped.x, mapped.y };
+    param.args.touch.contact = contact;
 
     if (!dispatch_input_message(param)) {
         return false;
@@ -184,7 +184,6 @@ bool AndroidNativeControlUnitMgr::touch_down(int contact, int x, int y, int pres
 bool AndroidNativeControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 {
     LogFunc << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
-    (void)pressure;
 
     if (!connected()) {
         LogError << "controller is not connected";
@@ -204,6 +203,7 @@ bool AndroidNativeControlUnitMgr::touch_move(int contact, int x, int y, int pres
     param.display_id = config_.display_id;
     param.method = TOUCH_MOVE;
     param.args.touch.p = { mapped.x, mapped.y };
+    param.args.touch.contact = contact;
 
     if (!dispatch_input_message(param)) {
         return false;
@@ -232,6 +232,7 @@ bool AndroidNativeControlUnitMgr::touch_up(int contact)
     param.display_id = config_.display_id;
     param.method = TOUCH_UP;
     param.args.touch.p = { mapped.x, mapped.y };
+    param.args.touch.contact = contact;
 
     if (!dispatch_input_message(param)) {
         return false;
@@ -321,11 +322,12 @@ json::object AndroidNativeControlUnitMgr::get_info() const
 
 bool AndroidNativeControlUnitMgr::validate_contact(int contact)
 {
-    if (contact == 0) {
+    // Android MotionEvent pointer id is 0..15
+    if (contact >= 0 && contact < 16) {
         return true;
     }
 
-    LogWarn << "native android controller only supports single touch" << VAR(contact);
+    LogWarn << "invalid touch contact" << VAR(contact);
     return false;
 }
 

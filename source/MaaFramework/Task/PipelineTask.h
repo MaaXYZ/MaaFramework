@@ -37,6 +37,7 @@ private:
     {
         std::string model;
         std::set<std::string> node_names;
+        std::set<std::string> owner_node_names;
         std::vector<BatchOCREntry> entries;
     };
 

@@ -109,7 +109,7 @@ class JOCR:
 @dataclass
 class JNeuralNetworkClassify:
     model: str  # 必选
-    expected: list[int] = field(default_factory=lambda: [])
+    expected: list[Union[int, str]] = field(default_factory=lambda: [])
     roi: JTarget = (0, 0, 0, 0)
     roi_offset: JRect = (0, 0, 0, 0)
     labels: list[str] = field(default_factory=lambda: [])
@@ -120,7 +120,7 @@ class JNeuralNetworkClassify:
 @dataclass
 class JNeuralNetworkDetect:
     model: str  # 必选
-    expected: list[int] = field(default_factory=lambda: [])
+    expected: list[Union[int, str]] = field(default_factory=lambda: [])
     roi: JTarget = (0, 0, 0, 0)
     roi_offset: JRect = (0, 0, 0, 0)
     labels: list[str] = field(default_factory=lambda: [])
@@ -217,6 +217,7 @@ class JTouch:
     target: JTarget = True
     target_offset: JRect = (0, 0, 0, 0)
     pressure: int = 0
+    auto_up: bool = False
 
 
 @dataclass
@@ -238,6 +239,7 @@ class JLongPressKey:
 @dataclass
 class JKey:
     key: int
+    auto_up: bool = False
 
 
 @dataclass

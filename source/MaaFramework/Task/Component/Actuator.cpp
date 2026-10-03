@@ -1,5 +1,7 @@
 #include "Actuator.h"
 
+#include <algorithm>
+
 #include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
@@ -126,6 +128,13 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
     default:
         LogError << "Unknown action" << VAR(static_cast<int>(pipeline_data.action_type));
         return { };
+    }
+
+    if (result.action_id == MaaInvalidId) {
+        result.action_id = action_id_;
+        result.name = pipeline_data.name;
+        result.action = MAA_RES_NS::Action::kTypeNameMap.at(pipeline_data.action_type);
+        result.box = reco_hit;
     }
 
     tasker_->runtime_cache().set_action_detail(result.action_id, result);
@@ -332,7 +341,12 @@ ActionResult Actuator::touch_down(const MAA_RES_NS::Action::TouchParam& param, c
         return { };
     }
     cv::Point point = rand_point(target_rect);
-    MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
+    MAA_CTRL_NS::TouchParam ctrl_param {
+        .contact = static_cast<int>(param.contact),
+        .point = point,
+        .pressure = param.pressure,
+        .auto_up = param.auto_up,
+    };
     bool ret = controller()->touch_down(ctrl_param);
 
     return ActionResult {
@@ -358,7 +372,12 @@ ActionResult Actuator::touch_move(const MAA_RES_NS::Action::TouchParam& param, c
         return { };
     }
     cv::Point point = rand_point(target_rect);
-    MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
+    MAA_CTRL_NS::TouchParam ctrl_param {
+        .contact = static_cast<int>(param.contact),
+        .point = point,
+        .pressure = param.pressure,
+        .auto_up = param.auto_up,
+    };
     bool ret = controller()->touch_move(ctrl_param);
 
     return ActionResult {
@@ -438,7 +457,7 @@ ActionResult Actuator::key_down(const MAA_RES_NS::Action::KeyParam& param, const
         return { };
     }
 
-    MAA_CTRL_NS::ClickKeyParam ctrl_param { .keycode = { param.key } };
+    MAA_CTRL_NS::ClickKeyParam ctrl_param { .keycode = { param.key }, .auto_up = param.auto_up };
     bool ret = controller()->key_down(ctrl_param);
 
     return ActionResult {
@@ -553,7 +572,10 @@ ActionResult Actuator::screencap(const MAA_RES_NS::Action::ScreencapParam& param
 
     auto image = controller()->cached_image();
     if (image.empty()) {
-        LogError << "cached_image is empty";
+        image = controller()->screencap();
+    }
+    if (image.empty()) {
+        LogError << "screencap failed";
         return { };
     }
 
@@ -653,6 +675,17 @@ ActionResult
         .image = controller()->cached_image(),
         .box = box,
     };
+    const auto uses_image = [](const std::string& str) {
+        return str.find("{IMAGE}") != std::string::npos;
+    };
+    if (rt.image.empty() && (uses_image(param.exec) || std::ranges::any_of(param.args, uses_image))) {
+        // 仅在需要图像且无缓存时补截图。
+        rt.image = controller()->screencap();
+        if (rt.image.empty()) {
+            LogError << "screencap failed";
+            return { };
+        }
+    }
     bool ret = CommandAction().run(param, rt);
 
     return ActionResult {

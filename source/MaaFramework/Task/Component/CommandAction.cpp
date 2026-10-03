@@ -1,5 +1,6 @@
 #include "CommandAction.h"
 
+#include <algorithm>
 #include <functional>
 
 #include "MaaUtils/Encoding.h"
@@ -37,7 +38,8 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
     LogFunc << VAR(command.exec) << VAR(command.args) << VAR(command.detach);
 
     auto gen_runtime = [&](const std::string& src) -> std::string {
-        static std::unordered_map<std::string, std::function<std::string(const Runtime&)>> kArgvReplacement = {
+        // 不能是 static：bind 了 this，static 会让后续实例使用第一个实例的悬空指针
+        const std::unordered_map<std::string, std::function<std::string(const Runtime&)>> kArgvReplacement = {
             { "{ENTRY}", std::bind(&CommandAction::get_entry_name, this, std::placeholders::_1) },
             { "{NODE}", std::bind(&CommandAction::get_node_name, this, std::placeholders::_1) },
             { "{IMAGE}", std::bind(&CommandAction::get_image_path, this, std::placeholders::_1) },
@@ -55,6 +57,16 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
         }
         return dst;
     };
+
+    // 没有截图时 imwrite 会触发 OpenCV 断言并终止进程，需提前失败
+    auto has_image = [](const std::string& s) {
+        return s.find("{IMAGE}") != std::string::npos;
+    };
+    bool use_image = has_image(command.exec) || std::ranges::any_of(command.args, has_image);
+    if (use_image && runtime.image.empty()) {
+        LogError << "{IMAGE} is used but cached_image is empty";
+        return false;
+    }
 
     std::string conv_exec = gen_runtime(command.exec);
     std::filesystem::path exec = boost::process::search_path(path(conv_exec));

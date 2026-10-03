@@ -102,6 +102,7 @@ export constexpr auto _MaaWin32InputMethod_PostMessageWithCursorPos = MaaWin32In
 export constexpr auto _MaaWin32InputMethod_SendMessageWithWindowPos = MaaWin32InputMethod_SendMessageWithWindowPos;
 export constexpr auto _MaaWin32InputMethod_PostMessageWithWindowPos = MaaWin32InputMethod_PostMessageWithWindowPos;
 export constexpr auto _MaaWin32InputMethod_Interception = MaaWin32InputMethod_Interception;
+export constexpr auto _MaaWin32InputMethod_AnchoredTouch = MaaWin32InputMethod_AnchoredTouch;
 
 export using ::MaaMacOSScreencapMethod;
 export constexpr auto _MaaMacOSScreencapMethod_None = MaaMacOSScreencapMethod_None;
@@ -163,6 +164,7 @@ export using ::MaaPlayCoverControllerCreate;
 export using ::MaaWlRootsControllerCreate;
 export using ::MaaGamepadControllerCreate;
 export using ::MaaKWinControllerCreate;
+export using ::MaaLinuxControllerCreate;
 export using ::MaaControllerDestroy;
 export using ::MaaControllerAddSink;
 export using ::MaaControllerRemoveSink;

@@ -17,7 +17,6 @@ UInput::UInput(std::filesystem::path device_node, int screen_width, int screen_h
     , screen_height_(screen_height)
     , device_node_(std::move(device_node))
 {
-    open();
 }
 
 UInput::~UInput()
@@ -25,7 +24,7 @@ UInput::~UInput()
     close();
 }
 
-bool UInput::open()
+bool UInput::init()
 {
     if (screen_width_ <= 0 || screen_height_ <= 0) {
         LogError << "Invalid screen dimensions" << VAR(screen_width_) << VAR(screen_height_);
@@ -131,11 +130,10 @@ bool UInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    if (!pointer_down_) {
-        LogError << "Pointer is not down, cannot move";
-        return false;
-    }
-
+    // When the pointer is not pressed, degrade to an absolute move instead of
+    // failing. Some callers issue TouchMove right after a Click (e.g. MaaEnd's
+    // "move the mouse away" step) and must not break just because no button is
+    // currently down.
     return send_pointer_move(x, y);
 }
 

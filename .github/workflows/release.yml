@@ -194,6 +194,34 @@ jobs:
                   prerelease: ${{ needs.meta.outputs.is-prerelease == 'true' }}
                   body: ${{ needs.changelog.outputs.release_body }}
 
+    github_packages:
+        if: ${{ inputs.only-publish-to == 'GitHub' || inputs.only-publish-to == 'All' }}
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
+        runs-on: ubuntu-latest
+        outputs:
+            result: ${{ steps.publish.outcome }}
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: dawidd6/action-download-artifact@v21
+              with:
+                  workflow: build.yml
+                  run_id: ${{ inputs.run-id }}
+                  name: pkgs-nodejs
+                  path: assets/pkgs-nodejs
+                  check_artifacts: true
+                  if_no_artifact_found: fail
+
+            - uses: ./.github/actions/publish_github_packages
+              id: publish
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  path: assets/pkgs-nodejs
+                  dry-run: ${{ inputs.dry-run }}
+
     mirrorchyan:
         needs: [meta, github]
         if: always() && needs.meta.result == 'success' && (
@@ -221,25 +249,31 @@ jobs:
                   gh workflow run --repo ${{ github.repository }} mirrorchyan_release_note.yml -f tag=${{ needs.meta.outputs.tag }}
 
     create_issue:
-        needs: [meta, changelog, nuget, nodejs, pip, github, mirrorchyan]
+        needs: [meta, changelog, nuget, nodejs, pip, github, github_packages, mirrorchyan]
         runs-on: ubuntu-latest
         if: success() && (
-                needs.nuget.outputs.result != 'success'  ||
-                needs.nodejs.outputs.result != 'success' ||
-                needs.pip.outputs.result != 'success'    ||
-                needs.github.outputs.result != 'success' ||
+                needs.nuget.outputs.result != 'success'           ||
+                needs.nodejs.outputs.result != 'success'          ||
+                needs.pip.outputs.result != 'success'             ||
+                needs.github.outputs.result != 'success'          ||
+                needs.github_packages.outputs.result != 'success' ||
                 needs.mirrorchyan.outputs.result != 'success'
             )
+        permissions:
+            issues: write
         env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GH_REPO: ${{ github.repository }}
             ISSUE_TITLE: "${{ needs.meta.outputs.tag }} failed to release"
             ISSUE_BODY: |
                 A new release attempt for tag ${{ needs.meta.outputs.tag }} failed.
 
-                ${{ needs.nuget.outputs.result != 'success'         && '- nuget         @moomiji'   || '' }}
-                ${{ needs.nodejs.outputs.result != 'success'        && '- nodejs        @neko-para' || '' }}
-                ${{ needs.pip.outputs.result != 'success'           && '- pip           @MistEO'    || '' }}
-                ${{ needs.github.outputs.result != 'success'        && '- github        @MistEO'    || '' }}
-                ${{ needs.mirrorchyan.outputs.result != 'success'   && '- mirrorchyan   @MistEO'    || '' }}
+                ${{ needs.nuget.outputs.result != 'success'           && '- nuget           @moomiji'   || '' }}
+                ${{ needs.nodejs.outputs.result != 'success'          && '- nodejs          @neko-para' || '' }}
+                ${{ needs.pip.outputs.result != 'success'             && '- pip             @MistEO'    || '' }}
+                ${{ needs.github.outputs.result != 'success'          && '- github          @MistEO'    || '' }}
+                ${{ needs.github_packages.outputs.result != 'success' && '- github_packages @MistEO'    || '' }}
+                ${{ needs.mirrorchyan.outputs.result != 'success'     && '- mirrorchyan     @MistEO'    || '' }}
 
                 Release run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
@@ -252,33 +286,24 @@ jobs:
                 | pip | ${{ needs.pip.outputs.result }} |
                 | mirrorchyan | ${{ needs.mirrorchyan.outputs.result }} |
                 | github | ${{ needs.github.outputs.result }} |
+                | github_packages | ${{ needs.github_packages.outputs.result }} |
 
                 cc @MistEO
         steps:
-            - name: find issues
+            - name: Find issue
               id: find-issues
-              uses: actions-cool/issues-helper@v3
-              with:
-                  actions: "find-issues"
-                  issue-state: "all"
-                  title-includes: "${{ env.ISSUE_TITLE }}"
+              run: |
+                  issue=$(gh issue list --state all --limit 100 \
+                    --search "in:title \"$ISSUE_TITLE\"" \
+                    --json number,state,title \
+                    --jq 'map(select(.title | contains(env.ISSUE_TITLE))) | .[0] // null')
+                  echo "issue=$issue" >> "$GITHUB_OUTPUT"
             - name: Create issue
-              if: ${{ fromJSON(steps.find-issues.outputs.issues)[0] == null }}
-              uses: actions-cool/issues-helper@v3
-              with:
-                  actions: "create-issue"
-                  title: ${{ env.ISSUE_TITLE }}
-                  body: ${{ env.ISSUE_BODY }}
-            - name: Open issue
-              if: ${{ fromJSON(steps.find-issues.outputs.issues)[0].state == 'closed' }}
-              uses: actions-cool/issues-helper@v3
-              with:
-                  actions: "open-issue"
-                  issue-number: ${{ fromJSON(steps.find-issues.outputs.issues)[0].number }}
+              if: fromJSON(steps.find-issues.outputs.issue) == null
+              run: gh issue create --title "$ISSUE_TITLE" --body "$ISSUE_BODY"
+            - name: Reopen issue
+              if: fromJSON(steps.find-issues.outputs.issue).state == 'CLOSED'
+              run: gh issue reopen ${{ fromJSON(steps.find-issues.outputs.issue).number }}
             - name: Add comment
-              if: ${{ fromJSON(steps.find-issues.outputs.issues)[0] != null }}
-              uses: actions-cool/issues-helper@v3
-              with:
-                  actions: "create-comment"
-                  issue-number: ${{ fromJSON(steps.find-issues.outputs.issues)[0].number }}
-                  body: ${{ env.ISSUE_BODY }}
+              if: fromJSON(steps.find-issues.outputs.issue) != null
+              run: gh issue comment ${{ fromJSON(steps.find-issues.outputs.issue).number }} --body "$ISSUE_BODY"

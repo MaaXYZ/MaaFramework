@@ -21,8 +21,9 @@ public: // from ScreencapBase
     virtual std::optional<cv::Mat> screencap() override;
 
 private:
+    std::optional<cv::Mat> capture_window(HWND hwnd);
+
     HWND hwnd_ = nullptr;
 };
 
 MAA_CTRL_UNIT_NS_END
-
