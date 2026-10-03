@@ -13,6 +13,7 @@
 #include "Resource/PipelineParser.h"
 #include "Resource/ResourceMgr.h"
 #include "Tasker/Tasker.h"
+#include "Vision/NeuralNetworkCache.h"
 
 MAA_TASK_NS_BEGIN
 
@@ -280,6 +281,9 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
     auto ocr_cache =
         batch_plan ? std::make_shared<MAA_VISION_NS::OCRCache>(MAA_VISION_NS::OCRCache { .model = batch_plan->model }) : nullptr;
     bool batch_triggered = false;
+    // Each polling round owns one screenshot and one NN cache. Releasing it on
+    // return prevents results from surviving a hit, an action, or a new frame.
+    auto nn_cache = std::make_shared<MAA_VISION_NS::NeuralNetworkCache>();
 
     for (const auto& node : list) {
         if (context_->need_to_stop()) {
@@ -311,7 +315,7 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
         }
 
         auto anchor_name = node.anchor ? std::optional { node.name } : std::nullopt;
-        RecoResult result = run_recognition(image, pipeline_data, std::move(anchor_name), ocr_cache);
+        RecoResult result = run_recognition(image, pipeline_data, std::move(anchor_name), ocr_cache, nn_cache);
 
         if (result.box) {
             LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
