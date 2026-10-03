@@ -5,6 +5,7 @@
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
+#include "InferenceCache.hpp"
 #include "MaaUtils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
@@ -36,7 +37,8 @@ public:
         NeuralNetworkClassifierParam param,
         std::shared_ptr<Ort::Session> session,
         const Ort::MemoryInfo& memory_info,
-        std::string name = "");
+        std::string name = "",
+        InferenceCache<Result>* cache = nullptr);
 
 private:
     void analyze();
@@ -56,6 +58,7 @@ private:
     const NeuralNetworkClassifierParam param_;
     std::shared_ptr<Ort::Session> session_ = nullptr;
     const Ort::MemoryInfo& memory_info_;
+    InferenceCache<Result>* cache_ = nullptr;
 
     std::vector<int> expected_indices_;
 };
