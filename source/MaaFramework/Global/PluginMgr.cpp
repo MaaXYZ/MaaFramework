@@ -13,7 +13,14 @@ MAA_GLOBAL_NS_BEGIN
 
 struct DefaultPluginsLoader
 {
-    DefaultPluginsLoader() { PluginMgr::get_instance().load(library_dir() / "plugins"); }
+    DefaultPluginsLoader()
+    {
+        auto plugins_dir = library_dir() / "plugins";
+        std::error_code ec;
+        if (std::filesystem::is_directory(plugins_dir, ec)) {
+            PluginMgr::get_instance().load(plugins_dir);
+        }
+    }
 } _;
 
 bool PluginMgr::load(const std::filesystem::path& library_path)
