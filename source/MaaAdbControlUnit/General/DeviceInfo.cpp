@@ -89,7 +89,8 @@ std::optional<int> DeviceInfo::request_orientation()
 
     const auto& s = output_opt.value();
 
-    auto pos = s.find_first_of("0123456789");
+    // keep the sign so that negative values like "-1" are rejected below
+    auto pos = s.find_first_of("-0123456789");
     if (pos == std::string::npos) {
         return std::nullopt;
     }
