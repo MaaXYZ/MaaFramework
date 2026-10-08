@@ -83,6 +83,7 @@ const myAct: maa.CustomActionCallback = async self => {
 async function api_test() {
     const r1 = new maa.Resource()
     r1.inference_execution_provider = 'DirectML'
+    r1.inference_execution_provider = 'WebGPU'
     r1.inference_execution_provider = 'CoreML'
     r1.inference_execution_provider = 'Auto'
     r1.destroy()

@@ -45,6 +45,7 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
         }
     }
 
+#if MAAUTILS_HAS_BOOST_PROCESS
     if (auto env_adb = boost::process::search_path("adb"); std::filesystem::exists(env_adb)) {
         auto res = find_specified(env_adb, accurate_serials);
         for (auto& dev : res) {
@@ -54,6 +55,7 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
             result.emplace_back(std::move(dev));
         }
     }
+#endif
 
     LogInfo << VAR(result);
     return result;

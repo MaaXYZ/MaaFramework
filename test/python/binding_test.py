@@ -268,12 +268,14 @@ def test_resource_api():
     # 测试推理设置 API
     r1 = Resource()
     r1.use_directml()
+    r1.use_webgpu()
     r1.use_coreml()
     r1.use_auto_ep()
     r1.use_cpu()
 
     r2 = Resource()
     r2.use_directml(0)
+    r2.use_webgpu(0)
     r2.use_cpu()
 
     # 测试无效路径加载（应该失败但不崩溃）

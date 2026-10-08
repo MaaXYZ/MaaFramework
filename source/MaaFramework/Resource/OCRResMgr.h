@@ -28,6 +28,7 @@ public:
     void use_cuda(int device_id);
     void use_directml(int device_id);
     void use_coreml(uint32_t coreml_flag);
+    void use_webgpu(int device_id);
 
     bool lazy_load(const std::filesystem::path& path);
     void clear();
