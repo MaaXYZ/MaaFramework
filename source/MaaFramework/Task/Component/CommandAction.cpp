@@ -37,6 +37,11 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
 {
     LogFunc << VAR(command.exec) << VAR(command.args) << VAR(command.detach);
 
+#if !MAAUTILS_HAS_BOOST_PROCESS
+    std::ignore = runtime;
+    LogError << "Boost.Process is not available in this build";
+    return false;
+#else
     auto gen_runtime = [&](const std::string& src) -> std::string {
         // 不能是 static：bind 了 this，static 会让后续实例使用第一个实例的悬空指针
         const std::unordered_map<std::string, std::function<std::string(const Runtime&)>> kArgvReplacement = {
@@ -66,10 +71,6 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
         return false;
     }
 
-#if !MAAUTILS_HAS_BOOST_PROCESS
-    LogError << "Boost.Process is not available in this build";
-    return false;
-#else
     std::string conv_exec = gen_runtime(command.exec);
     std::filesystem::path exec = boost::process::search_path(path(conv_exec));
     if (!std::filesystem::exists(exec)) {
