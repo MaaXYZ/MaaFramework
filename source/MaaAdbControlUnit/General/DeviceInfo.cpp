@@ -97,7 +97,7 @@ std::optional<int> DeviceInfo::request_orientation()
 
     int value = 0;
     auto [ptr, ec] = std::from_chars(s.data() + pos, s.data() + s.size(), value);
-    if (ec != std::errc {}) {
+    if (ec != std::errc { }) {
         return std::nullopt;
     }
 
