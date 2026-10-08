@@ -322,8 +322,9 @@ struct ImportData
     std::vector<InterfaceData::Task> task;
     std::unordered_map<std::string, InterfaceData::Option> option;
     std::vector<InterfaceData::Preset> preset;
+    std::vector<InterfaceData::Group> group; // v2.4.0: 导入文件中的顶层分组声明
 
-    MEO_JSONIZATION(MEO_OPT task, MEO_OPT option, MEO_OPT preset);
+    MEO_JSONIZATION(MEO_OPT task, MEO_OPT option, MEO_OPT preset, MEO_OPT group);
 };
 
 struct Configuration
