@@ -699,9 +699,10 @@ def test_tasker_api(resource: Resource, controller: DbgController):
 
 class MyController(CustomController):
 
-    def __init__(self):
+    def __init__(self, image: Optional[numpy.ndarray] = None):
         super().__init__()
         self.count = 0
+        self.image = image if image is not None else numpy.zeros((1080, 1920, 3), dtype=numpy.uint8)
 
     def connect(self) -> bool:
         print("  on MyController.connect")
@@ -729,7 +730,7 @@ class MyController(CustomController):
     def screencap(self) -> numpy.ndarray:
         print("  on MyController.screencap")
         self.count += 1
-        return numpy.zeros((1080, 1920, 3), dtype=numpy.uint8)
+        return self.image
 
     def click(self, x: int, y: int) -> bool:
         print(f"  on MyController.click: {x}, {y}")
@@ -835,6 +836,13 @@ def test_custom_controller():
     print(f"  post_shell status: {shell_job.status}, output: {controller.shell_output!r}")
 
     print(f"  controller.count: {controller.count}, ret: {ret}")
+
+    # 非法的截图数据（此处为非 uint8）必须是受控的截图失败，而不是被静默误读成错图
+    bad_controller = MyController(numpy.zeros((8, 6, 3), dtype=numpy.float32))
+    assert bad_controller.post_connection().wait().succeeded, "bad controller connect should succeed"
+    print("  以下 traceback 是预期的：非法截图数据被拒绝")
+    assert not bad_controller.post_screencap().wait().succeeded, "invalid screencap data should fail the job"
+
     print("  PASS: custom controller")
 
 

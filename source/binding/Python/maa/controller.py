@@ -1,6 +1,7 @@
 import ctypes
 import json
 import os
+import traceback
 import warnings
 from abc import abstractmethod
 from collections.abc import Sequence
@@ -1665,12 +1666,16 @@ class CustomController(Controller):
             ctypes.py_object,
         ).value
 
-        image = self.screencap()
+        # 回调是 C 到 Python 的边界：这里逃逸的异常会被 ctypes 记为 "Exception ignored"
+        # 并返回默认值，所以集中转成受控的截图失败，同时保留堆栈便于定位自定义实现的问题
+        try:
+            image = self.screencap()
 
-        buffer = ImageBuffer(c_buffer)
-        buffer.set(image)
-
-        return int(True)
+            buffer = ImageBuffer(c_buffer)
+            return int(buffer.set(image))
+        except Exception:
+            traceback.print_exc()
+            return int(False)
 
     @staticmethod
     @MaaCustomControllerCallbacks.ClickFunc
