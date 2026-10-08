@@ -1,5 +1,7 @@
 #include "DeviceInfo.h"
 
+#include <charconv>
+
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Uuid.h"
 
@@ -13,8 +15,15 @@ bool DeviceInfo::parse(const json::value& config)
     static const json::array kDefaultResolutionArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "dumpsys window displays | grep DisplayFrames | tail -n 1 | grep -o -E [0-9]+",
     };
+    // Android 12-:   "SurfaceOrientation: 1"
+    // Android 13/14: "InputDeviceOrientation: 1"
+    // Android 15+:   "InputDeviceOrientation: Rotation90"
     static const json::array kDefaultOrientationArgv = {
-        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "dumpsys input | grep SurfaceOrientation | tail -n 1 | grep -m 1 -o -E [0-9]",
+        "{ADB}",
+        "-s",
+        "{ADB_SERIAL}",
+        "shell",
+        "dumpsys input | grep -e SurfaceOrientation -e InputDeviceOrientation | tail -n 1 | grep -m 1 -o -E [0-9]+; true",
     };
 
     return parse_command("UUID", config, kDefaultUuidArgv, uuid_argv_)
@@ -80,17 +89,35 @@ std::optional<int> DeviceInfo::request_orientation()
 
     const auto& s = output_opt.value();
 
-    if (s.empty()) {
+    // keep the sign so that negative values like "-1" are rejected below
+    auto pos = s.find_first_of("-0123456789");
+    if (pos == std::string::npos) {
         return std::nullopt;
     }
 
-    int ori = s.front() - '0';
-
-    if (!(ori >= 0 && ori <= 3)) {
+    int value = 0;
+    auto [ptr, ec] = std::from_chars(s.data() + pos, s.data() + s.size(), value);
+    if (ec != std::errc {}) {
         return std::nullopt;
     }
 
-    return ori;
+    // 0-3: rotation enum (Android 14-), 90/180/270: degrees (Android 15+ "Rotation90")
+    switch (value) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+        return value;
+    case 90:
+        return 1;
+    case 180:
+        return 2;
+    case 270:
+        return 3;
+    default:
+        LogWarn << "unknown orientation" << VAR(s);
+        return std::nullopt;
+    }
 }
 
 MAA_CTRL_UNIT_NS_END

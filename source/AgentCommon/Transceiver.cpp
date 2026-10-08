@@ -334,8 +334,8 @@ bool Transceiver::send(const json::value& j)
         return false;
     }
 
-    const bool tag = !s_handling_requests_.empty() && s_handling_requests_.back().owner == this && s_handling_requests_.back().req_id
-                     && is_response(j);
+    const bool tag =
+        !s_handling_requests_.empty() && s_handling_requests_.back().owner == this && s_handling_requests_.back().req_id && is_response(j);
     if (!tag) {
         return send_impl(j);
     }

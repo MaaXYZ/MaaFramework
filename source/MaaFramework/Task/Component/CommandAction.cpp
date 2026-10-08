@@ -64,7 +64,9 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
     };
 
     // 没有截图时 imwrite 会触发 OpenCV 断言并终止进程，需提前失败
-    auto has_image = [](const std::string& s) { return s.find("{IMAGE}") != std::string::npos; };
+    auto has_image = [](const std::string& s) {
+        return s.find("{IMAGE}") != std::string::npos;
+    };
     bool use_image = has_image(command.exec) || std::ranges::any_of(command.args, has_image);
     if (use_image && runtime.image.empty()) {
         LogError << "{IMAGE} is used but cached_image is empty";

@@ -235,17 +235,18 @@ bool request_vivo_orientation_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbContro
         return false;
     }
 
-    // If SurfaceOrientation exists, the default Orientation command should still work.
+    // If SurfaceOrientation (Android 12-) or InputDeviceOrientation (Android 13+) exists,
+    // the default Orientation command should still work.
     // In this case, do not override the default command to minimize the impact scope.
-    std::string surface_orientation;
-    if (control_unit->shell("dumpsys input | grep -m 1 SurfaceOrientation", surface_orientation)) {
-        string_trim_(surface_orientation);
-        if (!surface_orientation.empty()) {
+    std::string input_device_orientation;
+    if (control_unit->shell("dumpsys input | grep -m 1 -e SurfaceOrientation -e InputDeviceOrientation", input_device_orientation)) {
+        string_trim_(input_device_orientation);
+        if (!input_device_orientation.empty()) {
             return false;
         }
     }
 
-    // Some vivo / iQOO devices do not have SurfaceOrientation in dumpsys input,
+    // Some vivo / iQOO devices have neither field in dumpsys input,
     // but Viewport INTERNAL contains orientation=0/1/2/3.
     std::string viewport;
     if (!control_unit->shell("dumpsys input | grep -m 1 'Viewport INTERNAL'", viewport)) {

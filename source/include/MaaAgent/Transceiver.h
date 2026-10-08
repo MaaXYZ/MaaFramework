@@ -101,6 +101,7 @@ private:
     static constexpr const char* kRespIdKey = "_resp_id";
 
     inline static std::atomic<int64_t> s_req_id_ = 0;
+
     // 本线程正在处理的对端请求（嵌套时压栈），栈顶所属实例发出的回包带上其编号
     struct HandlingRequest
     {
