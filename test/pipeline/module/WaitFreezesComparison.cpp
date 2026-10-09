@@ -4,8 +4,11 @@
 #include "WaitFreezesComparison.h"
 
 #include <cstring>
+#include <format>
 #include <iostream>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <meojson/json.hpp>
@@ -24,7 +27,7 @@ const cv::Rect kRoi { 272, 200, 32, 33 };
 
 struct FrameSpec
 {
-    int solid = -1; // >= 0 时 ROI 填该灰度纯色，< 0 时 ROI 填纹理
+    std::optional<cv::Vec3b> solid; // 有值：ROI 填该 BGR 纯色；无值：ROI 填纹理
     unsigned texture_seed = 0;
 };
 
@@ -42,8 +45,9 @@ cv::Mat make_frame(const FrameSpec& spec)
     background.fill(frame, cv::RNG::UNIFORM, 0, 256);
 
     cv::Mat roi = frame(kRoi);
-    if (spec.solid >= 0) {
-        roi.setTo(cv::Scalar(spec.solid, spec.solid, spec.solid));
+    if (spec.solid) {
+        const cv::Vec3b& bgr = *spec.solid;
+        roi.setTo(cv::Scalar(bgr[0], bgr[1], bgr[2]));
     }
     else {
         cv::Mat texture(roi.size(), roi.type());
@@ -232,44 +236,47 @@ bool run_scenario(const Scenario& scenario)
 
 bool wait_freezes_comparison()
 {
-    const std::vector<Scenario> scenarios {
+    const auto black = cv::Vec3b { 0, 0, 0 };
+    const auto white = cv::Vec3b { 253, 253, 253 };
+
+    std::vector<Scenario> scenarios {
         // 两块相同的纯色 patch 必须判定为静止（method 5 是默认值）
         Scenario {
             .name = "identical solid white",
-            .script = { FrameSpec { .solid = 253 } },
+            .script = { FrameSpec { .solid = white } },
             .method = 5,
             .expect_frozen = true,
         },
         // 纯黑同样是无方差 patch，但 SQDIFF_NORMED / CCORR_NORMED 的分母（ΣT²·ΣI²）也退化为 0
         Scenario {
             .name = "identical solid black",
-            .script = { FrameSpec { .solid = 0 } },
+            .script = { FrameSpec { .solid = black } },
             .method = 5,
             .expect_frozen = true,
         },
         Scenario {
             .name = "identical solid black",
-            .script = { FrameSpec { .solid = 0 } },
+            .script = { FrameSpec { .solid = black } },
             .method = 1,
             .expect_frozen = true,
         },
         Scenario {
             .name = "identical solid black",
-            .script = { FrameSpec { .solid = 0 } },
+            .script = { FrameSpec { .solid = black } },
             .method = 3,
             .expect_frozen = true,
         },
         // 纯色 ROI 在两个纯色间来回切换仍然是"画面在变"，不能误报静止
         Scenario {
             .name = "solid white <-> solid gray",
-            .script = { FrameSpec { .solid = 253 }, FrameSpec { .solid = 100 } },
+            .script = { FrameSpec { .solid = white }, FrameSpec { .solid = cv::Vec3b { 100, 100, 100 } } },
             .method = 5,
             .expect_frozen = false,
         },
         // 纯色 vs 有纹理且不相同，仍然是"未静止"
         Scenario {
             .name = "solid white <-> textured",
-            .script = { FrameSpec { .solid = 253 }, FrameSpec { .texture_seed = 1 } },
+            .script = { FrameSpec { .solid = white }, FrameSpec { .texture_seed = 1 } },
             .method = 5,
             .time = 2000,
             .timeout = 4000,
@@ -279,7 +286,7 @@ bool wait_freezes_comparison()
         // 与非退化输入下的行为一致：反转语义是找变化，不能用来等画面静止
         Scenario {
             .name = "identical solid white, inverted method",
-            .script = { FrameSpec { .solid = 253 } },
+            .script = { FrameSpec { .solid = white } },
             .method = 10005,
             .expect_frozen = false,
         },
@@ -287,13 +294,13 @@ bool wait_freezes_comparison()
         // 方向必须按去掉 10000 后的 method 判断，否则与同一对纹理 patch 的判定相反
         Scenario {
             .name = "identical solid black, inverted sqdiff",
-            .script = { FrameSpec { .solid = 0 } },
+            .script = { FrameSpec { .solid = black } },
             .method = 10001,
             .expect_frozen = true,
         },
         Scenario {
             .name = "solid black <-> solid white, inverted sqdiff",
-            .script = { FrameSpec { .solid = 0 }, FrameSpec { .solid = 253 } },
+            .script = { FrameSpec { .solid = black }, FrameSpec { .solid = white } },
             .method = 10001,
             .expect_frozen = false,
         },
@@ -301,7 +308,7 @@ bool wait_freezes_comparison()
         // 最多损失一次采样，下一采样即自愈 —— 这也是它无法解释"连续几十次 0.000000"的原因
         Scenario {
             .name = "flat white then static texture (self-heal)",
-            .script = { FrameSpec { .solid = 253 }, FrameSpec { .texture_seed = 1 } },
+            .script = { FrameSpec { .solid = white }, FrameSpec { .texture_seed = 1 } },
             .method = 5,
             .timeout = 4000,
             .expect_frozen = true,
@@ -315,6 +322,21 @@ bool wait_freezes_comparison()
             .expect_frozen = true,
         },
     };
+
+    // 纯色不止白与黑：亮部/暗部/纯绿（模板 green mask 的约定色）/纯红/纯蓝都要能判静止
+    const std::vector<std::pair<std::string, cv::Vec3b>> solid_colors {
+        { "gray100", { 100, 100, 100 } },  { "gray128", { 128, 128, 128 } }, { "gray200", { 200, 200, 200 } },
+        { "white255", { 255, 255, 255 } }, { "green", { 0, 255, 0 } },      { "red", { 0, 0, 255 } },
+        { "blue", { 255, 0, 0 } },         { "darkblue", { 32, 0, 0 } },
+    };
+    for (const auto& [name, color] : solid_colors) {
+        scenarios.emplace_back(Scenario {
+            .name = std::format("identical solid {}", name),
+            .script = { FrameSpec { .solid = color } },
+            .method = 5,
+            .expect_frozen = true,
+        });
+    }
 
     bool all_passed = true;
     for (const auto& scenario : scenarios) {
