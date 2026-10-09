@@ -60,7 +60,7 @@ from maa.define import (
 )
 from maa.context import Context, ContextEventSink
 from maa.event_sink import EventSink
-from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
+from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick, JTemplateMatch
 
 analyzed: bool = False
 runned: bool = False
@@ -904,6 +904,86 @@ def test_command_image_placeholder():
     print("  PASS: Command {IMAGE} placeholder")
 
 
+def _noise_pattern(seed: int, size: int) -> numpy.ndarray:
+    blocks = numpy.random.default_rng(seed).integers(0, 256, size=(size // 4, size // 4, 3), dtype=numpy.uint8)
+    return blocks.repeat(4, axis=0).repeat(4, axis=1)
+
+
+def _write_png(path: Path, image: numpy.ndarray):
+    """测试环境没有 OpenCV/PIL，手写一个最简 PNG 编码"""
+    import struct
+    import zlib
+
+    def chunk(tag: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data))
+
+    height, width, _ = image.shape
+    rgb = image[:, :, ::-1]
+    raw = b"".join(b"\x00" + rgb[y].tobytes() for y in range(height))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(raw))
+        + chunk(b"IEND", b"")
+    )
+
+
+def _template_sizes(bundles: list[Path], template: str, screen: numpy.ndarray) -> set:
+    resource = Resource()
+    for bundle in bundles:
+        assert resource.post_bundle(bundle).wait().succeeded, f"load bundle failed: {bundle}"
+    controller = MyController(screen)
+    assert controller.post_connection().wait().succeeded
+    tasker = Tasker()
+    tasker.bind(resource, controller)
+    assert tasker.inited
+
+    param = JTemplateMatch(template=[template], threshold=[0.9])
+    detail = tasker.post_recognition(JRecognitionType.TemplateMatch, param, screen).wait().get()
+    assert detail and detail.nodes, "recognition should have node detail"
+    reco = detail.nodes[0].recognition
+    # 框的宽高即模板宽高，用来区分参与匹配的是哪张图
+    return {(r.box[2], r.box[3]) for r in reco.all_results}
+
+
+def test_template_override_across_bundles():
+    """回归 #1541：多个 Bundle 中同路径的模板图片应以后加载的为准，文件夹按相对路径合并"""
+    print("\n=== test_template_override_across_bundles ===")
+
+    import shutil
+    import tempfile
+
+    pattern_a = _noise_pattern(1, 40)
+    pattern_b = _noise_pattern(2, 60)
+    pattern_c = _noise_pattern(3, 48)
+    screen = numpy.full((720, 1280, 3), 128, dtype=numpy.uint8)
+    screen[100:140, 100:140] = pattern_a
+
+    work = Path(tempfile.mkdtemp(prefix="maafw_template_override_"))
+    try:
+        base = work / "base"
+        override = work / "override"
+        _write_png(base / "image" / "T.png", pattern_a)
+        _write_png(base / "image" / "D" / "1.png", pattern_a)
+        _write_png(base / "image" / "D" / "2.png", pattern_c)
+        _write_png(override / "image" / "T.png", pattern_b)
+        _write_png(override / "image" / "D" / "1.png", pattern_b)
+
+        sizes = _template_sizes([base], "T.png", screen)
+        assert sizes == {(40, 40)}, f"base only: {sizes}"
+
+        sizes = _template_sizes([base, override], "T.png", screen)
+        assert sizes == {(60, 60)}, f"file should be replaced by the later bundle: {sizes}"
+
+        sizes = _template_sizes([base, override], "D", screen)
+        assert sizes == {(60, 60), (48, 48)}, f"directory should merge by relative path: {sizes}"
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+    print("  PASS: template override across bundles")
+
+
 def _ctypes_type_name(ctypes_type):
     """取 ctypes 类型名；restype 可能为 None（void），此时回退到 repr。"""
     return getattr(ctypes_type, "__name__", repr(ctypes_type))
@@ -1208,6 +1288,9 @@ if __name__ == "__main__":
 
     # 回归：Command 动作 {IMAGE} 占位符
     test_command_image_placeholder()
+
+    # 回归：多 Bundle 同名模板覆盖 (#1541)
+    test_template_override_across_bundles()
 
     # shell API 的 ctypes 声明
     test_shell_api_declarations()
