@@ -1,0 +1,40 @@
+name: schema check
+
+# tools/** 不在 test.yml 的 paths 里，schema 改动不会触发构建矩阵，这里单独做静态校验
+on:
+    push:
+        branches:
+            - 'main'
+        paths:
+            - '.github/workflows/schema.yml'
+            - 'tools/**'
+
+    pull_request:
+        branches:
+            - '**'
+        paths:
+            - '.github/workflows/schema.yml'
+            - 'tools/**'
+
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}${{ github.ref == 'refs/heads/main' && format('-{0}', github.sha) || '' }}
+    cancel-in-progress: true
+
+jobs:
+    interface-import:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v7
+              with:
+                  submodules: false
+
+            - name: Set up Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: '3.9'
+
+            - name: Check importable fields
+              run: python tools/check_interface_schema.py --verbose
