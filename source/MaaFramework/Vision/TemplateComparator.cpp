@@ -30,7 +30,7 @@ PatchStats stats_of(const cv::Mat& patch)
         }
 
         // 用 min == max 判断常量：这是逐像素的精确比较，不依赖 meanStdDev 的浮点残差
-        //（ARM 上常量 patch 也可能算出非 0 的 stddev，那样会漏掉退化分支）
+        // （ARM 上常量 patch 也可能算出非 0 的 stddev，那样会漏掉退化分支）
         double min_val = 0.0, max_val = 0.0;
         cv::minMaxLoc(single, &min_val, &max_val);
 
@@ -146,8 +146,7 @@ double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int meth
 
         // 近常量 patch 上归一化分数没有区分度（见 PR 说明），这里留一条线索便于线上定位
         if (lhs_stats.near_constant || rhs_stats.near_constant) {
-            LogDebug << name_ << "near-constant patch, score may be unreliable" << VAR(method) << VAR(lhs.size())
-                     << VAR(rhs.size());
+            LogDebug << name_ << "near-constant patch, score may be unreliable" << VAR(method) << VAR(lhs.size()) << VAR(rhs.size());
         }
     }
 
@@ -183,8 +182,8 @@ double TemplateComparator::degenerate_score(const cv::Mat& lhs, const cv::Mat& r
     const bool identical = max_diff == 0.0;
 
     // 退化分支的取值只由像素本身决定，打出 max_diff 便于线上区分"两帧一致"与"两侧确实不同"
-    LogDebug << name_ << "degenerate patch" << VAR(max_diff) << VAR(lhs.size()) << VAR(rhs.size()) << VAR(method)
-             << VAR(invert_score) << VAR(low_score_better);
+    LogDebug << name_ << "degenerate patch" << VAR(max_diff) << VAR(lhs.size()) << VAR(rhs.size()) << VAR(method) << VAR(invert_score)
+             << VAR(low_score_better);
 
     // 非反转沿用原兜底：SQDIFF 系最差为 DBL_MAX、其余为 0（意在"比任何真实分数都差"）。
     // 反转后分数会被 1 - x 映射，SQDIFF 系最差取归一化上界 1（映射为 0），避免产出 -DBL_MAX 这类越界值。

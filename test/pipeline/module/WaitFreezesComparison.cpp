@@ -317,7 +317,7 @@ bool wait_freezes_comparison()
     // 纯色不止白与黑：亮部/暗部/纯绿（模板 green mask 的约定色）/纯红/纯蓝都要能判静止
     const std::vector<std::pair<std::string, cv::Vec3b>> solid_colors {
         { "gray100", { 100, 100, 100 } },  { "gray128", { 128, 128, 128 } }, { "gray200", { 200, 200, 200 } },
-        { "white255", { 255, 255, 255 } }, { "green", { 0, 255, 0 } },      { "red", { 0, 0, 255 } },
+        { "white255", { 255, 255, 255 } }, { "green", { 0, 255, 0 } },       { "red", { 0, 0, 255 } },
         { "blue", { 255, 0, 0 } },         { "darkblue", { 32, 0, 0 } },
     };
     for (const auto& [name, color] : solid_colors) {
