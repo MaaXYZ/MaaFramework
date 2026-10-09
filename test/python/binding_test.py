@@ -515,6 +515,55 @@ def test_buffer_api():
     assert resized.shape[1] == 50, "width should be 50"
     assert resized.shape[0] == 25, "height should keep aspect ratio"
 
+    # 四通道 BGRA 按 BGR 存储，alpha 丢弃
+    bgra = numpy.zeros((8, 6, 4), dtype=numpy.uint8)
+    bgra[:, :, 0] = 11  # B
+    bgra[:, :, 1] = 22  # G
+    bgra[:, :, 2] = 33  # R
+    bgra[:, :, 3] = 255  # A
+    assert buf.set(bgra), "set BGRA should succeed"
+    bgr = buf.get()
+    print(f"  BGRA stored as: {bgr.shape}")
+    assert bgr.shape == (8, 6, 3), f"BGRA should be stored as BGR, got {bgr.shape}"
+    assert (bgr[:, :, 0] == 11).all(), "B channel should be preserved"
+    assert (bgr[:, :, 1] == 22).all(), "G channel should be preserved"
+    assert (bgr[:, :, 2] == 33).all(), "R channel should be preserved"
+
+    # 单通道输入：二维与 (h, w, 1) 都按灰度复制到三通道
+    for gray in (numpy.full((4, 6), 77, dtype=numpy.uint8), numpy.full((4, 6, 1), 77, dtype=numpy.uint8)):
+        assert buf.set(gray), "set gray should succeed"
+        gray_out = buf.get()
+        print(f"  gray stored as: {gray_out.shape}")
+        assert gray_out.shape == (4, 6, 3), f"gray should be replicated to BGR, got {gray_out.shape}"
+        assert (gray_out == 77).all(), "gray value should be preserved in all channels"
+
+    # 非连续切片
+    padded = numpy.zeros((10, 10, 3), dtype=numpy.uint8)
+    padded[:, :, 0] = 9
+    view = padded[2:8, 3:9]
+    assert not view.flags["C_CONTIGUOUS"], "view should be non-contiguous"
+    assert buf.set(view), "set non-contiguous should succeed"
+    view_out = buf.get()
+    print(f"  non-contiguous stored as: {view_out.shape}")
+    assert view_out.shape == (6, 6, 3), f"non-contiguous shape should be kept, got {view_out.shape}"
+    assert (view_out[:, :, 0] == 9).all(), "non-contiguous content should be kept"
+
+    # 非 uint8 数据无法按 uint8 解析，显式失败
+    try:
+        buf.set(numpy.zeros((4, 4, 3), dtype=numpy.float32))
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("set with float32 should raise TypeError")
+
+    # 通道数不受支持
+    try:
+        buf.set(numpy.zeros((4, 4, 2), dtype=numpy.uint8))
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("set with 2 channels should raise ValueError")
+
     print("  PASS: buffer API")
 
 
@@ -650,9 +699,10 @@ def test_tasker_api(resource: Resource, controller: DbgController):
 
 class MyController(CustomController):
 
-    def __init__(self):
+    def __init__(self, image: Optional[numpy.ndarray] = None):
         super().__init__()
         self.count = 0
+        self.image = image if image is not None else numpy.zeros((1080, 1920, 3), dtype=numpy.uint8)
 
     def connect(self) -> bool:
         print("  on MyController.connect")
@@ -680,7 +730,7 @@ class MyController(CustomController):
     def screencap(self) -> numpy.ndarray:
         print("  on MyController.screencap")
         self.count += 1
-        return numpy.zeros((1080, 1920, 3), dtype=numpy.uint8)
+        return self.image
 
     def click(self, x: int, y: int) -> bool:
         print(f"  on MyController.click: {x}, {y}")
@@ -786,6 +836,13 @@ def test_custom_controller():
     print(f"  post_shell status: {shell_job.status}, output: {controller.shell_output!r}")
 
     print(f"  controller.count: {controller.count}, ret: {ret}")
+
+    # 非法的截图数据（此处为非 uint8）必须是受控的截图失败，而不是被静默误读成错图
+    bad_controller = MyController(numpy.zeros((8, 6, 3), dtype=numpy.float32))
+    assert bad_controller.post_connection().wait().succeeded, "bad controller connect should succeed"
+    print("  以下 traceback 是预期的：非法截图数据被拒绝")
+    assert not bad_controller.post_screencap().wait().succeeded, "invalid screencap data should fail the job"
+
     print("  PASS: custom controller")
 
 
