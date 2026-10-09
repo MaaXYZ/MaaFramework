@@ -124,6 +124,21 @@ bool ActionHelper::wait_freezes(
             return finish(false);
         }
 
+        if (pre_image.size() != cur_image.size()) {
+            // 只恢复全屏 ROI 的 90 度旋转；其他尺寸变化不在 wait_freezes 内处理。
+            const bool rotated_90 = pre_image.cols == cur_image.rows && pre_image.rows == cur_image.cols;
+            const bool full_roi = *corrected_roi == cv::Rect(0, 0, pre_image.cols, pre_image.rows);
+            if (rotated_90 && full_roi) {
+                LogWarn << "Screen rotated with fullscreen roi, restart wait freezes" << VAR(pre_image.size()) << VAR(cur_image.size());
+                roi = { 0, 0, cur_image.cols, cur_image.rows };
+                corrected_roi = roi;
+                cb_detail["roi"] = roi;
+                pre_image = cur_image;
+                pre_image_clock = std::chrono::steady_clock::now();
+                continue;
+            }
+        }
+
         std::string draw_name = noti_ctx.name.empty() ? "wait_freezes" : std::format("{}_wait_freezes", noti_ctx.name);
         TemplateComparator comparator(pre_image, cur_image, { *corrected_roi }, comp_param, draw_name);
 
