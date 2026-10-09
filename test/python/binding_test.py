@@ -978,6 +978,18 @@ def test_template_override_across_bundles():
 
         sizes = _template_sizes([base, override], "D", screen)
         assert sizes == {(60, 60), (48, 48)}, f"directory should merge by relative path: {sizes}"
+
+        # 后加载包中损坏的图片也算覆盖，不能回退到先加载包里的同名图片
+        broken = work / "broken"
+        (broken / "image" / "D").mkdir(parents=True)
+        (broken / "image" / "T.png").write_bytes(b"not a png")
+        (broken / "image" / "D" / "2.png").write_bytes(b"not a png")
+
+        sizes = _template_sizes([base, broken], "T.png", screen)
+        assert sizes == set(), f"broken file should not fall back to earlier bundle: {sizes}"
+
+        sizes = _template_sizes([base, override, broken], "D", screen)
+        assert sizes == {(60, 60)}, f"broken file in directory should not fall back to earlier bundle: {sizes}"
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
