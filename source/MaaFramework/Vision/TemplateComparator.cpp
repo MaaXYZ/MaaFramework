@@ -6,6 +6,21 @@
 
 MAA_VISION_NS_BEGIN
 
+namespace
+{
+
+bool roi_in_image(const cv::Rect& roi, const cv::Mat& image)
+{
+    if (image.empty() || roi.empty() || roi.x < 0 || roi.y < 0 || roi.x > image.cols || roi.y > image.rows) {
+        return false;
+    }
+
+    // 用减法而不是 x + width，避免和 cv::Mat::operator() 一样在相加时溢出后误判。
+    return roi.width <= image.cols - roi.x && roi.height <= image.rows - roi.y;
+}
+
+} // namespace
+
 TemplateComparator::TemplateComparator(
     cv::Mat lhs,
     cv::Mat rhs,
@@ -30,6 +45,12 @@ void TemplateComparator::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     while (next_roi()) {
+        // Mat::operator() 在 ROI 越界时会断言并中断进程，比较前先拦住。
+        if (!roi_in_image(roi_, image_) || !roi_in_image(roi_, rhs_image_)) {
+            LogError << "roi is out of range" << VAR(roi_) << VAR(image_.size()) << VAR(rhs_image_.size());
+            continue;
+        }
+
         cv::Mat lhs_roi = image_(roi_);
         cv::Mat rhs_roi = rhs_image_(roi_);
         double score = comp(lhs_roi, rhs_roi, param_.method);
