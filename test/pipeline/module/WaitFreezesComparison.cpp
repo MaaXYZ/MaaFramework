@@ -177,18 +177,9 @@ bool run_scenario(const Scenario& scenario)
     MaaTaskerBindResource(tasker, resource);
     MaaTaskerBindController(tasker, controller);
 
-    // 关掉截图缩放，让 ROI 坐标与实际画面一一对应
+    // 关掉截图缩放，让 ROI 坐标与实际画面一一对应（控制器仍会走一次同尺寸 resize，保持真实管线行为）
     const bool use_raw_size = true;
     MaaControllerSetOption(controller, MaaCtrlOption_ScreenshotUseRawSize, const_cast<bool*>(&use_raw_size), sizeof(use_raw_size));
-
-    // 控制器对截图总会走一次 resize（即使目标尺寸与原始尺寸相同）。重采样在部分平台上会让同一块
-    // 纯色区域出现逐帧 ±1 抖动，那样测到的是重采样而不是比较器，所以这里用 INTER_NEAREST 原样透传。
-    const int32_t resize_method = cv::INTER_NEAREST;
-    MaaControllerSetOption(
-        controller,
-        MaaCtrlOption_ScreenshotResizeMethod,
-        const_cast<int32_t*>(&resize_method),
-        sizeof(resize_method));
 
     MaaControllerWait(controller, MaaControllerPostConnection(controller));
 
