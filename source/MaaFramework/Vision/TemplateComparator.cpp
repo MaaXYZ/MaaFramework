@@ -126,7 +126,7 @@ double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int meth
     }
 
     if (is_comparable(lhs, rhs) && is_undefined_score(lhs, rhs, method)) {
-        return degenerate_score(lhs, rhs, invert_score);
+        return degenerate_score(lhs, rhs, method, invert_score);
     }
 
     cv::Mat matched;
@@ -151,22 +151,23 @@ double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int meth
 
 // 退化输入下 matchTemplate 的分母为 0，没有可用的相似度，这里直接用像素本身是否一致来定分：
 // 一致即为最优（wait_freezes 判定为静止），不一致则沿用原先兜底的最差取值。
-double TemplateComparator::degenerate_score(const cv::Mat& lhs, const cv::Mat& rhs, bool invert_score) const
+double TemplateComparator::degenerate_score(const cv::Mat& lhs, const cv::Mat& rhs, int method, bool invert_score) const
 {
+    // 方向必须按去掉 kMethodInvertBase 后的真实 cv method 判断：SQDIFF 系"越小越接近"。
+    // low_score_better_ 取自未去偏移的 param_.method，带 10000 时恒为 false，不能用在这里。
+    const bool low_score_better = (method == cv::TemplateMatchModes::TM_SQDIFF || method == cv::TemplateMatchModes::TM_SQDIFF_NORMED);
+
     const double max_diff = cv::norm(lhs, rhs, cv::NORM_INF);
     const bool identical = max_diff == 0.0;
 
     // 退化分支的取值只由像素本身决定，打出 max_diff 便于线上区分"两帧一致"与"两侧确实不同"
-    LogDebug << name_ << "degenerate patch" << VAR(max_diff) << VAR(lhs.size()) << VAR(rhs.size()) << VAR(invert_score)
-             << VAR(low_score_better_);
+    LogDebug << name_ << "degenerate patch" << VAR(max_diff) << VAR(lhs.size()) << VAR(rhs.size()) << VAR(method)
+             << VAR(invert_score) << VAR(low_score_better);
 
-    double val = 0.0;
-    if (low_score_better_) {
-        val = identical ? 0.0 : std::numeric_limits<double>::max();
-    }
-    else {
-        val = identical ? 1.0 : 0.0;
-    }
+    // 非反转沿用原兜底：SQDIFF 系最差为 DBL_MAX、其余为 0（意在"比任何真实分数都差"）。
+    // 反转后分数会被 1 - x 映射，SQDIFF 系最差取归一化上界 1（映射为 0），避免产出 -DBL_MAX 这类越界值。
+    const double worst = low_score_better ? (invert_score ? 1.0 : std::numeric_limits<double>::max()) : 0.0;
+    const double val = identical ? (low_score_better ? 0.0 : 1.0) : worst;
 
     return invert_score ? 1.0 - val : val;
 }

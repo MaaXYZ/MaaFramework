@@ -274,6 +274,20 @@ bool wait_freezes_comparison()
             .method = 10005,
             .expect_frozen = false,
         },
+        // 10001 = 反转 + SQDIFF_NORMED：SQDIFF 系原本"越小越接近"，反转后一致对应最高分，
+        // 方向必须按去掉 10000 后的 method 判断，否则与同一对纹理 patch 的判定相反
+        Scenario {
+            .name = "identical solid black, inverted sqdiff",
+            .script = { FrameSpec { .solid = 0 } },
+            .method = 10001,
+            .expect_frozen = true,
+        },
+        Scenario {
+            .name = "solid black <-> solid white, inverted sqdiff",
+            .script = { FrameSpec { .solid = 0 }, FrameSpec { .solid = 253 } },
+            .method = 10001,
+            .expect_frozen = false,
+        },
         // wait_freezes 在未命中时会把 pre_image 前滚到当前帧，所以"纯色一侧"这种一次性的退化分数
         // 最多损失一次采样，下一采样即自愈 —— 这也是它无法解释"连续几十次 0.000000"的原因
         Scenario {

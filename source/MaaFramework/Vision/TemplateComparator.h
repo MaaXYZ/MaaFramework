@@ -32,7 +32,7 @@ private:
     void cherry_pick();
 
     double comp(const cv::Mat& lhs, const cv::Mat& rhs, int method);
-    double degenerate_score(const cv::Mat& lhs, const cv::Mat& rhs, bool invert_score) const;
+    double degenerate_score(const cv::Mat& lhs, const cv::Mat& rhs, int method, bool invert_score) const;
     bool comp_score(double s1, double s2) const;
 
 private:
