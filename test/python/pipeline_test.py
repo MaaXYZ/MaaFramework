@@ -1347,6 +1347,8 @@ class TargetController(CustomController):
         self.screenshot_count = 0
         self.image_available = False
         self.image_shape = (720, 1280, 3)
+        self.rotate_on_screenshot = 0
+        self.rotated_shape = None
         self.scale_points = False
         self.use_touch = False
         self.inputs = []
@@ -1364,7 +1366,10 @@ class TargetController(CustomController):
     def screencap(self):
         self.screenshot_count += 1
         shape = self.image_shape if self.image_available else (0, 0, 3)
-        return np.zeros(shape, dtype=np.uint8)
+        image = np.zeros(shape, dtype=np.uint8)
+        if self.rotate_on_screenshot and self.screenshot_count == self.rotate_on_screenshot:
+            self.image_shape = self.rotated_shape
+        return image
 
     def click(self, x, y):
         self.inputs.append(("click", x, y))
@@ -1740,7 +1745,7 @@ class DirectHitTargetTest(unittest.TestCase):
         self.assertTrue(output.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
         self.assertEqual(self.controller.screenshot_count, 1)
 
-    def check_wait_freezes(self, param, expected, box=None):
+    def check_wait_freezes(self, param, expected, box=None, extra_screenshots=0):
         action = WaitFreezesAction(
             JWaitFreezes(time=10, rate_limit=10, timeout=1000, **param), box
         )
@@ -1760,7 +1765,7 @@ class DirectHitTargetTest(unittest.TestCase):
             self.assertTrue(detail["reco_ids"])
             self.assertEqual(
                 self.controller.screenshot_count - before,
-                1 + len(detail["reco_ids"]),
+                1 + len(detail["reco_ids"]) + extra_screenshots,
             )
             for reco_id in detail["reco_ids"]:
                 box = self.tasker.get_recognition_detail(reco_id).box
@@ -1794,6 +1799,14 @@ class DirectHitTargetTest(unittest.TestCase):
         self.assertTrue(self.controller.post_screencap().wait().succeeded)
         self.controller.image_shape = (1280, 720, 3)
         self.check_wait_freezes({"target": [0, 0, 0, 0]}, [0, 0, 720, 1280])
+
+    def test_wait_freezes_restarts_on_fullscreen_rotation(self):
+        self.controller.image_available = True
+        self.controller.rotate_on_screenshot = 1
+        self.controller.rotated_shape = (1280, 720, 3)
+        self.check_wait_freezes(
+            {"target": [0, 0, 0, 0]}, [0, 0, 720, 1280], extra_screenshots=1
+        )
 
     def test_wait_freezes_empty_self_and_invalid_targets(self):
         self.controller.image_available = True
