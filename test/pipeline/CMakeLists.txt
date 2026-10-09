@@ -7,7 +7,9 @@ file(
 
 add_executable(PipelineTesting ${pipeline_testing_src})
 
-target_link_libraries(PipelineTesting MaaFramework)
+target_link_libraries(PipelineTesting MaaFramework ${OpenCV_LIBS})
+
+target_include_directories(PipelineTesting PRIVATE ${OpenCV_INCLUDE_DIRS})
 
 add_dependencies(PipelineTesting MaaFramework PipelineSmokingResource)
 set_target_properties(PipelineTesting PROPERTIES FOLDER Testing)

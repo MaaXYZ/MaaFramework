@@ -6,6 +6,57 @@
 
 MAA_VISION_NS_BEGIN
 
+namespace
+{
+
+struct PatchStats
+{
+    bool zero_variance = false; // 每个通道的方差都为 0，即整块是同一颜色
+    bool all_zero = false;      // 每个通道的方差和均值都为 0，即整块全 0
+};
+
+PatchStats stats_of(const cv::Mat& patch)
+{
+    cv::Scalar mean, stddev;
+    cv::meanStdDev(patch, mean, stddev);
+
+    PatchStats stats { .zero_variance = true, .all_zero = true };
+    for (int channel = 0; channel < patch.channels(); ++channel) {
+        stats.zero_variance = stats.zero_variance && stddev[channel] == 0.0;
+        stats.all_zero = stats.all_zero && mean[channel] == 0.0;
+    }
+    stats.all_zero = stats.all_zero && stats.zero_variance;
+    return stats;
+}
+
+// 归一化方法的分母在某些输入下恒为 0，此时 cv::matchTemplate 返回的是与相似度无关的硬编码值
+// （CCOEFF_NORMED 走模板常量的提前返回得 1，其余走 "avoid rounding errors" 分支得 0），
+// 调用方（如 wait_freezes）会把它当成"变化极大"，见 OpenCV common_matchTemplate。
+bool is_undefined_score(const cv::Mat& lhs, const cv::Mat& rhs, int method)
+{
+    const PatchStats lhs_stats = stats_of(lhs);
+    const PatchStats rhs_stats = stats_of(rhs);
+
+    switch (method) {
+    case cv::TemplateMatchModes::TM_SQDIFF_NORMED:
+    case cv::TemplateMatchModes::TM_CCORR_NORMED:
+        // 分母为 sqrt(ΣT²·ΣI²)，任一侧全 0 即为 0
+        return lhs_stats.all_zero || rhs_stats.all_zero;
+    case cv::TemplateMatchModes::TM_CCOEFF_NORMED:
+        // 分母为 sqrt(Σ(T-T̄)²·Σ(I-Ī)²)，任一侧无方差即为 0
+        return lhs_stats.zero_variance || rhs_stats.zero_variance;
+    default:
+        return false;
+    }
+}
+
+bool is_comparable(const cv::Mat& lhs, const cv::Mat& rhs)
+{
+    return !lhs.empty() && !rhs.empty() && lhs.size() == rhs.size() && lhs.type() == rhs.type();
+}
+
+} // namespace
+
 TemplateComparator::TemplateComparator(
     cv::Mat lhs,
     cv::Mat rhs,
@@ -74,6 +125,10 @@ double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int meth
         method -= TemplateMatcherParam::kMethodInvertBase;
     }
 
+    if (is_comparable(lhs, rhs) && is_undefined_score(lhs, rhs, method)) {
+        return degenerate_score(lhs, rhs, invert_score);
+    }
+
     cv::Mat matched;
     cv::matchTemplate(lhs, rhs, matched, method);
 
@@ -92,6 +147,28 @@ double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int meth
     }
 
     return val;
+}
+
+// 退化输入下 matchTemplate 的分母为 0，没有可用的相似度，这里直接用像素本身是否一致来定分：
+// 一致即为最优（wait_freezes 判定为静止），不一致则沿用原先兜底的最差取值。
+double TemplateComparator::degenerate_score(const cv::Mat& lhs, const cv::Mat& rhs, bool invert_score) const
+{
+    const double max_diff = cv::norm(lhs, rhs, cv::NORM_INF);
+    const bool identical = max_diff == 0.0;
+
+    // 退化分支的取值只由像素本身决定，打出 max_diff 便于线上区分"两帧一致"与"两侧确实不同"
+    LogDebug << name_ << "degenerate patch" << VAR(max_diff) << VAR(lhs.size()) << VAR(rhs.size()) << VAR(invert_score)
+             << VAR(low_score_better_);
+
+    double val = 0.0;
+    if (low_score_better_) {
+        val = identical ? 0.0 : std::numeric_limits<double>::max();
+    }
+    else {
+        val = identical ? 1.0 : 0.0;
+    }
+
+    return invert_score ? 1.0 - val : val;
 }
 
 bool TemplateComparator::comp_score(double s1, double s2) const

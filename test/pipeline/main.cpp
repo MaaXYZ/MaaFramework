@@ -2,6 +2,7 @@
 
 #include "module/PipelineSmoking.h"
 #include "module/RunWithoutFile.h"
+#include "module/WaitFreezesComparison.h"
 
 #include "MaaFramework/MaaAPI.h"
 
@@ -21,6 +22,9 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &lv, sizeof(lv));
 
     if (!run_without_file(testset_dir)) {
+        return -1;
+    }
+    if (!wait_freezes_comparison()) {
         return -1;
     }
     if (!pipeline_smoking(testset_dir)) {
