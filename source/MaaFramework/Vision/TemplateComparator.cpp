@@ -11,32 +11,42 @@ namespace
 
 struct PatchStats
 {
-    bool zero_variance = false; // 每个通道的方差都为 0，即整块是同一颜色
-    bool all_zero = false;      // 每个通道的方差和均值都为 0，即整块全 0
+    bool zero_variance = false; // 每个通道 min == max，即整块是同一颜色
+    bool all_zero = false;      // 每个通道 min == max == 0，即整块全 0
+    bool near_constant = false; // 每个通道 max - min <= 1，几乎无纹理：分数不可靠，值得记一条日志
 };
 
 PatchStats stats_of(const cv::Mat& patch)
 {
-    cv::Scalar mean, stddev;
-    cv::meanStdDev(patch, mean, stddev);
+    PatchStats stats { .zero_variance = true, .all_zero = true, .near_constant = true };
 
-    PatchStats stats { .zero_variance = true, .all_zero = true };
     for (int channel = 0; channel < patch.channels(); ++channel) {
-        stats.zero_variance = stats.zero_variance && stddev[channel] == 0.0;
-        stats.all_zero = stats.all_zero && mean[channel] == 0.0;
+        cv::Mat single;
+        if (patch.channels() == 1) {
+            single = patch;
+        }
+        else {
+            cv::extractChannel(patch, single, channel);
+        }
+
+        // 用 min == max 判断常量：这是逐像素的精确比较，不依赖 meanStdDev 的浮点残差
+        //（ARM 上常量 patch 也可能算出非 0 的 stddev，那样会漏掉退化分支）
+        double min_val = 0.0, max_val = 0.0;
+        cv::minMaxLoc(single, &min_val, &max_val);
+
+        stats.zero_variance = stats.zero_variance && min_val == max_val;
+        stats.all_zero = stats.all_zero && min_val == 0.0 && max_val == 0.0;
+        stats.near_constant = stats.near_constant && max_val - min_val <= 1.0;
     }
-    stats.all_zero = stats.all_zero && stats.zero_variance;
+
     return stats;
 }
 
 // 归一化方法的分母在某些输入下恒为 0，此时 cv::matchTemplate 返回的是与相似度无关的硬编码值
 // （CCOEFF_NORMED 走模板常量的提前返回得 1，其余走 "avoid rounding errors" 分支得 0），
 // 调用方（如 wait_freezes）会把它当成"变化极大"，见 OpenCV common_matchTemplate。
-bool is_undefined_score(const cv::Mat& lhs, const cv::Mat& rhs, int method)
+bool is_undefined_score(const PatchStats& lhs_stats, const PatchStats& rhs_stats, int method)
 {
-    const PatchStats lhs_stats = stats_of(lhs);
-    const PatchStats rhs_stats = stats_of(rhs);
-
     switch (method) {
     case cv::TemplateMatchModes::TM_SQDIFF_NORMED:
     case cv::TemplateMatchModes::TM_CCORR_NORMED:
@@ -125,8 +135,20 @@ double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int meth
         method -= TemplateMatcherParam::kMethodInvertBase;
     }
 
-    if (is_comparable(lhs, rhs) && is_undefined_score(lhs, rhs, method)) {
-        return degenerate_score(lhs, rhs, method, invert_score);
+    // 尺寸/类型不一致时保持原路径，交给 matchTemplate 自己报错
+    if (is_comparable(lhs, rhs)) {
+        const PatchStats lhs_stats = stats_of(lhs);
+        const PatchStats rhs_stats = stats_of(rhs);
+
+        if (is_undefined_score(lhs_stats, rhs_stats, method)) {
+            return degenerate_score(lhs, rhs, method, invert_score);
+        }
+
+        // 近常量 patch 上归一化分数没有区分度（见 PR 说明），这里留一条线索便于线上定位
+        if (lhs_stats.near_constant || rhs_stats.near_constant) {
+            LogDebug << name_ << "near-constant patch, score may be unreliable" << VAR(method) << VAR(lhs.size())
+                     << VAR(rhs.size());
+        }
     }
 
     cv::Mat matched;
