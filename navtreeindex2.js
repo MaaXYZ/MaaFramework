@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"MaaToolkitAdbDevice_8h.html#ab564cccebb4128e18de3f561a2058786":[4,0,0,4,0,0,5],
 "MaaToolkitAdbDevice_8h.html#ab8dc9a69e2a1d91dc9f04e1a0c3b0dc5":[4,0,0,4,0,0,0],
 "MaaToolkitAdbDevice_8h.html#ad070aa284e3208b7c1a93aa40fe8e2e9":[4,0,0,4,0,0,2],
 "MaaToolkitAdbDevice_8h_source.html":[4,0,0,4,0,0],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "structMaaCustomControllerCallbacks.html#ac25e877ae83b359a0b3e7ee8b02f534f":[3,0,8,4],
 "structMaaCustomControllerCallbacks.html#ace80d9863f4faaa37fcf1a00bc521561":[3,0,8,7],
 "structMaaCustomControllerCallbacks.html#ad7eb80327cea4f03830d13480ce03eb7":[3,0,8,10],
-"structMaaCustomControllerCallbacks.html#add383d0ce3995532bfe0db9d008b6f7e":[3,0,8,13],
-"structMaaCustomControllerCallbacks.html#ae2381df699964f6e95fe89ad2fc22e38":[3,0,8,16]
+"structMaaCustomControllerCallbacks.html#add383d0ce3995532bfe0db9d008b6f7e":[3,0,8,13]
 };

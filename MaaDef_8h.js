@@ -177,7 +177,8 @@ var MaaDef_8h =
       [ "MaaInferenceExecutionProvider_CPU", "MaaDef_8h.html#a07c99fb673242274e529810067429535aa7f96492e1e243a6f4a08c587d727fad", null ],
       [ "MaaInferenceExecutionProvider_DirectML", "MaaDef_8h.html#a07c99fb673242274e529810067429535afc6b391b560f1e7d421ca2c6e26c693b", null ],
       [ "MaaInferenceExecutionProvider_CoreML", "MaaDef_8h.html#a07c99fb673242274e529810067429535ae25a91ba56fd4ace8c4f5034e87320d0", null ],
-      [ "MaaInferenceExecutionProvider_CUDA", "MaaDef_8h.html#a07c99fb673242274e529810067429535aada9d3c290c0a54170963a8885e1550c", null ]
+      [ "MaaInferenceExecutionProvider_CUDA", "MaaDef_8h.html#a07c99fb673242274e529810067429535aada9d3c290c0a54170963a8885e1550c", null ],
+      [ "MaaInferenceExecutionProvider_WebGPU", "MaaDef_8h.html#a07c99fb673242274e529810067429535a3d1cd45032b6c6bef2ecf8a5abad8b55", null ]
     ] ],
     [ "MaaResOptionEnum", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116", [
       [ "MaaResOption_Invalid", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e", null ],

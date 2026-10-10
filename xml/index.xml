@@ -582,6 +582,7 @@
     <member refid="MaaDef_8h_1a07c99fb673242274e529810067429535afc6b391b560f1e7d421ca2c6e26c693b" kind="enumvalue"><name>MaaInferenceExecutionProvider_DirectML</name></member>
     <member refid="MaaDef_8h_1a07c99fb673242274e529810067429535ae25a91ba56fd4ace8c4f5034e87320d0" kind="enumvalue"><name>MaaInferenceExecutionProvider_CoreML</name></member>
     <member refid="MaaDef_8h_1a07c99fb673242274e529810067429535aada9d3c290c0a54170963a8885e1550c" kind="enumvalue"><name>MaaInferenceExecutionProvider_CUDA</name></member>
+    <member refid="MaaDef_8h_1a07c99fb673242274e529810067429535a3d1cd45032b6c6bef2ecf8a5abad8b55" kind="enumvalue"><name>MaaInferenceExecutionProvider_WebGPU</name></member>
     <member refid="MaaDef_8h_1a9aa211dbcabe90cacd0c94ea6a03d116" kind="enum"><name>MaaResOptionEnum</name></member>
     <member refid="MaaDef_8h_1a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e" kind="enumvalue"><name>MaaResOption_Invalid</name></member>
     <member refid="MaaDef_8h_1a9aa211dbcabe90cacd0c94ea6a03d116a3ff6bf91b8715ced2a6c20ac9c1b4109" kind="enumvalue"><name>MaaResOption_InferenceDevice</name></member>
