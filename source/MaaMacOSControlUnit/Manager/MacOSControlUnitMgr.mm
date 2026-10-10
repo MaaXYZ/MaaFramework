@@ -6,6 +6,7 @@
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
 
+#include "Input/GestureInput.h"
 #include "Input/GlobalEventInput.h"
 #include "Input/InputUtils.h"
 #include "Input/PostToPidInput.h"
@@ -49,6 +50,9 @@ bool MacOSControlUnitMgr::connect()
         break;
     case MaaMacOSInputMethod_PostToPid:
         input_ = std::make_shared<PostToPidInput>(window_id_);
+        break;
+    case MaaMacOSInputMethod_Gesture:
+        input_ = std::make_shared<GestureInput>(window_id_);
         break;
     case MaaMacOSInputMethod_None:
         LogWarn << "No input method specified, input will not work";
