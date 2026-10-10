@@ -164,6 +164,12 @@ bool MacOSControlUnitMgr::stop_app(const std::string& intent)
         CGEventPostToPid(pid, key_down.get());
         CGEventPostToPid(pid, key_up.get());
 
+        if ([NSThread isMainThread]) {
+            LogWarn << "Command-Q sent; skipping exit detection on the main thread. Success only indicates the quit request was sent."
+                    << VAR(pid);
+            continue;
+        }
+
         for (int attempt = 0; attempt < 20 && !app.isTerminated; ++attempt) {
             std::this_thread::sleep_for(std::chrono::milliseconds(250));
         }

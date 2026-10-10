@@ -548,12 +548,14 @@ class MaaMacOSInputMethodEnum(IntEnum):
     |-------------|---------------|--------------------|----------------------------|
     | GlobalEvent | High          | No                 | Global event injection     |
     | PostToPid   | Medium        | Yes                | Post event to specific PID |
+    | Gesture     | Experimental  | Yes                | Native iOS app gestures; contact 0 only |
     """
 
     Null = 0
 
     GlobalEvent = 1
     PostToPid = 1 << 1
+    Gesture = 1 << 2
 
 
 MaaLinuxScreencapMethod = ctypes.c_uint64
