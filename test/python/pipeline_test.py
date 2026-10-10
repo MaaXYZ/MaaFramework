@@ -1795,6 +1795,48 @@ class DirectHitTargetTest(unittest.TestCase):
         self.controller.image_shape = (1280, 720, 3)
         self.check_wait_freezes({"target": [0, 0, 0, 0]}, [0, 0, 720, 1280])
 
+    def test_wait_freezes_reresolves_roi_when_screenshot_size_changes(self):
+        """横竖屏切换后应按新尺寸重新解析全屏 ROI，而不是沿用首帧 ROI。"""
+        self.controller.image_available = True
+        self.controller.image_shape = (720, 1280, 3)
+
+        def screencap():
+            image = TargetController.screencap(self.controller)
+            # 首帧保持 1280x720，之后切到 720x1280。
+            if self.controller.screenshot_count == 1:
+                self.controller.image_shape = (1280, 720, 3)
+            return image
+
+        self.controller.screencap = screencap
+        action = WaitFreezesAction(
+            JWaitFreezes(
+                time=10, rate_limit=10, timeout=1000, target=[0, 0, 0, 0]
+            )
+        )
+        self.assertTrue(self.resource.register_custom_action("FreezeProbe", action))
+        sink = WaitFreezesSink()
+        sink_id = self.tasker.add_context_sink(sink)
+        try:
+            self.run_node({"action": "Custom", "custom_action": "FreezeProbe"})
+            self.assertTrue(action.result)
+            self.assertEqual(len(sink.succeeded), 1)
+            self.assertEqual(sink.succeeded[0]["roi"], [0, 0, 720, 1280])
+
+            boxes = []
+            missed = 0
+            for reco_id in sink.succeeded[0]["reco_ids"]:
+                box = self.tasker.get_recognition_detail(reco_id).box
+                if box is None:
+                    missed += 1
+                    continue
+                boxes.append([box.x, box.y, box.w, box.h])
+            self.assertGreaterEqual(missed, 1)
+            self.assertTrue(boxes)
+            self.assertTrue(all(box == [0, 0, 720, 1280] for box in boxes))
+        finally:
+            self.tasker.remove_context_sink(sink_id)
+            self.resource.unregister_custom_action("FreezeProbe")
+
     def test_wait_freezes_empty_self_and_invalid_targets(self):
         self.controller.image_available = True
         for param in ({}, {"target": "MissingNode"}, {"target": "[Anchor]Missing"}):
