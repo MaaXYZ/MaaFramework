@@ -164,6 +164,7 @@ static maajs::ValueType load_macos_input_method(maajs::EnvType env)
 
     DEM(MaaMacOSInputMethod, GlobalEvent);
     DEM(MaaMacOSInputMethod, PostToPid);
+    DEM(MaaMacOSInputMethod, Gesture);
 
     return obj;
 }
