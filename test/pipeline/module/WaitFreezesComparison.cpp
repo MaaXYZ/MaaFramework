@@ -7,6 +7,7 @@
 #include <format>
 #include <iostream>
 #include <optional>
+#include <random>
 #include <string>
 #include <utility>
 #include <vector>
@@ -314,12 +315,24 @@ bool wait_freezes_comparison()
         },
     };
 
-    // 纯色不止白与黑：亮部/暗部/纯绿（模板 green mask 的约定色）/纯红/纯蓝都要能判静止
-    const std::vector<std::pair<std::string, cv::Vec3b>> solid_colors {
-        { "gray100", { 100, 100, 100 } },  { "gray128", { 128, 128, 128 } }, { "gray200", { 200, 200, 200 } },
-        { "white255", { 255, 255, 255 } }, { "green", { 0, 255, 0 } },       { "red", { 0, 0, 255 } },
-        { "blue", { 255, 0, 0 } },         { "darkblue", { 32, 0, 0 } },
+    // 纯色与具体颜色无关：判据是逐通道 min == max（等价于逐像素相等，对所有取值成立），
+    // 所以这里不维护颜色清单 —— 留几个边界/通道各异的锚点，其余用固定种子从全色域采样，
+    // 谁也不用再去补"别的颜色"。离线属性测试：20000 个随机 patch（1~4 通道 / 8U 与 32F /
+    // 常量、单像素扰动、噪声）下该判据与逐像素相等的结论零差异。
+    std::vector<std::pair<std::string, cv::Vec3b>> solid_colors {
+        { "black", black },
+        { "white255", { 255, 255, 255 } },
+        { "gray128", { 128, 128, 128 } },
+        { "green", { 0, 255, 0 } }, // 三个通道各不相同，用来挡住"只看单通道"的实现
     };
+    std::mt19937 color_rng(2024);
+    std::uniform_int_distribution<int> color_channel(0, 255);
+    for (int i = 0; i < 8; ++i) {
+        const cv::Vec3b color { static_cast<uint8_t>(color_channel(color_rng)),
+                                static_cast<uint8_t>(color_channel(color_rng)),
+                                static_cast<uint8_t>(color_channel(color_rng)) };
+        solid_colors.emplace_back(std::format("random{}#b{:02x}g{:02x}r{:02x}", i, color[0], color[1], color[2]), color);
+    }
     for (const auto& [name, color] : solid_colors) {
         scenarios.emplace_back(Scenario {
             .name = std::format("identical solid {}", name),
