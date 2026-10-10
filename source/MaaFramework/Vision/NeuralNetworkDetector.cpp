@@ -9,8 +9,6 @@
 
 #include <boost/regex.hpp>
 
-#include <onnxruntime/onnxruntime_cxx_api.h>
-
 #include "MaaUtils/NoWarningCV.hpp"
 #include "VisionUtils.hpp"
 
@@ -20,13 +18,11 @@ NeuralNetworkDetector::NeuralNetworkDetector(
     cv::Mat image,
     std::vector<cv::Rect> rois,
     NeuralNetworkDetectorParam param,
-    std::shared_ptr<Ort::Session> session,
-    const Ort::MemoryInfo& memory_info,
+    InferenceSessionPtr session,
     std::string name)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , session_(std::move(session))
-    , memory_info_(memory_info)
 {
     analyze();
 }
@@ -36,7 +32,7 @@ void NeuralNetworkDetector::analyze()
     LogFunc << name_;
 
     if (!session_) {
-        LogError << "OrtSession not loaded";
+        LogError << "InferenceSession not loaded";
         return;
     }
 
@@ -61,13 +57,13 @@ void NeuralNetworkDetector::analyze()
 NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vector<std::string>& labels) const
 {
     if (!session_) {
-        LogError << "OrtSession not loaded";
+        LogError << "InferenceSession not loaded";
         return { };
     }
 
     // batch_size, channel, height, width
     // for yolov8, input_shape is { 1, 3, 640, 640 }
-    const auto input_shape = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+    const auto& input_shape = session_->input_shape();
     if (input_shape.size() != 4) {
         LogError << "Input shape is not 4" << VAR(input_shape);
         return { };
@@ -100,22 +96,19 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
         cv::Scalar(114, 114, 114));
     std::vector<float> input = image_to_tensor(image);
 
-    Ort::Value input_tensor =
-        Ort::Value::CreateTensor<float>(memory_info_, input.data(), input.size(), input_shape.data(), input_shape.size());
+    auto output_opt = session_->run(input);
+    if (!output_opt) {
+        LogError << name_ << "inference failed" << VAR(param_.model);
+        return { };
+    }
 
-    Ort::AllocatorWithDefaultOptions allocator;
-    const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();
-    const std::string out_0 = session_->GetOutputNameAllocated(0, allocator).get();
-    const std::vector input_names { in_0.c_str() };
-    const std::vector output_names { out_0.c_str() };
-
-    Ort::RunOptions run_options;
-    auto output_tensor =
-        session_->Run(run_options, input_names.data(), &input_tensor, input_names.size(), output_names.data(), output_names.size());
-
-    const float* raw_output = output_tensor[0].GetTensorData<float>();
+    const float* raw_output = output_opt->data.data();
     // output_shape is { 1, 5, 8400 }
-    std::vector<int64_t> output_shape = output_tensor[0].GetTensorTypeAndShapeInfo().GetShape();
+    const std::vector<int64_t>& output_shape = output_opt->shape;
+    if (output_shape.size() != 3 || static_cast<size_t>(output_shape[1] * output_shape[2]) != output_opt->data.size()) {
+        LogError << name_ << "unexpected output shape" << VAR(output_shape) << VAR(output_opt->data.size());
+        return { };
+    }
 
     // yolov8 的 onnx 输出和前面的 v5, v7 等似乎不太一样，目前网上 yolov8 的 demo 较少，文档也没找到
     // 这里的输出解析是我跟着数据推测的：
@@ -286,18 +279,17 @@ std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() con
         return { };
     }
 
-    Ort::AllocatorWithDefaultOptions allocator;
-    Ort::ModelMetadata metadata = session_->GetModelMetadata();
+    const auto& metadata = session_->metadata();
 
     std::string names_str;
 
     constexpr std::array<std::string_view, 4> possible_keys = { "names", "name", "labels", "class_names" };
     for (const std::string_view& key : possible_keys) {
-        auto ptr = metadata.LookupCustomMetadataMapAllocated(key.data(), allocator);
-        if (!ptr) {
+        auto iter = metadata.find(std::string(key));
+        if (iter == metadata.end()) {
             continue;
         }
-        names_str = ptr.get();
+        names_str = iter->second;
         break;
     }
 

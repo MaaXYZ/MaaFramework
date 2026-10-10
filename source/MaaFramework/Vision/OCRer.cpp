@@ -5,11 +5,6 @@
 
 #include <boost/regex.hpp>
 
-MAA_SUPPRESS_CV_WARNINGS_BEGIN
-#include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
-#include "fastdeploy/vision/ocr/ppocr/ppocr_v4.h"
-#include "fastdeploy/vision/ocr/ppocr/recognizer.h"
-MAA_SUPPRESS_CV_WARNINGS_END
 
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/Logger.h"
@@ -39,17 +34,13 @@ OCRer::OCRer(
     cv::Mat image,
     std::vector<cv::Rect> rois,
     OCRerParam param,
-    std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
-    std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
-    std::shared_ptr<fastdeploy::pipeline::PPOCRv4> ocrer,
+    OCRSessionPtr session,
     std::string name,
     std::optional<ColorFilterConfig> color_filter)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , color_filter_(std::move(color_filter))
-    , deter_(std::move(deter))
-    , recer_(std::move(recer))
-    , ocrer_(std::move(ocrer))
+    , session_(std::move(session))
 {
     analyze();
 }
@@ -59,12 +50,12 @@ OCRer::OCRer(
     std::vector<cv::Rect> rois,
     OCRerParam param,
     const ResultsVec& cached,
-    std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
+    OCRSessionPtr session,
     std::string name)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , cache_(cached)
-    , recer_(std::move(recer))
+    , session_(std::move(session))
 {
     analyze();
 }
@@ -168,55 +159,50 @@ OCRer::ResultsVec OCRer::handle_cached() const
 
 OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
 {
-    if (!ocrer_) {
-        LogError << "ocrer_ is null";
+    if (!session_) {
+        LogError << "OCRSession not loaded";
         return { };
     }
 
-    fastdeploy::vision::OCRResult ocr_result;
-
-    bool ret = false;
+    std::optional<OCRDetRecResult> ocr_opt;
     {
         std::unique_lock lock(s_predict_mutex_);
-        ret = ocrer_->Predict(image_roi, &ocr_result);
+        ocr_opt = session_->det_and_rec(image_roi);
     }
-    if (!ret) {
-        LogWarn << "predict return false" << VAR(ocrer_) << VAR(image_) << VAR(image_roi);
+    if (!ocr_opt) {
+        LogWarn << "det_and_rec failed" << VAR(image_) << VAR(image_roi);
         return { };
     }
+    const auto& [boxes, texts, scores] = *ocr_opt;
 
     ResultsVec results;
 
-    if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
-        LogWarn << "Wrong ocr_result size" << VAR(ocr_result.boxes) << VAR(ocr_result.text) << VAR(ocr_result.rec_scores);
+    if (boxes.size() != texts.size() || texts.size() != scores.size()) {
+        LogWarn << "Wrong ocr_result size" << VAR(boxes) << VAR(texts) << VAR(scores);
 
-        if (ocr_result.boxes.empty() && ocr_result.text.size() == 1 && ocr_result.rec_scores.size() == 1) {
-            if (auto raw_text = ocr_result.text.front(); !raw_text.empty()) {
+        if (boxes.empty() && texts.size() == 1 && scores.size() == 1) {
+            if (const auto& raw_text = texts.front(); !raw_text.empty()) {
                 // 这种情况是 det 模型没出结果，整个 ROI 直接被送给了 rec 模型。凑合用吧（
-                auto text = to_u16(raw_text);
-                auto score = ocr_result.rec_scores.front();
-                results.emplace_back(Result { .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = score });
+                results.emplace_back(
+                    Result { .text = to_u16(raw_text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = scores.front() });
             }
         }
 
         return results;
     }
 
-    for (size_t i = 0; i != ocr_result.text.size(); ++i) {
+    for (size_t i = 0; i != texts.size(); ++i) {
         // the raw_box rect like ↓
         // 0 - 1
         // 3 - 2
-        const auto& raw_box = ocr_result.boxes.at(i);
+        const auto& raw_box = boxes.at(i);
         int x_collect[] = { raw_box[0], raw_box[2], raw_box[4], raw_box[6] };
         int y_collect[] = { raw_box[1], raw_box[3], raw_box[5], raw_box[7] };
         auto [left, right] = std::ranges::minmax(x_collect);
         auto [top, bottom] = std::ranges::minmax(y_collect);
 
-        auto text = to_u16(ocr_result.text.at(i));
         cv::Rect my_box(left, top, right - left, bottom - top);
-        auto score = ocr_result.rec_scores.at(i);
-
-        results.emplace_back(Result { .text = std::move(text), .box = my_box, .score = score });
+        results.emplace_back(Result { .text = to_u16(texts.at(i)), .box = my_box, .score = scores.at(i) });
     }
 
     return results;
@@ -224,22 +210,21 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
 
 OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
 {
-    if (!recer_) {
-        LogError << "recer_ is null";
+    if (!session_) {
+        LogError << "OCRSession not loaded";
         return { };
     }
 
-    std::string reco_text;
-    float reco_score = 0;
-    bool ret = false;
+    std::optional<OCRRecResult> rec_opt;
     {
         std::unique_lock lock(s_predict_mutex_);
-        ret = recer_->Predict(image_roi, &reco_text, &reco_score);
+        rec_opt = session_->rec(image_roi);
     }
-    if (!ret) {
-        LogWarn << "recer_ return false" << VAR(recer_) << VAR(image_) << VAR(image_roi);
+    if (!rec_opt) {
+        LogWarn << "rec failed" << VAR(image_) << VAR(image_roi);
         return { };
     }
+    auto& [reco_text, reco_score] = *rec_opt;
 
     auto text = to_u16(reco_text);
     Result result { .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = reco_score };
@@ -251,8 +236,8 @@ OCRer::ResultsVec OCRer::predict_batch_rec(const std::vector<cv::Rect>& rois) co
 {
     LogFunc << VAR(rois);
 
-    if (!recer_) {
-        LogError << "recer_ is null";
+    if (!session_) {
+        LogError << "OCRSession not loaded";
         return { };
     }
     if (rois.empty()) {
@@ -265,28 +250,26 @@ OCRer::ResultsVec OCRer::predict_batch_rec(const std::vector<cv::Rect>& rois) co
         imgs.emplace_back(image_(r));
     }
 
-    fastdeploy::vision::OCRResult ocr_result;
-
-    bool ret = false;
+    std::optional<std::vector<OCRRecResult>> batch_opt;
     {
         std::unique_lock lock(s_predict_mutex_);
-        ret = recer_->BatchPredict(imgs, &ocr_result);
+        batch_opt = session_->batch_rec(imgs);
     }
-    if (!ret) {
-        LogWarn << "recer_ BatchPredict return false" << VAR(recer_) << VAR(rois) << VAR(imgs);
+    if (!batch_opt) {
+        LogWarn << "batch_rec failed" << VAR(rois);
         return { };
     }
-    if (ocr_result.text.size() != rois.size() || ocr_result.rec_scores.size() != rois.size()) {
-        LogError << "Bad ocr result size" << VAR(rois) << VAR(ocr_result.boxes) << VAR(ocr_result.text) << VAR(ocr_result.rec_scores);
+    if (batch_opt->size() != rois.size()) {
+        LogError << "Bad ocr result size" << VAR(rois) << VAR(batch_opt->size());
         return { };
     }
 
     ResultsVec results;
 
-    for (size_t i = 0; i != ocr_result.text.size(); ++i) {
-        auto text = to_u16(ocr_result.text.at(i));
+    for (size_t i = 0; i != batch_opt->size(); ++i) {
+        auto text = to_u16(batch_opt->at(i).first);
         cv::Rect my_box = rois.at(i);
-        auto score = ocr_result.rec_scores.at(i);
+        auto score = batch_opt->at(i).second;
 
         results.emplace_back(Result { .text = std::move(text), .box = my_box, .score = score });
     }

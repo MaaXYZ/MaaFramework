@@ -175,6 +175,16 @@ enum MaaInferenceExecutionProviderEnum
     // (ep.webgpuexecutionprovider.deviceId). Auto uses device 0.
     // Shipped on Windows, Linux and macOS.
     MaaInferenceExecutionProvider_WebGPU = 5,
+
+    // NCNN, only available when MaaFW is built with NCNN (Android only).
+    // Setting it on other builds fails (MaaResourceSetOption returns false).
+    // MaaResOption_InferenceDevice: CPU / Auto -> NCNN CPU; GPU is not supported yet.
+    // Not tried by Auto.
+    // Models are loaded from `<model stem>.ncnn.param/.ncnn.bin/.ncnn.json` (the "model" field with .onnx replaced),
+    // the .onnx file itself is not needed. There is no fallback to onnxruntime: a missing or broken ncnn model fails
+    // the recognition, so ship ncnn models together with this provider.
+    // OCR also runs on NCNN: `det.ncnn.param/.bin`, `rec.ncnn.param/.bin` and `keys.txt` in the OCR model dir, no fallback either.
+    MaaInferenceExecutionProvider_NCNN = 6,
 };
 
 enum MaaResOptionEnum
@@ -183,6 +193,7 @@ enum MaaResOptionEnum
 
     /// Use the specified inference device.
     /// Please set this option before loading the model.
+    /// Once resource loading starts (any MaaResourcePost*), changing it fails until MaaResourceClear().
     ///
     /// value: MaaInferenceDevice, eg: 0; val_size: sizeof(MaaInferenceDevice)
     /// default value is MaaInferenceDevice_Auto
@@ -190,6 +201,7 @@ enum MaaResOptionEnum
 
     /// Use the specified inference execution provider
     /// Please set this option before loading the model.
+    /// Once resource loading starts (any MaaResourcePost*), changing it fails until MaaResourceClear().
     ///
     /// value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider)
     /// default value is MaaInferenceExecutionProvider_Auto

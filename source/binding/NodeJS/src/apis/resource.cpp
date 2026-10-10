@@ -144,6 +144,9 @@ void ResourceImpl::set_inference_execution_provider(std::string provider)
     else if (provider == "CUDA") {
         value = MaaInferenceExecutionProvider_CUDA;
     }
+    else if (provider == "NCNN") {
+        value = MaaInferenceExecutionProvider_NCNN;
+    }
     else {
         throw maajs::MaaError { std::format("Resource set inference_execution_provider failed, invalid provider {}", provider) };
     }

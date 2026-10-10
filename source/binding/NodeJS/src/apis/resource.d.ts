@@ -17,9 +17,10 @@ declare global {
             set inference_device(id: 'CPU' | 'Auto' | number)
             /**
              * `CoreML` is deprecated. MaaDeps no longer ships it; use `WebGPU`.
+             * `NCNN` is Android only (CPU), setting it on other platforms throws.
              */
             set inference_execution_provider(
-                provider: 'Auto' | 'CPU' | 'DirectML' | 'WebGPU' | 'CoreML' | 'CUDA',
+                provider: 'Auto' | 'CPU' | 'DirectML' | 'WebGPU' | 'CoreML' | 'CUDA' | 'NCNN',
             )
 
             register_custom_recognition(name: string, func: CustomRecognitionCallback): void
