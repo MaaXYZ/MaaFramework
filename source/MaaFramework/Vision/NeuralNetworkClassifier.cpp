@@ -14,11 +14,13 @@ NeuralNetworkClassifier::NeuralNetworkClassifier(
     NeuralNetworkClassifierParam param,
     std::shared_ptr<Ort::Session> session,
     const Ort::MemoryInfo& memory_info,
-    std::string name)
+    std::string name,
+    InferenceCache<Result>* cache)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , session_(std::move(session))
     , memory_info_(memory_info)
+    , cache_(cache)
 {
     analyze();
 }
@@ -36,7 +38,24 @@ void NeuralNetworkClassifier::analyze()
     init_expected_indices();
 
     while (next_roi()) {
-        auto res = classify();
+        Result res;
+        const auto* cached = cache_ ? cache_->find(session_, roi_) : nullptr;
+        if (cached) {
+            LogDebug << "NeuralNetworkClassify using inference cache" << VAR(name_) << VAR(roi_);
+            res = cached->front();
+        }
+        else {
+            res = classify();
+            if (cache_ && res.cls_index != SIZE_MAX) {
+                cache_->insert(session_, roi_, { res });
+            }
+        }
+        if (res.cls_index != SIZE_MAX) {
+            res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
+            if (debug_draw_) {
+                handle_draw(draw_result(res));
+            }
+        }
         add_results({ std::move(res) }, param_.expected);
     }
 
@@ -88,13 +107,7 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
     res.probs = softmax(res.raw);
     res.cls_index = std::max_element(res.probs.begin(), res.probs.end()) - res.probs.begin();
     res.score = res.probs[res.cls_index];
-    res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
     res.box = roi_;
-
-    if (debug_draw_) {
-        auto draw = draw_result(res);
-        handle_draw(draw);
-    }
 
     return res;
 }
@@ -131,7 +144,8 @@ cv::Mat NeuralNetworkClassifier::draw_result(const Result& res) const
 
     for (size_t i = 0; i != res.raw.size(); ++i) {
         const auto color = i == res.cls_index ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0);
-        std::string text = std::format("{} {}: prob {:.3f}, raw {:.3f}", i, param_.labels[i], res.probs[i], res.raw[i]);
+        const auto label = i < param_.labels.size() ? param_.labels[i] : std::format("Unknown_{}", i);
+        std::string text = std::format("{} {}: prob {:.3f}, raw {:.3f}", i, label, res.probs[i], res.raw[i]);
         cv::putText(image_draw, text, pt, cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
         pt.y += 20;
     }

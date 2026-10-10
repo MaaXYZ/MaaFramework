@@ -17,7 +17,12 @@ class Recognizer
 {
 public:
 public:
-    Recognizer(Tasker* tasker, Context& context, const cv::Mat& image, std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_batch_cache = nullptr);
+    Recognizer(
+        Tasker* tasker,
+        Context& context,
+        const cv::Mat& image,
+        std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_batch_cache = nullptr,
+        std::shared_ptr<MAA_VISION_NS::NeuralNetworkCache> nn_cache = nullptr);
     Recognizer(const Recognizer& recognizer);
 
 public:
@@ -65,6 +70,7 @@ private:
     std::shared_ptr<std::unordered_map<std::string, cv::Rect>> sub_best_box_;
 
     std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_batch_cache_;
+    std::shared_ptr<MAA_VISION_NS::NeuralNetworkCache> nn_cache_;
 };
 
 MAA_TASK_NS_END

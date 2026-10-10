@@ -22,11 +22,13 @@ NeuralNetworkDetector::NeuralNetworkDetector(
     NeuralNetworkDetectorParam param,
     std::shared_ptr<Ort::Session> session,
     const Ort::MemoryInfo& memory_info,
-    std::string name)
+    std::string name,
+    InferenceCache<Result>* cache)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , session_(std::move(session))
     , memory_info_(memory_info)
+    , cache_(cache)
 {
     analyze();
 }
@@ -47,7 +49,28 @@ void NeuralNetworkDetector::analyze()
     init_expected_indices(labels);
 
     while (next_roi()) {
-        auto results = detect(labels);
+        ResultsVec results;
+        const auto* cached = cache_ ? cache_->find(session_, roi_) : nullptr;
+        if (cached) {
+            LogDebug << "NeuralNetworkDetect using inference cache" << VAR(name_) << VAR(roi_);
+            results = *cached;
+        }
+        else {
+            auto predicted = detect();
+            if (!predicted) {
+                continue;
+            }
+            results = std::move(*predicted);
+            if (cache_) {
+                cache_->insert(session_, roi_, results);
+            }
+        }
+        for (auto& res : results) {
+            res.label = res.cls_index < labels.size() ? labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
+        }
+        if (debug_draw_) {
+            handle_draw(draw_result(results));
+        }
         add_results(std::move(results), param_.expected, param_.thresholds);
     }
 
@@ -58,11 +81,11 @@ void NeuralNetworkDetector::analyze()
              << VAR(param_.expected) << VAR(param_.thresholds);
 }
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vector<std::string>& labels) const
+std::optional<NeuralNetworkDetector::ResultsVec> NeuralNetworkDetector::detect() const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
-        return { };
+        return std::nullopt;
     }
 
     // batch_size, channel, height, width
@@ -70,7 +93,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
     const auto input_shape = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
     if (input_shape.size() != 4) {
         LogError << "Input shape is not 4" << VAR(input_shape);
-        return { };
+        return std::nullopt;
     }
 
     cv::Mat image = image_with_roi();
@@ -164,7 +187,6 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
 
             Result res;
             res.cls_index = j - kConfidenceIndex;
-            res.label = res.cls_index < labels.size() ? labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
             res.box = box;
             res.score = score;
 
@@ -173,11 +195,6 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
     }
 
     auto nms_results = NMS(std::move(raw_results));
-
-    if (debug_draw_) {
-        auto draw = draw_result(nms_results);
-        handle_draw(draw);
-    }
 
     return nms_results;
 }
