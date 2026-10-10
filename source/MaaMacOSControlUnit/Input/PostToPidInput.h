@@ -44,6 +44,7 @@ private:
     bool post_mouse_event(CGEventType type, int x, int y);
     bool post_keyboard_event(CGKeyCode key_code, bool key_down);
 
+protected:
     uint32_t window_id_ = 0;
     pid_t pid_ = -1;
     int window_w_ = 0;
