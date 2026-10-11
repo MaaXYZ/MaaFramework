@@ -15,8 +15,11 @@ declare global {
             clear_sinks(): void
 
             set inference_device(id: 'CPU' | 'Auto' | number)
+            /**
+             * `CoreML` is deprecated. MaaDeps no longer ships it; use `WebGPU`.
+             */
             set inference_execution_provider(
-                provider: 'Auto' | 'CPU' | 'DirectML' | 'CoreML' | 'CUDA',
+                provider: 'Auto' | 'CPU' | 'DirectML' | 'WebGPU' | 'CoreML' | 'CUDA',
             )
 
             register_custom_recognition(name: string, func: CustomRecognitionCallback): void
