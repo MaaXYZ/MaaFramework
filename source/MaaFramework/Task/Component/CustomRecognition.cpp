@@ -163,10 +163,11 @@ void CustomRecognition::analyze()
     const std::string& detail = detail_buffer.get();
 
     auto jdetail = json::parse(detail).value_or(detail);
+    Result res { .box = box, .detail = std::move(jdetail) };
 
     if (ret) {
         MultiResultData multi_results;
-        switch (parse_multi_result(jdetail, multi_results)) {
+        switch (parse_multi_result(res.detail, multi_results)) {
         case MultiResultState::Valid: {
             all_results_ = std::move(multi_results.all);
             filtered_results_ = std::move(multi_results.filtered);
@@ -180,7 +181,6 @@ void CustomRecognition::analyze()
             break;
 
         case MultiResultState::None: {
-            Result res { .box = box, .detail = std::move(jdetail) };
             all_results_ = { res };
             filtered_results_ = { res };
             best_result_ = res;
@@ -188,7 +188,7 @@ void CustomRecognition::analyze()
         }
     }
     else {
-        all_results_ = { Result { .box = box, .detail = std::move(jdetail) } };
+        all_results_ = { res };
     }
 
     if (debug_draw_ && !image_.empty()) {
