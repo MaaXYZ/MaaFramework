@@ -12,7 +12,8 @@
 // ClickScreen 同列表触发 batch，threshold 0.9 下旧实现 score 降至 ~0.81 而识别失败。
 // 修复后 batch 分簇保证各节点 det 输入与单独识别同尺度，断言两条路径结果完全一致。
 
-namespace {
+namespace
+{
 
 bool get_ocr_reco_box(MaaTasker* tasker, MaaTaskId task_id, const std::string& node_name, MaaRect& box)
 {
@@ -20,8 +21,8 @@ bool get_ocr_reco_box(MaaTasker* tasker, MaaTaskId task_id, const std::string& n
     MaaNodeId node_id_list[16] { };
     MaaSize node_id_list_size = std::size(node_id_list);
     MaaStatus status = MaaStatus_Failed;
-    bool ret = MaaTaskerGetTaskDetail(tasker, task_id, task_entry, node_id_list, &node_id_list_size, &status)
-               && status == MaaStatus_Succeeded;
+    bool ret =
+        MaaTaskerGetTaskDetail(tasker, task_id, task_entry, node_id_list, &node_id_list_size, &status) && status == MaaStatus_Succeeded;
     MaaStringBufferDestroy(task_entry);
     if (!ret) {
         return false;
@@ -45,8 +46,7 @@ bool get_ocr_reco_box(MaaTasker* tasker, MaaTaskId task_id, const std::string& n
         MaaImageBuffer* raw = MaaImageBufferCreate();
         MaaImageListBuffer* draws = MaaImageListBufferCreate();
         MaaBool hit = false;
-        ret = MaaTaskerGetRecognitionDetail(tasker, reco_id, reco_node_name, algorithm, &hit, &box, detail_json, raw, draws)
-              && hit;
+        ret = MaaTaskerGetRecognitionDetail(tasker, reco_id, reco_node_name, algorithm, &hit, &box, detail_json, raw, draws) && hit;
         MaaStringBufferDestroy(reco_node_name);
         MaaStringBufferDestroy(algorithm);
         MaaStringBufferDestroy(detail_json);

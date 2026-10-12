@@ -22,7 +22,8 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_TASK_NS_BEGIN
 
-namespace {
+namespace
+{
 // fastdeploy DBDetectorPreprocessor 默认 max_side_len，仅在拿不到 det 模型实例时兜底
 constexpr int kDetFallbackMaxSideLen = 960;
 }
