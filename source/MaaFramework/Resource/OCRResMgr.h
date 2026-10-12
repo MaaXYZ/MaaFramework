@@ -70,7 +70,9 @@ private:
     std::unordered_map<std::string, std::shared_ptr<fastdeploy::pipeline::PPOCRv4>> ocrers_;
 
     bool use_ncnn_ = false;
+#ifdef MAA_WITH_NCNN
     int ncnn_threads_ = 0;
+#endif
 
     std::mutex session_mutex_;
     std::unordered_map<std::string, MAA_VISION_NS::OCRSessionPtr> sessions_;

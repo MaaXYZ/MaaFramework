@@ -53,7 +53,9 @@ private:
     std::vector<std::filesystem::path> detector_roots_;
 
     MAA_VISION_NS::InferenceEngine engine_ = MAA_VISION_NS::InferenceEngine::ONNXRuntime;
+#ifdef MAA_WITH_NCNN
     int ncnn_threads_ = 0;
+#endif
 
     Ort::Env env_ = Ort::Env(ORT_LOGGING_LEVEL_FATAL, "MaaFW");
     Ort::SessionOptions options_;
