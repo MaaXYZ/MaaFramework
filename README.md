@@ -140,7 +140,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MPA](https://github.com/overflow65537/MAA_Punish) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/overflow65537/MAA_Punish) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MAA_Punish?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MAA_Punish?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
     战双帕弥什 小助手。图像技术 + 模拟控制，解放双手！由 玛丽的黑咖啡 2.0 强力驱动！
 
-- [MRA](https://github.com/Saratoga-Official/MRA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Saratoga-Official/MRA) ![activity](https://img.shields.io/github/commit-activity/m/Saratoga-Official/MRA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Saratoga-Official/MRA?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
+- [MRA](https://github.com/Saratoga-Official/MRA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Saratoga-Official/MRA) ![activity](https://img.shields.io/github/commit-activity/m/Saratoga-Official/MRA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Saratoga-Official/MRA?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
     战舰少女R 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MaaYuan](https://github.com/syoius/MaaYuan) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/syoius/MaaYuan) ![activity](https://img.shields.io/github/commit-activity/m/syoius/MaaYuan?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/syoius/MaaYuan?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://maayuan.top-%234285F4)](https://maayuan.top)  
@@ -266,6 +266,8 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
 ### 分发说明
 
 本项目支持 GPU 加速功能，其在 Windows 平台上依赖于 Microsoft 提供的独立组件 [DirectML](https://learn.microsoft.com/en-us/windows/ai/directml/)。DirectML 并非本项目的开源部分，也不受 LGPL-3.0 的约束。为方便用户，我们随安装包附带了一个未经修改的 DirectML.dll 文件。如果您无需 GPU 加速功能，可安全删除该 DLL 文件，软件的核心功能仍可正常运行。
+
+Windows、Linux 与 macOS 的预编译依赖还包含基于 [Dawn](https://dawn.googlesource.com/dawn) 的 WebGPU 推理库（`libwebgpu_dawn`）。macOS 不再附带 CoreML。
 
 ### 免责声明
 

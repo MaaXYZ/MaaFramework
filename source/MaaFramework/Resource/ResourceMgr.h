@@ -125,6 +125,7 @@ private:
     bool use_directml();
     bool use_coreml();
     bool use_cuda();
+    bool use_webgpu();
 
     MaaResId post_path(PostPathType type, const std::filesystem::path& path);
 

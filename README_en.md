@@ -142,7 +142,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MPA](https://github.com/overflow65537/MAA_Punish) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/overflow65537/MAA_Punish) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MAA_Punish?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MAA_Punish?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
     A Punishing Gray Raven Assistant. Image technology + simulation control, freeing your hands! Powered by MistEO's Black Coffee 2.0.
 
-- [MRA](https://github.com/Saratoga-Official/MRA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Saratoga-Official/MRA) ![activity](https://img.shields.io/github/commit-activity/m/Saratoga-Official/MRA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Saratoga-Official/MRA?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
+- [MRA](https://github.com/Saratoga-Official/MRA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Saratoga-Official/MRA) ![activity](https://img.shields.io/github/commit-activity/m/Saratoga-Official/MRA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Saratoga-Official/MRA?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
     A Warship Girls R Assistant. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 - [MaaYuan](https://github.com/syoius/MaaYuan) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/syoius/MaaYuan) ![activity](https://img.shields.io/github/commit-activity/m/syoius/MaaYuan?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/syoius/MaaYuan?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://maayuan.top-%234285F4)](https://maayuan.top)  
@@ -270,6 +270,8 @@ This project is open-sourced under the [`LGPL-3.0`](./LICENSE.md) license.
 ### Distribution Notice
 
 This project supports GPU acceleration, which relies on an independent component provided by Microsoft: [DirectML](https://learn.microsoft.com/en-us/windows/ai/directml/) for the Windows platform. DirectML is not part of this project's open-source codebase and is not governed by the LGPL-3.0 license. For user convenience, an unmodified copy of the DirectML.dll file is included in the installation package. If GPU acceleration is not required, you may safely delete this DLL file without affecting the core functionality of the software.
+
+The Windows, Linux and macOS prebuilt dependencies also include a WebGPU inference library based on [Dawn](https://dawn.googlesource.com/dawn) (`libwebgpu_dawn`). macOS no longer ships CoreML.
 
 ### Disclaimer
 

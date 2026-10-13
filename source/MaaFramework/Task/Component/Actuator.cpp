@@ -1,5 +1,7 @@
 #include "Actuator.h"
 
+#include <algorithm>
+
 #include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
@@ -570,7 +572,10 @@ ActionResult Actuator::screencap(const MAA_RES_NS::Action::ScreencapParam& param
 
     auto image = controller()->cached_image();
     if (image.empty()) {
-        LogError << "cached_image is empty";
+        image = controller()->screencap();
+    }
+    if (image.empty()) {
+        LogError << "screencap failed";
         return { };
     }
 
@@ -670,6 +675,17 @@ ActionResult
         .image = controller()->cached_image(),
         .box = box,
     };
+    const auto uses_image = [](const std::string& str) {
+        return str.find("{IMAGE}") != std::string::npos;
+    };
+    if (rt.image.empty() && (uses_image(param.exec) || std::ranges::any_of(param.args, uses_image))) {
+        // 仅在需要图像且无缓存时补截图。
+        rt.image = controller()->screencap();
+        if (rt.image.empty()) {
+            LogError << "screencap failed";
+            return { };
+        }
+    }
     bool ret = CommandAction().run(param, rt);
 
     return ActionResult {
