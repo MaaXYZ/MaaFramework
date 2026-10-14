@@ -10,6 +10,7 @@
 #include <net.h>
 
 #include "Common/Conf.h"
+#include "MaaUtils/JsonExt.hpp"
 #include "Vision/InferenceSession.h"
 
 MAA_RES_NS_BEGIN
@@ -21,6 +22,19 @@ public:
     //   <stem>.ncnn.param / <stem>.ncnn.bin / <stem>.ncnn.json (sidecar, required)
     // returns nullptr on failure.
     static std::shared_ptr<NcnnSession> create(const std::filesystem::path& base, int num_threads);
+
+    // ncnn::Option of MaaFW: CPU only and fp32 (fp16 / bf16 off) so that results match onnxruntime.
+    // num_threads <= 0 means default_num_threads()
+    static ncnn::Option make_option(int num_threads);
+    // override `opt` with the optional "options" object of a sidecar, keys are the ncnn::Option field names.
+    // unknown keys are ignored with a warning, an invalid value fails.
+    static bool apply_options(const json::value& sidecar, ncnn::Option& opt);
+    // same as apply_options, for an optional sidecar file: absent keeps `opt`, unparsable fails
+    static bool apply_options_file(const std::filesystem::path& sidecar, ncnn::Option& opt);
+
+    // extract() with the default type 0 casts fp16 / bf16 / int8 blobs to fp32 and unpacks to elempack 1,
+    // guard it before reading the data as float
+    static bool is_unpacked_fp32(const ncnn::Mat& mat) { return mat.elembits() == 32 && mat.elempack == 1; }
 
     // all of .ncnn.param / .ncnn.bin / .ncnn.json exist
     static bool files_exist(const std::filesystem::path& base);
@@ -48,7 +62,7 @@ private:
     NcnnSession() = default;
 
     bool load(const std::filesystem::path& param, const std::filesystem::path& bin, const std::filesystem::path& sidecar, int num_threads);
-    bool load_sidecar(const std::filesystem::path& sidecar);
+    bool load_sidecar(const std::filesystem::path& sidecar, ncnn::Option& opt);
 
     // declaration order matters: allocators must outlive net_
     mutable ncnn::UnlockedPoolAllocator blob_allocator_;

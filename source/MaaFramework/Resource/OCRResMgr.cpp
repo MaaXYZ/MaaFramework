@@ -179,8 +179,10 @@ MAA_VISION_NS::OCRSessionPtr OCRResMgr::load_ncnn_session(const std::string& nam
         // any model file makes this root the override, an incomplete one fails instead of falling to lower roots
         const bool has_ncnn = std::filesystem::exists(dir / NcnnOCRSession::kRecParamFilename)
                               || std::filesystem::exists(dir / NcnnOCRSession::kRecBinFilename)
+                              || std::filesystem::exists(dir / NcnnOCRSession::kRecSidecarFilename)
                               || std::filesystem::exists(dir / NcnnOCRSession::kDetParamFilename)
-                              || std::filesystem::exists(dir / NcnnOCRSession::kDetBinFilename);
+                              || std::filesystem::exists(dir / NcnnOCRSession::kDetBinFilename)
+                              || std::filesystem::exists(dir / NcnnOCRSession::kDetSidecarFilename);
         const bool has_onnx = std::filesystem::exists(dir / kRecModelFilename) || std::filesystem::exists(dir / kDetModelFilename);
         if (!has_ncnn && !has_onnx) {
             continue;

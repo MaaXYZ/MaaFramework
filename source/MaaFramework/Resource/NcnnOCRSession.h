@@ -23,6 +23,9 @@ public:
     inline static const std::filesystem::path kDetBinFilename = "det.ncnn.bin";
     inline static const std::filesystem::path kRecParamFilename = "rec.ncnn.param";
     inline static const std::filesystem::path kRecBinFilename = "rec.ncnn.bin";
+    // optional, only "options" (ncnn::Option overrides) is read; pre / post processing follows fastdeploy
+    inline static const std::filesystem::path kDetSidecarFilename = "det.ncnn.json";
+    inline static const std::filesystem::path kRecSidecarFilename = "rec.ncnn.json";
     inline static const std::filesystem::path kKeysFilename = "keys.txt";
 
     // rec + keys are required, det is optional (rec-only model). returns nullptr on failure.

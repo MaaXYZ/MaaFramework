@@ -3,11 +3,13 @@
 #include "NcnnSession.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <limits>
 #include <map>
+#include <unordered_map>
 
 #include <cpu.h>
 
@@ -98,6 +100,105 @@ int NcnnSession::default_num_threads()
     return std::clamp(count, 1, kMaxThreads);
 }
 
+ncnn::Option NcnnSession::make_option(int num_threads)
+{
+    ncnn::Option opt;
+    opt.num_threads = num_threads > 0 ? num_threads : default_num_threads();
+    opt.use_vulkan_compute = false;
+    // fp32 by default, scores are compared with thresholds tuned on onnxruntime. a model opts in via its sidecar
+    opt.use_fp16_packed = false;
+    opt.use_fp16_storage = false;
+    opt.use_fp16_arithmetic = false;
+    opt.use_bf16_packed = false;
+    opt.use_bf16_storage = false;
+    return opt;
+}
+
+bool NcnnSession::apply_options(const json::value& sidecar, ncnn::Option& opt)
+{
+    if (!sidecar.contains("options")) {
+        return true;
+    }
+    const auto& options = sidecar.at("options");
+    if (!options.is_object()) {
+        LogError << "ncnn options must be an object" << VAR(options);
+        return false;
+    }
+
+    // CPU fields of ncnn::Option with the same names. allocators and vulkan-only fields are not exposed
+    static const std::unordered_map<std::string, bool ncnn::Option::*> kBoolOptions = {
+        { "lightmode", &ncnn::Option::lightmode },
+        { "use_winograd_convolution", &ncnn::Option::use_winograd_convolution },
+        { "use_winograd23_convolution", &ncnn::Option::use_winograd23_convolution },
+        { "use_winograd43_convolution", &ncnn::Option::use_winograd43_convolution },
+        { "use_winograd63_convolution", &ncnn::Option::use_winograd63_convolution },
+        { "use_sgemm_convolution", &ncnn::Option::use_sgemm_convolution },
+        { "use_int8_inference", &ncnn::Option::use_int8_inference },
+        { "use_fp16_packed", &ncnn::Option::use_fp16_packed },
+        { "use_fp16_storage", &ncnn::Option::use_fp16_storage },
+        { "use_fp16_arithmetic", &ncnn::Option::use_fp16_arithmetic },
+        { "use_bf16_packed", &ncnn::Option::use_bf16_packed },
+        { "use_bf16_storage", &ncnn::Option::use_bf16_storage },
+        { "use_int8_packed", &ncnn::Option::use_int8_packed },
+        { "use_int8_storage", &ncnn::Option::use_int8_storage },
+        { "use_int8_arithmetic", &ncnn::Option::use_int8_arithmetic },
+        { "use_packing_layout", &ncnn::Option::use_packing_layout },
+        { "use_local_pool_allocator", &ncnn::Option::use_local_pool_allocator },
+        { "use_a53_a55_optimized_kernel", &ncnn::Option::use_a53_a55_optimized_kernel },
+    };
+
+    struct IntOption
+    {
+        int ncnn::Option::* field = nullptr;
+        int min = 0;
+        int max = 0;
+    };
+
+    static const std::unordered_map<std::string, IntOption> kIntOptions = {
+        { "num_threads", { &ncnn::Option::num_threads, 1, std::numeric_limits<int>::max() } },
+        { "openmp_blocktime", { &ncnn::Option::openmp_blocktime, 0, std::numeric_limits<int>::max() } },
+        { "flush_denormals", { &ncnn::Option::flush_denormals, 0, 3 } },
+    };
+
+    for (const auto& [key, value] : options.as_object()) {
+        if (auto iter = kBoolOptions.find(key); iter != kBoolOptions.end()) {
+            if (!value.is_boolean()) {
+                LogError << "ncnn option expects a boolean" << VAR(key) << VAR(value);
+                return false;
+            }
+            opt.*(iter->second) = value.as_boolean();
+        }
+        else if (auto iter = kIntOptions.find(key); iter != kIntOptions.end()) {
+            const auto& [field, min, max] = iter->second;
+            const double number = value.is_number() ? value.as_double() : std::numeric_limits<double>::quiet_NaN();
+            if (std::trunc(number) != number || number < min || number > max) {
+                LogError << "ncnn option expects an integer in range" << VAR(key) << VAR(value) << VAR(min) << VAR(max);
+                return false;
+            }
+            opt.*field = static_cast<int>(number);
+        }
+        else {
+            LogWarn << "unknown ncnn option, ignored" << VAR(key);
+        }
+    }
+
+    return true;
+}
+
+bool NcnnSession::apply_options_file(const std::filesystem::path& sidecar, ncnn::Option& opt)
+{
+    if (!std::filesystem::exists(sidecar)) {
+        return true;
+    }
+
+    auto json_opt = json::open(sidecar);
+    if (!json_opt || !json_opt->is_object()) {
+        LogError << "failed to parse ncnn sidecar" << VAR(sidecar);
+        return false;
+    }
+    return apply_options(*json_opt, opt);
+}
+
 bool NcnnSession::load_net_files(ncnn::Net& net, const std::filesystem::path& param, const std::filesystem::path& bin)
 {
     auto param_fp = open_file(param);
@@ -142,14 +243,15 @@ bool NcnnSession::load(
     const std::filesystem::path& sidecar,
     int num_threads)
 {
-    if (!load_sidecar(sidecar)) {
+    // options must be set before load_param / load_model
+    ncnn::Option opt = make_option(num_threads);
+    if (!load_sidecar(sidecar, opt)) {
         return false;
     }
-
-    net_.opt.num_threads = num_threads;
-    net_.opt.blob_allocator = &blob_allocator_;
-    net_.opt.workspace_allocator = &workspace_allocator_;
-    net_.opt.use_vulkan_compute = false;
+    // owned by this session, not configurable
+    opt.blob_allocator = &blob_allocator_;
+    opt.workspace_allocator = &workspace_allocator_;
+    net_.opt = opt;
 
     if (!load_net_files(net_, param, bin)) {
         return false;
@@ -170,11 +272,12 @@ bool NcnnSession::load(
         output_name_ = net_.output_names().front();
     }
 
-    LogInfo << "ncnn session loaded" << VAR(param) << VAR(input_name_) << VAR(output_name_) << VAR(input_shape_) << VAR(num_threads);
+    LogInfo << "ncnn session loaded" << VAR(param) << VAR(input_name_) << VAR(output_name_) << VAR(input_shape_)
+            << VAR(net_.opt.num_threads) << VAR(net_.opt.use_fp16_storage) << VAR(net_.opt.use_fp16_arithmetic);
     return true;
 }
 
-bool NcnnSession::load_sidecar(const std::filesystem::path& sidecar)
+bool NcnnSession::load_sidecar(const std::filesystem::path& sidecar, ncnn::Option& opt)
 {
     auto json_opt = json::open(sidecar);
     if (!json_opt || !json_opt->is_object()) {
@@ -201,6 +304,11 @@ bool NcnnSession::load_sidecar(const std::filesystem::path& sidecar)
                 metadata_.emplace(key, value.as_string());
             }
         }
+    }
+
+    if (!apply_options(root, opt)) {
+        LogError << "invalid options in ncnn sidecar" << VAR(sidecar);
+        return false;
     }
 
     return true;
@@ -236,13 +344,12 @@ std::optional<MAA_VISION_NS::InferenceOutput> NcnnSession::run(const std::vector
         return std::nullopt;
     }
 
-    // extract() with the default type 0 already casts fp16 / bf16 / int8 blobs to fp32 and unpacks to elempack 1
     ncnn::Mat out;
     if (ex.extract(output_name_.c_str(), out) != 0 || out.empty()) {
         LogError << "ncnn extractor extract failed" << VAR(output_name_);
         return std::nullopt;
     }
-    if (out.elembits() != 32 || out.elempack != 1) {
+    if (!is_unpacked_fp32(out)) {
         LogError << "unexpected ncnn output layout, expect unpacked fp32" << VAR(out.elemsize) << VAR(out.elempack);
         return std::nullopt;
     }

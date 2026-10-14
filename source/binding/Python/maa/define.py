@@ -326,6 +326,7 @@ class MaaInferenceExecutionProviderEnum(IntEnum):
     # Setting it on other builds fails.
     # MaaResOption_InferenceDevice: CPU / Auto -> NCNN CPU; GPU is not supported yet.
     # Loads `<model stem>.ncnn.param/.ncnn.bin/.ncnn.json`, no fallback to onnxruntime.
+    # Runs in fp32 by default, ncnn options can be set per model in the "options" of the .ncnn.json.
     NCNN = 6
 
 

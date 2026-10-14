@@ -369,16 +369,16 @@ NcnnOCRSession::~NcnnOCRSession()
 
 bool NcnnOCRSession::load(const std::filesystem::path& dir, int num_threads)
 {
+    // fp32 by default to stay aligned with the onnxruntime path (thresholds on det prob map, rec scores),
+    // the optional det.ncnn.json / rec.ncnn.json override the ncnn options of each net.
     // default allocators: det / rec input sizes vary per call, pool allocators gain little here
-    auto make_net = [&]() {
+    auto make_net = [&](const std::filesystem::path& sidecar) -> std::unique_ptr<ncnn::Net> {
         auto net = std::make_unique<ncnn::Net>();
-        net->opt.num_threads = num_threads;
-        net->opt.use_vulkan_compute = false;
-        // keep fp32 to stay aligned with the onnxruntime path (thresholds on det prob map, rec scores)
-        net->opt.use_fp16_packed = false;
-        net->opt.use_fp16_storage = false;
-        net->opt.use_fp16_arithmetic = false;
-        net->opt.use_bf16_storage = false;
+        net->opt = NcnnSession::make_option(num_threads);
+        if (!NcnnSession::apply_options_file(sidecar, net->opt)) {
+            LogError << "invalid ncnn ocr sidecar" << VAR(sidecar);
+            return nullptr;
+        }
         return net;
     };
     auto has_io = [](const ncnn::Net& net) {
@@ -389,8 +389,8 @@ bool NcnnOCRSession::load(const std::filesystem::path& dir, int num_threads)
         return false;
     }
 
-    rec_ = make_net();
-    if (!NcnnSession::load_net_files(*rec_, dir / kRecParamFilename, dir / kRecBinFilename)) {
+    rec_ = make_net(dir / kRecSidecarFilename);
+    if (!rec_ || !NcnnSession::load_net_files(*rec_, dir / kRecParamFilename, dir / kRecBinFilename)) {
         return false;
     }
     if (!has_io(*rec_)) {
@@ -401,13 +401,14 @@ bool NcnnOCRSession::load(const std::filesystem::path& dir, int num_threads)
     // det is optional, but a half-shipped det is an error rather than a rec-only model
     const bool has_det_param = std::filesystem::exists(dir / kDetParamFilename);
     const bool has_det_bin = std::filesystem::exists(dir / kDetBinFilename);
-    if (has_det_param != has_det_bin) {
+    const bool has_det_sidecar = std::filesystem::exists(dir / kDetSidecarFilename);
+    if (has_det_param != has_det_bin || (has_det_sidecar && !has_det_param)) {
         LogError << "ncnn det model is incomplete, expect both det.ncnn.param and det.ncnn.bin" << VAR(dir);
         return false;
     }
     if (has_det_param) {
-        det_ = make_net();
-        if (!NcnnSession::load_net_files(*det_, dir / kDetParamFilename, dir / kDetBinFilename)) {
+        det_ = make_net(dir / kDetSidecarFilename);
+        if (!det_ || !NcnnSession::load_net_files(*det_, dir / kDetParamFilename, dir / kDetBinFilename)) {
             return false;
         }
         if (!has_io(*det_)) {
@@ -416,7 +417,8 @@ bool NcnnOCRSession::load(const std::filesystem::path& dir, int num_threads)
         }
     }
 
-    LogInfo << "ncnn ocr loaded" << VAR(dir) << VAR(labels_.size()) << VAR(num_threads) << VAR(det_ != nullptr);
+    LogInfo << "ncnn ocr loaded" << VAR(dir) << VAR(labels_.size()) << VAR(rec_->opt.num_threads) << VAR(rec_->opt.use_fp16_storage)
+            << VAR(det_ != nullptr);
     return true;
 }
 
@@ -474,6 +476,10 @@ std::optional<std::vector<std::array<int, 8>>> NcnnOCRSession::detect(const cv::
             LogError << "ncnn det forward failed" << VAR(image.size());
             return std::nullopt;
         }
+    }
+    if (!NcnnSession::is_unpacked_fp32(out)) {
+        LogError << "unexpected ncnn det output layout, expect unpacked fp32" << VAR(out.elemsize) << VAR(out.elempack);
+        return std::nullopt;
     }
 
     const int out_h = out.h;
@@ -533,6 +539,10 @@ std::optional<MAA_VISION_NS::OCRRecResult> NcnnOCRSession::rec_one(const cv::Mat
             LogError << "ncnn rec forward failed" << VAR(image.size()) << VAR(img_w);
             return std::nullopt;
         }
+    }
+    if (!NcnnSession::is_unpacked_fp32(out)) {
+        LogError << "unexpected ncnn rec output layout, expect unpacked fp32" << VAR(out.elemsize) << VAR(out.elempack);
+        return std::nullopt;
     }
 
     // out: [T, num_classes], softmax already applied in the model
