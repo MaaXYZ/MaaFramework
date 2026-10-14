@@ -195,7 +195,6 @@ enum MaaResOptionEnum
 
     /// Use the specified inference device.
     /// Please set this option before loading the model.
-    /// Once resource loading starts (any MaaResourcePost*), changing it fails until MaaResourceClear().
     ///
     /// value: MaaInferenceDevice, eg: 0; val_size: sizeof(MaaInferenceDevice)
     /// default value is MaaInferenceDevice_Auto
@@ -203,7 +202,7 @@ enum MaaResOptionEnum
 
     /// Use the specified inference execution provider
     /// Please set this option before loading the model.
-    /// Once resource loading starts (any MaaResourcePost*), changing it fails until MaaResourceClear().
+    /// Once resource loading starts (any MaaResourcePost*), switching to or from NCNN fails until MaaResourceClear().
     ///
     /// value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider)
     /// default value is MaaInferenceExecutionProvider_Auto

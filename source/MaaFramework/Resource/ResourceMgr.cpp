@@ -100,7 +100,7 @@ MaaResId ResourceMgr::post_path(PostPathType type, const std::filesystem::path& 
         return MaaInvalidId;
     }
 
-    // lock the inference backend before enqueue, so the loader thread always sees the final options.
+    // lock the inference engine (NCNN or not) before enqueue, so the loader thread never switches it.
     // hold the mutex until enqueued, so clear() cannot unlock it in between
     std::unique_lock lock(inference_mutex_);
     inference_locked_ = true;
@@ -465,16 +465,8 @@ bool ResourceMgr::set_inference_device(MaaOptionValue value, MaaOptionValueSize 
 
     auto new_value = *reinterpret_cast<const MaaInferenceDevice*>(value);
 
+    // never locked: it does not switch the engine (NCNN ignores it), applied on the next post as before
     std::unique_lock lock(inference_mutex_);
-
-    if (inference_locked_) {
-        if (new_value == inference_device_) {
-            return true;
-        }
-        LogError << "inference backend is locked once resource loading starts, call clear() or recreate the resource to change it"
-                 << VAR(inference_device_) << VAR(new_value);
-        return false;
-    }
 
     inference_device_setted_ = false;
     inference_device_ = new_value;
@@ -503,11 +495,11 @@ bool ResourceMgr::set_inference_execution_provider(MaaOptionValue value, MaaOpti
 
     std::unique_lock lock(inference_mutex_);
 
-    if (inference_locked_) {
-        if (new_value == inference_ep_) {
-            return true;
-        }
-        LogError << "inference backend is locked once resource loading starts, call clear() or recreate the resource to change it"
+    // switching to / from NCNN changes the engine and the model files, refused once loading starts.
+    // switching between onnxruntime providers keeps the old behavior: applied on the next post, to models not loaded yet
+    const bool involves_ncnn = inference_ep_ == MaaInferenceExecutionProvider_NCNN || new_value == MaaInferenceExecutionProvider_NCNN;
+    if (inference_locked_ && involves_ncnn && new_value != inference_ep_) {
+        LogError << "switching to or from NCNN is not allowed once resource loading starts, call clear() or recreate the resource"
                  << VAR(inference_ep_) << VAR(new_value);
         return false;
     }
@@ -573,8 +565,8 @@ bool ResourceMgr::check_and_set_inference_device()
         }
     }
 
-    // resolved only once, even after fallback, so the backend never changes during loading
-    inference_device_setted_ = true;
+    // retried on the next post after a failure, as before
+    inference_device_setted_ = ret;
     LogInfo << "inference backend resolved" << VAR(inference_ep_) << VAR(inference_device_) << VAR(ret);
 
     return ret;

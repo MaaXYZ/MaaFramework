@@ -17,7 +17,8 @@
 MAA_RES_NS_BEGIN
 
 // Manages NeuralNetworkClassify / NeuralNetworkDetect sessions.
-// The backend is configured once (by ResourceMgr) before resource loading starts and never changes afterwards.
+// The backend is configured by ResourceMgr when loading. The engine (onnxruntime / ncnn) is fixed once sessions are loaded,
+// onnxruntime providers may still change and only affect models loaded later.
 class InferenceResMgr : public NonCopyable
 {
 public:
@@ -48,6 +49,7 @@ private:
     MAA_VISION_NS::InferenceSessionPtr load(const std::string& name, const std::vector<std::filesystem::path>& roots);
     MAA_VISION_NS::InferenceSessionPtr load_ort(const std::filesystem::path& path);
     bool sessions_loaded() const;
+    bool can_switch_to(MAA_VISION_NS::InferenceEngine engine) const;
 
     std::vector<std::filesystem::path> classifier_roots_;
     std::vector<std::filesystem::path> detector_roots_;

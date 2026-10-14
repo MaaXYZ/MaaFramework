@@ -164,7 +164,7 @@ private:
     MaaInferenceDevice inference_device_ = MaaInferenceDevice_Auto;
     MaaInferenceExecutionProvider inference_ep_ = MaaInferenceExecutionProvider_Auto;
     bool inference_device_setted_ = false;
-    // set once resource loading starts (any post_*), reset by clear()
+    // set once resource loading starts (any post_*), reset by clear(). while set, switching to / from NCNN is refused
     bool inference_locked_ = false;
 };
 

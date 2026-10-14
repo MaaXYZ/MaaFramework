@@ -46,8 +46,7 @@ InferenceResMgr::InferenceResMgr()
 
 void InferenceResMgr::use_cpu()
 {
-    if (sessions_loaded()) {
-        LogError << "sessions already loaded, ignore";
+    if (!can_switch_to(MAA_VISION_NS::InferenceEngine::ONNXRuntime)) {
         return;
     }
     engine_ = MAA_VISION_NS::InferenceEngine::ONNXRuntime;
@@ -60,8 +59,7 @@ void InferenceResMgr::use_cpu()
 
 void InferenceResMgr::use_cuda(int device_id)
 {
-    if (sessions_loaded()) {
-        LogError << "sessions already loaded, ignore";
+    if (!can_switch_to(MAA_VISION_NS::InferenceEngine::ONNXRuntime)) {
         return;
     }
     engine_ = MAA_VISION_NS::InferenceEngine::ONNXRuntime;
@@ -82,8 +80,7 @@ void InferenceResMgr::use_cuda(int device_id)
 
 void InferenceResMgr::use_directml(int device_id)
 {
-    if (sessions_loaded()) {
-        LogError << "sessions already loaded, ignore";
+    if (!can_switch_to(MAA_VISION_NS::InferenceEngine::ONNXRuntime)) {
         return;
     }
     engine_ = MAA_VISION_NS::InferenceEngine::ONNXRuntime;
@@ -112,8 +109,7 @@ void InferenceResMgr::use_directml(int device_id)
 
 bool InferenceResMgr::use_webgpu(int device_id)
 {
-    if (sessions_loaded()) {
-        LogError << "sessions already loaded, ignore";
+    if (!can_switch_to(MAA_VISION_NS::InferenceEngine::ONNXRuntime)) {
         return false;
     }
     engine_ = MAA_VISION_NS::InferenceEngine::ONNXRuntime;
@@ -146,8 +142,7 @@ bool InferenceResMgr::use_webgpu(int device_id)
 
 void InferenceResMgr::use_coreml(uint32_t coreml_flag)
 {
-    if (sessions_loaded()) {
-        LogError << "sessions already loaded, ignore";
+    if (!can_switch_to(MAA_VISION_NS::InferenceEngine::ONNXRuntime)) {
         return;
     }
     engine_ = MAA_VISION_NS::InferenceEngine::ONNXRuntime;
@@ -175,10 +170,7 @@ void InferenceResMgr::use_coreml(uint32_t coreml_flag)
 
 bool InferenceResMgr::use_ncnn()
 {
-    LogInfo;
-
-    if (sessions_loaded()) {
-        LogError << "sessions already loaded, ignore";
+    if (!can_switch_to(MAA_VISION_NS::InferenceEngine::NCNN)) {
         return false;
     }
 
@@ -261,6 +253,18 @@ bool InferenceResMgr::sessions_loaded() const
 {
     std::unique_lock lock(mutex_);
     return !classifiers_.empty() || !detectors_.empty();
+}
+
+bool InferenceResMgr::can_switch_to(MAA_VISION_NS::InferenceEngine engine) const
+{
+    // providers of the same engine may change, only models loaded later use the new one (as before).
+    // sessions of different engines are never mixed, ResourceMgr refuses such a switch before clear()
+    if (engine_ == engine || !sessions_loaded()) {
+        return true;
+    }
+
+    LogError << "sessions of another engine already loaded, ignore" << VAR(static_cast<int>(engine_)) << VAR(static_cast<int>(engine));
+    return false;
 }
 
 MAA_VISION_NS::InferenceSessionPtr InferenceResMgr::load(const std::string& name, const std::vector<std::filesystem::path>& roots)

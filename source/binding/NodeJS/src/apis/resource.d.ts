@@ -18,6 +18,7 @@ declare global {
             /**
              * `CoreML` is deprecated. MaaDeps no longer ships it; use `WebGPU`.
              * `NCNN` is Android only (CPU), setting it on other platforms throws.
+             * Switching to or from `NCNN` after resource loading starts throws until the resource is cleared.
              */
             set inference_execution_provider(
                 provider: 'Auto' | 'CPU' | 'DirectML' | 'WebGPU' | 'CoreML' | 'CUDA' | 'NCNN',
