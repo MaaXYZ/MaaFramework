@@ -178,7 +178,7 @@ enum MaaInferenceExecutionProviderEnum
 
     // NCNN, only available when MaaFW is built with NCNN (Android only).
     // Setting it on other builds fails (MaaResourceSetOption returns false).
-    // MaaResOption_InferenceDevice: CPU / Auto -> NCNN CPU; GPU is not supported yet.
+    // MaaResOption_InferenceDevice: CPU / Auto -> NCNN CPU; GPU is not supported yet, other values fail the loading.
     // Not tried by Auto.
     // Models are loaded from `<model stem>.ncnn.param/.ncnn.bin/.ncnn.json` (the "model" field with .onnx replaced),
     // the .onnx file itself is not needed. There is no fallback to onnxruntime: a missing or broken ncnn model fails

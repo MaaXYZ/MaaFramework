@@ -120,6 +120,7 @@ private:
     bool set_inference_device(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_inference_execution_provider(MaaOptionValue value, MaaOptionValueSize val_size);
 
+    // false if no usable backend: onnxruntime providers fall back to CPU, NCNN has no fallback
     bool check_and_set_inference_device();
     bool use_auto_ep();
     bool use_cpu();

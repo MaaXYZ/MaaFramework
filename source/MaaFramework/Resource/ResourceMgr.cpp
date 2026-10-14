@@ -557,7 +557,7 @@ bool ResourceMgr::check_and_set_inference_device()
     if (!ret) {
         if (inference_ep_ == MaaInferenceExecutionProvider_NCNN) {
             // NCNN is bound to the packaged models, never fall back to onnxruntime
-            LogError << "failed to use NCNN" << VAR(inference_device_);
+            LogError << "failed to use NCNN, the loading fails" << VAR(inference_device_);
         }
         else {
             LogWarn << "failed to use inference execution provider, fallback to CPU" << VAR(inference_ep_) << VAR(inference_device_);
@@ -569,7 +569,8 @@ bool ResourceMgr::check_and_set_inference_device()
     inference_device_setted_ = ret;
     LogInfo << "inference backend resolved" << VAR(inference_ep_) << VAR(inference_device_) << VAR(ret);
 
-    return ret;
+    // whether a usable backend is configured: onnxruntime falls back to CPU, NCNN has no fallback
+    return ret || inference_ep_ != MaaInferenceExecutionProvider_NCNN;
 }
 
 bool ResourceMgr::use_auto_ep()
@@ -729,8 +730,10 @@ bool ResourceMgr::use_webgpu()
 
 bool ResourceMgr::use_ncnn()
 {
+    // CPU only for now. other devices are refused rather than ignored, GPU ids are kept for a future vulkan backend
     if (inference_device_ != MaaInferenceDevice_CPU && inference_device_ != MaaInferenceDevice_Auto) {
-        LogWarn << "NCNN only supports CPU for now, ignore inference device" << VAR(inference_device_);
+        LogError << "NCNN only supports MaaInferenceDevice_CPU / MaaInferenceDevice_Auto for now" << VAR(inference_device_);
+        return false;
     }
 
     // NN and OCR both run on ncnn, bound to the packaged ncnn models
@@ -750,25 +753,30 @@ bool ResourceMgr::run_load(typename AsyncRunner<PostPathItem>::Id id, PostPathIt
 
     notifier_.notify(this, MaaMsg_Resource_Loading_Starting, cb_detail);
 
-    check_and_set_inference_device();
-
-    switch (item.type) {
-    case PostPathType::Bundle:
-        valid_ = load_bundle(item.path);
-        break;
-    case PostPathType::OcrModel:
-        valid_ = load_ocr_model(item.path);
-        break;
-    case PostPathType::Pipeline:
-        valid_ = load_pipeline(item.path);
-        break;
-    case PostPathType::Image:
-        valid_ = load_image(item.path);
-        break;
-    default:
-        LogError << "Unknown PostPathType" << VAR(static_cast<int>(item.type));
+    if (!check_and_set_inference_device()) {
+        // loading on would leave the models to a stale backend, i.e. a silent fallback from NCNN
+        LogError << "no usable inference backend, skip loading" << VAR(item.path);
         valid_ = false;
-        break;
+    }
+    else {
+        switch (item.type) {
+        case PostPathType::Bundle:
+            valid_ = load_bundle(item.path);
+            break;
+        case PostPathType::OcrModel:
+            valid_ = load_ocr_model(item.path);
+            break;
+        case PostPathType::Pipeline:
+            valid_ = load_pipeline(item.path);
+            break;
+        case PostPathType::Image:
+            valid_ = load_image(item.path);
+            break;
+        default:
+            LogError << "Unknown PostPathType" << VAR(static_cast<int>(item.type));
+            valid_ = false;
+            break;
+        }
     }
 
     cb_detail["hash"] = calc_hash();
@@ -787,7 +795,10 @@ bool ResourceMgr::load_bundle(const std::filesystem::path& path)
         return false;
     }
 
-    check_and_set_inference_device();
+    if (!check_and_set_inference_device()) {
+        LogError << "no usable inference backend" << VAR(path);
+        return false;
+    }
 
     paths_.emplace_back(path);
 

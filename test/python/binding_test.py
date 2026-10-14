@@ -272,6 +272,8 @@ def test_resource_api():
     r1.use_coreml()
     r1.use_auto_ep()
     r1.use_cpu()
+    # NCNN 仅在 Android 构建中可用，这里运行的桌面端构建应设置失败
+    assert not r1.use_ncnn()
 
     r2 = Resource()
     r2.use_directml(0)
@@ -280,6 +282,10 @@ def test_resource_api():
 
     # 测试无效路径加载（应该失败但不崩溃）
     r2.post_bundle("C:/_maafw_testing_/aaabbbccc").wait()
+
+    # 资源开始加载后，onnxruntime 系 EP 之间的切换与之前一致，仍可设置
+    assert r2.use_cpu()
+    assert r2.use_auto_ep()
 
     # 测试 loaded 属性
     print(f"  r2.loaded (after invalid path): {r2.loaded}")

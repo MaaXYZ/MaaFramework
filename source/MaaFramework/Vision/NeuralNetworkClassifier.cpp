@@ -68,6 +68,10 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
         LogError << name_ << "inference failed" << VAR(param_.model);
         return { };
     }
+    if (output_opt->data.empty()) {
+        LogError << name_ << "empty output" << VAR(param_.model) << VAR(output_opt->shape);
+        return { };
+    }
 
     std::vector<float> output = std::move(output_opt->data);
 

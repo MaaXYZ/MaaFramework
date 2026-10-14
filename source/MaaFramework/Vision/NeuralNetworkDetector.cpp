@@ -104,9 +104,10 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
     }
 
     const float* raw_output = output_opt->data.data();
-    // output_shape is { 1, 5, 8400 }
+    // output_shape is { 1, 5, 8400 }: batch 1, 4 box rows + at least 1 class row, candidates
     const std::vector<int64_t>& output_shape = output_opt->shape;
-    if (output_shape.size() != 3 || static_cast<size_t>(output_shape[1] * output_shape[2]) != output_opt->data.size()) {
+    if (output_shape.size() != 3 || output_shape[0] != 1 || output_shape[1] < 5 || output_shape[2] <= 0
+        || static_cast<size_t>(output_shape[1] * output_shape[2]) != output_opt->data.size()) {
         LogError << name_ << "unexpected output shape" << VAR(output_shape) << VAR(output_opt->data.size());
         return { };
     }
