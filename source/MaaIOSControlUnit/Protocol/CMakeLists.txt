@@ -58,9 +58,11 @@ if(CMAKE_C_COMPILER_ID MATCHES "Clang")
     target_compile_options(MaaIOSLwip PRIVATE -Wno-error=tautological-constant-out-of-range-compare)
 endif()
 if(MSVC)
-    # Only upstream C sources: its conditional IPv6 implementation leaves netif
-    # unused. The framework's C++ port and all protocol code retain /WX.
-    target_compile_options(MaaIOSLwip PRIVATE "$<$<COMPILE_LANGUAGE:C>:/wd4100>")
+    # VS evaluates COMPILE_LANGUAGE as CXX for a mixed C/C++ target, so attach
+    # this exception to the one upstream source that triggers it. The framework's
+    # C++ port and all protocol code retain /WX and their normal warning policy.
+    set_property(SOURCE "${lwip_SOURCE_DIR}/src/core/ipv6/nd6.c"
+        APPEND PROPERTY COMPILE_OPTIONS /wd4100)
 endif()
 
 if(NOT MAA_IOS_FETCH_DEPENDENCIES AND NOT FETCHCONTENT_SOURCE_DIR_MDNS)
@@ -75,7 +77,9 @@ FetchContent_MakeAvailable(mdns)
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(PkgConfig QUIET)
-if(PkgConfig_FOUND)
+# vcpkg pkg-config metadata selects one configuration; native multi-config
+# Windows builds must use import libraries and configuration-aware CMake targets.
+if(PkgConfig_FOUND AND NOT WIN32)
     pkg_check_modules(MAA_IOS_LIBAV QUIET IMPORTED_TARGET libavcodec libavutil libswscale)
 endif()
 add_library(MaaIOSLibAv INTERFACE)
@@ -107,7 +111,7 @@ if(APPLE)
     target_link_libraries(MaaIOSCurl INTERFACE "${maa_ios_sdk}/usr/lib/libcurl.tbd")
 else()
     find_package(CURL REQUIRED)
-    if(PkgConfig_FOUND)
+    if(PkgConfig_FOUND AND NOT WIN32)
         pkg_check_modules(MAA_IOS_CURL QUIET IMPORTED_TARGET libcurl)
     endif()
     if(TARGET PkgConfig::MAA_IOS_CURL)

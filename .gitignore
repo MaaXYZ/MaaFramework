@@ -463,3 +463,5 @@ test/pipeline/resources/BatchOcrRepro/resource/model/
 .ios-vcpkg/
 build-ios-device/
 ios-device-artifact/
+
+build-ios-native-deps/

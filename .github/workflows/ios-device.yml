@@ -192,6 +192,13 @@ jobs:
                   sudo apt-get update
                   sudo apt-get install -y cmake ninja-build pkg-config libssl-dev libcurl4-openssl-dev libavcodec-dev libavutil-dev libswscale-dev libdbus-1-dev libwayland-dev libffi-dev
 
+            - name: Isolate Linux native package headers
+              if: runner.os == 'Linux'
+              shell: bash
+              run: |
+                  bash tools/MaaIOSDevice/ci/linux-native-headers.sh "$PWD/build-ios-native-deps"
+                  echo "PKG_CONFIG_PATH=$PWD/build-ios-native-deps/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}" >> "$GITHUB_ENV"
+
             - name: macOS protocol dependencies
               if: runner.os == 'macOS'
               shell: bash
@@ -232,7 +239,8 @@ jobs:
                     extra+=(-G Ninja "-DCMAKE_TOOLCHAIN_FILE=$PWD/source/MaaUtils/MaaDeps/cmake/maa-x64-linux-toolchain.cmake")
                     # This native integration job links the runner's C protocol libraries.
                     # It is not a portable glibc-baseline release build.
-                    extra+=(-DOPENSSL_ROOT_DIR=/usr "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath-link,/usr/lib/x86_64-linux-gnu")
+                    extra+=(-DOPENSSL_ROOT_DIR=/usr "-DOPENSSL_INCLUDE_DIR=$PWD/build-ios-native-deps/include"
+                      "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath-link,/usr/lib/x86_64-linux-gnu")
                   else
                     extra+=(-G "Visual Studio 17 2022" -A x64
                       "-DCMAKE_TOOLCHAIN_FILE=$PWD/.ios-vcpkg/scripts/buildsystems/vcpkg.cmake"
