@@ -1,0 +1,273 @@
+name: iOS device tool
+
+on:
+    workflow_dispatch:
+    pull_request:
+        paths:
+            - '.github/workflows/ios-device.yml'
+            - 'source/MaaIOSControlUnit/**'
+            - 'source/MaaToolkit/**'
+            - 'source/MaaFramework/**'
+            - 'include/MaaFramework/**'
+            - 'include/MaaToolkit/**'
+            - 'test/ios_test/**'
+            - 'CMakeLists.txt'
+            - 'tools/MaaIOSDevice/**'
+    push:
+        branches: ['feat/ios-control-unit', 'main']
+        paths:
+            - '.github/workflows/ios-device.yml'
+            - 'source/MaaIOSControlUnit/**'
+            - 'source/MaaToolkit/**'
+            - 'source/MaaFramework/**'
+            - 'include/MaaFramework/**'
+            - 'include/MaaToolkit/**'
+            - 'test/ios_test/**'
+            - 'CMakeLists.txt'
+            - 'tools/MaaIOSDevice/**'
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ios-device-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    standalone:
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - platform: macos
+                      runner: macos-15
+                    - platform: linux
+                      runner: ubuntu-24.04
+                    - platform: windows-msvc-x64
+                      runner: windows-2022
+        runs-on: ${{ matrix.runner }}
+        timeout-minutes: 90
+        env:
+            VCPKG_BINARY_SOURCES: clear
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
+
+            - name: Linux dependencies
+              if: runner.os == 'Linux'
+              shell: bash
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y cmake ninja-build pkg-config libssl-dev libcurl4-openssl-dev libavcodec-dev libavutil-dev libswscale-dev
+
+            - name: macOS dependencies
+              if: runner.os == 'macOS'
+              shell: bash
+              run: |
+                  brew install cmake ninja pkg-config openssl@3 ffmpeg
+
+            - name: Pinned Windows vcpkg checkout
+              if: runner.os == 'Windows'
+              uses: actions/checkout@v7
+              with:
+                  repository: microsoft/vcpkg
+                  ref: e456309491fd875487bf02b8a0dca76c1b1b00cc
+                  path: .ios-vcpkg
+                  persist-credentials: false
+
+            - name: Windows dependencies
+              if: runner.os == 'Windows'
+              shell: pwsh
+              run: |
+                  & ./.ios-vcpkg/bootstrap-vcpkg.bat -disableMetrics
+                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+                  & ./.ios-vcpkg/vcpkg.exe install --triplet x64-windows --host-triplet x64-windows `
+                    --x-manifest-root="$pwd/tools/MaaIOSDevice/ci" --x-install-root="$pwd/.ios-vcpkg/installed" `
+                    --no-binarycaching
+                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+                  "$pwd/.ios-vcpkg/installed/x64-windows/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+            - name: Configure standalone tool (Unix)
+              if: runner.os != 'Windows'
+              shell: bash
+              run: |
+                  extra=()
+                  if [[ "$RUNNER_OS" == macOS ]]; then
+                    extra+=("-DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)")
+                  fi
+                  cmake -S tools/MaaIOSDevice -B build-ios-device -G Ninja \
+                    -DCMAKE_BUILD_TYPE=Release -DBUILD_IOS_DEVICE_TESTING=ON -DMAA_IOS_PROTOCOL_TESTS=ON \
+                    "${extra[@]}"
+
+            - name: Configure standalone tool (MSVC)
+              if: runner.os == 'Windows'
+              shell: pwsh
+              run: |
+                  cmake -S tools/MaaIOSDevice -B build-ios-device -G "Visual Studio 17 2022" -A x64 `
+                    -DCMAKE_TOOLCHAIN_FILE="$pwd/.ios-vcpkg/scripts/buildsystems/vcpkg.cmake" `
+                    -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_INSTALLED_DIR="$pwd/.ios-vcpkg/installed" `
+                    -DVCPKG_MANIFEST_MODE=OFF -DBUILD_IOS_DEVICE_TESTING=ON -DMAA_IOS_PROTOCOL_TESTS=ON
+                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+            - name: Build
+              shell: bash
+              run: cmake --build build-ios-device --config Release --parallel 4
+
+            - name: Offline protocol and command tests
+              shell: bash
+              run: ctest --test-dir build-ios-device --build-config Release --output-on-failure --no-tests=error --timeout 60
+
+            - name: Package executable, source and notices
+              shell: bash
+              run: |
+                  cmake --install build-ios-device --config Release --prefix "$PWD/ios-device-artifact"
+                  python tools/MaaIOSDevice/ci/package.py --repository "$PWD" --build "$PWD/build-ios-device" \
+                    --output "$PWD/ios-device-artifact" --platform "${{ matrix.platform }}"
+
+            - name: Check packaged Windows executable
+              if: runner.os == 'Windows'
+              shell: pwsh
+              run: |
+                  $env:PATH = "$pwd/ios-device-artifact/bin;$env:SystemRoot/System32;$env:SystemRoot;$env:SystemRoot/System32/Wbem"
+                  & ./ios-device-artifact/bin/MaaIOSDevice.exe --help
+                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+            - name: Upload tool and source materials
+              uses: actions/upload-artifact@v7
+              with:
+                  name: MaaIOSDevice-${{ matrix.platform }}
+                  path: ios-device-artifact/
+                  if-no-files-found: error
+
+            - name: Upload diagnostics
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  name: MaaIOSDevice-${{ matrix.platform }}-logs
+                  include-hidden-files: true
+                  path: |
+                      build-ios-device/CMakeCache.txt
+                      build-ios-device/CMakeFiles/CMakeConfigureLog.yaml
+                      build-ios-device/Testing/Temporary/
+                      .ios-vcpkg/buildtrees/**/*.log
+                  if-no-files-found: warn
+
+
+    framework-integration:
+        name: Framework iOS integration (${{ matrix.platform }})
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - platform: macos-arm64
+                      runner: macos-15
+                      maadeps: arm64-osx
+                    - platform: linux-x64
+                      runner: ubuntu-24.04
+                      maadeps: x64-linux
+                    - platform: windows-msvc-x64
+                      runner: windows-2022
+                      maadeps: x64-windows
+        runs-on: ${{ matrix.runner }}
+        timeout-minutes: 90
+        env:
+            VCPKG_BINARY_SOURCES: clear
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  submodules: recursive
+                  persist-credentials: false
+
+            - name: Native MaaFramework dependencies
+              shell: bash
+              env:
+                  GITHUB_TOKEN: ${{ github.token }}
+              run: python3 tools/maadeps-download.py '${{ matrix.maadeps }}'
+
+            - name: Linux protocol dependencies
+              if: runner.os == 'Linux'
+              shell: bash
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y cmake ninja-build pkg-config libssl-dev libcurl4-openssl-dev libavcodec-dev libavutil-dev libswscale-dev
+
+            - name: macOS protocol dependencies
+              if: runner.os == 'macOS'
+              shell: bash
+              run: |
+                  test "$(uname -m)" = arm64
+                  brew install cmake ninja pkg-config openssl@3 ffmpeg
+
+            - name: Pinned Windows vcpkg checkout
+              if: runner.os == 'Windows'
+              uses: actions/checkout@v7
+              with:
+                  repository: microsoft/vcpkg
+                  ref: e456309491fd875487bf02b8a0dca76c1b1b00cc
+                  path: .ios-vcpkg
+                  persist-credentials: false
+
+            - name: Windows protocol dependencies
+              if: runner.os == 'Windows'
+              shell: pwsh
+              run: |
+                  & ./.ios-vcpkg/bootstrap-vcpkg.bat -disableMetrics
+                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+                  & ./.ios-vcpkg/vcpkg.exe install --triplet x64-windows --host-triplet x64-windows `
+                    --x-manifest-root="$pwd/tools/MaaIOSDevice/ci" --x-install-root="$pwd/.ios-vcpkg/installed" `
+                    --no-binarycaching
+                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+                  "$pwd/.ios-vcpkg/installed/x64-windows/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+                  "$pwd/source/MaaUtils/MaaDeps/runtime/maa-x64-windows/msvc-debug" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+                  "$pwd/source/MaaUtils/MaaDeps/runtime/maa-x64-windows" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+            - name: Configure framework iOS integration
+              shell: bash
+              run: |
+                  extra=()
+                  if [[ "$RUNNER_OS" == macOS ]]; then
+                    extra+=(-G Ninja -DCMAKE_OSX_ARCHITECTURES=arm64 "-DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)")
+                  elif [[ "$RUNNER_OS" == Linux ]]; then
+                    extra+=(-G Ninja "-DCMAKE_TOOLCHAIN_FILE=$PWD/source/MaaUtils/MaaDeps/cmake/maa-x64-linux-toolchain.cmake")
+                    # This native integration job links the runner's C protocol libraries.
+                    # It is not a portable glibc-baseline release build.
+                    extra+=(-DOPENSSL_ROOT_DIR=/usr "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath-link,/usr/lib/x86_64-linux-gnu")
+                  else
+                    extra+=(-G "Visual Studio 17 2022" -A x64
+                      "-DCMAKE_TOOLCHAIN_FILE=$PWD/.ios-vcpkg/scripts/buildsystems/vcpkg.cmake"
+                      -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_MANIFEST_MODE=OFF
+                      "-DVCPKG_INSTALLED_DIR=$PWD/.ios-vcpkg/installed")
+                  fi
+                  cmake -S . -B build-ios-integration "${extra[@]}" \
+                    -DCMAKE_BUILD_TYPE=Debug -DMAADEPS_TRIPLET='maa-${{ matrix.maadeps }}' \
+                    -DWITH_IOS_CONTROLLER=ON -DBUILD_IOS_CONTROLLER_TESTING=ON \
+                    -DBUILD_IOS_DEVICE_TESTING=ON -DMAA_IOS_PROTOCOL_TESTS=ON \
+                    -DWITH_ADB_CONTROLLER=OFF -DWITH_WIN32_CONTROLLER=OFF -DWITH_MACOS_CONTROLLER=OFF \
+                    -DWITH_PLAYCOVER_CONTROLLER=OFF -DWITH_GAMEPAD_CONTROLLER=OFF -DWITH_LINUX_CONTROLLER=OFF \
+                    -DWITH_ANDROID_NATIVE_CONTROLLER=OFF -DWITH_MAA_AGENT=OFF \
+                    -DWITH_NODEJS_BINDING=OFF -DWITH_QUICKJS_BINDING=OFF -DBUILD_PICLI=OFF
+
+            - name: Build framework API, toolkit, session and tool
+              shell: bash
+              run: |
+                  cmake --build build-ios-integration --config Debug --parallel 3 \
+                    --target MaaFramework MaaToolkit MaaIOSControlUnit MaaIOSDevice
+                  cmake --build build-ios-integration --config Debug --parallel 3
+
+            - name: Run framework and protocol offline tests
+              shell: bash
+              run: ctest --test-dir build-ios-integration --build-config Debug --output-on-failure --no-tests=error --timeout 60
+
+            - name: Upload framework integration diagnostics
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  name: MaaIOSFramework-${{ matrix.platform }}-logs
+                  include-hidden-files: true
+                  path: |
+                      build-ios-integration/CMakeCache.txt
+                      build-ios-integration/CMakeFiles/CMakeConfigureLog.yaml
+                      build-ios-integration/Testing/Temporary/
+                      .ios-vcpkg/buildtrees/**/*.log
+                  if-no-files-found: warn

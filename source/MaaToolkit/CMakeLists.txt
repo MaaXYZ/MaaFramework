@@ -77,3 +77,19 @@ endif()
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaToolkit" DESTINATION "include")
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_toolkit_src})
+
+if(WITH_IOS_CONTROLLER)
+    target_link_libraries(MaaToolkit PRIVATE MaaIOSProtocol)
+    target_compile_definitions(MaaToolkit PRIVATE MAA_WITH_IOS_DEVICE=1)
+endif()
+
+if(BUILD_IOS_CONTROLLER_TESTING AND WITH_IOS_CONTROLLER)
+    add_executable(MaaIOSToolkitTest
+        ${CMAKE_SOURCE_DIR}/test/ios_test/toolkit_device_test.cpp
+        API/MaaToolkitIOSDevice.cpp)
+    target_include_directories(MaaIOSToolkitTest PRIVATE ${MAA_PUBLIC_INC}
+        ${CMAKE_SOURCE_DIR}/source/MaaIOSControlUnit/Protocol)
+    target_compile_definitions(MaaIOSToolkitTest PRIVATE MAA_WITH_IOS_DEVICE=1 MAA_TOOLKIT_EXPORTS)
+    target_link_libraries(MaaIOSToolkitTest PRIVATE MaaIOSProtocol)
+    add_test(NAME MaaIOSToolkitTest COMMAND MaaIOSToolkitTest)
+endif()

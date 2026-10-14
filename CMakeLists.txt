@@ -9,7 +9,9 @@ include(source/MaaUtils/MaaUtils.cmake)
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_MACOS_CONTROLLER "build with macOS controller" ON)
-option(WITH_IOS_CONTROLLER "build with iOS device controller (CoreDevice/DDI)" ON)
+# MaaDeps does not yet ship the additional iOS protocol libraries. Keep existing
+# multi-architecture builds intact; enable explicitly with target-compatible dependencies.
+option(WITH_IOS_CONTROLLER "build with iOS device controller (CoreDevice/DDI)" OFF)
 option(WITH_ANDROID_NATIVE_CONTROLLER "build with Android native controller" ON)
 option(WITH_CUSTOM_CONTROLLER "build with custom controller" ON)
 option(WITH_PLAYCOVER_CONTROLLER "build with PlayCover controller for macOS" ON)
@@ -62,8 +64,8 @@ if(WITH_MACOS_CONTROLLER AND NOT APPLE)
     set(WITH_MACOS_CONTROLLER OFF)
 endif()
 
-if(WITH_IOS_CONTROLLER AND NOT APPLE)
-    message(STATUS "Not on macOS, disable WITH_IOS_CONTROLLER")
+if(WITH_IOS_CONTROLLER AND ANDROID)
+    message(STATUS "iOS device controller requires a desktop host, disable on Android")
     set(WITH_IOS_CONTROLLER OFF)
 endif()
 
@@ -89,6 +91,14 @@ endif ()
 
 if(WITH_MAA_AGENT)
     find_package(cppzmq REQUIRED)
+endif()
+
+if(WITH_IOS_CONTROLLER)
+    add_compile_definitions(MAA_WITH_IOS_CONTROLLER=1)
+endif()
+
+if(BUILD_IOS_CONTROLLER_TESTING OR BUILD_IOS_DEVICE_TESTING OR MAA_IOS_PROTOCOL_TESTS)
+    enable_testing()
 endif()
 
 add_subdirectory(3rdparty)

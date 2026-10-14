@@ -990,7 +990,7 @@ class IOSController(Controller):
     """iOS 控制器 / iOS controller
 
     通过 USB（或局域网）直接控制真机：截图、点击、滑动、文本输入、启停 App。
-    Controls a physical iOS device over USB/LAN: screencap, click, swipe, text, app start/stop.
+    Controls a physical iOS device over USB/LAN; text input currently supports US-layout ASCII only.
     """
 
     def __init__(
@@ -1002,8 +1002,8 @@ class IOSController(Controller):
         """创建 iOS 控制器 / Create iOS controller
 
         Args:
-            udid: 设备 UDID，传空串表示使用第一台在连的设备 / device UDID, empty for the first connected device
-            wifi_address: 设备的局域网地址，传空串走 USB / device LAN address; empty (default) uses USB. 走无线时 udid 只用来挑本机哪条配对记录 / over Wi-Fi the udid only selects the pair record
+            udid: 设备 UDID，传空串要求仅有一台可用设备 / device UDID, empty requires a unique available device
+            wifi_address: 设备局域网地址或 auto；空串优先 USB，缺少 USB 时发现已配对 Wi-Fi / device LAN address or auto; empty prefers USB, then paired Wi-Fi discovery
             screencap_methods: 允许的截图方式位掩码 / allowed screencap method bitmask
 
         Raises:

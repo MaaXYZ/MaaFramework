@@ -5,15 +5,14 @@
 
 #include "MaaControlUnit/ControlUnitAPI.h"
 
-#include "Session/ScrctlSession.h"
+#include "Session/IOSSession.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
 class IOSControlUnitMgr : public IOSControlUnitAPI
 {
 public:
-    IOSControlUnitMgr(
-        std::string udid, std::string wifi_address, MaaIOScreencapMethod screencap_methods);
+    IOSControlUnitMgr(std::string udid, std::string wifi_address, MaaIOScreencapMethod screencap_methods);
     ~IOSControlUnitMgr() override;
 
 public: // from ControlUnitAPI
@@ -52,15 +51,13 @@ private:
     bool refresh_display_size(std::string& err);
 
     std::string udid_;
-    /// 非空 = 走局域网（拿配对记录与该地址建隧道），空 = USB。
+    /// 空值优先 USB，无 USB 候选时发现已配对 Wi-Fi；auto 发现无线，显式地址直接连接。
     std::string wifi_address_;
     MaaIOScreencapMethod screencap_methods_ = MaaIOScreencapMethod_Default;
-    maa::ios_unit::ScrctlSession session_;
+    maa::ios_unit::IOSSession session_;
 
     int display_width_ = 0;
     int display_height_ = 0;
-    /// touch_up 只给 contact 不给坐标，所以按住的位置得自己记着。
-    std::pair<double, double> last_touch_ { 0.5, 0.5 };
 };
 
 MAA_CTRL_UNIT_NS_END

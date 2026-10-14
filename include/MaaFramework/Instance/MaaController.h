@@ -53,61 +53,36 @@ extern "C"
         MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
 
     /**
-     * @brief Create an iOS device controller backed by the CoreDevice/DDI developer services.
+     * @brief Create a native MaaFramework iOS controller using CoreDevice/DDI services.
+     * @param udid Device UDID; empty selects the only eligible device.
+     * @param wifi_address Empty prefers USB, then paired Wi-Fi without a USB candidate.
+     *                     "auto" discovers paired wireless candidates;
+     *                     an IPv4/IPv6 address connects directly over Wi-Fi.
+     * @param screencap_methods Bitmask of Stream and/or ScreenshotService.
+     * @return Controller handle, or nullptr on failure.
      *
-     * @param udid The device UDID, or NULL to use the only connected device. When several
-     *             devices are attached, passing NULL fails rather than guessing.
-     * @param wifi_address The device's LAN address (IPv4/IPv6) to reach it over Wi-Fi
-     *                     instead of USB, or NULL (the default) for USB. Over Wi-Fi the
-     *                     `udid` only selects which pair record to use and may be left
-     *                     empty when this machine holds exactly one.
-     * @param screencap_methods Bitmask of allowed screencap methods, see MaaIOScreencapMethod.
-     *                          With more than one set, the fastest working one is used.
-     * @return The controller handle, or nullptr on failure.
-     *
-     * @note Runs entirely in userspace: no root, no jailbreak, no WebDriverAgent, and
-     *       unlike iPhone Mirroring the device stays usable while controlled.
-     * @note Requires the device to be paired (trusted) and to have a Developer Disk Image
-     *       mounted; Xcode mounts it automatically for registered devices.
-     * @note Wi-Fi needs a RemotePairing record on this machine (`$XDG_DATA_HOME/scrctl`,
-     *       else `~/.local/share/scrctl`). Pairing itself asks the user to tap "Allow" on
-     *       the device, so it is not part of connect -- do it once out of band. It also
-     *       has no lockdown session, which affects nothing on this code path.
-     * @note The media stream requires iOS 27 or later. On iOS 18 the device refuses
-     *       startmediastream with code 9021 and its own words "Remote control requires
-     *       iOS 27.0 or later on this device" (corroborated by Apple's on-device sharing
-     *       dialog), and getmediasupportinfo reports supportedFeatures 0 vs 972. Screencap
-     *       via ScreenshotService, hardware buttons and touch injection all work there --
-     *       so pass MaaIOScreencapMethod_ScreenshotService on such a device: it is the
-     *       only thing that can produce an image, and ~2 fps of it.
-     * @note A sleeping screen makes the screenshot service answer with an all-black PNG.
-     *       A recognition miss on an idle device may mean "asleep", not "template wrong";
-     *       wake it with MaaControllerClickKey(MaaKeycode_MaaKey_Home) before concluding.
-     * @note Screencap returns the logical display at native scale; touch coordinates are
-     *       in that same pixel space (before the framework's screenshot scaling, see
-     *       MaaControllerPostClick).
-     * @note On iOS 18 the `deviceinfo` service is not in the RSD catalog, so the unit
-     *       cannot learn the interface orientation there and never rotates anything.
-     *       That is correct rather than degraded: measured there the screenshot service
-     *       already hands back an upright image and orientation always reads rot0.
-     * @note Setting MaaIOScreencapMethod_ScreenshotService alone never opens a media stream,
-     *       so nothing is decoded in the background. It costs 10x to 40x more per frame:
-     *       14-17ms median over the stream vs 113-891ms per RPC (iPhone 14,4 / iOS 27, USB,
-     *       2026-09-27). The RPC cost tracks the size of the PNG the device produces, not
-     *       how busy the screen looks.
-     * @note With both methods set, a screen the decoder cannot handle (a single NAL above
-     *       the platform backend's 2-byte length prefix, measured at 256278 bytes on a
-     *       densely scribbled Freeform board) falls back to the RPC. The first few calls
-     *       pay the frame-wait budget before that is latched; steady state measured 860ms
-     *       on that board vs 518ms for ScreenshotService alone.
-     * @note With Stream alone such a screen fails every shot rather than silently
-     *       degrading, and connecting it costs ~7s of restart attempts.
-     * @note start_app / stop_app take a bundle identifier. Not supported: scroll,
-     *       relative_move, key_down/key_up. `click_key` maps to hardware buttons only
-     *       (home/lock/volume).
+     * @note MaaIOSDevice separately manages device discovery, interactive pairing and
+     *       native DDI preparation. Records live under MaaFramework/iOS in the platform
+     *       data directory, independently of scrctl. Its connect command only validates
+     *       a connection and exits; this controller creates and owns its own session.
+     * @note Available when the native iOS module is included in the build. Requires
+     *       device Developer Mode, trust/pairing and a compatible mounted DDI.
+     * @note ScreenshotService requests lossless PNGs without starting video. Stream
+     *       decodes live HEVC; enabling both permits screenshot-service fallback.
+     *       Device replies determine availability; older devices may require the service.
+     * @note Coordinates use the last delivered image's pixel space and geometry, before
+     *       framework screenshot scaling. Unknown/mismatched geometry rejects touches.
+     * @note Single touch (contact 0), mapped Android keycodes including ordinary keys,
+     *       modifiers and hardware buttons support press/release. Unsupported contacts,
+     *       keys, scroll, relative movement and Shell fail rather than being simulated.
+     * @note input_text accepts US-layout ASCII, tab and newline. Unsupported text is
+     *       rejected in full and is never pasted automatically. The device input method
+     *       determines the interpretation of keyboard events.
+     * @note start_app/stop_app take an application bundle identifier. Starting preserves
+     *       running instances; stopping an already stopped app succeeds.
      */
-    MAA_FRAMEWORK_API MaaController* MaaIOSControllerCreate(
-        const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods);
+    MAA_FRAMEWORK_API MaaController*
+        MaaIOSControllerCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods);
 
     /**
      * @brief Create an Android native controller backed by MaaAndroidNativeControlUnit.

@@ -477,30 +477,19 @@ typedef uint64_t MaaMacOSInputMethod;
 
 // MaaIOScreencapMethod:
 /**
- * @brief iOS screencap method flags
+ * @brief iOS screencap method flags.
  *
- * Use bitwise OR to set the methods you need.
- * MaaFramework will use the fastest method that is actually working and fall back
- * to the slower ones when it is not.
+ * Use bitwise OR to select the permitted backends. Video frames are preferred
+ * when Stream is enabled; ScreenshotService provides a lossless RPC fallback.
+ * Stream alone has no screenshot fallback. ScreenshotService alone starts no
+ * video session or background video decoder.
  *
- * Default: All methods
- *
- * Note: Stream carries HEVC, so it is lossy; pick ScreenshotService only when
- * pixel-exact matching matters more than per-frame latency.
- *
- * Latency below is measured on an iPhone 14,4 / iOS 27 over USB, 2026-09-27.
- * ScreenshotService cost is dominated by how big the device's PNG comes out and is
- * NOT monotone in how busy the screen looks: 167ms median on the board list,
- * 743ms on a board of thick marker bars, 518ms on a far denser fine-line mesh.
- *
- * | Method            | Speed     | Compatibility | Encoding | Notes                                                  |
- * |-------------------|-----------|---------------|----------|--------------------------------------------------------|
- * | Stream            | Very Fast | Medium        | Lossy    | live media stream, 14-17ms median per shot             |
- * | ScreenshotService | Slow      | High          | Lossless | one-shot capturescreenshot RPC, 113-891ms per shot     |
+ * Default: All methods. Reported availability describes supported backends,
+ * not a guarantee that every connected device/DDI exposes both services.
  */
 typedef uint64_t MaaIOScreencapMethod;
 #define MaaIOScreencapMethod_None 0ULL
-#define MaaIOScreencapMethod_Stream (1ULL)
+#define MaaIOScreencapMethod_Stream 1ULL
 #define MaaIOScreencapMethod_ScreenshotService (1ULL << 1)
 #define MaaIOScreencapMethod_All (~MaaIOScreencapMethod_None)
 #define MaaIOScreencapMethod_Default MaaIOScreencapMethod_All

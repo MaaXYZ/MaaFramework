@@ -1,13 +1,10 @@
 #include "IOSControlUnitMgr.h"
 
 #include <algorithm>
-#include <cmath>
 #include <vector>
 
 #include <MaaUtils/Logger.h>
 #include <MaaUtils/NoWarningCV.hpp>
-
-#include "hid/Hid.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -19,33 +16,12 @@ constexpr int kDefaultHoldMs = 90;
 /// 当成抖动丢掉，所以 duration 再短也要按这个间隔铺开若干步。
 constexpr int kMinStepMs = 12;
 
-/// Android keycode -> iOS Consumer page usage。只映射 iOS 上真有的那几个硬件键；
-/// 其余（方向键、菜单键…）在 iOS 上没有对应物，返回 0 让调用方报错。
-uint16_t consumer_usage_for(int keycode)
-{
-    switch (keycode) {
-    case 3: // KEYCODE_HOME
-        return scrctl::hid::button::kHome;
-    case 26: // KEYCODE_POWER
-        return scrctl::hid::button::kLock;
-    case 24: // KEYCODE_VOLUME_UP
-        return scrctl::hid::button::kVolumeUp;
-    case 25: // KEYCODE_VOLUME_DOWN
-        return scrctl::hid::button::kVolumeDown;
-    case 164: // KEYCODE_VOLUME_MUTE
-        return scrctl::hid::button::kMute;
-    default:
-        return 0;
-    }
-}
-
 } // namespace
 
-IOSControlUnitMgr::IOSControlUnitMgr(
-    std::string udid, std::string wifi_address, MaaIOScreencapMethod screencap_methods)
-    : udid_(std::move(udid)),
-      wifi_address_(std::move(wifi_address)),
-      screencap_methods_(screencap_methods)
+IOSControlUnitMgr::IOSControlUnitMgr(std::string udid, std::string wifi_address, MaaIOScreencapMethod screencap_methods)
+    : udid_(std::move(udid))
+    , wifi_address_(std::move(wifi_address))
+    , screencap_methods_(screencap_methods)
 {
 }
 
@@ -65,12 +41,6 @@ bool IOSControlUnitMgr::connect()
     display_width_ = 0;
     display_height_ = 0;
 
-    // 顺手把显示尺寸取到：不取的话第一次触摸之前会多一次截图的开销，
-    // 而 connect() 本来就要建立整条隧道，多这一张不心疼。
-    std::string size_err;
-    if (!refresh_display_size(size_err)) {
-        LogWarn << "connect ok but display size unknown, will retry on first touch" << VAR(size_err);
-    }
     return true;
 }
 
@@ -87,10 +57,10 @@ bool IOSControlUnitMgr::request_uuid(std::string& uuid)
 
 MaaControllerFeature IOSControlUnitMgr::get_features() const
 {
-    // click/swipe 直接实现（tap / 插值拖动），touch_down/up 也都原生支持，
-    // 不需要框架改用 down+up 拼。坐标缩放开着：框架负责把用户看到的
-    // 目标尺寸换算回截图原始像素，我们只按原始像素归一化。
-    return MaaControllerFeature_None;
+    // Framework long presses require down/up preferences; these flags do not
+    // imply support for additional contacts. Framework pixel scaling stays enabled.
+    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick |
+           MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 }
 
 bool IOSControlUnitMgr::start_app(const std::string& intent)
@@ -139,8 +109,7 @@ bool IOSControlUnitMgr::normalize(int x, int y, double& fx, double& fy, std::str
     // 出界只警告不报错：坐标来自框架，正常路径不会越界，真越界了也照样夹进
     // 触摸面（设备侧本来就会夹），但要把尺寸对不上的事实留在日志里。
     if (x < 0 || y < 0 || x >= display_width_ || y >= display_height_) {
-        LogWarn << "touch point outside the screenshot" << VAR(x) << VAR(y) << VAR(display_width_)
-                << VAR(display_height_);
+        LogWarn << "touch point outside the screenshot" << VAR(x) << VAR(y) << VAR(display_width_) << VAR(display_height_);
     }
     // 换向交给会话：它才知道设备报的界面朝向，而触摸面的 0..1 是面板轴的。
     return session_.logical_to_panel(x, y, display_width_, display_height_, fx, fy, err);
@@ -183,6 +152,10 @@ bool IOSControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
         return false;
     }
 
+    if (duration < 0 || duration > 600000) {
+        LogError << "iOS swipe duration must be between 0 and 600000 ms" << VAR(duration);
+        return false;
+    }
     const int steps = std::max(2, duration / kMinStepMs);
     std::vector<std::pair<double, double>> points;
     points.reserve(static_cast<size_t>(steps) + 1);
@@ -202,35 +175,35 @@ bool IOSControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 bool IOSControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     (void)pressure;
-    if (contact != 0) {
-        // 设备的 mainTouchscreen 报告只有一个接触点的位置字段，多指得换
-        // 报告布局（保留区里大概藏着多点数据，但没逆出来）。
-        LogError << "iOS controller supports single touch only" << VAR(contact);
+    if (contact != 0 || session_.touch_active()) {
+        LogError << "iOS controller requires one inactive contact numbered 0" << VAR(contact);
         return false;
     }
 
     std::string err;
-    if (!normalize(x, y, last_touch_.first, last_touch_.second, err)) {
+    double fx = 0, fy = 0;
+    if (!normalize(x, y, fx, fy, err)) {
         return false;
     }
-    return session_.touch(last_touch_.first, last_touch_.second, true, err);
+    return session_.touch(fx, fy, true, err);
 }
 
 bool IOSControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 {
     (void)pressure;
-    if (contact != 0) {
-        LogError << "iOS controller supports single touch only" << VAR(contact);
+    if (contact != 0 || !session_.touch_active()) {
+        LogError << "iOS touch_move needs the active contact numbered 0" << VAR(contact);
         return false;
     }
 
     std::string err;
-    if (!normalize(x, y, last_touch_.first, last_touch_.second, err)) {
+    double fx = 0, fy = 0;
+    if (!normalize(x, y, fx, fy, err)) {
         return false;
     }
     // 每个 CONTACT 报告都是"此刻在此处接触着"，没有 begin/end 操作码，
     // 所以 move 与 down 在线上一模一样。
-    return session_.touch(last_touch_.first, last_touch_.second, true, err);
+    return session_.touch(fx, fy, true, err);
 }
 
 bool IOSControlUnitMgr::touch_up(int contact)
@@ -241,20 +214,14 @@ bool IOSControlUnitMgr::touch_up(int contact)
     }
 
     std::string err;
-    return session_.touch(last_touch_.first, last_touch_.second, false, err);
+    return session_.release_touch(err);
 }
 
 bool IOSControlUnitMgr::click_key(int key)
 {
-    const uint16_t usage = consumer_usage_for(key);
-    if (usage == 0) {
-        LogError << "No iOS hardware button for this keycode" << VAR(key);
-        return false;
-    }
-
     std::string err;
-    if (!session_.press_button(usage, err)) {
-        LogError << "press button failed" << VAR(key) << VAR(err);
+    if (!session_.click_key(key, err)) {
+        LogError << "iOS click_key failed" << VAR(key) << VAR(err);
         return false;
     }
     return true;
@@ -272,21 +239,31 @@ bool IOSControlUnitMgr::input_text(const std::string& text)
 
 bool IOSControlUnitMgr::key_down(int key)
 {
-    (void)key;
-    // 硬件按键没有"按住不放"的语义可用：indigo 的 button 是 down/up 一组成对。
-    LogWarn << "key_down not supported on iOS controller";
-    return false;
+    std::string err;
+    if (!session_.key_down(key, err)) {
+        LogError << "iOS key_down failed" << VAR(key) << VAR(err);
+        return false;
+    }
+    return true;
 }
 
 bool IOSControlUnitMgr::key_up(int key)
 {
-    (void)key;
-    LogWarn << "key_up not supported on iOS controller";
-    return false;
+    std::string err;
+    if (!session_.key_up(key, err)) {
+        LogError << "iOS key_up failed" << VAR(key) << VAR(err);
+        return false;
+    }
+    return true;
 }
 
 bool IOSControlUnitMgr::inactive()
 {
+    std::string err;
+    if (!session_.release_inputs(err)) {
+        LogError << "iOS input cleanup failed" << VAR(err);
+        return false;
+    }
     return true;
 }
 

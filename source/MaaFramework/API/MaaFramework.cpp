@@ -97,19 +97,20 @@ MaaController* MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMet
 #endif
 }
 
-MaaController* MaaIOSControllerCreate(
-    const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods)
+MaaController* MaaIOSControllerCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods)
 {
-    LogFunc << VAR(udid) << VAR(wifi_address) << VAR(screencap_methods);
+    const char* selected_udid = udid ? udid : "";
+    const char* selected_wifi = wifi_address ? wifi_address : "";
+    LogFunc << VAR(selected_udid) << VAR(selected_wifi) << VAR(screencap_methods);
 
-#ifndef __APPLE__
+#ifndef MAA_WITH_IOS_CONTROLLER
 
-    LogError << "This API " << __FUNCTION__ << " is only available on macOS";
+    LogError << "This API " << __FUNCTION__ << " is disabled in this build";
     return nullptr;
 
 #else
 
-    auto control_unit = MAA_NS::IOSControlUnitLibraryHolder::create_control_unit(udid, wifi_address, screencap_methods);
+    auto control_unit = MAA_NS::IOSControlUnitLibraryHolder::create_control_unit(selected_udid, selected_wifi, screencap_methods);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";

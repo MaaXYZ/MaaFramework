@@ -267,22 +267,26 @@ declare global {
             static find(): Promise<DesktopDevice[] | null>
         }
 
+        type IOSDevice = [name: string, udid: string, screencap_methods: ScreencapOrInputMethods, connections_json: string]
+
         /**
-         * Connect to a physical iPhone over Xcode's CoreDevice channel (macOS only).
+         * Connect to a physical iPhone through MaaFramework's independent CoreDevice implementation.
          *
          * @param udid device UDID. Pass an empty string to use the only connected device;
          *             if several are connected the constructor fails and lists the candidates.
          * @param wifi_address device LAN address (IPv4/IPv6) to go over Wi-Fi instead of
-         *                     USB. Pass an empty string for USB, the default. Over Wi-Fi the
-         *                     udid only selects which pair record on this machine to use and
-         *                     may be empty when exactly one record exists. Pairing is not done
+         *                     USB. Empty means USB first, then discovered paired Wi-Fi.
+         *                     Use "auto" for Wi-Fi discovery. An empty udid requires one
+         *                     eligible device; explicit addresses require one matching
+         *                     local record when udid is empty. Pairing is not done
          *                     here -- it needs a tap on the device, so create the record out
-         *                     of band first.
+         *                     of band first with MaaIOSDevice pair and prepare.
          * @param screencap_method bitwise OR of `IOSScreencapMethod` values. Defaults to
          *                         `IOSScreencapMethod.Default` (stream first, fall back to the
          *                         screenshot service when a frame cannot be decoded).
          */
         class IOSController extends Controller {
+            static find(timeout_ms?: number): Promise<IOSDevice[] | null>
             constructor(udid: string, wifi_address?: string, screencap_method?: ScreencapOrInputMethods)
         }
 

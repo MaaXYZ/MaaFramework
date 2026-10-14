@@ -10,6 +10,12 @@
 
 #include <boost/regex.hpp>
 
+#if defined(MAA_WITH_IOS_CONTROLLER)
+static constexpr bool kIOSSupported = true;
+#else
+static constexpr bool kIOSSupported = false;
+#endif
+
 #if defined(_WIN32)
 #include "MaaUtils/SafeWindows.hpp"
 #include <shellapi.h>
@@ -18,6 +24,7 @@
 #include "MaaFramework/Utility/MaaBuffer.h"
 #include "MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h"
 #include "MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h"
+#include "MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
@@ -27,10 +34,8 @@ static bool s_eof = false;
 
 #if defined(__APPLE__)
 static constexpr bool kPlayCoverSupported = true;
-static constexpr bool kIOSSupported = true;
 #else
 static constexpr bool kPlayCoverSupported = false;
-static constexpr bool kIOSSupported = false;
 #endif
 
 #if defined(_WIN32)
@@ -355,10 +360,9 @@ void Interactor::print_config() const
     case InterfaceData::Controller::Type::IOS: {
         const auto& ios = config_.configuration().ios;
         std::cout << MAA_NS::utf8_to_crt(
-            std::format("\t\tUDID: {}\n\t\tScreencap: {}\n", ios.udid.empty() ? "(any single connected device)" : ios.udid,
-                        ios.screencap));
+            std::format("\t\tUDID: {}\n\t\tScreencap: {}\n", ios.udid.empty() ? "(any single connected device)" : ios.udid, ios.screencap));
         if (!kIOSSupported) {
-            std::cout << "\t\t(iOS is only available on macOS)\n";
+            std::cout << "\t\t(iOS is disabled in this build)\n";
         }
     } break;
     case InterfaceData::Controller::Type::PlayCover: {
@@ -619,7 +623,7 @@ void Interactor::select_controller()
                 std::cout << " (Windows only)";
             }
             if (ctrl.type == InterfaceData::Controller::Type::IOS && !kIOSSupported) {
-                std::cout << " (macOS only)";
+                std::cout << " (disabled in this build)";
             }
             std::cout << "\n";
             if (!ctrl.description.empty()) {
@@ -653,7 +657,7 @@ void Interactor::select_controller()
         break;
     case InterfaceData::Controller::Type::IOS:
         if (!kIOSSupported) {
-            std::cout << "\niOS controller is only available on macOS.\n";
+            std::cout << "\niOS controller is disabled in this build.\n";
             bool has_other_controllers =
                 std::ranges::any_of(all_controllers, [](const auto& ctrl) { return ctrl.type != InterfaceData::Controller::Type::IOS; });
             if (has_other_controllers) {
@@ -846,6 +850,40 @@ void Interactor::select_playcover(const MAA_PROJECT_INTERFACE_NS::InterfaceData:
     std::cout << "\n";
 }
 
+void Interactor::select_ios_auto_detect()
+{
+    std::cout << "Searching USB and Wi-Fi iOS devices...\n";
+    auto* list = MaaToolkitIOSDeviceListCreate();
+    if (!list) {
+        return;
+    }
+    std::unique_ptr<MaaToolkitIOSDeviceList, decltype(&MaaToolkitIOSDeviceListDestroy)> owned(list, MaaToolkitIOSDeviceListDestroy);
+    if (!MaaToolkitIOSDeviceFind(list)) {
+        std::cout << "Device discovery unavailable; enter a UDID/address manually.\n";
+        return;
+    }
+    std::vector<const MaaToolkitIOSDevice*> devices;
+    for (MaaSize i = 0; i < MaaToolkitIOSDeviceListSize(list); ++i) {
+        const auto* device = MaaToolkitIOSDeviceListAt(list, i);
+        if (!device || !MaaToolkitIOSDeviceGetUdid(device)[0]) {
+            continue;
+        }
+        devices.push_back(device);
+        std::cout << MAA_NS::utf8_to_crt(
+            std::format("\t{}. {}  {}\n", devices.size(), MaaToolkitIOSDeviceGetName(device), MaaToolkitIOSDeviceGetUdid(device)));
+    }
+    if (devices.empty()) {
+        std::cout << "No selectable device. Pair and prepare it with MaaIOSDevice, or enter a UDID manually.\n";
+        return;
+    }
+    std::cout << std::format("\t{}. Enter a UDID manually\n", devices.size() + 1);
+    const auto choice = input(devices.size() + 1, "Select device");
+    if (s_eof || choice > static_cast<int>(devices.size())) {
+        return;
+    }
+    config_.configuration().ios.udid = MaaToolkitIOSDeviceGetUdid(devices[choice - 1]);
+}
+
 void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::IOSConfig& ios_config)
 {
     std::cout << "### Configure iOS device ###\n\n";
@@ -854,6 +892,12 @@ void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Contr
 
     if (ios.udid.empty()) {
         ios.udid = ios_config.udid;
+    }
+    if (ios.udid.empty()) {
+        select_ios_auto_detect();
+        if (s_eof) {
+            return;
+        }
     }
 
     std::cout << "Device UDID. Leave it empty to use the only connected iPhone\n"
@@ -876,10 +920,10 @@ void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Contr
         ios.wifi = ios_config.wifi;
     }
 
-    std::cout << "Device LAN address for Wi-Fi control. Leave it empty to stay on USB.\n"
-                 "Wi-Fi needs a RemotePairing record on this machine (~/.local/share/scrctl);\n"
+    std::cout << "Device LAN address or auto for Wi-Fi. Empty prefers USB, then paired Wi-Fi discovery.\n"
+                 "Wi-Fi needs a verified MaaFramework pairing record on this machine;\n"
                  "over Wi-Fi the UDID above only picks which record to use.\n";
-    std::cout << "Wi-Fi address [" << (ios.wifi.empty() ? "USB" : ios.wifi) << "]: ";
+    std::cout << "Wi-Fi address [" << (ios.wifi.empty() ? "auto transport" : ios.wifi) << "]: ";
     std::cin.sync();
     std::getline(std::cin, buffer);
 
@@ -893,9 +937,8 @@ void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Contr
     std::cout << "\n";
 
     std::cout << "### Select screencap method ###\n\n";
-    std::cout << "\t1. Stream: media stream, ~15ms per shot, but lossy and needs a decoder running\n";
-    std::cout << "\t2. ScreenshotService: one RPC per shot, ~170ms on a simple screen and several\n";
-    std::cout << "\t   hundred ms on a busy one; lossless, no background work\n";
+    std::cout << "\t1. Stream: video frames, low latency, lossy, background decoding\n";
+    std::cout << "\t2. ScreenshotService: lossless screenshot RPC, no background decoding\n";
     std::cout << "\t3. Both: stream first, fall back to the service when a frame cannot be decoded\n";
 
     int choice = input(3, "Choose screencap method");
@@ -1904,7 +1947,7 @@ bool Interactor::check_validity()
 
     if (config_.configuration().controller.type == InterfaceData::Controller::Type::IOS) {
         if (!kIOSSupported) {
-            LogError << "iOS controller is only available on macOS";
+            LogError << "iOS controller is disabled in this build";
             return false;
         }
 

@@ -1,8 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <optional>
-
 #include "MaaControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/MaaDef.h"
 
@@ -14,46 +11,35 @@ extern "C"
     MAA_CONTROL_UNIT_API const char* MaaIOSControlUnitGetVersion();
 
     /**
-     * @brief Create an iOS device control unit talking over the CoreDevice/DDI stack.
+     * Create a native MaaFramework iOS controller.
      *
-     * @param udid The device UDID to connect, or NULL/"" to use the only connected device.
-     * @param wifi_address The device's LAN address (IPv4/IPv6) to reach it over Wi-Fi
-     *       instead of USB, or NULL/"" (the default) to use USB. When set, `udid`
-     *       selects which pair record to use; leaving it empty auto-picks when this
-     *       machine holds exactly one. Pairing itself is NOT done here -- see the
-     *       notes below.
-     * @param screencap_methods Bitmask of allowed screencap methods. With only
-     *       MaaIOScreencapMethod_ScreenshotService set, no media stream is ever started
-     *       (nothing decodes in the background); with only _Stream set there is no
-     *       fallback, so a screen the decoder cannot handle fails instead of degrading.
-     * @return The control unit handle, or nullptr on failure.
+     * udid selects the device; empty selects the only eligible device.
+     * wifi_address empty prefers USB, then paired Wi-Fi without a USB candidate.
+     * "auto" discovers the paired device over mDNS;
+     * an explicit IPv4/IPv6 address uses its RemotePairing service directly.
+     * Pairing is performed separately with MaaIOSDevice, and records are read
+     * from MaaFramework/iOS under XDG_DATA_HOME or the platform user data directory.
+     * Development services require a suitable mounted Developer Disk Image;
+     * MaaIOSDevice prepare downloads and mounts one without installing Xcode.
      *
-     * @note The device must be paired and have a Developer Disk Image mounted
-     *       (Xcode does this automatically when a device is registered).
-     * @note Coordinates are in screenshot pixel space; the unit normalizes them
-     *       to the device's 0..1 touch surface internally.
-     * @note Not supported: key_down/key_up, relative_move.
-     *       `click_key` only maps to hardware buttons (home, volume, lock...).
-     * @note start_app / stop_app take a bundle identifier. start_app brings the
-     *       app to the foreground without disturbing a running instance -- same
-     *       semantics as the Android unit (`monkey -p <pkg> 1`); stop_app SIGKILLs
-     *       every process whose executable lives in the app's bundle, and succeeds
-     *       when the app was not running (like `am force-stop`).
-     * @note input_text covers ASCII reachable on the US layout; it returns false
-     *       when nothing in the string can be typed rather than silently sending
-     *       an empty keystroke sequence.
-     * @note Wi-Fi (`wifi_address`) requires a RemotePairing record on this machine,
-     *       read from `$XDG_DATA_HOME/scrctl` (or `~/.local/share/scrctl`). Creating
-     *       one needs the user to tap "Allow" on the device, so it is deliberately
-     *       not part of `connect()`: pair once out of band (scrctl's `wifi_probe
-     *       --pair-setup*`), then just pass the address here. The record holds an
-     *       Ed25519 private key that lets the holder type on the device -- 0600.
-     * @note Over Wi-Fi there is no lockdown session, so anything that would need
-     *       lockdownd is unavailable. Nothing on the screencap/input path does.
+     * screencap_methods is a bitmask: ScreenshotService makes lossless PNG RPCs
+     * without starting video; Stream receives and decodes HEVC frames. Combining
+     * both permits fallback to ScreenshotService when video is unavailable.
+     * Touch coordinates use the pixels and geometry of the last delivered image.
+     *
+     * Keys use Android keycodes. Standard keyboard keys and the supported home,
+     * power, volume and mute buttons support click_key, key_down and key_up.
+     * Unsupported keys, relative movement and additional touch contacts fail.
+     * input_text supports nonempty US-layout ASCII, tab and newline; strings
+     * containing unsupported characters are rejected before sending any key.
+     * Device-side input methods determine the interpretation of physical keys.
+     *
+     * start_app brings an existing application to the foreground without killing
+     * it first. stop_app stops all processes in its bundle and succeeds if none
+     * were running. Both take an application bundle identifier.
      */
     MAA_CONTROL_UNIT_API MaaIOSControlUnitHandle
-        MaaIOSControlUnitCreate(
-            const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods);
+        MaaIOSControlUnitCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods);
 
     MAA_CONTROL_UNIT_API void MaaIOSControlUnitDestroy(MaaIOSControlUnitHandle handle);
 

@@ -458,3 +458,8 @@ temp/*
 
 # BatchOcrRepro 用例的 OCR 模型，构建时从 TestingDataSet 子模块复制
 test/pipeline/resources/BatchOcrRepro/resource/model/
+
+# Standalone iOS device tool CI dependencies and artifacts
+.ios-vcpkg/
+build-ios-device/
+ios-device-artifact/

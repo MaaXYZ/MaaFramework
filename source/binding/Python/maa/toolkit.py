@@ -33,6 +33,16 @@ class AdbDevice:
 
 
 @dataclass
+class IOSDevice:
+    """iOS discovery result; connections retain every USB/Wi-Fi candidate."""
+
+    name: str
+    udid: str
+    screencap_methods: int
+    connections: list[dict[str, Any]]
+
+
+@dataclass
 class DesktopWindow:
     """桌面窗口信息 / Desktop window information
 
@@ -179,6 +189,33 @@ class Toolkit:
         return devices
 
     @staticmethod
+    def find_ios_devices(timeout_ms: int = 3000) -> list[IOSDevice]:
+        """Discover USB/Wi-Fi devices without pairing or starting a media session."""
+        if timeout_ms < 0 or timeout_ms > 60000:
+            raise ValueError("timeout_ms must be between 0 and 60000")
+        Toolkit._set_api_properties()
+        api = Library.toolkit()
+        handle = api.MaaToolkitIOSDeviceListCreate()
+        if not handle:
+            raise MemoryError("could not allocate iOS device list")
+        try:
+            if not api.MaaToolkitIOSDeviceFindWithTimeout(timeout_ms, handle):
+                warnings = api.MaaToolkitIOSDeviceListGetWarnings(handle).decode("utf-8")
+                raise RuntimeError(f"iOS discovery failed: {warnings}")
+            devices = []
+            for index in range(api.MaaToolkitIOSDeviceListSize(handle)):
+                device = api.MaaToolkitIOSDeviceListAt(handle, index)
+                devices.append(IOSDevice(
+                    api.MaaToolkitIOSDeviceGetName(device).decode("utf-8"),
+                    api.MaaToolkitIOSDeviceGetUdid(device).decode("utf-8"),
+                    int(api.MaaToolkitIOSDeviceGetScreencapMethods(device)),
+                    json.loads(api.MaaToolkitIOSDeviceGetConnections(device).decode("utf-8")),
+                ))
+            return devices
+        finally:
+            api.MaaToolkitIOSDeviceListDestroy(handle)
+
+    @staticmethod
     def find_desktop_windows() -> list[DesktopWindow]:
         """查询所有窗口信息 / Query all window info
 
@@ -316,6 +353,25 @@ class Toolkit:
             ctypes.c_char_p,
             ctypes.c_char_p,
         ]
+
+        api = Library.toolkit()
+        api.MaaToolkitIOSDeviceListCreate.restype = ctypes.c_void_p
+        api.MaaToolkitIOSDeviceListCreate.argtypes = []
+        api.MaaToolkitIOSDeviceListDestroy.restype = None
+        api.MaaToolkitIOSDeviceListDestroy.argtypes = [ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceFindWithTimeout.restype = MaaBool
+        api.MaaToolkitIOSDeviceFindWithTimeout.argtypes = [ctypes.c_int64, ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceListSize.restype = MaaSize
+        api.MaaToolkitIOSDeviceListSize.argtypes = [ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceListAt.restype = ctypes.c_void_p
+        api.MaaToolkitIOSDeviceListAt.argtypes = [ctypes.c_void_p, MaaSize]
+        for name in ("MaaToolkitIOSDeviceGetName", "MaaToolkitIOSDeviceGetUdid",
+                     "MaaToolkitIOSDeviceGetConnections", "MaaToolkitIOSDeviceListGetWarnings"):
+            function = getattr(api, name)
+            function.restype = ctypes.c_char_p
+            function.argtypes = [ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceGetScreencapMethods.restype = MaaIOScreencapMethod
+        api.MaaToolkitIOSDeviceGetScreencapMethods.argtypes = [ctypes.c_void_p]
 
         Library.toolkit().MaaToolkitAdbDeviceListCreate.restype = MaaToolkitAdbDeviceListHandle
         Library.toolkit().MaaToolkitAdbDeviceListCreate.argtypes = []
