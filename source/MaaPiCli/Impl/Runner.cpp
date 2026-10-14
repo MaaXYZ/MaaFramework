@@ -247,6 +247,7 @@ bool Runner::run(const RuntimeParam& param)
     }
 
     std::vector<MaaAgentClient*> agents;
+#if MAAUTILS_HAS_BOOST_PROCESS
     std::vector<boost::process::child> agent_children;
     for (const auto& agent_param : param.agent) {
         MaaAgentClient* agent = MaaAgentClientCreateV2(nullptr);
@@ -280,6 +281,12 @@ bool Runner::run(const RuntimeParam& param)
 
         agents.emplace_back(agent);
     }
+#else
+    if (!param.agent.empty()) {
+        LogError << "Boost.Process is not available, cannot start agent";
+        return false;
+    }
+#endif
 
     MaaId tid = 0;
     for (const auto& task : param.task) {

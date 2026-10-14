@@ -1,5 +1,7 @@
 #include "TemplateResMgr.h"
 
+#include <set>
+
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/Logger.h"
 
@@ -81,6 +83,10 @@ std::vector<cv::Mat> TemplateResMgr::load(const std::string& name)
     };
 
     std::vector<cv::Mat> results;
+    // Later loaded bundles override earlier ones: a file only takes the last loaded one,
+    // while directories are merged by relative path and later files take precedence.
+    // A path is marked as overridden once found, so a broken image never falls back to an earlier bundle.
+    std::set<std::filesystem::path> overridden_relatives;
 
     for (const auto& root : roots_ | std::views::reverse) {
         auto path = root / MAA_NS::path(name);
@@ -90,15 +96,21 @@ std::vector<cv::Mat> TemplateResMgr::load(const std::string& name)
         LogDebug << VAR(path);
 
         if (std::filesystem::is_regular_file(path)) {
-            cv::Mat image = load_regular_image(path);
-            if (image.empty()) {
+            if (!overridden_relatives.empty()) {
                 continue;
             }
-            results.emplace_back(std::move(image));
+            cv::Mat image = load_regular_image(path);
+            if (image.empty()) {
+                return { };
+            }
+            return { std::move(image) };
         }
         else if (std::filesystem::is_directory(path)) {
             for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
                 if (!entry.is_regular_file()) {
+                    continue;
+                }
+                if (!overridden_relatives.emplace(entry.path().lexically_relative(path)).second) {
                     continue;
                 }
                 cv::Mat image = load_regular_image(entry.path());

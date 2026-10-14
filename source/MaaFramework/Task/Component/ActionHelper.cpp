@@ -124,6 +124,27 @@ bool ActionHelper::wait_freezes(
             return finish(false);
         }
 
+        if (pre_image.size() != cur_image.size()) {
+            // 首帧 ROI 按当时的截图尺寸展开。尺寸变化后继续沿用，会在后续同尺寸帧上越界，OpenCV 断言会直接中断进程。
+            LogWarn << "screenshot size changed during wait_freezes" << VAR(pre_image.size()) << VAR(cur_image.size());
+
+            auto new_roi = get_target_rect(param.target, ref_box);
+            if (new_roi.empty()) {
+                LogError << "failed to get target rect for wait_freezes" << VAR(noti_ctx.name) << VAR(cur_image.size());
+                return finish(false);
+            }
+
+            auto new_corrected_roi = correct_roi(new_roi, cur_image);
+            if (!new_corrected_roi) {
+                LogError << "corrected roi is empty" << VAR(new_roi) << VAR(cur_image.size());
+                return finish(false);
+            }
+
+            roi = new_roi;
+            corrected_roi = new_corrected_roi;
+            cb_detail["roi"] = json::value(roi);
+        }
+
         std::string draw_name = noti_ctx.name.empty() ? "wait_freezes" : std::format("{}_wait_freezes", noti_ctx.name);
         TemplateComparator comparator(pre_image, cur_image, { *corrected_roi }, comp_param, draw_name);
 

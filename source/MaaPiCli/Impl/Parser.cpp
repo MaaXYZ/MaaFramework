@@ -3,6 +3,7 @@
 #include <functional>
 #include <ranges>
 #include <unordered_set>
+#include <utility>
 
 #include "MaaUtils/Logger.h"
 
@@ -26,6 +27,11 @@ std::optional<InterfaceData> Parser::parse_interface(const std::filesystem::path
 
     InterfaceData& data = *data_opt;
 
+    std::unordered_set<std::string> group_names;
+    for (const auto& group : data.group) {
+        group_names.insert(group.name);
+    }
+
     auto base_dir = path.parent_path();
     for (const std::string& import_path : data_opt->import_) {
         auto import_full_path = base_dir / MaaNS::path(import_path);
@@ -45,6 +51,12 @@ std::optional<InterfaceData> Parser::parse_interface(const std::filesystem::path
             data.preset.end(),
             std::make_move_iterator(import_data->preset.begin()),
             std::make_move_iterator(import_data->preset.end()));
+
+        for (auto& group : import_data->group) {
+            if (group_names.insert(group.name).second) {
+                data.group.push_back(std::move(group));
+            }
+        }
     }
 
     return data;

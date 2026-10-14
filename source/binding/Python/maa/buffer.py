@@ -261,6 +261,56 @@ class StringListBuffer:
         ]
 
 
+def _normalize_image(value: numpy.ndarray) -> numpy.ndarray:
+    """校验并归一化为三通道 BGR / Validate and normalize to three-channel BGR
+
+    MaaFramework 的识别链路按 OpenCV 约定只接受三通道 BGR 图像（模板匹配要求图像与模板
+    类型一致），因此单通道输入按灰度复制到三通道，四通道输入按 BGRA 约定丢弃 alpha。
+    MaaFramework's recognition pipeline only accepts three-channel BGR images (OpenCV
+    convention; template matching requires the image and template to share a type), so
+    single-channel input is replicated to three channels and four-channel input drops
+    alpha as BGRA.
+
+    Args:
+        value: 待写入的图像数组 / Image array to be stored
+
+    Returns:
+        numpy.ndarray: C-contiguous 的三通道 BGR 数组 / C-contiguous three-channel BGR array
+
+    Raises:
+        TypeError: 如果 value 不是 uint8 的 numpy.ndarray / If value is not a uint8 numpy.ndarray
+        ValueError: 如果形状不受支持 / If the shape is unsupported
+    """
+    if not isinstance(value, numpy.ndarray):  # pyright: ignore[reportUnnecessaryIsInstance]
+        raise TypeError("value must be a numpy.ndarray")
+
+    # 非 uint8 数据按 uint8 解析会得到无意义的像素，显式失败而不是静默出错图
+    if value.dtype != numpy.uint8:
+        raise TypeError(f"value must be a numpy.ndarray of dtype uint8, got {value.dtype}")
+
+    if value.ndim == 2:
+        value = value[:, :, numpy.newaxis]
+    elif value.ndim != 3:
+        raise ValueError(f"value must be a 2D or 3D array, got shape {value.shape}")
+
+    channels = value.shape[2]
+    if channels == 1:
+        gray = value
+        value = numpy.empty((gray.shape[0], gray.shape[1], 3), dtype=numpy.uint8)
+        value[:] = gray
+    elif channels == 4:
+        # OpenCV 的四通道约定为 BGRA，识别链路没有 alpha 的位置
+        value = value[:, :, :3]
+    elif channels != 3:
+        raise ValueError(f"value must have 1, 3 or 4 channels, got {channels}")
+
+    # 确保数组是 C-contiguous 的，避免切片视图导致的内存不连续问题
+    if not value.flags["C_CONTIGUOUS"]:
+        value = numpy.ascontiguousarray(value)
+
+    return value
+
+
 class ImageBuffer:
     """图像缓冲区 / Image buffer
 
@@ -310,29 +360,30 @@ class ImageBuffer:
         """设置图像数据 / Set image data
 
         Args:
-            value: BGR 格式图像，形状为 (height, width, channels)
-            BGR format image with shape (height, width, channels)
+            value: 图像数据，dtype 必须为 uint8。支持单通道 (height, width) 或
+                (height, width, 1)、三通道 BGR (height, width, 3) 与四通道 BGRA
+                (height, width, 4)。单通道会按灰度复制到三通道，四通道会丢弃 alpha。
+                Image data, whose dtype must be uint8. Single-channel (height, width) or
+                (height, width, 1), three-channel BGR (height, width, 3) and four-channel
+                BGRA (height, width, 4) are supported. Single-channel input is replicated
+                as gray and four-channel input drops alpha.
 
         Returns:
             bool: 是否成功 / Whether successful
 
         Raises:
-            TypeError: 如果 value 不是 numpy.ndarray
+            TypeError: 如果 value 不是 uint8 的 numpy.ndarray / If value is not a uint8 numpy.ndarray
+            ValueError: 如果形状不受支持 / If the shape is unsupported
         """
-        if not isinstance(value, numpy.ndarray):  # pyright: ignore[reportUnnecessaryIsInstance]
-            raise TypeError("value must be a numpy.ndarray")
-
-        # 确保数组是 C-contiguous 的，避免切片视图导致的内存不连续问题
-        if not value.flags["C_CONTIGUOUS"]:
-            value = numpy.ascontiguousarray(value)
+        image = _normalize_image(value)
 
         return bool(
             Library.framework().MaaImageBufferSetRawData(
                 self._handle,
-                value.ctypes.data,
-                value.shape[1],
-                value.shape[0],
-                16,  # CV_8UC3
+                image.ctypes.data,
+                image.shape[1],
+                image.shape[0],
+                16,  # CV_8UC3，_normalize_image 已保证是三通道
             )
         )
 
