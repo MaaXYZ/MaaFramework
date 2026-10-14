@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <charconv>
 #include <cmath>
 #include <map>
 #include <ranges>
@@ -319,7 +320,12 @@ std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() con
         }
 
         const std::string& index_str = match[1].str();
-        int index = std::stoi(index_str);
+        int index = 0;
+        // the metadata comes from the model resource, an out-of-range index must not throw
+        if (auto [ptr, ec] = std::from_chars(index_str.data(), index_str.data() + index_str.size(), index); ec != std::errc { }) {
+            LogWarn << name_ << "Invalid label index" << VAR(index_str);
+            continue;
+        }
 
         const std::string& label = match[2].str();
         if (label.empty()) {

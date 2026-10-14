@@ -198,6 +198,8 @@ bool InferenceResMgr::lazy_load_classifier(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
 
+    // roots are read by get_or_load under the same mutex
+    std::unique_lock lock(mutex_);
     classifier_roots_.emplace_back(path);
 
     return true;
@@ -207,6 +209,7 @@ bool InferenceResMgr::lazy_load_detector(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
 
+    std::unique_lock lock(mutex_);
     detector_roots_.emplace_back(path);
 
     return true;

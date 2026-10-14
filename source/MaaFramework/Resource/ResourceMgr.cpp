@@ -100,7 +100,9 @@ MaaResId ResourceMgr::post_path(PostPathType type, const std::filesystem::path& 
         return MaaInvalidId;
     }
 
-    // lock the inference backend before enqueue, so the loader thread always sees the final options
+    // lock the inference backend before enqueue, so the loader thread always sees the final options.
+    // hold the mutex until enqueued, so clear() cannot unlock it in between
+    std::unique_lock lock(inference_mutex_);
     inference_locked_ = true;
 
     valid_ = false;
@@ -251,6 +253,9 @@ bool ResourceMgr::running() const
 bool ResourceMgr::clear()
 {
     LogFunc;
+
+    // check running and unlock the inference backend atomically against post_path
+    std::unique_lock lock(inference_mutex_);
 
     if (running()) {
         LogError << "running, ignore clear";
@@ -460,6 +465,8 @@ bool ResourceMgr::set_inference_device(MaaOptionValue value, MaaOptionValueSize 
 
     auto new_value = *reinterpret_cast<const MaaInferenceDevice*>(value);
 
+    std::unique_lock lock(inference_mutex_);
+
     if (inference_locked_) {
         if (new_value == inference_device_) {
             return true;
@@ -494,6 +501,8 @@ bool ResourceMgr::set_inference_execution_provider(MaaOptionValue value, MaaOpti
     }
 #endif
 
+    std::unique_lock lock(inference_mutex_);
+
     if (inference_locked_) {
         if (new_value == inference_ep_) {
             return true;
@@ -512,6 +521,8 @@ bool ResourceMgr::set_inference_execution_provider(MaaOptionValue value, MaaOpti
 
 bool ResourceMgr::check_and_set_inference_device()
 {
+    std::unique_lock lock(inference_mutex_);
+
     if (inference_device_setted_) {
         return true;
     }

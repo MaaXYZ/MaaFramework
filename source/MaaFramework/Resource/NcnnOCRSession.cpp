@@ -381,6 +381,9 @@ bool NcnnOCRSession::load(const std::filesystem::path& dir, int num_threads)
         net->opt.use_bf16_storage = false;
         return net;
     };
+    auto has_io = [](const ncnn::Net& net) {
+        return !net.input_names().empty() && !net.output_names().empty();
+    };
 
     if (!load_keys(dir / kKeysFilename)) {
         return false;
@@ -390,10 +393,25 @@ bool NcnnOCRSession::load(const std::filesystem::path& dir, int num_threads)
     if (!NcnnSession::load_net_files(*rec_, dir / kRecParamFilename, dir / kRecBinFilename)) {
         return false;
     }
+    if (!has_io(*rec_)) {
+        LogError << "ncnn rec model has no input or output" << VAR(dir);
+        return false;
+    }
 
-    if (std::filesystem::exists(dir / kDetParamFilename)) {
+    // det is optional, but a half-shipped det is an error rather than a rec-only model
+    const bool has_det_param = std::filesystem::exists(dir / kDetParamFilename);
+    const bool has_det_bin = std::filesystem::exists(dir / kDetBinFilename);
+    if (has_det_param != has_det_bin) {
+        LogError << "ncnn det model is incomplete, expect both det.ncnn.param and det.ncnn.bin" << VAR(dir);
+        return false;
+    }
+    if (has_det_param) {
         det_ = make_net();
         if (!NcnnSession::load_net_files(*det_, dir / kDetParamFilename, dir / kDetBinFilename)) {
+            return false;
+        }
+        if (!has_io(*det_)) {
+            LogError << "ncnn det model has no input or output" << VAR(dir);
             return false;
         }
     }
@@ -556,6 +574,10 @@ std::optional<std::vector<MAA_VISION_NS::OCRRecResult>> NcnnOCRSession::rec_batc
     // RecognizerPreprocessor::Apply: the whole batch shares the widest aspect ratio
     float max_wh_ratio = float(kRecImgW) / float(kRecImgH);
     for (const cv::Mat* image : images) {
+        if (image->empty()) {
+            LogError << "empty rec image";
+            return std::nullopt;
+        }
         max_wh_ratio = std::max(max_wh_ratio, float(image->cols) / float(image->rows));
     }
     const int img_w = int(kRecImgH * max_wh_ratio);
@@ -563,10 +585,6 @@ std::optional<std::vector<MAA_VISION_NS::OCRRecResult>> NcnnOCRSession::rec_batc
     std::vector<MAA_VISION_NS::OCRRecResult> results;
     results.reserve(images.size());
     for (const cv::Mat* image : images) {
-        if (image->empty()) {
-            LogError << "empty rec image";
-            return std::nullopt;
-        }
         auto res = rec_one(to_bgr(*image), img_w);
         if (!res) {
             return std::nullopt;

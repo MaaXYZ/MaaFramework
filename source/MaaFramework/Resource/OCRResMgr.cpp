@@ -114,6 +114,7 @@ bool OCRResMgr::lazy_load(const std::filesystem::path& path)
         return false;
     }
 
+    std::unique_lock lock(session_mutex_);
     roots_.emplace_back(path);
 
     return true;
@@ -123,12 +124,12 @@ void OCRResMgr::clear()
 {
     LogFunc;
 
+    std::unique_lock lock(session_mutex_);
+
     roots_.clear();
     deters_.clear();
     recers_.clear();
     ocrers_.clear();
-
-    std::unique_lock lock(session_mutex_);
     sessions_.clear();
 }
 
@@ -175,8 +176,12 @@ MAA_VISION_NS::OCRSessionPtr OCRResMgr::load_ncnn_session(const std::string& nam
 
     for (const auto& root : roots_ | std::views::reverse) {
         const auto dir = root / MAA_NS::path(name);
-        const bool has_ncnn = std::filesystem::exists(dir / NcnnOCRSession::kRecParamFilename);
-        const bool has_onnx = std::filesystem::exists(dir / kRecModelFilename);
+        // any model file makes this root the override, an incomplete one fails instead of falling to lower roots
+        const bool has_ncnn = std::filesystem::exists(dir / NcnnOCRSession::kRecParamFilename)
+                              || std::filesystem::exists(dir / NcnnOCRSession::kRecBinFilename)
+                              || std::filesystem::exists(dir / NcnnOCRSession::kDetParamFilename)
+                              || std::filesystem::exists(dir / NcnnOCRSession::kDetBinFilename);
+        const bool has_onnx = std::filesystem::exists(dir / kRecModelFilename) || std::filesystem::exists(dir / kDetModelFilename);
         if (!has_ncnn && !has_onnx) {
             continue;
         }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <mutex>
 
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
@@ -158,11 +159,13 @@ private:
     std::unique_ptr<AsyncRunner<PostPathItem>> res_loader_ = nullptr;
     EventDispatcher notifier_;
 
+    // guards the inference options below: setters, post_path (lock + enqueue), clear and the loader
+    std::mutex inference_mutex_;
     MaaInferenceDevice inference_device_ = MaaInferenceDevice_Auto;
     MaaInferenceExecutionProvider inference_ep_ = MaaInferenceExecutionProvider_Auto;
     bool inference_device_setted_ = false;
     // set once resource loading starts (any post_*), reset by clear()
-    std::atomic_bool inference_locked_ = false;
+    bool inference_locked_ = false;
 };
 
 MAA_RES_NS_END

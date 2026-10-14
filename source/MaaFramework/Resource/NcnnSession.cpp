@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstring>
 #include <fstream>
+#include <limits>
 #include <map>
 
 #include <cpu.h>
@@ -185,9 +186,11 @@ bool NcnnSession::load_sidecar(const std::filesystem::path& sidecar)
     input_name_ = root.get("input", std::string());
     output_name_ = root.get("output", std::string());
 
+    // fixed NCHW, batch 1 only; C / H / W are used as int by ncnn and the vision preprocessing
     auto shape_opt = root.find<std::vector<int64_t>>("input_shape");
-    if (!shape_opt || shape_opt->size() != 4 || std::ranges::any_of(*shape_opt, [](int64_t d) { return d <= 0; })) {
-        LogError << "invalid input_shape in ncnn sidecar, expect [N, C, H, W]" << VAR(sidecar);
+    if (!shape_opt || shape_opt->size() != 4 || shape_opt->front() != 1
+        || std::ranges::any_of(*shape_opt, [](int64_t d) { return d <= 0 || d > std::numeric_limits<int>::max(); })) {
+        LogError << "invalid input_shape in ncnn sidecar, expect [1, C, H, W]" << VAR(sidecar);
         return false;
     }
     input_shape_ = std::move(*shape_opt);
@@ -233,9 +236,14 @@ std::optional<MAA_VISION_NS::InferenceOutput> NcnnSession::run(const std::vector
         return std::nullopt;
     }
 
+    // extract() with the default type 0 already casts fp16 / bf16 / int8 blobs to fp32 and unpacks to elempack 1
     ncnn::Mat out;
     if (ex.extract(output_name_.c_str(), out) != 0 || out.empty()) {
         LogError << "ncnn extractor extract failed" << VAR(output_name_);
+        return std::nullopt;
+    }
+    if (out.elembits() != 32 || out.elempack != 1) {
+        LogError << "unexpected ncnn output layout, expect unpacked fp32" << VAR(out.elemsize) << VAR(out.elempack);
         return std::nullopt;
     }
 
