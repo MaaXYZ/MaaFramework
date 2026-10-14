@@ -4,6 +4,7 @@
 // 没反应"。这类错误没有比"钉住一个可用客户端的真实字节"更硬的判据了——下面
 // 那段 284 字节的基准是从一个确认能在设备上画出东西的客户端抓下来的原样字节。
 #include <cstdio>
+#include <limits>
 #include <span>
 #include <string>
 #include <vector>
@@ -81,7 +82,7 @@ void test_normalize()
     check(maa::ios::hid::normalize(0.5) == 32768 || maa::ios::hid::normalize(0.5) == 32767, "0.5 -> 屏幕正中");
     check(maa::ios::hid::normalize(-3.0) == 0, "负数夹到 0，不取模");
     check(maa::ios::hid::normalize(9.0) == 0xFFFF, "超过 1 夹到 65535");
-    check(maa::ios::hid::normalize(0.0 / 0.0) == 0, "NaN 落到 0 而不是变成随机 UInt16");
+    check(maa::ios::hid::normalize(std::numeric_limits<double>::quiet_NaN()) == 0, "NaN 落到 0 而不是变成随机 UInt16");
 }
 
 /// 一个可用客户端为"在 (32767,32767) 按下一刻"发出的整条消息。

@@ -57,6 +57,11 @@ endif()
 if(CMAKE_C_COMPILER_ID MATCHES "Clang")
     target_compile_options(MaaIOSLwip PRIVATE -Wno-error=tautological-constant-out-of-range-compare)
 endif()
+if(MSVC)
+    # Only upstream C sources: its conditional IPv6 implementation leaves netif
+    # unused. The framework's C++ port and all protocol code retain /WX.
+    target_compile_options(MaaIOSLwip PRIVATE "$<$<COMPILE_LANGUAGE:C>:/wd4100>")
+endif()
 
 if(NOT MAA_IOS_FETCH_DEPENDENCIES AND NOT FETCHCONTENT_SOURCE_DIR_MDNS)
     message(FATAL_ERROR "Offline iOS builds require FETCHCONTENT_SOURCE_DIR_MDNS")

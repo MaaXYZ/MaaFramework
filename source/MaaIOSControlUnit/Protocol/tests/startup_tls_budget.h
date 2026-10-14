@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <cstring>
 #include <thread>
 
 namespace maa_ios_test
