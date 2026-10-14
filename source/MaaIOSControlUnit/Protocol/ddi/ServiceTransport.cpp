@@ -187,12 +187,12 @@ struct ServiceTransport::Impl
         if (!ssl) {
             return socket.write_all(bytes, count, error);
         }
-        size_t offset = 0;
-        while (offset < count) {
-            const auto length = static_cast<int>(std::min(count - offset, size_t(INT_MAX)));
-            const auto written = SSL_write(ssl, bytes + offset, length);
+        size_t write_offset = 0;
+        while (write_offset < count) {
+            const auto length = static_cast<int>(std::min(count - write_offset, size_t(INT_MAX)));
+            const auto written = SSL_write(ssl, bytes + write_offset, length);
             if (written > 0) {
-                offset += static_cast<size_t>(written);
+                write_offset += static_cast<size_t>(written);
                 continue;
             }
             const auto code = SSL_get_error(ssl, written);

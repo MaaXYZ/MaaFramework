@@ -153,6 +153,11 @@ if(APPLE)
         "-framework CoreVideo" "-framework CoreFoundation" "-framework IOKit")
 elseif(WIN32)
     target_compile_definitions(MaaIOSProtocol PUBLIC WIN32_LEAN_AND_MEAN NOMINMAX)
+    if(MSVC)
+        # Use portable CRT getenv/fopen; retain all non-CRT diagnostics and
+        # keep this compatibility setting private to the protocol target.
+        target_compile_definitions(MaaIOSProtocol PRIVATE _CRT_SECURE_NO_WARNINGS)
+    endif()
     target_link_libraries(MaaIOSProtocol PUBLIC ws2_32 PRIVATE advapi32 iphlpapi)
 endif()
 

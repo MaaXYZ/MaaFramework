@@ -105,7 +105,7 @@ struct Stack::Impl
                 return ERR_BUF;
             }
             // output 回调不能阻塞在 TLS 写入，只复制并提交包；队列满时反馈 ERR_MEM。
-            return self.owner->enqueue(std::move(packet)) ? ERR_OK : ERR_MEM;
+            return static_cast<err_t>(self.owner->enqueue(std::move(packet)) ? ERR_OK : ERR_MEM);
         }
         catch (const std::bad_alloc&) {
             return ERR_MEM;

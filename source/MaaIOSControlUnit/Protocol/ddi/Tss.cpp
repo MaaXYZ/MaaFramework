@@ -100,7 +100,7 @@ bool truth(const V* value)
 V request_base()
 {
     std::array<uint8_t, 16> bytes { };
-    require(RAND_bytes(bytes.data(), bytes.size()) == 1, MAA_IOS_TR("Cannot generate DDI signing request identifier"));
+    require(RAND_bytes(bytes.data(), static_cast<int>(bytes.size())) == 1, MAA_IOS_TR("Cannot generate DDI signing request identifier"));
     bytes[6] = (bytes[6] & 15) | 0x40;
     bytes[8] = (bytes[8] & 63) | 0x80;
     constexpr char hex[] = "0123456789ABCDEF";

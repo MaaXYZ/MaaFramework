@@ -895,7 +895,7 @@ BrowseResult browse(const BrowseOptions& options)
                     // 只接受 mDNS responder 的源端口；广播内容仍是不受信任的发现信息。
                     const auto port = from.ss_family == AF_INET    ? reinterpret_cast<const sockaddr_in*>(&from)->sin_port
                                       : from.ss_family == AF_INET6 ? reinterpret_cast<const sockaddr_in6*>(&from)->sin6_port
-                                                                   : 0;
+                                                                   : uint16_t { 0 };
                     if (ntohs(port) != MDNS_PORT) {
                         continue;
                     }

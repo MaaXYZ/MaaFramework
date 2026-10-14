@@ -63,7 +63,14 @@ std::optional<Socket> connect_tcp(const std::string& host, uint16_t port, int ti
                 continue;
             }
         }
-        if (::connect(fd, ai->ai_addr, ai->ai_addrlen) != 0) {
+        // Native socket lengths differ on Windows. A resolved socket address
+        // must fit sockaddr_storage before narrowing to the platform API type.
+        if (!ai->ai_addr || ai->ai_addrlen > sizeof(sockaddr_storage)) {
+            last_error = MAA_IOS_TR("Resolved address exceeds socket storage");
+            continue;
+        }
+        const auto address_length = static_cast<socklen_t>(ai->ai_addrlen);
+        if (::connect(fd, ai->ai_addr, address_length) != 0) {
             if (!(socket_connect_pending(socket_error()) && nonblocking)) {
                 last_error = socket_error_message();
                 continue;

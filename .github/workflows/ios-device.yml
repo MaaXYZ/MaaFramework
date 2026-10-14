@@ -192,13 +192,6 @@ jobs:
                   sudo apt-get update
                   sudo apt-get install -y cmake ninja-build pkg-config libssl-dev libcurl4-openssl-dev libavcodec-dev libavutil-dev libswscale-dev libdbus-1-dev libwayland-dev libffi-dev
 
-            - name: Isolate Linux native package headers
-              if: runner.os == 'Linux'
-              shell: bash
-              run: |
-                  bash tools/MaaIOSDevice/ci/linux-native-headers.sh "$PWD/build-ios-native-deps"
-                  echo "PKG_CONFIG_PATH=$PWD/build-ios-native-deps/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}" >> "$GITHUB_ENV"
-
             - name: macOS protocol dependencies
               if: runner.os == 'macOS'
               shell: bash
@@ -236,11 +229,10 @@ jobs:
                   if [[ "$RUNNER_OS" == macOS ]]; then
                     extra+=(-G Ninja -DCMAKE_OSX_ARCHITECTURES=arm64 "-DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)")
                   elif [[ "$RUNNER_OS" == Linux ]]; then
-                    extra+=(-G Ninja "-DCMAKE_TOOLCHAIN_FILE=$PWD/source/MaaUtils/MaaDeps/cmake/maa-x64-linux-toolchain.cmake")
-                    # This native integration job links the runner's C protocol libraries.
-                    # It is not a portable glibc-baseline release build.
-                    extra+=(-DOPENSSL_ROOT_DIR=/usr "-DOPENSSL_INCLUDE_DIR=$PWD/build-ios-native-deps/include"
-                      "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath-link,/usr/lib/x86_64-linux-gnu")
+                    # Native glibc + protocol C libraries; MaaDeps' matching libc++ ABI.
+                    # This is separate from the portable release toolchain.
+                    extra+=(-G Ninja "-DCMAKE_TOOLCHAIN_FILE=$PWD/tools/MaaIOSDevice/ci/linux-native-toolchain.cmake"
+                      -DOPENSSL_ROOT_DIR=/usr -DWITH_RPATH_LIBRARY=OFF)
                   else
                     extra+=(-G "Visual Studio 17 2022" -A x64
                       "-DCMAKE_TOOLCHAIN_FILE=$PWD/.ios-vcpkg/scripts/buildsystems/vcpkg.cmake"
