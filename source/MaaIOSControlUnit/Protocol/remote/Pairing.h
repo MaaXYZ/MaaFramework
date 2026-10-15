@@ -26,7 +26,6 @@ namespace maa::ios::remote
 struct UsbPairingOptions
 {
     std::string udid; ///< 空值只选择唯一 USB 设备；不选择 usbmux Network 条目。
-    std::optional<wifi::PairRecord> existing_record;
     std::vector<wifi::PairRecord> existing_records;
     int timeout_ms = 120000;
     /// 允许对不完整或已被设备拒绝的记录重新配对。已有可用记录仍优先复用，

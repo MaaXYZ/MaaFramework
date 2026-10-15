@@ -197,7 +197,7 @@ PairingResult detail::run_usb_pairing_workflow(
     }
 
     try {
-        std::optional<wifi::PairRecord> existing = options.existing_record;
+        std::optional<wifi::PairRecord> existing;
         for (const auto& candidate : options.existing_records) {
             if (candidate.udid != selected_udid) {
                 continue;
