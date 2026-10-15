@@ -32,6 +32,16 @@ PiCli 将凭据直接保存在 `config/maa_pi_config.json` 的 `ios.pairing_reco
 PiCli stores credentials directly in `ios.pairing_records` in `config/maa_pi_config.json`
 and uses them for discovery and controller connections; no separate credential file path is needed.
 
+PiCli 配置 iOS 控制器时，可选择使用已有配对、USB 配对或 Wi-Fi 配对。
+USB 配对需在设备上确认信任；Wi-Fi 配对需在开发者模式页面选择电脑，并输入终端显示的配对码。
+成功后自动保存凭据；失败不修改已保存的凭据。
+
+When configuring an iOS controller in PiCli, choose existing pairing, USB pairing or Wi-Fi pairing.
+Accept trust prompts for USB; for Wi-Fi, select the computer on the Developer Mode page
+and enter the code printed in the terminal. Successful pairing saves credentials automatically;
+failure leaves existing credentials unchanged.
+
+
 ```python
 from maa.toolkit import Toolkit
 from maa.controller import IOSController
