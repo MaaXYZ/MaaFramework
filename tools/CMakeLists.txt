@@ -10,5 +10,5 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/interface_config.schema.json DESTINATI
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/interface_import.schema.json DESTINATION tools)
 
 if(WITH_IOS_CONTROLLER)
-    add_subdirectory(MaaIOSDevice)
+    add_subdirectory(MaaIOSManager)
 endif()

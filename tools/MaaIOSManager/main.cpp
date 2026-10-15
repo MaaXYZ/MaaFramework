@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     maa::ios::tool::Options options;
     std::string error;
     if (!maa::ios::tool::parse(arguments, options, error)) {
-        std::cerr << error << "\nRun MaaIOSDevice --help for usage.\n";
+        std::cerr << error << "\nRun MaaIOSManager --help for usage.\n";
         return 2;
     }
     try {

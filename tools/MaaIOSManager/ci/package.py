@@ -60,7 +60,7 @@ def windows_dependencies(repository: Path, output: Path) -> dict:
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(history, destination)
     shutil.copy2(vcpkg / "LICENSE.txt", sources / "LICENSE.txt")
-    shutil.copy2(repository / "tools/MaaIOSDevice/ci/vcpkg.json", sources / "vcpkg.json")
+    shutil.copy2(repository / "tools/MaaIOSManager/ci/vcpkg.json", sources / "vcpkg.json")
     archives = sources / "upstream-archives"
     archives.mkdir(parents=True)
     for archive in sorted((vcpkg / "downloads").iterdir()):
@@ -95,12 +95,12 @@ def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
     (output / "licenses").mkdir(exist_ok=True)
     materials = output / "source-materials"
-    copy_tree(repository / "tools/MaaIOSDevice", materials / "tools/MaaIOSDevice")
+    copy_tree(repository / "tools/MaaIOSManager", materials / "tools/MaaIOSManager")
     copy_tree(repository / "source/MaaIOSControlUnit/Protocol", materials / "source/MaaIOSControlUnit/Protocol")
     shutil.copy2(repository / "LICENSE.md", materials / "LICENSE.md")
     shutil.copy2(repository / "source/MaaIOSControlUnit/Protocol/LICENSE.Apache-2.0", output / "licenses/LICENSE.Apache-2.0")
     shutil.copy2(repository / "source/MaaIOSControlUnit/Protocol/NOTICE", output / "licenses/NOTICE")
-    shutil.copy2(repository / "tools/MaaIOSDevice/README.md", output / "README.md")
+    shutil.copy2(repository / "tools/MaaIOSManager/README.md", output / "README.md")
     shutil.copy2(arguments.build / "CMakeCache.txt", materials / "CMakeCache.txt")
     dependency_sources = arguments.build / "_deps"
     if dependency_sources.is_dir():

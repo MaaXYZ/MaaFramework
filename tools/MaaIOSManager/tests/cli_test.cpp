@@ -102,5 +102,5 @@ int main()
                 == 0
             && output.str().find("then closes the tunnel") != std::string::npos,
         "help must state connect lifetime and require no device");
-    std::cout << "MaaIOSDevice CLI tests passed\n";
+    std::cout << "MaaIOSManager CLI tests passed\n";
 }

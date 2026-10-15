@@ -461,7 +461,7 @@ test/pipeline/resources/BatchOcrRepro/resource/model/
 
 # Standalone iOS device tool CI dependencies and artifacts
 .ios-vcpkg/
-build-ios-device/
-ios-device-artifact/
+build-ios-manager/
+ios-manager-artifact/
 
 build-ios-native-deps/

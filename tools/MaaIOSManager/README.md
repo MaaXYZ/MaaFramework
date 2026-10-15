@@ -1,4 +1,4 @@
-# MaaIOSDevice
+# MaaIOSManager
 
 MaaFramework's independent iOS device management executable. It uses the repository's
 `MaaIOSProtocol` implementation and shares pairing records with iOS controllers. It does
@@ -7,12 +7,12 @@ not run `scrctl`, link an installed `libscrctl`, or require a sibling scrctl che
 ## Commands
 
 ```sh
-MaaIOSDevice devices --json
-MaaIOSDevice pair -s DEVICE_UDID
-MaaIOSDevice pair --wifi
-MaaIOSDevice connect -s DEVICE_UDID --wifi auto --json
-MaaIOSDevice connect -s DEVICE_UDID --wifi 192.168.1.42 --port 49152
-MaaIOSDevice prepare -s DEVICE_UDID
+MaaIOSManager devices --json
+MaaIOSManager pair -s DEVICE_UDID
+MaaIOSManager pair --wifi
+MaaIOSManager connect -s DEVICE_UDID --wifi auto --json
+MaaIOSManager connect -s DEVICE_UDID --wifi 192.168.1.42 --port 49152
+MaaIOSManager prepare -s DEVICE_UDID
 ```
 
 - `devices` takes a USB/mDNS snapshot. One device may have multiple IPv4, IPv6 and
@@ -45,20 +45,20 @@ the DDI cache directory.
 ## Standalone build
 
 ```sh
-cmake -S tools/MaaIOSDevice -B build-ios-device -DBUILD_IOS_DEVICE_TESTING=ON
-cmake --build build-ios-device --parallel
-ctest --test-dir build-ios-device --output-on-failure
+cmake -S tools/MaaIOSManager -B build-ios-manager -DBUILD_IOS_MANAGER_TESTING=ON
+cmake --build build-ios-manager --parallel
+ctest --test-dir build-ios-manager --output-on-failure
 ```
 
 The standalone configuration needs the protocol's OpenSSL, libcurl, FFmpeg and pinned
 header/network dependencies. It does not configure the complete MaaFramework or OpenCV.
 Protocol CMake supports `MAA_IOS_FETCH_DEPENDENCIES=OFF` with explicit FetchContent source
-directories for offline builds. `cmake --install build-ios-device --prefix OUTPUT` installs
+directories for offline builds. `cmake --install build-ios-manager --prefix OUTPUT` installs
 the executable to `OUTPUT/bin`.
 
 ## Cross-platform CI
 
-The independent `iOS device tool` workflow builds on macOS, Linux and Windows x64
+The independent `iOS manager` workflow builds on macOS, Linux and Windows x64
 (MSVC), running command and protocol tests without a neighboring scrctl checkout.
 Windows uses the pinned vcpkg manifest in `ci/vcpkg.json`; its artifact includes
 runtime DLLs, package ownership/hashes, dependency notices, source archives and
@@ -70,7 +70,7 @@ checks; they do not establish phone or virtual-machine compatibility.
 
 ## 中文说明
 
-`MaaIOSDevice` 是 MaaFramework 自有的 iOS 设备管理程序，与控制器共用配对记录，
+`MaaIOSManager` 是 MaaFramework 自有的 iOS 设备管理程序，与控制器共用配对记录，
 不运行 scrctl，也不依赖旁边的 scrctl 源码仓库。
 
 - `devices` 列举 USB 和 Wi-Fi 设备，保留同一设备的全部地址与接口候选；`--json` 输出结构化快照。

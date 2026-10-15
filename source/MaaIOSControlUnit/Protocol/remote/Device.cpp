@@ -41,8 +41,8 @@ std::string proxy_failure_hint(const std::string_view lockdown_error)
     }
     if (e.find("InvalidService") != std::string::npos) {
         return MAA_IOS_TR(
-            " (service unavailable; check Developer Mode and a compatible DDI; download: MaaIOSDevice prepare, installation: the "
-            "MaaIOSDevice documentation)");
+            " (service unavailable; check Developer Mode and a compatible DDI; download: MaaIOSManager prepare, installation: the "
+            "MaaIOSManager documentation)");
     }
     return MAA_IOS_TR(" (check DDI mounting and Developer Mode)");
 }

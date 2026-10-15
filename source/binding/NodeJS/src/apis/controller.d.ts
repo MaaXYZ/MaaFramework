@@ -280,7 +280,7 @@ declare global {
          *                     eligible device; explicit addresses require one matching
          *                     local record when udid is empty. Pairing is not done
          *                     here -- it needs a tap on the device, so create the record out
-         *                     of band first with MaaIOSDevice pair and prepare.
+         *                     of band first with MaaIOSManager pair and prepare.
          * @param screencap_method bitwise OR of `IOSScreencapMethod` values. Defaults to
          *                         `IOSScreencapMethod.Default` (stream first, fall back to the
          *                         screenshot service when a frame cannot be decoded).

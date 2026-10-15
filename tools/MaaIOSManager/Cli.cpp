@@ -141,7 +141,7 @@ bool parse(const std::vector<std::string_view>& arguments, Options& options, std
 
 void help(std::ostream& output)
 {
-    output << "MaaIOSDevice - MaaFramework iOS device management\n\n"
+    output << "MaaIOSManager - MaaFramework iOS device management\n\n"
            << "  devices [--json] [--timeout MS] [--usb-only | --wifi-only]\n"
            << "  pair [-s UDID] [--wifi] [--repair] [--timeout MS]\n"
            << "  connect [-s UDID] [--wifi auto | ADDRESS] [--port PORT] [--json]\n"

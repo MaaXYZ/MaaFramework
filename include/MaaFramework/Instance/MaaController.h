@@ -61,7 +61,7 @@ extern "C"
      * @param screencap_methods Bitmask of Stream and/or ScreenshotService.
      * @return Controller handle, or nullptr on failure.
      *
-     * @note MaaIOSDevice separately manages device discovery, interactive pairing and
+     * @note MaaIOSManager separately manages device discovery, interactive pairing and
      *       native DDI preparation. Records live under MaaFramework/iOS in the platform
      *       data directory, independently of scrctl. Its connect command only validates
      *       a connection and exits; this controller creates and owns its own session.

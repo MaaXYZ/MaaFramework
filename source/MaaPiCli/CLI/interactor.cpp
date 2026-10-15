@@ -873,7 +873,7 @@ void Interactor::select_ios_auto_detect()
             std::format("\t{}. {}  {}\n", devices.size(), MaaToolkitIOSDeviceGetName(device), MaaToolkitIOSDeviceGetUdid(device)));
     }
     if (devices.empty()) {
-        std::cout << "No selectable device. Pair and prepare it with MaaIOSDevice, or enter a UDID manually.\n";
+        std::cout << "No selectable device. Pair and prepare it with MaaIOSManager, or enter a UDID manually.\n";
         return;
     }
     std::cout << std::format("\t{}. Enter a UDID manually\n", devices.size() + 1);

@@ -1,5 +1,5 @@
 {
-  "name": "maa-ios-device-ci",
+  "name": "maa-ios-manager-ci",
   "version-string": "1",
   "builtin-baseline": "e456309491fd875487bf02b8a0dca76c1b1b00cc",
   "dependencies": [

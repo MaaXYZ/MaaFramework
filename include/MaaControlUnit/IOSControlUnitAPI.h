@@ -17,10 +17,10 @@ extern "C"
      * wifi_address empty prefers USB, then paired Wi-Fi without a USB candidate.
      * "auto" discovers the paired device over mDNS;
      * an explicit IPv4/IPv6 address uses its RemotePairing service directly.
-     * Pairing is performed separately with MaaIOSDevice, and records are read
+     * Pairing is performed separately with MaaIOSManager, and records are read
      * from MaaFramework/iOS under XDG_DATA_HOME or the platform user data directory.
      * Development services require a suitable mounted Developer Disk Image;
-     * MaaIOSDevice prepare downloads and mounts one without installing Xcode.
+     * MaaIOSManager prepare downloads and mounts one without installing Xcode.
      *
      * screencap_methods is a bitmask: ScreenshotService makes lossless PNG RPCs
      * without starting video; Stream receives and decodes HEVC frames. Combining
