@@ -31,7 +31,8 @@ permissions:
 
 concurrency:
     group: ios-device-${{ github.event.pull_request.number || github.ref }}
-    cancel-in-progress: true
+    # Retain results from the long native dependency builds when a new fix queues.
+    cancel-in-progress: false
 
 jobs:
     standalone:

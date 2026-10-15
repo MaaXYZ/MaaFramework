@@ -25,8 +25,10 @@ set(CMAKE_CXX_COMPILER "${maa_ios_deps}/x-tools/llvm/bin/clang++")
 set(CMAKE_C_COMPILER_TARGET x86_64-linux-gnu)
 set(CMAKE_CXX_COMPILER_TARGET x86_64-linux-gnu)
 set(CMAKE_C_FLAGS_INIT "-fPIC")
+# The explicit headers select libc++; -stdlib is needed only for linking.
+# With -nostdinc++, Clang diagnoses a compile-time -stdlib as unused.
 set(CMAKE_CXX_FLAGS_INIT
-    "-fPIC -stdlib=libc++ -nostdinc++ -isystem \"${maa_ios_sysroot}/usr/include/c++/v1\"")
+    "-fPIC -nostdinc++ -isystem \"${maa_ios_sysroot}/usr/include/c++/v1\"")
 set(maa_ios_link_flags
     "-fuse-ld=lld -stdlib=libc++ -L\"${maa_ios_runtime}\" -Wl,-rpath,${maa_ios_runtime} -Wl,-rpath-link,${maa_ios_runtime}")
 set(CMAKE_EXE_LINKER_FLAGS_INIT "${maa_ios_link_flags}")
