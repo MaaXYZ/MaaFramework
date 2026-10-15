@@ -9,7 +9,7 @@ endif()
 get_filename_component(maa_ios_repository "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
 set(maa_ios_deps "${maa_ios_repository}/source/MaaUtils/MaaDeps")
 set(maa_ios_sysroot "${maa_ios_deps}/x-tools/x86_64-linux-gnu/x86_64-linux-gnu/sysroot")
-set(maa_ios_runtime "${maa_ios_repository}/build-ios-native-deps/lib")
+set(maa_ios_runtime "${maa_ios_repository}/build/ios-native-deps/lib")
 file(MAKE_DIRECTORY "${maa_ios_runtime}")
 # Copy only C++ runtimes, so the old sysroot's libc cannot enter the link or RPATH.
 foreach(maa_ios_library IN ITEMS libc++ libc++abi libunwind)

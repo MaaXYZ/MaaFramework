@@ -1,5 +1,6 @@
 #include "Cli.h"
 #include "Commands.h"
+#include "MaaUtils/Logger.h"
 
 #include <atomic>
 #include <csignal>
@@ -19,6 +20,8 @@ void on_signal(int)
 
 int main(int argc, char** argv)
 {
+    // Keep stdout reserved for command output, including machine-readable JSON.
+    MAA_LOG_NS::Logger::get_instance().set_stdout_level(MAA_LOG_NS::level::off);
     std::signal(SIGINT, on_signal);
     std::signal(SIGTERM, on_signal);
     std::vector<std::string_view> arguments;

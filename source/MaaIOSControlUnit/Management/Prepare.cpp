@@ -1,4 +1,4 @@
-#include "Commands.h"
+#include "Operations.h"
 #include "ddi/Cryptex.h"
 #include "ddi/Mounter.h"
 #include "ddi/ServiceTransport.h"
@@ -10,19 +10,20 @@
 #include <limits>
 #include <ostream>
 
-namespace maa::ios::tool
+namespace maa::ios::management
 {
-int prepare(const Options& o, std::ostream& output, std::ostream& errors, const std::function<bool()>& cancelled)
+Json prepare(const Options& o, const Callbacks& callbacks)
 {
     using namespace std::chrono;
+    const auto& cancelled = callbacks.cancelled;
     std::string error;
+    Json prepared;
     bool installation_started = false;
-    auto fail = [&] {
-        errors << "DDI installation failed: " << terminal_text(error) << '\n';
-        if (installation_started) {
-            errors << "An interrupted installation may already have taken effect; check device state before replacing again.\n";
-        }
-        return 1;
+    auto fail = [&]() -> Json {
+        return { { "success", false },
+                 { "error", error },
+                 { "cancelled", callbacks.stopped() },
+                 { "device_may_have_changed", installation_started } };
     };
     ddi::DownloadTarget target;
     std::optional<uint64_t> ecid;
@@ -111,8 +112,13 @@ int prepare(const Options& o, std::ostream& output, std::ostream& errors, const 
     if (!selected) {
         return fail();
     }
-    output << "DDI target: OS " << terminal_text(target.system_version) << ", model " << terminal_text(target.product_type)
-           << ", image type " << ddi::kind_name(selected->kind) << '\n';
+    callbacks.notify(
+        { { "type", "progress" },
+          { "phase", "target" },
+          { "message", "DDI target: OS " + target.system_version + ", model " + target.product_type },
+          { "os_version", target.system_version },
+          { "product_type", target.product_type },
+          { "image_kind", ddi::kind_name(selected->kind) } });
     ddi::DownloadOptions download;
     download.cancelled = cancelled;
     download.timeout = seconds(o.download_timeout_seconds);
@@ -129,7 +135,13 @@ int prepare(const Options& o, std::ostream& output, std::ostream& errors, const 
     uint64_t last_bytes = 0;
     auto progress = [&](const std::string& file, uint64_t received, uint64_t total) {
         if (last_file != file || received == total || received >= last_bytes + 1024 * 1024) {
-            errors << "DDI transfer: " << terminal_text(file) << " (" << received << '/' << total << " bytes)\n";
+            callbacks.notify(
+                { { "type", "progress" },
+                  { "phase", "transfer" },
+                  { "file", file },
+                  { "received", received },
+                  { "total", total },
+                  { "message", "DDI transfer: " + file + " (" + std::to_string(received) + "/" + std::to_string(total) + " bytes)" } });
             last_file = file;
             last_bytes = received;
         }
@@ -139,7 +151,11 @@ int prepare(const Options& o, std::ostream& output, std::ostream& errors, const 
     if (!image) {
         return fail();
     }
-    output << "DDI source: " << terminal_text(image->source_url) << '\n';
+    callbacks.notify(
+        { { "type", "progress" },
+          { "phase", "source" },
+          { "source_url", image->source_url },
+          { "message", "DDI source: " + image->source_url } });
     // Establishing the CoreDevice tunnel is connection preparation. The
     // installation budget starts once that transport is available.
     if (selected->kind == ddi::Kind::Cryptex && !device) {
@@ -222,8 +238,9 @@ int prepare(const Options& o, std::ostream& output, std::ostream& errors, const 
             error = "DDI Cryptex is installed but its developer image is not mounted";
             return fail();
         }
-        output << (result->already_installed ? "DDI already installed: " : "DDI installed and verified: ")
-               << terminal_text(result->identifier) << ' ' << terminal_text(result->version) << '\n';
+        prepared = { { "status", result->already_installed ? "already_installed" : "installed" },
+                     { "identifier", result->identifier },
+                     { "version", result->version } };
     }
     else {
         if (selected->kind == ddi::Kind::Personalized && !ecid) {
@@ -262,9 +279,17 @@ int prepare(const Options& o, std::ostream& output, std::ostream& errors, const 
         if (!result) {
             return fail();
         }
-        output << (result->state == ddi::MountState::AlreadyMounted ? "DDI already mounted: " : "DDI mounted and verified: ")
-               << terminal_text(result->image_type) << '\n';
+        prepared = { { "status", result->state == ddi::MountState::AlreadyMounted ? "already_mounted" : "mounted" },
+                     { "image_type", result->image_type } };
     }
-    return 0;
+    prepared["success"] = true;
+    prepared["error"] = "";
+    prepared["cancelled"] = false;
+    prepared["device_may_have_changed"] = installation_started;
+    prepared["os_version"] = target.system_version;
+    prepared["product_type"] = target.product_type;
+    prepared["image_kind"] = ddi::kind_name(selected->kind);
+    prepared["source_url"] = image->source_url;
+    return prepared;
 }
 }

@@ -9,6 +9,11 @@ on:
             - 'source/MaaToolkit/**'
             - 'source/MaaFramework/**'
             - 'include/MaaFramework/**'
+            - 'include/MaaControlUnit/**'
+            - 'source/LibraryHolder/**'
+            - 'source/include/LibraryHolder/**'
+            - 'source/binding/Python/maa/toolkit.py'
+            - 'test/python/ios_management_test.py'
             - 'include/MaaToolkit/**'
             - 'test/ios_test/**'
             - 'CMakeLists.txt'
@@ -21,6 +26,11 @@ on:
             - 'source/MaaToolkit/**'
             - 'source/MaaFramework/**'
             - 'include/MaaFramework/**'
+            - 'include/MaaControlUnit/**'
+            - 'source/LibraryHolder/**'
+            - 'source/include/LibraryHolder/**'
+            - 'source/binding/Python/maa/toolkit.py'
+            - 'test/python/ios_management_test.py'
             - 'include/MaaToolkit/**'
             - 'test/ios_test/**'
             - 'CMakeLists.txt'
@@ -35,126 +45,6 @@ concurrency:
     cancel-in-progress: false
 
 jobs:
-    standalone:
-        strategy:
-            fail-fast: false
-            matrix:
-                include:
-                    - platform: macos
-                      runner: macos-15
-                    - platform: linux
-                      runner: ubuntu-24.04
-                    - platform: windows-msvc-x64
-                      runner: windows-2022
-        runs-on: ${{ matrix.runner }}
-        timeout-minutes: 90
-        env:
-            VCPKG_BINARY_SOURCES: clear
-        steps:
-            - uses: actions/checkout@v7
-              with:
-                  persist-credentials: false
-
-            - name: Linux dependencies
-              if: runner.os == 'Linux'
-              shell: bash
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y cmake ninja-build pkg-config libssl-dev libcurl4-openssl-dev libavcodec-dev libavutil-dev libswscale-dev
-
-            - name: macOS dependencies
-              if: runner.os == 'macOS'
-              shell: bash
-              run: |
-                  brew install cmake ninja pkg-config openssl@3 ffmpeg
-
-            - name: Pinned Windows vcpkg checkout
-              if: runner.os == 'Windows'
-              uses: actions/checkout@v7
-              with:
-                  repository: microsoft/vcpkg
-                  ref: e456309491fd875487bf02b8a0dca76c1b1b00cc
-                  path: .ios-vcpkg
-                  persist-credentials: false
-
-            - name: Windows dependencies
-              if: runner.os == 'Windows'
-              shell: pwsh
-              run: |
-                  & ./.ios-vcpkg/bootstrap-vcpkg.bat -disableMetrics
-                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-                  & ./.ios-vcpkg/vcpkg.exe install --triplet x64-windows --host-triplet x64-windows `
-                    --x-manifest-root="$pwd/tools/MaaIOSManager/ci" --x-install-root="$pwd/.ios-vcpkg/installed" `
-                    --no-binarycaching
-                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-                  "$pwd/.ios-vcpkg/installed/x64-windows/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-            - name: Configure standalone tool (Unix)
-              if: runner.os != 'Windows'
-              shell: bash
-              run: |
-                  extra=()
-                  if [[ "$RUNNER_OS" == macOS ]]; then
-                    extra+=("-DOPENSSL_ROOT_DIR=$(brew --prefix openssl@3)")
-                  fi
-                  cmake -S tools/MaaIOSManager -B build-ios-manager -G Ninja \
-                    -DCMAKE_BUILD_TYPE=Release -DBUILD_IOS_MANAGER_TESTING=ON -DMAA_IOS_PROTOCOL_TESTS=ON \
-                    "${extra[@]}"
-
-            - name: Configure standalone tool (MSVC)
-              if: runner.os == 'Windows'
-              shell: pwsh
-              run: |
-                  cmake -S tools/MaaIOSManager -B build-ios-manager -G "Visual Studio 17 2022" -A x64 `
-                    -DCMAKE_TOOLCHAIN_FILE="$pwd/.ios-vcpkg/scripts/buildsystems/vcpkg.cmake" `
-                    -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_INSTALLED_DIR="$pwd/.ios-vcpkg/installed" `
-                    -DVCPKG_MANIFEST_MODE=OFF -DBUILD_IOS_MANAGER_TESTING=ON -DMAA_IOS_PROTOCOL_TESTS=ON
-                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
-            - name: Build
-              shell: bash
-              run: cmake --build build-ios-manager --config Release --parallel 4
-
-            - name: Offline protocol and command tests
-              shell: bash
-              run: ctest --test-dir build-ios-manager --build-config Release --output-on-failure --no-tests=error --timeout 60
-
-            - name: Package executable, source and notices
-              shell: bash
-              run: |
-                  cmake --install build-ios-manager --config Release --prefix "$PWD/ios-manager-artifact"
-                  python tools/MaaIOSManager/ci/package.py --repository "$PWD" --build "$PWD/build-ios-manager" \
-                    --output "$PWD/ios-manager-artifact" --platform "${{ matrix.platform }}"
-
-            - name: Check packaged Windows executable
-              if: runner.os == 'Windows'
-              shell: pwsh
-              run: |
-                  $env:PATH = "$pwd/ios-manager-artifact/bin;$env:SystemRoot/System32;$env:SystemRoot;$env:SystemRoot/System32/Wbem"
-                  & ./ios-manager-artifact/bin/MaaIOSManager.exe --help
-                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
-            - name: Upload tool and source materials
-              uses: actions/upload-artifact@v7
-              with:
-                  name: MaaIOSManager-${{ matrix.platform }}
-                  path: ios-manager-artifact/
-                  if-no-files-found: error
-
-            - name: Upload diagnostics
-              if: always()
-              uses: actions/upload-artifact@v7
-              with:
-                  name: MaaIOSManager-${{ matrix.platform }}-logs
-                  include-hidden-files: true
-                  path: |
-                      build-ios-manager/CMakeCache.txt
-                      build-ios-manager/CMakeFiles/CMakeConfigureLog.yaml
-                      build-ios-manager/Testing/Temporary/
-                      .ios-vcpkg/buildtrees/**/*.log
-                  if-no-files-found: warn
-
-
     framework-integration:
         name: Framework iOS integration (${{ matrix.platform }})
         strategy:
@@ -220,7 +110,6 @@ jobs:
                     --no-binarycaching
                   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
                   "$pwd/.ios-vcpkg/installed/x64-windows/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-                  "$pwd/source/MaaUtils/MaaDeps/runtime/maa-x64-windows/msvc-debug" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
                   "$pwd/source/MaaUtils/MaaDeps/runtime/maa-x64-windows" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
             - name: Configure framework iOS integration
@@ -240,8 +129,8 @@ jobs:
                       -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_MANIFEST_MODE=OFF
                       "-DVCPKG_INSTALLED_DIR=$PWD/.ios-vcpkg/installed")
                   fi
-                  cmake -S . -B build-ios-integration "${extra[@]}" \
-                    -DCMAKE_BUILD_TYPE=Debug -DMAADEPS_TRIPLET='maa-${{ matrix.maadeps }}' \
+                  cmake -S . -B build "${extra[@]}" \
+                    -DCMAKE_BUILD_TYPE=Release -DMAADEPS_TRIPLET='maa-${{ matrix.maadeps }}' \
                     -DWITH_IOS_CONTROLLER=ON -DBUILD_IOS_CONTROLLER_TESTING=ON \
                     -DBUILD_IOS_MANAGER_TESTING=ON -DMAA_IOS_PROTOCOL_TESTS=ON \
                     -DWITH_ADB_CONTROLLER=OFF -DWITH_WIN32_CONTROLLER=OFF -DWITH_MACOS_CONTROLLER=OFF \
@@ -252,13 +141,48 @@ jobs:
             - name: Build framework API, toolkit, session and tool
               shell: bash
               run: |
-                  cmake --build build-ios-integration --config Debug --parallel 3 \
+                  cmake --build build --config Release --parallel 3 \
                     --target MaaFramework MaaToolkit MaaIOSControlUnit MaaIOSManager
-                  cmake --build build-ios-integration --config Debug --parallel 3
+                  cmake --build build --config Release --parallel 3
 
             - name: Run framework and protocol offline tests
               shell: bash
-              run: ctest --test-dir build-ios-integration --build-config Debug --output-on-failure --no-tests=error --timeout 60
+              run: ctest --test-dir build --build-config Release --output-on-failure --no-tests=error --timeout 60
+
+            - name: Python management callback tests
+              shell: bash
+              env:
+                  MAAFW_BINARY_PATH: ${{ github.workspace }}/build/bin/Release
+                  PYTHONPATH: ${{ github.workspace }}/source/binding/Python
+              run: |
+                  python3 -m pip install numpy
+                  python3 test/python/ios_management_test.py
+
+            - name: Install framework and package manager runtime
+              shell: bash
+              run: |
+                  cmake --install build --config Release --prefix "$PWD/build/ios-manager-artifact"
+                  python tools/MaaIOSManager/ci/package.py --repository "$PWD" --build "$PWD/build" \
+                    --output "$PWD/build/ios-manager-artifact" --platform "${{ matrix.platform }}"
+
+            - name: Check packaged Windows C libraries and manager
+              if: runner.os == 'Windows'
+              shell: pwsh
+              run: |
+                  $python = (Get-Command python).Source
+                  $env:PATH = "$pwd/build/ios-manager-artifact/bin;$env:SystemRoot/System32;$env:SystemRoot;$env:SystemRoot/System32/Wbem"
+                  & $python -c "import ctypes,pathlib; root=pathlib.Path('build/ios-manager-artifact/bin').resolve(); cookies=[ctypes.WinDLL(str(root/name)) for name in ('MaaIOSControlUnit.dll','MaaToolkit.dll')]"
+                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+                  & ./build/ios-manager-artifact/bin/MaaIOSManager.exe --help
+                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+            - name: Upload manager and framework runtime
+              uses: actions/upload-artifact@v7
+              with:
+                  name: MaaIOSManager-${{ matrix.platform }}
+                  path: build/ios-manager-artifact/
+                  include-hidden-files: true
+                  if-no-files-found: error
 
             - name: Upload framework integration diagnostics
               if: always()
@@ -267,8 +191,8 @@ jobs:
                   name: MaaIOSFramework-${{ matrix.platform }}-logs
                   include-hidden-files: true
                   path: |
-                      build-ios-integration/CMakeCache.txt
-                      build-ios-integration/CMakeFiles/CMakeConfigureLog.yaml
-                      build-ios-integration/Testing/Temporary/
+                      build/CMakeCache.txt
+                      build/CMakeFiles/CMakeConfigureLog.yaml
+                      build/Testing/Temporary/
                       .ios-vcpkg/buildtrees/**/*.log
                   if-no-files-found: warn

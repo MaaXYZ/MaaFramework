@@ -1,11 +1,16 @@
 import ctypes
 import json
+import threading
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 from .define import *
 from .library import Library
+
+
+_IOSEventCallback = ctypes.CFUNCTYPE(MaaBool, ctypes.c_char_p, ctypes.c_void_p)
+_IOSCancelCallback = ctypes.CFUNCTYPE(MaaBool, ctypes.c_void_p)
 
 
 @dataclass
@@ -216,6 +221,119 @@ class Toolkit:
             api.MaaToolkitIOSDeviceListDestroy(handle)
 
     @staticmethod
+    def ios_discover(
+        options: Optional[dict[str, Any]] = None,
+        on_event: Optional[Callable[[dict[str, Any]], bool]] = None,
+        cancelled: Optional[Callable[[], bool]] = None,
+    ) -> dict[str, Any]:
+        """同步发现设备，返回含 success/cancelled/error 的完整结果。
+
+        Blocking discovery with the complete JSON result, including warnings.
+        on_event receives decoded progress/PIN events; return True to continue.
+        cancelled may be called on native worker threads and must be thread-safe.
+        Callback exceptions cancel native work and are re-raised after cleanup.
+        """
+        return Toolkit._ios_manage("Discover", options, on_event, cancelled)
+
+    @staticmethod
+    def ios_pair(
+        options: Optional[dict[str, Any]] = None,
+        on_event: Optional[Callable[[dict[str, Any]], bool]] = None,
+        cancelled: Optional[Callable[[], bool]] = None,
+    ) -> dict[str, Any]:
+        """同步 USB/Wi-Fi 配对 / Blocking USB/Wi-Fi pairing.
+
+        Wi-Fi pairing requires on_event to display its PIN. USB pairing may omit it.
+        on_event receives progress/PIN events; True continues, False cancels.
+        Callback threading and error handling are the same as ios_discover.
+        """
+        return Toolkit._ios_manage("Pair", options, on_event, cancelled)
+
+    @staticmethod
+    def ios_check_connection(
+        options: Optional[dict[str, Any]] = None,
+        on_event: Optional[Callable[[dict[str, Any]], bool]] = None,
+        cancelled: Optional[Callable[[], bool]] = None,
+    ) -> dict[str, Any]:
+        """同步检查连接后释放 / Check a connection synchronously, then release it.
+
+        Callback threading and error handling are the same as ios_discover.
+        """
+        return Toolkit._ios_manage("CheckConnection", options, on_event, cancelled)
+
+    @staticmethod
+    def ios_prepare(
+        options: Optional[dict[str, Any]] = None,
+        on_event: Optional[Callable[[dict[str, Any]], bool]] = None,
+        cancelled: Optional[Callable[[], bool]] = None,
+    ) -> dict[str, Any]:
+        """同步准备 DDI / Prepare the device DDI synchronously.
+
+        Callback threading and error handling are the same as ios_discover.
+        """
+        return Toolkit._ios_manage("Prepare", options, on_event, cancelled)
+
+    @staticmethod
+    def _ios_manage(
+        operation: str,
+        options: Optional[dict[str, Any]],
+        on_event: Optional[Callable[[dict[str, Any]], bool]],
+        cancelled: Optional[Callable[[], bool]],
+    ) -> dict[str, Any]:
+        from .buffer import StringBuffer
+
+        if options is not None and not isinstance(options, dict):
+            raise TypeError("iOS management options must be a dict")
+        if on_event is not None and not callable(on_event):
+            raise TypeError("on_event must be callable")
+        if cancelled is not None and not callable(cancelled):
+            raise TypeError("cancelled must be callable")
+        encoded_options = json.dumps(options if options is not None else {}, ensure_ascii=False).encode("utf-8")
+        Toolkit._set_api_properties()
+        stopped = threading.Event()
+        errors: list[BaseException] = []
+        error_lock = threading.Lock()
+
+        def callback_failed(error: BaseException) -> None:
+            with error_lock:
+                if not errors:
+                    errors.append(error)
+            stopped.set()
+
+        def event(event_json: bytes, _userdata: Any) -> bool:
+            try:
+                if stopped.is_set():
+                    return False
+                if on_event is not None and not on_event(json.loads(event_json.decode("utf-8"))):
+                    stopped.set()
+                return not stopped.is_set()
+            except BaseException as error:
+                callback_failed(error)
+                return False
+
+        def cancel(_userdata: Any) -> bool:
+            try:
+                if stopped.is_set() or (cancelled is not None and cancelled()):
+                    stopped.set()
+                return stopped.is_set()
+            except BaseException as error:
+                callback_failed(error)
+                return True
+
+        # Keep callbacks and the result buffer alive until native workers have joined.
+        event_callback = _IOSEventCallback(event) if on_event is not None else _IOSEventCallback()
+        cancel_callback = _IOSCancelCallback(cancel)
+        result_buffer = StringBuffer()
+        function = getattr(Library.toolkit(), f"MaaToolkitIOSDevice{operation}")
+        function(encoded_options, event_callback, cancel_callback, None, result_buffer._handle)
+        if errors:
+            raise errors[0]
+        result: dict[str, Any] = json.loads(result_buffer.get())
+        if not isinstance(result, dict):
+            raise RuntimeError("iOS management returned a non-object result")
+        return result
+
+    @staticmethod
     def find_desktop_windows() -> list[DesktopWindow]:
         """查询所有窗口信息 / Query all window info
 
@@ -355,6 +473,11 @@ class Toolkit:
         ]
 
         api = Library.toolkit()
+        for name in ("Discover", "Pair", "CheckConnection", "Prepare"):
+            function = getattr(api, f"MaaToolkitIOSDevice{name}")
+            function.restype = MaaBool
+            function.argtypes = [ctypes.c_char_p, _IOSEventCallback, _IOSCancelCallback,
+                                 ctypes.c_void_p, MaaStringBufferHandle]
         api.MaaToolkitIOSDeviceListCreate.restype = ctypes.c_void_p
         api.MaaToolkitIOSDeviceListCreate.argtypes = []
         api.MaaToolkitIOSDeviceListDestroy.restype = None

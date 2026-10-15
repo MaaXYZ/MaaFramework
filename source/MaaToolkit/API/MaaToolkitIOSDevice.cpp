@@ -1,12 +1,11 @@
 #include "MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"
 
-#include <chrono>
+#include "LibraryHolder/ControlUnit.h"
+#include "MaaFramework/Utility/MaaBuffer.h"
+#include <memory>
+#include <meojson/json.hpp>
 #include <string>
 #include <vector>
-#ifdef MAA_WITH_IOS_DEVICE
-#include "remote/Discovery.h"
-#include <nlohmann/json.hpp>
-#endif
 
 struct MaaToolkitIOSDevice
 {
@@ -20,6 +19,85 @@ struct MaaToolkitIOSDeviceList
     std::vector<MaaToolkitIOSDevice> devices;
     std::string warnings = "[]";
 };
+
+namespace
+{
+MaaBool manage(
+    const char* function_name,
+    const char* options_json,
+    MaaToolkitIOSDeviceEventCallback event_callback,
+    MaaToolkitIOSDeviceCancelCallback cancel_callback,
+    void* userdata,
+    MaaStringBuffer* result)
+{
+    if (!result) {
+        return false;
+    }
+    try {
+#ifdef MAA_WITH_IOS_DEVICE
+        return MAA_NS::IOSControlUnitLibraryHolder::management(
+            function_name,
+            options_json,
+            event_callback,
+            cancel_callback,
+            userdata,
+            result);
+#else
+        (void)function_name;
+        (void)options_json;
+        (void)event_callback;
+        (void)cancel_callback;
+        (void)userdata;
+        MaaStringBufferSet(result, R"({"success":false,"cancelled":false,"error":"iOS controller support is disabled in this build"})");
+        return false;
+#endif
+    }
+    catch (...) {
+        MaaStringBufferSet(result, R"({"success":false,"cancelled":false,"error":"iOS device management failed"})");
+        return false;
+    }
+}
+}
+
+MaaBool MaaToolkitIOSDeviceDiscover(
+    const char* options_json,
+    MaaToolkitIOSDeviceEventCallback event_callback,
+    MaaToolkitIOSDeviceCancelCallback cancel_callback,
+    void* userdata,
+    MaaStringBuffer* result)
+{
+    return manage("MaaIOSControlUnitDiscover", options_json, event_callback, cancel_callback, userdata, result);
+}
+
+MaaBool MaaToolkitIOSDevicePair(
+    const char* options_json,
+    MaaToolkitIOSDeviceEventCallback event_callback,
+    MaaToolkitIOSDeviceCancelCallback cancel_callback,
+    void* userdata,
+    MaaStringBuffer* result)
+{
+    return manage("MaaIOSControlUnitPair", options_json, event_callback, cancel_callback, userdata, result);
+}
+
+MaaBool MaaToolkitIOSDeviceCheckConnection(
+    const char* options_json,
+    MaaToolkitIOSDeviceEventCallback event_callback,
+    MaaToolkitIOSDeviceCancelCallback cancel_callback,
+    void* userdata,
+    MaaStringBuffer* result)
+{
+    return manage("MaaIOSControlUnitCheckConnection", options_json, event_callback, cancel_callback, userdata, result);
+}
+
+MaaBool MaaToolkitIOSDevicePrepare(
+    const char* options_json,
+    MaaToolkitIOSDeviceEventCallback event_callback,
+    MaaToolkitIOSDeviceCancelCallback cancel_callback,
+    void* userdata,
+    MaaStringBuffer* result)
+{
+    return manage("MaaIOSControlUnitPrepare", options_json, event_callback, cancel_callback, userdata, result);
+}
 
 MaaToolkitIOSDeviceList* MaaToolkitIOSDeviceListCreate()
 {
@@ -52,41 +130,39 @@ MaaBool MaaToolkitIOSDeviceFindWithTimeout(int64_t timeout_ms, MaaToolkitIOSDevi
         list->warnings = "[\"timeout_ms must be between 0 and 60000\"]";
         return false;
     }
-#ifdef MAA_WITH_IOS_DEVICE
     try {
-        maa::ios::remote::DiscoveryOptions options;
-        options.timeout = std::chrono::milliseconds(timeout_ms);
-        auto result = maa::ios::remote::discover_devices(options);
-        std::vector<MaaToolkitIOSDevice> devices;
-        for (const auto& device : result.devices) {
-            auto connections = nlohmann::json::array();
-            for (const auto& c : device.candidates) {
-                connections.push_back(
-                    { { "transport", c.transport == maa::ios::remote::DiscoveryTransport::usbmux ? "usbmux" : "remote_pairing" },
-                      { "connection_type", c.connection_type },
-                      { "address", c.address },
-                      { "port", c.port },
-                      { "interface_index", c.interface_index },
-                      { "interface_name", c.interface_name },
-                      { "instance", c.instance },
-                      { "identifier", c.identifier },
-                      { "pairing_state", static_cast<int>(c.pairing) } });
-            }
-            devices.push_back({ device.name, device.udid, connections.dump() });
+        std::unique_ptr<MaaStringBuffer, decltype(&MaaStringBufferDestroy)> result(MaaStringBufferCreate(), MaaStringBufferDestroy);
+        if (!result) {
+            return false;
         }
-        list->warnings = nlohmann::json(result.warnings).dump();
-        list->devices = std::move(devices);
-        return !result.cancelled && (result.usb_available || result.wifi_available);
+        const auto options = json::value(json::object { { "timeout_ms", timeout_ms } }).to_string();
+        const bool success = MaaToolkitIOSDeviceDiscover(options.c_str(), nullptr, nullptr, nullptr, result.get());
+        const auto parsed = json::parse(MaaStringBufferGet(result.get()));
+        if (!parsed || !parsed->is_object()) {
+            list->warnings = "[\"invalid iOS discovery result\"]";
+            return false;
+        }
+        list->warnings = parsed->get("warnings", json::array { }).to_string();
+        if (!success) {
+            const auto error = parsed->get("error", std::string { });
+            if (!error.empty()) {
+                list->warnings = json::value(json::array { error }).to_string();
+            }
+            return false;
+        }
+        for (const auto& device : parsed->get("devices", json::array { })) {
+            list->devices.push_back(
+                { device.get("name", std::string { }),
+                  device.get("udid", std::string { }),
+                  device.get("candidates", json::array { }).to_string() });
+        }
+        return true;
     }
     catch (...) {
         list->devices.clear();
         list->warnings = "[\"iOS device discovery failed\"]";
         return false;
     }
-#else
-    list->warnings = "[\"iOS controller support is disabled in this build\"]";
-    return false;
-#endif
 }
 
 MaaSize MaaToolkitIOSDeviceListSize(const MaaToolkitIOSDeviceList* list)

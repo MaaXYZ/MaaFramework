@@ -1,202 +1,174 @@
 #include "Commands.h"
 
-#include "remote/DeviceConnection.h"
-#include "remote/Discovery.h"
-#include "remote/Pairing.h"
-#include "remote/WifiPairing.h"
-#include "wifi/PairRecord.h"
+#include "MaaFramework/Utility/MaaBuffer.h"
+#include "MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"
 
+#include <memory>
+#include <meojson/json.hpp>
 #include <ostream>
 
 namespace maa::ios::tool
 {
 namespace
 {
-std::string_view pairing_status(remote::DiscoveryPairing pairing)
+struct Callbacks
 {
-    switch (pairing) {
-    case remote::DiscoveryPairing::ready:
-        return "paired";
-    case remote::DiscoveryPairing::needs_pairing:
-        return "needs_pairing";
-    case remote::DiscoveryPairing::identifier_hint:
-        return "identifier_hint";
-    case remote::DiscoveryPairing::ambiguous:
-        return "ambiguous";
-    case remote::DiscoveryPairing::invalid_advertisement:
-        return "invalid_advertisement";
-    case remote::DiscoveryPairing::crypto_error:
-        return "crypto_error";
-    case remote::DiscoveryPairing::unmatched:
-        return "unmatched";
-    }
-    return "unmatched";
+    std::ostream& errors;
+    const std::function<bool()>& cancelled;
+};
+
+MaaBool cancelled(void* userdata)
+{
+    const auto& callbacks = *static_cast<Callbacks*>(userdata);
+    return callbacks.cancelled && callbacks.cancelled();
 }
 
-void devices_json(const remote::DiscoveryResult& result, std::ostream& output)
+MaaBool event(const char* text, void* userdata)
 {
-    output << "{\"usb_available\":" << (result.usb_available ? "true" : "false")
-           << ",\"wifi_available\":" << (result.wifi_available ? "true" : "false")
-           << ",\"cancelled\":" << (result.cancelled ? "true" : "false") << ",\"devices\":[";
-    bool first_device = true;
-    for (const auto& device : result.devices) {
-        if (!first_device) {
-            output << ',';
-        }
-        first_device = false;
-        output << "{\"udid\":" << json_string(device.udid) << ",\"name\":" << json_string(device.name) << ",\"candidates\":[";
-        bool first_candidate = true;
-        for (const auto& candidate : device.candidates) {
-            if (!first_candidate) {
-                output << ',';
-            }
-            first_candidate = false;
-            output << "{\"transport\":"
-                   << json_string(candidate.transport == remote::DiscoveryTransport::usbmux ? "usbmux" : "remote_pairing")
-                   << ",\"connection_type\":" << json_string(candidate.connection_type) << ",\"device_id\":" << candidate.device_id
-                   << ",\"address\":" << json_string(candidate.address) << ",\"port\":" << candidate.port
-                   << ",\"interface_index\":" << candidate.interface_index
-                   << ",\"interface_name\":" << json_string(candidate.interface_name) << ",\"instance\":" << json_string(candidate.instance)
-                   << ",\"identifier\":" << json_string(candidate.identifier)
-                   << ",\"pairing\":" << json_string(pairing_status(candidate.pairing)) << '}';
-        }
-        output << "]}";
+    auto& callbacks = *static_cast<Callbacks*>(userdata);
+    const auto parsed = json::parse(text);
+    if (!parsed) {
+        return false;
     }
-    output << "],\"warnings\":[";
-    bool first_warning = true;
-    for (const auto& warning : result.warnings) {
-        if (!first_warning) {
-            output << ',';
-        }
-        first_warning = false;
-        output << json_string(warning);
-    }
-    output << "]}\n";
-}
-
-int devices(const Options& options, std::ostream& output, std::ostream& errors, const std::function<bool()>& cancelled)
-{
-    remote::DiscoveryOptions discovery;
-    discovery.timeout = std::chrono::milliseconds(options.timeout_ms);
-    discovery.should_cancel = cancelled;
-    discovery.include_usb = !options.wifi_only;
-    discovery.include_wifi = !options.usb_only;
-    const auto result = remote::discover_devices(discovery);
-    if (options.json) {
-        devices_json(result, output);
+    if (parsed->get("type", std::string { }) == "pin") {
+        callbacks.errors << "Enter this one-use pairing code on the device: " << terminal_text(parsed->get("pin", std::string { })) << '\n'
+                         << std::flush;
     }
     else {
-        output << "List of iOS devices\n";
-        for (const auto& device : result.devices) {
-            output << terminal_text(device.udid.empty() ? "(UDID unknown)" : device.udid);
-            if (!device.name.empty()) {
-                output << "  " << terminal_text(device.name);
+        const auto message = parsed->get("message", std::string { });
+        if (!message.empty()) {
+            callbacks.errors << terminal_text(message) << '\n';
+        }
+    }
+    return !cancelled(userdata);
+}
+
+void show_devices(const json::value& result, std::ostream& output, std::ostream& errors)
+{
+    output << "List of iOS devices\n";
+    const auto devices = result.get("devices", json::array { });
+    for (const auto& device : devices) {
+        auto udid = device.get("udid", std::string { });
+        output << terminal_text(udid.empty() ? "(UDID unknown)" : udid);
+        const auto name = device.get("name", std::string { });
+        if (!name.empty()) {
+            output << "  " << terminal_text(name);
+        }
+        output << '\n';
+        for (const auto& candidate : device.get("candidates", json::array { })) {
+            output << "  " << terminal_text(candidate.get("connection_type", std::string { }));
+            if (candidate.get("transport", std::string { }) == "remote_pairing") {
+                auto address = candidate.get("address", std::string { });
+                if (address.find(':') != std::string::npos) {
+                    address = "[" + address + "]";
+                }
+                output << "  " << terminal_text(address) << ':' << candidate.get("port", 0) << "  "
+                       << terminal_text(candidate.get("interface_name", std::string { })) << "  "
+                       << terminal_text(candidate.get("pairing", std::string { }));
             }
             output << '\n';
-            for (const auto& candidate : device.candidates) {
-                output << "  " << terminal_text(candidate.connection_type);
-                if (candidate.transport == remote::DiscoveryTransport::remote_pairing) {
-                    const auto address =
-                        candidate.address.find(':') == std::string::npos ? candidate.address : "[" + candidate.address + "]";
-                    output << "  " << terminal_text(address) << ':' << candidate.port << "  " << terminal_text(candidate.interface_name)
-                           << "  " << pairing_status(candidate.pairing);
-                }
-                output << '\n';
-            }
-        }
-        if (result.devices.empty()) {
-            output << "No devices found\n";
-        }
-        for (const auto& warning : result.warnings) {
-            errors << "Discovery warning: " << terminal_text(warning) << '\n';
         }
     }
-    if (result.cancelled) {
-        return 130;
+    if (devices.empty()) {
+        output << "No devices found\n";
     }
-    return result.usb_available || result.wifi_available ? 0 : 1;
+    for (const auto& warning : result.get("warnings", json::array { })) {
+        errors << "Discovery warning: " << terminal_text(warning.as_string()) << '\n';
+    }
 }
 
-int pair(const Options& options, std::ostream& output, std::ostream& errors, const std::function<bool()>& cancelled)
+void show_result(Command command, const json::value& result, std::ostream& output, std::ostream& errors)
 {
-    const auto progress = [&errors](std::string_view message) {
-        errors << terminal_text(message) << '\n';
-    };
-    remote::PairingResult result;
-    if (!options.wifi.empty()) {
-        remote::WifiPairingOptions pairing;
-        pairing.udid = options.udid;
-        pairing.timeout_ms = options.timeout_ms;
-        pairing.should_cancel = cancelled;
-        pairing.progress = progress;
-        pairing.display_pin = [&errors](std::string_view pin, std::string&) {
-            errors << "Enter this one-use pairing code on the device: " << pin << '\n' << std::flush;
-            return true;
-        };
-        result = remote::pair_wifi_remote(pairing);
+    if (command == Command::Devices) {
+        show_devices(result, output, errors);
+        return;
     }
-    else {
-        remote::UsbPairingOptions pairing;
-        pairing.udid = options.udid;
-        pairing.timeout_ms = options.timeout_ms;
-        pairing.allow_repair = options.repair;
-        pairing.should_cancel = cancelled;
-        pairing.progress = progress;
-        result = remote::pair_usb_remote(pairing);
+    if (command == Command::Pair) {
+        output << (result.get("reused", false) ? "Pairing verified: " : "Pairing saved: ")
+               << terminal_text(result.get("udid", std::string { })) << '\n';
+        return;
     }
-    if (!result.ok) {
-        errors << "Pairing failed: " << terminal_text(result.error) << '\n';
-        return 1;
+    if (command == Command::Connect) {
+        output << "Connection verified: " << terminal_text(result.get("udid", std::string { })) << "  "
+               << terminal_text(result.get("transport", std::string { })) << "  "
+               << terminal_text(result.get("product_type", std::string { })) << "  "
+               << terminal_text(result.get("os_version", std::string { }))
+               << "\nTunnel closed. Controllers establish their own sessions.\n";
+        return;
     }
-    output << (result.reused ? "Pairing verified: " : "Pairing saved: ") << terminal_text(result.udid) << '\n';
-    return 0;
-}
-
-int connect(const Options& options, std::ostream& output, std::ostream& errors, const std::function<bool()>& cancelled)
-{
-    std::string error;
-    auto device = remote::open_device(options.udid, options.wifi, error, options.port, cancelled);
-    if (!device) {
-        if (options.json) {
-            output << "{\"verified\":false,\"session_open\":false,\"error\":" << json_string(error) << "}\n";
-        }
-        else {
-            errors << "Connection failed: " << terminal_text(error) << '\n';
-        }
-        return 1;
-    }
-    const auto udid = device->udid();
-    const auto transport = device->connection_type();
-    const auto version = device->property("OSVersion");
-    const auto model = device->property("ProductType");
-    device.reset();
-    if (options.json) {
-        output << "{\"verified\":true,\"session_open\":false,\"udid\":" << json_string(udid) << ",\"transport\":" << json_string(transport)
-               << ",\"os_version\":" << json_string(version) << ",\"product_type\":" << json_string(model) << "}\n";
-    }
-    else {
-        output << "Connection verified: " << terminal_text(udid) << "  " << terminal_text(transport) << "  " << terminal_text(model) << "  "
-               << terminal_text(version) << "\nTunnel closed. Controllers establish their own sessions.\n";
-    }
-    return 0;
+    output << "DDI preparation completed\n";
 }
 }
 
-int execute(const Options& options, std::ostream& output, std::ostream& errors, const std::function<bool()>& cancelled)
+int execute(const Options& options, std::ostream& output, std::ostream& errors, const std::function<bool()>& should_cancel)
 {
-    switch (options.command) {
-    case Command::Devices:
-        return devices(options, output, errors, cancelled);
-    case Command::Pair:
-        return pair(options, output, errors, cancelled);
-    case Command::Connect:
-        return connect(options, output, errors, cancelled);
-    case Command::Prepare:
-        return prepare(options, output, errors, cancelled);
-    case Command::Help:
+    if (options.command == Command::Help) {
         help(output);
         return 0;
     }
-    return 2;
+    json::value request = json::object { };
+    decltype(&MaaToolkitIOSDeviceDiscover) operation = nullptr;
+    switch (options.command) {
+    case Command::Devices:
+        operation = MaaToolkitIOSDeviceDiscover;
+        request["timeout_ms"] = options.timeout_ms;
+        request["usb_only"] = options.usb_only;
+        request["wifi_only"] = options.wifi_only;
+        break;
+    case Command::Pair:
+        operation = MaaToolkitIOSDevicePair;
+        request["timeout_ms"] = options.timeout_ms;
+        request["repair"] = options.repair;
+        request["udid"] = options.udid;
+        request["wifi"] = options.wifi;
+        break;
+    case Command::Connect:
+        operation = MaaToolkitIOSDeviceCheckConnection;
+        request["udid"] = options.udid;
+        request["wifi"] = options.wifi;
+        if (!options.wifi.empty() && options.wifi != "auto") {
+            request["port"] = options.port;
+        }
+        break;
+    case Command::Prepare:
+        operation = MaaToolkitIOSDevicePrepare;
+        request["udid"] = options.udid;
+        request["wifi"] = options.wifi;
+        if (!options.wifi.empty() && options.wifi != "auto") {
+            request["port"] = options.port;
+        }
+        request["cache_directory"] = options.cache_directory;
+        request["replace"] = options.replace;
+        request["download_timeout_seconds"] = options.download_timeout_seconds;
+        request["install_timeout_seconds"] = options.install_timeout_seconds;
+        break;
+    case Command::Help:
+        return 0;
+    }
+    std::unique_ptr<MaaStringBuffer, decltype(&MaaStringBufferDestroy)> buffer(MaaStringBufferCreate(), MaaStringBufferDestroy);
+    if (!buffer) {
+        errors << "Unable to allocate operation result\n";
+        return 1;
+    }
+    Callbacks callbacks { errors, should_cancel };
+    const bool success = operation(request.to_string().c_str(), event, cancelled, &callbacks, buffer.get());
+    const auto result = json::parse(MaaStringBufferGet(buffer.get()));
+    if (!result || !result->is_object()) {
+        errors << "Invalid iOS management result\n";
+        return 1;
+    }
+    if (options.json) {
+        output << result->to_string() << '\n';
+    }
+    else if (success) {
+        show_result(options.command, *result, output, errors);
+    }
+    else {
+        errors << "Device operation failed: " << terminal_text(result->get("error", std::string { })) << '\n';
+        if (result->get("device_may_have_changed", false)) {
+            errors << "An interrupted installation may already have taken effect; check device state before replacing again.\n";
+        }
+    }
+    return result->get("cancelled", false) || cancelled(&callbacks) ? 130 : (success ? 0 : 1);
 }
 }

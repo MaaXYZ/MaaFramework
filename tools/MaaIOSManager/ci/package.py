@@ -11,7 +11,9 @@ from pathlib import Path
 
 def copy_tree(source: Path, destination: Path) -> None:
     shutil.copytree(source, destination, dirs_exist_ok=True,
-                    ignore=shutil.ignore_patterns(".git", "__pycache__", "*.pyc", "CMakeFiles"))
+                    ignore=shutil.ignore_patterns(
+                        ".git", "__pycache__", "*.pyc", "CMakeFiles", "MaaDeps", "node_modules",
+                        ".pnpm-store", ".venv", "venv", ".cache", "build", "build-*", "*.o", "*.obj", "*.node"))
 
 
 def digest(path: Path) -> str:
@@ -62,14 +64,14 @@ def windows_dependencies(repository: Path, output: Path) -> dict:
     shutil.copy2(vcpkg / "LICENSE.txt", sources / "LICENSE.txt")
     shutil.copy2(repository / "tools/MaaIOSManager/ci/vcpkg.json", sources / "vcpkg.json")
     archives = sources / "upstream-archives"
-    archives.mkdir(parents=True)
+    archives.mkdir(parents=True, exist_ok=True)
     for archive in sorted((vcpkg / "downloads").iterdir()):
         if archive.is_file() and archive.name.endswith((".tar.gz", ".tar.xz", ".tar.bz2", ".tgz")):
             shutil.copy2(archive, archives / archive.name)
     if not any("ffmpeg" in archive.name.lower() for archive in archives.iterdir()):
         raise RuntimeError("Missing FFmpeg corresponding source archive")
     configuration = sources / "ffmpeg-build-configuration"
-    configuration.mkdir(parents=True)
+    configuration.mkdir(parents=True, exist_ok=True)
     for path in (vcpkg / "buildtrees/ffmpeg").rglob("*"):
         if path.is_file() and (path.name in {"config.h", "config.mak", "config.log"} or path.suffix == ".log"):
             relative = path.relative_to(vcpkg / "buildtrees/ffmpeg")
@@ -95,9 +97,23 @@ def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
     (output / "licenses").mkdir(exist_ok=True)
     materials = output / "source-materials"
-    copy_tree(repository / "tools/MaaIOSManager", materials / "tools/MaaIOSManager")
-    copy_tree(repository / "source/MaaIOSControlUnit/Protocol", materials / "source/MaaIOSControlUnit/Protocol")
-    shutil.copy2(repository / "LICENSE.md", materials / "LICENSE.md")
+    for directory in ["source", "include", "3rdparty", "cmake", "tools", "test"]:
+        source = repository / directory
+        if not source.is_dir():
+            raise RuntimeError(f"Framework source directory is missing: {directory}")
+        copy_tree(source, materials / directory)
+    for filename in ["CMakeLists.txt", "CMakePresets.json", "LICENSE.md"]:
+        shutil.copy2(repository / filename, materials / filename)
+    recipes = materials / "build-recipes"
+    recipes.mkdir(exist_ok=True)
+    shutil.copy2(repository / ".github/workflows/ios-manager.yml", recipes / "ios-manager.yml")
+    maadeps = repository / "source/MaaUtils/MaaDeps"
+    for triplet in (maadeps / "vcpkg/installed").iterdir():
+        if triplet.is_dir() and (triplet / "share").is_dir():
+            copy_tree(triplet / "share", output / "licenses/MaaDeps" / triplet.name)
+    maadeps_source = materials / "source/MaaUtils/MaaDeps"
+    maadeps_source.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(maadeps / "maadeps.cmake", maadeps_source / "maadeps.cmake")
     shutil.copy2(repository / "source/MaaIOSControlUnit/Protocol/LICENSE.Apache-2.0", output / "licenses/LICENSE.Apache-2.0")
     shutil.copy2(repository / "source/MaaIOSControlUnit/Protocol/NOTICE", output / "licenses/NOTICE")
     shutil.copy2(repository / "tools/MaaIOSManager/README.md", output / "README.md")
@@ -126,16 +142,25 @@ def main() -> None:
     provenance = {
         "commit": subprocess.check_output(["git", "-C", str(repository), "rev-parse", "HEAD"], text=True).strip(),
         "platform": arguments.platform,
-        "binary_dependencies": "vcpkg runtime DLLs" if arguments.platform.startswith("windows") else "system package libraries (not bundled)",
+        "architecture": "Manager -> MaaToolkit C API -> LibraryHolder -> MaaIOSControlUnit C API",
+        "binary_dependencies": "MaaFramework/MaaDeps runtime plus vcpkg DLLs" if arguments.platform.startswith("windows") else "MaaFramework/MaaDeps runtime plus system OpenSSL/FFmpeg/libcurl",
+        "maadeps_version": "v3.0.0",
+        "submodules": subprocess.check_output(["git", "-C", str(repository), "submodule", "status", "--recursive"], text=True).splitlines(),
     }
+    if arguments.platform.startswith("linux"):
+        cxx_runtime = arguments.build / "ios-native-deps/lib"
+        if cxx_runtime.is_dir():
+            for library in cxx_runtime.glob("*.so*"):
+                if library.is_file():
+                    shutil.copy2(library.resolve(), output / "bin" / library.name)
     if arguments.platform.startswith("windows"):
         provenance.update(windows_dependencies(repository, output))
-        note = "Bundled third-party DLLs are listed in provenance.json. The Microsoft VC++ 2015-2022 x64 runtime is required.\n"
+        note = "The artifact includes the framework, control unit, toolkit and MaaDeps runtime. Additional vcpkg DLLs are listed in provenance.json. The Microsoft VC++ 2015-2022 x64 runtime is required.\n"
     else:
-        note = "This executable uses system OpenSSL, FFmpeg and libcurl packages; it does not bundle those runtime libraries.\n"
+        note = "The artifact includes the framework, control unit, toolkit and MaaDeps runtime. OpenSSL, FFmpeg and libcurl are system dependencies and are not bundled.\n"
     (output / "RUNTIME.txt").write_text(note, encoding="utf-8")
     (output / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
-    hashes = {str(path.relative_to(output)): digest(path) for path in sorted(output.rglob("*")) if path.is_file()}
+    hashes = {str(path.relative_to(output)): digest(path) for path in sorted(output.rglob("*")) if path.is_file() and path.name != "SHA256SUMS.json"}
     (output / "SHA256SUMS.json").write_text(json.dumps(hashes, indent=2) + "\n", encoding="utf-8")
 
 

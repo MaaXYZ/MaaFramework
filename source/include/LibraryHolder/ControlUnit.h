@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "MaaControlUnit/IOSControlUnitAPI.h"
 #include "MaaFramework/Instance/MaaCustomController.h"
 #include "MaaUtils/LibraryHolder.h"
 #include "MaaUtils/Platform.h"
@@ -77,6 +78,14 @@ class IOSControlUnitLibraryHolder : public LibraryHolder<IOSControlUnitLibraryHo
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI>
         create_control_unit(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods);
+
+    static MaaBool management(
+        const char* function_name,
+        const char* options_json,
+        MaaIOSControlUnitManagementEventCallback event_callback,
+        MaaIOSControlUnitManagementCancelCallback cancel_callback,
+        void* userdata,
+        MaaStringBuffer* result);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaIOSControlUnit");

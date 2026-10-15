@@ -16,6 +16,7 @@
 #include "MaaControlUnit/ReplayControlUnitAPI.h"
 #include "MaaControlUnit/Win32ControlUnitAPI.h"
 #include "MaaControlUnit/WlRootsControlUnitAPI.h"
+#include "MaaUtils/Buffer/BufferTypes.hpp"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Runtime.h"
 
@@ -428,10 +429,38 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI> MacOSControlUnitLibraryHo
     return std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI> IOSControlUnitLibraryHolder::create_control_unit(
-    const char* udid,
-    const char* wifi_address,
-    MaaIOScreencapMethod screencap_methods)
+MaaBool IOSControlUnitLibraryHolder::management(
+    const char* function_name,
+    const char* options_json,
+    MaaIOSControlUnitManagementEventCallback event_callback,
+    MaaIOSControlUnitManagementCancelCallback cancel_callback,
+    void* userdata,
+    MaaStringBuffer* result)
+{
+    if (!result) {
+        return false;
+    }
+    result->set(R"({"success":false,"cancelled":false,"error":"iOS control unit is unavailable"})");
+    // The backend owns process-wide network workers. Retain one reference rather
+    // than unloading it inside a call and joining DLL workers under loader lock.
+    static std::mutex load_mutex;
+    static bool retained = false;
+    {
+        std::lock_guard lock(load_mutex);
+        if (!retained) {
+            retained = load_library(library_dir() / libname_);
+        }
+        if (!retained) {
+            return false;
+        }
+    }
+    check_version<IOSControlUnitLibraryHolder, decltype(MaaIOSControlUnitGetVersion)>(version_func_name_);
+    auto function = get_function<decltype(MaaIOSControlUnitDiscover)>(function_name);
+    return function && function(options_json, event_callback, cancel_callback, userdata, result);
+}
+
+std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI>
+    IOSControlUnitLibraryHolder::create_control_unit(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
