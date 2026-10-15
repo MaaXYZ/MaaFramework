@@ -4,6 +4,7 @@
 
 #include <array>
 #include <atomic>
+#include <charconv>
 #include <chrono>
 #include <condition_variable>
 #include <cstdio>
@@ -12,6 +13,7 @@
 #include <fstream>
 #include <iterator>
 #include <mutex>
+#include <stdexcept>
 #include <string_view>
 #include <thread>
 
@@ -107,10 +109,17 @@ void put32(Bytes& bytes, std::size_t offset, uint32_t value)
 
 Bytes hex(std::string_view text)
 {
+    if (text.size() % 2 != 0) {
+        throw std::invalid_argument("Odd-length hexadecimal fixture");
+    }
     Bytes bytes;
     for (std::size_t i = 0; i < text.size(); i += 2) {
         unsigned value = 0;
-        std::sscanf(text.data() + i, "%2x", &value);
+        const auto* end = text.data() + i + 2;
+        const auto result = std::from_chars(text.data() + i, end, value, 16);
+        if (result.ec != std::errc { } || result.ptr != end) {
+            throw std::invalid_argument("Invalid hexadecimal fixture");
+        }
         bytes.push_back(static_cast<uint8_t>(value));
     }
     return bytes;

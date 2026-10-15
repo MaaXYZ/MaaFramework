@@ -1,6 +1,7 @@
 // RTP 拆包自检。全部用手工构造的包，不打真机——这样每一处偏移错了都会立刻
 // 变成一条明确的失败，而不是"画面有点糊"。
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <span>
@@ -971,19 +972,19 @@ void test_sequence_reordering()
 
     // 真丢一个、而且再也没来：这个数必须待在 1，不能被"后来又到了几个包"冲掉。
     RtpSeq gone;
-    for (const uint16_t s : { 100, 101, 103, 104 }) {
+    for (const uint16_t s : std::array<uint16_t, 4> { 100, 101, 103, 104 }) {
         gone.observe(s);
     }
     check(gone.lost() == 1 && gone.gaps_detected() == 1, "真丢一个就是 1");
     // 已经补过的洞上再来一次同一个号（重复包），不能把 lost() 往下多冲一格——
     // 否则丢包数会变成"看网络心情"的数，也就失去意义了。
     RtpSeq refilled;
-    for (const uint16_t s : { 100, 102, 101, 101 }) {
+    for (const uint16_t s : std::array<uint16_t, 4> { 100, 102, 101, 101 }) {
         refilled.observe(s);
     }
     check(refilled.lost() == 0, "同一个迟到包重复到达只冲销一次");
     RtpSeq dupthenloss;
-    for (const uint16_t s : { 100, 101, 101, 103 }) {
+    for (const uint16_t s : std::array<uint16_t, 4> { 100, 101, 101, 103 }) {
         dupthenloss.observe(s);
     }
     check(dupthenloss.lost() == 1, "重复包不算补齐：水位之后的洞仍然欠着");
