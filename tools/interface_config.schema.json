@@ -172,9 +172,10 @@
                 "screencap": {
                     "type": "string"
                 },
-                "pairing_record_path": {
-                    "type": "string",
-                    "description": "由调用方保存的配对凭据文件路径；不会搜索默认目录"
+                "pairing_records": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "直接保存在 PiCli 配置中的不透明配对凭据"
                 }
             },
             "additionalProperties": false

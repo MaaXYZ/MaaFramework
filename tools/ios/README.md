@@ -26,7 +26,11 @@ Credentials must be complete, at most 16 KiB each, and have unique device UDIDs.
 
 发现、连接检查、DDI 准备和控制器配置均显式传入 `pairing_records` 字符串数组。
 控制器持有自己的副本；创建后可释放原始缓冲区。无凭据也能发现广播，但不会标记已配对。
-PiCli 在用户配置的 `ios.pairing_record_path` 指定文件中读取凭据，不搜索隐式目录。
+PiCli 将凭据直接保存在 `config/maa_pi_config.json` 的 `ios.pairing_records` 数组中，
+用于设备发现和控制器连接，无需配置单独的凭据文件路径。
+
+PiCli stores credentials directly in `ios.pairing_records` in `config/maa_pi_config.json`
+and uses them for discovery and controller connections; no separate credential file path is needed.
 
 ```python
 from maa.toolkit import Toolkit

@@ -859,21 +859,8 @@ void Interactor::select_ios_auto_detect()
     }
     std::unique_ptr<MaaToolkitIOSDeviceList, decltype(&MaaToolkitIOSDeviceListDestroy)> owned(list, MaaToolkitIOSDeviceListDestroy);
     json::array credentials;
-    const auto& credential_path = config_.configuration().ios.pairing_record_path;
-    if (!credential_path.empty()) {
-        std::ifstream input(MAA_NS::path(credential_path), std::ios::binary);
-        std::string credential(16385, '\0');
-        if (!input) {
-            std::cout << "Cannot open the configured pairing credential.\n";
-            return;
-        }
-        input.read(credential.data(), static_cast<std::streamsize>(credential.size()));
-        credential.resize(static_cast<size_t>(input.gcount()));
-        if (input.bad() || credential.size() > 16384) {
-            std::cout << "Invalid pairing credential file.\n";
-            return;
-        }
-        credentials.emplace_back(std::move(credential));
+    for (const auto& credential : config_.configuration().ios.pairing_records) {
+        credentials.emplace_back(credential);
     }
     const auto options = json::value(json::object { { "pairing_records", std::move(credentials) } }).to_string();
     if (!MaaToolkitIOSDeviceFindWithOptions(options.c_str(), list)) {
@@ -907,17 +894,6 @@ void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Contr
     std::cout << "### Configure iOS device ###\n\n";
 
     auto& ios = config_.configuration().ios;
-
-    std::cout << "Pairing credential file (optional for USB) [" << ios.pairing_record_path << "]: ";
-    std::string credential_path;
-    std::getline(std::cin, credential_path);
-    if (std::cin.eof()) {
-        s_eof = true;
-        return;
-    }
-    if (!credential_path.empty()) {
-        ios.pairing_record_path = credential_path;
-    }
 
     if (ios.udid.empty()) {
         ios.udid = ios_config.udid;

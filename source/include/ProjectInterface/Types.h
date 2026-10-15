@@ -390,9 +390,9 @@ struct Configuration
         std::string udid;
         std::string wifi;
         std::string screencap;
-        std::string pairing_record_path;
+        std::vector<std::string> pairing_records;
 
-        MEO_JSONIZATION(MEO_OPT udid, MEO_OPT wifi, MEO_OPT screencap, MEO_OPT pairing_record_path);
+        MEO_JSONIZATION(MEO_OPT udid, MEO_OPT wifi, MEO_OPT screencap, MEO_OPT pairing_records);
     };
 
     struct PlayCoverConfig
@@ -517,7 +517,7 @@ struct RuntimeParam
         /// 非空 = 走局域网。空 = USB。
         std::string wifi;
         MaaIOScreencapMethod screencap = MaaIOScreencapMethod_Default;
-        std::string pairing_record_path;
+        std::vector<std::string> pairing_records;
     };
 
     struct PlayCoverParam
