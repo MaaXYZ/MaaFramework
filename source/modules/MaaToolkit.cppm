@@ -45,6 +45,7 @@ export using ::MaaToolkitIOSDeviceListCreate;
 export using ::MaaToolkitIOSDeviceListDestroy;
 export using ::MaaToolkitIOSDeviceFind;
 export using ::MaaToolkitIOSDeviceFindWithTimeout;
+export using ::MaaToolkitIOSDeviceFindWithOptions;
 export using ::MaaToolkitIOSDeviceListSize;
 export using ::MaaToolkitIOSDeviceListAt;
 export using ::MaaToolkitIOSDeviceGetName;

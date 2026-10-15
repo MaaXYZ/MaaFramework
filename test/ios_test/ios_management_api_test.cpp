@@ -30,6 +30,7 @@ bool result_is(const MAA_NS::StringBuffer& buffer, bool stopped)
 int main()
 {
     MAA_NS::StringBuffer result;
+    MAA_NS::StringBuffer credential;
     if (MaaIOSControlUnitDiscover("{}", nullptr, cancelled, nullptr, &result) || cancel_calls != 1 || !result_is(result, true)) {
         return 1;
     }
@@ -42,7 +43,8 @@ int main()
         || !result_is(result, false)) {
         return 3;
     }
-    if (MaaIOSControlUnitPair("{\"wifi\":\"auto\"}", nullptr, nullptr, nullptr, &result) || !result_is(result, false)) {
+    if (MaaIOSControlUnitPair("{\"wifi\":\"auto\"}", nullptr, nullptr, nullptr, &result, &credential) || !result_is(result, false)
+        || !credential.empty()) {
         return 4;
     }
     if (MaaIOSControlUnitPrepare("{\"replace\":1}", nullptr, nullptr, nullptr, &result) || !result_is(result, false)) {

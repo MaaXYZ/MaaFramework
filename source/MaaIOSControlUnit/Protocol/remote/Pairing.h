@@ -1,5 +1,7 @@
 #pragma once
 
+#include "wifi/PairRecord.h"
+
 #include <functional>
 #include <optional>
 #include <string>
@@ -23,8 +25,9 @@ namespace maa::ios::remote
 
 struct UsbPairingOptions
 {
-    std::string udid;              ///< 空值只选择唯一 USB 设备；不选择 usbmux Network 条目。
-    std::string pairing_directory; ///< 空值使用默认记录目录。
+    std::string udid; ///< 空值只选择唯一 USB 设备；不选择 usbmux Network 条目。
+    std::optional<wifi::PairRecord> existing_record;
+    std::vector<wifi::PairRecord> existing_records;
     int timeout_ms = 120000;
     /// 允许对不完整或已被设备拒绝的记录重新配对。已有可用记录仍优先复用，
     /// 传输或身份校验失败不会触发重新配对。记录属于另一 UDID 时始终拒绝覆盖。
@@ -39,14 +42,14 @@ struct PairingResult
     bool ok = false;
     bool reused = false;
     std::string udid;
-    std::string path;
+    std::optional<wifi::PairRecord> record;
     std::string error;
 };
 
 /// 经可信 USB 入口建立供无线连接使用的 RemotePairing 记录。
 /// 已有记录先 PairVerify；新配对要求设备确认，并由 pair_setup 校验 SRP/M6 身份。
-/// 使用新服务连接 PairVerify 成功后才保存，保存失败返回 ok=false。
-/// 设备已执行的配对不能回滚；重新配对后保存失败可能使旧文件不再可用。
+/// 使用新服务连接 PairVerify 成功后才向调用方返回凭据；本流程不读写文件。
+/// 设备已执行的配对不能回滚；调用方负责保存已返回的凭据。
 /// timeout_ms 范围为 1..300000，限制每次配对回复等待（包括用户确认），
 /// 不表示整个流程的总 deadline；每次 USB 隧道和 RSD 准备有独立 30 秒预算，可通过 should_cancel 中断。
 PairingResult pair_usb_remote(const UsbPairingOptions& options = { });
@@ -67,7 +70,7 @@ struct PairingWorkflowOperations
         setup;
 };
 
-/// 执行真实记录读取、复用/重新配对决策和验证后保存；不枚举设备。
+/// 执行内存凭据复用/重新配对决策，验证后返回；不枚举设备或访问文件。
 /// selected_udid 必须由上述 USB 选择边界取得，hostname 用于新主机标识生成。
 /// 离线测试只使用合成记录和回调，协议密码学校验由 pair_setup/pair_verify 负责。
 PairingResult run_usb_pairing_workflow(

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "wifi/PairRecord.h"
+
 #include <chrono>
 #include <cstdint>
 #include <functional>
@@ -68,7 +70,7 @@ struct DiscoveryOptions
     std::chrono::milliseconds timeout { 3000 };
     /// 留空表示不取消。回调应快速返回且不抛异常；共享状态由调用方同步。
     std::function<bool()> should_cancel;
-    std::string pairing_directory; ///< 空值使用默认记录目录，不创建目录。
+    std::vector<wifi::PairRecord> pairing_records;
     bool include_usb = true;
     bool include_wifi = true;
     /// 独立于无线扫描的 usbmux 枚举预算（0..60 秒），涵盖连接及整个请求/回复。

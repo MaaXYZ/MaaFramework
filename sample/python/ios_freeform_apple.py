@@ -156,16 +156,18 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--udid", default="", help="设备 UDID，留空用唯一在连的那台")
     ap.add_argument("--wifi", default="", help="设备的局域网地址；留空走 USB")
+    ap.add_argument("--pairing-record", type=Path, help="调用方保存的配对凭据文件 / caller-owned pairing credential file")
     args = ap.parse_args()
 
     if not resource.post_bundle(SAMPLE_ROOT / "resource").wait():
         raise RuntimeError("failed to load sample resource")
 
-    controller = IOSController(udid=args.udid, wifi_address=args.wifi)
+    records = [args.pairing_record.read_text(encoding="utf-8")] if args.pairing_record else []
+    controller = IOSController(udid=args.udid, wifi_address=args.wifi, pairing_records=records)
     if not controller.post_connection().wait():
         raise RuntimeError(
             "failed to connect the iPhone. Over Wi-Fi this usually means there is no "
-            "RemotePairing record on this machine; see docs/zh_cn/2.4-控制方式说明.md"
+            "explicit pairing credential; see docs/zh_cn/2.4-控制方式说明.md"
         )
     print("connected:", controller.info)
 

@@ -37,17 +37,30 @@ extern "C"
      * device_may_have_changed before retrying with replacement.
      */
     MAA_CONTROL_UNIT_API MaaBool MaaIOSControlUnitDiscover(
-        const char* options_json, MaaIOSControlUnitManagementEventCallback event_callback,
-        MaaIOSControlUnitManagementCancelCallback cancel_callback, void* userdata, MaaStringBuffer* result);
+        const char* options_json,
+        MaaIOSControlUnitManagementEventCallback event_callback,
+        MaaIOSControlUnitManagementCancelCallback cancel_callback,
+        void* userdata,
+        MaaStringBuffer* result);
     MAA_CONTROL_UNIT_API MaaBool MaaIOSControlUnitPair(
-        const char* options_json, MaaIOSControlUnitManagementEventCallback event_callback,
-        MaaIOSControlUnitManagementCancelCallback cancel_callback, void* userdata, MaaStringBuffer* result);
+        const char* options_json,
+        MaaIOSControlUnitManagementEventCallback event_callback,
+        MaaIOSControlUnitManagementCancelCallback cancel_callback,
+        void* userdata,
+        MaaStringBuffer* result,
+        MaaStringBuffer* credential);
     MAA_CONTROL_UNIT_API MaaBool MaaIOSControlUnitCheckConnection(
-        const char* options_json, MaaIOSControlUnitManagementEventCallback event_callback,
-        MaaIOSControlUnitManagementCancelCallback cancel_callback, void* userdata, MaaStringBuffer* result);
+        const char* options_json,
+        MaaIOSControlUnitManagementEventCallback event_callback,
+        MaaIOSControlUnitManagementCancelCallback cancel_callback,
+        void* userdata,
+        MaaStringBuffer* result);
     MAA_CONTROL_UNIT_API MaaBool MaaIOSControlUnitPrepare(
-        const char* options_json, MaaIOSControlUnitManagementEventCallback event_callback,
-        MaaIOSControlUnitManagementCancelCallback cancel_callback, void* userdata, MaaStringBuffer* result);
+        const char* options_json,
+        MaaIOSControlUnitManagementEventCallback event_callback,
+        MaaIOSControlUnitManagementCancelCallback cancel_callback,
+        void* userdata,
+        MaaStringBuffer* result);
 
     /**
      * Create a native MaaFramework iOS controller.
@@ -56,10 +69,11 @@ extern "C"
      * wifi_address empty prefers USB, then paired Wi-Fi without a USB candidate.
      * "auto" discovers the paired device over mDNS;
      * an explicit IPv4/IPv6 address uses its RemotePairing service directly.
-     * Pairing is performed separately with MaaIOSManager, and records are read
-     * from MaaFramework/iOS under XDG_DATA_HOME or the platform user data directory.
+     * Pairing is performed separately through MaaToolkit. config is JSON with
+     * pairing_records: an array of caller-owned opaque credential strings.
+     * The controller owns a copy; no implicit pairing directory is read or written.
      * Development services require a suitable mounted Developer Disk Image;
-     * MaaIOSManager prepare downloads and mounts one without installing Xcode.
+     * MaaToolkitIOSDevicePrepare downloads and mounts one without installing Xcode.
      *
      * screencap_methods is a bitmask: ScreenshotService makes lossless PNG RPCs
      * without starting video; Stream receives and decodes HEVC frames. Combining
@@ -78,7 +92,7 @@ extern "C"
      * were running. Both take an application bundle identifier.
      */
     MAA_CONTROL_UNIT_API MaaIOSControlUnitHandle
-        MaaIOSControlUnitCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods);
+        MaaIOSControlUnitCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods, const char* config);
 
     MAA_CONTROL_UNIT_API void MaaIOSControlUnitDestroy(MaaIOSControlUnitHandle handle);
 

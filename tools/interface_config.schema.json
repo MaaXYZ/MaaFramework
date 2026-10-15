@@ -125,11 +125,16 @@
                                     "type": "string"
                                 }
                             },
-                            "required": ["name", "value"]
+                            "required": [
+                                "name",
+                                "value"
+                            ]
                         }
                     }
                 },
-                "required": ["name"]
+                "required": [
+                    "name"
+                ]
             }
         },
         "last_welcome": {
@@ -153,7 +158,31 @@
                     "$ref": "#/definitions/welcome"
                 }
             ]
+        },
+        "ios": {
+            "type": "object",
+            "title": "iOS 用户配置",
+            "properties": {
+                "udid": {
+                    "type": "string"
+                },
+                "wifi": {
+                    "type": "string"
+                },
+                "screencap": {
+                    "type": "string"
+                },
+                "pairing_record_path": {
+                    "type": "string",
+                    "description": "由调用方保存的配对凭据文件路径；不会搜索默认目录"
+                }
+            },
+            "additionalProperties": false
         }
     },
-    "required": ["controller", "resource", "task"]
+    "required": [
+        "controller",
+        "resource",
+        "task"
+    ]
 }

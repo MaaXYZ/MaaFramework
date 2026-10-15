@@ -435,7 +435,8 @@ MaaBool IOSControlUnitLibraryHolder::management(
     MaaIOSControlUnitManagementEventCallback event_callback,
     MaaIOSControlUnitManagementCancelCallback cancel_callback,
     void* userdata,
-    MaaStringBuffer* result)
+    MaaStringBuffer* result,
+    MaaStringBuffer* credential)
 {
     if (!result) {
         return false;
@@ -455,12 +456,19 @@ MaaBool IOSControlUnitLibraryHolder::management(
         }
     }
     check_version<IOSControlUnitLibraryHolder, decltype(MaaIOSControlUnitGetVersion)>(version_func_name_);
+    if (std::string_view(function_name) == "MaaIOSControlUnitPair") {
+        auto pair = get_function<decltype(MaaIOSControlUnitPair)>(function_name);
+        return pair && pair(options_json, event_callback, cancel_callback, userdata, result, credential);
+    }
     auto function = get_function<decltype(MaaIOSControlUnitDiscover)>(function_name);
     return function && function(options_json, event_callback, cancel_callback, userdata, result);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI>
-    IOSControlUnitLibraryHolder::create_control_unit(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods)
+std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI> IOSControlUnitLibraryHolder::create_control_unit(
+    const char* udid,
+    const char* wifi_address,
+    MaaIOScreencapMethod screencap_methods,
+    const char* config)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -481,7 +489,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI>
         return nullptr;
     }
 
-    auto control_unit_handle = create_control_unit_func(udid, wifi_address, screencap_methods);
+    auto control_unit_handle = create_control_unit_func(udid, wifi_address, screencap_methods, config);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";

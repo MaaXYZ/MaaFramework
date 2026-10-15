@@ -77,7 +77,7 @@ class IOSControlUnitLibraryHolder : public LibraryHolder<IOSControlUnitLibraryHo
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI>
-        create_control_unit(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods);
+        create_control_unit(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods, const char* config);
 
     static MaaBool management(
         const char* function_name,
@@ -85,7 +85,8 @@ public:
         MaaIOSControlUnitManagementEventCallback event_callback,
         MaaIOSControlUnitManagementCancelCallback cancel_callback,
         void* userdata,
-        MaaStringBuffer* result);
+        MaaStringBuffer* result,
+        MaaStringBuffer* credential = nullptr);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaIOSControlUnit");

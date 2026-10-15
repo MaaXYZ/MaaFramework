@@ -645,7 +645,7 @@ std::string Rsd::missing_service_message(const std::string_view name, const std:
     if (seen.empty()) {
         out += MAA_IOS_TR("Directory is empty; check tunnel setup and DDI mounting.");
         out += MAA_IOS_TR(
-            "\nDownload a supported DDI with MaaIOSManager prepare; installation and compatibility guidance: the MaaIOSManager "
+            "\nDownload a supported DDI with MaaToolkitIOSDevicePrepare; installation and compatibility guidance: the MaaToolkit iOS "
             "documentation.\n");
         return out;
     }
@@ -666,8 +666,8 @@ std::string Rsd::missing_service_message(const std::string_view name, const std:
         out += "  · " + n + "\n";
     }
     out += MAA_IOS_TR(
-        "A mounted DDI may still lack this service. Check its version and capabilities; download a supported DDI with MaaIOSManager "
-        "prepare. Installation guidance: the MaaIOSManager documentation.\n");
+        "A mounted DDI may still lack this service. Check its version and capabilities; download a supported DDI with MaaToolkit iOS "
+        "prepare. Installation guidance: the MaaToolkit iOS documentation.\n");
     out += MAA_IOS_TR(
                "Include this diagnostic when reporting the issue. For the full directory and "
                "feature lists, run feature_probe --all to print all ")

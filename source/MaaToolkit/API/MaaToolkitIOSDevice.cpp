@@ -28,12 +28,16 @@ MaaBool manage(
     MaaToolkitIOSDeviceEventCallback event_callback,
     MaaToolkitIOSDeviceCancelCallback cancel_callback,
     void* userdata,
-    MaaStringBuffer* result)
+    MaaStringBuffer* result,
+    MaaStringBuffer* credential = nullptr)
 {
     if (!result) {
         return false;
     }
     try {
+        if (credential) {
+            MaaStringBufferClear(credential);
+        }
 #ifdef MAA_WITH_IOS_DEVICE
         return MAA_NS::IOSControlUnitLibraryHolder::management(
             function_name,
@@ -41,7 +45,8 @@ MaaBool manage(
             event_callback,
             cancel_callback,
             userdata,
-            result);
+            result,
+            credential);
 #else
         (void)function_name;
         (void)options_json;
@@ -74,9 +79,13 @@ MaaBool MaaToolkitIOSDevicePair(
     MaaToolkitIOSDeviceEventCallback event_callback,
     MaaToolkitIOSDeviceCancelCallback cancel_callback,
     void* userdata,
-    MaaStringBuffer* result)
+    MaaStringBuffer* result,
+    MaaStringBuffer* credential)
 {
-    return manage("MaaIOSControlUnitPair", options_json, event_callback, cancel_callback, userdata, result);
+    if (!credential || result == credential) {
+        return false;
+    }
+    return manage("MaaIOSControlUnitPair", options_json, event_callback, cancel_callback, userdata, result, credential);
 }
 
 MaaBool MaaToolkitIOSDeviceCheckConnection(
@@ -130,13 +139,23 @@ MaaBool MaaToolkitIOSDeviceFindWithTimeout(int64_t timeout_ms, MaaToolkitIOSDevi
         list->warnings = "[\"timeout_ms must be between 0 and 60000\"]";
         return false;
     }
+    const auto options = json::value(json::object { { "timeout_ms", timeout_ms } }).to_string();
+    return MaaToolkitIOSDeviceFindWithOptions(options.c_str(), list);
+}
+
+MaaBool MaaToolkitIOSDeviceFindWithOptions(const char* options_json, MaaToolkitIOSDeviceList* list)
+{
+    if (!list) {
+        return false;
+    }
+    list->devices.clear();
+    list->warnings = "[]";
     try {
         std::unique_ptr<MaaStringBuffer, decltype(&MaaStringBufferDestroy)> result(MaaStringBufferCreate(), MaaStringBufferDestroy);
         if (!result) {
             return false;
         }
-        const auto options = json::value(json::object { { "timeout_ms", timeout_ms } }).to_string();
-        const bool success = MaaToolkitIOSDeviceDiscover(options.c_str(), nullptr, nullptr, nullptr, result.get());
+        const bool success = MaaToolkitIOSDeviceDiscover(options_json, nullptr, nullptr, nullptr, result.get());
         const auto parsed = json::parse(MaaStringBufferGet(result.get()));
         if (!parsed || !parsed->is_object()) {
             list->warnings = "[\"invalid iOS discovery result\"]";

@@ -7,8 +7,9 @@ extern "C"
 {
 #endif
 
-    // Synchronous management operations. options_json is a JSON object; result
-    // receives JSON with success, cancelled and error, including on failure.
+    // Synchronous operations. options_json may include pairing_records: an array
+    // of opaque credential strings to copy. result receives JSON with success,
+    // cancelled and error, including on failure.
     // event_json has type progress or pin. Returning false cancels the operation.
     // The cancellation callback may run on worker threads and must be thread-safe.
     typedef MaaBool (*MaaToolkitIOSDeviceEventCallback)(const char* event_json, void* userdata);
@@ -24,12 +25,16 @@ extern "C"
 
     // Options: udid, wifi (empty or "auto"), repair (USB only),
     // timeout_ms (1..300000, default 120000). Wi-Fi requires a PIN event callback.
+    // result and credential must be distinct, caller-created MaaStringBuffers.
+    // The verified versioned credential is returned separately from status JSON;
+    // failures clear credential. Persistence and access control belong to the caller.
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDevicePair(
         const char* options_json,
         MaaToolkitIOSDeviceEventCallback event_callback,
         MaaToolkitIOSDeviceCancelCallback cancel_callback,
         void* userdata,
-        MaaStringBuffer* result);
+        MaaStringBuffer* result,
+        MaaStringBuffer* credential);
 
     // Options: udid, wifi (empty, "auto" or address), port (explicit address only).
     // Closes the verified session before returning; does not create a shared tunnel.
@@ -43,6 +48,8 @@ extern "C"
     // Connection options plus cache_directory, replace (default false),
     // download_timeout_seconds (1..3600, default 300),
     // install_timeout_seconds (1..3600, default 180).
+    // Empty cache_directory uses temporary files and cleans them after the operation;
+    // only an explicit directory enables persistent caching.
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDevicePrepare(
         const char* options_json,
         MaaToolkitIOSDeviceEventCallback event_callback,
@@ -56,6 +63,8 @@ extern "C"
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceFind(MaaToolkitIOSDeviceList* list);
     // timeout_ms: 0..60000; USB enumeration has a separate one-second budget.
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceFindWithTimeout(int64_t timeout_ms, MaaToolkitIOSDeviceList* list);
+    // Same options as Discover, including explicit pairing_records.
+    MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceFindWithOptions(const char* options_json, MaaToolkitIOSDeviceList* list);
     MAA_TOOLKIT_API MaaSize MaaToolkitIOSDeviceListSize(const MaaToolkitIOSDeviceList* list);
     // Borrowed results remain valid until the next find or list destruction.
     MAA_TOOLKIT_API const MaaToolkitIOSDevice* MaaToolkitIOSDeviceListAt(const MaaToolkitIOSDeviceList* list, MaaSize index);

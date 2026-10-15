@@ -254,7 +254,7 @@ void test_non_network_paths()
     options.should_cancel = [] {
         return true;
     };
-    options.pairing_directory = "unused-invalid-path";
+    options.pairing_records = { };
     auto result = remote::discover_devices(options);
     check(
         result.cancelled && result.devices.empty() && result.warnings.empty() && !result.usb_available && !result.wifi_available,

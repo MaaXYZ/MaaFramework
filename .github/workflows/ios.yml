@@ -1,10 +1,10 @@
-name: iOS manager
+name: iOS integration
 
 on:
     workflow_dispatch:
     pull_request:
         paths:
-            - '.github/workflows/ios-manager.yml'
+            - '.github/workflows/ios.yml'
             - 'source/MaaIOSControlUnit/**'
             - 'source/MaaToolkit/**'
             - 'source/MaaFramework/**'
@@ -17,11 +17,11 @@ on:
             - 'include/MaaToolkit/**'
             - 'test/ios_test/**'
             - 'CMakeLists.txt'
-            - 'tools/MaaIOSManager/**'
+            - 'tools/ios/**'
     push:
         branches: ['feat/ios-control-unit', 'main']
         paths:
-            - '.github/workflows/ios-manager.yml'
+            - '.github/workflows/ios.yml'
             - 'source/MaaIOSControlUnit/**'
             - 'source/MaaToolkit/**'
             - 'source/MaaFramework/**'
@@ -34,13 +34,13 @@ on:
             - 'include/MaaToolkit/**'
             - 'test/ios_test/**'
             - 'CMakeLists.txt'
-            - 'tools/MaaIOSManager/**'
+            - 'tools/ios/**'
 
 permissions:
     contents: read
 
 concurrency:
-    group: ios-manager-${{ github.event.pull_request.number || github.ref }}
+    group: ios-${{ github.event.pull_request.number || github.ref }}
     # Retain results from the long native dependency builds when a new fix queues.
     cancel-in-progress: false
 
@@ -106,7 +106,7 @@ jobs:
                   & ./.ios-vcpkg/bootstrap-vcpkg.bat -disableMetrics
                   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
                   & ./.ios-vcpkg/vcpkg.exe install --triplet x64-windows --host-triplet x64-windows `
-                    --x-manifest-root="$pwd/tools/MaaIOSManager/ci" --x-install-root="$pwd/.ios-vcpkg/installed" `
+                    --x-manifest-root="$pwd/tools/ios/ci" --x-install-root="$pwd/.ios-vcpkg/installed" `
                     --no-binarycaching
                   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
                   "$pwd/.ios-vcpkg/installed/x64-windows/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
@@ -121,7 +121,7 @@ jobs:
                   elif [[ "$RUNNER_OS" == Linux ]]; then
                     # Native glibc + protocol C libraries; MaaDeps' matching libc++ ABI.
                     # This is separate from the portable release toolchain.
-                    extra+=(-G Ninja "-DCMAKE_TOOLCHAIN_FILE=$PWD/tools/MaaIOSManager/ci/linux-native-toolchain.cmake"
+                    extra+=(-G Ninja "-DCMAKE_TOOLCHAIN_FILE=$PWD/tools/ios/ci/linux-native-toolchain.cmake"
                       -DOPENSSL_ROOT_DIR=/usr -DWITH_RPATH_LIBRARY=OFF)
                   else
                     extra+=(-G "Visual Studio 17 2022" -A x64
@@ -132,17 +132,17 @@ jobs:
                   cmake -S . -B build "${extra[@]}" \
                     -DCMAKE_BUILD_TYPE=Release -DMAADEPS_TRIPLET='maa-${{ matrix.maadeps }}' \
                     -DWITH_IOS_CONTROLLER=ON -DBUILD_IOS_CONTROLLER_TESTING=ON \
-                    -DBUILD_IOS_MANAGER_TESTING=ON -DMAA_IOS_PROTOCOL_TESTS=ON \
+                    -DMAA_IOS_PROTOCOL_TESTS=ON \
                     -DWITH_ADB_CONTROLLER=OFF -DWITH_WIN32_CONTROLLER=OFF -DWITH_MACOS_CONTROLLER=OFF \
                     -DWITH_PLAYCOVER_CONTROLLER=OFF -DWITH_GAMEPAD_CONTROLLER=OFF -DWITH_LINUX_CONTROLLER=OFF \
                     -DWITH_ANDROID_NATIVE_CONTROLLER=OFF -DWITH_MAA_AGENT=OFF \
                     -DWITH_NODEJS_BINDING=OFF -DWITH_QUICKJS_BINDING=OFF -DBUILD_PICLI=OFF
 
-            - name: Build framework API, toolkit, session and tool
+            - name: Build framework API, toolkit and session
               shell: bash
               run: |
                   cmake --build build --config Release --parallel 3 \
-                    --target MaaFramework MaaToolkit MaaIOSControlUnit MaaIOSManager
+                    --target MaaFramework MaaToolkit MaaIOSControlUnit
                   cmake --build build --config Release --parallel 3
 
             - name: Run framework and protocol offline tests
@@ -151,7 +151,7 @@ jobs:
 
             - name: Install framework runtime
               shell: bash
-              run: cmake --install build --config Release --prefix "$PWD/build/ios-manager-artifact"
+              run: cmake --install build --config Release --prefix "$PWD/build/ios-artifact"
 
             - uses: actions/setup-python@v6
               with:
@@ -160,34 +160,32 @@ jobs:
             - name: Python management callback tests
               shell: bash
               env:
-                  MAAFW_BINARY_PATH: ${{ github.workspace }}/build/ios-manager-artifact/bin
+                  MAAFW_BINARY_PATH: ${{ github.workspace }}/build/ios-artifact/bin
                   PYTHONPATH: ${{ github.workspace }}/source/binding/Python
               run: |
                   python3 -m pip install ./source/binding/Python
                   python3 test/python/ios_management_test.py
 
-            - name: Package manager runtime and source materials
+            - name: Package framework runtime and source materials
               shell: bash
               run: |
-                  python tools/MaaIOSManager/ci/package.py --repository "$PWD" --build "$PWD/build" \
-                    --output "$PWD/build/ios-manager-artifact" --platform "${{ matrix.platform }}"
+                  python tools/ios/ci/package.py --repository "$PWD" --build "$PWD/build" \
+                    --output "$PWD/build/ios-artifact" --platform "${{ matrix.platform }}"
 
-            - name: Check packaged Windows C libraries and manager
+            - name: Check packaged Windows C libraries
               if: runner.os == 'Windows'
               shell: pwsh
               run: |
                   $python = (Get-Command python).Source
-                  $env:PATH = "$pwd/build/ios-manager-artifact/bin;$env:SystemRoot/System32;$env:SystemRoot;$env:SystemRoot/System32/Wbem"
-                  & $python -c "import ctypes,pathlib; root=pathlib.Path('build/ios-manager-artifact/bin').resolve(); cookies=[ctypes.WinDLL(str(root/name)) for name in ('MaaIOSControlUnit.dll','MaaToolkit.dll')]"
-                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-                  & ./build/ios-manager-artifact/bin/MaaIOSManager.exe --help
+                  $env:PATH = "$pwd/build/ios-artifact/bin;$env:SystemRoot/System32;$env:SystemRoot;$env:SystemRoot/System32/Wbem"
+                  & $python -c "import ctypes,pathlib; root=pathlib.Path('build/ios-artifact/bin').resolve(); cookies=[ctypes.WinDLL(str(root/name)) for name in ('MaaIOSControlUnit.dll','MaaToolkit.dll')]"
                   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-            - name: Upload manager and framework runtime
+            - name: Upload framework runtime
               uses: actions/upload-artifact@v7
               with:
-                  name: MaaIOSManager-${{ matrix.platform }}
-                  path: build/ios-manager-artifact/
+                  name: MaaIOSFramework-${{ matrix.platform }}
+                  path: build/ios-artifact/
                   include-hidden-files: true
                   if-no-files-found: error
 

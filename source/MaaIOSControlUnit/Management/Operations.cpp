@@ -37,6 +37,7 @@ Json discover(const Options& options, const Callbacks& callbacks)
     request.include_usb = !options.wifi_only;
     request.include_wifi = !options.usb_only;
     request.should_cancel = callbacks.cancelled;
+    request.pairing_records = options.pairing_records;
     const auto found = remote::discover_devices(request);
     auto devices = Json::array();
     for (const auto& device : found.devices) {
@@ -67,7 +68,7 @@ Json discover(const Options& options, const Callbacks& callbacks)
              { "warnings", found.warnings } };
 }
 
-Json pair(const Options& options, const Callbacks& callbacks)
+Json pair(const Options& options, const Callbacks& callbacks, std::string& credential)
 {
     const auto progress = [&callbacks](std::string_view message) {
         callbacks.notify({ { "type", "progress" }, { "message", message } });
@@ -75,6 +76,7 @@ Json pair(const Options& options, const Callbacks& callbacks)
     remote::PairingResult result;
     if (!options.wifi.empty()) {
         remote::WifiPairingOptions request;
+        request.existing_records = options.pairing_records;
         request.udid = options.udid;
         request.timeout_ms = options.timeout_ms;
         request.should_cancel = callbacks.cancelled;
@@ -94,12 +96,16 @@ Json pair(const Options& options, const Callbacks& callbacks)
     }
     else {
         remote::UsbPairingOptions request;
+        request.existing_records = options.pairing_records;
         request.udid = options.udid;
         request.timeout_ms = options.timeout_ms;
         request.allow_repair = options.repair;
         request.should_cancel = callbacks.cancelled;
         request.progress = progress;
         result = remote::pair_usb_remote(request);
+    }
+    if (result.ok && result.record) {
+        credential = wifi::format_record(*result.record);
     }
     return { { "success", result.ok },
              { "error", result.error },
@@ -111,7 +117,7 @@ Json pair(const Options& options, const Callbacks& callbacks)
 Json check_connection(const Options& options, const Callbacks& callbacks)
 {
     std::string error;
-    auto device = remote::open_device(options.udid, options.wifi, error, options.port, callbacks.cancelled);
+    auto device = remote::open_device(options.udid, options.wifi, error, options.port, callbacks.cancelled, options.pairing_records);
     if (!device) {
         return { { "success", false },
                  { "error", error },

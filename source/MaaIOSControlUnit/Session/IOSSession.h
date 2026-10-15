@@ -46,7 +46,12 @@ public:
     IOSSession(const IOSSession&) = delete;
     IOSSession& operator=(const IOSSession&) = delete;
 
-    bool create(const std::string& udid, const std::string& wifi_address, MaaIOScreencapMethod screencap_methods, std::string& err);
+    bool create(
+        const std::string& udid,
+        const std::string& wifi_address,
+        MaaIOScreencapMethod screencap_methods,
+        std::string& err,
+        const std::string& config);
     void close();
 
     [[nodiscard]] bool connected() const { return device_ != nullptr; }
@@ -55,7 +60,9 @@ public:
     bool logical_to_panel(int x, int y, int width, int height, double& fx, double& fy, std::string& err) const;
     bool touch(double x, double y, bool down, std::string& err);
     bool release_touch(std::string& err);
+
     [[nodiscard]] bool touch_active() const noexcept { return inputs_.touch_active; }
+
     bool tap(double x, double y, int hold_ms, std::string& err);
     bool stroke(const std::vector<std::pair<double, double>>& points, int step_ms, std::string& err);
     bool key_down(int key, std::string& err);

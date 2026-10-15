@@ -197,33 +197,24 @@ PairingResult detail::run_usb_pairing_workflow(
     }
 
     try {
-        const auto directory = options.pairing_directory.empty() ? wifi::default_record_dir() : options.pairing_directory;
-        result.path = wifi::record_path(directory, result.udid);
-        std::error_code ec;
-        const auto status = std::filesystem::symlink_status(result.path, ec);
-        const bool exists = status.type() != std::filesystem::file_type::not_found;
-        if (ec && ec != std::errc::no_such_file_or_directory) {
-            result.error = MAA_IOS_TR("Cannot inspect existing USB pairing record");
+        std::optional<wifi::PairRecord> existing = options.existing_record;
+        for (const auto& candidate : options.existing_records) {
+            if (candidate.udid != selected_udid) {
+                continue;
+            }
+            if (existing) {
+                result.error = "Multiple credentials match the USB device";
+                return result;
+            }
+            existing = candidate;
+        }
+        if (existing && existing->udid != result.udid) {
+            result.error = "Supplied pairing credential belongs to another device";
             return result;
         }
-        std::optional<wifi::PairRecord> existing;
-        if (exists && !ec) {
-            if (!std::filesystem::is_regular_file(status)) {
-                result.error = MAA_IOS_TR("Existing USB pairing record is not a regular file");
-                return result;
-            }
+        if (existing) {
             std::string error;
-            existing = wifi::load_record(result.path, error);
-            if (existing && existing->udid != result.udid) {
-                // 文件名净化可能碰撞。该文件属于另一设备时即使 repair 也不能覆盖。
-                result.error = MAA_IOS_TR("Existing pairing record belongs to a different device; choose another record directory");
-                return result;
-            }
-            if (!existing && !options.allow_repair) {
-                result.error = MAA_IOS_TR("Existing pairing record cannot be read; enable USB repair explicitly");
-                return result;
-            }
-            if (existing && existing->complete() && existing->has_peer_identity()) {
+            if (existing->complete() && existing->has_peer_identity()) {
                 progress(options, MAA_IOS_TR("Verifying the existing USB pairing record"));
                 if (cancelled(options, result.error)) {
                     return result;
@@ -235,6 +226,7 @@ PairingResult detail::run_usb_pairing_workflow(
                 if (verified.outcome == wifi::VerifyOutcome::Paired) {
                     result.ok = true;
                     result.reused = true;
+                    result.record = *existing;
                     return result;
                 }
                 if (verified.outcome != wifi::VerifyOutcome::NotPaired) {
@@ -257,10 +249,19 @@ PairingResult detail::run_usb_pairing_workflow(
             result.error = MAA_IOS_TR("Cannot obtain the local hostname for USB pairing");
             return result;
         }
-        // 重新配对保持已有主机标识；只有首次配对或不可解析的旧文件才重新派生。
-        const auto host_identifier = existing && !existing->host_identifier.empty()
-                                         ? existing->host_identifier
-                                         : wifi::host_identifier_uuid3(std::string(hostname) + ".MaaFramework.iOS");
+        // Independent applications must not replace each other's pairing identity
+        // merely because they run on the same computer. Repairs keep the identity.
+        std::string host_identifier;
+        if (existing) {
+            host_identifier = existing->host_identifier;
+        }
+        else {
+            const auto nonce = wifi::random_bytes(16, result.error);
+            if (!nonce) {
+                return result;
+            }
+            host_identifier = wifi::host_identifier_uuid3(wifi::b64_encode(*nonce));
+        }
         if (host_identifier.empty()) {
             result.error = MAA_IOS_TR("Cannot generate a host identifier for USB pairing");
             return result;
@@ -295,11 +296,8 @@ PairingResult detail::run_usb_pairing_workflow(
             result.error = MAA_IOS_TR("New USB pairing record verification failed: ") + (verified.error.empty() ? error : verified.error);
             return result;
         }
-        if (!wifi::save_record(result.path, setup.record, error)) {
-            result.error = MAA_IOS_TR("Cannot save the verified USB pairing record: ") + error;
-            return result;
-        }
         result.ok = true;
+        result.record = setup.record;
         return result;
     }
     catch (const std::exception&) {

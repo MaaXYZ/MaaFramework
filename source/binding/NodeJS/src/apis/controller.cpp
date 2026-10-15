@@ -1,5 +1,6 @@
 #include "controller.h"
 #include "loader.h"
+#include <meojson/json.hpp>
 
 #include <MaaFramework/MaaAPI.h>
 #ifdef MAA_JS_WITH_TOOLKIT
@@ -22,14 +23,19 @@ namespace
 }
 
 #ifdef MAA_JS_WITH_TOOLKIT
-std::optional<std::vector<IOSDevice>> find_ios_devices(int64_t timeout)
+std::optional<std::vector<IOSDevice>> find_ios_devices(int64_t timeout, const std::string& config)
 {
     auto list = MaaToolkitIOSDeviceListCreate();
     if (!list) {
         return std::nullopt;
     }
     std::unique_ptr<MaaToolkitIOSDeviceList, decltype(&MaaToolkitIOSDeviceListDestroy)> owned(list, MaaToolkitIOSDeviceListDestroy);
-    if (!MaaToolkitIOSDeviceFindWithTimeout(timeout, list)) {
+    auto options = json::parse(config);
+    if (!options || !options->is_object()) {
+        return std::nullopt;
+    }
+    (*options)["timeout_ms"] = timeout;
+    if (!MaaToolkitIOSDeviceFindWithOptions(options->to_string().c_str(), list)) {
         return std::nullopt;
     }
     std::vector<IOSDevice> result;
@@ -641,7 +647,8 @@ maajs::ValueType load_macos_controller(maajs::EnvType env)
     return ctor;
 }
 
-maajs::PromiseType IOSControllerImpl::find(maajs::EnvType env, maajs::OptionalParam<int32_t> timeout_ms)
+maajs::PromiseType
+    IOSControllerImpl::find(maajs::EnvType env, maajs::OptionalParam<int32_t> timeout_ms, maajs::OptionalParam<std::string> config)
 {
 #ifdef MAA_JS_WITH_TOOLKIT
     const auto timeout = timeout_ms.value_or(3000);
@@ -649,21 +656,25 @@ maajs::PromiseType IOSControllerImpl::find(maajs::EnvType env, maajs::OptionalPa
         throw maajs::MaaError { "timeout_ms must be between 0 and 60000" };
     }
     using Result = std::optional<std::vector<IOSDevice>>;
-    auto worker = new maajs::AsyncWork<Result>(env, [timeout] { return find_ios_devices(timeout); });
+    auto worker =
+        new maajs::AsyncWork<Result>(env, [timeout, options = config.value_or("{}")] { return find_ios_devices(timeout, options); });
     worker->Queue();
     return worker->Promise();
 #else
     std::ignore = env;
     std::ignore = timeout_ms;
+    std::ignore = config;
     throw_toolkit_unavailable("IOSController.find");
 #endif
 }
 
 IOSControllerImpl* IOSControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [udid, wifi_address, screencap_methods] = maajs::UnWrapArgs<IOSControllerCtorParam, void>(info);
+    auto [udid, wifi_address, screencap_methods, config] = maajs::UnWrapArgs<IOSControllerCtorParam, void>(info);
     const auto wifi = wifi_address.value_or("");
-    auto ctrl = MaaIOSControllerCreate(udid.c_str(), wifi.c_str(), screencap_methods.value_or(MaaIOScreencapMethod_Default));
+    const auto options = config.value_or("{}");
+    auto ctrl =
+        MaaIOSControllerCreate(udid.c_str(), wifi.c_str(), screencap_methods.value_or(MaaIOScreencapMethod_Default), options.c_str());
     if (!ctrl) {
         return nullptr;
     }

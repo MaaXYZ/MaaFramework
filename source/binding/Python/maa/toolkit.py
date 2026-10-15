@@ -194,7 +194,7 @@ class Toolkit:
         return devices
 
     @staticmethod
-    def find_ios_devices(timeout_ms: int = 3000) -> list[IOSDevice]:
+    def find_ios_devices(timeout_ms: int = 3000, pairing_records: Optional[list[str]] = None) -> list[IOSDevice]:
         """Discover USB/Wi-Fi devices without pairing or starting a media session."""
         if timeout_ms < 0 or timeout_ms > 60000:
             raise ValueError("timeout_ms must be between 0 and 60000")
@@ -204,7 +204,8 @@ class Toolkit:
         if not handle:
             raise MemoryError("could not allocate iOS device list")
         try:
-            if not api.MaaToolkitIOSDeviceFindWithTimeout(timeout_ms, handle):
+            options = json.dumps({"timeout_ms": timeout_ms, "pairing_records": pairing_records or []}).encode()
+            if not api.MaaToolkitIOSDeviceFindWithOptions(options, handle):
                 warnings = api.MaaToolkitIOSDeviceListGetWarnings(handle).decode("utf-8")
                 raise RuntimeError(f"iOS discovery failed: {warnings}")
             devices = []
@@ -240,14 +241,17 @@ class Toolkit:
         options: Optional[dict[str, Any]] = None,
         on_event: Optional[Callable[[dict[str, Any]], bool]] = None,
         cancelled: Optional[Callable[[], bool]] = None,
-    ) -> dict[str, Any]:
-        """同步 USB/Wi-Fi 配对 / Blocking USB/Wi-Fi pairing.
+    ) -> tuple[dict[str, Any], str]:
+        """同步配对，返回 (status, credential) / Returns (status, opaque credential).
 
         Wi-Fi pairing requires on_event to display its PIN. USB pairing may omit it.
         on_event receives progress/PIN events; True continues, False cancels.
         Callback threading and error handling are the same as ios_discover.
         """
-        return Toolkit._ios_manage("Pair", options, on_event, cancelled)
+        from .buffer import StringBuffer
+        credential = StringBuffer()
+        result = Toolkit._ios_manage("Pair", options, on_event, cancelled, credential)
+        return result, credential.get()
 
     @staticmethod
     def ios_check_connection(
@@ -279,6 +283,7 @@ class Toolkit:
         options: Optional[dict[str, Any]],
         on_event: Optional[Callable[[dict[str, Any]], bool]],
         cancelled: Optional[Callable[[], bool]],
+        credential_buffer: Optional[Any] = None,
     ) -> dict[str, Any]:
         from .buffer import StringBuffer
 
@@ -325,7 +330,10 @@ class Toolkit:
         cancel_callback = _IOSCancelCallback(cancel)
         result_buffer = StringBuffer()
         function = getattr(Library.toolkit(), f"MaaToolkitIOSDevice{operation}")
-        function(encoded_options, event_callback, cancel_callback, None, result_buffer._handle)
+        if operation == "Pair":
+            function(encoded_options, event_callback, cancel_callback, None, result_buffer._handle, credential_buffer._handle)
+        else:
+            function(encoded_options, event_callback, cancel_callback, None, result_buffer._handle)
         if errors:
             raise errors[0]
         result: dict[str, Any] = json.loads(result_buffer.get())
@@ -476,14 +484,19 @@ class Toolkit:
         for name in ("Discover", "Pair", "CheckConnection", "Prepare"):
             function = getattr(api, f"MaaToolkitIOSDevice{name}")
             function.restype = MaaBool
-            function.argtypes = [ctypes.c_char_p, _IOSEventCallback, _IOSCancelCallback,
-                                 ctypes.c_void_p, MaaStringBufferHandle]
+            argument_types = [ctypes.c_char_p, _IOSEventCallback, _IOSCancelCallback,
+                              ctypes.c_void_p, MaaStringBufferHandle]
+            if name == "Pair":
+                argument_types.append(MaaStringBufferHandle)
+            function.argtypes = argument_types
         api.MaaToolkitIOSDeviceListCreate.restype = ctypes.c_void_p
         api.MaaToolkitIOSDeviceListCreate.argtypes = []
         api.MaaToolkitIOSDeviceListDestroy.restype = None
         api.MaaToolkitIOSDeviceListDestroy.argtypes = [ctypes.c_void_p]
         api.MaaToolkitIOSDeviceFindWithTimeout.restype = MaaBool
         api.MaaToolkitIOSDeviceFindWithTimeout.argtypes = [ctypes.c_int64, ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceFindWithOptions.restype = MaaBool
+        api.MaaToolkitIOSDeviceFindWithOptions.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
         api.MaaToolkitIOSDeviceListSize.restype = MaaSize
         api.MaaToolkitIOSDeviceListSize.argtypes = [ctypes.c_void_p]
         api.MaaToolkitIOSDeviceListAt.restype = ctypes.c_void_p

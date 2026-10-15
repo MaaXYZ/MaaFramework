@@ -335,6 +335,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
 
         ios.udid = config_.ios.udid;
         ios.wifi = config_.ios.wifi;
+        ios.pairing_record_path = config_.ios.pairing_record_path;
 
         if (!controller.ios.screencap.empty()) {
             ios.screencap = parse_ios_screencap_method(controller.ios.screencap);

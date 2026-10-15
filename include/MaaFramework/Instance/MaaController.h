@@ -59,12 +59,12 @@ extern "C"
      *                     "auto" discovers paired wireless candidates;
      *                     an IPv4/IPv6 address connects directly over Wi-Fi.
      * @param screencap_methods Bitmask of Stream and/or ScreenshotService.
+     * @param config JSON with pairing_records (opaque credential strings); nullptr is {}.
      * @return Controller handle, or nullptr on failure.
      *
-     * @note MaaIOSManager separately manages device discovery, interactive pairing and
-     *       native DDI preparation. Records live under MaaFramework/iOS in the platform
-     *       data directory, independently of scrctl. Its connect command only validates
-     *       a connection and exits; this controller creates and owns its own session.
+     * @note MaaToolkit provides discovery, pairing and DDI preparation. The caller
+     *       holds/persists credentials and passes them explicitly. This controller
+     *       copies config and owns its session; no implicit credential files are used.
      * @note Available when the native iOS module is included in the build. Requires
      *       device Developer Mode, trust/pairing and a compatible mounted DDI.
      * @note ScreenshotService requests lossless PNGs without starting video. Stream
@@ -82,7 +82,7 @@ extern "C"
      *       running instances; stopping an already stopped app succeeds.
      */
     MAA_FRAMEWORK_API MaaController*
-        MaaIOSControllerCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods);
+        MaaIOSControllerCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods, const char* config);
 
     /**
      * @brief Create an Android native controller backed by MaaAndroidNativeControlUnit.

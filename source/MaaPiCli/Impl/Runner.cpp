@@ -1,6 +1,7 @@
 #include "ProjectInterface/Runner.h"
 
 #include <format>
+#include <fstream>
 #include <iostream>
 
 #include <meojson/json.hpp>
@@ -152,7 +153,25 @@ bool Runner::run(const RuntimeParam& param)
     }
     else if (const auto* p_ios_param = std::get_if<RuntimeParam::IOSParam>(&param.controller_param)) {
 #if defined(MAA_WITH_IOS_CONTROLLER)
-        controller_handle = MaaIOSControllerCreate(p_ios_param->udid.c_str(), p_ios_param->wifi.c_str(), p_ios_param->screencap);
+        json::array records;
+        if (!p_ios_param->pairing_record_path.empty()) {
+            std::ifstream input(MAA_NS::path(p_ios_param->pairing_record_path), std::ios::binary);
+            std::string credential(16385, '\0');
+            if (!input) {
+                LogError << "Cannot open the configured iOS pairing credential";
+                return false;
+            }
+            input.read(credential.data(), static_cast<std::streamsize>(credential.size()));
+            credential.resize(static_cast<size_t>(input.gcount()));
+            if (input.bad() || credential.size() > 16384) {
+                LogError << "Cannot read iOS pairing credential";
+                return false;
+            }
+            records.emplace_back(std::move(credential));
+        }
+        const auto options = json::value(json::object { { "pairing_records", std::move(records) } }).to_string();
+        controller_handle =
+            MaaIOSControllerCreate(p_ios_param->udid.c_str(), p_ios_param->wifi.c_str(), p_ios_param->screencap, options.c_str());
 #else
         std::ignore = p_ios_param;
         LogError << "iOS controller is disabled in this build";

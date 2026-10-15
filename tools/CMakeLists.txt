@@ -8,7 +8,3 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/custom.recognition.schema.json DESTINA
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/interface.schema.json DESTINATION tools)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/interface_config.schema.json DESTINATION tools)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/interface_import.schema.json DESTINATION tools)
-
-if(WITH_IOS_CONTROLLER)
-    add_subdirectory(MaaIOSManager)
-endif()

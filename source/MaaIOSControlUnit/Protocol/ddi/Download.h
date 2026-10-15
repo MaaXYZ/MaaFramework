@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -14,7 +15,8 @@ namespace maa::ios::ddi
 
 struct DownloadOptions
 {
-    // Empty selects the platform cache directory. A supplied root must be absolute.
+    // Empty uses private temporary storage, removed with the last DownloadResult.
+    // An explicit absolute root enables persistent validated caching.
     std::filesystem::path cache_root;
     std::chrono::seconds timeout { 300 };
     std::function<bool()> cancelled;
@@ -38,6 +40,7 @@ struct DownloadResult
     std::string source_url;
     bool cache_hit = false;
     Kind kind = Kind::Cryptex;
+    std::shared_ptr<void> temporary_storage = { };
 };
 
 // Selects the image category from the OS version. Personalized images validate
@@ -49,7 +52,6 @@ std::optional<DownloadResult> download_for_target(const DownloadOptions& options
 // Downloads the pinned Cryptex DDI only. Does not connect to or modify a device.
 // Returns nullopt and a diagnostic on failure, timeout or cancellation.
 std::optional<DownloadResult> download_cryptex(const DownloadOptions& options, std::string& error);
-std::optional<std::filesystem::path> default_cache_root(std::string& error);
 // Validates every pinned file, its digest and the Cryptex manifest structure.
 bool validate_cryptex_cache(const std::filesystem::path& directory, std::string& error);
 

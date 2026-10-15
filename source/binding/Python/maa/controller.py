@@ -998,6 +998,7 @@ class IOSController(Controller):
         udid: str = "",
         wifi_address: str = "",
         screencap_methods: int = MaaIOScreencapMethodEnum.Stream | MaaIOScreencapMethodEnum.ScreenshotService,
+        pairing_records: Optional[list[str]] = None,
     ):
         """创建 iOS 控制器 / Create iOS controller
 
@@ -1005,6 +1006,7 @@ class IOSController(Controller):
             udid: 设备 UDID，传空串要求仅有一台可用设备 / device UDID, empty requires a unique available device
             wifi_address: 设备局域网地址或 auto；空串优先 USB，缺少 USB 时发现已配对 Wi-Fi / device LAN address or auto; empty prefers USB, then paired Wi-Fi discovery
             screencap_methods: 允许的截图方式位掩码 / allowed screencap method bitmask
+            pairing_records: 调用方持有的配对凭据 / caller-owned opaque pairing credentials
 
         Raises:
             RuntimeError: 如果创建失败
@@ -1016,6 +1018,7 @@ class IOSController(Controller):
             udid.encode(),
             wifi_address.encode(),
             MaaIOScreencapMethod(screencap_methods),
+            json.dumps({"pairing_records": pairing_records or []}, ensure_ascii=False).encode(),
         )
 
         if not self._handle:
@@ -1027,6 +1030,7 @@ class IOSController(Controller):
             ctypes.c_char_p,
             ctypes.c_char_p,
             MaaIOScreencapMethod,
+            ctypes.c_char_p,
         ]
 
 

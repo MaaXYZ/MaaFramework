@@ -524,12 +524,35 @@ std::optional<DownloadResult> download(
             return std::nullopt;
         }
         fs::path root = options.cache_root;
+        std::shared_ptr<void> temporary_storage;
         if (root.empty()) {
-            auto selected = default_cache_root(error);
-            if (!selected) {
-                return std::nullopt;
+            const auto temporary_root = fs::temp_directory_path();
+            for (int attempt = 0; attempt != 16; ++attempt) {
+                std::array<unsigned char, 16> random;
+                if (RAND_bytes(random.data(), static_cast<int>(random.size())) != 1) {
+                    throw std::runtime_error("Cannot create a unique temporary DDI directory");
+                }
+                constexpr char hex[] = "0123456789abcdef";
+                std::string name = "maafw-ddi-";
+                for (auto value : random) {
+                    name += hex[value >> 4];
+                    name += hex[value & 15];
+                }
+                const auto candidate = temporary_root / name;
+                if (!fs::create_directory(candidate)) {
+                    continue;
+                }
+                temporary_storage = std::shared_ptr<void>(new fs::path(candidate), [](void* pointer) {
+                    std::unique_ptr<fs::path> directory(static_cast<fs::path*>(pointer));
+                    std::error_code ignored;
+                    fs::remove_all(*directory, ignored);
+                });
+                root = candidate;
+                break;
             }
-            root = *selected;
+            if (root.empty()) {
+                throw std::runtime_error("Cannot create a temporary DDI directory");
+            }
         }
         if (!root.is_absolute()) {
             throw std::runtime_error(MAA_IOS_TR("DDI cache root must be an absolute path"));
@@ -555,7 +578,7 @@ std::optional<DownloadResult> download(
             if (stopped()) {
                 return std::nullopt;
             }
-            return DownloadResult { directory, catalog.build, catalog.source_url, true, catalog.kind };
+            return DownloadResult { directory, catalog.build, catalog.source_url, true, catalog.kind, temporary_storage };
         }
         const auto lock_path = root / (cache_name + ".lock");
         if (!fs::create_directory(lock_path)) {
@@ -570,7 +593,7 @@ std::optional<DownloadResult> download(
             if (target) {
                 check_manifest(directory, catalog, target);
             }
-            return DownloadResult { directory, catalog.build, catalog.source_url, true, catalog.kind };
+            return DownloadResult { directory, catalog.build, catalog.source_url, true, catalog.kind, temporary_storage };
         }
         std::vector<uint8_t> nonce(16);
         if (RAND_bytes(nonce.data(), static_cast<int>(nonce.size())) != 1) {
@@ -654,7 +677,7 @@ std::optional<DownloadResult> download(
         }
         fs::rename(staging, directory);
         cleanup.path.clear();
-        return DownloadResult { directory, catalog.build, catalog.source_url, false, catalog.kind };
+        return DownloadResult { directory, catalog.build, catalog.source_url, false, catalog.kind, temporary_storage };
     }
     catch (const std::exception& e) {
         error = e.what();
@@ -662,49 +685,6 @@ std::optional<DownloadResult> download(
     }
 }
 } // namespace detail
-
-std::optional<fs::path> default_cache_root(std::string& error)
-{
-    error.clear();
-    auto environment_path = [](const char* name) -> fs::path {
-#ifdef _WIN32
-        std::wstring wide_name;
-        while (*name)
-            wide_name += static_cast<wchar_t>(*name++);
-        const auto* value = _wgetenv(wide_name.c_str());
-        return value && *value ? fs::path(value) : fs::path { };
-#else
-        const auto* value = std::getenv(name);
-        return value && *value ? fs::path(value) : fs::path { };
-#endif
-    };
-    auto xdg = environment_path("XDG_CACHE_HOME");
-    if (!xdg.empty()) {
-        if (!xdg.is_absolute()) {
-            error = MAA_IOS_TR("XDG_CACHE_HOME must be an absolute path");
-            return std::nullopt;
-        }
-        return xdg / "MaaFramework/iOS" / "ddi";
-    }
-#ifdef _WIN32
-    auto root = environment_path("LOCALAPPDATA");
-    if (root.is_absolute()) {
-        return root / "MaaFramework/iOS" / "cache" / "ddi";
-    }
-#elif defined(__APPLE__)
-    auto root = environment_path("HOME");
-    if (root.is_absolute()) {
-        return root / "Library" / "Caches" / "MaaFramework/iOS" / "ddi";
-    }
-#else
-    auto root = environment_path("HOME");
-    if (root.is_absolute()) {
-        return root / ".cache" / "MaaFramework/iOS" / "ddi";
-    }
-#endif
-    error = MAA_IOS_TR("No absolute platform cache directory is available; specify --ddi-directory");
-    return std::nullopt;
-}
 
 std::optional<DownloadResult> download_cryptex(const DownloadOptions& options, std::string& error)
 {

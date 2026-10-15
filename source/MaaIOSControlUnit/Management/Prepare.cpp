@@ -78,7 +78,7 @@ Json prepare(const Options& o, const Callbacks& callbacks)
         ecid = number("UniqueChipID");
     }
     else {
-        device = remote::open_device(o.udid, o.wifi, error, o.port, cancelled);
+        device = remote::open_device(o.udid, o.wifi, error, o.port, cancelled, o.pairing_records);
         if (!device) {
             return fail();
         }
@@ -111,6 +111,40 @@ Json prepare(const Options& o, const Callbacks& callbacks)
     auto selected = ddi::select_for_version(target.system_version, error);
     if (!selected) {
         return fail();
+    }
+    // A mounted image alone does not establish compatibility. On CoreDevice
+    // systems also require the controller's screenshot feature to be advertised.
+    if (!o.replace && selected->kind != ddi::Kind::Classic) {
+        if (!device) {
+            transport::IoBudget preparation({ seconds(30), cancelled });
+            device = remote::Device::establish_bounded(record->udid, preparation, error, false, true);
+            if (!device) {
+                return fail();
+            }
+        }
+        if (device->rsd().supports("com.apple.coredevice.screencaptureservice", "com.apple.coredevice.feature.capturescreenshot")) {
+            auto adapter = !o.wifi.empty() ? ddi::ServiceTransport::open_remote(*device, seconds(30), cancelled, error)
+                                           : ddi::ServiceTransport::open_usb(*lockdown, record->device_id, seconds(30), cancelled, error);
+            if (!adapter) {
+                return fail();
+            }
+            auto wire = adapter->service();
+            ddi::MountOptions inspect;
+            inspect.timeout = seconds(30);
+            inspect.cancelled = cancelled;
+            auto mounted = ddi::inspect_mounted(wire, selected->kind, inspect, error);
+            if (!mounted) {
+                return fail();
+            }
+            if (mounted->state != ddi::MountState::NotMounted) {
+                return { { "success", true },
+                         { "error", "" },
+                         { "cancelled", callbacks.stopped() },
+                         { "status", "already_mounted" },
+                         { "downloaded", false },
+                         { "device_may_have_changed", false } };
+            }
+        }
     }
     callbacks.notify(
         { { "type", "progress" },

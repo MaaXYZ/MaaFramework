@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Collect the independent tool, exact source, dependency recipes and notices."""
+"""Collect the iOS framework runtime, exact source, dependency recipes and notices."""
 
 import argparse
 import hashlib
@@ -62,7 +62,7 @@ def windows_dependencies(repository: Path, output: Path) -> dict:
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(history, destination)
     shutil.copy2(vcpkg / "LICENSE.txt", sources / "LICENSE.txt")
-    shutil.copy2(repository / "tools/MaaIOSManager/ci/vcpkg.json", sources / "vcpkg.json")
+    shutil.copy2(repository / "tools/ios/ci/vcpkg.json", sources / "vcpkg.json")
     archives = sources / "upstream-archives"
     archives.mkdir(parents=True, exist_ok=True)
     for archive in sorted((vcpkg / "downloads").iterdir()):
@@ -106,7 +106,7 @@ def main() -> None:
         shutil.copy2(repository / filename, materials / filename)
     recipes = materials / "build-recipes"
     recipes.mkdir(exist_ok=True)
-    shutil.copy2(repository / ".github/workflows/ios-manager.yml", recipes / "ios-manager.yml")
+    shutil.copy2(repository / ".github/workflows/ios.yml", recipes / "ios.yml")
     maadeps = repository / "source/MaaUtils/MaaDeps"
     for triplet in (maadeps / "vcpkg/installed").iterdir():
         if triplet.is_dir() and (triplet / "share").is_dir():
@@ -116,7 +116,7 @@ def main() -> None:
     shutil.copy2(maadeps / "maadeps.cmake", maadeps_source / "maadeps.cmake")
     shutil.copy2(repository / "source/MaaIOSControlUnit/Protocol/LICENSE.Apache-2.0", output / "licenses/LICENSE.Apache-2.0")
     shutil.copy2(repository / "source/MaaIOSControlUnit/Protocol/NOTICE", output / "licenses/NOTICE")
-    shutil.copy2(repository / "tools/MaaIOSManager/README.md", output / "README.md")
+    shutil.copy2(repository / "tools/ios/README.md", output / "README.md")
     shutil.copy2(arguments.build / "CMakeCache.txt", materials / "CMakeCache.txt")
     dependency_sources = arguments.build / "_deps"
     if dependency_sources.is_dir():
@@ -142,7 +142,7 @@ def main() -> None:
     provenance = {
         "commit": subprocess.check_output(["git", "-C", str(repository), "rev-parse", "HEAD"], text=True).strip(),
         "platform": arguments.platform,
-        "architecture": "Manager -> MaaToolkit C API -> LibraryHolder -> MaaIOSControlUnit C API",
+        "architecture": "MaaToolkit C API -> LibraryHolder -> MaaIOSControlUnit C API",
         "binary_dependencies": "MaaFramework/MaaDeps runtime plus vcpkg DLLs" if arguments.platform.startswith("windows") else "MaaFramework/MaaDeps runtime plus system OpenSSL/FFmpeg/libcurl",
         "maadeps_version": "v3.0.0",
         "submodules": subprocess.check_output(["git", "-C", str(repository), "submodule", "status", "--recursive"], text=True).splitlines(),

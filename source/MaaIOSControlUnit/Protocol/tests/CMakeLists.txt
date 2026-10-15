@@ -1,4 +1,4 @@
-foreach(name IN ITEMS plist json hid rtp ddi_selection discovery device_selection tls_embedding decoder_capability)
+foreach(name IN ITEMS plist json hid rtp ddi_selection discovery device_selection tls_embedding decoder_capability credentials)
     add_executable(maa_ios_${name}_test ${name}_test.cpp)
     target_link_libraries(maa_ios_${name}_test PRIVATE MaaIOSProtocolTestSupport)
     add_test(NAME maa_ios_${name} COMMAND maa_ios_${name}_test)

@@ -357,21 +357,6 @@ std::optional<PairRecord> load_record(const std::string& path, std::string& err)
     return parse_record(*text, err);
 }
 
-std::string default_record_dir()
-{
-    const char* xdg = std::getenv("XDG_DATA_HOME");
-    if (xdg != nullptr && *xdg != '\0') {
-        return std::string(xdg) + "/MaaFramework/iOS";
-    }
-#ifdef _WIN32
-    if (const char* local = std::getenv("LOCALAPPDATA"); local && *local) {
-        return (std::filesystem::path(local) / "MaaFramework/iOS").string();
-    }
-#endif
-    const char* home = std::getenv("HOME");
-    return std::string(home != nullptr ? home : ".") + "/.local/share/MaaFramework/iOS";
-}
-
 std::string record_path(const std::string& dir, const std::string& udid)
 {
     return dir + "/remote-" + sanitize(udid) + ".pair";

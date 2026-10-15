@@ -280,14 +280,14 @@ declare global {
          *                     eligible device; explicit addresses require one matching
          *                     local record when udid is empty. Pairing is not done
          *                     here -- it needs a tap on the device, so create the record out
-         *                     of band first with MaaIOSManager pair and prepare.
+         *                     of band first with MaaToolkit pairing/preparation APIs.
          * @param screencap_method bitwise OR of `IOSScreencapMethod` values. Defaults to
          *                         `IOSScreencapMethod.Default` (stream first, fall back to the
          *                         screenshot service when a frame cannot be decoded).
          */
         class IOSController extends Controller {
-            static find(timeout_ms?: number): Promise<IOSDevice[] | null>
-            constructor(udid: string, wifi_address?: string, screencap_method?: ScreencapOrInputMethods)
+            static find(timeout_ms?: number, config?: string): Promise<IOSDevice[] | null>
+            constructor(udid: string, wifi_address?: string, screencap_method?: ScreencapOrInputMethods, config?: string)
         }
 
         class PlayCoverController extends Controller {

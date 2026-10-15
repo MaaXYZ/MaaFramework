@@ -28,7 +28,8 @@ MaaBool IOSControlUnitLibraryHolder::management(
     MaaIOSControlUnitManagementEventCallback event_callback,
     MaaIOSControlUnitManagementCancelCallback cancel_callback,
     void* userdata,
-    MaaStringBuffer* result)
+    MaaStringBuffer* result,
+    MaaStringBuffer* credential)
 {
     if (throw_management) {
         throw std::runtime_error("private protocol failure");
@@ -41,6 +42,9 @@ MaaBool IOSControlUnitLibraryHolder::management(
         return false;
     }
     MaaStringBufferSet(result, next_result.c_str());
+    if (credential) {
+        MaaStringBufferSet(credential, "opaque-test-credential");
+    }
     return true;
 }
 
@@ -79,9 +83,10 @@ int main()
             "does not leak protocol exception data");
         throw_management = false;
         auto* result = MaaStringBufferCreate();
+        auto* credential = MaaStringBufferCreate();
         require(result != nullptr, "result allocation");
         require(
-            MaaToolkitIOSDevicePair("{}", nullptr, nullptr, nullptr, result) && last_function == "MaaIOSControlUnitPair",
+            MaaToolkitIOSDevicePair("{}", nullptr, nullptr, nullptr, result, credential) && last_function == "MaaIOSControlUnitPair",
             "pair uses control unit");
         require(
             MaaToolkitIOSDeviceCheckConnection("{}", nullptr, nullptr, nullptr, result)
@@ -100,7 +105,8 @@ int main()
                 },
                 nullptr,
                 &pin_seen,
-                result)
+                result,
+                credential)
                 && pin_seen,
             "pairing events reach caller");
         require(
@@ -112,6 +118,7 @@ int main()
                 result),
             "cancellation reaches control unit");
         MaaStringBufferDestroy(result);
+        MaaStringBufferDestroy(credential);
         MaaToolkitIOSDeviceListDestroy(list);
         require(owned_udid == "device-id", "caller copy outlives list");
         require(!MaaToolkitIOSDeviceFind(nullptr) && MaaToolkitIOSDeviceListAt(nullptr, 0) == nullptr, "null handles");

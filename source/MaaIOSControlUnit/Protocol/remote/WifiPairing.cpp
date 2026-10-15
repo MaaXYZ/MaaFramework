@@ -286,30 +286,17 @@ bool record_text_valid(std::string_view value)
            && std::none_of(value.begin(), value.end(), [](unsigned char ch) { return ch < 0x20 || ch == 0x7f; });
 }
 
-std::string pairing_record_path(const std::string& udid, const WifiPairingOptions& options)
-{
-    return wifi::record_path(options.pairing_directory.empty() ? wifi::default_record_dir() : options.pairing_directory, udid);
-}
-
-bool pairing_target_available(const std::string& path, std::string& err)
-{
-    std::error_code ec;
-    const auto status = std::filesystem::symlink_status(path, ec);
-    if (std::filesystem::exists(status)) {
-        err = MAA_IOS_TR("Pairing record already exists; Wi-Fi pairing will not replace it");
-        return false;
-    }
-    if (ec && ec != std::errc::no_such_file_or_directory) {
-        err = MAA_IOS_TR("Cannot inspect the Wi-Fi pairing record path");
-        return false;
-    }
-    return true;
-}
 } // namespace
 
 bool detail::admit_wifi_pairing(const wifi::PairRecord& record, const WifiPairingOptions& options, std::string& err)
 {
     err.clear();
+    for (const auto& existing : options.existing_records) {
+        if (existing.udid == record.udid) {
+            err = "A credential for this device was supplied; verify it instead of pairing again";
+            return false;
+        }
+    }
     // Only peer fields are available here: M5 has authenticated the Identifier
     // and public key, but the responder has not yet emitted its M6 identity.
     if (record.udid.empty() || !record_text_valid(record.udid) || !record.has_peer_identity() || record.peer_alt_irk.size() != 16
@@ -322,7 +309,7 @@ bool detail::admit_wifi_pairing(const wifi::PairRecord& record, const WifiPairin
             err = MAA_IOS_TR("Wi-Fi pairing cancelled");
             return false;
         }
-        return pairing_target_available(pairing_record_path(record.udid, options), err);
+        return true;
     }
     catch (const std::exception&) {
         err = MAA_IOS_TR("Wi-Fi pairing workflow failed before completion");
@@ -343,9 +330,8 @@ PairingResult detail::save_wifi_pairing(
         result.error = MAA_IOS_TR("Wi-Fi pairing returned an incomplete or unexpected device identity");
         return result;
     }
-    result.path = pairing_record_path(record.udid, options);
     try {
-        if (!pairing_target_available(result.path, result.error)) {
+        if (!admit_wifi_pairing(record, options, result.error)) {
             return result;
         }
         if (options.should_cancel && options.should_cancel()) {
@@ -362,11 +348,8 @@ PairingResult detail::save_wifi_pairing(
             result.error = MAA_IOS_TR("Wi-Fi pairing cancelled");
             return result;
         }
-        if (!wifi::save_record_new(result.path, record, error)) {
-            result.error = MAA_IOS_TR("Cannot save the verified Wi-Fi pairing record: ") + error;
-            return result;
-        }
         result.ok = true;
+        result.record = record;
     }
     catch (const std::exception&) {
         result.error = MAA_IOS_TR("Wi-Fi pairing workflow failed before completion");
@@ -385,11 +368,6 @@ PairingResult pair_wifi_remote(const WifiPairingOptions& options)
     try {
         if (!deadline.active(result.error) || !transport::initialize_sockets(result.error)) {
             return result;
-        }
-        if (!options.udid.empty()) {
-            if (!pairing_target_available(pairing_record_path(options.udid, options), result.error)) {
-                return result;
-            }
         }
         wifi::PairableHostOptions host;
         host.host_identifier = uuid(result.error);

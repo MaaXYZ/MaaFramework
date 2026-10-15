@@ -858,7 +858,25 @@ void Interactor::select_ios_auto_detect()
         return;
     }
     std::unique_ptr<MaaToolkitIOSDeviceList, decltype(&MaaToolkitIOSDeviceListDestroy)> owned(list, MaaToolkitIOSDeviceListDestroy);
-    if (!MaaToolkitIOSDeviceFind(list)) {
+    json::array credentials;
+    const auto& credential_path = config_.configuration().ios.pairing_record_path;
+    if (!credential_path.empty()) {
+        std::ifstream input(MAA_NS::path(credential_path), std::ios::binary);
+        std::string credential(16385, '\0');
+        if (!input) {
+            std::cout << "Cannot open the configured pairing credential.\n";
+            return;
+        }
+        input.read(credential.data(), static_cast<std::streamsize>(credential.size()));
+        credential.resize(static_cast<size_t>(input.gcount()));
+        if (input.bad() || credential.size() > 16384) {
+            std::cout << "Invalid pairing credential file.\n";
+            return;
+        }
+        credentials.emplace_back(std::move(credential));
+    }
+    const auto options = json::value(json::object { { "pairing_records", std::move(credentials) } }).to_string();
+    if (!MaaToolkitIOSDeviceFindWithOptions(options.c_str(), list)) {
         std::cout << "Device discovery unavailable; enter a UDID/address manually.\n";
         return;
     }
@@ -873,7 +891,7 @@ void Interactor::select_ios_auto_detect()
             std::format("\t{}. {}  {}\n", devices.size(), MaaToolkitIOSDeviceGetName(device), MaaToolkitIOSDeviceGetUdid(device)));
     }
     if (devices.empty()) {
-        std::cout << "No selectable device. Pair and prepare it with MaaIOSManager, or enter a UDID manually.\n";
+        std::cout << "No selectable device. Prepare pairing/DDI through MaaToolkit, or enter a UDID manually.\n";
         return;
     }
     std::cout << std::format("\t{}. Enter a UDID manually\n", devices.size() + 1);
@@ -889,6 +907,17 @@ void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Contr
     std::cout << "### Configure iOS device ###\n\n";
 
     auto& ios = config_.configuration().ios;
+
+    std::cout << "Pairing credential file (optional for USB) [" << ios.pairing_record_path << "]: ";
+    std::string credential_path;
+    std::getline(std::cin, credential_path);
+    if (std::cin.eof()) {
+        s_eof = true;
+        return;
+    }
+    if (!credential_path.empty()) {
+        ios.pairing_record_path = credential_path;
+    }
 
     if (ios.udid.empty()) {
         ios.udid = ios_config.udid;
@@ -921,7 +950,7 @@ void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Contr
     }
 
     std::cout << "Device LAN address or auto for Wi-Fi. Empty prefers USB, then paired Wi-Fi discovery.\n"
-                 "Wi-Fi needs a verified MaaFramework pairing record on this machine;\n"
+                 "Wi-Fi needs the explicitly configured pairing credential file;\n"
                  "over Wi-Fi the UDID above only picks which record to use.\n";
     std::cout << "Wi-Fi address [" << (ios.wifi.empty() ? "auto transport" : ios.wifi) << "]: ";
     std::cin.sync();

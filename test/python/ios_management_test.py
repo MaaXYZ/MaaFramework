@@ -28,7 +28,7 @@ class NativeFunction:
         self.name = name
         self.api = api
 
-    def __call__(self, options, on_event, cancelled, userdata, result):
+    def __call__(self, options, on_event, cancelled, userdata, result, credential=None):
         self.api.calls.append((self.name, json.loads(options.decode("utf-8"))))
         state = {}
 
@@ -49,6 +49,8 @@ class NativeFunction:
             "success": not state["cancelled"], "cancelled": state["cancelled"],
             "error": "" if not state["cancelled"] else "cancelled", "label": "中文",
         })
+        if credential is not None:
+            FakeBuffer.instances[credential].text = "opaque-test-credential" if not state["cancelled"] else ""
         return not state["cancelled"]
 
 
@@ -84,6 +86,10 @@ class IOSManagementBindingTest(unittest.TestCase):
                 return True
 
             result = getattr(Toolkit, name)({"udid": "中文设备"}, event)
+            if symbol == "Pair":
+                result, credential = result
+                self.assertEqual(credential, "opaque-test-credential")
+                self.assertNotIn("credential", result)
             self.assertTrue(result["success"])
             self.assertEqual(result["label"], "中文")
             self.assertEqual(self.api.calls[-1], (f"MaaToolkitIOSDevice{symbol}", {"udid": "中文设备"}))
@@ -91,7 +97,8 @@ class IOSManagementBindingTest(unittest.TestCase):
             self.assertNotEqual(events[0][0], main_thread)
 
     def test_event_false_cancels_before_returning_result(self):
-        result = Toolkit.ios_pair(on_event=lambda event: False)
+        result, credential = Toolkit.ios_pair(on_event=lambda event: False)
+        self.assertEqual(credential, "")
         self.assertTrue(result["cancelled"])
         self.assertFalse(self.api.state["accepted"])
 
@@ -138,6 +145,18 @@ class IOSManagementBindingTest(unittest.TestCase):
             self.assertIs(function.argtypes[1], _IOSEventCallback)
             self.assertIs(function.argtypes[2], _IOSCancelCallback)
             self.assertIs(function.argtypes[4], MaaStringBufferHandle)
+            if name == "Pair":
+                self.assertIs(function.argtypes[5], MaaStringBufferHandle)
+
+
+class NativeIOSManagementBoundaryTest(unittest.TestCase):
+    def test_pair_credential_pointer_and_cancellation_without_device_io(self):
+        status, credential = Toolkit.ios_pair(cancelled=lambda: True)
+        if "disabled" in status.get("error", ""):
+            self.skipTest("iOS support is disabled")
+        self.assertFalse(status["success"])
+        self.assertTrue(status["cancelled"])
+        self.assertEqual(credential, "")
 
 
 if __name__ == "__main__":

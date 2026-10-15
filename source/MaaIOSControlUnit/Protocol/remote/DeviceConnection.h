@@ -19,7 +19,8 @@ std::optional<remote::Device> open_device(
     const std::string& wifi,
     std::string& err,
     uint16_t wifi_port = wifi::kAdvertisedPortFallback,
-    const std::function<bool()>& should_cancel = { });
+    const std::function<bool()>& should_cancel = { },
+    const std::vector<wifi::PairRecord>& pairing_records = { });
 
 namespace detail
 {

@@ -1,4 +1,5 @@
 #include "IOSSession.h"
+#include "Management/Credentials.h"
 
 #include <algorithm>
 #include <chrono>
@@ -58,7 +59,12 @@ IOSSession::~IOSSession()
     close();
 }
 
-bool IOSSession::create(const std::string& udid, const std::string& wifi_address, MaaIOScreencapMethod methods, std::string& err)
+bool IOSSession::create(
+    const std::string& udid,
+    const std::string& wifi_address,
+    MaaIOScreencapMethod methods,
+    std::string& err,
+    const std::string& config)
 {
     close();
     constexpr auto known = MaaIOScreencapMethod_Stream | MaaIOScreencapMethod_ScreenshotService;
@@ -66,11 +72,23 @@ bool IOSSession::create(const std::string& udid, const std::string& wifi_address
         err = "no supported iOS screencap method selected";
         return false;
     }
+    const auto parsed = maa::ios::management::Json::parse(config, nullptr, false);
+    std::vector<maa::ios::wifi::PairRecord> records;
+    if (!parsed.is_object() || !maa::ios::management::parse_credentials(parsed, records, err)) {
+        if (err.empty()) {
+            err = "Invalid iOS controller configuration";
+        }
+        return false;
+    }
     screencap_methods_ = methods & known;
     maa::ios::transport::IoBudget budget;
-    auto device = maa::ios::remote::open_device(udid, wifi_address, err, maa::ios::wifi::kAdvertisedPortFallback, [&budget] {
-        return budget.stopped();
-    });
+    auto device = maa::ios::remote::open_device(
+        udid,
+        wifi_address,
+        err,
+        maa::ios::wifi::kAdvertisedPortFallback,
+        [&budget] { return budget.stopped(); },
+        records);
     if (!device) {
         return false;
     }

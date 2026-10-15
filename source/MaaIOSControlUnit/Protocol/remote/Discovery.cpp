@@ -288,11 +288,7 @@ DiscoveryResult discover_devices(const DiscoveryOptions& options)
     if (options.include_wifi && options.timeout.count() > 0 && !result.cancelled) {
         // 先读取本地匹配材料，扫描中取消后仍能识别已收到的广播。
         // 不把没有本次广播的离线记录列为设备。
-        pair_records = detail::load_discovery_records(
-            options.pairing_directory.empty() ? wifi::default_record_dir() : options.pairing_directory,
-            options.should_cancel,
-            result.warnings,
-            result.cancelled);
+        pair_records = options.pairing_records;
         if (!result.cancelled) {
             auto browse = wifi::mdns::browse({ options.timeout, options.should_cancel });
             advertisements = std::move(browse.advertisements);

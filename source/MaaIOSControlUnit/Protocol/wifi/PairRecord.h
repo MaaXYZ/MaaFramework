@@ -58,10 +58,6 @@ bool save_record_new(const std::string& path, const PairRecord& record, std::str
 /// 最多读取 16 KiB 加一个检测字节，拒绝超限或读取失败，然后解析完整文本。
 std::optional<PairRecord> load_record(const std::string& path, std::string& err);
 
-/// 非空 XDG_DATA_HOME 优先，目录为其下的 MaaFramework/iOS；否则 Windows 尝试
-/// LOCALAPPDATA/MaaFramework/iOS。其余情况使用 HOME/.local/share/MaaFramework/iOS，HOME 未设置时
-/// 以当前目录为根（./.local/share/MaaFramework/iOS）。这里只生成路径，不创建目录。
-std::string default_record_dir();
 /// <dir>/remote-<完整 UDID 的净化结果>.pair：仅保留 ASCII 字母和数字，其余字符
 /// 均替换为下划线，避免 UDID 引入路径分隔符；不同原始字符串可能得到同一文件名。
 std::string record_path(const std::string& dir, const std::string& udid);

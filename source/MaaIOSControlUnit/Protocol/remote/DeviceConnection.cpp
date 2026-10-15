@@ -62,12 +62,14 @@ void preserve_scope(remote::DiscoveryCandidate& candidate)
     }
 }
 
-std::optional<wifi::PairRecord>
-    load_selected_record(std::string_view serial, std::string& error, const std::function<bool()>& should_cancel)
+std::optional<wifi::PairRecord> load_selected_record(
+    std::string_view serial,
+    std::string& error,
+    const std::function<bool()>& should_cancel,
+    const std::vector<wifi::PairRecord>& records)
 {
     std::vector<std::string> warnings;
     bool cancelled = false;
-    const auto records = remote::detail::load_discovery_records(wifi::default_record_dir(), should_cancel, warnings, cancelled);
     if (cancelled || startup_cancelled(should_cancel, error)) {
         error = MAA_IOS_TR("Device startup cancelled");
         return std::nullopt;
@@ -85,10 +87,12 @@ std::optional<remote::Device> open_discovered_device(
     const std::string& serial,
     std::string& error,
     const std::function<bool()>& should_cancel,
-    const transport::IoBudget& budget)
+    const transport::IoBudget& budget,
+    const std::vector<wifi::PairRecord>& records)
 {
     remote::DiscoveryOptions options;
     options.include_usb = false;
+    options.pairing_records = records;
     options.timeout = std::min(options.timeout, budget.remaining());
     options.should_cancel = should_cancel;
     const auto discovery = remote::discover_devices(options);
@@ -103,7 +107,7 @@ std::optional<remote::Device> open_discovered_device(
         }
         return std::nullopt;
     }
-    const auto record = load_selected_record(selection->udid, error, should_cancel);
+    const auto record = load_selected_record(selection->udid, error, should_cancel, records);
     if (!record) {
         return std::nullopt;
     }
@@ -286,7 +290,8 @@ std::optional<remote::Device> open_device(
     const std::string& wifi,
     std::string& error,
     uint16_t wifi_port,
-    const std::function<bool()>& should_cancel)
+    const std::function<bool()>& should_cancel,
+    const std::vector<wifi::PairRecord>& records)
 {
     transport::IoBudget budget({ std::chrono::milliseconds(30000), should_cancel });
     const std::function<bool()> cancelled = [&budget] {
@@ -298,14 +303,14 @@ std::optional<remote::Device> open_device(
             return std::nullopt;
         }
         if (wifi == "auto") {
-            return open_discovered_device(serial, error, cancelled, budget);
+            return open_discovered_device(serial, error, cancelled, budget, records);
         }
         if (!wifi.empty()) {
             if (!wifi_port) {
                 error = MAA_IOS_TR("Wi-Fi port must be between 1 and 65535");
                 return std::nullopt;
             }
-            const auto record = load_selected_record(serial, error, cancelled);
+            const auto record = load_selected_record(serial, error, cancelled, records);
             if (!record) {
                 return std::nullopt;
             }
@@ -327,7 +332,9 @@ std::optional<remote::Device> open_device(
                 [&budget](const std::string& selected, std::string& err) {
                     return remote::Device::establish_bounded(selected, budget, err);
                 },
-                [&](const std::string& selected, std::string& err) { return open_discovered_device(selected, err, cancelled, budget); },
+                [&](const std::string& selected, std::string& err) {
+                    return open_discovered_device(selected, err, cancelled, budget, records);
+                },
                 [](const std::string& warning) { std::fprintf(stderr, MAA_IOS_TR("Discovery warning: %s\n"), warning.c_str()); },
             });
     };

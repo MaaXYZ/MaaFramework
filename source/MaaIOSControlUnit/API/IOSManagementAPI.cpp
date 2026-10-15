@@ -6,6 +6,7 @@
 #include <string_view>
 
 #include "MaaUtils/Buffer/BufferTypes.hpp"
+#include "Management/Credentials.h"
 #include "Management/Operations.h"
 
 namespace
@@ -45,7 +46,7 @@ bool parse_options(Operation operation, const char* source, Options& options, st
         allowed = { "udid", "wifi", "port", "cache_directory", "replace", "download_timeout_seconds", "install_timeout_seconds" };
     }
     for (auto iter = value.begin(); iter != value.end(); ++iter) {
-        if (!allowed.contains(iter.key())) {
+        if (!allowed.contains(iter.key()) && iter.key() != "pairing_records") {
             error = "unknown iOS management option: " + iter.key();
             return false;
         }
@@ -95,6 +96,9 @@ bool parse_options(Operation operation, const char* source, Options& options, st
         out = static_cast<int>(number);
         return true;
     };
+    if (!parse_credentials(value, options.pairing_records, error)) {
+        return false;
+    }
     options.timeout_ms = operation == Operation::Pair ? 120000 : 3000;
     int port = options.port;
     if (!string("udid", options.udid) || !string("wifi", options.wifi) || !string("cache_directory", options.cache_directory)
@@ -131,12 +135,19 @@ MaaBool manage(
     MaaIOSControlUnitManagementEventCallback event_callback,
     MaaIOSControlUnitManagementCancelCallback cancel_callback,
     void* userdata,
-    MaaStringBuffer* output)
+    MaaStringBuffer* output,
+    MaaStringBuffer* credential_output = nullptr)
 {
+    if (operation == Operation::Pair && (!credential_output || output == credential_output)) {
+        return false;
+    }
     if (!output) {
         return false;
     }
     try {
+        if (credential_output) {
+            credential_output->clear();
+        }
         Options options;
         std::string error;
         if (!parse_options(operation, options_json, options, error)) {
@@ -191,6 +202,7 @@ MaaBool manage(
             };
         }
         Json result;
+        std::string credential;
         if (callbacks.stopped()) {
             result = { { "success", false }, { "error", "iOS management cancelled" } };
         }
@@ -200,7 +212,7 @@ MaaBool manage(
                 result = discover(options, callbacks);
                 break;
             case Operation::Pair:
-                result = pair(options, callbacks);
+                result = pair(options, callbacks, credential);
                 break;
             case Operation::CheckConnection:
                 result = check_connection(options, callbacks);
@@ -219,6 +231,9 @@ MaaBool manage(
         }
         const bool success = result.value("success", false);
         output->set(result.dump(-1, ' ', false, Json::error_handler_t::replace));
+        if (success && credential_output) {
+            credential_output->set(std::move(credential));
+        }
         return success;
     }
     catch (...) {
@@ -254,9 +269,10 @@ extern "C"
         MaaIOSControlUnitManagementEventCallback event,
         MaaIOSControlUnitManagementCancelCallback cancel,
         void* userdata,
-        MaaStringBuffer* result)
+        MaaStringBuffer* result,
+        MaaStringBuffer* credential)
     {
-        return manage(Operation::Pair, options, event, cancel, userdata, result);
+        return manage(Operation::Pair, options, event, cancel, userdata, result, credential);
     }
 
     MaaBool MaaIOSControlUnitCheckConnection(

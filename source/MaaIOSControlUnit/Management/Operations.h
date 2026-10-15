@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 
+#include "wifi/PairRecord.h"
 #include <nlohmann/json.hpp>
 
 namespace maa::ios::management
@@ -17,6 +18,7 @@ struct Options
     std::string udid;
     std::string wifi;
     std::string cache_directory;
+    std::vector<wifi::PairRecord> pairing_records;
     bool repair = false;
     bool replace = false;
     bool usb_only = false;
@@ -38,7 +40,7 @@ struct Callbacks
 };
 
 Json discover(const Options&, const Callbacks&);
-Json pair(const Options&, const Callbacks&);
+Json pair(const Options&, const Callbacks&, std::string& credential);
 Json check_connection(const Options&, const Callbacks&);
 Json prepare(const Options&, const Callbacks&);
 } // namespace maa::ios::management

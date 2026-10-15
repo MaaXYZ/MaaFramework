@@ -18,9 +18,10 @@ constexpr int kMinStepMs = 12;
 
 } // namespace
 
-IOSControlUnitMgr::IOSControlUnitMgr(std::string udid, std::string wifi_address, MaaIOScreencapMethod screencap_methods)
+IOSControlUnitMgr::IOSControlUnitMgr(std::string udid, std::string wifi_address, MaaIOScreencapMethod screencap_methods, std::string config)
     : udid_(std::move(udid))
     , wifi_address_(std::move(wifi_address))
+    , config_(std::move(config))
     , screencap_methods_(screencap_methods)
 {
 }
@@ -33,7 +34,7 @@ IOSControlUnitMgr::~IOSControlUnitMgr()
 bool IOSControlUnitMgr::connect()
 {
     std::string err;
-    if (!session_.create(udid_, wifi_address_, screencap_methods_, err)) {
+    if (!session_.create(udid_, wifi_address_, screencap_methods_, err, config_)) {
         LogError << "Failed to create iOS session" << VAR(err);
         return false;
     }
@@ -59,8 +60,7 @@ MaaControllerFeature IOSControlUnitMgr::get_features() const
 {
     // Framework long presses require down/up preferences; these flags do not
     // imply support for additional contacts. Framework pixel scaling stays enabled.
-    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick |
-           MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 }
 
 bool IOSControlUnitMgr::start_app(const std::string& intent)
