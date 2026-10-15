@@ -391,8 +391,18 @@ struct Configuration
         std::string wifi;
         std::string screencap;
         std::vector<std::string> pairing_records;
+        bool prepare_ddi = true;
+        std::string ddi_cache_directory;
+        int ddi_download_timeout_seconds = 300;
 
-        MEO_JSONIZATION(MEO_OPT udid, MEO_OPT wifi, MEO_OPT screencap, MEO_OPT pairing_records);
+        MEO_JSONIZATION(
+            MEO_OPT udid,
+            MEO_OPT wifi,
+            MEO_OPT screencap,
+            MEO_OPT pairing_records,
+            MEO_OPT prepare_ddi,
+            MEO_OPT ddi_cache_directory,
+            MEO_OPT ddi_download_timeout_seconds);
     };
 
     struct PlayCoverConfig
@@ -518,6 +528,9 @@ struct RuntimeParam
         std::string wifi;
         MaaIOScreencapMethod screencap = MaaIOScreencapMethod_Default;
         std::vector<std::string> pairing_records;
+        bool prepare_ddi = true;
+        std::string ddi_cache_directory;
+        int ddi_download_timeout_seconds = 300;
     };
 
     struct PlayCoverParam

@@ -102,11 +102,42 @@ Python 提供设备管理方法；NodeJS 提供控制器和发现配置，交互
 
 PiCli 运行 iOS 任务前会调用 `MaaToolkitIOSDevicePrepare`，成功后才创建并连接控制器。
 设备上可确认适用的已挂载镜像会被复用；否则按需下载、安装并验证挂载。
-准备失败时显示错误并停止运行。默认使用临时下载文件，不启用持久缓存，不主动替换已有镜像。
+准备失败时显示错误并停止运行，不主动替换已有镜像。
 仅完成配对不会触发 DDI 准备。
 
 Before running iOS tasks, PiCli calls `MaaToolkitIOSDevicePrepare` and proceeds to controller
 creation and connection only on success. It reuses a confirmed suitable mounted image or
 performs the required download, installation and mount verification. Preparation errors stop
-the run. Downloads use temporary storage by default, with no persistent cache or explicit
-replacement of an existing image. Pairing alone does not trigger preparation.
+the run. It does not explicitly replace an existing image. Pairing alone does not trigger preparation.
+
+PiCli 默认使用当前用户的平台持久缓存目录：
+
+| 平台 / Platform | 默认目录 / Default directory |
+| --- | --- |
+| macOS | `~/Library/Caches/MaaPiCli/ddi/` |
+| Linux | `$XDG_CACHE_HOME/MaaPiCli/ddi/`，未设置或非绝对路径时用 `~/.cache/MaaPiCli/ddi/` |
+| Windows | `%LOCALAPPDATA%/MaaPiCli/cache/ddi/` |
+
+在 `config/maa_pi_config.json` 的 `ios` 中可配置：
+
+```json
+{
+    "prepare_ddi": true,
+    "ddi_cache_directory": "",
+    "ddi_download_timeout_seconds": 300
+}
+```
+
+`prepare_ddi: false` 跳过准备，由用户保证设备已就绪；可用于已准备好的离线设备。
+`ddi_cache_directory` 留空使用上表默认值，也可指定绝对路径。下载超时范围为 1–3600 秒。
+缓存只避免重复下载；需要个性化签票时仍可能访问网络。
+准备期间 Ctrl+C 请求取消，等待清理后以 130 退出；底层操作按自身的取消检查点响应。
+
+PiCli uses the platform cache directories listed above for persistent DDI downloads.
+In the `ios` section of `config/maa_pi_config.json`, set `prepare_ddi` to `false` to skip preparation
+when the device is already prepared (including offline use). Empty `ddi_cache_directory` selects
+the platform default; an override must be absolute. `ddi_download_timeout_seconds` accepts 1–3600,
+defaulting to 300. Cached assets avoid repeat downloads, but personalization may still require network access.
+During preparation, Ctrl+C requests cancellation; PiCli exits with code 130 after cleanup.
+Underlying operations respond at their cancellation checkpoints. These defaults belong to PiCli;
+Toolkit callers still choose their own cache location or temporary storage.

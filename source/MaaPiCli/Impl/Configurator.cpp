@@ -336,6 +336,9 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         ios.udid = config_.ios.udid;
         ios.wifi = config_.ios.wifi;
         ios.pairing_records = config_.ios.pairing_records;
+        ios.prepare_ddi = config_.ios.prepare_ddi;
+        ios.ddi_cache_directory = config_.ios.ddi_cache_directory;
+        ios.ddi_download_timeout_seconds = config_.ios.ddi_download_timeout_seconds;
 
         if (!controller.ios.screencap.empty()) {
             ios.screencap = parse_ios_screencap_method(controller.ios.screencap);

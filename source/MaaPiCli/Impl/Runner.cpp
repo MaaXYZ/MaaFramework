@@ -1,5 +1,8 @@
 #include "ProjectInterface/Runner.h"
 
+#include <atomic>
+#include <csignal>
+#include <cstdlib>
 #include <format>
 #include <iostream>
 
@@ -134,6 +137,51 @@ std::string reconfig_linux(const RuntimeParam::LinuxParam& raw)
 #if defined(MAA_WITH_IOS_CONTROLLER)
 namespace
 {
+std::atomic<bool> ios_prepare_cancelled = false;
+static_assert(std::atomic<bool>::is_always_lock_free);
+
+extern "C" void cancel_ios_prepare(int)
+{
+    ios_prepare_cancelled.store(true, std::memory_order_relaxed);
+}
+
+MaaBool is_ios_prepare_cancelled(void*)
+{
+    return ios_prepare_cancelled.load(std::memory_order_relaxed);
+}
+
+std::filesystem::path default_ios_ddi_cache()
+{
+#if defined(_WIN32)
+    wchar_t* local = nullptr;
+    size_t length = 0;
+    if (_wdupenv_s(&local, &length, L"LOCALAPPDATA") != 0) {
+        return {};
+    }
+    const auto root = local ? std::filesystem::path(local) : std::filesystem::path();
+    std::free(local);
+    if (root.is_absolute()) {
+        return root / "MaaPiCli" / "cache" / "ddi";
+    }
+#else
+#if !defined(__APPLE__)
+    const auto* xdg = std::getenv("XDG_CACHE_HOME");
+    if (xdg && *xdg && std::filesystem::path(xdg).is_absolute()) {
+        return std::filesystem::path(xdg) / "MaaPiCli" / "ddi";
+    }
+#endif
+    const auto* home = std::getenv("HOME");
+    if (home && *home && std::filesystem::path(home).is_absolute()) {
+#if defined(__APPLE__)
+        return std::filesystem::path(home) / "Library" / "Caches" / "MaaPiCli" / "ddi";
+#else
+        return std::filesystem::path(home) / ".cache" / "MaaPiCli" / "ddi";
+#endif
+    }
+#endif
+    return { };
+}
+
 MaaBool print_ios_prepare_progress(const char* text, void*)
 {
     const auto event = json::parse(text);
@@ -145,17 +193,41 @@ MaaBool print_ios_prepare_progress(const char* text, void*)
 
 bool prepare_ios(const RuntimeParam::IOSParam& ios)
 {
+    ios_prepare_cancelled.store(false, std::memory_order_relaxed);
+    if (!ios.prepare_ddi) {
+        return true;
+    }
+    if (ios.ddi_download_timeout_seconds < 1 || ios.ddi_download_timeout_seconds > 3600) {
+        LogError << "iOS DDI download timeout must be between 1 and 3600 seconds";
+        return false;
+    }
+    const auto cache = ios.ddi_cache_directory.empty() ? default_ios_ddi_cache() : MAA_NS::path(ios.ddi_cache_directory);
+    if (cache.empty() || !cache.is_absolute()) {
+        LogError << "Cannot resolve an absolute iOS DDI cache directory; set ios.ddi_cache_directory";
+        return false;
+    }
     json::array records(ios.pairing_records);
-    const auto options =
-        json::value(json::object { { "udid", ios.udid }, { "wifi", ios.wifi }, { "pairing_records", std::move(records) } }).to_string();
+    const auto options = json::value(
+                             json::object { { "udid", ios.udid },
+                                            { "wifi", ios.wifi },
+                                            { "pairing_records", std::move(records) },
+                                            { "cache_directory", MAA_NS::path_to_utf8_string(cache) },
+                                            { "download_timeout_seconds", ios.ddi_download_timeout_seconds } })
+                             .to_string();
     auto* result = MaaStringBufferCreate();
     if (!result) {
         LogError << "Cannot allocate iOS preparation result";
         return false;
     }
     OnScopeLeave([&]() { MaaStringBufferDestroy(result); });
+    const auto previous = std::signal(SIGINT, cancel_ios_prepare);
+    if (previous == SIG_ERR) {
+        LogError << "Cannot install iOS preparation interrupt handler";
+        return false;
+    }
+    OnScopeLeave([&]() { std::signal(SIGINT, previous); });
     std::cout << "Preparing iOS developer image..." << std::endl;
-    if (!MaaToolkitIOSDevicePrepare(options.c_str(), print_ios_prepare_progress, nullptr, nullptr, result)) {
+    if (!MaaToolkitIOSDevicePrepare(options.c_str(), print_ios_prepare_progress, is_ios_prepare_cancelled, nullptr, result)) {
         const auto status = json::parse(MaaStringBufferGet(result));
         LogError << "iOS developer image preparation failed"
                  << (status ? status->get("error", std::string()) : "Invalid preparation result");
@@ -170,6 +242,9 @@ bool Runner::run(const RuntimeParam& param)
 {
 #if defined(MAA_WITH_IOS_CONTROLLER)
     if (const auto* ios = std::get_if<RuntimeParam::IOSParam>(&param.controller_param); ios && !prepare_ios(*ios)) {
+        if (is_ios_prepare_cancelled(nullptr)) {
+            std::exit(130);
+        }
         return false;
     }
 #endif
