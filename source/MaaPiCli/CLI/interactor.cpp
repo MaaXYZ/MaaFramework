@@ -943,9 +943,31 @@ void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Contr
     if (ios.udid.empty()) {
         ios.udid = ios_config.udid;
     }
-    std::cout << "\t1. Use existing pairing\n\t2. Pair over USB\n\t3. Pair over Wi-Fi\n";
-    const auto pairing_choice = input(3, "Choose pairing action");
-    if (s_eof || (pairing_choice != 1 && !pair_ios(pairing_choice == 3))) {
+    int pairing_choice = 0;
+    while (true) {
+        std::cout << "\t1. Use existing pairing\n\t2. Pair over USB\n\t3. Pair over Wi-Fi\n"
+                     "\t4. Clear all local pairing credentials\n";
+        pairing_choice = input(4, "Choose pairing action");
+        if (s_eof) {
+            return;
+        }
+        if (pairing_choice != 4) {
+            break;
+        }
+        std::cout << "This removes all pairing credentials from PiCli configuration only.\n"
+                     "To revoke access on the phone, also remove this computer in device settings.\n"
+                     "\t1. Cancel\n\t2. Clear local credentials\n";
+        const auto confirmation = input(2, "Confirm clearing credentials");
+        if (s_eof) {
+            return;
+        }
+        if (confirmation == 2) {
+            ios.pairing_records.clear();
+            config_.save(user_path_);
+            std::cout << "Local pairing credentials cleared. You can pair again now.\n";
+        }
+    }
+    if (pairing_choice != 1 && !pair_ios(pairing_choice == 3)) {
         return;
     }
     if (ios.udid.empty()) {

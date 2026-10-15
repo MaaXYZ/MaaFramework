@@ -3,52 +3,242 @@
         "action": "StartApp",
         "package": "com.apple.freeform",
         "timeout": 30000,
-        "next": ["OnBoardList", "InBoard", "DrawingMode"]
+        "next": [
+            "OnBoardList",
+            "InBoard",
+            "DrawingMode"
+        ]
     },
-
     "OnBoardList": {
         "recognition": "TemplateMatch",
-        "template": ["ios/freeform_board_list.png"],
+        "template": [
+            "ios/freeform_board_list.png"
+        ],
         "threshold": 0.8,
         "roi": [0, 1360, 400, 160],
         "action": "Click",
         "target": [622, 1458],
-        "post_wait_freezes": { "time": 300, "timeout": 4000, "target": [40, 240, 640, 1000] },
-        "next": ["InBoard", "OnBoardList"]
+        "post_wait_freezes": {
+            "time": 300,
+            "timeout": 4000,
+            "target": [40, 240, 640, 1000]
+        },
+        "next": [
+            "InBoard",
+            "OnBoardList"
+        ]
     },
-
     "InBoard": {
         "recognition": "TemplateMatch",
-        "template": ["ios/freeform_pen_bar.png"],
+        "template": [
+            "ios/freeform_pen_bar.png"
+        ],
         "threshold": 0.8,
         "roi": [120, 1360, 400, 160],
         "action": "Click",
         "target": [235, 1470],
-        "post_wait_freezes": { "time": 300, "timeout": 4000, "target": [40, 240, 640, 1000] },
-        "next": ["DrawingMode", "InBoard"]
+        "post_wait_freezes": {
+            "time": 300,
+            "timeout": 4000,
+            "target": [40, 240, 640, 1000]
+        },
+        "next": [
+            "DrawingMode",
+            "InBoard"
+        ]
     },
-
     "DrawingMode": {
         "recognition": "TemplateMatch",
-        "template": ["ios/freeform_drawing_mode.png"],
+        "template": [
+            "ios/freeform_drawing_mode.png"
+        ],
         "threshold": 0.8,
         "roi": [540, 60, 180, 160],
-        "action": "Custom",
-        "custom_action": "DrawAppleLogo",
-        "next": ["CommitInk", "DrawingMode"]
+        "action": "DoNothing",
+        "next": [
+            "DrawAppleBody"
+        ]
     },
-
     "CommitInk": {
         "recognition": "TemplateMatch",
-        "template": ["ios/freeform_drawing_mode.png"],
+        "template": [
+            "ios/freeform_drawing_mode.png"
+        ],
         "threshold": 0.8,
         "roi": [540, 60, 180, 160],
         "action": "Click",
         "target": [647, 137],
-        "next": ["Done"]
+        "next": [
+            "Done"
+        ]
     },
-
     "Done": {
         "action": "DoNothing"
+    },
+    "DrawAppleBody": {
+        "action": "Swipe",
+        "begin": [206, 432],
+        "end": [
+            [193, 445],
+            [179, 459],
+            [170, 476],
+            [160, 493],
+            [156, 510],
+            [152, 527],
+            [150, 550],
+            [148, 573],
+            [152, 597],
+            [155, 621],
+            [164, 649],
+            [173, 677],
+            [182, 697],
+            [192, 717],
+            [207, 739],
+            [223, 761],
+            [231, 770],
+            [239, 779],
+            [246, 784],
+            [253, 790],
+            [261, 794],
+            [269, 797],
+            [275, 798],
+            [281, 800],
+            [292, 798],
+            [303, 796],
+            [322, 789],
+            [341, 782],
+            [350, 781],
+            [360, 779],
+            [376, 780],
+            [391, 780],
+            [412, 788],
+            [433, 796],
+            [442, 797],
+            [451, 798],
+            [461, 797],
+            [472, 796],
+            [483, 790],
+            [493, 784],
+            [504, 773],
+            [515, 762],
+            [528, 744],
+            [541, 726],
+            [550, 709],
+            [559, 692],
+            [565, 677],
+            [571, 661],
+            [557, 653],
+            [544, 646],
+            [534, 635],
+            [523, 624],
+            [516, 611],
+            [509, 599],
+            [505, 582],
+            [501, 566],
+            [501, 553],
+            [502, 541],
+            [505, 527],
+            [509, 514],
+            [518, 498],
+            [528, 483],
+            [542, 471],
+            [557, 458],
+            [553, 453],
+            [549, 448],
+            [540, 439],
+            [531, 431],
+            [520, 424],
+            [508, 418],
+            [496, 414],
+            [484, 409],
+            [470, 408],
+            [457, 406],
+            [442, 408],
+            [427, 410],
+            [395, 420],
+            [363, 430],
+            [356, 429],
+            [348, 428],
+            [323, 419],
+            [298, 410],
+            [282, 409],
+            [267, 408],
+            [251, 412],
+            [235, 416],
+            [221, 424],
+            [206, 432]
+        ],
+        "duration": 20,
+        "contact": 0,
+        "post_delay": 200,
+        "next": [
+            "DrawAppleLeaf"
+        ]
+    },
+    "DrawAppleLeaf": {
+        "action": "Swipe",
+        "begin": [359, 401],
+        "end": [
+            [362, 401],
+            [366, 401],
+            [371, 401],
+            [377, 400],
+            [382, 399],
+            [387, 397],
+            [392, 395],
+            [398, 393],
+            [403, 391],
+            [408, 388],
+            [413, 385],
+            [417, 382],
+            [421, 378],
+            [426, 375],
+            [429, 371],
+            [433, 367],
+            [437, 363],
+            [440, 359],
+            [444, 352],
+            [448, 346],
+            [452, 336],
+            [457, 326],
+            [459, 321],
+            [460, 315],
+            [461, 310],
+            [462, 304],
+            [463, 299],
+            [463, 293],
+            [463, 287],
+            [462, 282],
+            [457, 282],
+            [452, 283],
+            [447, 284],
+            [442, 285],
+            [432, 289],
+            [421, 293],
+            [412, 299],
+            [402, 305],
+            [398, 309],
+            [394, 313],
+            [390, 317],
+            [386, 321],
+            [382, 326],
+            [378, 331],
+            [375, 336],
+            [373, 341],
+            [368, 350],
+            [363, 360],
+            [362, 366],
+            [360, 371],
+            [360, 377],
+            [359, 383],
+            [359, 392],
+            [359, 401]
+        ],
+        "duration": 20,
+        "contact": 0,
+        "post_delay": 200,
+        "next": [
+            "CommitInk"
+        ]
     }
 }

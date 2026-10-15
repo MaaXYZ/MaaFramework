@@ -1,0 +1,31 @@
+{
+    "interface_version": 2,
+    "name": "MaaFramework iOS sample",
+    "controller": [
+        {
+            "name": "iOS",
+            "type": "IOS",
+            "display_short_side": 720
+        }
+    ],
+    "resource": [
+        {
+            "name": "iOS sample",
+            "path": [
+                "resource"
+            ]
+        }
+    ],
+    "task": [
+        {
+            "name": "iOS screenshot check",
+            "entry": "IOSCapture",
+            "default_check": true
+        },
+        {
+            "name": "Freeform Apple drawing",
+            "entry": "StartFreeform",
+            "default_check": false
+        }
+    ]
+}

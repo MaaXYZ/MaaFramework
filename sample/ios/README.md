@@ -1,109 +1,86 @@
 # iOS 无边记示例 / iOS Freeform example
 
-使用 iOS 控制器启动无边记，通过模板识别进入绘图模式，再用自定义触摸动作绘制苹果轮廓。
-脚本只加载本目录的 `resource`，不依赖公共示例资源。
-
 ## 使用
 
-准备 MaaFramework Python 绑定及原生库，保持手机解锁并安装无边记。
-本示例在连接控制器前自动准备 DDI：复用可确认适用的已挂载镜像，否则按需下载、安装并验证挂载。
-准备失败会显示错误并停止；默认不保留持久下载缓存。
+本示例完全使用流水线，通过 PiCli 运行，不需要 Python、Agent 或自定义动作。
+准备启用 iOS 支持的 MaaFramework/PiCli，保持手机解锁，安装无边记并保持竖屏。
 
-### 配对
+在仓库根目录执行（以 macOS `RelWithDebInfo` 构建为例）：
 
-在 PiCli 的运行目录执行 `./MaaPiCli`。该目录需要有效的 `interface.json`，其中声明
-`type: "IOS"` 的控制器。进入 iOS 控制器配置后选择 USB 配对或 Wi-Fi 配对：
+```bash
+cp sample/ios/interface.json build/bin/RelWithDebInfo/interface.json
+cp -R sample/ios/resource build/bin/RelWithDebInfo/
+cd build/bin/RelWithDebInfo
+./MaaPiCli
+```
+
+命令会更新运行目录中的 interface 和同名资源，请先备份自己的文件或使用独立运行目录。
+`config/` 中的配置及配对凭据不会被复制命令覆盖。
+
+### 配对和设备准备
+
+进入 iOS 控制器配置，选择 USB 配对或 Wi-Fi 配对：
 
 - USB：连接并解锁手机，确认设备上的信任或配对提示。
-- Wi-Fi：电脑和手机处于同一局域网，在手机「设置 → 隐私与安全性 → 开发者模式」
-  选择电脑，输入终端显示的一次性配对码。
+- Wi-Fi：电脑和手机处于同一局域网，在「设置 → 隐私与安全性 → 开发者模式」选择电脑，输入终端显示的一次性配对码。
 
-看到 `Pairing saved to PiCli configuration.` 后，凭据已保存到运行目录下
-`config/maa_pi_config.json` 的 `ios.pairing_records` 中。下次可选择 `Use existing pairing`。
-配对成功即会保存，不需要运行任务。
+看到 `Pairing saved to PiCli configuration.` 后，凭据保存在运行目录的
+`config/maa_pi_config.json` 的 `ios.pairing_records` 中，下次可选择 `Use existing pairing`。
+手机已取消配对时，可在此菜单选择 `Clear all local pairing credentials` 并确认，清除旧凭据后重新配对。
+此操作会删除 PiCli 保存的所有设备凭据，不会取消手机上的授权。
 
-### 使用 PiCli 保存的凭据运行
+PiCli 默认在运行任务前自动准备 DDI：复用可确认适用的已挂载镜像，否则按需下载、安装并验证挂载。
+缓存路径、跳过准备及超时选项见 [iOS 管理 API](../../tools/ios/README.md)。
 
-以下命令从仓库根目录执行，以 macOS 的 `RelWithDebInfo` 构建目录为例。
-先将第一条凭据导出为示例接受的文件；如果配置中有多个设备，请选择对应的数组元素。
+### 任务
 
-```bash
-python3 - <<'PYCODE'
-import json
-from pathlib import Path
+- `iOS screenshot check`：获取一帧图像，不点按手机。成功只表示返回非空图像，不判断画面内容。
+- `Freeform Apple drawing`：启动无边记，识别并进入绘图模式，用两次连续折线 `Swipe` 绘制果身与叶子，再确认笔迹。该任务会修改画布，默认不选中。
 
-build = Path("build/bin/RelWithDebInfo")
-config = json.loads((build / "config/maa_pi_config.json").read_text(encoding="utf-8"))
-Path("build/ios-example.pair").write_text(config["ios"]["pairing_records"][0], encoding="utf-8")
-PYCODE
-
-export MAAFW_BINARY_PATH="$PWD/build/bin/RelWithDebInfo"
-export PYTHONPATH="$PWD/source/binding/Python${PYTHONPATH:+:$PYTHONPATH}"
-python3 sample/ios/freeform_apple.py --wifi auto --pairing-record build/ios-example.pair
-```
-
-`MAAFW_BINARY_PATH` 必须在导入 `maa` 前设置；请根据实际构建目录调整。
-示例不会自行读取 PiCli 配置，也不会发起配对；上面的导出步骤将两者连接起来。
-
-### 已有独立凭据文件
-
-
-```bash
-python sample/ios/freeform_apple.py --udid <UDID> --pairing-record <credential-file>
-python sample/ios/freeform_apple.py --wifi auto --pairing-record <credential-file>
-```
-
-凭据文件内容为 Toolkit 配对接口返回的不透明字符串，不是 PiCli 的完整配置 JSON。
-此示例会操作手机并修改无边记画布。模板与坐标基于特定竖屏界面，其他机型、方向或系统版本可能需要调整。
+控制器短边缩放固定为 720；模板、界面坐标和轮廓基于约 720×1568 的竖屏画面。
+其他机型、方向或系统界面可能需要调整。每条轮廓内不抬手，两条轮廓之间抬手；
+轮廓点来自 simple-icons 的 Apple 图标（CC0-1.0）。任务成功表示识别与动作执行成功，不做绘图前后的像素差分验收。
 
 ## Usage
 
-Install the MaaFramework Python bindings and native libraries and keep the device unlocked with Freeform installed.
-Before connecting, this example automatically prepares the DDI: it reuses a confirmed suitable mounted image
-or downloads, installs and verifies the required image. Preparation errors stop execution. Downloads are temporary by default.
+This example uses only pipelines and runs in PiCli. Python, agents and custom actions are not required.
+Build MaaFramework/PiCli with iOS support, install Freeform and keep the device unlocked in portrait orientation.
 
-### Pairing and running
+Run from the repository root (macOS `RelWithDebInfo` build):
 
-Run `./MaaPiCli` in its runtime directory, which must contain an `interface.json` declaring an
-`IOS` controller. In the iOS controller configuration, choose USB or Wi-Fi pairing:
+```bash
+cp sample/ios/interface.json build/bin/RelWithDebInfo/interface.json
+cp -R sample/ios/resource build/bin/RelWithDebInfo/
+cd build/bin/RelWithDebInfo
+./MaaPiCli
+```
 
-- USB: connect and unlock the device, then accept its trust or pairing prompts.
-- Wi-Fi: use the same LAN, select the computer under Settings > Privacy & Security > Developer Mode,
-  then enter the one-use code shown in the terminal.
+Back up existing interface or same-named resource files, or use a separate runtime directory.
+The copy commands do not overwrite configuration or credentials in `config/`.
+
+### Pairing and preparation
+
+In the iOS controller configuration, choose USB or Wi-Fi pairing:
+
+- USB: connect and unlock the phone, then accept its trust or pairing prompts.
+- Wi-Fi: use the same LAN, select the computer under Settings > Privacy & Security > Developer Mode, and enter the one-use code shown in the terminal.
 
 After `Pairing saved to PiCli configuration.`, credentials are stored in `ios.pairing_records` in
-`config/maa_pi_config.json` under the runtime directory. No task execution is needed to save them.
-Choose `Use existing pairing` on subsequent runs.
+`config/maa_pi_config.json` under the runtime directory. Choose `Use existing pairing` on subsequent runs.
+If pairing was revoked on the phone, choose `Clear all local pairing credentials` and confirm before pairing again.
+This removes credentials for all devices saved by PiCli; it does not revoke authorization on the phone.
 
-Run the following commands from the repository root. They export the first saved credential and use the
-macOS `RelWithDebInfo` build directory; adjust the directory and array index for your setup.
-Set `MAAFW_BINARY_PATH` before importing `maa`.
+PiCli prepares the DDI before running tasks by default, reusing a confirmed suitable mounted image or
+downloading, installing and verifying the required image. See [iOS management APIs](../../tools/ios/README.md)
+for cache, preparation skip and timeout options.
 
-```bash
-python3 - <<'PYCODE'
-import json
-from pathlib import Path
+### Tasks
 
-build = Path("build/bin/RelWithDebInfo")
-config = json.loads((build / "config/maa_pi_config.json").read_text(encoding="utf-8"))
-Path("build/ios-example.pair").write_text(config["ios"]["pairing_records"][0], encoding="utf-8")
-PYCODE
+- `iOS screenshot check`: captures a frame without tapping the device. Success only means a nonempty image was returned.
+- `Freeform Apple drawing`: launches Freeform, recognizes drawing controls, draws the body and leaf using two continuous polyline `Swipe` actions, and confirms the ink. It modifies the canvas and is not selected by default.
 
-export MAAFW_BINARY_PATH="$PWD/build/bin/RelWithDebInfo"
-export PYTHONPATH="$PWD/source/binding/Python${PYTHONPATH:+:$PYTHONPATH}"
-python3 sample/ios/freeform_apple.py --wifi auto --pairing-record build/ios-example.pair
-```
-
-The script does not read PiCli configuration or initiate pairing itself.
-
-For an existing independent credential file, after setting the environment variables above:
-
-```bash
-python3 sample/ios/freeform_apple.py --udid <UDID> --pairing-record <credential-file>
-python3 sample/ios/freeform_apple.py --wifi auto --pairing-record <credential-file>
-```
-
-The credential file contains the opaque string returned by the Toolkit pairing API, rather than the entire PiCli configuration JSON.
-
-The script launches Freeform, recognizes drawing controls and draws an Apple outline with custom touch actions.
-It loads only its local `resource` directory. It modifies the device canvas; templates and coordinates target a specific portrait UI and may need adjustment for other devices or OS versions.
+The controller scales the short side to 720; templates, UI coordinates and strokes target a portrait image
+of approximately 720×1568. Other devices, orientations or OS versions may require adjustment.
+Each stroke keeps the finger down through its waypoints, lifting between the two strokes.
+Outline points derive from the simple-icons Apple icon (CC0-1.0).
+Task success indicates recognition/action completion; it does not compare before/after pixels to verify the drawing.
