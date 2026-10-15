@@ -149,6 +149,10 @@ jobs:
               shell: bash
               run: ctest --test-dir build --build-config Release --output-on-failure --no-tests=error --timeout 60
 
+            - uses: actions/setup-python@v6
+              with:
+                  python-version: '3.12'
+
             - name: Python management callback tests
               shell: bash
               env:
