@@ -132,8 +132,51 @@ std::string reconfig_linux(const RuntimeParam::LinuxParam& raw)
     return obj.dumps();
 }
 
+#if defined(MAA_WITH_IOS_CONTROLLER)
+namespace
+{
+MaaBool print_ios_prepare_progress(const char* text, void*)
+{
+    const auto event = json::parse(text);
+    if (event) {
+        std::cout << MAA_NS::utf8_to_crt(event->get("message", std::string())) << std::endl;
+    }
+    return true;
+}
+
+bool prepare_ios(const RuntimeParam::IOSParam& ios)
+{
+    json::array records;
+    for (const auto& credential : ios.pairing_records) {
+        records.emplace_back(credential);
+    }
+    const auto options =
+        json::value(json::object { { "udid", ios.udid }, { "wifi", ios.wifi }, { "pairing_records", std::move(records) } }).to_string();
+    auto* result = MaaStringBufferCreate();
+    if (!result) {
+        LogError << "Cannot allocate iOS preparation result";
+        return false;
+    }
+    OnScopeLeave([&]() { MaaStringBufferDestroy(result); });
+    std::cout << "Preparing iOS developer image..." << std::endl;
+    if (!MaaToolkitIOSDevicePrepare(options.c_str(), print_ios_prepare_progress, nullptr, nullptr, result)) {
+        const auto status = json::parse(MaaStringBufferGet(result));
+        LogError << "iOS developer image preparation failed"
+                 << (status ? status->get("error", std::string()) : "Invalid preparation result");
+        return false;
+    }
+    return true;
+}
+} // namespace
+#endif
+
 bool Runner::run(const RuntimeParam& param)
 {
+#if defined(MAA_WITH_IOS_CONTROLLER)
+    if (const auto* ios = std::get_if<RuntimeParam::IOSParam>(&param.controller_param); ios && !prepare_ios(*ios)) {
+        return false;
+    }
+#endif
     MaaTasker* tasker_handle = MaaTaskerCreate();
 
     MaaController* controller_handle = nullptr;

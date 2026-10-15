@@ -97,3 +97,16 @@ pairing/preparation is currently available through C/Python APIs.
 
 从仓库根目录启用 `WITH_IOS_CONTROLLER=ON` 构建。`ci/` 仅保留依赖和框架打包配方。
 Python 提供设备管理方法；NodeJS 提供控制器和发现配置，交互式配对/准备目前通过 C/Python API 调用。
+
+## PiCli 自动准备 DDI / Automatic DDI preparation in PiCli
+
+PiCli 运行 iOS 任务前会调用 `MaaToolkitIOSDevicePrepare`，成功后才创建并连接控制器。
+设备上可确认适用的已挂载镜像会被复用；否则按需下载、安装并验证挂载。
+准备失败时显示错误并停止运行。默认使用临时下载文件，不启用持久缓存，不主动替换已有镜像。
+仅完成配对不会触发 DDI 准备。
+
+Before running iOS tasks, PiCli calls `MaaToolkitIOSDevicePrepare` and proceeds to controller
+creation and connection only on success. It reuses a confirmed suitable mounted image or
+performs the required download, installation and mount verification. Preparation errors stop
+the run. Downloads use temporary storage by default, with no persistent cache or explicit
+replacement of an existing image. Pairing alone does not trigger preparation.
