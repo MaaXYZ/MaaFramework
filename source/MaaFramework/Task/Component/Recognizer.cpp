@@ -14,6 +14,7 @@ MAA_SUPPRESS_CV_WARNINGS_END
 #include "Resource/ResourceMgr.h"
 #include "Vision/ColorMatcher.h"
 #include "Vision/FeatureMatcher.h"
+#include "Vision/NeuralNetworkCache.h"
 #include "Vision/NeuralNetworkClassifier.h"
 #include "Vision/NeuralNetworkDetector.h"
 #include "Vision/OCRer.h"
@@ -28,13 +29,19 @@ namespace
 constexpr int kDetFallbackMaxSideLen = 960;
 }
 
-Recognizer::Recognizer(Tasker* tasker, Context& context, const cv::Mat& image_, std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_batch_cache)
+Recognizer::Recognizer(
+    Tasker* tasker,
+    Context& context,
+    const cv::Mat& image_,
+    std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_batch_cache,
+    std::shared_ptr<MAA_VISION_NS::NeuralNetworkCache> nn_cache)
     : tasker_(tasker)
     , context_(context)
     , image_(image_)
     , sub_filtered_boxes_(std::make_shared<typename decltype(sub_filtered_boxes_)::element_type>())
     , sub_best_box_(std::make_shared<typename decltype(sub_best_box_)::element_type>())
     , ocr_batch_cache_(std::move(ocr_batch_cache))
+    , nn_cache_(nn_cache ? std::move(nn_cache) : std::make_shared<MAA_VISION_NS::NeuralNetworkCache>())
 {
 }
 
@@ -46,6 +53,7 @@ Recognizer::Recognizer(const Recognizer& recognizer)
     , sub_filtered_boxes_(recognizer.sub_filtered_boxes_)
     , sub_best_box_(recognizer.sub_best_box_)
     , ocr_batch_cache_(recognizer.ocr_batch_cache_)
+    , nn_cache_(recognizer.nn_cache_)
 {
 }
 
@@ -323,7 +331,14 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
     return build_result(
         name,
         "NeuralNetworkClassify",
-        NeuralNetworkClassifier(image_, rois, param, onnx_res.classifier(param.model), onnx_res.memory_info(), name));
+        NeuralNetworkClassifier(
+            image_,
+            rois,
+            param,
+            onnx_res.classifier(param.model),
+            onnx_res.memory_info(),
+            name,
+            &nn_cache_->classifiers));
 }
 
 RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam& param, const std::string& name)
@@ -351,7 +366,7 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
     return build_result(
         name,
         "NeuralNetworkDetect",
-        NeuralNetworkDetector(image_, rois, param, onnx_res.detector(param.model), onnx_res.memory_info(), name));
+        NeuralNetworkDetector(image_, rois, param, onnx_res.detector(param.model), onnx_res.memory_info(), name, &nn_cache_->detectors));
 }
 
 RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionParam& param, const std::string& name)

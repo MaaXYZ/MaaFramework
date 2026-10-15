@@ -1279,6 +1279,115 @@ def test_binding_init_thread_safety():
     print("  PASS: 8 threads initialised the binding concurrently")
 
 
+def test_neural_network_cache():
+    """Exercise cache sharing and lifetime through real pipeline execution (#1504)."""
+    import shutil
+    import tempfile
+
+    print("\n=== test_neural_network_cache ===")
+
+    class FrameController(MyController):
+        def __init__(self):
+            super().__init__()
+            self.frames = [255]
+            self.frame_index = 0
+
+        def screencap(self):
+            value = self.frames[min(self.frame_index, len(self.frames) - 1)]
+            self.frame_index += 1
+            return numpy.full((32, 32, 3), value, dtype=numpy.uint8)
+
+    class Capture(ContextEventSink):
+        def __init__(self):
+            self.results = []
+
+        def on_raw_notification(self, context, msg, details):
+            if msg in ("Node.Recognition.Succeeded", "Node.Recognition.Failed"):
+                self.results.append(details["reco_details"])
+
+    with tempfile.TemporaryDirectory() as temporary:
+        bundle = Path(temporary)
+        models = install_dir / "test" / "NeuralNetworkCache"
+        for algorithm in ("classify", "detect"):
+            model_dir = bundle / "model" / algorithm
+            model_dir.mkdir(parents=True)
+            source = "classifier" if algorithm == "classify" else "detector"
+            shutil.copyfile(models / f"{source}.onnx", model_dir / "test.onnx")
+
+        resource = Resource()
+        assert resource.use_cpu()
+        assert resource.post_bundle(bundle).wait().succeeded
+        controller = FrameController()
+        controller.set_screenshot_use_raw_size(True)
+        assert controller.post_connection().wait().succeeded
+        tasker = Tasker()
+        assert tasker.bind(resource, controller)
+        capture = Capture()
+        tasker.add_context_sink(capture)
+
+        def run(nodes, frames=(255,)):
+            capture.results.clear()
+            controller.frames = list(frames)
+            controller.frame_index = 0
+            pipeline = {
+                name: {"pre_delay": 0, "post_delay": 0, "rate_limit": 0, "timeout": 2000, **node}
+                for name, node in nodes.items()
+            }
+            assert tasker.post_task("Entry", pipeline).wait().succeeded
+            return [r for r in capture.results if r["algorithm"] != "DirectHit"]
+
+        classify = {"recognition": "NeuralNetworkClassify", "model": "test.onnx", "labels": ["white", "black"]}
+        results = run({
+            "Entry": {"next": ["Miss", "Hit"]},
+            "Miss": {**classify, "expected": [1]},
+            "Hit": {**classify, "expected": ["renamed"], "labels": ["renamed", "other"], "index": -1},
+        })
+        assert len(results) == 2 and results[0]["box"] is None
+        assert results[1]["detail"]["best"]["label"] == "renamed"
+        assert results[0]["detail"]["all"][0]["score"] == results[1]["detail"]["all"][0]["score"]
+        assert results[0]["reco_id"] != results[1]["reco_id"]
+
+        # Copied Recognizers in composite algorithms share the same frame cache.
+        results = run({
+            "Entry": {"next": ["Composite"]},
+            "Composite": {"recognition": {"type": "Or", "param": {"any_of": ["Miss", "Hit"]}}},
+            "Miss": {**classify, "expected": [1]},
+            "Hit": {**classify, "expected": [0]},
+        })
+        assert results[0]["algorithm"] == "Or"
+        assert len(results[0]["detail"]) == 2
+        assert results[0]["detail"][1]["detail"]["best"]["cls_index"] == 0
+
+        # An unsuccessful polling round must release its white-frame prediction.
+        results = run({
+            "Entry": {"next": ["Miss", "Never"]},
+            "Miss": {**classify, "expected": [1]},
+            "Never": {**classify, "expected": [2]},
+        }, frames=(255, 0))
+        assert controller.frame_index == 2
+        assert [r["detail"]["all"][0]["cls_index"] for r in results] == [0, 0, 1]
+
+        # Hitting a node must also release the cache before the next screenshot.
+        results = run({
+            "Entry": {"next": ["White"]},
+            "White": {**classify, "expected": [0], "next": ["Black"]},
+            "Black": {**classify, "expected": [1]},
+        }, frames=(255, 0))
+        assert [r["detail"]["best"]["cls_index"] for r in results] == [0, 1]
+
+        detect = {"recognition": "NeuralNetworkDetect", "model": "test.onnx", "labels": ["first", "second"]}
+        results = run({
+            "Entry": {"next": ["High", "Low"]},
+            "High": {**detect, "expected": [0], "threshold": 0.95},
+            "Low": {**detect, "expected": ["second"], "threshold": 0.5},
+        })
+        assert results[0]["box"] is None and len(results[0]["detail"]["all"]) == 2
+        assert results[1]["detail"]["best"]["cls_index"] == 1
+        assert results[1]["box"] == [20, 20, 8, 8]
+
+    print("  PASS: neural network cache pipeline semantics and frame lifetime")
+
+
 if __name__ == "__main__":
     print(f"MaaFw Version: {Library.version()}")
 
@@ -1327,6 +1436,7 @@ if __name__ == "__main__":
 
     # 回归：并发初始化线程安全 (#629)
     test_binding_init_thread_safety()
+    test_neural_network_cache()
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")

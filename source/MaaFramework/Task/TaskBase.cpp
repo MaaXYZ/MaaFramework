@@ -56,7 +56,8 @@ RecoResult TaskBase::run_recognition(
     const cv::Mat& image,
     const PipelineData& data,
     std::optional<std::string> anchor_name,
-    std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_cache)
+    std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_cache,
+    std::shared_ptr<MAA_VISION_NS::NeuralNetworkCache> nn_cache)
 {
     LogFunc << VAR(cur_node_) << VAR(data.name);
 
@@ -65,7 +66,7 @@ RecoResult TaskBase::run_recognition(
         return { };
     }
 
-    Recognizer recognizer(tasker_, *context_, image, std::move(ocr_cache));
+    Recognizer recognizer(tasker_, *context_, image, std::move(ocr_cache), std::move(nn_cache));
 
     json::value cb_detail {
         { "task_id", task_id() },

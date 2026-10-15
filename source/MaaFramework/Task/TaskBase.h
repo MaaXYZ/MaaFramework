@@ -15,6 +15,10 @@
 #include "Tasker/Tasker.h"
 #include "Vision/OCRer.h"
 
+MAA_VISION_NS_BEGIN
+struct NeuralNetworkCache;
+MAA_VISION_NS_END
+
 MAA_TASK_NS_BEGIN
 
 class TaskBase : public NonCopyable
@@ -44,7 +48,8 @@ protected:
         const cv::Mat& image,
         const PipelineData& data,
         std::optional<std::string> anchor_name = std::nullopt,
-        std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_cache = nullptr);
+        std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_cache = nullptr,
+        std::shared_ptr<MAA_VISION_NS::NeuralNetworkCache> nn_cache = nullptr);
     ActionResult run_action(const RecoResult& reco, const PipelineData& data);
     cv::Mat screencap();
     void set_node_detail(MaaNodeId node_id, NodeDetail detail);

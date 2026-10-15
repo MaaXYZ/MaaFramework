@@ -1,6 +1,7 @@
 #include <filesystem>
 
 #include "module/BatchOcrRepro.h"
+#include "module/NeuralNetworkCache.h"
 #include "module/PipelineSmoking.h"
 #include "module/RunWithoutFile.h"
 
@@ -20,6 +21,10 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaGlobalSetOption(MaaGlobalOption_SaveDraw, &on, sizeof(on));
     MaaLoggingLevel lv = MaaLoggingLevel_Info;
     MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &lv, sizeof(lv));
+
+    if (!test_neural_network_cache(testset_dir, cur_dir / "debug")) {
+        return -1;
+    }
 
     if (!run_without_file(testset_dir)) {
         return -1;
