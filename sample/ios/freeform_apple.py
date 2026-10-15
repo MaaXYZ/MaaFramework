@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """在真机 iPhone 的无边记里画一个苹果 logo —— iOS 控制器的端到端样例。
 
-    python sample/python/ios_freeform_apple.py
-    python sample/python/ios_freeform_apple.py --wifi 10.24.24.7
+    python sample/ios/freeform_apple.py
+    python sample/ios/freeform_apple.py --wifi 10.24.24.7
 
-流水线（`sample/resource/pipeline/ios_freeform_apple.json`）负责"到画布里去、并把笔拿起来"：
+流水线（`sample/ios/resource/pipeline/freeform_apple.json`）负责"到画布里去、并把笔拿起来"：
 起无边记 -> 认到看板列表就点新建 -> 认到底部工具条就点笔图标 -> 认到右上角蓝色对勾才动手画。
 
 中间那一步不是多余的装饰：**画板默认不在绘画模式**，这时单指拖动是"平移画布"，一笔画都
@@ -27,7 +27,7 @@ from maa.custom_action import CustomAction
 from maa.resource import Resource
 from maa.tasker import Tasker
 
-SAMPLE_ROOT = Path(__file__).resolve().parents[1]
+SAMPLE_ROOT = Path(__file__).resolve().parent
 
 resource = Resource()
 
