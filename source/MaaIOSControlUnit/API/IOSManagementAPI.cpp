@@ -34,19 +34,20 @@ bool parse_options(Operation operation, const char* source, Options& options, st
     }
     std::set<std::string> allowed;
     if (operation == Operation::Discover) {
-        allowed = { "timeout_ms", "usb_only", "wifi_only" };
+        allowed = { "pairing_records", "timeout_ms", "usb_only", "wifi_only" };
     }
     else if (operation == Operation::Pair) {
-        allowed = { "udid", "wifi", "repair", "timeout_ms" };
+        allowed = { "pairing_records", "udid", "wifi", "repair", "timeout_ms" };
     }
     else if (operation == Operation::CheckConnection) {
-        allowed = { "udid", "wifi", "port" };
+        allowed = { "pairing_records", "udid", "wifi", "port" };
     }
     else {
-        allowed = { "udid", "wifi", "port", "cache_directory", "replace", "download_timeout_seconds", "install_timeout_seconds" };
+        allowed = { "pairing_records",        "udid", "wifi", "port", "cache_directory", "replace", "download_timeout_seconds",
+                    "install_timeout_seconds" };
     }
     for (auto iter = value.begin(); iter != value.end(); ++iter) {
-        if (!allowed.contains(iter.key()) && iter.key() != "pairing_records") {
+        if (!allowed.contains(iter.key())) {
             error = "unknown iOS management option: " + iter.key();
             return false;
         }
