@@ -858,10 +858,7 @@ void Interactor::select_ios_auto_detect()
         return;
     }
     std::unique_ptr<MaaToolkitIOSDeviceList, decltype(&MaaToolkitIOSDeviceListDestroy)> owned(list, MaaToolkitIOSDeviceListDestroy);
-    json::array credentials;
-    for (const auto& credential : config_.configuration().ios.pairing_records) {
-        credentials.emplace_back(credential);
-    }
+    json::array credentials(config_.configuration().ios.pairing_records);
     const auto options = json::value(json::object { { "pairing_records", std::move(credentials) } }).to_string();
     if (!MaaToolkitIOSDeviceFindWithOptions(options.c_str(), list)) {
         std::cout << "Device discovery unavailable; enter a UDID/address manually.\n";
@@ -892,10 +889,7 @@ void Interactor::select_ios_auto_detect()
 bool Interactor::pair_ios(bool wireless)
 {
     auto& ios = config_.configuration().ios;
-    json::array records;
-    for (const auto& credential : ios.pairing_records) {
-        records.emplace_back(credential);
-    }
+    json::array records(ios.pairing_records);
     const auto options =
         json::value(json::object { { "udid", ios.udid }, { "wifi", wireless ? "auto" : "" }, { "pairing_records", std::move(records) } })
             .to_string();

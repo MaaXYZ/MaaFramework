@@ -1,7 +1,6 @@
 #include "ProjectInterface/Runner.h"
 
 #include <format>
-#include <fstream>
 #include <iostream>
 
 #include <meojson/json.hpp>
@@ -146,10 +145,7 @@ MaaBool print_ios_prepare_progress(const char* text, void*)
 
 bool prepare_ios(const RuntimeParam::IOSParam& ios)
 {
-    json::array records;
-    for (const auto& credential : ios.pairing_records) {
-        records.emplace_back(credential);
-    }
+    json::array records(ios.pairing_records);
     const auto options =
         json::value(json::object { { "udid", ios.udid }, { "wifi", ios.wifi }, { "pairing_records", std::move(records) } }).to_string();
     auto* result = MaaStringBufferCreate();
@@ -196,10 +192,7 @@ bool Runner::run(const RuntimeParam& param)
     }
     else if (const auto* p_ios_param = std::get_if<RuntimeParam::IOSParam>(&param.controller_param)) {
 #if defined(MAA_WITH_IOS_CONTROLLER)
-        json::array records;
-        for (const auto& credential : p_ios_param->pairing_records) {
-            records.emplace_back(credential);
-        }
+        json::array records(p_ios_param->pairing_records);
         const auto options = json::value(json::object { { "pairing_records", std::move(records) } }).to_string();
         controller_handle =
             MaaIOSControllerCreate(p_ios_param->udid.c_str(), p_ios_param->wifi.c_str(), p_ios_param->screencap, options.c_str());
