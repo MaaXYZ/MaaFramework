@@ -4,6 +4,7 @@
 #include <chrono>
 #include <limits>
 #include <thread>
+#include <utility>
 
 #include <MaaUtils/Logger.h>
 #include <MaaUtils/NoWarningCV.hpp>
@@ -142,9 +143,9 @@ void IOSSession::close()
 
 bool IOSSession::convert(const maa::ios::Frame& frame, cv::Mat& image, std::string& err)
 {
-    if (!frame || frame.width > std::numeric_limits<int>::max() || frame.height > std::numeric_limits<int>::max()
-        || frame.bytes_per_pixel != 4 || frame.row_pitch < uint64_t(frame.width) * 4
-        || frame.pixels.size() < uint64_t(frame.row_pitch) * frame.height) {
+    if (!frame || std::cmp_greater(frame.width, std::numeric_limits<int>::max())
+        || std::cmp_greater(frame.height, std::numeric_limits<int>::max()) || frame.bytes_per_pixel != 4
+        || frame.row_pitch < uint64_t(frame.width) * 4 || frame.pixels.size() < uint64_t(frame.row_pitch) * frame.height) {
         err = "invalid decoded iOS video frame";
         return false;
     }
