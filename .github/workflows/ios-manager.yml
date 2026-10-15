@@ -159,7 +159,7 @@ jobs:
                   MAAFW_BINARY_PATH: ${{ github.workspace }}/build/bin/Release
                   PYTHONPATH: ${{ github.workspace }}/source/binding/Python
               run: |
-                  python3 -m pip install numpy
+                  python3 -m pip install ./source/binding/Python
                   python3 test/python/ios_management_test.py
 
             - name: Install framework and package manager runtime
