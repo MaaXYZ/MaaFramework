@@ -3,7 +3,6 @@
 #include "NcnnSession.h"
 
 #include <algorithm>
-#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -125,61 +124,25 @@ bool NcnnSession::apply_options(const json::value& sidecar, ncnn::Option& opt)
         return false;
     }
 
-    // CPU fields of ncnn::Option with the same names. allocators and vulkan-only fields are not exposed
-    static const std::unordered_map<std::string, bool ncnn::Option::*> kBoolOptions = {
-        { "lightmode", &ncnn::Option::lightmode },
-        { "use_winograd_convolution", &ncnn::Option::use_winograd_convolution },
-        { "use_winograd23_convolution", &ncnn::Option::use_winograd23_convolution },
-        { "use_winograd43_convolution", &ncnn::Option::use_winograd43_convolution },
-        { "use_winograd63_convolution", &ncnn::Option::use_winograd63_convolution },
-        { "use_sgemm_convolution", &ncnn::Option::use_sgemm_convolution },
-        { "use_int8_inference", &ncnn::Option::use_int8_inference },
+    // only the precision a model tolerates is configurable, with the ncnn::Option field names.
+    // device related options (threads, kernels, layout, ...) are handled by MaaFW / ncnn defaults
+    static const std::unordered_map<std::string, bool ncnn::Option::*> kOptions = {
         { "use_fp16_packed", &ncnn::Option::use_fp16_packed },
         { "use_fp16_storage", &ncnn::Option::use_fp16_storage },
         { "use_fp16_arithmetic", &ncnn::Option::use_fp16_arithmetic },
-        { "use_bf16_packed", &ncnn::Option::use_bf16_packed },
-        { "use_bf16_storage", &ncnn::Option::use_bf16_storage },
-        { "use_int8_packed", &ncnn::Option::use_int8_packed },
-        { "use_int8_storage", &ncnn::Option::use_int8_storage },
-        { "use_int8_arithmetic", &ncnn::Option::use_int8_arithmetic },
-        { "use_packing_layout", &ncnn::Option::use_packing_layout },
-        { "use_local_pool_allocator", &ncnn::Option::use_local_pool_allocator },
-        { "use_a53_a55_optimized_kernel", &ncnn::Option::use_a53_a55_optimized_kernel },
-    };
-
-    struct IntOption
-    {
-        int ncnn::Option::* field = nullptr;
-        int min = 0;
-        int max = 0;
-    };
-
-    static const std::unordered_map<std::string, IntOption> kIntOptions = {
-        { "num_threads", { &ncnn::Option::num_threads, 1, std::numeric_limits<int>::max() } },
-        { "openmp_blocktime", { &ncnn::Option::openmp_blocktime, 0, std::numeric_limits<int>::max() } },
-        { "flush_denormals", { &ncnn::Option::flush_denormals, 0, 3 } },
     };
 
     for (const auto& [key, value] : options.as_object()) {
-        if (auto iter = kBoolOptions.find(key); iter != kBoolOptions.end()) {
-            if (!value.is_boolean()) {
-                LogError << "ncnn option expects a boolean" << VAR(key) << VAR(value);
-                return false;
-            }
-            opt.*(iter->second) = value.as_boolean();
-        }
-        else if (auto iter = kIntOptions.find(key); iter != kIntOptions.end()) {
-            const auto& [field, min, max] = iter->second;
-            const double number = value.is_number() ? value.as_double() : std::numeric_limits<double>::quiet_NaN();
-            if (std::trunc(number) != number || number < min || number > max) {
-                LogError << "ncnn option expects an integer in range" << VAR(key) << VAR(value) << VAR(min) << VAR(max);
-                return false;
-            }
-            opt.*field = static_cast<int>(number);
-        }
-        else {
+        auto iter = kOptions.find(key);
+        if (iter == kOptions.end()) {
             LogWarn << "unknown ncnn option, ignored" << VAR(key);
+            continue;
         }
+        if (!value.is_boolean()) {
+            LogError << "ncnn option expects a boolean" << VAR(key) << VAR(value);
+            return false;
+        }
+        opt.*(iter->second) = value.as_boolean();
     }
 
     return true;

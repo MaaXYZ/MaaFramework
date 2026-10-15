@@ -26,8 +26,9 @@ public:
     // ncnn::Option of MaaFW: CPU only and fp32 (fp16 / bf16 off) so that results match onnxruntime.
     // num_threads <= 0 means default_num_threads()
     static ncnn::Option make_option(int num_threads);
-    // override `opt` with the optional "options" object of a sidecar, keys are the ncnn::Option field names.
-    // unknown keys are ignored with a warning, an invalid value fails.
+    // override `opt` with the optional "options" object of a sidecar: only the fp16 fields of ncnn::Option (same names),
+    // the precision depends on the model while the other options depend on the device. unknown keys are ignored with
+    // a warning, an invalid value fails.
     static bool apply_options(const json::value& sidecar, ncnn::Option& opt);
     // same as apply_options, for an optional sidecar file: absent keeps `opt`, unparsable fails
     static bool apply_options_file(const std::filesystem::path& sidecar, ncnn::Option& opt);
