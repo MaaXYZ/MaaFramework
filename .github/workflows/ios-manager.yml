@@ -149,6 +149,10 @@ jobs:
               shell: bash
               run: ctest --test-dir build --build-config Release --output-on-failure --no-tests=error --timeout 60
 
+            - name: Install framework runtime
+              shell: bash
+              run: cmake --install build --config Release --prefix "$PWD/build/ios-manager-artifact"
+
             - uses: actions/setup-python@v6
               with:
                   python-version: '3.12'
@@ -156,16 +160,15 @@ jobs:
             - name: Python management callback tests
               shell: bash
               env:
-                  MAAFW_BINARY_PATH: ${{ github.workspace }}/build/bin/Release
+                  MAAFW_BINARY_PATH: ${{ github.workspace }}/build/ios-manager-artifact/bin
                   PYTHONPATH: ${{ github.workspace }}/source/binding/Python
               run: |
                   python3 -m pip install ./source/binding/Python
                   python3 test/python/ios_management_test.py
 
-            - name: Install framework and package manager runtime
+            - name: Package manager runtime and source materials
               shell: bash
               run: |
-                  cmake --install build --config Release --prefix "$PWD/build/ios-manager-artifact"
                   python tools/MaaIOSManager/ci/package.py --repository "$PWD" --build "$PWD/build" \
                     --output "$PWD/build/ios-manager-artifact" --platform "${{ matrix.platform }}"
 
