@@ -192,7 +192,7 @@ void test_record_loading()
 {
     TempDirectory directory;
     auto paired = paired_record();
-    const auto path = wifi::record_path(directory.path.string(), paired.udid);
+    const auto path = (directory.path / "remote-00008110_TEST_DEVICE.pair").string();
     write_file(path, wifi::format_record(paired));
     write_file(directory.path / "remote-corrupt-sensitive-identifier.pair", "not a pairing record\nhost_private_key=private-test-secret");
     write_file(directory.path / "remote-oversized.pair", std::string(16385, 'x'));

@@ -58,12 +58,8 @@ bool save_record_new(const std::string& path, const PairRecord& record, std::str
 /// 最多读取 16 KiB 加一个检测字节，拒绝超限或读取失败，然后解析完整文本。
 std::optional<PairRecord> load_record(const std::string& path, std::string& err);
 
-/// <dir>/remote-<完整 UDID 的净化结果>.pair：仅保留 ASCII 字母和数字，其余字符
-/// 均替换为下划线，避免 UDID 引入路径分隔符；不同原始字符串可能得到同一文件名。
-std::string record_path(const std::string& dir, const std::string& udid);
-
 /// 从目录的普通文件名中提取 remote- 与 .pair 之间的候选标识并排序，不解析文件内容。
-/// 返回值已净化，可再次传给 record_path；不能据此还原原始 UDID 的标点。
+/// 返回值是文件名中的候选标识，不能据此还原原始 UDID 的标点。
 /// 目录未被识别为目录时返回空列表并清除 err，包括不存在或目录查询失败的情况。
 /// 枚举过程中检测到的错误通过 err 返回；列表可用于 Wi-Fi 连接选择本地记录。
 std::vector<std::string> list_record_udids(const std::string& dir, std::string& err);

@@ -84,19 +84,6 @@ std::string_view trim(std::string_view s)
     return s;
 }
 
-/// 将外部提供的 UDID 转为文件名片段，仅保留 ASCII 字母和数字，其余替换为下划线。
-/// 净化防止 UDID 引入目录跳转或路径分隔符，但不保证不同原始标识之间没有重名。
-std::string sanitize(const std::string& udid)
-{
-    std::string out;
-    out.reserve(udid.size());
-    for (const char c : udid) {
-        const bool ok = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
-        out += ok ? c : '_';
-    }
-    return out;
-}
-
 /// 随机后缀临时文件与目标位于同目录，成功关闭后通过 rename 替换。
 /// POSIX 路径不调用 fsync，成功返回不能作为断电后持久性的保证。
 bool write_file(const std::string& path, std::string_view text, std::string& err, bool replace)
@@ -355,11 +342,6 @@ std::optional<PairRecord> load_record(const std::string& path, std::string& err)
         return std::nullopt;
     }
     return parse_record(*text, err);
-}
-
-std::string record_path(const std::string& dir, const std::string& udid)
-{
-    return dir + "/remote-" + sanitize(udid) + ".pair";
 }
 
 std::vector<std::string> list_record_udids(const std::string& dir, std::string& err)
