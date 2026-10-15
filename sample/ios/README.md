@@ -5,8 +5,9 @@
 
 ## 使用
 
-准备 MaaFramework Python 绑定及原生库，完成 DDI 准备，保持手机解锁并安装无边记。
-PiCli 运行 iOS 任务时会自动准备 DDI；本 Python 示例不自动调用准备接口，仅在 PiCli 中配对还不够。
+准备 MaaFramework Python 绑定及原生库，保持手机解锁并安装无边记。
+本示例在连接控制器前自动准备 DDI：复用可确认适用的已挂载镜像，否则按需下载、安装并验证挂载。
+准备失败会显示错误并停止；默认不保留持久下载缓存。
 
 ### 配对
 
@@ -57,8 +58,9 @@ python sample/ios/freeform_apple.py --wifi auto --pairing-record <credential-fil
 
 ## Usage
 
-Install the MaaFramework Python bindings and native libraries, prepare the DDI and keep the device unlocked with Freeform installed.
-PiCli prepares the DDI when running iOS tasks. This Python example does not call preparation automatically; pairing in PiCli alone is insufficient.
+Install the MaaFramework Python bindings and native libraries and keep the device unlocked with Freeform installed.
+Before connecting, this example automatically prepares the DDI: it reuses a confirmed suitable mounted image
+or downloads, installs and verifies the required image. Preparation errors stop execution. Downloads are temporary by default.
 
 ### Pairing and running
 
@@ -73,11 +75,34 @@ After `Pairing saved to PiCli configuration.`, credentials are stored in `ios.pa
 `config/maa_pi_config.json` under the runtime directory. No task execution is needed to save them.
 Choose `Use existing pairing` on subsequent runs.
 
-The export-and-run commands above use the first saved credential and the macOS `RelWithDebInfo`
-build directory. Run them from the repository root; select the appropriate array entry for other devices.
-Set `MAAFW_BINARY_PATH` before importing `maa` and adjust it for your build directory.
+Run the following commands from the repository root. They export the first saved credential and use the
+macOS `RelWithDebInfo` build directory; adjust the directory and array index for your setup.
+Set `MAAFW_BINARY_PATH` before importing `maa`.
+
+```bash
+python3 - <<'PYCODE'
+import json
+from pathlib import Path
+
+build = Path("build/bin/RelWithDebInfo")
+config = json.loads((build / "config/maa_pi_config.json").read_text(encoding="utf-8"))
+Path("build/ios-example.pair").write_text(config["ios"]["pairing_records"][0], encoding="utf-8")
+PYCODE
+
+export MAAFW_BINARY_PATH="$PWD/build/bin/RelWithDebInfo"
+export PYTHONPATH="$PWD/source/binding/Python${PYTHONPATH:+:$PYTHONPATH}"
+python3 sample/ios/freeform_apple.py --wifi auto --pairing-record build/ios-example.pair
+```
+
 The script does not read PiCli configuration or initiate pairing itself.
-If you already have an independent credential file, use either shorter command above.
+
+For an existing independent credential file, after setting the environment variables above:
+
+```bash
+python3 sample/ios/freeform_apple.py --udid <UDID> --pairing-record <credential-file>
+python3 sample/ios/freeform_apple.py --wifi auto --pairing-record <credential-file>
+```
+
 The credential file contains the opaque string returned by the Toolkit pairing API, rather than the entire PiCli configuration JSON.
 
 The script launches Freeform, recognizes drawing controls and draws an Apple outline with custom touch actions.

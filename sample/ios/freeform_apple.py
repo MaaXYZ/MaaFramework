@@ -26,6 +26,7 @@ from maa.controller import IOSController
 from maa.custom_action import CustomAction
 from maa.resource import Resource
 from maa.tasker import Tasker
+from maa.toolkit import Toolkit
 
 SAMPLE_ROOT = Path(__file__).resolve().parent
 
@@ -152,6 +153,11 @@ class DrawAppleLogo(CustomAction):
         return changed >= expect
 
 
+def print_prepare_progress(event):
+    print(event.get("message", ""), flush=True)
+    return True
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--udid", default="", help="设备 UDID，留空用唯一在连的那台")
@@ -163,6 +169,12 @@ def main():
         raise RuntimeError("failed to load sample resource")
 
     records = [args.pairing_record.read_text(encoding="utf-8")] if args.pairing_record else []
+    prepared = Toolkit.ios_prepare(
+        {"udid": args.udid, "wifi": args.wifi, "pairing_records": records},
+        on_event=print_prepare_progress,
+    )
+    if not prepared.get("success"):
+        raise RuntimeError(f"DDI preparation failed: {prepared.get('error', 'unknown error')}")
     controller = IOSController(udid=args.udid, wifi_address=args.wifi, pairing_records=records)
     if not controller.post_connection().wait():
         raise RuntimeError(
