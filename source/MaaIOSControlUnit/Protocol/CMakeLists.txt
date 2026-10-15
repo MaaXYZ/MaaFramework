@@ -130,9 +130,6 @@ if(APPLE)
 else()
     list(FILTER maa_ios_protocol_sources EXCLUDE REGEX "/decode/VideoToolboxDecoder\\.cpp$")
 endif()
-if(NOT WIN32)
-    list(FILTER maa_ios_protocol_sources EXCLUDE REGEX "/wifi/PairRecordWindows\\.(cpp|h)$")
-endif()
 # The protocol is private implementation of the existing control unit.
 # The test-only archive below never become a separately distributed protocol library.
 set(maa_ios_protocol_root "${CMAKE_CURRENT_SOURCE_DIR}")

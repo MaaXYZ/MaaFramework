@@ -48,20 +48,4 @@ struct PairRecord
 std::string format_record(const PairRecord& record);
 std::optional<PairRecord> parse_record(std::string_view text, std::string& err);
 
-/// 同目录临时文件写入后替换目标。POSIX 文件在写入内容前设为 0600，新建叶子目录
-/// 设为 0700；Windows 为文件和新建叶子目录设置当前进程用户 SID 的受保护 DACL。
-/// 已有目录和上级目录权限不在此调整。失败返回 false 并填 err，尽量移除临时文件。
-bool save_record(const std::string& path, const PairRecord& record, std::string& err);
-/// Same private temporary-file write, but atomically refuses an existing target
-/// (including symlinks). Used for wireless first pairing; never replaces trust.
-bool save_record_new(const std::string& path, const PairRecord& record, std::string& err);
-/// 最多读取 16 KiB 加一个检测字节，拒绝超限或读取失败，然后解析完整文本。
-std::optional<PairRecord> load_record(const std::string& path, std::string& err);
-
-/// 从目录的普通文件名中提取 remote- 与 .pair 之间的候选标识并排序，不解析文件内容。
-/// 返回值是文件名中的候选标识，不能据此还原原始 UDID 的标点。
-/// 目录未被识别为目录时返回空列表并清除 err，包括不存在或目录查询失败的情况。
-/// 枚举过程中检测到的错误通过 err 返回；列表可用于 Wi-Fi 连接选择本地记录。
-std::vector<std::string> list_record_udids(const std::string& dir, std::string& err);
-
 } // namespace maa::ios::wifi

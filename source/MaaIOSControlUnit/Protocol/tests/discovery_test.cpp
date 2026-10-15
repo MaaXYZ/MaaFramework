@@ -6,8 +6,6 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdio>
-#include <filesystem>
-#include <fstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -164,90 +162,6 @@ void test_merge()
     check(!result.usb_available && !result.wifi_available, "pure merging does not claim actual transport availability");
 }
 
-struct TempDirectory
-{
-    std::filesystem::path path =
-        std::filesystem::temp_directory_path()
-        / ("maa-ios-discovery-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
-
-    TempDirectory() { std::filesystem::create_directory(path); }
-
-    ~TempDirectory()
-    {
-        std::error_code ec;
-        std::filesystem::remove_all(path, ec);
-    }
-};
-
-void write_file(const std::filesystem::path& path, const std::string& text)
-{
-    std::ofstream out(path, std::ios::binary);
-    out << text;
-    if (!out) {
-        throw std::runtime_error("Cannot write synthetic record fixture");
-    }
-}
-
-void test_record_loading()
-{
-    TempDirectory directory;
-    auto paired = paired_record();
-    const auto path = (directory.path / "remote-00008110_TEST_DEVICE.pair").string();
-    write_file(path, wifi::format_record(paired));
-    write_file(directory.path / "remote-corrupt-sensitive-identifier.pair", "not a pairing record\nhost_private_key=private-test-secret");
-    write_file(directory.path / "remote-oversized.pair", std::string(16385, 'x'));
-    write_file(directory.path / "ignored.txt", wifi::format_record(paired));
-    std::filesystem::create_directory(directory.path / "remote-directory.pair");
-    std::error_code ec;
-    std::filesystem::create_symlink(path, directory.path / "remote-symlink.pair", ec);
-    std::vector<std::string> warnings;
-    bool cancelled = false;
-    auto records = remote::detail::load_discovery_records(directory.path.string(), { }, warnings, cancelled);
-    check(
-        records.size() == 1 && records[0].udid == paired.udid,
-        "bad, oversized, non-record, directory and symlink entries do not hide a valid record");
-    check(
-        std::filesystem::path(path).filename().string().find(paired.udid) == std::string::npos && records[0].udid == "00008110-TEST:DEVICE",
-        "sanitized filename never replaces the original UDID parsed from record contents");
-    check(warnings.size() == 2 && !cancelled, "invalid and oversized records produce bounded category warnings");
-    for (const auto& warning : warnings) {
-        check(
-            warning.find("sensitive-identifier") == std::string::npos && warning.find("private-test-secret") == std::string::npos
-                && warning.find(paired.udid) == std::string::npos && warning.find(directory.path.string()) == std::string::npos,
-            "record loading warnings contain no record contents, paths or device identifiers");
-    }
-    const auto result = remote::detail::merge_discovery({ }, { advertisement() }, records);
-    check(
-        result.devices.size() == 1 && result.devices[0].udid == paired.udid
-            && result.devices[0].candidates[0].pairing == DiscoveryPairing::ready,
-        "a valid record remains usable despite unrelated corrupt files");
-
-    warnings.clear();
-    records = remote::detail::load_discovery_records((directory.path / "missing").string(), { }, warnings, cancelled);
-    check(records.empty() && warnings.empty(), "missing record directory is a silent empty state");
-    records = remote::detail::load_discovery_records(path, { }, warnings, cancelled);
-    check(records.empty() && warnings.size() == 1, "non-directory record path reports category warning");
-    warnings.clear();
-    records = remote::detail::load_discovery_records(path, [] { return true; }, warnings, cancelled);
-    check(records.empty() && warnings.empty() && cancelled, "pre-cancelled record load does not inspect path");
-
-    TempDirectory limited;
-    for (int i = 0; i < 257; ++i) {
-        write_file(limited.path / ("remote-" + std::to_string(i) + ".pair"), wifi::format_record(paired));
-    }
-    cancelled = false;
-    records = remote::detail::load_discovery_records(limited.path.string(), { }, warnings, cancelled);
-    check(records.size() == 256 && warnings.size() == 1, "pairing file limit bounds reads while preserving already loaded records");
-
-    warnings.clear();
-    cancelled = false;
-    int cancel_checks = 0;
-    records = remote::detail::load_discovery_records(limited.path.string(), [&] { return ++cancel_checks >= 6; }, warnings, cancelled);
-    check(
-        cancelled && !records.empty() && records.size() < 256 && warnings.empty(),
-        "cancellation callback preserves records loaded before cancellation");
-}
-
 void test_non_network_paths()
 {
     remote::DiscoveryOptions options;
@@ -289,7 +203,6 @@ int main()
 {
     try {
         test_merge();
-        test_record_loading();
         test_non_network_paths();
     }
     catch (const std::exception& error) {

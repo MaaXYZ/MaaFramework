@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <exception>
-#include <filesystem>
 #include <map>
 #include <tuple>
 #include <utility>
@@ -136,107 +135,6 @@ DiscoveryResult detail::merge_discovery(
         }
     }
     return result;
-}
-
-std::vector<wifi::PairRecord> detail::load_discovery_records(
-    const std::string& directory,
-    const std::function<bool()>& should_cancel,
-    std::vector<std::string>& warnings,
-    bool& cancelled)
-{
-    std::vector<wifi::PairRecord> records;
-    auto stop = [&] {
-        if (cancelled) {
-            return true;
-        }
-        if (!should_cancel || !should_cancel()) {
-            return false;
-        }
-        cancelled = true;
-        return true;
-    };
-    if (stop()) {
-        return records;
-    }
-
-    // 错误文本只描述错误类别。记录解析器的详细错误可能包含路径或字段内容，
-    // 设备枚举不把这些内容送到终端，也不需要据此猜测设备身份。
-    try {
-        const std::filesystem::path root(directory);
-        std::error_code ec;
-        const auto status = std::filesystem::status(root, ec);
-        if (ec == std::errc::no_such_file_or_directory || status.type() == std::filesystem::file_type::not_found) {
-            return records;
-        }
-        if (ec) {
-            warn(warnings, MAA_IOS_TR("Cannot access pairing record directory"));
-            return records;
-        }
-        if (!std::filesystem::is_directory(status)) {
-            warn(warnings, MAA_IOS_TR("Pairing record path is not a directory"));
-            return records;
-        }
-        std::filesystem::directory_iterator entry(root, ec), end;
-        if (ec) {
-            warn(warnings, MAA_IOS_TR("Cannot read pairing record directory"));
-            return records;
-        }
-        constexpr size_t kMaxEntries = 4096;
-        constexpr size_t kMaxRecords = 256;
-        constexpr uintmax_t kMaxFileSize = 16384;
-        size_t examined = 0, record_files = 0;
-        while (entry != end) {
-            if (stop()) {
-                break;
-            }
-            if (examined++ >= kMaxEntries) {
-                warn(warnings, MAA_IOS_TR("Pairing record directory entry limit reached"));
-                break;
-            }
-            const auto file_status = entry->symlink_status(ec);
-            if (ec) {
-                warn(warnings, MAA_IOS_TR("Cannot inspect a pairing record directory entry"));
-                ec.clear();
-            }
-            else if (std::filesystem::is_regular_file(file_status)) {
-                const auto utf8_name = entry->path().filename().u8string();
-                const std::string name(utf8_name.begin(), utf8_name.end());
-                if (name.size() > 12 && name.starts_with("remote-") && name.ends_with(".pair")) {
-                    if (record_files++ >= kMaxRecords) {
-                        warn(warnings, MAA_IOS_TR("Pairing record file limit reached"));
-                        break;
-                    }
-                    const auto size = entry->file_size(ec);
-                    if (ec) {
-                        warn(warnings, MAA_IOS_TR("Cannot read a pairing record file"));
-                        ec.clear();
-                    }
-                    else if (size > kMaxFileSize) {
-                        warn(warnings, MAA_IOS_TR("Skipped an oversized pairing record file"));
-                    }
-                    else if (!stop()) {
-                        std::string error;
-                        const auto record = wifi::load_record(entry->path().string(), error);
-                        if (record) {
-                            records.push_back(*record);
-                        }
-                        else {
-                            warn(warnings, MAA_IOS_TR("Skipped an unreadable or invalid pairing record file"));
-                        }
-                    }
-                }
-            }
-            entry.increment(ec);
-            if (ec) {
-                warn(warnings, MAA_IOS_TR("Reading pairing record directory was interrupted"));
-                break;
-            }
-        }
-    }
-    catch (const std::exception&) {
-        warn(warnings, MAA_IOS_TR("Cannot read pairing records for device discovery"));
-    }
-    return records;
 }
 
 DiscoveryResult discover_devices(const DiscoveryOptions& options)

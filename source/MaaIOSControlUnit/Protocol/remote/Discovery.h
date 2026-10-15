@@ -103,15 +103,5 @@ DiscoveryResult merge_discovery(
     const std::vector<wifi::mdns::Advertisement>& advertisements,
     const std::vector<wifi::PairRecord>& pair_records);
 
-/// 有界读取普通 remote-*.pair 文件，跳过符号链接；最多检查 4096 个目录项、
-/// 读取 256 份各不超过 16 KiB 的记录。坏文件不阻止其他记录，warning 不含文件名、
-/// 密钥、记录内容或设备标识。缺失目录返回空列表且不产生 warning。
-/// 单独提供这条内部边界以便离线检查加载行为，不创建或修改任何文件。
-std::vector<wifi::PairRecord> load_discovery_records(
-    const std::string& directory,
-    const std::function<bool()>& should_cancel,
-    std::vector<std::string>& warnings,
-    bool& cancelled);
-
 } // namespace detail
 } // namespace maa::ios::remote

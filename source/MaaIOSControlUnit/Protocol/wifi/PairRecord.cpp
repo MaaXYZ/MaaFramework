@@ -1,25 +1,8 @@
 #include "wifi/PairRecord.h"
 #include "i18n/Translation.h"
 
-#include <algorithm>
-#include <filesystem>
-
-#ifdef _WIN32
-#include "wifi/PairRecordWindows.h"
-#else
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#endif
-
-#include <cerrno>
-#include <cstdio>
-#include <cstdlib>
-#include <fstream>
 #include <set>
 #include <sstream>
-
-#include "wifi/Tlv.h"
 
 namespace maa::ios::wifi
 {
@@ -27,8 +10,6 @@ namespace
 {
 
 constexpr char kHeader[] = "MaaIOS-pair-record 1";
-// 最多读取上限加一个检测字节，避免超大文件在大小校验前占用大量内存。
-constexpr size_t kMaxRecordText = 16384;
 
 std::string hex(const Bytes& data)
 {
@@ -82,79 +63,6 @@ std::string_view trim(std::string_view s)
         s.remove_suffix(1);
     }
     return s;
-}
-
-/// 随机后缀临时文件与目标位于同目录，成功关闭后通过 rename 替换。
-/// POSIX 路径不调用 fsync，成功返回不能作为断电后持久性的保证。
-bool write_file(const std::string& path, std::string_view text, std::string& err, bool replace)
-{
-    const auto nonce = random_bytes(8, err);
-    if (!nonce) {
-        return false;
-    }
-    const std::string tmp = path + ".tmp." + hex(*nonce);
-#ifdef _WIN32
-    return write_private_record(tmp, path, text, err, replace);
-#else
-    const int fd = ::open(tmp.c_str(), O_WRONLY | O_CREAT | O_EXCL, 0600);
-    std::FILE* f = fd < 0 ? nullptr : ::fdopen(fd, "wb");
-    if (f == nullptr) {
-        if (fd >= 0) {
-            ::close(fd);
-            ::remove(tmp.c_str());
-        }
-        err = MAA_IOS_TR("Cannot open temporary file ") + tmp;
-        return false;
-    }
-    // 在写入含私钥的记录前将临时文件权限设为 0600；设置失败即关闭并移除文件。
-    if (::fchmod(::fileno(f), 0600) != 0) {
-        err = MAA_IOS_TR("Failed to set record file permissions");
-        std::fclose(f);
-        ::remove(tmp.c_str());
-        return false;
-    }
-    const size_t written = std::fwrite(text.data(), 1, text.size(), f);
-    const int closed = std::fclose(f);
-    if (written != text.size() || closed != 0) {
-        err = MAA_IOS_TR("Incomplete record file write");
-        ::remove(tmp.c_str());
-        return false;
-    }
-    // link publishes the finished private inode exclusively. An existing
-    // filename or symlink wins the race; only replacement mode uses rename.
-    if ((replace ? std::rename(tmp.c_str(), path.c_str()) : ::link(tmp.c_str(), path.c_str())) != 0) {
-        err = !replace && errno == EEXIST ? MAA_IOS_TR("Pairing record already exists; Wi-Fi pairing will not replace it")
-                                          : MAA_IOS_TR("Rename failed");
-        ::remove(tmp.c_str());
-        return false;
-    }
-    if (!replace) {
-        ::remove(tmp.c_str());
-    }
-    return true;
-#endif
-}
-
-std::optional<std::string> read_file(const std::string& path, std::string& err)
-{
-    std::ifstream in(path, std::ios::binary);
-    if (!in) {
-        err = MAA_IOS_TR("Cannot open ") + path;
-        return std::nullopt;
-    }
-    std::string text(kMaxRecordText + 1, '\0');
-    in.read(text.data(), static_cast<std::streamsize>(text.size()));
-    const auto count = static_cast<size_t>(in.gcount());
-    if (in.bad() || (in.fail() && !in.eof())) {
-        err = MAA_IOS_TR("Failed to read pairing record file ") + path;
-        return std::nullopt;
-    }
-    if (count > kMaxRecordText) {
-        err = MAA_IOS_TR("Pairing record file too large");
-        return std::nullopt;
-    }
-    text.resize(count);
-    return text;
 }
 
 } // namespace
@@ -288,92 +196,6 @@ std::optional<PairRecord> parse_record(std::string_view text, std::string& err)
         return std::nullopt;
     }
     return record;
-}
-
-namespace
-{
-bool save_record_impl(const std::string& path, const PairRecord& record, std::string& err, bool replace)
-{
-    err.clear();
-    const auto parent = std::filesystem::path(path).parent_path();
-    const std::string dir = parent.string();
-    if (!dir.empty()) {
-        // 创建缺失的父目录；任何目录创建错误都在写入记录前返回。
-        std::error_code ec;
-        const bool existed = std::filesystem::is_directory(dir, ec);
-        std::filesystem::create_directories(dir, ec);
-        if (ec) {
-            err = MAA_IOS_TR("Failed to create directory ") + dir + ": " + ec.message();
-            return false;
-        }
-        if (!existed) {
-            // 只限制新建的叶子目录。共享父目录及已有目录的权限由用户管理。
-#ifdef _WIN32
-            if (!protect_record_directory(dir, err)) {
-                return false;
-            }
-#else
-            std::filesystem::permissions(dir, std::filesystem::perms::owner_all, ec);
-            if (ec) {
-                err = std::string(MAA_IOS_TR("Failed to set record file permissions")) + ": " + ec.message();
-                return false;
-            }
-#endif
-        }
-    }
-    return write_file(path, format_record(record), err, replace);
-}
-} // namespace
-
-bool save_record(const std::string& path, const PairRecord& record, std::string& err)
-{
-    return save_record_impl(path, record, err, true);
-}
-
-bool save_record_new(const std::string& path, const PairRecord& record, std::string& err)
-{
-    return save_record_impl(path, record, err, false);
-}
-
-std::optional<PairRecord> load_record(const std::string& path, std::string& err)
-{
-    const std::optional<std::string> text = read_file(path, err);
-    if (!text) {
-        return std::nullopt;
-    }
-    return parse_record(*text, err);
-}
-
-std::vector<std::string> list_record_udids(const std::string& dir, std::string& err)
-{
-    std::vector<std::string> out;
-    static constexpr std::string_view kPrefix = "remote-";
-    static constexpr std::string_view kSuffix = ".pair";
-    std::error_code ec;
-    const std::filesystem::path root(dir);
-    if (!std::filesystem::is_directory(root, ec)) {
-        // 未识别为目录时统一返回空列表，包括不存在和 is_directory 查询失败。
-        // 当前接口在此清除 err，调用方无法用该结果区分不存在与查询失败。
-        err.clear();
-        return out;
-    }
-    for (const auto& entry : std::filesystem::directory_iterator(root, ec)) {
-        if (ec) {
-            err = MAA_IOS_TR("Reading directory ") + dir + MAA_IOS_TR(" failed: ") + ec.message();
-            break;
-        }
-        if (!entry.is_regular_file(ec)) {
-            continue;
-        }
-        const std::string name = entry.path().filename().string();
-        if (name.size() <= kPrefix.size() + kSuffix.size() || name.compare(0, kPrefix.size(), kPrefix) != 0
-            || name.compare(name.size() - kSuffix.size(), kSuffix.size(), kSuffix) != 0) {
-            continue;
-        }
-        out.push_back(name.substr(kPrefix.size(), name.size() - kPrefix.size() - kSuffix.size()));
-    }
-    std::sort(out.begin(), out.end());
-    return out;
 }
 
 } // namespace maa::ios::wifi
