@@ -68,19 +68,10 @@ std::optional<wifi::PairRecord> load_selected_record(
     const std::function<bool()>& should_cancel,
     const std::vector<wifi::PairRecord>& records)
 {
-    std::vector<std::string> warnings;
-    bool cancelled = false;
-    if (cancelled || startup_cancelled(should_cancel, error)) {
-        error = MAA_IOS_TR("Device startup cancelled");
+    if (startup_cancelled(should_cancel, error)) {
         return std::nullopt;
     }
-    auto selected = detail::select_pairing_record(records, serial, error);
-    if (!selected && !warnings.empty()) {
-        for (const auto& warning : warnings) {
-            error += "\n" + warning;
-        }
-    }
-    return selected;
+    return detail::select_pairing_record(records, serial, error);
 }
 
 std::optional<remote::Device> open_discovered_device(
