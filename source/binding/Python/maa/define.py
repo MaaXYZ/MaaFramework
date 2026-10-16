@@ -322,6 +322,13 @@ class MaaInferenceExecutionProviderEnum(IntEnum):
     # Shipped on Windows, Linux and macOS.
     WebGPU = 5
 
+    # NCNN, only available when MaaFW is built with NCNN (Android only).
+    # Setting it on other builds fails.
+    # MaaResOption_InferenceDevice: CPU / Auto -> NCNN CPU; GPU is not supported yet, other values fail the loading.
+    # Loads `<model stem>.ncnn.param/.ncnn.bin/.ncnn.json`, no fallback to onnxruntime.
+    # Runs in fp32 by default, fp16 can be enabled per model in the "options" of the .ncnn.json.
+    NCNN = 6
+
 
 class MaaResOptionEnum(IntEnum):
     Invalid = 0

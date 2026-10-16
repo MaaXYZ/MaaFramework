@@ -3,9 +3,8 @@
 #include <ostream>
 #include <vector>
 
-#include <onnxruntime/onnxruntime_cxx_api.h>
-
 #include "MaaUtils/JsonExt.hpp"
+#include "InferenceSession.h"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
@@ -34,8 +33,7 @@ public:
         cv::Mat image,
         std::vector<cv::Rect> rois,
         NeuralNetworkClassifierParam param,
-        std::shared_ptr<Ort::Session> session,
-        const Ort::MemoryInfo& memory_info,
+        InferenceSessionPtr session,
         std::string name = "");
 
 private:
@@ -54,8 +52,7 @@ private:
 
 private:
     const NeuralNetworkClassifierParam param_;
-    std::shared_ptr<Ort::Session> session_ = nullptr;
-    const Ort::MemoryInfo& memory_info_;
+    InferenceSessionPtr session_ = nullptr;
 
     std::vector<int> expected_indices_;
 };
