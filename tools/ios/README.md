@@ -141,3 +141,6 @@ defaulting to 300. Cached assets avoid repeat downloads, but personalization may
 During preparation, Ctrl+C requests cancellation; PiCli exits with code 130 after cleanup.
 Underlying operations respond at their cancellation checkpoints. These defaults belong to PiCli;
 Toolkit callers still choose their own cache location or temporary storage.
+
+Android arm64 主机的视频解码依赖构建见 [构建指南](../../docs/zh_cn/4.1-构建指南.md#android-主机的-ios-视频流)。
+For Android arm64 video-decoding dependencies, see the [build guide](../../docs/en_us/4.1-BuildGuide.md#ios-video-streaming-on-an-android-host).

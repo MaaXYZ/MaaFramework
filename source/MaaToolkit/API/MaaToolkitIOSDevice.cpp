@@ -12,6 +12,7 @@ struct MaaToolkitIOSDevice
     std::string name;
     std::string udid;
     std::string connections;
+    MaaIOScreencapMethod screencap_methods = MaaIOScreencapMethod_ScreenshotService;
 };
 
 struct MaaToolkitIOSDeviceList
@@ -173,7 +174,8 @@ MaaBool MaaToolkitIOSDeviceFindWithOptions(const char* options_json, MaaToolkitI
             list->devices.push_back(
                 { device.get("name", std::string { }),
                   device.get("udid", std::string { }),
-                  device.get("candidates", json::array { }).to_string() });
+                  device.get("candidates", json::array { }).to_string(),
+                  device.get("screencap_methods", MaaIOScreencapMethod_ScreenshotService) });
         }
         return true;
     }
@@ -211,11 +213,7 @@ const char* MaaToolkitIOSDeviceGetConnections(const MaaToolkitIOSDevice* device)
 
 MaaIOScreencapMethod MaaToolkitIOSDeviceGetScreencapMethods(const MaaToolkitIOSDevice* device)
 {
-#if defined(__ANDROID__)
-    return device ? MaaIOScreencapMethod_ScreenshotService : MaaIOScreencapMethod_None;
-#else
-    return device ? (MaaIOScreencapMethod_Stream | MaaIOScreencapMethod_ScreenshotService) : MaaIOScreencapMethod_None;
-#endif
+    return device ? device->screencap_methods : MaaIOScreencapMethod_None;
 }
 
 const char* MaaToolkitIOSDeviceListGetWarnings(const MaaToolkitIOSDeviceList* list)

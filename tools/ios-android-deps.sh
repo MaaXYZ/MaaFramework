@@ -2,13 +2,13 @@
 #
 # tools/ios-android-deps.sh
 #
-# Build the arm64-android OpenSSL + curl static dependency prefix that the
+# Build the arm64-android OpenSSL + curl and shared FFmpeg dependency prefix that the
 # MaaFramework iOS control unit needs when it is cross-compiled for an Android
 # host (MaaDeps ships neither library for Android).
 #
 # Targets arm64-android only for now. Downloads pinned upstream tarballs
 # (sources are never vendored into git), verifies sha256, builds
-# OpenSSL and then curl against it into the requested prefix, and prints the
+# OpenSSL, curl and a minimal HEVC/PNG FFmpeg build into the requested prefix, and prints the
 # CMake -D flags the caller must pass so this composes with
 #   scripts/build-sdk.py --android --android-deps <prefix>
 # on the consuming side.
@@ -47,6 +47,10 @@ CURL_VERSION="8.23.0"
 # underscores (curl-8_23_0 would be a 404).
 CURL_URL="https://curl.se/download/curl-${CURL_VERSION}.tar.xz"
 CURL_SHA256="8dadd7d2536a314f982ad05a651b713f426bf7d02cc2c76cffb9796f2218e6c5"
+
+FFMPEG_VERSION="9.0.2"
+FFMPEG_URL="https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.xz"
+FFMPEG_SHA256="8c3850283eb25fa026482078a04051e0be17347b09ef81a0849bec15a96e002e"
 
 DEFAULT_NDK="/Users/YJBeetle/Library/Android/sdk/ndk/29.0.14206865"
 ANDROID_API="${ANDROID_API:-24}"
@@ -214,13 +218,57 @@ build_curl() {
     )
 }
 
+# FFmpeg is shared so consumers can replace the LGPL libraries independently.
+build_ffmpeg() {
+    local recipe="ffmpeg-$FFMPEG_VERSION arm64-v8a api-$ANDROID_API ndk-$(basename "$NDK") recipe-1"
+    local marker="$PREFIX/share/ffmpeg/maafw-build.txt"
+    if [ -f "$PREFIX/lib/libavcodec.so" ] && [ -f "$PREFIX/lib/libavutil.so" ] \
+       && [ -f "$PREFIX/lib/libswscale.so" ] && [ -f "$PREFIX/include/libavcodec/avcodec.h" ] \
+       && [ -f "$marker" ] && [ "$(cat "$marker")" = "$recipe" ]; then
+        log "FFmpeg already built at $PREFIX - skipping"
+        return 0
+    fi
+    fetch_pinned "$FFMPEG_URL" "$FFMPEG_SHA256" "$WORK_DIR/ffmpeg-${FFMPEG_VERSION}.tar.xz"
+    local src="$WORK_DIR/ffmpeg-${FFMPEG_VERSION}"
+    if [ ! -f "$src/configure" ]; then
+        tar -xf "$WORK_DIR/ffmpeg-${FFMPEG_VERSION}.tar.xz" -C "$WORK_DIR"
+    fi
+    local output="$WORK_DIR/ffmpeg-build-arm64-api-$ANDROID_API"
+    mkdir -p "$output"
+    log "building FFmpeg $FFMPEG_VERSION for arm64-android (API $ANDROID_API)"
+    (
+        cd "$output"
+        "$src/configure" \
+            --prefix="$PREFIX" --libdir="$PREFIX/lib" \
+            --target-os=android --arch=aarch64 --enable-cross-compile \
+            --cc="$NDK_BIN/${TRIPLE}${ANDROID_API}-clang" \
+            --cxx="$NDK_BIN/${TRIPLE}${ANDROID_API}-clang++" \
+            --ar="$NDK_BIN/llvm-ar" --ranlib="$NDK_BIN/llvm-ranlib" \
+            --nm="$NDK_BIN/llvm-nm" --strip="$NDK_BIN/llvm-strip" \
+            --sysroot="$(dirname "$NDK_BIN")/sysroot" \
+            --disable-autodetect --disable-everything \
+            --disable-programs --disable-doc --disable-debug --disable-network \
+            --disable-avformat --disable-avdevice --disable-avfilter --disable-swresample \
+            --enable-shared --disable-static --enable-pic --enable-pthreads \
+            --enable-avcodec --enable-avutil --enable-swscale \
+            --enable-decoder=hevc,png --enable-parser=hevc --enable-zlib
+        make -j"$JOBS"
+        make install
+    )
+    mkdir -p "$PREFIX/share/ffmpeg"
+    cp "$src/COPYING.LGPLv2.1" "$PREFIX/share/ffmpeg/"
+    cp "$output/ffbuild/config.log" "$PREFIX/share/ffmpeg/"
+    printf '%s\n' "$recipe" > "$marker"
+}
+
 build_openssl
 build_curl
+build_ffmpeg
 
 # ---------------------------------------------------------------------------
 # Verification + CMake flags for the caller
 # ---------------------------------------------------------------------------
-for f in lib/libcrypto.a lib/libssl.a lib/libcurl.a include/curl/curl.h include/openssl/ssl.h; do
+for f in lib/libcrypto.a lib/libssl.a lib/libcurl.a include/curl/curl.h include/openssl/ssl.h lib/libavcodec.so lib/libavutil.so lib/libswscale.so; do
     [ -f "$PREFIX/$f" ] || die "expected artifact missing after build: $PREFIX/$f"
 done
 
@@ -237,4 +285,8 @@ Pass these CMake flags when configuring MaaFramework for Android, e.g.:
   -DOPENSSL_SSL_LIBRARY=$PREFIX/lib/libssl.a
   -DCURL_INCLUDE_DIR=$PREFIX/include
   -DCURL_LIBRARY=$PREFIX/lib/libcurl.a
+  -DMAA_IOS_FFMPEG_INCLUDE_DIR=$PREFIX/include
+  -DMAA_IOS_AVCODEC_LIBRARY=$PREFIX/lib/libavcodec.so
+  -DMAA_IOS_AVUTIL_LIBRARY=$PREFIX/lib/libavutil.so
+  -DMAA_IOS_SWSCALE_LIBRARY=$PREFIX/lib/libswscale.so
 EOF

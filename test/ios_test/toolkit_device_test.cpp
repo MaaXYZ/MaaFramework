@@ -56,7 +56,7 @@ int main()
         auto* list = MaaToolkitIOSDeviceListCreate();
         require(list != nullptr, "allocate");
         next_result = R"({"success":true,"cancelled":false,"error":"","usb_available":true,"wifi_available":true,
-            "devices":[{"udid":"device-id","name":"phone","candidates":[
+            "devices":[{"udid":"device-id","name":"phone","screencap_methods":3,"candidates":[
                 {"transport":"usbmux","connection_type":"Network"},
                 {"transport":"remote_pairing","address":"fe80::1%14","port":49153,"interface_index":14,"pairing_state":1}]}],
             "warnings":["one source unavailable"]})";
@@ -64,16 +64,19 @@ int main()
         require(last_function == "MaaIOSControlUnitDiscover", "discovery uses control unit");
         const auto* device = MaaToolkitIOSDeviceListAt(list, 0);
         require(device && MaaToolkitIOSDeviceListSize(list) == 1, "list view");
-#if defined(__ANDROID__)
-        require(
-            MaaToolkitIOSDeviceGetScreencapMethods(device) == MaaIOScreencapMethod_ScreenshotService,
-            "Android advertises screenshot RPC only");
-#else
         require(
             MaaToolkitIOSDeviceGetScreencapMethods(device) == (MaaIOScreencapMethod_Stream | MaaIOScreencapMethod_ScreenshotService),
-            "desktop advertises both capture methods");
-#endif
+            "report decoder capability supplied by the loaded control unit");
         require(MaaToolkitIOSDeviceGetScreencapMethods(nullptr) == MaaIOScreencapMethod_None, "null device has no capture methods");
+        const auto with_video = next_result;
+        next_result = R"({"success":true,"devices":[{"udid":"screenshot-only","screencap_methods":2}]})";
+        require(MaaToolkitIOSDeviceFindWithTimeout(0, list), "screenshot-only discovery");
+        require(
+            MaaToolkitIOSDeviceGetScreencapMethods(MaaToolkitIOSDeviceListAt(list, 0)) == MaaIOScreencapMethod_ScreenshotService,
+            "do not advertise video without a decoder");
+        next_result = with_video;
+        require(MaaToolkitIOSDeviceFindWithTimeout(5, list), "restore video-capable discovery");
+        device = MaaToolkitIOSDeviceListAt(list, 0);
         std::string owned_udid = MaaToolkitIOSDeviceGetUdid(device);
         const auto candidates = json::parse(MaaToolkitIOSDeviceGetConnections(device));
         require(candidates && candidates->as_array().size() == 2, "retain candidates");

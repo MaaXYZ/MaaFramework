@@ -1,4 +1,6 @@
 #include "Operations.h"
+#include "MaaFramework/MaaDef.h"
+#include "decode/Decoder.h"
 
 #include "remote/DeviceConnection.h"
 #include "remote/Discovery.h"
@@ -56,7 +58,12 @@ Json discover(const Options& options, const Callbacks& callbacks)
                   { "pairing", pairing_name(c.pairing) },
                   { "pairing_state", static_cast<int>(c.pairing) } });
         }
-        devices.push_back({ { "udid", device.udid }, { "name", device.name }, { "candidates", std::move(candidates) } });
+        const auto methods = MaaIOScreencapMethod_ScreenshotService | (kHaveDecoder ? MaaIOScreencapMethod_Stream : 0ULL);
+        devices.push_back(
+            { { "udid", device.udid },
+              { "name", device.name },
+              { "candidates", std::move(candidates) },
+              { "screencap_methods", methods } });
     }
     const bool ok = !found.cancelled && (found.usb_available || found.wifi_available);
     return { { "success", ok },
