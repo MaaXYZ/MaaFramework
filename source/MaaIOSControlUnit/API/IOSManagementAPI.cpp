@@ -37,7 +37,7 @@ bool parse_options(Operation operation, const char* source, Options& options, st
         allowed = { "pairing_records", "timeout_ms", "usb_only", "wifi_only" };
     }
     else if (operation == Operation::Pair) {
-        allowed = { "pairing_records", "udid", "wifi", "repair", "timeout_ms" };
+        allowed = { "pairing_records", "udid", "wifi", "repair", "timeout_ms", "host_name" };
     }
     else if (operation == Operation::CheckConnection) {
         allowed = { "pairing_records", "udid", "wifi", "port" };
@@ -102,7 +102,8 @@ bool parse_options(Operation operation, const char* source, Options& options, st
     }
     options.timeout_ms = operation == Operation::Pair ? 120000 : 3000;
     int port = options.port;
-    if (!string("udid", options.udid) || !string("wifi", options.wifi) || !string("cache_directory", options.cache_directory)
+    if (!string("udid", options.udid) || !string("wifi", options.wifi)
+        || !string("cache_directory", options.cache_directory) || !string("host_name", options.host_name)
         || !boolean("repair", options.repair) || !boolean("replace", options.replace) || !boolean("usb_only", options.usb_only)
         || !boolean("wifi_only", options.wifi_only) || !integer("port", 1, 65535, port)
         || !integer("timeout_ms", operation == Operation::Pair ? 1 : 0, operation == Operation::Pair ? 300000 : 60000, options.timeout_ms)

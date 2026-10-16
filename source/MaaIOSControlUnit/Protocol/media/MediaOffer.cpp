@@ -123,7 +123,7 @@ std::vector<uint8_t> rate_table(const Offer& offer)
     std::vector<uint8_t> out;
     auto entry = [&out](std::vector<std::pair<uint32_t, uint64_t>> fields) {
         std::vector<uint8_t> body;
-        for (const auto [field, value] : fields) {
+        for (const auto& [field, value] : fields) {
             put_field_varint(body, field, value);
         }
         put_field_bytes(out, 9, body);
@@ -131,7 +131,7 @@ std::vector<uint8_t> rate_table(const Offer& offer)
     // 样本每条都包含 f1，包括值为 0 的记录。保留显式零值以维持已验证的编码形状，
     // 不在未知消息定义的情况下假定字段省略与显式写零完全等价。
     auto f2_of = [](const std::vector<std::pair<uint32_t, uint64_t>>& e) {
-        for (const auto [f, v] : e) {
+        for (const auto& [f, v] : e) {
             if (f == 2) {
                 return v;
             }
