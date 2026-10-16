@@ -85,6 +85,7 @@ Json pair(const Options& options, const Callbacks& callbacks, std::string& crede
         remote::WifiPairingOptions request;
         request.existing_records = options.pairing_records;
         request.udid = options.udid;
+        request.host_name = options.host_name;
         request.timeout_ms = options.timeout_ms;
         request.should_cancel = callbacks.cancelled;
         request.progress = progress;

@@ -10,6 +10,9 @@ namespace maa::ios::remote
 struct WifiPairingOptions
 {
     std::string udid; ///< Optional expected device UDID; checked after authenticated M5, before M6.
+    /// Name advertised to the phone's pairing UI. Empty keeps the platform hostname, which on
+    /// Android is often the meaningless "localhost"; callers own their own product identity.
+    std::string host_name;
     std::vector<wifi::PairRecord> existing_records;
     /// Cooperative total deadline including discovery, PIN and verification.
     /// Socket waits check it every 50ms; callbacks must return promptly.

@@ -18,6 +18,7 @@ struct Options
     std::string udid;
     std::string wifi;
     std::string cache_directory;
+    std::string host_name;
     std::vector<wifi::PairRecord> pairing_records;
     bool repair = false;
     bool replace = false;
