@@ -489,6 +489,8 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="#a07c99fb673242274e529810067429535aada9d3c290c0a54170963a8885e1550c">MaaInferenceExecutionProvider_CUDA</a> = 4
 , <br />
 &#160;&#160;<a class="el" href="#a07c99fb673242274e529810067429535a3d1cd45032b6c6bef2ecf8a5abad8b55">MaaInferenceExecutionProvider_WebGPU</a> = 5
+, <br />
+&#160;&#160;<a class="el" href="#a07c99fb673242274e529810067429535acc33aacf8d622440ad183b4808953bed">MaaInferenceExecutionProvider_NCNN</a> = 6
 <br />
  }</td></tr>
 <tr class="separator:a07c99fb673242274e529810067429535"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -697,7 +699,7 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    (<a class="code hl_define" href="#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~MaaAdbScreencapMethod_RawByNetcat) &amp; (~MaaAdbScreencapMethod_MinicapDirect) \</div>
 <div class="line">     &amp; (~MaaAdbScreencapMethod_MinicapStream))</div>
-<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:307</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:320</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2824,6 +2826,7 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="a07c99fb673242274e529810067429535ae25a91ba56fd4ace8c4f5034e87320d0" name="a07c99fb673242274e529810067429535ae25a91ba56fd4ace8c4f5034e87320d0"></a>MaaInferenceExecutionProvider_CoreML&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a07c99fb673242274e529810067429535aada9d3c290c0a54170963a8885e1550c" name="a07c99fb673242274e529810067429535aada9d3c290c0a54170963a8885e1550c"></a>MaaInferenceExecutionProvider_CUDA&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a07c99fb673242274e529810067429535a3d1cd45032b6c6bef2ecf8a5abad8b55" name="a07c99fb673242274e529810067429535a3d1cd45032b6c6bef2ecf8a5abad8b55"></a>MaaInferenceExecutionProvider_WebGPU&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a07c99fb673242274e529810067429535acc33aacf8d622440ad183b4808953bed" name="a07c99fb673242274e529810067429535acc33aacf8d622440ad183b4808953bed"></a>MaaInferenceExecutionProvider_NCNN&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
@@ -2844,7 +2847,7 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="a9aa211dbcabe90cacd0c94ea6a03d116a3ff6bf91b8715ced2a6c20ac9c1b4109" name="a9aa211dbcabe90cacd0c94ea6a03d116a3ff6bf91b8715ced2a6c20ac9c1b4109"></a>MaaResOption_InferenceDevice&#160;</td><td class="fielddoc"><p>Use the specified inference device. Please set this option before loading the model.</p>
 <p>value: MaaInferenceDevice, eg: 0; val_size: sizeof(MaaInferenceDevice) default value is MaaInferenceDevice_Auto </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a9aa211dbcabe90cacd0c94ea6a03d116ace3b2838a2190168d82cf04fd4d05cf9" name="a9aa211dbcabe90cacd0c94ea6a03d116ace3b2838a2190168d82cf04fd4d05cf9"></a>MaaResOption_InferenceExecutionProvider&#160;</td><td class="fielddoc"><p>Use the specified inference execution provider Please set this option before loading the model.</p>
+<tr><td class="fieldname"><a id="a9aa211dbcabe90cacd0c94ea6a03d116ace3b2838a2190168d82cf04fd4d05cf9" name="a9aa211dbcabe90cacd0c94ea6a03d116ace3b2838a2190168d82cf04fd4d05cf9"></a>MaaResOption_InferenceExecutionProvider&#160;</td><td class="fielddoc"><p>Use the specified inference execution provider Please set this option before loading the model. Once resource loading starts (any MaaResourcePost*), switching to or from NCNN fails until <a class="el" href="MaaResource_8h.html#a245abf490b3967003e4645f7bb2f2a32">MaaResourceClear()</a>.</p>
 <p>value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider) default value is MaaInferenceExecutionProvider_Auto </p>
 </td></tr>
 </table>
@@ -2914,7 +2917,7 @@ Enumerations</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Sat Oct 10 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
+    <li class="footer">Generated on Fri Oct 16 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
 </body>

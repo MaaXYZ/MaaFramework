@@ -1,5 +1,6 @@
 var NAVTREEINDEX3 =
 {
+"structMaaCustomControllerCallbacks.html#add383d0ce3995532bfe0db9d008b6f7e":[3,0,8,13],
 "structMaaCustomControllerCallbacks.html#ae2381df699964f6e95fe89ad2fc22e38":[3,0,8,16],
 "structMaaCustomControllerCallbacks.html#af0a00cdd379be8608bf360acfdfde4ea":[3,0,8,2],
 "structMaaRect.html":[3,0,9],
