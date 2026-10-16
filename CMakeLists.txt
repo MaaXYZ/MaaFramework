@@ -64,11 +64,6 @@ if(WITH_MACOS_CONTROLLER AND NOT APPLE)
     set(WITH_MACOS_CONTROLLER OFF)
 endif()
 
-if(WITH_IOS_CONTROLLER AND ANDROID)
-    message(STATUS "iOS device controller requires a desktop host, disable on Android")
-    set(WITH_IOS_CONTROLLER OFF)
-endif()
-
 if(WITH_ANDROID_NATIVE_CONTROLLER AND NOT ANDROID)
     message(STATUS "Not on Android, disable WITH_ANDROID_NATIVE_CONTROLLER")
     set(WITH_ANDROID_NATIVE_CONTROLLER OFF)

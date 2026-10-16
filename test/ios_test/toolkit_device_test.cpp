@@ -64,6 +64,16 @@ int main()
         require(last_function == "MaaIOSControlUnitDiscover", "discovery uses control unit");
         const auto* device = MaaToolkitIOSDeviceListAt(list, 0);
         require(device && MaaToolkitIOSDeviceListSize(list) == 1, "list view");
+#if defined(__ANDROID__)
+        require(
+            MaaToolkitIOSDeviceGetScreencapMethods(device) == MaaIOScreencapMethod_ScreenshotService,
+            "Android advertises screenshot RPC only");
+#else
+        require(
+            MaaToolkitIOSDeviceGetScreencapMethods(device) == (MaaIOScreencapMethod_Stream | MaaIOScreencapMethod_ScreenshotService),
+            "desktop advertises both capture methods");
+#endif
+        require(MaaToolkitIOSDeviceGetScreencapMethods(nullptr) == MaaIOScreencapMethod_None, "null device has no capture methods");
         std::string owned_udid = MaaToolkitIOSDeviceGetUdid(device);
         const auto candidates = json::parse(MaaToolkitIOSDeviceGetConnections(device));
         require(candidates && candidates->as_array().size() == 2, "retain candidates");

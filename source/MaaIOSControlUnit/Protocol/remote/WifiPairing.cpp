@@ -17,6 +17,7 @@
 #include <memory>
 #include <utility>
 #ifndef _WIN32
+#include <arpa/inet.h>
 #include <fcntl.h>
 #endif
 

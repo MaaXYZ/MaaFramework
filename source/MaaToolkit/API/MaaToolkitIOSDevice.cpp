@@ -211,7 +211,11 @@ const char* MaaToolkitIOSDeviceGetConnections(const MaaToolkitIOSDevice* device)
 
 MaaIOScreencapMethod MaaToolkitIOSDeviceGetScreencapMethods(const MaaToolkitIOSDevice* device)
 {
+#if defined(__ANDROID__)
+    return device ? MaaIOScreencapMethod_ScreenshotService : MaaIOScreencapMethod_None;
+#else
     return device ? (MaaIOScreencapMethod_Stream | MaaIOScreencapMethod_ScreenshotService) : MaaIOScreencapMethod_None;
+#endif
 }
 
 const char* MaaToolkitIOSDeviceListGetWarnings(const MaaToolkitIOSDeviceList* list)

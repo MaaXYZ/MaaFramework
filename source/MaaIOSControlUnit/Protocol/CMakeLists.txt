@@ -72,12 +72,22 @@ find_package(Threads REQUIRED)
 find_package(PkgConfig QUIET)
 # vcpkg pkg-config metadata selects one configuration; native multi-config
 # Windows builds must use import libraries and configuration-aware CMake targets.
-if(PkgConfig_FOUND AND NOT WIN32)
+# Cross-compiling is the worse form of the same trap: pkg-config always reports the
+# build machine, so a host libavcodec or libcurl would be linked into the target .so.
+set(maa_ios_host_pkg_config OFF)
+if(PkgConfig_FOUND AND NOT WIN32 AND NOT CMAKE_CROSSCOMPILING)
+    set(maa_ios_host_pkg_config ON)
+endif()
+if(maa_ios_host_pkg_config)
     pkg_check_modules(MAA_IOS_LIBAV QUIET IMPORTED_TARGET libavcodec libavutil libswscale)
 endif()
 add_library(MaaIOSLibAv INTERFACE)
-if(TARGET PkgConfig::MAA_IOS_LIBAV)
+if(ANDROID)
+    # Android currently uses screenshot RPC without a video decoder.
+    set(MAA_IOS_LIBAV OFF)
+elseif(TARGET PkgConfig::MAA_IOS_LIBAV)
     target_link_libraries(MaaIOSLibAv INTERFACE PkgConfig::MAA_IOS_LIBAV)
+    set(MAA_IOS_LIBAV ON)
 else()
     # vcpkg / native MSVC packages expose ordinary headers and import libraries.
     find_path(MAA_IOS_FFMPEG_INCLUDE_DIR libavcodec/avcodec.h REQUIRED)
@@ -87,6 +97,7 @@ else()
     target_include_directories(MaaIOSLibAv SYSTEM INTERFACE "${MAA_IOS_FFMPEG_INCLUDE_DIR}")
     target_link_libraries(MaaIOSLibAv INTERFACE "${MAA_IOS_AVCODEC_LIBRARY}"
         "${MAA_IOS_AVUTIL_LIBRARY}" "${MAA_IOS_SWSCALE_LIBRARY}")
+    set(MAA_IOS_LIBAV ON)
 endif()
 
 add_library(MaaIOSCurl INTERFACE)
@@ -104,7 +115,7 @@ if(APPLE)
     target_link_libraries(MaaIOSCurl INTERFACE "${maa_ios_sdk}/usr/lib/libcurl.tbd")
 else()
     find_package(CURL REQUIRED)
-    if(PkgConfig_FOUND AND NOT WIN32)
+    if(maa_ios_host_pkg_config)
         pkg_check_modules(MAA_IOS_CURL QUIET IMPORTED_TARGET libcurl)
     endif()
     if(TARGET PkgConfig::MAA_IOS_CURL)
@@ -130,6 +141,9 @@ if(APPLE)
 else()
     list(FILTER maa_ios_protocol_sources EXCLUDE REGEX "/decode/VideoToolboxDecoder\\.cpp$")
 endif()
+if(NOT MAA_IOS_LIBAV)
+    list(FILTER maa_ios_protocol_sources EXCLUDE REGEX "/decode/FFmpegDecoder\\.cpp$")
+endif()
 # The protocol is private implementation of the existing control unit.
 # The test-only archive below never become a separately distributed protocol library.
 set(maa_ios_protocol_root "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -137,7 +151,9 @@ function(maa_ios_apply_protocol_options target visibility)
     target_include_directories(${target} ${visibility} "${maa_ios_protocol_root}")
     target_include_directories(${target} SYSTEM PRIVATE "${mdns_SOURCE_DIR}")
     target_compile_features(${target} ${visibility} cxx_std_20)
-    target_compile_definitions(${target} ${visibility} MAA_IOS_HAVE_LIBAV=1)
+    if(MAA_IOS_LIBAV)
+        target_compile_definitions(${target} ${visibility} MAA_IOS_HAVE_LIBAV=1)
+    endif()
     target_compile_definitions(${target} PRIVATE OPENSSL_SUPPRESS_DEPRECATED)
     target_link_libraries(${target} ${visibility}
         OpenSSL::SSL OpenSSL::Crypto nlohmann_json::nlohmann_json MaaIOSLibAv Threads::Threads
