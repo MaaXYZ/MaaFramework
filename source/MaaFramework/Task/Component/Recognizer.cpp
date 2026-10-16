@@ -280,16 +280,7 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
         return build_result(name, "OCR", OCRer(image_, rois, param, cached, resource()->ocr_res().session(param.model), name));
     }
 
-    return build_result(
-        name,
-        "OCR",
-        OCRer(
-            image_,
-            rois,
-            param,
-            resource()->ocr_res().session(param.model),
-            name,
-            std::move(color_filter)));
+    return build_result(name, "OCR", OCRer(image_, rois, param, resource()->ocr_res().session(param.model), name, std::move(color_filter)));
 }
 
 RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierParam& param, const std::string& name)
@@ -342,10 +333,7 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
 
     auto& inference_res = resource()->inference_res();
 
-    return build_result(
-        name,
-        "NeuralNetworkDetect",
-        NeuralNetworkDetector(image_, rois, param, inference_res.detector(param.model), name));
+    return build_result(name, "NeuralNetworkDetect", NeuralNetworkDetector(image_, rois, param, inference_res.detector(param.model), name));
 }
 
 RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionParam& param, const std::string& name)
@@ -693,12 +681,7 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
             }
         }
 
-        OCRer ocrer(
-            masked_image,
-            { cluster.union_roi },
-            batch_param,
-            ocr_session,
-            cluster.batch_name);
+        OCRer ocrer(masked_image, { cluster.union_roi }, batch_param, ocr_session, cluster.batch_name);
 
         for (const auto& [node, rois] : cluster.node_rois) {
             auto& cache = ocr_batch_cache_->results[node];

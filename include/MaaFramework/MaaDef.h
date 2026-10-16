@@ -184,8 +184,8 @@ enum MaaInferenceExecutionProviderEnum
     // the .onnx file itself is not needed. There is no fallback to onnxruntime: a missing or broken ncnn model fails
     // the recognition, so ship ncnn models together with this provider.
     // OCR also runs on NCNN: `det.ncnn.param/.bin`, `rec.ncnn.param/.bin` and `keys.txt` in the OCR model dir, no fallback either.
-    // Runs in fp32 by default. fp16 (use_fp16_packed / use_fp16_storage / use_fp16_arithmetic) can be enabled per model in the "options" of the .ncnn.json
-    // (optional `det.ncnn.json` / `rec.ncnn.json` for OCR), see docs.
+    // Runs in fp32 by default. fp16 (use_fp16_packed / use_fp16_storage / use_fp16_arithmetic) can be enabled per model in the "options" of
+    // the .ncnn.json (optional `det.ncnn.json` / `rec.ncnn.json` for OCR), see docs.
     MaaInferenceExecutionProvider_NCNN = 6,
 };
 

@@ -14,11 +14,8 @@ class OrtSession : public MAA_VISION_NS::InferenceSession
 {
 public:
     // returns nullptr on failure
-    static std::shared_ptr<OrtSession> create(
-        Ort::Env& env,
-        const std::filesystem::path& path,
-        const Ort::SessionOptions& options,
-        const Ort::MemoryInfo& memory_info);
+    static std::shared_ptr<OrtSession>
+        create(Ort::Env& env, const std::filesystem::path& path, const Ort::SessionOptions& options, const Ort::MemoryInfo& memory_info);
 
     virtual ~OrtSession() override = default;
 

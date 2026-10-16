@@ -210,10 +210,10 @@ std::vector<IntBox> boxes_from_bitmap(const cv::Mat& pred, const cv::Mat& bitmap
         const int dest_height = pred.rows;
         IntBox int_box;
         for (int p = 0; p < 4; ++p) {
-            int_box[p][0] = static_cast<int>(
-                std::clamp(roundf(cliparray[p][0] / float(width) * float(dest_width)), 0.f, float(dest_width)));
-            int_box[p][1] = static_cast<int>(
-                std::clamp(roundf(cliparray[p][1] / float(height) * float(dest_height)), 0.f, float(dest_height)));
+            int_box[p][0] =
+                static_cast<int>(std::clamp(roundf(cliparray[p][0] / float(width) * float(dest_width)), 0.f, float(dest_width)));
+            int_box[p][1] =
+                static_cast<int>(std::clamp(roundf(cliparray[p][1] / float(height) * float(dest_height)), 0.f, float(dest_height)));
         }
         boxes.emplace_back(int_box);
     }
@@ -337,8 +337,7 @@ cv::Mat get_rotate_crop_image(const cv::Mat& src, const std::array<int, 8>& box)
 
 ncnn::Mat to_ncnn(const cv::Mat& bgr, const float* mean, const float* norm)
 {
-    ncnn::Mat in =
-        ncnn::Mat::from_pixels(bgr.data, ncnn::Mat::PIXEL_BGR, bgr.cols, bgr.rows, static_cast<int>(bgr.step[0]));
+    ncnn::Mat in = ncnn::Mat::from_pixels(bgr.data, ncnn::Mat::PIXEL_BGR, bgr.cols, bgr.rows, static_cast<int>(bgr.step[0]));
     in.substract_mean_normalize(mean, norm);
     return in;
 }
@@ -564,8 +563,7 @@ std::optional<MAA_VISION_NS::OCRRecResult> NcnnOCRSession::rec_one(const cv::Mat
             score += max_value;
             count += 1;
             if (argmax_idx >= static_cast<int>(labels_.size())) {
-                LogError << "rec output index exceeds keys, check keys.txt" << VAR(argmax_idx) << VAR(labels_.size())
-                         << VAR(num_classes);
+                LogError << "rec output index exceeds keys, check keys.txt" << VAR(argmax_idx) << VAR(labels_.size()) << VAR(num_classes);
                 return std::nullopt;
             }
             text += labels_[argmax_idx];

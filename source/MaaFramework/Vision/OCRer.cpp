@@ -5,7 +5,6 @@
 
 #include <boost/regex.hpp>
 
-
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/StringMisc.hpp"
@@ -45,13 +44,7 @@ OCRer::OCRer(
     analyze();
 }
 
-OCRer::OCRer(
-    cv::Mat image,
-    std::vector<cv::Rect> rois,
-    OCRerParam param,
-    const ResultsVec& cached,
-    OCRSessionPtr session,
-    std::string name)
+OCRer::OCRer(cv::Mat image, std::vector<cv::Rect> rois, OCRerParam param, const ResultsVec& cached, OCRSessionPtr session, std::string name)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , cache_(cached)

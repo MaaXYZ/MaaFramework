@@ -3,8 +3,8 @@
 #include <ostream>
 #include <vector>
 
-#include "MaaUtils/JsonExt.hpp"
 #include "InferenceSession.h"
+#include "MaaUtils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 

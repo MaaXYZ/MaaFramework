@@ -3,11 +3,11 @@
 #include <filesystem>
 #include <ranges>
 
+#include "FastDeployOCRSession.h"
 #include "MaaUtils/File.hpp"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/StringMisc.hpp"
-#include "FastDeployOCRSession.h"
 #include "NcnnOCRSession.h"
 #include "NcnnSession.h"
 
