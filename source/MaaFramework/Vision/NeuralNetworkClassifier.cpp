@@ -1,7 +1,5 @@
 #include "NeuralNetworkClassifier.h"
 
-#include <onnxruntime/onnxruntime_cxx_api.h>
-
 #include "MaaUtils/NoWarningCV.hpp"
 #include "VisionUtils.hpp"
 #include <ranges>
@@ -12,13 +10,11 @@ NeuralNetworkClassifier::NeuralNetworkClassifier(
     cv::Mat image,
     std::vector<cv::Rect> rois,
     NeuralNetworkClassifierParam param,
-    std::shared_ptr<Ort::Session> session,
-    const Ort::MemoryInfo& memory_info,
+    InferenceSessionPtr session,
     std::string name)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , session_(std::move(session))
-    , memory_info_(memory_info)
 {
     analyze();
 }
@@ -28,7 +24,7 @@ void NeuralNetworkClassifier::analyze()
     LogFunc << name_;
 
     if (!session_) {
-        LogError << "OrtSession not loaded";
+        LogError << "InferenceSession not loaded";
         return;
     }
     auto start_time = std::chrono::steady_clock::now();
@@ -50,12 +46,12 @@ void NeuralNetworkClassifier::analyze()
 NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
 {
     if (!session_) {
-        LogError << "OrtSession not loaded";
+        LogError << "InferenceSession not loaded";
         return { };
     }
     // batch_size, channel, height, width
     // for yolov8, input_shape is { 1, 3, 640, 640 }
-    const auto input_shape = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+    const auto& input_shape = session_->input_shape();
     if (input_shape.size() != 4) {
         LogError << "Input shape is not 4" << VAR(input_shape);
         return { };
@@ -67,21 +63,17 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
     cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
     std::vector<float> input = image_to_tensor(image);
 
-    Ort::Value input_tensor =
-        Ort::Value::CreateTensor<float>(memory_info_, input.data(), input.size(), input_shape.data(), input_shape.size());
+    auto output_opt = session_->run(input);
+    if (!output_opt) {
+        LogError << name_ << "inference failed" << VAR(param_.model);
+        return { };
+    }
+    if (output_opt->data.empty()) {
+        LogError << name_ << "empty output" << VAR(param_.model) << VAR(output_opt->shape);
+        return { };
+    }
 
-    Ort::AllocatorWithDefaultOptions allocator;
-    const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();
-    const std::string out_0 = session_->GetOutputNameAllocated(0, allocator).get();
-    const std::vector input_names { in_0.c_str() };
-    const std::vector output_names { out_0.c_str() };
-
-    Ort::RunOptions run_options;
-    auto output_tensor =
-        session_->Run(run_options, input_names.data(), &input_tensor, input_names.size(), output_names.data(), output_names.size());
-
-    const float* raw_output = output_tensor[0].GetTensorData<float>();
-    std::vector<float> output(raw_output, raw_output + output_tensor[0].GetTensorTypeAndShapeInfo().GetElementCount());
+    std::vector<float> output = std::move(output_opt->data);
 
     Result res;
     res.raw = std::move(output);
