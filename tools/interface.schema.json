@@ -672,7 +672,8 @@
                             "description": "可选。MacOS 控制器的输入控制方式，不提供则使用默认",
                             "enum": [
                                 "GlobalEvent",
-                                "PostToPid"
+                                "PostToPid",
+                                "Gesture"
                             ]
                         },
                         "screencap": {
