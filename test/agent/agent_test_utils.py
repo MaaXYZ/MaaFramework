@@ -132,6 +132,52 @@ def run_custom_recognition(tasker, reco_name: str):
     return (box.x, box.y, box.w, box.h)
 
 
+MULTI_REC_BOXES = ((11, 4, 5, 14), (21, 22, 23, 24))
+
+
+def assert_multi_recognition(tasker) -> None:
+    # 回调通过 "$all" 返回多个结果，框架保持回调顺序，并按节点 index 选取最终 box
+    for index, expected_box in ((-1, MULTI_REC_BOXES[1]), (1, MULTI_REC_BOXES[1]), (0, MULTI_REC_BOXES[0])):
+        pipeline_override = {
+            "Entry": {"next": "StaleProbe", "timeout": 0},
+            "StaleProbe": {
+                "recognition": "Custom",
+                "custom_recognition": "MultiRec",
+                "index": index,
+            },
+        }
+        detail = tasker.post_task("Entry", pipeline_override).wait().get()
+        assert detail, f"pipeline failed for index {index}"
+        node = next((n for n in detail.nodes if n.name == "StaleProbe"), None)
+        assert node and node.recognition, f"missing recognition detail for index {index}"
+        reco = node.recognition
+        assert reco.hit, f"should hit for index {index}"
+        assert [int(v) for v in reco.box] == list(expected_box), (
+            f"wrong best box for index {index}: {reco.box}"
+        )
+        assert len(reco.all_results) == 2, f"all results for index {index}"
+        assert len(reco.filtered_results) == 2, f"filtered results for index {index}"
+        assert [
+            [int(v) for v in res.box] for res in reco.all_results
+        ] == [list(box) for box in MULTI_REC_BOXES], f"wrong order for index {index}"
+
+    # 越界 index 视为无结果
+    pipeline_override = {
+        "Entry": {"next": "StaleProbe", "timeout": 0},
+        "StaleProbe": {
+            "recognition": "Custom",
+            "custom_recognition": "MultiRec",
+            "index": 2,
+        },
+    }
+    detail = tasker.post_task("Entry", pipeline_override).wait().get()
+    assert detail, "pipeline failed for out-of-range index"
+    node = next((n for n in detail.nodes if n.name == "StaleProbe"), None)
+    assert node is None or not node.recognition or not node.recognition.hit, (
+        "out-of-range index should not hit"
+    )
+
+
 def assert_stale_response_dropped(agent, tasker, report_file: Path) -> None:
     # SlowRec 超时被放弃后，agent 仍会带着旧 context 反调并迟到回包；后续调用必须拿到自己的结果
     assert agent.set_timeout(int(SLOW_REC_SECONDS * 1000 / 3))
@@ -227,6 +273,9 @@ def run_connected_agent_test(
                     )
                     assert action_detail.success, "custom action should succeed"
 
+        # MyRec 通过 "$all" 返回多个结果，index 为 -1 时最终 box 是第二个结果
+        assert "MultiRec" in reco_list
+        assert_multi_recognition(tasker)
         assert_stale_response_dropped(agent, tasker, sink_report_file)
         assert_nested_response_kept(agent, tasker, sink_report_file)
 

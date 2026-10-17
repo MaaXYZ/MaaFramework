@@ -138,6 +138,7 @@ def api_test():
         assert not agent.connected, "agent should remain disconnected after registration rollback"
         assert "MyAct" in resource.custom_action_list, "existing custom action should be preserved"
         assert "MyRec" not in resource.custom_recognition_list, "agent registrations should be rolled back"
+        assert "MultiRec" not in resource.custom_recognition_list, "agent registrations should be rolled back"
         child_process.wait(timeout=10)
         assert child_process.returncode == 0, "failed connect should stop the server automatically"
     finally:

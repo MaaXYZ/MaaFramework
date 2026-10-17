@@ -29,6 +29,18 @@ MaaBool my_action(
     const MaaRect* box,
     void* trans_arg);
 
+MaaBool my_recognition(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_recognition_name,
+    const char* custom_recognition_param,
+    const MaaImageBuffer* image,
+    const MaaRect* roi,
+    void* trans_arg,
+    MaaRect* out_box,
+    MaaStringBuffer* out_detail);
+
 struct ActionFailedCapture
 {
     bool seen = false;
@@ -76,6 +88,76 @@ void capture_action_failed(void* handle, const char* message, const char* detail
         capture->box_h = static_cast<int32_t>(box[3].as_integer());
     }
     capture->success = action_details.at("success").as_boolean();
+}
+
+bool check_multi_recognition(MaaTasker* tasker, MaaController* controller, int32_t index, bool expect_hit, int32_t expect_x)
+{
+    auto image_buffer = MaaImageBufferCreate();
+    MaaControllerCachedImage(controller, image_buffer);
+
+    json::value param {
+        { "custom_recognition", "MultiRec" },
+        { "index", index },
+    };
+    std::string param_str = param.to_string();
+
+    auto task_id = MaaTaskerPostRecognition(tasker, "Custom", param_str.c_str(), image_buffer);
+    MaaTaskerWait(tasker, task_id);
+    MaaImageBufferDestroy(image_buffer);
+
+    MaaSize node_size = 0;
+    if (task_id == MaaInvalidId || !MaaTaskerGetTaskDetail(tasker, task_id, nullptr, nullptr, &node_size, nullptr) || node_size != 1) {
+        std::cout << "Failed to run custom recognition with index " << index << std::endl;
+        return false;
+    }
+
+    MaaNodeId node_id = MaaInvalidId;
+    if (!MaaTaskerGetTaskDetail(tasker, task_id, nullptr, &node_id, &node_size, nullptr)) {
+        std::cout << "Failed to get node id" << std::endl;
+        return false;
+    }
+
+    MaaRecoId reco_id = MaaInvalidId;
+    MaaBool completed = false;
+    if (!MaaTaskerGetNodeDetail(tasker, node_id, nullptr, &reco_id, nullptr, &completed) || reco_id == MaaInvalidId) {
+        std::cout << "Failed to get node detail" << std::endl;
+        return false;
+    }
+
+    auto out_box = MaaRectCreate();
+    auto out_detail = MaaStringBufferCreate();
+    MaaBool hit = false;
+    bool got = MaaTaskerGetRecognitionDetail(tasker, reco_id, nullptr, nullptr, &hit, out_box, out_detail, nullptr, nullptr);
+    MaaRectDestroy(out_box);
+    auto parsed = json::parse(MaaStringBufferGet(out_detail));
+    MaaStringBufferDestroy(out_detail);
+
+    if (!got || !parsed) {
+        std::cout << "Failed to get recognition detail" << std::endl;
+        return false;
+    }
+
+    const auto& detail = *parsed;
+    if (detail.at("all").as_array().size() != 2 || detail.at("filtered").as_array().size() != 2) {
+        std::cout << "Unexpected multi result count with index " << index << std::endl;
+        return false;
+    }
+
+    // 元素缺省 detail 时使用多结果对象顶层的 detail
+    if (detail.at("all").as_array()[0].at("detail").as_string() != "shared"
+        || detail.at("all").as_array()[1].at("detail").as_string() != "second") {
+        std::cout << "Unexpected multi result detail with index " << index << std::endl;
+        return false;
+    }
+
+    bool hit_matched = (hit != 0) == expect_hit && (completed != 0) == expect_hit;
+    bool best_matched = expect_hit ? (detail.at("best").at("box").as_array()[0].as_integer() == expect_x) : detail.at("best").is_null();
+    if (!hit_matched || !best_matched) {
+        std::cout << "Multi result index selection mismatch with index " << index << std::endl;
+        return false;
+    }
+
+    return true;
 }
 
 bool run_without_file(const std::filesystem::path& testset_dir)
@@ -137,6 +219,16 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     auto task_id = MaaTaskerPostTask(tasker_handle, "MyTask", task_param_str.c_str());
     auto status = MaaTaskerWait(tasker_handle, task_id);
 
+    MaaResourceRegisterCustomRecognition(resource_handle, "MultiRec", &my_recognition, nullptr);
+
+    MaaControllerWait(controller_handle, MaaControllerPostScreencap(controller_handle));
+
+    // index 在回调给出的顺序上选取，越界视为无结果
+    if (!check_multi_recognition(tasker_handle, controller_handle, -1, true, 21)
+        || !check_multi_recognition(tasker_handle, controller_handle, 5, false, 0)) {
+        return false;
+    }
+
     MaaTaskerDestroy(tasker_handle);
     MaaResourceDestroy(resource_handle);
     MaaControllerDestroy(controller_handle);
@@ -179,6 +271,33 @@ MaaBool my_action(
     MaaImageBufferDestroy(image_buffer);
     MaaRectDestroy(out_box);
     MaaStringBufferDestroy(out_detail);
+
+    return true;
+}
+
+MaaBool my_recognition(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_recognition_name,
+    const char* custom_recognition_param,
+    const MaaImageBuffer* image,
+    const MaaRect* roi,
+    void* trans_arg,
+    MaaRect* out_box,
+    MaaStringBuffer* out_detail)
+{
+    std::ignore = context;
+    std::ignore = task_id;
+    std::ignore = node_name;
+    std::ignore = custom_recognition_name;
+    std::ignore = custom_recognition_param;
+    std::ignore = image;
+    std::ignore = roi;
+    std::ignore = trans_arg;
+
+    MaaRectSet(out_box, 11, 12, 13, 14);
+    MaaStringBufferSet(out_detail, R"({"detail":"shared","$all":[{"box":[11,12,13,14]},{"box":[21,22,23,24],"detail":"second"}]})");
 
     return true;
 }

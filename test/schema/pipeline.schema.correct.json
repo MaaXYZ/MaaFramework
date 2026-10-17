@@ -128,7 +128,8 @@
         "custom_recognition": "<custom_1>",
         "custom_recognition_param": {
             "<param_string>": "<param_string>"
-        }
+        },
+        "index": 1
     },
     "custom_recognition_v2": {
         "recognition": {
@@ -138,7 +139,8 @@
                 "custom_recognition_param": {
                     "<param_integer>": 0,
                     "AdditionalParam": "The unevaluatedProperties is true (default)."
-                }
+                },
+                "index": -1
             }
         }
     }
