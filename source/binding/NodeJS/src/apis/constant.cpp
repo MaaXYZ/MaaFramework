@@ -51,6 +51,18 @@ static maajs::ValueType load_adb_input_method(maajs::EnvType env)
     return obj;
 }
 
+static maajs::ValueType load_ios_screencap_method(maajs::EnvType env)
+{
+    auto obj = maajs::ObjectType::New(env);
+
+    DEM(MaaIOScreencapMethod, Stream);
+    DEM(MaaIOScreencapMethod, ScreenshotService);
+    DEM(MaaIOScreencapMethod, All);
+    DEM(MaaIOScreencapMethod, Default);
+
+    return obj;
+}
+
 static maajs::ValueType load_win32_screencap_method(maajs::EnvType env)
 {
     auto obj = maajs::ObjectType::New(env);
@@ -168,18 +180,6 @@ static maajs::ValueType load_macos_input_method(maajs::EnvType env)
     return obj;
 }
 
-static maajs::ValueType load_ios_screencap_method(maajs::EnvType env)
-{
-    auto obj = maajs::ObjectType::New(env);
-
-    DEM(MaaIOScreencapMethod, Stream);
-    DEM(MaaIOScreencapMethod, ScreenshotService);
-    DEM(MaaIOScreencapMethod, All);
-    DEM(MaaIOScreencapMethod, Default);
-
-    return obj;
-}
-
 static maajs::ValueType load_linux_screencap_method(maajs::EnvType env)
 {
     auto obj = maajs::ObjectType::New(env);
@@ -208,11 +208,11 @@ std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env)
         { "Status", load_status(env) },
         { "AdbScreencapMethod", load_adb_screencap_method(env) },
         { "AdbInputMethod", load_adb_input_method(env) },
+        { "IOSScreencapMethod", load_ios_screencap_method(env) },
         { "Win32ScreencapMethod", load_win32_screencap_method(env) },
         { "Win32InputMethod", load_win32_input_method(env) },
         { "MacOSScreencapMethod", load_macos_screencap_method(env) },
         { "MacOSInputMethod", load_macos_input_method(env) },
-        { "IOSScreencapMethod", load_ios_screencap_method(env) },
         { "LinuxScreencapMethod", load_linux_screencap_method(env) },
         { "LinuxInputMethod", load_linux_input_method(env) },
         { "GamepadType", load_gamepad_type(env) },

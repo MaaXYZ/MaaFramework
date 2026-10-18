@@ -902,6 +902,54 @@ class AdbController(Controller):
         ]
 
 
+class IOSController(Controller):
+    """iOS 控制器 / iOS controller
+
+    通过 USB（或局域网）直接控制真机：截图、点击、滑动、文本输入、启停 App。
+    Controls a physical iOS device over USB/LAN; text input currently supports US-layout ASCII only.
+    """
+
+    def __init__(
+        self,
+        udid: str = "",
+        wifi_address: str = "",
+        screencap_methods: int = MaaIOScreencapMethodEnum.Stream | MaaIOScreencapMethodEnum.ScreenshotService,
+        pairing_records: Optional[list[str]] = None,
+    ):
+        """创建 iOS 控制器 / Create iOS controller
+
+        Args:
+            udid: 设备 UDID，传空串要求仅有一台可用设备 / device UDID, empty requires a unique available device
+            wifi_address: 设备局域网地址或 auto；空串优先 USB，缺少 USB 时发现已配对 Wi-Fi / device LAN address or auto; empty prefers USB, then paired Wi-Fi discovery
+            screencap_methods: 允许的截图方式位掩码 / allowed screencap method bitmask
+            pairing_records: 调用方持有的配对凭据 / caller-owned opaque pairing credentials
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._set_ios_api_properties()
+
+        self._handle = Library.framework().MaaIOSControllerCreate(
+            udid.encode(),
+            wifi_address.encode(),
+            MaaIOScreencapMethod(screencap_methods),
+            json.dumps({"pairing_records": pairing_records or []}, ensure_ascii=False).encode(),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create iOS controller.")
+
+    def _set_ios_api_properties(self):
+        Library.framework().MaaIOSControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaIOSControllerCreate.argtypes = [
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            MaaIOScreencapMethod,
+            ctypes.c_char_p,
+        ]
+
+
 class Win32Controller(Controller):
     """Win32 控制器 / Win32 controller"""
 
@@ -983,54 +1031,6 @@ class MacOSController(Controller):
             ctypes.c_uint32,
             MaaMacOSScreencapMethod,
             MaaMacOSInputMethod,
-        ]
-
-
-class IOSController(Controller):
-    """iOS 控制器 / iOS controller
-
-    通过 USB（或局域网）直接控制真机：截图、点击、滑动、文本输入、启停 App。
-    Controls a physical iOS device over USB/LAN; text input currently supports US-layout ASCII only.
-    """
-
-    def __init__(
-        self,
-        udid: str = "",
-        wifi_address: str = "",
-        screencap_methods: int = MaaIOScreencapMethodEnum.Stream | MaaIOScreencapMethodEnum.ScreenshotService,
-        pairing_records: Optional[list[str]] = None,
-    ):
-        """创建 iOS 控制器 / Create iOS controller
-
-        Args:
-            udid: 设备 UDID，传空串要求仅有一台可用设备 / device UDID, empty requires a unique available device
-            wifi_address: 设备局域网地址或 auto；空串优先 USB，缺少 USB 时发现已配对 Wi-Fi / device LAN address or auto; empty prefers USB, then paired Wi-Fi discovery
-            screencap_methods: 允许的截图方式位掩码 / allowed screencap method bitmask
-            pairing_records: 调用方持有的配对凭据 / caller-owned opaque pairing credentials
-
-        Raises:
-            RuntimeError: 如果创建失败
-        """
-        super().__init__()
-        self._set_ios_api_properties()
-
-        self._handle = Library.framework().MaaIOSControllerCreate(
-            udid.encode(),
-            wifi_address.encode(),
-            MaaIOScreencapMethod(screencap_methods),
-            json.dumps({"pairing_records": pairing_records or []}, ensure_ascii=False).encode(),
-        )
-
-        if not self._handle:
-            raise RuntimeError("Failed to create iOS controller.")
-
-    def _set_ios_api_properties(self):
-        Library.framework().MaaIOSControllerCreate.restype = MaaControllerHandle
-        Library.framework().MaaIOSControllerCreate.argtypes = [
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-            MaaIOScreencapMethod,
-            ctypes.c_char_p,
         ]
 
 

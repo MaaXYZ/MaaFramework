@@ -337,6 +337,25 @@ typedef uint64_t MaaAdbInputMethod;
 #define MaaAdbInputMethod_All (~MaaAdbInputMethod_None)
 #define MaaAdbInputMethod_Default (MaaAdbInputMethod_All & (~MaaAdbInputMethod_EmulatorExtras))
 
+// MaaIOScreencapMethod:
+/**
+ * @brief iOS screencap method flags.
+ *
+ * Use bitwise OR to select the permitted backends. Video frames are preferred
+ * when Stream is enabled; ScreenshotService provides a lossless RPC fallback.
+ * Stream alone has no screenshot fallback. ScreenshotService alone starts no
+ * video session or background video decoder.
+ *
+ * Default: All methods. Reported availability describes supported backends,
+ * not a guarantee that every connected device/DDI exposes both services.
+ */
+typedef uint64_t MaaIOScreencapMethod;
+#define MaaIOScreencapMethod_None 0ULL
+#define MaaIOScreencapMethod_Stream 1ULL
+#define MaaIOScreencapMethod_ScreenshotService (1ULL << 1)
+#define MaaIOScreencapMethod_All (~MaaIOScreencapMethod_None)
+#define MaaIOScreencapMethod_Default MaaIOScreencapMethod_All
+
 // MaaWin32ScreencapMethod:
 /**
  * @brief Win32 screencap method flags
@@ -474,25 +493,6 @@ typedef uint64_t MaaMacOSInputMethod;
 #define MaaMacOSInputMethod_None 0ULL
 #define MaaMacOSInputMethod_GlobalEvent 1ULL
 #define MaaMacOSInputMethod_PostToPid (1ULL << 1)
-
-// MaaIOScreencapMethod:
-/**
- * @brief iOS screencap method flags.
- *
- * Use bitwise OR to select the permitted backends. Video frames are preferred
- * when Stream is enabled; ScreenshotService provides a lossless RPC fallback.
- * Stream alone has no screenshot fallback. ScreenshotService alone starts no
- * video session or background video decoder.
- *
- * Default: All methods. Reported availability describes supported backends,
- * not a guarantee that every connected device/DDI exposes both services.
- */
-typedef uint64_t MaaIOScreencapMethod;
-#define MaaIOScreencapMethod_None 0ULL
-#define MaaIOScreencapMethod_Stream 1ULL
-#define MaaIOScreencapMethod_ScreenshotService (1ULL << 1)
-#define MaaIOScreencapMethod_All (~MaaIOScreencapMethod_None)
-#define MaaIOScreencapMethod_Default MaaIOScreencapMethod_All
 
 // MaaLinuxScreencapMethod:
 /**

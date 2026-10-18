@@ -528,9 +528,9 @@
                     "title": "控制器类型",
                     "enum": [
                         "Adb",
+                        "IOS",
                         "Win32",
                         "MacOS",
-                        "IOS",
                         "PlayCover",
                         "Gamepad",
                         "Linux"
@@ -590,6 +590,23 @@
                     "title": "Adb 控制器配置",
                     "description": "Adb 控制器的具体配置。V2 协议中 input/screencap 由 MaaFramework 自动检测，无需手动配置",
                     "additionalProperties": true
+                },
+                "ios": {
+                    "type": "object",
+                    "title": "iOS 控制器配置",
+                    "properties": {
+                        "udid": {
+                            "type": "string"
+                        },
+                        "wifi": {
+                            "type": "string"
+                        },
+                        "screencap": {
+                            "type": "string",
+                            "description": "Stream、ScreenshotService 或按 | 组合"
+                        }
+                    },
+                    "additionalProperties": false
                 },
                 "win32": {
                     "type": "object",
@@ -784,23 +801,6 @@
                             "title": "使用 Win32 VK 键码",
                             "description": "可选。为 true 时按键被视为 Win32 Virtual-Key 码，内部转换为 Linux evdev 码；否则按原始 evdev 码处理。默认 false",
                             "default": false
-                        }
-                    },
-                    "additionalProperties": false
-                },
-                "ios": {
-                    "type": "object",
-                    "title": "iOS 控制器配置",
-                    "properties": {
-                        "udid": {
-                            "type": "string"
-                        },
-                        "wifi": {
-                            "type": "string"
-                        },
-                        "screencap": {
-                            "type": "string",
-                            "description": "Stream、ScreenshotService 或按 | 组合"
                         }
                     },
                     "additionalProperties": false

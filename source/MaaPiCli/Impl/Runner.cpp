@@ -261,10 +261,6 @@ bool Runner::run(const RuntimeParam& param)
             adb_param.config.c_str(),
             adb_param.agent_path.c_str());
     }
-    else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
-        controller_handle =
-            MaaWin32ControllerCreate(p_win32_param->hwnd, p_win32_param->screencap, p_win32_param->mouse, p_win32_param->keyboard);
-    }
     else if (const auto* p_ios_param = std::get_if<RuntimeParam::IOSParam>(&param.controller_param)) {
 #if defined(MAA_WITH_IOS_CONTROLLER)
         json::array records(p_ios_param->pairing_records);
@@ -276,6 +272,10 @@ bool Runner::run(const RuntimeParam& param)
         LogError << "iOS controller is disabled in this build";
         return false;
 #endif
+    }
+    else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
+        controller_handle =
+            MaaWin32ControllerCreate(p_win32_param->hwnd, p_win32_param->screencap, p_win32_param->mouse, p_win32_param->keyboard);
     }
     else if (const auto* p_playcover_param = std::get_if<RuntimeParam::PlayCoverParam>(&param.controller_param)) {
 #if defined(__APPLE__)

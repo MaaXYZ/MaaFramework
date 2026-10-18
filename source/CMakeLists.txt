@@ -2,17 +2,17 @@ if(WITH_ADB_CONTROLLER)
     add_subdirectory(MaaAdbControlUnit)
 endif()
 
+if(WITH_IOS_CONTROLLER)
+    add_subdirectory(MaaIOSControlUnit/Protocol)
+    add_subdirectory(MaaIOSControlUnit)
+endif()
+
 if(WITH_WIN32_CONTROLLER)
     add_subdirectory(MaaWin32ControlUnit)
 endif()
 
 if(WITH_MACOS_CONTROLLER)
     add_subdirectory(MaaMacOSControlUnit)
-endif()
-
-if(WITH_IOS_CONTROLLER)
-    add_subdirectory(MaaIOSControlUnit/Protocol)
-    add_subdirectory(MaaIOSControlUnit)
 endif()
 
 if(WITH_ANDROID_NATIVE_CONTROLLER AND ANDROID)

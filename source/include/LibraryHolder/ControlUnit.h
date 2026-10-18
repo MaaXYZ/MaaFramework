@@ -11,9 +11,9 @@
 MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitAPI;
 class AdbControlUnitAPI;
+class IOSControlUnitAPI;
 class Win32ControlUnitAPI;
 class MacOSControlUnitAPI;
-class IOSControlUnitAPI;
 class GamepadControlUnitAPI;
 class CustomControlUnitAPI;
 class WlRootsControlUnitAPI;
@@ -43,6 +43,19 @@ private:
     inline static const std::string destroy_func_name_ = "MaaAdbControlUnitDestroy";
 };
 
+class IOSControlUnitLibraryHolder : public LibraryHolder<IOSControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI>
+        create_control_unit(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods, const char* config);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaIOSControlUnit");
+    inline static const std::string version_func_name_ = "MaaIOSControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaIOSControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaIOSControlUnitDestroy";
+};
+
 class Win32ControlUnitLibraryHolder : public LibraryHolder<Win32ControlUnitLibraryHolder>
 {
 public:
@@ -70,19 +83,6 @@ private:
     inline static const std::string version_func_name_ = "MaaMacOSControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaMacOSControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaMacOSControlUnitDestroy";
-};
-
-class IOSControlUnitLibraryHolder : public LibraryHolder<IOSControlUnitLibraryHolder>
-{
-public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI>
-        create_control_unit(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods, const char* config);
-
-private:
-    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaIOSControlUnit");
-    inline static const std::string version_func_name_ = "MaaIOSControlUnitGetVersion";
-    inline static const std::string create_func_name_ = "MaaIOSControlUnitCreate";
-    inline static const std::string destroy_func_name_ = "MaaIOSControlUnitDestroy";
 };
 
 class AndroidNativeControlUnitLibraryHolder : public LibraryHolder<AndroidNativeControlUnitLibraryHolder>

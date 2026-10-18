@@ -29,29 +29,6 @@ extern "C"
         const char* config,
         const char* agent_path);
 
-    MAA_FRAMEWORK_API MaaController* MaaWin32ControllerCreate(
-        void* hWnd,
-        MaaWin32ScreencapMethod screencap_method,
-        MaaWin32InputMethod mouse_method,
-        MaaWin32InputMethod keyboard_method);
-
-    /**
-     * @brief Create a macOS controller for native macOS applications.
-     *
-     * @param window_id The CGWindowID of the target window (0 for desktop).
-     * @param screencap_method macOS screencap method to use.
-     * @param input_method macOS input method to use.
-     * @return The controller handle, or nullptr on failure.
-     *
-     * @note This controller is designed for native macOS applications.
-     * @note Requires Screen Recording permission for screencap.
-     * @note Input simulation requires Accessibility permission.
-     * @note Some features are not supported: start_app, stop_app, scroll.
-     * @note Only single touch is supported (contact must be 0).
-     */
-    MAA_FRAMEWORK_API MaaController*
-        MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
-
     /**
      * @brief Create a native MaaFramework iOS controller using CoreDevice/DDI services.
      * @param udid Device UDID; empty selects the only eligible device.
@@ -83,6 +60,29 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaController*
         MaaIOSControllerCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods, const char* config);
+
+    MAA_FRAMEWORK_API MaaController* MaaWin32ControllerCreate(
+        void* hWnd,
+        MaaWin32ScreencapMethod screencap_method,
+        MaaWin32InputMethod mouse_method,
+        MaaWin32InputMethod keyboard_method);
+
+    /**
+     * @brief Create a macOS controller for native macOS applications.
+     *
+     * @param window_id The CGWindowID of the target window (0 for desktop).
+     * @param screencap_method macOS screencap method to use.
+     * @param input_method macOS input method to use.
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note This controller is designed for native macOS applications.
+     * @note Requires Screen Recording permission for screencap.
+     * @note Input simulation requires Accessibility permission.
+     * @note Some features are not supported: start_app, stop_app, scroll.
+     * @note Only single touch is supported (contact must be 0).
+     */
+    MAA_FRAMEWORK_API MaaController*
+        MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
 
     /**
      * @brief Create an Android native controller backed by MaaAndroidNativeControlUnit.

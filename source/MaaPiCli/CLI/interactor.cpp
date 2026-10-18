@@ -342,6 +342,14 @@ void Interactor::print_config() const
         std::cout << MAA_NS::utf8_to_crt(
             std::format("\t\t{}\n\t\t{}\n", config_.configuration().adb.adb_path, config_.configuration().adb.address));
         break;
+    case InterfaceData::Controller::Type::IOS: {
+        const auto& ios = config_.configuration().ios;
+        std::cout << MAA_NS::utf8_to_crt(
+            std::format("\t\tUDID: {}\n\t\tScreencap: {}\n", ios.udid.empty() ? "(any single connected device)" : ios.udid, ios.screencap));
+        if (!kIOSSupported) {
+            std::cout << "\t\t(iOS is disabled in this build)\n";
+        }
+    } break;
     case InterfaceData::Controller::Type::Win32:
         if (config_.configuration().win32.hwnd) {
             std::cout << MAA_NS::utf8_to_crt(std::format("\t\t{}\n", format_win32_config(config_.configuration().win32)));
@@ -356,14 +364,6 @@ void Interactor::print_config() const
                 macos.title,
                 macos.screencap,
                 macos.input));
-    } break;
-    case InterfaceData::Controller::Type::IOS: {
-        const auto& ios = config_.configuration().ios;
-        std::cout << MAA_NS::utf8_to_crt(
-            std::format("\t\tUDID: {}\n\t\tScreencap: {}\n", ios.udid.empty() ? "(any single connected device)" : ios.udid, ios.screencap));
-        if (!kIOSSupported) {
-            std::cout << "\t\t(iOS is disabled in this build)\n";
-        }
     } break;
     case InterfaceData::Controller::Type::PlayCover: {
         const auto& pc = config_.configuration().playcover;
@@ -647,14 +647,6 @@ void Interactor::select_controller()
         config_.configuration().controller.type = InterfaceData::Controller::Type::Adb;
         select_adb();
         break;
-    case InterfaceData::Controller::Type::Win32:
-        config_.configuration().controller.type = InterfaceData::Controller::Type::Win32;
-        select_win32_hwnd(controller.win32);
-        break;
-    case InterfaceData::Controller::Type::MacOS:
-        config_.configuration().controller.type = InterfaceData::Controller::Type::MacOS;
-        select_macos(controller.macos);
-        break;
     case InterfaceData::Controller::Type::IOS:
         if (!kIOSSupported) {
             std::cout << "\niOS controller is disabled in this build.\n";
@@ -673,6 +665,14 @@ void Interactor::select_controller()
         }
         config_.configuration().controller.type = InterfaceData::Controller::Type::IOS;
         select_ios(controller.ios);
+        break;
+    case InterfaceData::Controller::Type::Win32:
+        config_.configuration().controller.type = InterfaceData::Controller::Type::Win32;
+        select_win32_hwnd(controller.win32);
+        break;
+    case InterfaceData::Controller::Type::MacOS:
+        config_.configuration().controller.type = InterfaceData::Controller::Type::MacOS;
+        select_macos(controller.macos);
         break;
     case InterfaceData::Controller::Type::PlayCover:
         if (!kPlayCoverSupported) {

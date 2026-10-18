@@ -108,6 +108,22 @@ struct AdbControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+using IOSControllerCtorParam = std::
+    tuple<std::string, maajs::OptionalParam<std::string>, maajs::OptionalParam<MaaIOScreencapMethod>, maajs::OptionalParam<std::string>>;
+
+using IOSDevice = std::tuple<std::string, std::string, MaaIOScreencapMethod, std::string>;
+
+struct IOSControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+    static maajs::PromiseType find(maajs::EnvType env, maajs::OptionalParam<int32_t> timeout_ms, maajs::OptionalParam<std::string> config);
+
+    constexpr static char name[] = "IOSController";
+
+    static IOSControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
 using Win32Device = std::tuple<uintptr_t, std::string, std::string>;
 using Win32ControllerCtorParam = std::tuple<uintptr_t, MaaWin32ScreencapMethod, MaaWin32InputMethod, MaaWin32InputMethod>;
 
@@ -135,22 +151,6 @@ struct MacOSControllerImpl : public ControllerImpl
     constexpr static char name[] = "MacOSController";
 
     static MacOSControllerImpl* ctor(const maajs::CallbackInfo&);
-    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
-};
-
-using IOSControllerCtorParam = std::
-    tuple<std::string, maajs::OptionalParam<std::string>, maajs::OptionalParam<MaaIOScreencapMethod>, maajs::OptionalParam<std::string>>;
-
-using IOSDevice = std::tuple<std::string, std::string, MaaIOScreencapMethod, std::string>;
-
-struct IOSControllerImpl : public ControllerImpl
-{
-    using ControllerImpl::ControllerImpl;
-    static maajs::PromiseType find(maajs::EnvType env, maajs::OptionalParam<int32_t> timeout_ms, maajs::OptionalParam<std::string> config);
-
-    constexpr static char name[] = "IOSController";
-
-    static IOSControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 

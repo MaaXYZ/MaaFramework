@@ -45,6 +45,32 @@ MaaController* MaaAdbControllerCreate(
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
+MaaController*
+    MaaIOSControllerCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods, const char* config)
+{
+    const char* selected_udid = udid ? udid : "";
+    const char* selected_wifi = wifi_address ? wifi_address : "";
+    LogFunc << VAR(selected_udid) << VAR(selected_wifi) << VAR(screencap_methods);
+
+#ifndef MAA_WITH_IOS_CONTROLLER
+    (void)config;
+
+    LogError << "This API " << __FUNCTION__ << " is disabled in this build";
+    return nullptr;
+
+#else
+
+    auto control_unit = MAA_NS::IOSControlUnitLibraryHolder::create_control_unit(selected_udid, selected_wifi, screencap_methods, config);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+#endif
+}
+
 MaaController* MaaWin32ControllerCreate(
     void* hWnd,
     MaaWin32ScreencapMethod screencap_method,
@@ -87,32 +113,6 @@ MaaController* MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMet
 #else
 
     auto control_unit = MAA_NS::MacOSControlUnitLibraryHolder::create_control_unit(window_id, screencap_method, input_method);
-
-    if (!control_unit) {
-        LogError << "Failed to create control unit";
-        return nullptr;
-    }
-
-    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
-#endif
-}
-
-MaaController*
-    MaaIOSControllerCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods, const char* config)
-{
-    const char* selected_udid = udid ? udid : "";
-    const char* selected_wifi = wifi_address ? wifi_address : "";
-    LogFunc << VAR(selected_udid) << VAR(selected_wifi) << VAR(screencap_methods);
-
-#ifndef MAA_WITH_IOS_CONTROLLER
-    (void)config;
-
-    LogError << "This API " << __FUNCTION__ << " is disabled in this build";
-    return nullptr;
-
-#else
-
-    auto control_unit = MAA_NS::IOSControlUnitLibraryHolder::create_control_unit(selected_udid, selected_wifi, screencap_methods, config);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";

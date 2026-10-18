@@ -8,6 +8,12 @@ MaaController* MaaAdbControllerCreate(const char*, const char*, MaaAdbScreencapM
     return nullptr;
 }
 
+MaaController* MaaIOSControllerCreate(const char*, const char*, MaaIOScreencapMethod, const char*)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
 MaaController* MaaWin32ControllerCreate(void*, MaaWin32ScreencapMethod, MaaWin32InputMethod, MaaWin32InputMethod)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
@@ -15,12 +21,6 @@ MaaController* MaaWin32ControllerCreate(void*, MaaWin32ScreencapMethod, MaaWin32
 }
 
 MaaController* MaaMacOSControllerCreate(uint32_t, MaaMacOSScreencapMethod, MaaMacOSInputMethod)
-{
-    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
-    return nullptr;
-}
-
-MaaController* MaaIOSControllerCreate(const char*, const char*, MaaIOScreencapMethod, const char*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return nullptr;

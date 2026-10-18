@@ -20,16 +20,16 @@ if(WITH_ADB_CONTROLLER)
     add_dependencies(MaaFramework MaaAdbControlUnit)
 endif()
 
+if(WITH_IOS_CONTROLLER)
+    add_dependencies(MaaFramework MaaIOSControlUnit)
+endif()
+
 if(WITH_WIN32_CONTROLLER)
     add_dependencies(MaaFramework MaaWin32ControlUnit)
 endif()
 
 if(WITH_MACOS_CONTROLLER)
     add_dependencies(MaaFramework MaaMacOSControlUnit)
-endif()
-
-if(WITH_IOS_CONTROLLER)
-    add_dependencies(MaaFramework MaaIOSControlUnit)
 endif()
 
 if(WITH_DBG_CONTROLLER)

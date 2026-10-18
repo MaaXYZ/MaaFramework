@@ -533,6 +533,53 @@ maajs::ValueType load_adb_controller(maajs::EnvType env)
     return ctor;
 }
 
+maajs::PromiseType
+    IOSControllerImpl::find(maajs::EnvType env, maajs::OptionalParam<int32_t> timeout_ms, maajs::OptionalParam<std::string> config)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    const auto timeout = timeout_ms.value_or(3000);
+    if (timeout < 0 || timeout > 60000) {
+        throw maajs::MaaError { "timeout_ms must be between 0 and 60000" };
+    }
+    using Result = std::optional<std::vector<IOSDevice>>;
+    auto worker =
+        new maajs::AsyncWork<Result>(env, [timeout, options = config.value_or("{}")] { return find_ios_devices(timeout, options); });
+    worker->Queue();
+    return worker->Promise();
+#else
+    std::ignore = env;
+    std::ignore = timeout_ms;
+    std::ignore = config;
+    throw_toolkit_unavailable("IOSController.find");
+#endif
+}
+
+IOSControllerImpl* IOSControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [udid, wifi_address, screencap_methods, config] = maajs::UnWrapArgs<IOSControllerCtorParam, void>(info);
+    const auto wifi = wifi_address.value_or("");
+    const auto options = config.value_or("{}");
+    auto ctrl =
+        MaaIOSControllerCreate(udid.c_str(), wifi.c_str(), screencap_methods.value_or(MaaIOScreencapMethod_Default), options.c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new IOSControllerImpl(ctrl, true);
+}
+
+void IOSControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
+{
+    MAA_BIND_FUNC(ctor, "find", find);
+}
+
+maajs::ValueType load_ios_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<IOSControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->iosControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
 maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
 {
 #ifdef MAA_JS_WITH_TOOLKIT
@@ -644,53 +691,6 @@ maajs::ValueType load_macos_controller(maajs::EnvType env)
     maajs::FunctionType ctor;
     maajs::NativeClass<MacOSControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
     ExtContext::get(env)->macosControllerCtor = maajs::PersistentFunction(ctor);
-    return ctor;
-}
-
-maajs::PromiseType
-    IOSControllerImpl::find(maajs::EnvType env, maajs::OptionalParam<int32_t> timeout_ms, maajs::OptionalParam<std::string> config)
-{
-#ifdef MAA_JS_WITH_TOOLKIT
-    const auto timeout = timeout_ms.value_or(3000);
-    if (timeout < 0 || timeout > 60000) {
-        throw maajs::MaaError { "timeout_ms must be between 0 and 60000" };
-    }
-    using Result = std::optional<std::vector<IOSDevice>>;
-    auto worker =
-        new maajs::AsyncWork<Result>(env, [timeout, options = config.value_or("{}")] { return find_ios_devices(timeout, options); });
-    worker->Queue();
-    return worker->Promise();
-#else
-    std::ignore = env;
-    std::ignore = timeout_ms;
-    std::ignore = config;
-    throw_toolkit_unavailable("IOSController.find");
-#endif
-}
-
-IOSControllerImpl* IOSControllerImpl::ctor(const maajs::CallbackInfo& info)
-{
-    auto [udid, wifi_address, screencap_methods, config] = maajs::UnWrapArgs<IOSControllerCtorParam, void>(info);
-    const auto wifi = wifi_address.value_or("");
-    const auto options = config.value_or("{}");
-    auto ctrl =
-        MaaIOSControllerCreate(udid.c_str(), wifi.c_str(), screencap_methods.value_or(MaaIOScreencapMethod_Default), options.c_str());
-    if (!ctrl) {
-        return nullptr;
-    }
-    return new IOSControllerImpl(ctrl, true);
-}
-
-void IOSControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
-{
-    MAA_BIND_FUNC(ctor, "find", find);
-}
-
-maajs::ValueType load_ios_controller(maajs::EnvType env)
-{
-    maajs::FunctionType ctor;
-    maajs::NativeClass<IOSControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
-    ExtContext::get(env)->iosControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
 

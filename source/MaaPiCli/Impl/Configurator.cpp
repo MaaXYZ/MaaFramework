@@ -277,6 +277,27 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         runtime.controller_param = std::move(adb);
     } break;
 
+    case InterfaceData::Controller::Type::IOS: {
+        RuntimeParam::IOSParam ios;
+
+        ios.udid = config_.ios.udid;
+        ios.wifi = config_.ios.wifi;
+        ios.pairing_records = config_.ios.pairing_records;
+        ios.prepare_ddi = config_.ios.prepare_ddi;
+        ios.ddi_cache_directory = config_.ios.ddi_cache_directory;
+        ios.ddi_download_timeout_seconds = config_.ios.ddi_download_timeout_seconds;
+
+        if (!controller.ios.screencap.empty()) {
+            ios.screencap = parse_ios_screencap_method(controller.ios.screencap);
+        }
+        if (ios.screencap == MaaIOScreencapMethod_None) {
+            ios.screencap = MaaIOScreencapMethod_Default;
+        }
+
+        // udid 留空是合法的：控制单元按"恰好一台就用它"处理，多台时才报错列候选。
+        runtime.controller_param = std::move(ios);
+    } break;
+
     case InterfaceData::Controller::Type::Win32: {
         RuntimeParam::Win32Param win32;
 
@@ -328,27 +349,6 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         }
 
         runtime.controller_param = std::move(macos);
-    } break;
-
-    case InterfaceData::Controller::Type::IOS: {
-        RuntimeParam::IOSParam ios;
-
-        ios.udid = config_.ios.udid;
-        ios.wifi = config_.ios.wifi;
-        ios.pairing_records = config_.ios.pairing_records;
-        ios.prepare_ddi = config_.ios.prepare_ddi;
-        ios.ddi_cache_directory = config_.ios.ddi_cache_directory;
-        ios.ddi_download_timeout_seconds = config_.ios.ddi_download_timeout_seconds;
-
-        if (!controller.ios.screencap.empty()) {
-            ios.screencap = parse_ios_screencap_method(controller.ios.screencap);
-        }
-        if (ios.screencap == MaaIOScreencapMethod_None) {
-            ios.screencap = MaaIOScreencapMethod_Default;
-        }
-
-        // udid 留空是合法的：控制单元按"恰好一台就用它"处理，多台时才报错列候选。
-        runtime.controller_param = std::move(ios);
     } break;
 
     case InterfaceData::Controller::Type::PlayCover: {

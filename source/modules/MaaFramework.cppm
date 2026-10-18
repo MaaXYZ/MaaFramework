@@ -78,6 +78,13 @@ export constexpr auto _MaaAdbInputMethod_None = MaaAdbInputMethod_None;
 export constexpr auto _MaaAdbInputMethod_All = MaaAdbInputMethod_All;
 export constexpr auto _MaaAdbInputMethod_Default = MaaAdbInputMethod_Default;
 
+export using ::MaaIOScreencapMethod;
+export constexpr auto _MaaIOScreencapMethod_None = MaaIOScreencapMethod_None;
+export constexpr auto _MaaIOScreencapMethod_Stream = MaaIOScreencapMethod_Stream;
+export constexpr auto _MaaIOScreencapMethod_ScreenshotService = MaaIOScreencapMethod_ScreenshotService;
+export constexpr auto _MaaIOScreencapMethod_All = MaaIOScreencapMethod_All;
+export constexpr auto _MaaIOScreencapMethod_Default = MaaIOScreencapMethod_Default;
+
 export using ::MaaWin32ScreencapMethod;
 export constexpr auto _MaaWin32ScreencapMethod_None = MaaWin32ScreencapMethod_None;
 export constexpr auto _MaaWin32ScreencapMethod_GDI = MaaWin32ScreencapMethod_GDI;
@@ -112,13 +119,6 @@ export using ::MaaMacOSInputMethod;
 export constexpr auto _MaaMacOSInputMethod_None = MaaMacOSInputMethod_None;
 export constexpr auto _MaaMacOSInputMethod_GlobalEvent = MaaMacOSInputMethod_GlobalEvent;
 export constexpr auto _MaaMacOSInputMethod_PostToPid = MaaMacOSInputMethod_PostToPid;
-
-export using ::MaaIOScreencapMethod;
-export constexpr auto _MaaIOScreencapMethod_None = MaaIOScreencapMethod_None;
-export constexpr auto _MaaIOScreencapMethod_Stream = MaaIOScreencapMethod_Stream;
-export constexpr auto _MaaIOScreencapMethod_ScreenshotService = MaaIOScreencapMethod_ScreenshotService;
-export constexpr auto _MaaIOScreencapMethod_All = MaaIOScreencapMethod_All;
-export constexpr auto _MaaIOScreencapMethod_Default = MaaIOScreencapMethod_Default;
 
 export using ::MaaGamepadType;
 export constexpr auto _MaaGamepadType_Xbox360 = MaaGamepadType_Xbox360;
@@ -160,9 +160,9 @@ export using ::MaaContextWaitFreezes;
 
 export using ::MaaCustomControllerCallbacks;
 export using ::MaaAdbControllerCreate;
+export using ::MaaIOSControllerCreate;
 export using ::MaaWin32ControllerCreate;
 export using ::MaaMacOSControllerCreate;
-export using ::MaaIOSControllerCreate;
 export using ::MaaAndroidNativeControllerCreate;
 export using ::MaaCustomControllerCreate;
 export using ::MaaDbgControllerCreate;

@@ -31,8 +31,8 @@
                     "type": "string",
                     "enum": [
                         "Adb",
-                        "Win32",
                         "IOS",
+                        "Win32",
                         "PlayCover",
                         "Linux"
                     ]
@@ -56,6 +56,43 @@
                     "type": "object"
                 }
             }
+        },
+        "ios": {
+            "type": "object",
+            "title": "iOS 用户配置",
+            "properties": {
+                "udid": {
+                    "type": "string"
+                },
+                "wifi": {
+                    "type": "string"
+                },
+                "screencap": {
+                    "type": "string"
+                },
+                "prepare_ddi": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "运行前自动准备 DDI；关闭时由调用方保证设备已准备好"
+                },
+                "ddi_cache_directory": {
+                    "type": "string",
+                    "default": "",
+                    "description": "DDI 持久缓存的绝对路径；留空使用当前用户的平台缓存目录"
+                },
+                "ddi_download_timeout_seconds": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3600,
+                    "default": 300
+                },
+                "pairing_records": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "直接保存在 PiCli 配置中的不透明配对凭据"
+                }
+            },
+            "additionalProperties": false
         },
         "win32": {
             "title": "Win32配置",
@@ -159,43 +196,6 @@
                     "$ref": "#/definitions/welcome"
                 }
             ]
-        },
-        "ios": {
-            "type": "object",
-            "title": "iOS 用户配置",
-            "properties": {
-                "udid": {
-                    "type": "string"
-                },
-                "wifi": {
-                    "type": "string"
-                },
-                "screencap": {
-                    "type": "string"
-                },
-                "prepare_ddi": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "运行前自动准备 DDI；关闭时由调用方保证设备已准备好"
-                },
-                "ddi_cache_directory": {
-                    "type": "string",
-                    "default": "",
-                    "description": "DDI 持久缓存的绝对路径；留空使用当前用户的平台缓存目录"
-                },
-                "ddi_download_timeout_seconds": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 3600,
-                    "default": 300
-                },
-                "pairing_records": {
-                    "type": "array",
-                    "items": { "type": "string" },
-                    "description": "直接保存在 PiCli 配置中的不透明配对凭据"
-                }
-            },
-            "additionalProperties": false
         }
     },
     "required": [

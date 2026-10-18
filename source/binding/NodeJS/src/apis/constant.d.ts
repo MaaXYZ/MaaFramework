@@ -59,6 +59,31 @@ declare global {
         >
 
         /**
+         * iOS screencap method flags.
+         *
+         * Use bitwise OR to set the methods you need.
+         * MaaFramework will use the fastest allowed one and fall back when it cannot.
+         *
+         * Default: both methods
+         *
+         * | Method            | Speed     | Compatibility | Lossless | Notes                                              |
+         * |-------------------|-----------|---------------|----------|----------------------------------------------------|
+         * | Stream            | Very Fast | Medium        | Lossy    | Latest frame of the device media stream, 14-17ms   |
+         * | ScreenshotService | Slow      | High          | Lossless | One RPC per shot, 113-891ms, see note below        |
+         *
+         * ScreenshotService cost tracks how large the device's PNG comes out, not how busy the
+         * screen looks: 167ms on a list screen, 743ms on a marker-filled board, 518ms on a far
+         * denser fine-line mesh. Do not treat it as a constant multiple of Stream.
+         */
+        const IOSScreencapMethod: Record<
+            | 'Stream'
+            | 'ScreenshotService'
+            | 'All'
+            | 'Default',
+            ScreencapOrInputMethods
+        >
+
+        /**
          * Win32 screencap method flags.
          *
          * Use bitwise OR to set the methods you need.
@@ -174,31 +199,6 @@ declare global {
         const MacOSInputMethod: Record<
             | 'GlobalEvent'
             | 'PostToPid',
-            ScreencapOrInputMethods
-        >
-
-        /**
-         * iOS screencap method flags.
-         *
-         * Use bitwise OR to set the methods you need.
-         * MaaFramework will use the fastest allowed one and fall back when it cannot.
-         *
-         * Default: both methods
-         *
-         * | Method            | Speed     | Compatibility | Lossless | Notes                                              |
-         * |-------------------|-----------|---------------|----------|----------------------------------------------------|
-         * | Stream            | Very Fast | Medium        | Lossy    | Latest frame of the device media stream, 14-17ms   |
-         * | ScreenshotService | Slow      | High          | Lossless | One RPC per shot, 113-891ms, see note below        |
-         *
-         * ScreenshotService cost tracks how large the device's PNG comes out, not how busy the
-         * screen looks: 167ms on a list screen, 743ms on a marker-filled board, 518ms on a far
-         * denser fine-line mesh. Do not treat it as a constant multiple of Stream.
-         */
-        const IOSScreencapMethod: Record<
-            | 'Stream'
-            | 'ScreenshotService'
-            | 'All'
-            | 'Default',
             ScreencapOrInputMethods
         >
 

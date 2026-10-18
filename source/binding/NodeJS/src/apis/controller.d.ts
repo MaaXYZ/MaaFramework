@@ -244,29 +244,6 @@ declare global {
             static find(adb?: string): Promise<AdbDevice[] | null>
         }
 
-        type DesktopDevice = [handle: DesktopHandle, class_name: string, window_name: string]
-
-        class Win32Controller extends Controller {
-            constructor(
-                hwnd: DesktopHandle,
-                screencap_method: ScreencapOrInputMethods,
-                mouse_method: ScreencapOrInputMethods,
-                keyboard_method: ScreencapOrInputMethods,
-            )
-
-            static find(): Promise<DesktopDevice[] | null>
-        }
-
-        class MacOSController extends Controller {
-            constructor(
-                window_id: number,
-                screencap_method: ScreencapOrInputMethods,
-                input_method: ScreencapOrInputMethods,
-            )
-
-            static find(): Promise<DesktopDevice[] | null>
-        }
-
         type IOSDevice = [name: string, udid: string, screencap_methods: ScreencapOrInputMethods, connections_json: string]
 
         /**
@@ -288,6 +265,29 @@ declare global {
         class IOSController extends Controller {
             static find(timeout_ms?: number, config?: string): Promise<IOSDevice[] | null>
             constructor(udid: string, wifi_address?: string, screencap_method?: ScreencapOrInputMethods, config?: string)
+        }
+
+        type DesktopDevice = [handle: DesktopHandle, class_name: string, window_name: string]
+
+        class Win32Controller extends Controller {
+            constructor(
+                hwnd: DesktopHandle,
+                screencap_method: ScreencapOrInputMethods,
+                mouse_method: ScreencapOrInputMethods,
+                keyboard_method: ScreencapOrInputMethods,
+            )
+
+            static find(): Promise<DesktopDevice[] | null>
+        }
+
+        class MacOSController extends Controller {
+            constructor(
+                window_id: number,
+                screencap_method: ScreencapOrInputMethods,
+                input_method: ScreencapOrInputMethods,
+            )
+
+            static find(): Promise<DesktopDevice[] | null>
         }
 
         class PlayCoverController extends Controller {

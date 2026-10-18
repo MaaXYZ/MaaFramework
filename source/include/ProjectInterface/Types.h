@@ -19,6 +19,19 @@ struct InterfaceData
 {
     struct Controller
     {
+        struct IOSConfig
+        {
+            std::string udid;
+            /// 设备的局域网地址；留空走 USB。走无线时 udid 只用来挑配对记录，
+            /// 本机恰好只有一条记录时也可以留空。
+            std::string wifi;
+            // 取图方式，见 MaaIOScreencapMethod：留空 = 两条都给（快路径优先，解不了自动降级）。
+            // 可以叠：用 '|' 或 ',' 分隔，例如 "Stream|ScreenshotService"。
+            std::string screencap;
+
+            MEO_JSONIZATION(MEO_OPT udid, MEO_OPT wifi, MEO_OPT screencap);
+        };
+
         struct Win32Config
         {
             std::string class_regex;
@@ -37,19 +50,6 @@ struct InterfaceData
             std::string input;
 
             MEO_JSONIZATION(MEO_OPT title_regex, MEO_OPT screencap, MEO_OPT input);
-        };
-
-        struct IOSConfig
-        {
-            std::string udid;
-            /// 设备的局域网地址；留空走 USB。走无线时 udid 只用来挑配对记录，
-            /// 本机恰好只有一条记录时也可以留空。
-            std::string wifi;
-            // 取图方式，见 MaaIOScreencapMethod：留空 = 两条都给（快路径优先，解不了自动降级）。
-            // 可以叠：用 '|' 或 ',' 分隔，例如 "Stream|ScreenshotService"。
-            std::string screencap;
-
-            MEO_JSONIZATION(MEO_OPT udid, MEO_OPT wifi, MEO_OPT screencap);
         };
 
         struct PlayCoverConfig
@@ -84,14 +84,12 @@ struct InterfaceData
         {
             Invalid,
             Adb,
+            IOS,
             Win32,
             MacOS,
             PlayCover,
             Gamepad,
             Linux,
-            // 追加在末尾：meojson 是按枚举名反射字符串的，但已有工程里可能存了底层整数值，
-            // 插在中间会把它们的类型改掉。
-            IOS,
         };
 
         std::string name;
@@ -114,9 +112,9 @@ struct InterfaceData
         // v2.3.0: 控制器级选项
         std::vector<std::string> option;
 
+        IOSConfig ios;
         Win32Config win32;
         MacOSConfig macos;
-        IOSConfig ios;
         PlayCoverConfig playcover;
         GamepadConfig gamepad;
         LinuxConfig lnx;
@@ -133,9 +131,9 @@ struct InterfaceData
             MEO_OPT display_raw,
             MEO_OPT attach_resource_path,
             MEO_OPT option,
+            MEO_OPT ios,
             MEO_OPT win32,
             MEO_OPT macos,
-            MEO_OPT ios,
             MEO_OPT playcover,
             MEO_OPT gamepad,
             MEO_OPT lnx);
@@ -355,27 +353,6 @@ struct Configuration
         MEO_JSONIZATION(name);
     };
 
-    struct Win32Config
-    {
-        void* hwnd = nullptr;
-        std::wstring class_name;
-        std::wstring window_name;
-
-        int _placeholder = 0;
-
-        MEO_JSONIZATION(MEO_OPT _placeholder);
-    };
-
-    struct MacOSConfig
-    {
-        uint32_t window_id = 0;
-        std::string title;
-        std::string screencap;
-        std::string input;
-
-        MEO_JSONIZATION(MEO_OPT window_id, MEO_OPT title, MEO_OPT screencap, MEO_OPT input);
-    };
-
     struct AdbConfig
     {
         std::string name;
@@ -403,6 +380,27 @@ struct Configuration
             MEO_OPT prepare_ddi,
             MEO_OPT ddi_cache_directory,
             MEO_OPT ddi_download_timeout_seconds);
+    };
+
+    struct Win32Config
+    {
+        void* hwnd = nullptr;
+        std::wstring class_name;
+        std::wstring window_name;
+
+        int _placeholder = 0;
+
+        MEO_JSONIZATION(MEO_OPT _placeholder);
+    };
+
+    struct MacOSConfig
+    {
+        uint32_t window_id = 0;
+        std::string title;
+        std::string screencap;
+        std::string input;
+
+        MEO_JSONIZATION(MEO_OPT window_id, MEO_OPT title, MEO_OPT screencap, MEO_OPT input);
     };
 
     struct PlayCoverConfig
@@ -455,9 +453,9 @@ struct Configuration
 
     Controller controller;
     AdbConfig adb;
+    IOSConfig ios;
     Win32Config win32;
     MacOSConfig macos;
-    IOSConfig ios;
     PlayCoverConfig playcover;
     GamepadConfig gamepad;
     LinuxConfig lnx;
@@ -471,9 +469,9 @@ struct Configuration
     MEO_JSONIZATION(
         controller,
         MEO_OPT adb,
+        MEO_OPT ios,
         MEO_OPT win32,
         MEO_OPT macos,
-        MEO_OPT ios,
         MEO_OPT playcover,
         MEO_OPT gamepad,
         MEO_OPT lnx,
@@ -506,6 +504,18 @@ struct RuntimeParam
         std::string agent_path;
     };
 
+    struct IOSParam
+    {
+        std::string udid;
+        /// 非空 = 走局域网。空 = USB。
+        std::string wifi;
+        MaaIOScreencapMethod screencap = MaaIOScreencapMethod_Default;
+        std::vector<std::string> pairing_records;
+        bool prepare_ddi = true;
+        std::string ddi_cache_directory;
+        int ddi_download_timeout_seconds = 300;
+    };
+
     struct Win32Param
     {
         void* hwnd = nullptr;
@@ -519,18 +529,6 @@ struct RuntimeParam
         uint32_t window_id = 0;
         MaaMacOSScreencapMethod screencap = MaaMacOSScreencapMethod_None;
         MaaMacOSInputMethod input = MaaMacOSInputMethod_None;
-    };
-
-    struct IOSParam
-    {
-        std::string udid;
-        /// 非空 = 走局域网。空 = USB。
-        std::string wifi;
-        MaaIOScreencapMethod screencap = MaaIOScreencapMethod_Default;
-        std::vector<std::string> pairing_records;
-        bool prepare_ddi = true;
-        std::string ddi_cache_directory;
-        int ddi_download_timeout_seconds = 300;
     };
 
     struct PlayCoverParam
@@ -574,7 +572,7 @@ struct RuntimeParam
         std::unordered_map<std::string, std::string> env_vars; // v2.5.0: PI_* env vars
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param, MacOSParam, IOSParam, PlayCoverParam, GamepadParam, LinuxParam> controller_param;
+    std::variant<std::monostate, AdbParam, IOSParam, Win32Param, MacOSParam, PlayCoverParam, GamepadParam, LinuxParam> controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;
