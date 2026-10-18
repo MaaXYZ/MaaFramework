@@ -8,6 +8,8 @@ on:
             - 'main'
         paths:
             - '.github/workflows/build.yml'
+            - '.github/actions/ios-dependencies/**'
+            - 'tools/ios/**'
             - '3rdparty/**'
             - 'cmake/**'
             - 'include/**'
@@ -20,6 +22,8 @@ on:
             - '**'
         paths:
             - '.github/workflows/build.yml'
+            - '.github/actions/ios-dependencies/**'
+            - 'tools/ios/**'
             - '3rdparty/**'
             - 'cmake/**'
             - 'include/**'
@@ -122,9 +126,15 @@ jobs:
                   pnpm i
                   cd -
 
+            - name: Prepare iOS host dependencies
+              uses: ./.github/actions/ios-dependencies
+              with:
+                  platform: windows
+                  architecture: ${{ matrix.arch }}
+
             - name: Build MAA
               run: |
-                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
+                  cmake -C "$env:MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - ${{ needs.meta.outputs.build-config }}" -j 16
 
@@ -140,6 +150,14 @@ jobs:
                   cp -r sample install
 
                   cp -r LICENSE.md install
+
+            - name: Collect iOS runtime dependencies and source materials
+              shell: bash
+              run: |
+                  python3 tools/ios/ci/package.py --repository "$PWD" --build "build" \
+                    --output "$PWD/install" --platform "windows-${{ matrix.arch }}" \
+                    --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
+                    --configuration "${{ needs.meta.outputs.build-config }}" --dependency-config "$MAA_IOS_CMAKE"
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -174,7 +192,7 @@ jobs:
             - name: Install dep
               run: |
                   sudo apt-get update -y
-                  sudo apt-get install -y ninja-build cmake ccache libpipewire-0.3-dev libdbus-1-dev meson python3-jinja2
+                  sudo apt-get install -y ninja-build cmake ccache libpipewire-0.3-dev libdbus-1-dev meson python3-jinja2 patchelf
 
             # noble 自带 libei 1.2.1，缺少 1.6 才引入的文本输入；从源码构建 1.6.0 保证发布产物功能完整
             - name: Build libei 1.6.0 (host)
@@ -285,9 +303,15 @@ jobs:
                   pnpm i
                   cd -
 
+            - name: Prepare iOS host dependencies
+              uses: ./.github/actions/ios-dependencies
+              with:
+                  platform: linux
+                  architecture: ${{ matrix.arch }}
+
             - name: Build MAA
               run: |
-                  cmake --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
+                  cmake -C "$MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
@@ -309,6 +333,14 @@ jobs:
                   cp -r sample install
 
                   cp -r LICENSE.md install
+
+            - name: Collect iOS runtime dependencies and source materials
+              shell: bash
+              run: |
+                  python3 tools/ios/ci/package.py --repository "$PWD" --build "build" \
+                    --output "$PWD/install" --platform "linux-${{ matrix.arch }}" \
+                    --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
+                    --configuration "${{ needs.meta.outputs.build-config }}" --dependency-config "$MAA_IOS_CMAKE"
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -384,9 +416,15 @@ jobs:
                   pnpm i
                   cd -
 
+            - name: Prepare iOS host dependencies
+              uses: ./.github/actions/ios-dependencies
+              with:
+                  platform: macos
+                  architecture: ${{ matrix.arch }}
+
             - name: Build MAA
               run: |
-                  cmake --preset 'NinjaMulti' \
+                  cmake -C "$MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DCMAKE_OSX_SYSROOT=macosx \
@@ -410,6 +448,14 @@ jobs:
                   cp -r sample install
 
                   cp -r LICENSE.md install
+
+            - name: Collect iOS runtime dependencies and source materials
+              shell: bash
+              run: |
+                  python3 tools/ios/ci/package.py --repository "$PWD" --build "build" \
+                    --output "$PWD/install" --platform "macos-${{ matrix.arch }}" \
+                    --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
+                    --configuration "${{ needs.meta.outputs.build-config }}" --dependency-config "$MAA_IOS_CMAKE"
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -476,6 +522,12 @@ jobs:
               run: |
                   python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-android
 
+            - name: Prepare iOS host dependencies
+              uses: ./.github/actions/ios-dependencies
+              with:
+                  platform: android
+                  architecture: ${{ matrix.arch }}
+
             - name: Build MAA
               shell: bash
               run: |
@@ -485,7 +537,7 @@ jobs:
                       preset='NinjaMulti Android arm64'
                   fi
 
-                  cmake --preset "$preset" \
+                  cmake -C "$MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON --preset "$preset" \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
                   cmake --build --preset "$preset - ${{ needs.meta.outputs.build-config }}" -j 16
@@ -507,6 +559,14 @@ jobs:
                   cp -r sample install
 
                   cp -r LICENSE.md install
+
+            - name: Collect iOS runtime dependencies and source materials
+              shell: bash
+              run: |
+                  python3 tools/ios/ci/package.py --repository "$PWD" --build "build/android/${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64-v8a' }}" \
+                    --output "$PWD/install" --platform "android-${{ matrix.arch }}" \
+                    --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
+                    --configuration "${{ needs.meta.outputs.build-config }}" --dependency-config "$MAA_IOS_CMAKE"
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1

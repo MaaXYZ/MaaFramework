@@ -24,64 +24,101 @@ def digest(path: Path) -> str:
     return value.hexdigest()
 
 
-def windows_dependencies(repository: Path, output: Path) -> dict:
-    vcpkg = repository / ".ios-vcpkg"
+def relocate_runtime(output: Path, prefix: Path, libraries: list[Path], system: str) -> None:
+    if system == "linux":
+        for library in libraries:
+            subprocess.run(["patchelf", "--set-rpath", "$ORIGIN", str(library)], check=True)
+        return
+    if system != "macos":
+        return
+    for binary in sorted((output / "bin").iterdir()):
+        if not binary.is_file() or binary.suffix not in {"", ".dylib", ".node"}:
+            continue
+        listing = subprocess.run(["otool", "-L", str(binary)], capture_output=True, text=True)
+        if listing.returncode:
+            continue
+        changes = []
+        for line in listing.stdout.splitlines()[1:]:
+            dependency = line.strip().split(" (", 1)[0]
+            if dependency.startswith(str(prefix) + "/"):
+                name = Path(dependency).name
+                if not (output / "bin" / name).is_file():
+                    raise RuntimeError(f"Unbundled runtime dependency: {dependency}")
+                changes += ["-change", dependency, f"@rpath/{name}"]
+        if binary in libraries:
+            changes += ["-id", f"@rpath/{binary.name}"]
+            load_commands = subprocess.check_output(["otool", "-l", str(binary)], text=True)
+            if "path @loader_path (" not in load_commands:
+                changes += ["-add_rpath", "@loader_path"]
+        if changes:
+            subprocess.run(["install_name_tool", *changes, str(binary)], check=True)
+            subprocess.run(["codesign", "--force", "--sign", "-", str(binary)], check=True)
+
+
+def dependencies(arguments, output: Path) -> dict:
+    vcpkg = arguments.vcpkg.resolve()
     installed = vcpkg / "installed"
-    triplet = installed / "x64-windows"
+    prefix = installed / arguments.triplet
+    system = arguments.platform.split("-", 1)[0]
+    directory = "debug/bin" if arguments.configuration == "Debug" else "bin"
+    if system != "windows":
+        directory = "lib"
     owners = {}
     packages = set()
-    for listing in (installed / "vcpkg/info").glob("*.list"):
+    for listing in (installed / "vcpkg/info").glob(f"*_{arguments.triplet}.list"):
         package = listing.stem.rsplit("_", 2)[0]
         packages.add(package)
         for line in listing.read_text(encoding="utf-8").splitlines():
-            if line.startswith("x64-windows/bin/") and line.lower().endswith(".dll"):
-                owners[Path(line).name.lower()] = package
+            owners[line] = package
     libraries = []
-    for library in sorted((triplet / "bin").glob("*.dll")):
-        owner = owners.get(library.name.lower())
+    runtime = []
+    (output / "bin").mkdir(exist_ok=True)
+    for library in sorted((prefix / directory).iterdir()):
+        if not library.is_file() or not (library.name.endswith((".dll", ".dylib")) or ".so" in library.name):
+            continue
+        relative = library.relative_to(installed).as_posix()
+        owner = owners.get(relative)
         if not owner:
-            raise RuntimeError(f"DLL has no installed package ownership: {library.name}")
-        if not (triplet / "share" / owner / "copyright").is_file():
-            raise RuntimeError(f"Missing bundled dependency license: {owner}")
-        shutil.copy2(library, output / "bin" / library.name)
-        libraries.append({"file": library.name, "package": owner, "sha256": digest(library)})
+            raise RuntimeError(f"Runtime library has no installed package ownership: {relative}")
+        destination = output / "bin" / library.name
+        shutil.copy2(library, destination)
+        libraries.append(destination)
+        runtime.append({"file": library.name, "package": owner})
     if not libraries:
-        raise RuntimeError("Windows artifact has no runtime DLLs")
-    copy_tree(triplet / "share", output / "licenses" / "vcpkg-packages")
-    copy_tree(triplet / "include", output / "source-materials" / "vcpkg" / "installed-headers")
+        raise RuntimeError("No iOS runtime dependencies were packaged")
     sources = output / "source-materials" / "vcpkg"
-    for path in ["scripts", "triplets"]:
-        copy_tree(vcpkg / path, sources / path)
-    (sources / "versions").mkdir(parents=True, exist_ok=True)
-    shutil.copy2(vcpkg / "versions/baseline.json", sources / "versions/baseline.json")
+    required = {"openssl", "ffmpeg", "pugixml", "nlohmann-json", "zlib"}
+    if system != "macos":
+        required.add("curl")
     for package in sorted(packages):
-        copy_tree(vcpkg / "ports" / package, sources / "ports" / package)
-        history = vcpkg / "versions" / (package[0] + "-") / (package + ".json")
-        if history.is_file():
-            destination = sources / "versions" / history.parent.name / history.name
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(history, destination)
+        share = prefix / "share" / package
+        license_file = share / "copyright"
+        if not license_file.is_file():
+            raise RuntimeError(f"Missing dependency license: {package}")
+        licenses = output / "bin/licenses/ios" / package
+        licenses.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(license_file, licenses / "copyright")
+        materials = share / "source-materials"
+        if package in required and not (materials / "source.tar.gz").is_file():
+            raise RuntimeError(f"Missing corresponding sources: {package}")
+        if materials.is_dir():
+            copy_tree(materials, sources / "dependencies" / package)
+    if not required.issubset(packages):
+        raise RuntimeError(f"Missing installed dependencies: {required - packages}")
+    for directory in ["scripts", "triplets"]:
+        copy_tree(vcpkg / directory, sources / directory)
+    copy_tree(prefix / "include", sources / "installed-headers")
     shutil.copy2(vcpkg / "LICENSE.txt", sources / "LICENSE.txt")
-    shutil.copy2(repository / "tools/ios/ci/vcpkg.json", sources / "vcpkg.json")
-    archives = sources / "upstream-archives"
-    archives.mkdir(parents=True, exist_ok=True)
-    for archive in sorted((vcpkg / "downloads").iterdir()):
-        if archive.is_file() and archive.name.endswith((".tar.gz", ".tar.xz", ".tar.bz2", ".tgz")):
-            shutil.copy2(archive, archives / archive.name)
-    if not any("ffmpeg" in archive.name.lower() for archive in archives.iterdir()):
-        raise RuntimeError("Missing FFmpeg corresponding source archive")
-    configuration = sources / "ffmpeg-build-configuration"
-    configuration.mkdir(parents=True, exist_ok=True)
-    for path in (vcpkg / "buildtrees/ffmpeg").rglob("*"):
-        if path.is_file() and (path.name in {"config.h", "config.mak", "config.log"} or path.suffix == ".log"):
-            relative = path.relative_to(vcpkg / "buildtrees/ffmpeg")
-            target = configuration / relative
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(path, target)
+    shutil.copy2(arguments.dependency_config, sources / "framework.cmake")
+    copy_tree(arguments.dependency_config.parent / "triplets", sources / "overlay-triplets")
+    relocate_runtime(output, prefix, libraries, system)
+    for library in runtime:
+        library["sha256"] = digest(output / "bin" / library["file"])
     return {
         "vcpkg_commit": subprocess.check_output(["git", "-C", str(vcpkg), "rev-parse", "HEAD"], text=True).strip(),
-        "triplet": "x64-windows",
-        "runtime_libraries": libraries,
+        "triplet": arguments.triplet,
+        "configuration": arguments.configuration,
+        "runtime_libraries": runtime,
     }
 
 
@@ -91,6 +128,10 @@ def main() -> None:
     parser.add_argument("--build", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--platform", required=True)
+    parser.add_argument("--vcpkg", type=Path, required=True)
+    parser.add_argument("--triplet", required=True)
+    parser.add_argument("--configuration", choices=("Debug", "Release", "RelWithDebInfo"), required=True)
+    parser.add_argument("--dependency-config", type=Path, required=True)
     arguments = parser.parse_args()
     repository = arguments.repository.resolve()
     output = arguments.output.resolve()
@@ -106,7 +147,9 @@ def main() -> None:
         shutil.copy2(repository / filename, materials / filename)
     recipes = materials / "build-recipes"
     recipes.mkdir(exist_ok=True)
-    shutil.copy2(repository / ".github/workflows/ios.yml", recipes / "ios.yml")
+    for name in ["build.yml", "test.yml"]:
+        shutil.copy2(repository / ".github/workflows" / name, recipes / name)
+    copy_tree(repository / ".github/actions/ios-dependencies", recipes / "ios-dependencies")
     maadeps = repository / "source/MaaUtils/MaaDeps"
     for triplet in (maadeps / "vcpkg/installed").iterdir():
         if triplet.is_dir() and (triplet / "share").is_dir():
@@ -114,7 +157,6 @@ def main() -> None:
     maadeps_source = materials / "source/MaaUtils/MaaDeps"
     maadeps_source.mkdir(parents=True, exist_ok=True)
     shutil.copy2(maadeps / "maadeps.cmake", maadeps_source / "maadeps.cmake")
-    shutil.copy2(repository / "tools/ios/README.md", output / "README.md")
     shutil.copy2(arguments.build / "CMakeCache.txt", materials / "CMakeCache.txt")
     dependency_sources = arguments.build / "_deps"
     if dependency_sources.is_dir():
@@ -127,35 +169,18 @@ def main() -> None:
             key, value = line.split("=", 1)
             if value and Path(value).is_dir():
                 copy_tree(Path(value), materials / "fetched-dependencies" / key.split(":")[0].lower())
-        if line.startswith("nlohmann_json_DIR:") and "=" in line:
-            directory = Path(line.split("=", 1)[1]).resolve()
-            for prefix in directory.parents:
-                header_source = prefix / "include/nlohmann"
-                if header_source.is_dir():
-                    copy_tree(header_source, materials / "system-headers/nlohmann")
-                    for license_file in prefix.glob("LICENSE*"):
-                        if license_file.is_file():
-                            shutil.copy2(license_file, output / "licenses" / ("nlohmann-json-" + license_file.name))
-                    break
     provenance = {
         "commit": subprocess.check_output(["git", "-C", str(repository), "rev-parse", "HEAD"], text=True).strip(),
         "platform": arguments.platform,
         "architecture": "MaaToolkit device management and MaaIOSControlUnit sessions share a private static protocol target",
-        "binary_dependencies": "MaaFramework/MaaDeps runtime plus vcpkg DLLs" if arguments.platform.startswith("windows") else "MaaFramework/MaaDeps runtime plus system OpenSSL/FFmpeg/libcurl",
+        "binary_dependencies": "MaaFramework/MaaDeps runtime and target-built iOS protocol dependencies",
         "maadeps_version": "v3.0.0",
         "submodules": subprocess.check_output(["git", "-C", str(repository), "submodule", "status", "--recursive"], text=True).splitlines(),
     }
-    if arguments.platform.startswith("linux"):
-        cxx_runtime = arguments.build / "ios-native-deps/lib"
-        if cxx_runtime.is_dir():
-            for library in cxx_runtime.glob("*.so*"):
-                if library.is_file():
-                    shutil.copy2(library.resolve(), output / "bin" / library.name)
+    provenance.update(dependencies(arguments, output))
+    note = "iOS protocol runtime dependencies are listed in provenance.json. Licenses are in bin/licenses/ios; corresponding sources and build recipes are in source-materials.\n"
     if arguments.platform.startswith("windows"):
-        provenance.update(windows_dependencies(repository, output))
-        note = "The artifact includes the framework, control unit, toolkit and MaaDeps runtime. Additional vcpkg DLLs are listed in provenance.json. The Microsoft VC++ 2015-2022 x64 runtime is required.\n"
-    else:
-        note = "The artifact includes the framework, control unit, toolkit and MaaDeps runtime. OpenSSL, FFmpeg and libcurl are system dependencies and are not bundled.\n"
+        note += "The Microsoft Visual C++ 2015-2022 runtime for the target architecture is required.\n"
     (output / "RUNTIME.txt").write_text(note, encoding="utf-8")
     (output / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
     hashes = {str(path.relative_to(output)): digest(path) for path in sorted(output.rglob("*")) if path.is_file() and path.name != "SHA256SUMS.json"}

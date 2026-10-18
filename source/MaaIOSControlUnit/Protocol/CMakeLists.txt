@@ -1,3 +1,8 @@
+if(MAA_IOS_DEPENDENCIES_ROOT)
+    list(PREPEND CMAKE_PREFIX_PATH "${MAA_IOS_DEPENDENCIES_ROOT}")
+    list(PREPEND CMAKE_FIND_ROOT_PATH "${MAA_IOS_DEPENDENCIES_ROOT}")
+endif()
+
 include(FetchContent)
 if(POLICY CMP0135)
     cmake_policy(SET CMP0135 NEW)
@@ -75,7 +80,7 @@ find_package(PkgConfig QUIET)
 # Cross-compiling is the worse form of the same trap: pkg-config always reports the
 # build machine, so a host libavcodec or libcurl would be linked into the target .so.
 set(maa_ios_host_pkg_config OFF)
-if(PkgConfig_FOUND AND NOT WIN32 AND NOT CMAKE_CROSSCOMPILING)
+if(PkgConfig_FOUND AND NOT WIN32 AND NOT CMAKE_CROSSCOMPILING AND NOT MAA_IOS_DEPENDENCIES_ROOT)
     set(maa_ios_host_pkg_config ON)
 endif()
 if(maa_ios_host_pkg_config)
