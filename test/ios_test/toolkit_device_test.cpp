@@ -9,7 +9,7 @@
 namespace
 {
 std::string next_result;
-bool throw_management = false;
+bool discovery_succeeded = true;
 bool discovery_called = false;
 
 void require(bool value, const char* message)
@@ -30,12 +30,9 @@ MaaBool MaaToolkitIOSDeviceDiscover(
     void*,
     MaaStringBuffer* result)
 {
-    if (throw_management) {
-        throw std::runtime_error("private protocol failure");
-    }
     discovery_called = true;
     MaaStringBufferSet(result, next_result.c_str());
-    return true;
+    return discovery_succeeded;
 }
 
 int main()
@@ -77,12 +74,14 @@ int main()
         require(
             !MaaToolkitIOSDeviceFindWithTimeout(-1, list) && MaaToolkitIOSDeviceListSize(list) == 0,
             "invalid refresh clears old borrowed data");
-        throw_management = true;
-        require(!MaaToolkitIOSDeviceFind(list) && MaaToolkitIOSDeviceListSize(list) == 0, "C boundary catches management exception");
+        require(MaaToolkitIOSDeviceFindWithTimeout(0, list), "restore discovery before failure");
+        discovery_succeeded = false;
+        next_result = R"({"success":false,"error":"discovery unavailable"})";
+        require(!MaaToolkitIOSDeviceFind(list) && MaaToolkitIOSDeviceListSize(list) == 0, "failed discovery clears device list");
         require(
-            std::string(MaaToolkitIOSDeviceListGetWarnings(list)).find("private protocol failure") == std::string::npos,
-            "does not leak protocol exception data");
-        throw_management = false;
+            json::parse(MaaToolkitIOSDeviceListGetWarnings(list))->as_array()[0].as_string() == "discovery unavailable",
+            "report discovery failure");
+        discovery_succeeded = true;
         MaaToolkitIOSDeviceListDestroy(list);
         require(owned_udid == "device-id", "caller copy outlives list");
         require(!MaaToolkitIOSDeviceFind(nullptr) && MaaToolkitIOSDeviceListAt(nullptr, 0) == nullptr, "null handles");
