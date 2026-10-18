@@ -170,12 +170,14 @@ cancellation. Set `cache_directory` to retain and revalidate files across calls.
 mounted CoreDevice image with the required screenshot feature can be reused without downloading.
 Classic images are reused without downloading when their mounted signature matches the pinned catalog for the device OS.
 When compatibility cannot be confirmed, image validation and preparation are required.
-`replace` defaults to false. Download/install timeout defaults are 300/180 seconds.
+`replace` defaults to false. A different or unverifiable mounted Classic signature fails;
+set `replace: true` to explicitly replace it. Download/install timeout defaults are 300/180 seconds.
 
 不指定 `cache_directory` 时使用临时目录，完成、失败或取消后清理；只有显式指定目录才启用
 持久缓存。已确认适用的设备挂载镜像可直接复用；Classic 镜像的挂载签名与设备系统对应的固定目录摘要匹配时，
 无需下载或本地缓存。无法确认时继续校验准备流程。
-`replace` 默认关闭，不能因取消就假定设备安装已回滚。
+`replace` 默认关闭。Classic 挂载签名不匹配或无法验证时返回错误；显式设置 `replace: true` 才会替换。
+不能因取消就假定设备安装已回滚。
 
 ## Build / 构建
 

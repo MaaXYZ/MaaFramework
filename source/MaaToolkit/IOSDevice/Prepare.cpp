@@ -137,8 +137,11 @@ Json prepare(const Options& o, const Callbacks& callbacks)
             if (!mounted) {
                 return fail();
             }
-            if (mounted->state != ddi::MountState::NotMounted
-                && (selected->kind != ddi::Kind::Classic || mounted->signature_matches == true)) {
+            if (mounted->state != ddi::MountState::NotMounted) {
+                if (selected->kind == ddi::Kind::Classic && mounted->signature_matches != true) {
+                    error = "Mounted Classic DDI signature does not match the requested image; enable replacement explicitly";
+                    return fail();
+                }
                 return { { "success", true },
                          { "error", "" },
                          { "cancelled", callbacks.stopped() },

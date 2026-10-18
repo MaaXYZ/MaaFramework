@@ -56,6 +56,7 @@ std::optional<MountResult> inspect_mounted(PlistService&, const DownloadTarget&,
 bool unmount_current(PlistService&, Kind, const MountOptions&, std::string& error);
 // Classic/Personalized only. Validates pinned cache, prepares signature/ticket,
 // sends image and checks mounted state. AlreadyMounted is not an installation.
+// A different or unverifiable Classic signature fails unless replacement is explicit.
 std::optional<MountResult>
     mount_image(PlistService&, const DownloadResult&, const DownloadTarget&, uint64_t ecid, const MountOptions&, std::string& error);
 

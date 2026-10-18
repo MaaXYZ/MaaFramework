@@ -1,5 +1,7 @@
+#include "ddi/DownloadInternal.h"
 #include "ddi/Mounter.h"
 
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 
@@ -29,6 +31,7 @@ struct ImageMounter
 {
     std::vector<uint8_t> signature = classic_signature;
     bool mounted = true;
+    size_t uploaded = 0;
     std::vector<std::string> commands;
 
     ddi::PlistService service()
@@ -53,9 +56,34 @@ struct ImageMounter
                 }
                 reply.set("EntryList", std::move(entries));
             }
+            else if (command == "QueryDeveloperModeStatus") {
+                reply.set("DeveloperModeStatus", V::Bool(true));
+            }
+            else if (command == "UnmountImage") {
+                mounted = false;
+                reply.set("Status", V::Str("Complete"));
+            }
+            else if (command == "ReceiveBytes") {
+                reply.set("Status", V::Str("ReceiveBytesAck"));
+            }
+            else if (command == "MountImage") {
+                mounted = true;
+                signature = request.find("ImageSignature")->data;
+                reply.set("Status", V::Str("Complete"));
+            }
             else {
                 throw std::runtime_error("Unexpected image-mounter command");
             }
+            return reply;
+        };
+        result.send_bytes = [this](const uint8_t* bytes, size_t size, auto, std::string&) {
+            require(size == 1 && bytes[0] == 'x', "only the selected image is uploaded");
+            uploaded += size;
+            return true;
+        };
+        result.receive = [](auto, std::string&) -> std::optional<V> {
+            auto reply = V::Dict();
+            reply.set("Status", V::Str("Complete"));
             return reply;
         };
         return result;
@@ -94,12 +122,64 @@ void test_classic_reuse_without_download()
     result = ddi::inspect_mounted(service, target, options, error);
     require(!result && !error.empty(), "unsupported Classic catalog cannot establish compatibility");
 }
+
+void test_existing_classic_signature_mismatch()
+{
+    const ddi::detail::Catalog catalog { "16.0",
+                                         "https://example.invalid/ddi",
+                                         { { "DeveloperDiskImage.dmg", 1, "", "c1b0730e0133447badcfd47fd144e254807b06e1" },
+                                           { "DeveloperDiskImage.dmg.signature", 1, "", "e25f1814e51579d5f55c0f1fe0135ddb28a47f4a" } },
+                                         ddi::Kind::Classic };
+    std::string error;
+    auto download = ddi::detail::download(
+        { },
+        catalog,
+        [](const std::string& url, auto, auto, const auto&, const auto& sink, std::string&) {
+            const char value = url.ends_with(".signature") ? 'y' : 'x';
+            return sink(&value, 1);
+        },
+        error);
+    require(download.has_value(), "synthetic Classic cache is valid");
+    ddi::DownloadTarget target;
+    target.system_version = "16.0";
+    ddi::MountOptions options;
+    ImageMounter mock;
+    mock.signature = { 'y' };
+    auto service = mock.service();
+    auto result = ddi::detail::mount_image_with_catalog(service, *download, target, 0, options, catalog, error);
+    require(
+        result && result->state == ddi::MountState::AlreadyMounted && result->signature_matches == true,
+        "matching mounted Classic image is reused");
+    require(mock.uploaded == 0 && mock.commands == std::vector<std::string> { "LookupImage" }, "matching reuse performs no device writes");
+
+    mock.signature = { 'z' };
+    mock.commands.clear();
+    result = ddi::detail::mount_image_with_catalog(service, *download, target, 0, options, catalog, error);
+    require(!result && !error.empty(), "mismatched mounted Classic image must fail instead of reporting success");
+    require(
+        mock.uploaded == 0 && mock.commands == std::vector<std::string> { "LookupImage" },
+        "signature mismatch cannot implicitly replace the mounted image");
+
+    mock.signature.clear();
+    result = ddi::detail::mount_image_with_catalog(service, *download, target, 0, options, catalog, error);
+    require(!result && !error.empty(), "mounted Classic image without a verifiable signature is rejected");
+
+    mock.signature = { 'z' };
+    mock.commands.clear();
+    options.replace_existing = true;
+    result = ddi::detail::mount_image_with_catalog(service, *download, target, 0, options, catalog, error);
+    require(
+        result && result->state == ddi::MountState::Mounted && result->signature_matches == true && mock.uploaded == 1,
+        "explicit replacement uploads and verifies the selected image");
+    require(std::ranges::find(mock.commands, "UnmountImage") != mock.commands.end(), "replacement explicitly unmounts the previous image");
+}
 } // namespace
 
 int main()
 {
     try {
         test_classic_reuse_without_download();
+        test_existing_classic_signature_mismatch();
         std::cout << "Classic DDI mounted-image checks passed\n";
         return 0;
     }
