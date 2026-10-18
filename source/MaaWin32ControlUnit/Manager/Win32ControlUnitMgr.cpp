@@ -3,9 +3,9 @@
 #include <chrono>
 
 #include "MaaFramework/MaaMsg.h"
+#include "MaaUtils/Encoding.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Time.hpp"
-#include "MaaUtils/Encoding.h"
 
 #include <tlhelp32.h>
 
@@ -310,7 +310,8 @@ bool Win32ControlUnitMgr::start_app(const std::string& intent)
             args = cmd.substr(pos + 1);
             args.erase(0, args.find_first_not_of(L" \t"));
         }
-    } else if (auto pos = cmd.find(L' '); pos != std::wstring::npos) {
+    }
+    else if (auto pos = cmd.find(L' '); pos != std::wstring::npos) {
         file = cmd.substr(0, pos);
         args = cmd.substr(pos + 1);
         args.erase(0, args.find_first_not_of(L" \t"));
@@ -398,7 +399,8 @@ bool Win32ControlUnitMgr::stop_app(const std::string& intent)
         if (TerminateProcess(hProcess, 0)) {
             LogInfo << "Process" << pe.th32ProcessID << "terminated successfully by intent matching";
             terminated_any = true;
-        } else {
+        }
+        else {
             LogError << "TerminateProcess failed for PID" << pe.th32ProcessID << "error:" << GetLastError();
         }
 

@@ -118,11 +118,34 @@ void ResourceImpl::set_inference_execution_provider(std::string provider)
     else if (provider == "DirectML") {
         value = MaaInferenceExecutionProvider_DirectML;
     }
+    else if (provider == "WebGPU") {
+        value = MaaInferenceExecutionProvider_WebGPU;
+    }
     else if (provider == "CoreML") {
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif
         value = MaaInferenceExecutionProvider_CoreML;
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(_MSC_VER)
+#pragma warning(pop)
+#endif
     }
     else if (provider == "CUDA") {
         value = MaaInferenceExecutionProvider_CUDA;
+    }
+    else if (provider == "NCNN") {
+        value = MaaInferenceExecutionProvider_NCNN;
     }
     else {
         throw maajs::MaaError { std::format("Resource set inference_execution_provider failed, invalid provider {}", provider) };

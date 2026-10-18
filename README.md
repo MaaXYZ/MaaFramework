@@ -25,7 +25,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
   <a href="https://pypi.org/project/MaaFw/" target="_blank"><img alt="pypi" src="https://img.shields.io/pypi/dm/maafw?logo=pypi&label=PyPI"></a>
   <a href="https://www.nuget.org/packages/Maa.Framework.Runtimes" target="_blank"><img alt="nuget" src="https://img.shields.io/badge/NuGet-004880?logo=nuget"></a>
   <a href="https://www.npmjs.com/package/@maaxyz/maa-node" target="_blank"><img alt="npm" src="https://img.shields.io/badge/npm-CB3837?logo=npm"></a>
-  <a href="https://pkg.go.dev/github.com/MaaXYZ/maa-framework-go/v3"><img alt="go reference" src="https://pkg.go.dev/badge/github.com/MaaXYZ/maa-framework-go/v3.svg" /></a>
+  <a href="https://pkg.go.dev/github.com/MaaXYZ/maa-framework-go/v4"><img alt="go reference" src="https://pkg.go.dev/badge/github.com/MaaXYZ/maa-framework-go/v4.svg" /></a>
   <a href="https://crates.io/crates/maa-framework"><img alt="rust crate" src="https://img.shields.io/badge/Rust-crate-orange?logo=rust" /></a>
   <a href="https://mirrorchyan.com/zh/projects?source=maafw-badge" target="_blank"><img alt="mirrorc" src="./docs/static/mirrorc-zh.svg"></a>
   <br>
@@ -123,6 +123,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [Everything-Maa](https://github.com/KhazixW2/Everything-Maa) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black) ![license](https://img.shields.io/github/license/KhazixW2/Everything-Maa) ![activity](https://img.shields.io/github/commit-activity/m/KhazixW2/Everything-Maa?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/KhazixW2/Everything-Maa?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/everything-maa)  
     面向 AI 辅助开发的 MaaFramework 工具集，提供可复用 Skills、版本化 MCP 配置与 CLI 安装器，覆盖项目创建、Pipeline 编写、测试和分析
 
+- [MaaCtl](https://github.com/TanyaShue/MaaCtl) ![Go](https://img.shields.io/badge/Go-007d9c?logo=go) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaCtl?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaCtl?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/maactl)  
+    MaaFramework / ProjectInterface v2 命令行客户端，纯参数化运行 PI 项目与 Pipeline 节点，提供 Go 单文件可执行程序与 npm（npx/全局安装）分发
+
 ### 应用程序
 
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
@@ -137,7 +140,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MPA](https://github.com/overflow65537/MAA_Punish) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/overflow65537/MAA_Punish) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MAA_Punish?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MAA_Punish?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
     战双帕弥什 小助手。图像技术 + 模拟控制，解放双手！由 玛丽的黑咖啡 2.0 强力驱动！
 
-- [MRA](https://github.com/Saratoga-Official/MRA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Saratoga-Official/MRA) ![activity](https://img.shields.io/github/commit-activity/m/Saratoga-Official/MRA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Saratoga-Official/MRA?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
+- [MRA](https://github.com/Saratoga-Official/MRA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Saratoga-Official/MRA) ![activity](https://img.shields.io/github/commit-activity/m/Saratoga-Official/MRA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Saratoga-Official/MRA?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
     战舰少女R 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MaaYuan](https://github.com/syoius/MaaYuan) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/syoius/MaaYuan) ![activity](https://img.shields.io/github/commit-activity/m/syoius/MaaYuan?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/syoius/MaaYuan?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://maayuan.top-%234285F4)](https://maayuan.top)  
@@ -240,6 +243,12 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MFABD2](https://github.com/sunyink/MFABD2) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue) ![activity](https://img.shields.io/github/commit-activity/m/sunyink/MFABD2?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/sunyink/MFABD2?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?rid=MFABD2&os=win&arch=x64&channel=stable)  
     棕色尘埃2 (Brown Dust 2) 小助手。图像技术 + 模拟控制，解放双手！PC 端、模拟器与 PlayCover 同步支持，由 MaaFramework 强力驱动！
 
+- [MaaWoA](https://github.com/huzesama/MaaWoA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/huzesama/MaaWoA) ![activity](https://img.shields.io/github/commit-activity/m/huzesama/MaaWoA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/huzesama/MaaWoA?style=social)  
+    机场世界 (World of Airports) 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
+- [MAES](https://github.com/Guili-Ad/MAES) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Guili-Ad/MAES) ![activity](https://img.shields.io/github/commit-activity/m/Guili-Ad/MAES?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Guili-Ad/MAES?style=social)  
+    偶像梦幻祭 2 打歌小助手。使用图像识别 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。
@@ -257,6 +266,8 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
 ### 分发说明
 
 本项目支持 GPU 加速功能，其在 Windows 平台上依赖于 Microsoft 提供的独立组件 [DirectML](https://learn.microsoft.com/en-us/windows/ai/directml/)。DirectML 并非本项目的开源部分，也不受 LGPL-3.0 的约束。为方便用户，我们随安装包附带了一个未经修改的 DirectML.dll 文件。如果您无需 GPU 加速功能，可安全删除该 DLL 文件，软件的核心功能仍可正常运行。
+
+Windows、Linux 与 macOS 的预编译依赖还包含基于 [Dawn](https://dawn.googlesource.com/dawn) 的 WebGPU 推理库（`libwebgpu_dawn`）。macOS 不再附带 CoreML。
 
 ### 免责声明
 

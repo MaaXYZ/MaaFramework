@@ -3,11 +3,10 @@
 #include <ostream>
 #include <vector>
 
+#include "InferenceSession.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
-
-#include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "Common/Conf.h"
 
@@ -32,8 +31,7 @@ public:
         cv::Mat image,
         std::vector<cv::Rect> rois,
         NeuralNetworkDetectorParam param,
-        std::shared_ptr<Ort::Session> session,
-        const Ort::MemoryInfo& memory_info,
+        InferenceSessionPtr session,
         std::string name = "");
 
 private:
@@ -41,20 +39,24 @@ private:
 
     ResultsVec detect(const std::vector<std::string>& labels) const;
 
-    void add_results(ResultsVec results, const std::vector<int>& expected, const std::vector<double>& thresholds);
+    void
+        add_results(ResultsVec results, const std::vector<std::variant<int, std::string>>& expected, const std::vector<double>& thresholds);
     void cherry_pick();
 
 private:
     cv::Mat draw_result(const ResultsVec& results) const;
     void sort_(ResultsVec& results) const;
 
+    void init_expected_indices(const std::vector<std::string>& labels);
+
 private:
     std::vector<std::string> parse_labels_from_metadata() const;
 
 private:
     const NeuralNetworkDetectorParam param_;
-    std::shared_ptr<Ort::Session> session_ = nullptr;
-    const Ort::MemoryInfo& memory_info_;
+    InferenceSessionPtr session_ = nullptr;
+
+    std::vector<int> expected_indices_;
 };
 
 MAA_VISION_NS_END

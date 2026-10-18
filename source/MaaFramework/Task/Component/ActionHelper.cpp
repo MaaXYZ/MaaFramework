@@ -25,14 +25,19 @@ bool ActionHelper::wait_freezes(
         return true;
     }
 
-    auto roi = get_target_rect(param.target, ref_box);
-    if (roi.empty()) {
-        LogError << "failed to get target rect for wait_freezes" << VAR(noti_ctx.name);
+    if (!controller()) {
+        LogError << "Controller is null";
         return false;
     }
 
-    if (!controller()) {
-        LogError << "Controller is null";
+    const auto start_clock = std::chrono::steady_clock::now();
+    auto screencap_clock = start_clock;
+    // 使用首帧尺寸解析目标，避免依赖空缓存或旧尺寸。
+    cv::Mat pre_image = controller()->screencap();
+
+    auto roi = get_target_rect(param.target, ref_box);
+    if (roi.empty()) {
+        LogError << "failed to get target rect for wait_freezes" << VAR(noti_ctx.name);
         return false;
     }
 
@@ -61,7 +66,6 @@ bool ActionHelper::wait_freezes(
     };
     notify(MaaMsg_Node_WaitFreezes_Starting, cb_detail);
 
-    const auto start_clock = std::chrono::steady_clock::now();
     std::vector<MaaRecoId> reco_ids;
 
     auto finish = [&](bool success) {
@@ -89,9 +93,6 @@ bool ActionHelper::wait_freezes(
     };
 
     auto rate_limit = std::min(param.rate_limit, param.time);
-
-    auto screencap_clock = std::chrono::steady_clock::now();
-    cv::Mat pre_image = controller()->screencap();
 
     auto corrected_roi = correct_roi(roi, pre_image);
     if (!corrected_roi) {
@@ -121,6 +122,27 @@ bool ActionHelper::wait_freezes(
         if (pre_image.empty() || cur_image.empty()) {
             LogError << "Image is empty" << VAR(pre_image.empty()) << VAR(cur_image.empty());
             return finish(false);
+        }
+
+        if (pre_image.size() != cur_image.size()) {
+            // 首帧 ROI 按当时的截图尺寸展开。尺寸变化后继续沿用，会在后续同尺寸帧上越界，OpenCV 断言会直接中断进程。
+            LogWarn << "screenshot size changed during wait_freezes" << VAR(pre_image.size()) << VAR(cur_image.size());
+
+            auto new_roi = get_target_rect(param.target, ref_box);
+            if (new_roi.empty()) {
+                LogError << "failed to get target rect for wait_freezes" << VAR(noti_ctx.name) << VAR(cur_image.size());
+                return finish(false);
+            }
+
+            auto new_corrected_roi = correct_roi(new_roi, cur_image);
+            if (!new_corrected_roi) {
+                LogError << "corrected roi is empty" << VAR(new_roi) << VAR(cur_image.size());
+                return finish(false);
+            }
+
+            roi = new_roi;
+            corrected_roi = new_corrected_roi;
+            cb_detail["roi"] = json::value(roi);
         }
 
         std::string draw_name = noti_ctx.name.empty() ? "wait_freezes" : std::format("{}_wait_freezes", noti_ctx.name);
@@ -210,9 +232,10 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
         return { };
     }
 
-    // 无 controller 时跳过边界检查，直接返回 raw + offset
-    if (!controller()) {
-        LogDebug << "controller not bound, skip image boundary check";
+    auto image = controller() ? controller()->cached_image() : cv::Mat { };
+    // 无缓存图像时跳过归一化和边界检查，直接返回 raw + offset
+    if (image.empty()) {
+        LogDebug << "no cached image, skip target normalization and boundary check";
         return cv::Rect(
             raw.x + target.offset.x,
             raw.y + target.offset.y,
@@ -220,19 +243,34 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
             raw.height + target.offset.height);
     }
 
-    auto image = controller()->cached_image();
-
     // Region 类型支持负数坐标和尺寸
     if (target.type == Target::Type::Region) {
         raw = MAA_VISION_NS::normalize_rect(raw, image.cols, image.rows);
     }
 
-    int x = std::clamp(raw.x + target.offset.x, 0, image.cols);
-    int y = std::clamp(raw.y + target.offset.y, 0, image.rows);
-    int width = std::clamp(raw.width + target.offset.width, 0, image.cols - x);
-    int height = std::clamp(raw.height + target.offset.height, 0, image.rows - y);
+    cv::Rect rect = raw;
+    rect.x += target.offset.x;
+    rect.y += target.offset.y;
+    rect.width += target.offset.width;
+    rect.height += target.offset.height;
 
-    return cv::Rect(x, y, width, height);
+    // 对所有 target 类型，offset 引入的负宽高按 ROI 语义取绝对值并反向调整位置
+    // 注：不直接调 normalize_rect，因为它的负 x/y 语义（从右/下边缘算起）对 offset 不适用
+    if (rect.width < 0) {
+        rect.x += rect.width;
+        rect.width = -rect.width;
+    }
+    if (rect.height < 0) {
+        rect.y += rect.height;
+        rect.height = -rect.height;
+    }
+
+    rect.x = std::clamp(rect.x, 0, image.cols);
+    rect.y = std::clamp(rect.y, 0, image.rows);
+    rect.width = std::clamp(rect.width, 0, image.cols - rect.x);
+    rect.height = std::clamp(rect.height, 0, image.rows - rect.y);
+
+    return rect;
 }
 
 cv::Rect ActionHelper::get_rect_from_node(const std::string& node_name) const

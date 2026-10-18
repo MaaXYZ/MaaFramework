@@ -25,7 +25,7 @@ _✨ An automation black-box testing framework based on image recognition ✨_
   <a href="https://pypi.org/project/MaaFw/" target="_blank"><img alt="pypi" src="https://img.shields.io/pypi/dm/maafw?logo=pypi&label=PyPI"></a>
   <a href="https://www.nuget.org/packages/Maa.Framework.Runtimes" target="_blank"><img alt="nuget" src="https://img.shields.io/badge/NuGet-004880?logo=nuget"></a>
   <a href="https://www.npmjs.com/package/@maaxyz/maa-node" target="_blank"><img alt="npm" src="https://img.shields.io/badge/npm-CB3837?logo=npm"></a>
-  <a href="https://pkg.go.dev/github.com/MaaXYZ/maa-framework-go/v3"><img alt="go reference" src="https://pkg.go.dev/badge/github.com/MaaXYZ/maa-framework-go/v3.svg" /></a>
+  <a href="https://pkg.go.dev/github.com/MaaXYZ/maa-framework-go/v4"><img alt="go reference" src="https://pkg.go.dev/badge/github.com/MaaXYZ/maa-framework-go/v4.svg" /></a>
   <a href="https://mirrorchyan.com/en/projects?source=maafw-badge" target="_blank"><img alt="mirrorc" src="./docs/static/mirrorc-en.svg"></a>
   <br>
   <a href="https://maafw.com/" target="_blank"><img alt="website" src="./docs/static/maafw.svg"></a>
@@ -125,6 +125,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [Everything-Maa](https://github.com/KhazixW2/Everything-Maa) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black) ![license](https://img.shields.io/github/license/KhazixW2/Everything-Maa) ![activity](https://img.shields.io/github/commit-activity/m/KhazixW2/Everything-Maa?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/KhazixW2/Everything-Maa?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/everything-maa)  
     A MaaFramework toolkit for AI-assisted development, providing reusable skills, versioned MCP profiles, and a CLI installer for project creation, Pipeline authoring, testing, and analysis.
 
+- [MaaCtl](https://github.com/TanyaShue/MaaCtl) ![Go](https://img.shields.io/badge/Go-007d9c?logo=go) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaCtl?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaCtl?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/maactl)  
+    A command-line client for MaaFramework / ProjectInterface v2, running PI projects and Pipeline nodes in a fully parameterized way, distributed as a Go single-file executable and an npm (npx / global install) package.
+
 ### Application
 
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
@@ -139,7 +142,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MPA](https://github.com/overflow65537/MAA_Punish) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/overflow65537/MAA_Punish) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MAA_Punish?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MAA_Punish?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
     A Punishing Gray Raven Assistant. Image technology + simulation control, freeing your hands! Powered by MistEO's Black Coffee 2.0.
 
-- [MRA](https://github.com/Saratoga-Official/MRA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Saratoga-Official/MRA) ![activity](https://img.shields.io/github/commit-activity/m/Saratoga-Official/MRA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Saratoga-Official/MRA?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
+- [MRA](https://github.com/Saratoga-Official/MRA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Saratoga-Official/MRA) ![activity](https://img.shields.io/github/commit-activity/m/Saratoga-Official/MRA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Saratoga-Official/MRA?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
     A Warship Girls R Assistant. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 - [MaaYuan](https://github.com/syoius/MaaYuan) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/syoius/MaaYuan) ![activity](https://img.shields.io/github/commit-activity/m/syoius/MaaYuan?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/syoius/MaaYuan?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://maayuan.top-%234285F4)](https://maayuan.top)  
@@ -244,6 +247,12 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MFABD2](https://github.com/sunyink/MFABD2) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue) ![activity](https://img.shields.io/github/commit-activity/m/sunyink/MFABD2?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/sunyink/MFABD2?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?rid=MFABD2&os=win&arch=x64&channel=stable)  
     A Brown Dust 2 assistant. Image technology + simulation control, freeing your hands! Supports PC, emulator and PlayCover. Powered by MaaFramework!
 
+- [MaaWoA](https://github.com/huzesama/MaaWoA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/huzesama/MaaWoA) ![activity](https://img.shields.io/github/commit-activity/m/huzesama/MaaWoA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/huzesama/MaaWoA?style=social)  
+    An assistant for World of Airports. Image technology + simulation control, freeing your hands! Powered by MaaFramework!
+
+- [MAES](https://github.com/Guili-Ad/MAES) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Guili-Ad/MAES) ![activity](https://img.shields.io/github/commit-activity/m/Guili-Ad/MAES?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Guili-Ad/MAES?style=social)  
+    Ensemble Stars!! Music rhythm-game auto-play assistant focused on song play and lane calibration. Powered by MaaFramework.
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
@@ -261,6 +270,8 @@ This project is open-sourced under the [`LGPL-3.0`](./LICENSE.md) license.
 ### Distribution Notice
 
 This project supports GPU acceleration, which relies on an independent component provided by Microsoft: [DirectML](https://learn.microsoft.com/en-us/windows/ai/directml/) for the Windows platform. DirectML is not part of this project's open-source codebase and is not governed by the LGPL-3.0 license. For user convenience, an unmodified copy of the DirectML.dll file is included in the installation package. If GPU acceleration is not required, you may safely delete this DLL file without affecting the core functionality of the software.
+
+The Windows, Linux and macOS prebuilt dependencies also include a WebGPU inference library based on [Dawn](https://dawn.googlesource.com/dawn) (`libwebgpu_dawn`). macOS no longer ships CoreML.
 
 ### Disclaimer
 

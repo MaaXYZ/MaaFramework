@@ -867,8 +867,16 @@ class Tasker:
     def _set_api_properties():
         if Tasker._api_properties_initialized:
             return
-        Tasker._api_properties_initialized = True
 
+        with Library._api_lock:
+            if Tasker._api_properties_initialized:
+                return
+
+            Tasker._assign_api_properties()
+            Tasker._api_properties_initialized = True
+
+    @staticmethod
+    def _assign_api_properties() -> None:
         Library.framework().MaaGlobalSetOption.restype = MaaBool
         Library.framework().MaaGlobalSetOption.argtypes = [
             MaaGlobalOption,

@@ -1,7 +1,10 @@
 #pragma once
 
 #include <cstdint>
+#include <initializer_list>
 #include <string>
+
+#include <libei.h>
 
 #include "Base/UnitBase.h"
 #include "Common/Conf.h"
@@ -57,7 +60,7 @@ private:
     void handle_event(struct ei_event* event);
 
     template <typename F>
-    bool send(F&& emit);
+    bool send(std::initializer_list<enum ei_device_capability> required_caps, F&& emit);
 
     struct ei* ei_ = nullptr;
     struct ei_device* device_ = nullptr;

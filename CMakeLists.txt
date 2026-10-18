@@ -22,6 +22,7 @@ option(WITH_NODEJS_BINDING "build with nodejs binding" OFF)
 option(WITH_QUICKJS_BINDING "build with quickjs binding" OFF)
 
 option(WITH_MAA_AGENT "build with MaaAgent" ON)
+option(WITH_NCNN "build with ncnn inference backend (Android only)" ${ANDROID})
 
 option(BUILD_SAMPLE "build a demo" OFF)
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)

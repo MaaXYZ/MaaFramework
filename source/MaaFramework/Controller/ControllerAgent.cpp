@@ -28,6 +28,8 @@ ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAP
 ControllerAgent::~ControllerAgent()
 {
     LogFunc;
+
+    auto_release_pressed();
 }
 
 bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size)
@@ -267,6 +269,8 @@ void ControllerAgent::post_stop()
     if (action_runner_ && action_runner_->running()) {
         action_runner_->clear();
     }
+
+    auto_release_pressed();
 }
 
 bool ControllerAgent::running() const
@@ -451,9 +455,10 @@ bool ControllerAgent::handle_click(const ClickParam& param)
 
     bool ret = true;
     if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
+        remember_touch_down(param.contact, true);
         ret &= control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        ret &= control_unit_->touch_up(param.contact);
+        ret &= release_touch_if_held(param.contact);
     }
     else {
         ret &= control_unit_->click(point.x, point.y);
@@ -473,9 +478,10 @@ bool ControllerAgent::handle_long_press(const LongPressParam& param)
 
     bool ret = true;
     if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
+        remember_touch_down(param.contact, true);
         ret &= control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
         std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
-        ret &= control_unit_->touch_up(param.contact);
+        ret &= release_touch_if_held(param.contact);
     }
     else {
         LogWarn << "long press not supported, use click instead";
@@ -501,10 +507,17 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
     bool ret = !param.end.empty();
 
     if (!param.only_hover && use_touch_down_up) {
+        remember_touch_down(param.contact, true);
         ret &= control_unit_->touch_down(param.contact, begin.x, begin.y, param.pressure);
     }
 
+    bool stopped = false;
     for (size_t i = 0; i < param.end.size(); ++i) {
+        if (need_to_stop_) {
+            stopped = true;
+            break;
+        }
+
         const cv::Point& end = preproc_touch_point(param.end.at(i));
         const uint duration = param.duration.empty() ? 200 : (i < param.duration.size()) ? param.duration.at(i) : param.duration.back();
         const uint end_hold = param.end_hold.empty() ? 0 : (i < param.end_hold.size()) ? param.end_hold.at(i) : param.end_hold.back();
@@ -520,16 +533,28 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
             auto now = std::chrono::steady_clock::now();
 
             for (int step = 1; step < total_step; ++step) {
+                std::this_thread::sleep_until(now + delay);
+                if (need_to_stop_) {
+                    stopped = true;
+                    break;
+                }
+
                 int mx = static_cast<int>(begin.x + step * x_step_len);
                 int my = static_cast<int>(begin.y + step * y_step_len);
-
-                std::this_thread::sleep_until(now + delay);
 
                 now = std::chrono::steady_clock::now();
                 ret &= control_unit_->touch_move(param.contact, mx, my, param.pressure);
             }
 
+            if (stopped) {
+                break;
+            }
+
             std::this_thread::sleep_until(now + delay);
+            if (need_to_stop_) {
+                stopped = true;
+                break;
+            }
 
             now = std::chrono::steady_clock::now();
             ret &= control_unit_->touch_move(param.contact, end.x, end.y, param.pressure);
@@ -541,12 +566,16 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(end_hold));
+        if (need_to_stop_) {
+            stopped = true;
+            break;
+        }
 
         begin = end;
     }
 
     if (!param.only_hover && use_touch_down_up) {
-        ret &= control_unit_->touch_up(param.contact);
+        ret &= release_touch_if_held(param.contact);
     }
 
     return ret;
@@ -620,6 +649,10 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
     bool ret = !param.swipes.empty();
     size_t over_count = 0;
     while (over_count < param.swipes.size()) {
+        if (need_to_stop_) {
+            break;
+        }
+
         uint now_point = static_cast<uint>(std::chrono::duration_cast<std::chrono::milliseconds>(now - starting).count());
 
         for (size_t i = 0; i < param.swipes.size(); ++i) {
@@ -643,6 +676,7 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
 
             if (seg_op.step_index == 0) {
                 if (!s.only_hover) {
+                    remember_touch_down(contact, true);
                     ret &= control_unit_->touch_down(contact, seg_op.begin.x, seg_op.begin.y, s.pressure);
                 }
                 ++seg_op.step_index;
@@ -655,7 +689,7 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
             }
             else if (seg_op.step_index == seg_op.total_step) {
                 if (!s.only_hover) {
-                    ret &= control_unit_->touch_up(contact);
+                    ret &= release_touch_if_held(contact);
                 }
                 ++seg_op.step_index;
                 ++over_count;
@@ -670,6 +704,17 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
         now = std::chrono::steady_clock::now();
     }
 
+    if (need_to_stop_) {
+        for (size_t i = 0; i < param.swipes.size(); ++i) {
+            const SwipeParam& s = param.swipes.at(i);
+            if (s.only_hover) {
+                continue;
+            }
+            int contact = s.contact != 0 ? s.contact : static_cast<int>(i);
+            ret &= release_touch_if_held(contact);
+        }
+    }
+
     return ret;
 }
 
@@ -681,7 +726,12 @@ bool ControllerAgent::handle_touch_down(const TouchParam& param)
     }
 
     cv::Point point = preproc_touch_point(param.point);
+    remember_touch_down(param.contact, param.auto_up);
     bool ret = control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
+
+    if (param.auto_up && need_to_stop_) {
+        ret &= release_touch_if_held(param.contact);
+    }
 
     return ret;
 }
@@ -706,6 +756,7 @@ bool ControllerAgent::handle_touch_up(const TouchParam& param)
         return false;
     }
 
+    take_touch(param.contact);
     bool ret = control_unit_->touch_up(param.contact);
 
     return ret;
@@ -738,10 +789,15 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
     bool use_key_down_up = control_unit_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 
     for (const auto& keycode : param.keycode) {
+        if (need_to_stop_) {
+            break;
+        }
+
         if (use_key_down_up) {
+            remember_key_down(keycode, true);
             ret &= control_unit_->key_down(keycode);
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            ret &= control_unit_->key_up(keycode);
+            ret &= release_key_if_held(keycode);
         }
         else {
             ret &= control_unit_->click_key(keycode);
@@ -763,10 +819,15 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
     bool use_key_down_up = control_unit_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 
     for (const auto& keycode : param.keycode) {
+        if (need_to_stop_) {
+            break;
+        }
+
         if (use_key_down_up) {
+            remember_key_down(keycode, true);
             ret &= control_unit_->key_down(keycode);
             std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
-            ret &= control_unit_->key_up(keycode);
+            ret &= release_key_if_held(keycode);
         }
         else {
             LogWarn << "long press key not supported, use click instead";
@@ -842,7 +903,17 @@ bool ControllerAgent::handle_key_down(const ClickKeyParam& param)
     bool ret = !param.keycode.empty();
 
     for (const auto& keycode : param.keycode) {
+        if (need_to_stop_) {
+            break;
+        }
+
+        remember_key_down(keycode, param.auto_up);
         ret &= control_unit_->key_down(keycode);
+
+        if (param.auto_up && need_to_stop_) {
+            ret &= release_key_if_held(keycode);
+            break;
+        }
     }
 
     return ret;
@@ -858,6 +929,7 @@ bool ControllerAgent::handle_key_up(const ClickKeyParam& param)
     bool ret = !param.keycode.empty();
 
     for (const auto& keycode : param.keycode) {
+        take_key(keycode);
         ret &= control_unit_->key_up(keycode);
     }
 
@@ -923,6 +995,114 @@ bool ControllerAgent::check_stop()
 
     need_to_stop_ = false;
     return true;
+}
+
+void ControllerAgent::remember_touch_down(int contact, bool auto_up)
+{
+    std::unique_lock lock(pressed_mutex_);
+    held_contacts_.insert(contact);
+    if (auto_up) {
+        auto_up_contacts_.insert(contact);
+    }
+    else {
+        auto_up_contacts_.erase(contact);
+    }
+}
+
+bool ControllerAgent::take_touch(int contact)
+{
+    std::unique_lock lock(pressed_mutex_);
+    auto_up_contacts_.erase(contact);
+    return held_contacts_.erase(contact) > 0;
+}
+
+bool ControllerAgent::release_touch_if_held(int contact)
+{
+    if (!take_touch(contact)) {
+        return true;
+    }
+
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    return control_unit_->touch_up(contact);
+}
+
+void ControllerAgent::remember_key_down(int keycode, bool auto_up)
+{
+    std::unique_lock lock(pressed_mutex_);
+    held_keys_.insert(keycode);
+    if (auto_up) {
+        auto_up_keys_.insert(keycode);
+    }
+    else {
+        auto_up_keys_.erase(keycode);
+    }
+}
+
+bool ControllerAgent::take_key(int keycode)
+{
+    std::unique_lock lock(pressed_mutex_);
+    auto_up_keys_.erase(keycode);
+    return held_keys_.erase(keycode) > 0;
+}
+
+bool ControllerAgent::release_key_if_held(int keycode)
+{
+    if (!take_key(keycode)) {
+        return true;
+    }
+
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    return control_unit_->key_up(keycode);
+}
+
+void ControllerAgent::auto_release_pressed()
+{
+    std::set<int> contacts;
+    std::set<int> keys;
+    {
+        std::unique_lock lock(pressed_mutex_);
+        std::set<int> pending_contacts;
+        pending_contacts.swap(auto_up_contacts_);
+        for (int contact : pending_contacts) {
+            if (held_contacts_.erase(contact)) {
+                contacts.insert(contact);
+            }
+        }
+
+        std::set<int> pending_keys;
+        pending_keys.swap(auto_up_keys_);
+        for (int keycode : pending_keys) {
+            if (held_keys_.erase(keycode)) {
+                keys.insert(keycode);
+            }
+        }
+    }
+
+    if (contacts.empty() && keys.empty()) {
+        return;
+    }
+
+    LogInfo << "auto release pressed" << VAR(contacts) << VAR(keys);
+
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return;
+    }
+
+    for (int contact : contacts) {
+        control_unit_->touch_up(contact);
+    }
+    for (int keycode : keys) {
+        control_unit_->key_up(keycode);
+    }
 }
 
 bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action action)

@@ -113,7 +113,6 @@ extern "C"
      *
      * @note This controller is designed for PlayCover on macOS.
      * @note Some features are not supported: start_app, input_text, click_key, key_down, key_up, scroll.
-     * @note Only single touch is supported (contact must be 0).
      */
     MAA_FRAMEWORK_API MaaController* MaaPlayCoverControllerCreate(const char* address, const char* uuid);
 

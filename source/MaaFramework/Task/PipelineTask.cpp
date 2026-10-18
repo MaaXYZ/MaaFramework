@@ -161,11 +161,16 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         return true;
     };
 
+    const bool need_screencap = !std::ranges::all_of(next, [&](const MAA_RES_NS::NodeAttr& node) {
+        auto data_opt = context_->get_pipeline_data(node);
+        return !data_opt || !data_opt->enabled || data_opt->reco_type == MAA_RES_NS::Recognition::Type::DirectHit;
+    });
+
     while (!context_->need_to_stop()) {
         auto current_clock = std::chrono::steady_clock::now();
-        cv::Mat image = screencap();
+        cv::Mat image = need_screencap ? screencap() : cv::Mat { };
 
-        if (image.empty()) {
+        if (need_screencap && image.empty()) {
             LogWarn << "screencap failed, skip recognition" << VAR(pretask.name);
             if (!check_timeout_and_sleep(current_clock)) {
                 break;
@@ -289,7 +294,7 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
         }
         const auto& pipeline_data = *node_opt;
 
-        if (batch_plan && !batch_triggered && batch_plan->node_names.contains(pipeline_data.name)) {
+        if (batch_plan && !batch_triggered && batch_plan->owner_node_names.contains(pipeline_data.name)) {
             batch_triggered = true;
 
             Recognizer recognizer(tasker_, *context_, image, ocr_cache);
@@ -356,7 +361,11 @@ std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const 
             continue;
         }
 
+        const auto old_size = ctx.plan.entries.size();
         collect_ocr_from_reco(ctx, data.name, data.reco_type, data.reco_param);
+        if (ctx.plan.entries.size() > old_size) {
+            ctx.plan.owner_node_names.emplace(data.name);
+        }
     }
 
     if (ctx.plan.entries.size() < 2) {

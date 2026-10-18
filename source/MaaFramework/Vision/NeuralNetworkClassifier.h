@@ -3,8 +3,7 @@
 #include <ostream>
 #include <vector>
 
-#include <onnxruntime/onnxruntime_cxx_api.h>
-
+#include "InferenceSession.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
@@ -34,8 +33,7 @@ public:
         cv::Mat image,
         std::vector<cv::Rect> rois,
         NeuralNetworkClassifierParam param,
-        std::shared_ptr<Ort::Session> session,
-        const Ort::MemoryInfo& memory_info,
+        InferenceSessionPtr session,
         std::string name = "");
 
 private:
@@ -43,17 +41,20 @@ private:
 
     Result classify() const;
 
-    void add_results(ResultsVec results, const std::vector<int>& expected);
+    void add_results(ResultsVec results, const std::vector<std::variant<int, std::string>>& expected);
     void cherry_pick();
 
 private:
     cv::Mat draw_result(const Result& res) const;
     void sort_(ResultsVec& results) const;
 
+    void init_expected_indices();
+
 private:
     const NeuralNetworkClassifierParam param_;
-    std::shared_ptr<Ort::Session> session_ = nullptr;
-    const Ort::MemoryInfo& memory_info_;
+    InferenceSessionPtr session_ = nullptr;
+
+    std::vector<int> expected_indices_;
 };
 
 MAA_VISION_NS_END
