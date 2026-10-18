@@ -580,6 +580,11 @@ std::vector<cv::Rect> Recognizer::get_rois_from_pretask(const std::string& name,
     if (use_best) {
         if (auto it = sub_best_box_->find(name); it != sub_best_box_->end()) {
             LogDebug << "pre task from sub_best_box_" << VAR(name) << VAR(it->second);
+            // 子识别没有选中结果时用空矩形占位，此时应视为无 ROI，而不是让 correct_roi 扩成整张图
+            if (it->second.empty()) {
+                LogDebug << "pre task has no best box" << VAR(name);
+                return { };
+            }
             return { it->second };
         }
     }

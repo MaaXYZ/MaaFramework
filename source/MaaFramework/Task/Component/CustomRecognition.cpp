@@ -183,7 +183,10 @@ void CustomRecognition::analyze()
         case MultiResultState::None: {
             all_results_ = { res };
             filtered_results_ = { res };
-            best_result_ = res;
+            // 单结果回调同样按 index 选取，越界视为无命中，与内置算法保持一致
+            if (MAA_VISION_NS::pythonic_index(1, param_.result_index)) {
+                best_result_ = res;
+            }
         } break;
         }
     }
@@ -192,7 +195,8 @@ void CustomRecognition::analyze()
     }
 
     if (debug_draw_ && !image_.empty()) {
-        handle_draw(draw_result(res, ret));
+        // 覆盖层绘制最终选中的结果，没有选中时不标记命中
+        handle_draw(draw_result(best_result_.value_or(res), best_result_.has_value()));
     }
 
     auto cost = duration_since(start_time);
