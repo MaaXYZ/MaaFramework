@@ -791,10 +791,10 @@ void test_rtcp_shapes()
     compound.insert(compound.end(), sdes.begin(), sdes.end());
     check(compound.size() == 44, "RR+SDES 复合包 = 44 字节（苹果实测的那个形状）");
 
-    const auto named = maa::ios::rt::build_sdes_cname(our, "scrctl");
+    const auto named = maa::ios::rt::build_sdes_cname(our, "MaaIOS");
     check(named.size() % 4 == 0, "带实义 CNAME 的 SDES 补齐到 4 字节边界");
     check((named[2] << 8 | named[3]) == named.size() / 4 - 1, "它的长度字段按真实字数走（不是空 CNAME 那档的 2）");
-    check(named.size() == 20, "CNAME=\"scrctl\" 时 SDES = 20 字节: " + std::to_string(named.size()));
+    check(named.size() == 20, "CNAME=\"MaaIOS\" 时 SDES = 20 字节: " + std::to_string(named.size()));
 
     // 设备的 SR 和视频共用一个 UDP 端口，靠开头两字节分。判错会把每秒那个心跳记成视频包，
     // "画面静止"和"流死了"就分不开了。

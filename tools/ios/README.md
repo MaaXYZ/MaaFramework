@@ -1,11 +1,10 @@
 # iOS device management API / iOS 设备管理 API
 
-There is no separate device-manager executable. MaaToolkit implements discovery, pairing,
-connection checks and DDI preparation directly. MaaToolkit and MaaIOSControlUnit share
-a private static protocol target; no protocol library is installed.
+MaaToolkit implements discovery, pairing, connection checks and DDI preparation.
+MaaToolkit and MaaIOSControlUnit share a private static protocol target.
 
-不再提供独立设备管理程序。发现、配对、连接检查和 DDI 准备直接由 MaaToolkit 实现。
-MaaToolkit 与 MaaIOSControlUnit 共用内部协议静态目标，不安装独立协议库。
+发现、配对、连接检查和 DDI 准备由 MaaToolkit 实现。
+MaaToolkit 与 MaaIOSControlUnit 共用内部协议静态目标。
 
 ## Credentials / 配对凭据
 
@@ -92,7 +91,7 @@ When compatibility cannot be confirmed, normal image validation/preparation is s
 
 Configure the MaaFramework repository root with `WITH_IOS_CONTROLLER=ON`. Supply normal
 MaaDeps plus target-compatible OpenSSL, FFmpeg and libcurl. `ci/` holds dependency recipes
-and runtime/source packaging scripts, not a separate protocol or manager project.
+and runtime/source packaging scripts.
 Python exposes management calls. NodeJS exposes controller/discovery configuration; interactive
 pairing/preparation is currently available through C/Python APIs.
 

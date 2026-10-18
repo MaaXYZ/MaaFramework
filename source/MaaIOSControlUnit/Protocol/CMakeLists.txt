@@ -163,7 +163,6 @@ if(NOT MAA_IOS_LIBAV)
     list(FILTER maa_ios_protocol_sources EXCLUDE REGEX "/decode/FFmpegDecoder\\.cpp$")
 endif()
 # Shared implementation for MaaToolkit and MaaIOSControlUnit.
-# This static target has no installed library or public protocol API.
 set(maa_ios_protocol_root "${CMAKE_CURRENT_SOURCE_DIR}")
 function(maa_ios_apply_protocol_options target visibility)
     target_include_directories(${target} ${visibility} "${maa_ios_protocol_root}")
@@ -215,5 +214,3 @@ if(MAA_IOS_PROTOCOL_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
-
-install(FILES NOTICE LICENSE.Apache-2.0 DESTINATION share/licenses/MaaIOSControlUnit)

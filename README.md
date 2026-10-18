@@ -350,8 +350,6 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
      Userspace TCP/IP for iOS transport (BSD-3-Clause).
 - [mdns](https://github.com/mjansson/mdns)  
      iOS Wi-Fi discovery and pairing advertisement (Unlicense).
-- [scrctl](https://github.com/YJBeetle/scrctl)  
-     Source of the adapted iOS protocol implementation (Apache-2.0).
 - ~~[protobuf](https://github.com/protocolbuffers/protobuf)~~  
     ~~Protocol Buffers - Google's data interchange format~~
 - ~~[grpc](https://github.com/grpc/grpc)~~  

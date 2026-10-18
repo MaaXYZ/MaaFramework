@@ -114,8 +114,6 @@ def main() -> None:
     maadeps_source = materials / "source/MaaUtils/MaaDeps"
     maadeps_source.mkdir(parents=True, exist_ok=True)
     shutil.copy2(maadeps / "maadeps.cmake", maadeps_source / "maadeps.cmake")
-    shutil.copy2(repository / "source/MaaIOSControlUnit/Protocol/LICENSE.Apache-2.0", output / "licenses/LICENSE.Apache-2.0")
-    shutil.copy2(repository / "source/MaaIOSControlUnit/Protocol/NOTICE", output / "licenses/NOTICE")
     shutil.copy2(repository / "tools/ios/README.md", output / "README.md")
     shutil.copy2(arguments.build / "CMakeCache.txt", materials / "CMakeCache.txt")
     dependency_sources = arguments.build / "_deps"
