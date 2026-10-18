@@ -289,6 +289,39 @@ bool check_empty_best_roi(MaaTasker* tasker, MaaController* controller)
     return true;
 }
 
+// 前置子识别没有选中结果时，其 filtered 也不应再作为下游内置识别的 ROI
+bool check_filtered_roi_without_best(MaaTasker* tasker, MaaController* controller)
+{
+    json::value param {
+        { "any_of",
+          json::array {
+              json::object {
+                  { "recognition", "Custom" },
+                  { "custom_recognition", "MultiRec" },
+                  { "index", 5 },
+                  { "sub_name", "empty_best" },
+              },
+              json::object {
+                  { "recognition", "DirectHit" },
+                  { "roi", "empty_best" },
+              },
+          } },
+    };
+    std::string param_str = param.to_string();
+
+    RecognitionOutcome outcome;
+    if (!query_recognition(tasker, controller, "Or", param_str.c_str(), outcome)) {
+        return false;
+    }
+
+    if (outcome.hit || !outcome.best_null) {
+        std::cout << "Or with filtered roi without best should not hit" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 bool run_without_file(const std::filesystem::path& testset_dir)
 {
     auto screenshot_path = testset_dir / "PipelineSmoking" / "Screenshot";
@@ -372,6 +405,11 @@ bool run_without_file(const std::filesystem::path& testset_dir)
 
     // 引用没有选中结果的前置子识别时视为无 ROI
     if (!check_empty_best_roi(tasker_handle, controller_handle)) {
+        return false;
+    }
+
+    // filtered 同样不应绕过没有选中结果的情况
+    if (!check_filtered_roi_without_best(tasker_handle, controller_handle)) {
         return false;
     }
 
