@@ -32,9 +32,9 @@ struct IOSPairingView
 
     explicit IOSPairingView(maajs::ObjectType object)
     {
-        udid = maajs::JSConvert<std::string>::from_value(object.Get("udid"));
-        host_identifier = maajs::JSConvert<std::string>::from_value(object.Get("host_identifier"));
-        peer_identifier = maajs::JSConvert<std::string>::from_value(object.Get("peer_identifier"));
+        udid = maajs::JSConvert<std::string>::from_value(object["udid"].AsValue());
+        host_identifier = maajs::JSConvert<std::string>::from_value(object["host_identifier"].AsValue());
+        peer_identifier = maajs::JSConvert<std::string>::from_value(object["peer_identifier"].AsValue());
         if (udid.find('\0') != std::string::npos || host_identifier.find('\0') != std::string::npos
             || peer_identifier.find('\0') != std::string::npos) {
             throw maajs::MaaError { "iOS pairing identities must not contain NUL" };
@@ -48,7 +48,7 @@ struct IOSPairingView
         std::memcpy(value.host_private_key, bytes(object, "host_private_key", 32), 32);
         std::memcpy(value.host_public_key, bytes(object, "host_public_key", 32), 32);
         std::memcpy(value.peer_public_key, bytes(object, "peer_public_key", 32), 32);
-        const maajs::ValueType irk = object.Get("peer_alt_irk");
+        const maajs::ValueType irk = object["peer_alt_irk"].AsValue();
         if (!irk.IsUndefined() && !irk.IsNull()) {
             std::memcpy(value.peer_alt_irk, bytes(object, "peer_alt_irk", 16), 16);
             value.has_peer_alt_irk = true;
@@ -57,7 +57,7 @@ struct IOSPairingView
 
     static const uint8_t* bytes(maajs::ObjectType object, const char* name, size_t size)
     {
-        auto buffer = maajs::JSConvert<maajs::ArrayBufferType>::from_value(object.Get(name));
+        auto buffer = maajs::JSConvert<maajs::ArrayBufferType>::from_value(object[name].AsValue());
         if (buffer.ByteLength() != size) {
             throw maajs::MaaError { std::format("{} must contain {} bytes", name, size) };
         }
