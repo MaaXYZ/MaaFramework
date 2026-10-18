@@ -10,7 +10,6 @@
 #include <thread>
 #include <utility>
 
-#include "i18n/Translation.h"
 #include "transport/Socket.h"
 
 namespace maa::ios::transport
@@ -67,13 +66,13 @@ public:
         }
         switch (reason_.load()) {
         case Reason::cancelled:
-            error = MAA_IOS_TR("Device startup cancelled");
+            error = "Device startup cancelled";
             break;
         case Reason::timed_out:
-            error = MAA_IOS_TR("Device startup timed out");
+            error = "Device startup timed out";
             break;
         case Reason::callback_failed:
-            error = MAA_IOS_TR("Device startup cancellation callback failed");
+            error = "Device startup cancellation callback failed";
             break;
         case Reason::none:
             break;

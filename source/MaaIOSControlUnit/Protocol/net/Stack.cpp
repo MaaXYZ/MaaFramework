@@ -1,5 +1,6 @@
 #include "net/Stack.h"
-#include "i18n/Translation.h"
+
+#include "MaaUtils/Logger.h"
 
 #include "net/LwipRuntime.h"
 #ifdef _WIN32
@@ -10,7 +11,6 @@
 #endif
 #include <chrono>
 #include <condition_variable>
-#include <cstdio>
 #include <cstring>
 #include <deque>
 #include <map>
@@ -178,11 +178,11 @@ void Stack::close_tcp(tcp_pcb* pcb)
 bool Stack::start_pump(std::string& err)
 {
     if (!addresses_valid_ || stopping_ || pumping_) {
-        return err = MAA_IOS_TR("Cannot start tunnel stack: invalid address or stack already started/stopped"), false;
+        return err = "Cannot start tunnel stack: invalid address or stack already started/stopped", false;
     }
     const auto mtu = tunnel_.mtu();
     if (mtu < 1280) {
-        return err = MAA_IOS_TR("Tunnel MTU is below the IPv6 minimum"), false;
+        return err = "Tunnel MTU is below the IPv6 minimum", false;
     }
     const bool registered = LwipRuntime::instance().call([&] {
         ip6_addr_t ip { };
@@ -199,14 +199,14 @@ bool Stack::start_pump(std::string& err)
         return true;
     });
     if (!registered) {
-        return err = MAA_IOS_TR("Failed to register lwIP tunnel interface"), false;
+        return err = "Failed to register lwIP tunnel interface", false;
     }
     pumping_ = true;
     try {
         pump_ = std::thread(&Stack::pump_loop, this);
     }
     catch (const std::system_error& e) {
-        err = MAA_IOS_TR("Failed to start tunnel thread: ") + std::string(e.what());
+        err = "Failed to start tunnel thread: " + std::string(e.what());
         stop_pump();
         return false;
     }
@@ -229,13 +229,13 @@ void Stack::stop_pump()
         return;
     }
     if (net_debug_) {
-        std::fprintf(stderr, "tunnel: local shutdown requested\n");
+        LogDebug << "tunnel: local shutdown requested";
     }
     stopping_ = true;
     {
         std::lock_guard lock(err_mu_);
         if (pump_err_.empty()) {
-            pump_err_ = MAA_IOS_TR("Tunnel stopped");
+            pump_err_ = "Tunnel stopped";
         }
     }
     // 先取消隧道等待，再通知端点失败；fd 由拥有者在线程退出后释放。
@@ -291,7 +291,7 @@ bool Stack::enqueue(std::vector<uint8_t> packet)
 bool Stack::send(const std::vector<uint8_t>& packet, std::string& err)
 {
     if (!pumping_ || !enqueue(packet)) {
-        return err = MAA_IOS_TR("Tunnel stopped or send queue full"), false;
+        return err = "Tunnel stopped or send queue full", false;
     }
     return true;
 }
@@ -361,16 +361,16 @@ void Stack::pump_loop()
         }
     }
     catch (const std::exception& e) {
-        error = MAA_IOS_TR("Tunnel processing failed: ") + std::string(e.what());
+        error = "Tunnel processing failed: " + std::string(e.what());
     }
     if (!stopping_) {
         {
             std::lock_guard lock(err_mu_);
-            pump_err_ = error.empty() ? MAA_IOS_TR("Tunnel read failed") : error;
+            pump_err_ = error.empty() ? "Tunnel read failed" : error;
         }
         // 后续端点可能只报告 lwIP 已关闭；诊断模式先保留隧道的首个错误。
         if (net_debug_) {
-            std::fprintf(stderr, "tunnel: pump failed: %s\n", pump_error().c_str());
+            LogWarn << std::format("tunnel: pump failed: {}", pump_error());
         }
         stopping_ = true;
         fail_endpoints(pump_error());
@@ -428,28 +428,25 @@ void Stack::observe_icmpv6(const uint8_t* icmp, std::size_t len)
     const uint8_t type = icmp[0];
     const uint8_t code = icmp[1];
     // ICMPv6 type=1 的端口不可达为 code=4；ICMPv4 使用 code=3，不能共用码表。
-    static constexpr const char* kCodes[] = { MAA_IOS_N_("no route to destination"),
-                                              MAA_IOS_N_("communication administratively prohibited"),
-                                              MAA_IOS_N_("beyond source address scope"),
-                                              MAA_IOS_N_("address unreachable"),
-                                              MAA_IOS_N_("port unreachable"),
-                                              MAA_IOS_N_("source address failed ingress/egress policy"),
-                                              MAA_IOS_N_("route to destination rejected") };
+    static constexpr const char* kCodes[] = {
+        "no route to destination", "communication administratively prohibited",   "beyond source address scope",  "address unreachable",
+        "port unreachable",        "source address failed ingress/egress policy", "route to destination rejected"
+    };
     std::string line = "ICMPv6 type=" + std::to_string(type) + " code=" + std::to_string(code);
     if (type == 1 && code < std::size(kCodes)) {
-        line += std::string(MAA_IOS_TR("(")) + MAA_IOS_TR(kCodes[code]) + MAA_IOS_TR(")");
+        line += std::string("(") + kCodes[code] + ")";
     }
     else if (type == 2) {
-        line += MAA_IOS_TR(" (packet too big)");
+        line += " (packet too big)";
     }
     else if (type == 3) {
-        line += MAA_IOS_TR(" (hop limit exceeded)");
+        line += " (hop limit exceeded)";
     }
     else if (type == 4) {
-        line += MAA_IOS_TR(" (parameter problem)");
+        line += " (parameter problem)";
     }
     else if (type == 128 || type == 129) {
-        line += type == 128 ? MAA_IOS_TR(" (echo request)") : MAA_IOS_TR(" (echo reply)");
+        line += type == 128 ? " (echo request)" : " (echo reply)";
     }
     // 错误消息 type=1..4 在 8 字节 ICMPv6 头之后引用触发报文：先是 40 字节
     // IPv6 头，再是 L4 数据。UDP 头前 8 字节包含端口、长度和校验和，用于
@@ -462,11 +459,11 @@ void Stack::observe_icmpv6(const uint8_t* icmp, std::size_t len)
         char dst[64] = "?";
         inet_ntop(AF_INET6, inner + 8, src, sizeof(src));
         inet_ntop(AF_INET6, inner + 24, dst, sizeof(dst));
-        line += MAA_IOS_TR(" inner nh=") + std::to_string(inner_nh) + " " + src + " -> " + dst;
+        line += " inner nh=" + std::to_string(inner_nh) + " " + src + " -> " + dst;
         if (inner_nh == 17 && rest >= 40 + 8) {
             const uint16_t sp = get16(inner + 40);
             const uint16_t dp = get16(inner + 42);
-            line += MAA_IOS_TR(" ports ") + std::to_string(sp) + "->" + std::to_string(dp);
+            line += " ports " + std::to_string(sp) + "->" + std::to_string(dp);
         }
     }
     {
@@ -477,7 +474,7 @@ void Stack::observe_icmpv6(const uint8_t* icmp, std::size_t len)
         }
         icmp_last_ = line;
     }
-    std::fprintf(stderr, "    <- %s\n", line.c_str());
+    LogDebug << std::format("<- {}", line);
 }
 
 } // namespace maa::ios::net

@@ -1,5 +1,4 @@
 #include "wifi/PairVerify.h"
-#include "i18n/Translation.h"
 
 #include "wifi/PairingIdentity.h"
 #include "wifi/Tlv.h"
@@ -11,13 +10,13 @@ PairVerifyResult pair_verify(Rppairing& channel, const PairRecord& host, std::st
 {
     PairVerifyResult result;
     if (!host.complete()) {
-        err = MAA_IOS_TR("Pairing record incomplete; cannot sign");
+        err = "Pairing record incomplete; cannot sign";
         result.outcome = VerifyOutcome::NotPaired;
         result.error = err;
         return result;
     }
     if (!host.has_peer_identity()) {
-        err = MAA_IOS_TR("Pairing record has no device identity; pair again over USB");
+        err = "Pairing record has no device identity; pair again over USB";
         result.outcome = VerifyOutcome::NotPaired;
         result.error = err;
         return result;
@@ -61,7 +60,7 @@ PairVerifyResult pair_verify(Rppairing& channel, const PairRecord& host, std::st
     std::string tlv_err;
     const std::map<uint8_t, Bytes> second = tlv_parse(*reply1, tlv_err);
     if (!tlv_err.empty()) {
-        err = MAA_IOS_TR("PV-Msg02 TLV decode incomplete: ") + tlv_err;
+        err = "PV-Msg02 TLV decode incomplete: " + tlv_err;
         result.error = err;
         return result;
     }
@@ -73,20 +72,20 @@ PairVerifyResult pair_verify(Rppairing& channel, const PairRecord& host, std::st
             json::Value body = j_obj({ { "pairVerifyFailed", j_obj({ }) } });
             channel.send_plain(j_obj({ { "event", j_obj({ { "_0", std::move(body) } }) } }), ignored);
         }
-        err = MAA_IOS_TR("Device does not recognize this pairing record (not paired or pairing removed)");
+        err = "Device does not recognize this pairing record (not paired or pairing removed)";
         result.outcome = VerifyOutcome::NotPaired;
         result.error = err;
         return result;
     }
     const Bytes* second_state = tlv_get(second, TlvType::State);
     if (second_state == nullptr || second_state->size() != 1 || (*second_state)[0] != 0x02) {
-        err = MAA_IOS_TR("PV-Msg02 response has invalid State (expected 2)");
+        err = "PV-Msg02 response has invalid State (expected 2)";
         result.error = err;
         return result;
     }
     const Bytes* peer_pub = tlv_get(second, TlvType::PublicKey);
     if (peer_pub == nullptr || peer_pub->size() != 32) {
-        err = MAA_IOS_TR("PV-Msg02 missing 32-byte public key");
+        err = "PV-Msg02 missing 32-byte public key";
         result.error = err;
         return result;
     }
@@ -102,14 +101,14 @@ PairVerifyResult pair_verify(Rppairing& channel, const PairRecord& host, std::st
     }
     const Bytes* encrypted_identity = tlv_get(second, TlvType::EncryptedData);
     if (encrypted_identity == nullptr || encrypted_identity->empty()) {
-        err = MAA_IOS_TR("PV-Msg02 missing encrypted device identity");
+        err = "PV-Msg02 missing encrypted device identity";
         result.error = err;
         return result;
     }
     static constexpr char kPvMsg02[] = "\x00\x00\x00\x00PV-Msg02";
     const auto peer_identity = chacha_open(sv(*verify_key), std::string_view(kPvMsg02, sizeof(kPvMsg02) - 1), *encrypted_identity, err);
     if (!peer_identity) {
-        err = MAA_IOS_TR("PV-Msg02 device identity decryption failed: ") + err;
+        err = "PV-Msg02 device identity decryption failed: " + err;
         result.error = err;
         return result;
     }
@@ -145,7 +144,7 @@ PairVerifyResult pair_verify(Rppairing& channel, const PairRecord& host, std::st
     // 完整解码后区分设备拒绝与成功状态；只有精确的单字节 State=4 才安装主密钥。
     const std::map<uint8_t, Bytes> final_fields = tlv_parse(*reply3, final_err);
     if (!final_err.empty()) {
-        err = MAA_IOS_TR("PV-Msg04 TLV decode incomplete: ") + final_err;
+        err = "PV-Msg04 TLV decode incomplete: " + final_err;
         result.error = err;
         return result;
     }
@@ -157,14 +156,14 @@ PairVerifyResult pair_verify(Rppairing& channel, const PairRecord& host, std::st
             json::Value body = j_obj({ { "pairVerifyFailed", j_obj({ }) } });
             channel.send_plain(j_obj({ { "event", j_obj({ { "_0", std::move(body) } }) } }), ignored);
         }
-        err = MAA_IOS_TR("Device does not recognize this pairing record (not paired or pairing removed)");
+        err = "Device does not recognize this pairing record (not paired or pairing removed)";
         result.outcome = VerifyOutcome::NotPaired;
         result.error = err;
         return result;
     }
     const Bytes* final_state = tlv_get(final_fields, TlvType::State);
     if (final_state == nullptr || final_state->size() != 1 || (*final_state)[0] != 0x04) {
-        err = MAA_IOS_TR("PV-Msg04 response has invalid State (expected 4)");
+        err = "PV-Msg04 response has invalid State (expected 4)";
         result.error = err;
         return result;
     }

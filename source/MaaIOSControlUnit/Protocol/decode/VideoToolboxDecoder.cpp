@@ -1,5 +1,6 @@
 #include "Decoder.h"
-#include "i18n/Translation.h"
+
+#include "MaaUtils/Logger.h"
 
 #include <CoreMedia/CMBlockBuffer.h>
 #include <CoreMedia/CMFormatDescription.h>
@@ -7,7 +8,6 @@
 #include <CoreVideo/CVPixelBuffer.h>
 #include <VideoToolbox/VideoToolbox.h>
 
-#include <cstdio>
 #include <cstring>
 
 namespace maa::ios
@@ -68,7 +68,7 @@ public:
 
         OSStatus st = CMVideoFormatDescriptionCreateFromHEVCParameterSets(nullptr, 3, sets, sizes, kNalLengthSize, nullptr, &format_desc_);
         if (st != noErr) {
-            std::fprintf(stderr, MAA_IOS_TR("Failed to parse HEVC parameter sets: %d\n"), static_cast<int>(st));
+            LogError << std::format("Failed to parse HEVC parameter sets: {}", static_cast<int>(st));
             return false;
         }
 
@@ -94,7 +94,7 @@ public:
         CFRelease(dest);
 
         if (st != noErr || session_ == nullptr) {
-            std::fprintf(stderr, MAA_IOS_TR("Failed to create VideoToolbox session: %d\n"), static_cast<int>(st));
+            LogError << std::format("Failed to create VideoToolbox session: {}", static_cast<int>(st));
             teardown();
             return false;
         }
@@ -225,11 +225,8 @@ private:
         static bool warned = false;
         if (!warned) {
             warned = true;
-            std::fprintf(
-                stderr,
-                MAA_IOS_TR(
-                    "NAL size %zu exceeds the 2-byte length prefix; frame dropped. This stream "
-                    "requires software decoding.\n"),
+            LogWarn << std::format(
+                "NAL size {} exceeds the 2-byte length prefix; frame dropped. This stream requires software decoding.",
                 n);
         }
     }

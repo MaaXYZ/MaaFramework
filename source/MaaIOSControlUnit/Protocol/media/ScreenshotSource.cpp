@@ -1,5 +1,4 @@
 #include "media/ScreenshotSource.h"
-#include "i18n/Translation.h"
 
 #include <chrono>
 #include <utility>
@@ -39,7 +38,7 @@ bool decode_png_bgra(const std::vector<uint8_t>& png, maa::ios::Frame& out, std:
 #ifdef MAA_IOS_HAVE_LIBAV
     const AVCodec* codec = avcodec_find_decoder(AV_CODEC_ID_PNG);
     if (codec == nullptr) {
-        err = MAA_IOS_TR("FFmpeg has no PNG decoder");
+        err = "FFmpeg has no PNG decoder";
         return false;
     }
     AVCodecContext* ctx = avcodec_alloc_context3(codec);
@@ -79,20 +78,20 @@ bool decode_png_bgra(const std::vector<uint8_t>& png, maa::ios::Frame& out, std:
                     ok = true;
                 }
                 else {
-                    err = MAA_IOS_TR("Cannot create BGRA conversion (format=")
-                          + std::string(av_get_pix_fmt_name(static_cast<AVPixelFormat>(frame->format))) + MAA_IOS_TR(")");
+                    err = "Cannot create BGRA conversion (format="
+                          + std::string(av_get_pix_fmt_name(static_cast<AVPixelFormat>(frame->format))) + ")";
                 }
             }
             else {
-                err = MAA_IOS_TR("PNG dimensions must be positive");
+                err = "PNG dimensions must be positive";
             }
         }
         else {
-            err = MAA_IOS_TR("FFmpeg could not decode PNG image");
+            err = "FFmpeg could not decode PNG image";
         }
     }
     else {
-        err = MAA_IOS_TR("Failed to allocate PNG decode resources");
+        err = "Failed to allocate PNG decode resources";
     }
     av_frame_free(&frame);
     av_packet_free(&pkt);
@@ -101,7 +100,7 @@ bool decode_png_bgra(const std::vector<uint8_t>& png, maa::ios::Frame& out, std:
 #else
     (void)png;
     (void)out;
-    err = MAA_IOS_TR("FFmpeg is not included; screenshot mode has no PNG decoder");
+    err = "FFmpeg is not included; screenshot mode has no PNG decoder";
     return false;
 #endif
 }
@@ -124,7 +123,7 @@ ScreenshotSource::~ScreenshotSource()
 std::unique_ptr<ScreenshotSource> ScreenshotSource::start(remote::Device& device, std::string& err, bool capture_first)
 {
     if (!device.rsd().has_service(kService)) {
-        err = MAA_IOS_TR("Device directory missing service: ") + std::string(kService);
+        err = "Device directory missing service: " + std::string(kService);
         return nullptr;
     }
     std::unique_ptr<ScreenshotSource> src(new ScreenshotSource(device));
@@ -168,7 +167,7 @@ bool ScreenshotSource::capture_once(std::vector<uint8_t>& png, std::string& err)
     }
     const auto* image = out.find("image");
     if (image == nullptr || image->data.empty()) {
-        err = MAA_IOS_TR("Screenshot response missing image data");
+        err = "Screenshot response missing image data";
         return false;
     }
     png = image->data;

@@ -1,5 +1,4 @@
 #include "wifi/PairSetup.h"
-#include "i18n/Translation.h"
 
 #include <openssl/evp.h>
 
@@ -46,7 +45,7 @@ bool md5_of(std::string_view data, Bytes& out, std::string& err)
     out.assign(16, 0);
     unsigned int len = 0;
     if (EVP_Digest(data.data(), data.size(), out.data(), &len, EVP_md5(), nullptr) != 1 || len != 16) {
-        err = MAA_IOS_TR("MD5 unavailable; check OpenSSL algorithm providers");
+        err = "MD5 unavailable; check OpenSSL algorithm providers";
         return false;
     }
     return true;
@@ -68,7 +67,7 @@ std::optional<json::Value> do_handshake(Rppairing& channel, bool attempt_verify,
     const json::Value* handshake = one != nullptr ? json::find(*one, "handshake") : nullptr;
     const json::Value* zero = handshake != nullptr ? json::find(*handshake, "_0") : nullptr;
     if (zero == nullptr) {
-        err = MAA_IOS_TR("Handshake response missing response._1.handshake._0");
+        err = "Handshake response missing response._1.handshake._0";
         return std::nullopt;
     }
     return std::optional<json::Value>(std::in_place, *zero);
@@ -83,20 +82,20 @@ std::optional<std::map<uint8_t, Bytes>>
     std::string tlv_err;
     std::map<uint8_t, Bytes> fields = tlv_parse(raw, tlv_err);
     if (!tlv_err.empty()) {
-        err = std::string(which) + MAA_IOS_TR(" TLV decode incomplete: ") + tlv_err;
+        err = std::string(which) + " TLV decode incomplete: " + tlv_err;
         return std::nullopt;
     }
     if (const Bytes* code = tlv_get(fields, TlvType::Error)) {
         if (allow_error) {
             return fields;
         }
-        err = std::string(which) + MAA_IOS_TR(" returned error code 0x");
+        err = std::string(which) + " returned error code 0x";
         err += hex_upper(code->data(), code->size());
         return std::nullopt;
     }
     const Bytes* state = tlv_get(fields, TlvType::State);
     if (state == nullptr || state->size() != 1 || (*state)[0] != expected_state) {
-        err = std::string(which) + MAA_IOS_TR(" reply must contain a one-byte State equal to ") + std::to_string(expected_state);
+        err = std::string(which) + " reply must contain a one-byte State equal to " + std::to_string(expected_state);
         return std::nullopt;
     }
     return fields;
@@ -111,10 +110,10 @@ bool plane_allows_pair_setup(const json::Value& handshake, std::string& err)
     const json::Value* options = json::find(handshake, "deviceOptions");
     const json::Value* allowed = options != nullptr ? json::find(*options, "allowsPairSetup") : nullptr;
     if (allowed != nullptr && allowed->is_boolean() && !allowed->as_boolean()) {
-        err = MAA_IOS_TR(
+        err =
             "Control channel does not allow pair-setup "
             "(deviceOptions.allowsPairSetup=false). Tested iOS 27 devices require the "
-            "RemoteXPC entry point (wifi_probe --pair-setup-xpc)");
+            "RemoteXPC entry point (wifi_probe --pair-setup-xpc)";
         return false;
     }
     return true;
@@ -162,7 +161,7 @@ PairSetupResult pair_setup(
         return result;
     };
     if (host_identifier.empty()) {
-        err = MAA_IOS_TR("Host identifier missing; provide one if hostname lookup is unavailable");
+        err = "Host identifier missing; provide one if hostname lookup is unavailable";
         return fail();
     }
     const auto metadata = host_metadata(host_identifier, err);
@@ -226,7 +225,7 @@ PairSetupResult pair_setup(
             // M2 未含 Error，按公钥派生 verify 密钥并发送 Msg03，检查 M4 是否拒绝。
             const Bytes* peer_x = tlv_get(*vf, TlvType::PublicKey);
             if (peer_x == nullptr || peer_x->size() != 32) {
-                err = MAA_IOS_TR("Verify M2 missing 32-byte public key");
+                err = "Verify M2 missing 32-byte public key";
                 return fail();
             }
             const std::optional<Bytes> shared = x25519_shared(vk->priv, sv(*peer_x), err);
@@ -269,12 +268,12 @@ PairSetupResult pair_setup(
                 send_verify_failed();
             }
             else {
-                err = MAA_IOS_TR("Device accepted this identifier; already paired, pair-setup is unnecessary");
+                err = "Device accepted this identifier; already paired, pair-setup is unnecessary";
                 return fail();
             }
         }
         if (progress) {
-            progress(MAA_IOS_TR("Verify completed without accepting this key; sending upgrade M1"));
+            progress("Verify completed without accepting this key; sending upgrade M1");
         }
     }
     else {
@@ -287,7 +286,7 @@ PairSetupResult pair_setup(
             return fail();
         }
         if (progress) {
-            progress(MAA_IOS_TR("Handshake (attemptPairVerify=false) completed; sending M1"));
+            progress("Handshake (attemptPairVerify=false) completed; sending M1");
         }
     }
     // 2) M1 → M2：设备给出 SRP 的 salt 与 B。kind 见 PairSetupOptions::pairing_kind。
@@ -304,7 +303,7 @@ PairSetupResult pair_setup(
     const Bytes* server_public = tlv_get(*fields2, TlvType::PublicKey);
     const Bytes* salt = tlv_get(*fields2, TlvType::Salt);
     if (server_public == nullptr || salt == nullptr || server_public->empty() || salt->empty()) {
-        err = MAA_IOS_TR("M2 missing PUBLIC_KEY or SALT");
+        err = "M2 missing PUBLIC_KEY or SALT";
         return fail();
     }
 
@@ -328,17 +327,17 @@ PairSetupResult pair_setup(
     }
     const Bytes* server_proof = tlv_get(*fields4, TlvType::Proof);
     if (server_proof == nullptr) {
-        err = MAA_IOS_TR("M4 missing PROOF");
+        err = "M4 missing PROOF";
         return fail();
     }
     // 必须验证 SRP 服务端证明后才继续注册主机密钥；证明绑定本次 SRP 会话。
     // 固定 PIN 的证明不等于验证设备长期身份，不能据此声称完成独立设备身份认证。
     if (!srp.verify_server_proof(*server_proof)) {
-        err = MAA_IOS_TR("Device SRP proof mismatch; pairing aborted. Check PIN and peer identity");
+        err = "Device SRP proof mismatch; pairing aborted. Check PIN and peer identity";
         return fail();
     }
     if (progress) {
-        progress(MAA_IOS_TR("SRP mutual verification passed; registering host key on device (M5)"));
+        progress("SRP mutual verification passed; registering host key on device (M5)");
     }
 
     const Bytes& session_key = srp.session_key();
@@ -426,14 +425,14 @@ PairSetupResult pair_setup(
     // 固定 PIN 的 SRP 和设备自签名仍需要可信的首次配对入口作为身份信任来源。
     const Bytes* sealed6 = tlv_get(*fields6, TlvType::EncryptedData);
     if (sealed6 == nullptr) {
-        err = MAA_IOS_TR("PairSetup M6 missing encrypted device identity");
+        err = "PairSetup M6 missing encrypted device identity";
         return fail();
     }
     static constexpr char kPsMsg06[] = "\x00\x00\x00\x00PS-Msg06";
     std::string open_err;
     const std::optional<Bytes> plain6 = chacha_open(sv(*setup_key), std::string_view(kPsMsg06, sizeof(kPsMsg06) - 1), *sealed6, open_err);
     if (!plain6) {
-        err = MAA_IOS_TR("Cannot decrypt M6: ") + open_err;
+        err = "Cannot decrypt M6: " + open_err;
         return fail();
     }
     const std::optional<PairingIdentity> peer_identity = authenticate_setup_identity(session_key, *plain6, err);

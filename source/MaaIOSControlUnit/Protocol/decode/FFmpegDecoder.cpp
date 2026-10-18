@@ -1,5 +1,6 @@
 #include "decode/Decoder.h"
-#include "i18n/Translation.h"
+
+#include "MaaUtils/Logger.h"
 
 // 以 C 链接约定声明 libav 接口，与其库导出的符号一致。
 extern "C"
@@ -10,7 +11,6 @@ extern "C"
 #include <libswscale/swscale.h>
 }
 
-#include <cstdio>
 #include <cstring>
 #include <string>
 
@@ -41,7 +41,7 @@ public:
 
         const AVCodec* codec = avcodec_find_decoder(AV_CODEC_ID_HEVC);
         if (codec == nullptr) {
-            std::fprintf(stderr, MAA_IOS_TR("FFmpeg has no HEVC decoder\n"));
+            LogError << "FFmpeg has no HEVC decoder";
             return false;
         }
         ctx_ = avcodec_alloc_context3(codec);
@@ -56,7 +56,7 @@ public:
         // 打开解码上下文后才允许提交 packet；参数集将在 decode 中随 AU 提交。
         const int open_st = avcodec_open2(ctx_, codec, nullptr);
         if (open_st < 0) {
-            std::fprintf(stderr, MAA_IOS_TR("Failed to open FFmpeg HEVC decoder: %s\n"), av_strerr(open_st).c_str());
+            LogError << std::format("Failed to open FFmpeg HEVC decoder: {}", av_strerr(open_st));
             teardown();
             return false;
         }
@@ -109,7 +109,7 @@ public:
             static bool warned = false;
             if (!warned) {
                 warned = true;
-                std::fprintf(stderr, MAA_IOS_TR("FFmpeg rejected packet: %s\n"), av_strerr(send_st).c_str());
+                LogWarn << std::format("FFmpeg rejected packet: {}", av_strerr(send_st));
             }
             return false;
         }
@@ -155,12 +155,7 @@ private:
         const AVPixelFormat src = static_cast<AVPixelFormat>(f->format);
         const AVPixFmtDescriptor* desc = src == AV_PIX_FMT_NONE ? nullptr : av_pix_fmt_desc_get(src);
         if (w <= 0 || h <= 0 || desc == nullptr || (desc->flags & AV_PIX_FMT_FLAG_HWACCEL)) {
-            std::fprintf(
-                stderr,
-                MAA_IOS_TR("Software decoder requires CPU frames; received format=%d %dx%d\n"),
-                static_cast<int>(src),
-                w,
-                h);
+            LogError << std::format("Software decoder requires CPU frames; received format={} {}x{}", static_cast<int>(src), w, h);
             return false;
         }
 
@@ -214,7 +209,6 @@ std::unique_ptr<Decoder> create_software_decoder()
 {
     // 将 libav 的进程级日志阈值设为 error，抑制已测全范围 yuvj420p 输入的重复
     // 像素格式警告。这不改变颜色转换配置，也会影响进程内其他 libav 使用者。
-    // 本文件直接写 stderr 的诊断不受此阈值影响。
     static bool log_quieted = false;
     if (!log_quieted) {
         av_log_set_level(AV_LOG_ERROR);

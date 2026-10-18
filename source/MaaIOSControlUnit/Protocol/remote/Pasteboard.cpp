@@ -1,5 +1,4 @@
 #include "remote/Pasteboard.h"
-#include "i18n/Translation.h"
 
 #include <cstdio>
 #include <vector>
@@ -19,7 +18,7 @@ bool cancelled(std::stop_token cancel, std::string& err)
     if (!cancel.stop_requested()) {
         return false;
     }
-    err = MAA_IOS_TR("Clipboard request cancelled");
+    err = "Clipboard request cancelled";
     return true;
 }
 
@@ -29,7 +28,7 @@ bool valid_request(std::stop_token cancel, int reply_timeout_ms, std::string& er
         return false;
     }
     if (reply_timeout_ms < 0) {
-        err = MAA_IOS_TR("Clipboard reply timeout must not be negative");
+        err = "Clipboard reply timeout must not be negative";
         return false;
     }
     return true;
@@ -127,7 +126,7 @@ bool Pasteboard::set_text(
         if (cancelled(cancel, err)) {
             return false;
         }
-        err = MAA_IOS_TR("SET failed: ") + err;
+        err = "SET failed: " + err;
         return false;
     }
     if (cancelled(cancel, err)) {
@@ -135,7 +134,7 @@ bool Pasteboard::set_text(
     }
     // 检查回复命令。SET_REPLY 本身不证明设备已保存文本，落地验证需另行读回。
     if (reply.at("command").as_string_or("") != "SET_REPLY") {
-        err = MAA_IOS_TR("SET response is not SET_REPLY: ") + xpc::describe(reply).substr(0, 300);
+        err = "SET response is not SET_REPLY: " + xpc::describe(reply).substr(0, 300);
         return false;
     }
     return !cancelled(cancel, err);
@@ -158,21 +157,21 @@ bool Pasteboard::get_text(Device& device, std::string& out, std::string& err, bo
         if (cancelled(cancel, err)) {
             return false;
         }
-        err = MAA_IOS_TR("PULL failed: ") + err;
+        err = "PULL failed: " + err;
         return false;
     }
     if (cancelled(cancel, err)) {
         return false;
     }
     if (reply.at("command").as_string_or("") != "PULL_REPLY") {
-        err = MAA_IOS_TR("PULL response is not PULL_REPLY: ") + xpc::describe(reply).substr(0, 300);
+        err = "PULL response is not PULL_REPLY: " + xpc::describe(reply).substr(0, 300);
         return false;
     }
     const auto text = find_text(reply);
     if (!text) {
         // 缺少 UTF-8 Data 表示时保留有限长度的回复描述，帮助区分只有其他类型内容
         // 和设备返回错误；存在但零长度的 Data 已由 find_text 作为空文本接受。
-        err = MAA_IOS_TR("Response has no plain-text representation: ") + xpc::describe(reply).substr(0, 400);
+        err = "Response has no plain-text representation: " + xpc::describe(reply).substr(0, 400);
         return false;
     }
     if (cancelled(cancel, err)) {

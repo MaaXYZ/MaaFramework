@@ -1,10 +1,10 @@
 #include "remote/Rsd.h"
-#include "i18n/Translation.h"
+
+#include "MaaUtils/Logger.h"
 
 #include <charconv>
 #include <chrono>
 #include <condition_variable>
-#include <cstdio>
 #include <cstdlib>
 #include <mutex>
 #include <random>
@@ -194,7 +194,7 @@ xpc::Value core_device_request(std::string_view feature_identifier, std::string_
                 value = value * 10 + static_cast<uint64_t>(c - '0');
             }
             if (bad) {
-                std::fprintf(stderr, MAA_IOS_TR("Invalid numeric component in MAA_IOS_COREDEVICE_VERSION: %s (using 629.3)\n"), override);
+                LogWarn << std::format("Invalid numeric component in MAA_IOS_COREDEVICE_VERSION: {} (using 629.3)", override);
                 parsed.clear();
                 break;
             }
@@ -206,7 +206,7 @@ xpc::Value core_device_request(std::string_view feature_identifier, std::string_
         }
         if (!parsed.empty()) {
             parts = std::move(parsed);
-            std::fprintf(stderr, MAA_IOS_TR("  coreDeviceVersion overridden by environment: %s (default: 629.3)\n"), override);
+            LogDebug << std::format("coreDeviceVersion overridden by environment: {} (default: 629.3)", override);
         }
     }
     for (const uint64_t part : parts) {
@@ -251,11 +251,11 @@ std::unique_ptr<ServiceConnection>
     ServiceConnection::open(net::Stack& stack, const ServiceInfo& service, std::string& err, bool verbose, std::stop_token cancel)
 {
     if (cancel.stop_requested()) {
-        err = MAA_IOS_TR("Service connection cancelled");
+        err = "Service connection cancelled";
         return nullptr;
     }
     if (service.port == 0) {
-        err = std::string(MAA_IOS_TR("Service has no valid TCP port (expected 1..65535): ")) + service.name;
+        err = std::string("Service has no valid TCP port (expected 1..65535): ") + service.name;
         return nullptr;
     }
     auto conn = std::unique_ptr<ServiceConnection>(new ServiceConnection());
@@ -269,8 +269,7 @@ std::unique_ptr<ServiceConnection>
         if (conn->cancelled(err)) {
             return nullptr;
         }
-        err =
-            MAA_IOS_TR("Connect to ") + service.name + MAA_IOS_TR(" port ") + std::to_string(service.port) + MAA_IOS_TR(" failed: ") + err;
+        err = "Connect to " + service.name + " port " + std::to_string(service.port) + " failed: " + err;
         return nullptr;
     }
     if (conn->cancelled(err)) {
@@ -285,7 +284,7 @@ std::unique_ptr<ServiceConnection>
         return nullptr;
     }
     if (!channel) {
-        err = service.name + MAA_IOS_TR(" HTTP/2 handshake failed: ") + err;
+        err = service.name + " HTTP/2 handshake failed: " + err;
         return nullptr;
     }
     // 身份申报仅用于 RSD 控制通道；服务连接完成握手后直接发送业务请求。
@@ -301,7 +300,7 @@ bool ServiceConnection::cancelled(std::string& err) const
     if (!cancel_.stop_requested()) {
         return false;
     }
-    err = MAA_IOS_TR("Service connection cancelled");
+    err = "Service connection cancelled";
     return true;
 }
 
@@ -311,7 +310,7 @@ bool ServiceConnection::call(const xpc::Value& request, xpc::Value& reply, int t
         return false;
     }
     if (channel_ == nullptr) {
-        err = MAA_IOS_TR("Service connection is not RemoteXPC");
+        err = "Service connection is not RemoteXPC";
         return false;
     }
     const bool ok = channel_->call(request, reply, timeout_ms, err);
@@ -324,7 +323,7 @@ bool ServiceConnection::send_only(const xpc::Value& request, std::string& err)
         return false;
     }
     if (channel_ == nullptr) {
-        err = MAA_IOS_TR("Service connection is not RemoteXPC");
+        err = "Service connection is not RemoteXPC";
         return false;
     }
     const bool ok = channel_->send_request(request, false, err);
@@ -337,7 +336,7 @@ bool ServiceConnection::service(int timeout_ms, std::string& err)
         return false;
     }
     if (channel_ == nullptr) {
-        err = MAA_IOS_TR("Service connection is not RemoteXPC");
+        err = "Service connection is not RemoteXPC";
         return false;
     }
     const bool ok = channel_->service(timeout_ms, err);
@@ -350,7 +349,7 @@ Channel::Wait ServiceConnection::wait_message(xpc::Value& out, int timeout_ms, s
         return Channel::Wait::Broken;
     }
     if (channel_ == nullptr) {
-        err = MAA_IOS_TR("Service connection is not RemoteXPC");
+        err = "Service connection is not RemoteXPC";
         return Channel::Wait::Broken;
     }
     const auto status = channel_->wait(out, timeout_ms, err);
@@ -366,11 +365,11 @@ std::string device_error_text(std::string_view feature_identifier, const xpc::Va
     const std::string detail = error.at("userInfo").at("NSLocalizedDescription").as_string_or("");
     const auto code = error.at("code").as_int_or(0);
     // 已收到业务错误，保留设备的说明和错误码，不在此自动重试。
-    std::string err = std::string(feature_identifier) + MAA_IOS_TR(" failed");
+    std::string err = std::string(feature_identifier) + " failed";
     if (!detail.empty()) {
         err += "：" + detail;
     }
-    err += MAA_IOS_TR("(code ") + std::to_string(code) + MAA_IOS_TR(")");
+    err += "(code " + std::to_string(code) + ")";
     err += Rsd::remote_control_version_hint(detail);
     // NSDebugDescription 保留原文，NSCodingPath 单独格式化，便于定位字段/类型错误。
     const std::string debug = error.at("userInfo").at("NSDebugDescription").as_string_or("");
@@ -381,7 +380,7 @@ std::string device_error_text(std::string_view feature_identifier, const xpc::Va
     }
     if (detail.empty() && debug.empty()) {
         // 没有文本诊断时附带截取后的原始错误对象。
-        err += MAA_IOS_TR("; original error: ") + xpc::describe(error).substr(0, 600);
+        err += "; original error: " + xpc::describe(error).substr(0, 600);
     }
     return err;
 }
@@ -410,8 +409,7 @@ CallResult ServiceConnection::invoke(
     output = xpc::make_dict();
     const auto* error = reply.find("CoreDevice.error");
     if (error == nullptr) {
-        err = std::string(feature_identifier) + MAA_IOS_TR(" failed; response missing CoreDevice.output: ")
-              + xpc::describe(reply).substr(0, 300);
+        err = std::string(feature_identifier) + " failed; response missing CoreDevice.output: " + xpc::describe(reply).substr(0, 300);
         return CallResult::DeviceError;
     }
     err = device_error_text(feature_identifier, *error);
@@ -428,7 +426,7 @@ bool ServiceConnection::subscribe(
         return false;
     }
     if (channel_ == nullptr) {
-        err = MAA_IOS_TR("Streaming feature requires an XPC service connection");
+        err = "Streaming feature requires an XPC service connection";
         return false;
     }
     if (!channel_->send_request(core_device_request(feature_identifier, action_identifier, input), true, err)) {
@@ -446,7 +444,7 @@ ServiceConnection::StreamEvent ServiceConnection::next_batch(std::vector<xpc::Va
 {
     elements.clear();
     if (channel_ == nullptr) {
-        err = MAA_IOS_TR("Service connection is not an XPC channel");
+        err = "Service connection is not an XPC channel";
         return StreamEvent::Broken;
     }
     xpc::Value reply;
@@ -465,13 +463,12 @@ ServiceConnection::StreamEvent ServiceConnection::next_batch(std::vector<xpc::Va
             err = device_error_text(subscribed_feature_, *error);
         }
         else {
-            err = subscribed_feature_ + MAA_IOS_TR(" response missing both sideChannelStatus and error: ")
-                  + xpc::describe(reply).substr(0, 300);
+            err = subscribed_feature_ + " response missing both sideChannelStatus and error: " + xpc::describe(reply).substr(0, 300);
         }
         return StreamEvent::DeviceError;
     }
     if (status->find("receivedError") != nullptr) {
-        err = subscribed_feature_ + MAA_IOS_TR(" failed mid-stream: ") + xpc::describe(status->at("receivedError")).substr(0, 400);
+        err = subscribed_feature_ + " failed mid-stream: " + xpc::describe(status->at("receivedError")).substr(0, 400);
         return StreamEvent::DeviceError;
     }
     if (status->find("finishStreaming") != nullptr) {
@@ -552,7 +549,7 @@ std::optional<Rsd> Rsd::open_bounded(
         if (!budget.check(err)) {
             return std::nullopt;
         }
-        err = MAA_IOS_TR("Connect to RSD port ") + std::to_string(p.rsd_port) + MAA_IOS_TR(" failed: ") + err;
+        err = "Connect to RSD port " + std::to_string(p.rsd_port) + " failed: " + err;
         return std::nullopt;
     }
     if (!budget.check(err)) {
@@ -563,7 +560,7 @@ std::optional<Rsd> Rsd::open_bounded(
         return std::nullopt;
     }
     if (!channel) {
-        err = MAA_IOS_TR("RSD control channel handshake failed: ") + err;
+        err = "RSD control channel handshake failed: " + err;
         return std::nullopt;
     }
     rsd->control_ = std::make_unique<Channel>(std::move(*channel));
@@ -577,7 +574,7 @@ std::optional<Rsd> Rsd::open_bounded(
     const auto* info = rsd->control_->peer_info();
     const auto* services = info != nullptr ? info->find("Services") : nullptr;
     if (services == nullptr || !services->is_dict()) {
-        err = MAA_IOS_TR("peer_info missing Services");
+        err = "peer_info missing Services";
         return std::nullopt;
     }
     rsd->services_ = parse_service_directory(*services);
@@ -626,7 +623,7 @@ bool Rsd::supports(std::string_view service_name, std::string_view feature) cons
 std::unique_ptr<ServiceConnection> Rsd::connect_service(std::string_view name, std::string& err, bool verbose, std::stop_token cancel)
 {
     if (cancel.stop_requested()) {
-        err = MAA_IOS_TR("Service connection cancelled");
+        err = "Service connection cancelled";
         return nullptr;
     }
     const auto info = service(name);
@@ -641,12 +638,12 @@ std::string Rsd::missing_service_message(const std::string_view name, const std:
 {
     // 报告目录总数，仅逐行列出 CoreDevice 服务名，其它服务不展开。
     // 目录能力只是诊断信息，不能单独证明 DDI 挂载状态；全量目录由 feature_probe 输出。
-    std::string out = MAA_IOS_TR("Device directory missing service ") + std::string(name) + MAA_IOS_TR(".");
+    std::string out = "Device directory missing service " + std::string(name) + ".";
     if (seen.empty()) {
-        out += MAA_IOS_TR("Directory is empty; check tunnel setup and DDI mounting.");
-        out += MAA_IOS_TR(
+        out += "Directory is empty; check tunnel setup and DDI mounting.";
+        out +=
             "\nDownload a supported DDI with MaaToolkitIOSDevicePrepare; installation and compatibility guidance: the MaaToolkit iOS "
-            "documentation.\n");
+            "documentation.\n";
         return out;
     }
     std::vector<std::string> cd;
@@ -655,23 +652,23 @@ std::string Rsd::missing_service_message(const std::string_view name, const std:
             cd.push_back(s.name);
         }
     }
-    out += MAA_IOS_TR("Device directory contains ") + std::to_string(seen.size()) + MAA_IOS_TR(" services, including ")
-           + std::to_string(cd.size()) + MAA_IOS_TR(" com.apple.coredevice.* services:\n");
+    out += "Device directory contains " + std::to_string(seen.size()) + " services, including " + std::to_string(cd.size())
+           + " com.apple.coredevice.* services:\n";
     if (cd.empty()) {
-        out += MAA_IOS_TR(
+        out +=
             "  (none found; check DDI mounting through Xcode and the CoreDevice services "
-            "available on this device)\n");
+            "available on this device)\n";
     }
     for (const auto& n : cd) {
         out += "  · " + n + "\n";
     }
-    out += MAA_IOS_TR(
+    out +=
         "A mounted DDI may still lack this service. Check its version and capabilities; download a supported DDI with MaaToolkit iOS "
-        "prepare. Installation guidance: the MaaToolkit iOS documentation.\n");
-    out += MAA_IOS_TR(
-               "Include this diagnostic when reporting the issue. For the full directory and "
-               "feature lists, run feature_probe --all to print all ")
-           + std::to_string(seen.size()) + MAA_IOS_TR(" services.\n");
+        "prepare. Installation guidance: the MaaToolkit iOS documentation.\n";
+    out +=
+        "Include this diagnostic when reporting the issue. For the full directory and "
+        "feature lists, run feature_probe --all to print all "
+        + std::to_string(seen.size()) + " services.\n";
     return out;
 }
 
@@ -681,10 +678,9 @@ std::string Rsd::remote_control_version_hint(const std::string_view device_detai
     if (device_detail.find("requires iOS") == std::string_view::npos) {
         return "";
     }
-    return MAA_IOS_TR(
-        " (device rejected the system version: live media worked on tested iOS 27 "
-        "devices and was rejected on tested iOS 18 devices. Screenshot fallback and "
-        "button input may still be available; see docs/coredevice.md section 23)");
+    return " (device rejected the system version: live media worked on tested iOS 27 "
+           "devices and was rejected on tested iOS 18 devices. Screenshot fallback and "
+           "button input may still be available; see docs/coredevice.md section 23)";
 }
 
 const xpc::Value* Rsd::properties() const

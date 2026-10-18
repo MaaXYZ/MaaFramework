@@ -167,7 +167,7 @@ function(maa_ios_apply_protocol_options target visibility)
     endif()
     target_compile_definitions(${target} PRIVATE OPENSSL_SUPPRESS_DEPRECATED)
     target_link_libraries(${target} ${visibility}
-        OpenSSL::SSL OpenSSL::Crypto MaaIOSLibAv Threads::Threads
+        MaaUtils ${OpenCV_LIBS} OpenSSL::SSL OpenSSL::Crypto MaaIOSLibAv Threads::Threads
         pugixml::pugixml MaaIOSLwip MaaIOSCurl)
     if(APPLE)
         target_link_libraries(${target} ${visibility} "-framework VideoToolbox" "-framework CoreMedia"

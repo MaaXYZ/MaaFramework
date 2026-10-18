@@ -1,5 +1,4 @@
 #include "ddi/ServiceTransport.h"
-#include "i18n/Translation.h"
 #include "remote/Device.h"
 #include "transport/Lockdown.h"
 #include "transport/Usbmux.h"
@@ -72,13 +71,13 @@ public:
         check();
         switch (reason_.load()) {
         case Timeout:
-            error = MAA_IOS_TR("DDI service operation timed out");
+            error = "DDI service operation timed out";
             return false;
         case Cancelled:
-            error = MAA_IOS_TR("DDI service operation was cancelled");
+            error = "DDI service operation was cancelled";
             return false;
         case Callback:
-            error = MAA_IOS_TR("DDI service cancellation callback failed");
+            error = "DDI service cancellation callback failed";
             return false;
         default:
             return true;
@@ -201,7 +200,7 @@ struct ServiceTransport::Impl
                     continue;
                 }
             }
-            error = MAA_IOS_TR("Cannot write DDI service TLS data");
+            error = "Cannot write DDI service TLS data";
             return false;
         }
         return true;
@@ -233,7 +232,7 @@ struct ServiceTransport::Impl
                     return false;
                 }
                 if (pending.empty()) {
-                    error = MAA_IOS_TR("DDI service closed the connection");
+                    error = "DDI service closed the connection";
                     return false;
                 }
             }
@@ -257,7 +256,7 @@ struct ServiceTransport::Impl
                     continue;
                 }
             }
-            error = MAA_IOS_TR("Cannot read DDI service TLS data");
+            error = "Cannot read DDI service TLS data";
             return false;
         }
         return true;
@@ -267,7 +266,7 @@ struct ServiceTransport::Impl
     {
         const auto body = plist::write(request);
         if (body.empty() || body.size() > kMaxFrame) {
-            error = MAA_IOS_TR("DDI service request exceeds its frame limit");
+            error = "DDI service request exceeds its frame limit";
             return false;
         }
         const auto length = static_cast<uint32_t>(body.size());
@@ -286,7 +285,7 @@ struct ServiceTransport::Impl
         }
         const auto length = uint32_t(header[0]) << 24 | uint32_t(header[1]) << 16 | uint32_t(header[2]) << 8 | header[3];
         if (!length || length > kMaxFrame) {
-            error = MAA_IOS_TR("DDI service response has an invalid frame length");
+            error = "DDI service response has an invalid frame length";
             return { };
         }
         std::string body(length, '\0');
@@ -295,7 +294,7 @@ struct ServiceTransport::Impl
         }
         auto result = plist::parse(body);
         if (!result || !result->is_dict()) {
-            error = MAA_IOS_TR("DDI service response is not a plist dictionary");
+            error = "DDI service response is not a plist dictionary";
             return { };
         }
         return result;
@@ -342,16 +341,16 @@ struct ServiceTransport::Impl
             return true;
         }
         if (!device || !device->stack()) {
-            error = MAA_IOS_TR("DDI remote session is unavailable");
+            error = "DDI remote session is unavailable";
             return false;
         }
         const auto endpoint = device->rsd().service(kRemoteService);
         if (!endpoint || !endpoint->port) {
-            error = MAA_IOS_TR("DDI remote image-mounter service is unavailable");
+            error = "DDI remote image-mounter service is unavailable";
             return false;
         }
         if (endpoint->uses_remote_xpc || endpoint->encrypt_socket_data) {
-            error = MAA_IOS_TR("DDI remote image-mounter service uses an unsupported transport");
+            error = "DDI remote image-mounter service uses an unsupported transport";
             return false;
         }
         tcp = std::make_unique<net::TcpStream>(*device->stack());
@@ -377,7 +376,7 @@ struct ServiceTransport::Impl
             const auto* request = response ? response->find("Request") : nullptr;
             if (!response || response->find("Error") || !request || !request->is_string() || request->string != expected) {
                 if (response) {
-                    error = MAA_IOS_TR("DDI remote image-mounter check-in was rejected");
+                    error = "DDI remote image-mounter check-in was rejected";
                 }
                 ok = false;
                 break;
@@ -472,7 +471,7 @@ PlistService ServiceTransport::service()
         error.clear();
         try {
             if (!data && size) {
-                error = MAA_IOS_TR("DDI service raw upload data is missing");
+                error = "DDI service raw upload data is missing";
                 return false;
             }
             Watchdog watch(timeout, impl_->cancelled, impl_->interrupter());

@@ -1,10 +1,10 @@
 #include "media/FramePump.h"
-#include "i18n/Translation.h"
+
+#include "MaaUtils/Logger.h"
 
 #include <algorithm>
 #include <cerrno>
 #include <chrono>
-#include <cstdio>
 #include <cstring>
 #include <optional>
 #include <utility>
@@ -72,14 +72,9 @@ void warn_no_software()
 {
     static std::once_flag warned;
     std::call_once(warned, [] {
-        std::fprintf(
-            stderr,
-            MAA_IOS_TR(
-                "Software decoder (libavcodec) is not included; continuing with the platform "
-                "decoder. The current adapter uses 2-byte NAL lengths and cannot process larger "
-                "NALs. Such access units are dropped and the session is recreated, which may "
-                "interrupt video.\nInstall FFmpeg development packages and reconfigure the "
-                "build.\n"));
+        LogWarn << "Software decoder (libavcodec) is not included; continuing with the platform decoder. The current adapter uses 2-byte "
+                   "NAL lengths and cannot process larger NALs. Such access units are dropped and the session is recreated, which may "
+                   "interrupt video.\nInstall FFmpeg development packages and reconfigure the build.";
     });
 }
 
@@ -108,7 +103,7 @@ std::unique_ptr<FramePump> FramePump::start(remote::Device& device, const Option
     // 缺少解码后端时不建立设备媒体会话，避免占用设备资源。
     // 使用编译期能力常量，无需创建平台解码会话试探。
     if (!maa::ios::kHaveDecoder) {
-        err = MAA_IOS_TR(maa::ios::kNoDecoderMessage);
+        err = maa::ios::kNoDecoderMessage;
         return nullptr;
     }
 
@@ -141,10 +136,7 @@ FramePump::~FramePump()
     if (session_ != nullptr) {
         std::string stop_err;
         if (!session_->stop(device_, stop_err, verbose_)) {
-            std::fprintf(
-                stderr,
-                MAA_IOS_TR("Failed to stop device video session (device will release it when the lease expires): %s\n"),
-                stop_err.c_str());
+            LogWarn << std::format("Failed to stop device video session (device will release it when the lease expires): {}", stop_err);
         }
         session_.reset();
     }
@@ -166,7 +158,7 @@ bool FramePump::restart(std::string& err)
         std::string stop_err;
         if (!session_->stop(device_, stop_err, verbose_)) {
             // 停止旧会话失败仍尝试新会话，保留错误供排查设备端残留状态。
-            std::fprintf(stderr, MAA_IOS_TR("Failed to stop previous video session (still attempting restart): %s\n"), stop_err.c_str());
+            LogWarn << std::format("Failed to stop previous video session (still attempting restart): {}", stop_err);
         }
         session_.reset();
     }
@@ -192,7 +184,7 @@ bool FramePump::restart(std::string& err)
             }
             cv_.notify_all();
             if (worker_running_) {
-                std::fprintf(stderr, MAA_IOS_TR("Video negotiation failed during recovery; stopping video reception: %s\n"), err.c_str());
+                LogError << std::format("Video negotiation failed during recovery; stopping video reception: {}", err);
             }
         }
         reviving_ = false; // 重建失败，结束本次恢复标记。
@@ -217,7 +209,7 @@ bool FramePump::restart(std::string& err)
         std::lock_guard<std::mutex> lock(mutex_);
         ++stats_.restarts;
     }
-    std::printf(MAA_IOS_TR("Video session recreated, receive port=%u\n"), session_->receiver_port());
+    LogInfo << std::format("Video session recreated, receive port={}", session_->receiver_port());
     return true;
 }
 
@@ -242,7 +234,7 @@ void FramePump::loop()
     // 两种后端都不可用时退出，避免解引用空 decoder。start() 通常已通过
     // 编译期能力检查拦截，此处仍保留防御检查。
     if (decoder == nullptr) {
-        std::fprintf(stderr, "%s", MAA_IOS_TR(maa::ios::kNoDecoderMessage));
+        LogError << maa::ios::kNoDecoderMessage;
         return;
     }
     bool configured = false;
@@ -285,7 +277,7 @@ void FramePump::loop()
         }
         else {
             // 发送失败保留诊断；后续静默与关键帧等待策略负责恢复。
-            std::fprintf(stderr, MAA_IOS_TR("Failed to send PLI: %s\n"), serr.c_str());
+            LogWarn << std::format("Failed to send PLI: {}", serr);
         }
     };
 
@@ -316,8 +308,8 @@ void FramePump::loop()
 
         if (!need_keyframe_) {
             // 仅在进入关键帧等待状态时输出一次。
-            std::printf(
-                MAA_IOS_TR("Video packet loss or payload damage detected: requesting keyframe, wait limit %d ms\n"),
+            LogWarn << std::format(
+                "Video packet loss or payload damage detected: requesting keyframe, wait limit {} ms",
                 options_.stall_restart_ms);
         }
         discard_for_recovery();
@@ -348,7 +340,7 @@ void FramePump::loop()
                     auto soft = create_software_decoder();
                     if (soft != nullptr) {
                         decoder = std::move(soft);
-                        std::printf(MAA_IOS_TR("Decoder switched to %s\n"), decoder->backend_name());
+                        LogInfo << std::format("Decoder switched to {}", decoder->backend_name());
                     }
                     else {
                         // 软件后端未编入时保留平台后端并提示构建条件。
@@ -394,12 +386,11 @@ void FramePump::loop()
                 if (oversized_restarts_ >= kMaxOversizedRestarts) {
                     if (!video_unusable_) {
                         video_unusable_ = true;
-                        std::printf(
-                            MAA_IOS_TR(
-                                "After %d restarts, NALs still exceed the decoder limit. Video is unavailable; "
-                                "retrying every %llu seconds. Callers can use screenshots.\n"),
+                        LogWarn << std::format(
+                            "After {} restarts, NALs still exceed the decoder limit. Video is unavailable; retrying every {} seconds. "
+                            "Callers can use screenshots.",
                             oversized_restarts_,
-                            static_cast<unsigned long long>(kOversizedRetryMs / 1000));
+                            kOversizedRetryMs / 1000);
                     }
                     // 达到重建上限后交由主循环统一管理降级重试，避免重复调度。
                     return;
@@ -446,9 +437,9 @@ void FramePump::loop()
                     std::lock_guard<std::mutex> lock(mutex_);
                     ++stats_.forced_decode_failures;
                 }
-                std::printf(
-                    MAA_IOS_TR("Test: injected keyframe decode failure (%s)\n"),
-                    options_.debug_suppress_pli_after_fail ? MAA_IOS_TR("further PLI disabled") : MAA_IOS_TR("PLI continues"));
+                LogDebug << std::format(
+                    "Test: injected keyframe decode failure ({})",
+                    options_.debug_suppress_pli_after_fail ? "further PLI disabled" : "PLI continues");
             }
             else {
                 ok = decoder->decode(au, f);
@@ -547,23 +538,19 @@ void FramePump::loop()
                 reviving_ = false;
             }
             if (verbose_) {
-                std::printf(
-                    MAA_IOS_TR("%s: no data for %llu ms; device reports session alive, continuing to wait\n"),
-                    why,
-                    static_cast<unsigned long long>(quiet_ms));
+                LogDebug << std::format("{}: no data for {} ms; device reports session alive, continuing to wait", why, quiet_ms);
             }
             return false; // 设备报告会话仍运行，暂不重建。
         }
-        std::printf(
-            MAA_IOS_TR("%s: no data for %llu ms, %s; recreating video session\n"),
+        LogWarn << std::format(
+            "{}: no data for {} ms, {}; recreating video session",
             why,
-            static_cast<unsigned long long>(quiet_ms),
-            state == StreamSession::ServerState::Ended ? MAA_IOS_TR("device session ended")
-                                                       : (MAA_IOS_TR("session status query failed (") + perr + MAA_IOS_TR(")")).c_str());
+            quiet_ms,
+            state == StreamSession::ServerState::Ended ? "device session ended" : ("session status query failed (" + perr + ")"));
         std::string restart_err;
         if (!restart(restart_err)) {
             if (!negotiation_invalid_) {
-                std::fprintf(stderr, MAA_IOS_TR("Failed to recreate video session: %s\n"), restart_err.c_str());
+                LogWarn << std::format("Failed to recreate video session: {}", restart_err);
             }
             reviving_ = false;
             return false;
@@ -578,7 +565,7 @@ void FramePump::loop()
         std::string restart_err;
         if (!restart(restart_err)) {
             if (!negotiation_invalid_) {
-                std::fprintf(stderr, MAA_IOS_TR("Failed to recreate video session: %s\n"), restart_err.c_str());
+                LogWarn << std::format("Failed to recreate video session: {}", restart_err);
             }
             return false;
         }
@@ -593,10 +580,7 @@ void FramePump::loop()
     uint64_t last_ask_ms_ = 0;
     auto judge_quiet = [&](uint64_t quiet, uint64_t blind_at, uint64_t ask_every_ms, const char* why) {
         if (quiet > blind_at) {
-            std::printf(
-                MAA_IOS_TR("%s: no data for %llu ms; recovery threshold exceeded, recreating video session\n"),
-                why,
-                static_cast<unsigned long long>(quiet));
+            LogWarn << std::format("{}: no data for {} ms; recovery threshold exceeded, recreating video session", why, quiet);
             restart_now();
         }
         else if (quiet > kQuietSuspiciousMs) {
@@ -624,7 +608,7 @@ void FramePump::loop()
             if (negotiation_invalid_) {
                 return;
             }
-            std::fprintf(stderr, MAA_IOS_TR("Failed to recreate video session: %s (retry in 1 second)\n"), rerr.c_str());
+            LogWarn << std::format("Failed to recreate video session: {} (retry in 1 second)", rerr);
             std::unique_lock<std::mutex> lock(mutex_);
             cv_.wait_for(lock, std::chrono::seconds(1), [this] { return stopping_; });
             if (stopping_) {
@@ -656,12 +640,12 @@ void FramePump::loop()
             }
             if (failed_after == 1) {
                 // 每个会话只输出第一次发送失败，避免重复日志掩盖恢复结果。
-                std::fprintf(stderr, MAA_IOS_TR("Failed to send RTCP keepalive: %s\n"), serr.c_str());
+                LogWarn << std::format("Failed to send RTCP keepalive: {}", serr);
             }
         }
         // 收到取帧或输入触发的 wake 请求后，按相同静默策略检查会话。
         if (wake_requested_.exchange(false)) {
-            judge_quiet(now_ms() - last_packet_ms_, kQuietCertainMs, 0, MAA_IOS_TR("Input or frame request"));
+            judge_quiet(now_ms() - last_packet_ms_, kQuietCertainMs, 0, "Input or frame request");
             continue;
         }
         // 降级重试计时每轮检查，不依赖收到超大 AU 或发生读超时。
@@ -669,18 +653,15 @@ void FramePump::loop()
         if (video_unusable_ && now_ms() - last_restart_ms_ >= kOversizedRetryMs) {
             last_restart_ms_ = now_ms();
             oversized_restart_ = true;
-            std::printf(
-                MAA_IOS_TR("Video fallback active for %llu seconds; retrying video session\n"),
-                static_cast<unsigned long long>(kOversizedRetryMs / 1000));
+            LogWarn << std::format("Video fallback active for {} seconds; retrying video session", kOversizedRetryMs / 1000);
         }
         if (oversized_restart_) {
             oversized_restart_ = false;
             // 降级既可能来自尺寸限制，也可能来自连续无关键帧输出，日志不能
             // 将定时重试一律归因于后端尺寸限制。
-            std::printf(
-                MAA_IOS_TR("%s; recreating video session to obtain a keyframe\n"),
-                video_unusable_ ? MAA_IOS_TR("Scheduled video retry after fallback")
-                                : MAA_IOS_TR("NAL exceeds platform decoder length limit"));
+            LogWarn << std::format(
+                "{}; recreating video session to obtain a keyframe",
+                video_unusable_ ? "Scheduled video retry after fallback" : "NAL exceeds platform decoder length limit");
             // 失败后的空会话由循环顶部统一退避重试。
             restart_now();
             continue;
@@ -716,7 +697,7 @@ void FramePump::loop()
                     std::lock_guard<std::mutex> lock(mutex_);
                     ++stats_.stall_restarts;
                 }
-                std::printf(MAA_IOS_TR("Keyframe wait reached %d ms; recreating video session\n"), options_.stall_restart_ms);
+                LogWarn << std::format("Keyframe wait reached {} ms; recreating video session", options_.stall_restart_ms);
                 restart_now(); // 失败由循环顶端的空会话兜底接手退避重试
                 continue;      // 这一轮的包属于上一条会话了
             }
@@ -730,21 +711,19 @@ void FramePump::loop()
             case NokeyAction::kRetry:
                 ++nokey_restarts_;
                 session_start_ms_ = now_ms();
-                std::printf(
-                    MAA_IOS_TR("No keyframe output after %llu seconds; recreating video session (%d/%d)\n"),
-                    static_cast<unsigned long long>(kNokeyBlindMs / 1000),
+                LogWarn << std::format(
+                    "No keyframe output after {} seconds; recreating video session ({}/{})",
+                    kNokeyBlindMs / 1000,
                     nokey_restarts_,
                     kMaxNokeyRestarts);
                 restart_now();
                 continue; // 这一轮的包属于上一条会话了
             case NokeyAction::kDegrade:
                 video_unusable_ = true;
-                std::printf(
-                    MAA_IOS_TR(
-                        "No keyframe output after %d restarts. Video is unavailable; callers can use "
-                        "screenshots. Retrying every %llu seconds.\n"),
+                LogWarn << std::format(
+                    "No keyframe output after {} restarts. Video is unavailable; callers can use screenshots. Retrying every {} seconds.",
                     kMaxNokeyRestarts,
-                    static_cast<unsigned long long>(kOversizedRetryMs / 1000));
+                    kOversizedRetryMs / 1000);
                 break;
             case NokeyAction::kWait:
                 break;
@@ -766,7 +745,7 @@ void FramePump::loop()
                     quiet,
                     std::max<uint64_t>(kQuietCertainMs, static_cast<uint64_t>(options_.silence_restart_ms)),
                     kSrPeriodMs,
-                    MAA_IOS_TR("Receive silence timeout"));
+                    "Receive silence timeout");
             }
             continue; // 超时不是结束
         }
@@ -835,7 +814,7 @@ void FramePump::loop()
 
         ++video_seen;
         if (options_.debug_drop_nth_packet > 0 && video_seen == static_cast<uint64_t>(options_.debug_drop_nth_packet)) {
-            std::printf(MAA_IOS_TR("Test: dropped video packet %d to inject a sequence gap\n"), options_.debug_drop_nth_packet);
+            LogDebug << std::format("Test: dropped video packet {} to inject a sequence gap", options_.debug_drop_nth_packet);
             options_.debug_drop_nth_packet = 0;    // 一次性：重起之后的新会话不该再被丢
             std::lock_guard<std::mutex> lock(mutex_);
             stats_.debug_dropped_at_ms = now_ms(); // 记录故障注入时间，供测试检查恢复期限。
@@ -863,9 +842,7 @@ void FramePump::loop()
             const auto timestamp = sampling_clock.observe(nal.timestamp);
             if (!timestamp) {
                 if (!need_keyframe_) {
-                    std::fputs(
-                        MAA_IOS_TR("Video sampling timestamp is ambiguous; discarding the access unit and requesting a keyframe.\n"),
-                        stderr);
+                    LogWarn << "Video sampling timestamp is ambiguous; discarding the access unit and requesting a keyframe.";
                 }
                 discard_for_recovery();
                 continue;
@@ -873,9 +850,7 @@ void FramePump::loop()
 
             if (!parser_->push_nal(std::move(nal.bytes), timestamp, nal.ends_access_unit)) {
                 if (!need_keyframe_) {
-                    std::fputs(
-                        MAA_IOS_TR("Video access-unit input is inconsistent; discarding the access unit and requesting a keyframe.\n"),
-                        stderr);
+                    LogWarn << "Video access-unit input is inconsistent; discarding the access unit and requesting a keyframe.";
                 }
                 discard_for_recovery();
             }

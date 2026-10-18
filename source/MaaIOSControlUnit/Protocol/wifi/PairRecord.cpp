@@ -1,5 +1,4 @@
 #include "wifi/PairRecord.h"
-#include "i18n/Translation.h"
 
 #include <set>
 
@@ -25,7 +24,7 @@ std::string hex(const Bytes& data)
 std::optional<Bytes> unhex(std::string_view text, std::string& err)
 {
     if (text.size() % 2 != 0) {
-        err = MAA_IOS_TR("Hex length must be even");
+        err = "Hex length must be even";
         return std::nullopt;
     }
     auto nibble = [](char c) -> int {
@@ -45,7 +44,7 @@ std::optional<Bytes> unhex(std::string_view text, std::string& err)
     for (size_t i = 0; i < text.size(); i += 2) {
         const int hi = nibble(text[i]), lo = nibble(text[i + 1]);
         if (hi < 0 || lo < 0) {
-            err = MAA_IOS_TR("Invalid hex character");
+            err = "Invalid hex character";
             return std::nullopt;
         }
         out.push_back(static_cast<uint8_t>((hi << 4) | lo));
@@ -170,8 +169,8 @@ std::optional<PairRecord> parse_record(std::string_view text, std::string& err)
                 return false;
             }
             if (bytes->size() != want) {
-                err = MAA_IOS_TR("Incorrect field length: ") + std::string(key) + MAA_IOS_TR(" requires ") + std::to_string(want)
-                      + MAA_IOS_TR(" bytes; got ") + std::to_string(bytes->size());
+                err = "Incorrect field length: " + std::string(key) + " requires " + std::to_string(want) + " bytes; got "
+                      + std::to_string(bytes->size());
                 return false;
             }
             field = *bytes;
@@ -223,7 +222,7 @@ std::optional<PairRecord> parse_record(std::string_view text, std::string& err)
         }
     }
     if (!seen_private) {
-        err = MAA_IOS_TR("Record missing hsk");
+        err = "Record missing hsk";
         return std::nullopt;
     }
     return record;

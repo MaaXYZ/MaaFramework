@@ -1,5 +1,4 @@
 #include "transport/Socket.h"
-#include "i18n/Translation.h"
 #include <algorithm>
 #include <climits>
 #ifndef _WIN32
@@ -89,11 +88,11 @@ bool Socket::write_all(const void* data, size_t len, std::string& err)
             if (socket_error() == kSocketInterrupted) {
                 continue;
             }
-            err = std::string(MAA_IOS_TR("send failed: ")) + socket_error_message();
+            err = std::string("send failed: ") + socket_error_message();
             return false;
         }
         if (n == 0) {
-            err = MAA_IOS_TR("Peer closed write direction");
+            err = "Peer closed write direction";
             return false;
         }
         p += static_cast<size_t>(n);
@@ -116,14 +115,14 @@ bool Socket::read_exact(void* data, size_t len, std::string& err)
                 continue;
             }
             if (socket_read_timed_out(socket_error())) {
-                err = MAA_IOS_TR("Read timed out (no bytes before deadline)");
+                err = "Read timed out (no bytes before deadline)";
                 return false;
             }
-            err = std::string(MAA_IOS_TR("recv failed: ")) + socket_error_message();
+            err = std::string("recv failed: ") + socket_error_message();
             return false;
         }
         if (n == 0) {
-            err = MAA_IOS_TR("Peer closed (received only ") + std::to_string(got) + "/" + std::to_string(len) + MAA_IOS_TR(")");
+            err = "Peer closed (received only " + std::to_string(got) + "/" + std::to_string(len) + ")";
             return false;
         }
         got += static_cast<size_t>(n);
@@ -141,7 +140,7 @@ bool Socket::set_read_timeout(int ms, std::string& err)
     tv.tv_usec = (ms % 1000) * 1000;
 #endif
     if (::setsockopt(fd_, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&tv), sizeof(tv)) != 0) {
-        err = std::string(MAA_IOS_TR("Failed to set read timeout: ")) + socket_error_message();
+        err = std::string("Failed to set read timeout: ") + socket_error_message();
         return false;
     }
     return true;
@@ -165,7 +164,7 @@ bool Socket::wait_readable(int ms, std::string& err, bool* timed_out)
         *timed_out = false;
     }
     if (!valid()) {
-        err = MAA_IOS_TR("Socket closed");
+        err = "Socket closed";
         return false;
     }
     for (;;) {
@@ -179,12 +178,12 @@ bool Socket::wait_readable(int ms, std::string& err, bool* timed_out)
                 err.clear();
             }
             else {
-                err = MAA_IOS_TR("Wait timed out");
+                err = "Wait timed out";
             }
             return false;
         }
         if (socket_error() != kSocketInterrupted) {
-            err = std::string(MAA_IOS_TR("poll failed: ")) + socket_error_message();
+            err = std::string("poll failed: ") + socket_error_message();
             return false;
         }
     }
@@ -198,7 +197,7 @@ bool Socket::read_len_prefixed_be(std::vector<uint8_t>& out, std::string& err)
     }
     const uint32_t len = uint32_t(hdr[0]) << 24 | uint32_t(hdr[1]) << 16 | uint32_t(hdr[2]) << 8 | hdr[3];
     if (len < 4 || len > (32u << 20)) {
-        err = MAA_IOS_TR("Invalid lockdown frame length: ") + std::to_string(len);
+        err = "Invalid lockdown frame length: " + std::to_string(len);
         return false;
     }
     out.resize(len);

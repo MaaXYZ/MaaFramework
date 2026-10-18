@@ -1,5 +1,4 @@
 #include "remote/PairingChannel.h"
-#include "i18n/Translation.h"
 
 #include <charconv>
 #include <cmath>
@@ -72,7 +71,7 @@ bool to_xpc(
         }
         if (value.is<uint64_t>()) {
             if (key != "sequenceNumber") {
-                err = MAA_IOS_TR("JSON integer exceeds XPC int64 range");
+                err = "JSON integer exceeds XPC int64 range";
                 return false;
             }
             out = xpc::make_uint64(value.as<uint64_t>());
@@ -82,7 +81,7 @@ bool to_xpc(
             out = xpc::make_double(*number);
             return true;
         }
-        err = MAA_IOS_TR("JSON number exceeds XPC range");
+        err = "JSON number exceeds XPC range";
         return false;
     case json::Value::value_type::string: {
         if (!is_binary_field(key, parent, grandparent)) {
@@ -91,7 +90,7 @@ bool to_xpc(
         }
         const auto bytes = wifi::b64_decode(value.as_string(), err);
         if (!bytes) {
-            err = MAA_IOS_TR("Field ") + std::string(key) + MAA_IOS_TR(" must contain base64 binary data; decode failed: ") + err;
+            err = "Field " + std::string(key) + " must contain base64 binary data; decode failed: " + err;
             return false;
         }
         out = xpc::make_data(std::move(*bytes));
@@ -113,7 +112,7 @@ bool to_xpc(
     default:
         break;
     }
-    err = MAA_IOS_TR("Unknown JSON value type");
+    err = "Unknown JSON value type";
     return false;
 }
 
@@ -154,7 +153,7 @@ bool from_xpc(const xpc::Value& value, json::Value& out, std::string& err)
         return true;
     case xpc::Type::Double: {
         if (!std::isfinite(value.real)) {
-            err = MAA_IOS_TR("XPC double is not finite");
+            err = "XPC double is not finite";
             return false;
         }
         // Preserve precision and the floating-point wire type, including integral doubles.
@@ -166,7 +165,7 @@ bool from_xpc(const xpc::Value& value, json::Value& out, std::string& err)
             std::chars_format::general,
             std::numeric_limits<double>::max_digits10);
         if (ec != std::errc { }) {
-            err = MAA_IOS_TR("Cannot represent XPC double as JSON");
+            err = "Cannot represent XPC double as JSON";
             return false;
         }
         std::string number(buffer, end);
@@ -191,7 +190,7 @@ bool from_xpc(const xpc::Value& value, json::Value& out, std::string& err)
         // 设备的 peerDeviceInfo.identifier 在字节流载体上是字符串，在这边可能是
         // UUID 对象。还原成同样的 8-4-4-4-12 文本，上层读到的才是同一个东西。
         if (value.data.size() != 16) {
-            err = MAA_IOS_TR("UUID field must contain 16 bytes");
+            err = "UUID field must contain 16 bytes";
             return false;
         }
         out = wifi::j_str(uuid_text(value.data));
@@ -217,10 +216,10 @@ bool from_xpc(const xpc::Value& value, json::Value& out, std::string& err)
         }
         return true;
     case xpc::Type::FileTransfer:
-        err = MAA_IOS_TR("File transfer placeholder is not supported on the pairing channel");
+        err = "File transfer placeholder is not supported on the pairing channel";
         return false;
     }
-    err = MAA_IOS_TR("Unknown XPC type marker");
+    err = "Unknown XPC type marker";
     return false;
 }
 
@@ -263,16 +262,16 @@ bool XpcPairingCarrier::wait_one(int ms, xpc::Value& out, std::string& err)
         return true;
     case Channel::Wait::Timeout:
         if (err.empty()) {
-            err = MAA_IOS_TR("Pairing reply timed out (") + std::to_string(ms) + MAA_IOS_TR(" ms without device data)");
+            err = "Pairing reply timed out (" + std::to_string(ms) + " ms without device data)";
         }
         return false;
     case Channel::Wait::Broken:
         if (err.empty()) {
-            err = MAA_IOS_TR("Pairing control channel disconnected");
+            err = "Pairing control channel disconnected";
         }
         return false;
     }
-    err = MAA_IOS_TR("Pairing control channel disconnected");
+    err = "Pairing control channel disconnected";
     return false;
 }
 
@@ -288,8 +287,8 @@ std::optional<json::Value> XpcPairingCarrier::read_envelope(std::string& err)
     }
     const xpc::Value* value = body.find("value");
     if (value == nullptr) {
-        err = MAA_IOS_TR("Channel received unexpected type; expected ") + std::string(kPairingEnvelopeType)
-              + MAA_IOS_TR(" (value field missing): ") + xpc::describe(body).substr(0, 400);
+        err = "Channel received unexpected type; expected " + std::string(kPairingEnvelopeType)
+              + " (value field missing): " + xpc::describe(body).substr(0, 400);
         return std::nullopt;
     }
     return xpc_to_json(*value, err);

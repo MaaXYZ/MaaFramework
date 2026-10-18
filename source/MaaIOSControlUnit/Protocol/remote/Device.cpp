@@ -1,8 +1,8 @@
 #include "remote/Device.h"
-#include "i18n/Translation.h"
+
+#include "MaaUtils/Logger.h"
 
 #include <algorithm>
-#include <cstdio>
 #include <map>
 #include <memory>
 
@@ -23,7 +23,7 @@ constexpr const char* kCoreDeviceProxy = "com.apple.internal.devicecompute.CoreD
 void stage(bool verbose, const char* what)
 {
     if (verbose) {
-        std::fprintf(stderr, MAA_IOS_TR("  [stage] %s\n"), what);
+        LogDebug << std::format("[stage] {}", what);
     }
 }
 
@@ -34,17 +34,16 @@ std::string proxy_failure_hint(const std::string_view lockdown_error)
     const std::string e(lockdown_error);
     // 先匹配明确的锁屏和信任错误，再补充服务能力或通用连接提示。
     if (e.find("PasswordProtected") != std::string::npos) {
-        return MAA_IOS_TR(" (device is locked; unlock it and keep the screen awake before retrying)");
+        return " (device is locked; unlock it and keep the screen awake before retrying)";
     }
     if (e.find("UserDenied") != std::string::npos || e.find("Trust") != std::string::npos) {
-        return MAA_IOS_TR(" (computer not trusted; unlock the device and confirm Trust)");
+        return " (computer not trusted; unlock the device and confirm Trust)";
     }
     if (e.find("InvalidService") != std::string::npos) {
-        return MAA_IOS_TR(
-            " (service unavailable; check Developer Mode and a compatible DDI; download: MaaToolkitIOSDevicePrepare, installation: the "
-            "MaaToolkit iOS documentation)");
+        return " (service unavailable; check Developer Mode and a compatible DDI; download: MaaToolkitIOSDevicePrepare, installation: the "
+               "MaaToolkit iOS documentation)";
     }
-    return MAA_IOS_TR(" (check DDI mounting and Developer Mode)");
+    return " (check DDI mounting and Developer Mode)";
 }
 
 std::string mask(std::string_view value, std::size_t keep)
@@ -76,14 +75,14 @@ std::optional<transport::DeviceRecord> detail::select_usbmux_device(
     }
     if (devices.empty()) {
         if (missing_udid) {
-            error = MAA_IOS_TR("Connected usbmux entries have no usable device UDID");
+            error = "Connected usbmux entries have no usable device UDID";
         }
         else {
             // usbmux 为空或 USB 过滤后为空时沿用原来的连接提示。
-            error = MAA_IOS_TR(
+            error =
                 "No USB device found (usbmux list is empty). Check the data cable and USB "
                 "connection, then reconnect the device. Untrusted devices normally appear in "
-                "this list too.");
+                "this list too.";
         }
         return std::nullopt;
     }
@@ -97,16 +96,15 @@ std::optional<transport::DeviceRecord> detail::select_usbmux_device(
     auto selected = devices.begin();
     if (serial.empty()) {
         if (devices.size() > 1) {
-            error = MAA_IOS_TR("Connected devices: ") + std::to_string(devices.size()) + MAA_IOS_TR("; select one: ") + candidates();
+            error = "Connected devices: " + std::to_string(devices.size()) + "; select one: " + candidates();
             return std::nullopt;
         }
     }
     else {
         selected = devices.find(std::string(serial));
         if (selected == devices.end()) {
-            error = MAA_IOS_TR("No connected device matches ") + mask(serial) + MAA_IOS_TR("; connected devices: ") + candidates()
-                    + MAA_IOS_TR(" (total ") + std::to_string(devices.size())
-                    + MAA_IOS_TR("). Check the selected UDID and USB connection.");
+            error = "No connected device matches " + mask(serial) + "; connected devices: " + candidates() + " (total "
+                    + std::to_string(devices.size()) + "). Check the selected UDID and USB connection.";
             return std::nullopt;
         }
     }
@@ -118,7 +116,7 @@ std::optional<transport::DeviceRecord> detail::select_usbmux_device(
             continue;
         }
         if (chosen) {
-            error = MAA_IOS_TR("Cannot choose a unique usbmux connection for device ") + mask(selected->first);
+            error = "Cannot choose a unique usbmux connection for device " + mask(selected->first);
             return std::nullopt;
         }
         chosen = record;
@@ -197,25 +195,25 @@ std::optional<Device>
     dev->udid_ = chosen->udid;
     dev->connection_type_ = chosen->connection_type;
 
-    stage(verbose, MAA_IOS_TR("lockdown pairing session"));
+    stage(verbose, "lockdown pairing session");
     dev->lockdown_ = transport::Lockdown::establish_bounded(chosen->device_id, chosen->udid, budget, err);
     if (!dev->lockdown_) {
-        err = MAA_IOS_TR("Failed to establish lockdown session: ") + err;
+        err = "Failed to establish lockdown session: " + err;
         budget.check(err);
         return std::nullopt;
     }
-    stage(verbose, MAA_IOS_TR("Start CoreDeviceProxy"));
+    stage(verbose, "Start CoreDeviceProxy");
     auto ep = dev->lockdown_->start_service_bounded(kCoreDeviceProxy, budget, err);
     if (!ep) {
-        err = MAA_IOS_TR("Start ") + std::string(kCoreDeviceProxy) + MAA_IOS_TR(" failed: ") + err + proxy_failure_hint(err);
+        err = "Start " + std::string(kCoreDeviceProxy) + " failed: " + err + proxy_failure_hint(err);
         budget.check(err);
         return std::nullopt;
     }
-    stage(verbose, MAA_IOS_TR("CDTunnel handshake"));
+    stage(verbose, "CDTunnel handshake");
     auto tunnel =
         transport::PacketTunnel::establish_bounded(chosen->device_id, ep->port, dev->lockdown_->identity(), ep->requires_tls, budget, err);
     if (!tunnel) {
-        err = MAA_IOS_TR("Failed to establish packet tunnel: ") + err;
+        err = "Failed to establish packet tunnel: " + err;
         budget.check(err);
         return std::nullopt;
     }
@@ -223,14 +221,14 @@ std::optional<Device>
     // 非 UUID 标识经同一规则转换，不能为每次连接随机分配 peer UUID。
     auto uuid = peer_uuid_from_host_id(dev->lockdown_->host_id());
     if (!uuid) {
-        err = MAA_IOS_TR("Cannot construct a stable peer identity from pairing HostID");
+        err = "Cannot construct a stable peer identity from pairing HostID";
         budget.check(err);
         return std::nullopt;
     }
     PeerIdentity identity;
     identity.uuid = *uuid;
 
-    stage(verbose, MAA_IOS_TR("Connect to RSD inside tunnel and read directory"));
+    stage(verbose, "Connect to RSD inside tunnel and read directory");
     if (!dev->finish_session(std::move(*tunnel), identity, budget, verbose, err)) {
         budget.check(err);
         return std::nullopt;
@@ -246,11 +244,11 @@ bool Device::finish_session(
     std::string& err)
 {
     tunnel_ = std::make_unique<transport::PacketTunnel>(std::move(tunnel));
-    stage(verbose, MAA_IOS_TR("Connect to RSD inside tunnel and read directory"));
+    stage(verbose, "Connect to RSD inside tunnel and read directory");
 
     stack_ = std::make_unique<net::Stack>(*tunnel_, tunnel_->params().client_address, tunnel_->params().server_address);
     if (!stack_->addresses_ok()) {
-        err = MAA_IOS_TR("Tunnel returned an invalid IPv6 address");
+        err = "Tunnel returned an invalid IPv6 address";
         return false;
     }
     // 隧道线程必须先于 TCP/RSD 连接启动，负责将收到的 IPv6 包交给协议栈。
@@ -261,7 +259,7 @@ bool Device::finish_session(
     if (!rsd_) {
         return false;
     }
-    stage(verbose, MAA_IOS_TR("Ready"));
+    stage(verbose, "Ready");
     return true;
 }
 
@@ -285,12 +283,12 @@ std::optional<Device> Device::establish_wifi_bounded(
     }
     // 本地记录问题应在连接前报出，避免网络不可达掩盖重新配对的原因。
     if (!record.complete()) {
-        err = MAA_IOS_TR("Pairing record incomplete; cannot sign");
+        err = "Pairing record incomplete; cannot sign";
         budget.check(err);
         return std::nullopt;
     }
     if (!record.has_peer_identity()) {
-        err = MAA_IOS_TR("Pairing record has no device identity; pair again over USB");
+        err = "Pairing record has no device identity; pair again over USB";
         budget.check(err);
         return std::nullopt;
     }
@@ -299,7 +297,7 @@ std::optional<Device> Device::establish_wifi_bounded(
     dev->udid_ = record.udid;
     dev->connection_type_ = "WiFi";
 
-    stage(verbose, MAA_IOS_TR("LAN pair-verify"));
+    stage(verbose, "LAN pair-verify");
     // Preserve the short TCP fallback while all stages share the parent deadline.
     const auto connect = [&](uint16_t target_port) {
         transport::IoBudget tcp_budget(
@@ -308,8 +306,8 @@ std::optional<Device> Device::establish_wifi_bounded(
     };
     auto control = connect(port);
     if (!control) {
-        err = MAA_IOS_TR("Cannot connect to device RemotePairing port ") + address + ":" + std::to_string(port) + "：" + err
-              + MAA_IOS_TR(" (check that the device is reachable on this network and has been paired)");
+        err = "Cannot connect to device RemotePairing port " + address + ":" + std::to_string(port) + "：" + err
+              + " (check that the device is reachable on this network and has been paired)";
         budget.check(err);
         return std::nullopt;
     }
@@ -320,17 +318,16 @@ std::optional<Device> Device::establish_wifi_bounded(
     const wifi::PairVerifyResult verified = wifi::pair_verify(channel, record, err);
     if (verified.outcome != wifi::VerifyOutcome::Paired) {
         if (verified.outcome == wifi::VerifyOutcome::NotPaired) {
-            err = MAA_IOS_TR("Device rejected pairing record: ") + mask(record.udid, 8)
-                  + MAA_IOS_TR(" is not paired with this device, or its pairing was removed");
+            err = "Device rejected pairing record: " + mask(record.udid, 8) + " is not paired with this device, or its pairing was removed";
         }
         else {
-            err = MAA_IOS_TR("pair-verify failed: ") + verified.error;
+            err = "pair-verify failed: " + verified.error;
         }
         budget.check(err);
         return std::nullopt;
     }
 
-    stage(verbose, MAA_IOS_TR("Request device tunnel port"));
+    stage(verbose, "Request device tunnel port");
     const auto listener = wifi::request_tcp_listener(channel, verified.shared_secret, err);
     if (!listener) {
         budget.check(err);
@@ -342,16 +339,16 @@ std::optional<Device> Device::establish_wifi_bounded(
     }
     control->close();
 
-    stage(verbose, MAA_IOS_TR("TLS-PSK and CDTunnel handshake"));
+    stage(verbose, "TLS-PSK and CDTunnel handshake");
     auto tunnel_sock = connect(*listener);
     if (!tunnel_sock) {
-        err = MAA_IOS_TR("Cannot connect to tunnel port ") + std::to_string(*listener) + "：" + err;
+        err = "Cannot connect to tunnel port " + std::to_string(*listener) + "：" + err;
         budget.check(err);
         return std::nullopt;
     }
     auto tunnel = transport::PacketTunnel::establish_psk_bounded(std::move(*tunnel_sock), verified.shared_secret, budget, err);
     if (!tunnel) {
-        err = MAA_IOS_TR("Failed to establish packet tunnel: ") + err;
+        err = "Failed to establish packet tunnel: " + err;
         budget.check(err);
         return std::nullopt;
     }
@@ -359,7 +356,7 @@ std::optional<Device> Device::establish_wifi_bounded(
     // 使用配对记录中持久化的 host identifier，保持多次会话的 RSD 身份一致。
     const auto uuid = parse_uuid_text(record.host_identifier);
     if (!uuid) {
-        err = MAA_IOS_TR("Pairing host identifier is not a valid UUID; cannot construct a stable peer identity");
+        err = "Pairing host identifier is not a valid UUID; cannot construct a stable peer identity";
         budget.check(err);
         return std::nullopt;
     }
@@ -389,11 +386,11 @@ std::string Device::property(std::string_view key) const
 std::unique_ptr<ServiceConnection> Device::connect(std::string_view service_name, std::string& err, bool verbose, std::stop_token cancel)
 {
     if (cancel.stop_requested()) {
-        err = MAA_IOS_TR("Service connection cancelled");
+        err = "Service connection cancelled";
         return nullptr;
     }
     if (!rsd_) {
-        err = MAA_IOS_TR("Session not established");
+        err = "Session not established";
         return nullptr;
     }
     return rsd_->connect_service(service_name, err, verbose, cancel);
@@ -410,7 +407,7 @@ CallResult Device::feature_call(
     int timeout_ms)
 {
     if (rsd_ && !rsd_->supports(service_name, feature_identifier)) {
-        err = std::string(service_name) + MAA_IOS_TR(" does not advertise feature ") + std::string(feature_identifier);
+        err = std::string(service_name) + " does not advertise feature " + std::string(feature_identifier);
         return CallResult::DeviceError;
     }
     auto conn = connect(service_name, err, verbose);

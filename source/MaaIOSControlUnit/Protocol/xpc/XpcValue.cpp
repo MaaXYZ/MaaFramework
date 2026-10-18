@@ -1,5 +1,4 @@
 #include "xpc/XpcValue.h"
-#include "i18n/Translation.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -193,7 +192,7 @@ public:
     bool u32(uint32_t& v)
     {
         if (remaining() < 4) {
-            return fail(MAA_IOS_TR("u32 read out of bounds"));
+            return fail("u32 read out of bounds");
         }
         v = static_cast<uint32_t>(p_[0]) | static_cast<uint32_t>(p_[1]) << 8 | static_cast<uint32_t>(p_[2]) << 16
             | static_cast<uint32_t>(p_[3]) << 24;
@@ -204,7 +203,7 @@ public:
     bool u64(uint64_t& v)
     {
         if (remaining() < 8) {
-            return fail(MAA_IOS_TR("u64 read out of bounds"));
+            return fail("u64 read out of bounds");
         }
         v = 0;
         for (int i = 0; i < 8; ++i) {
@@ -217,7 +216,7 @@ public:
     bool take(std::size_t n, std::vector<uint8_t>& out)
     {
         if (remaining() < n) {
-            return fail(MAA_IOS_TR("Fixed-length byte read out of bounds"));
+            return fail("Fixed-length byte read out of bounds");
         }
         out.assign(p_, p_ + n);
         p_ += n;
@@ -239,7 +238,7 @@ public:
         const uint8_t* start = p_;
         const uint8_t* nul = static_cast<const uint8_t*>(std::memchr(p_, 0, remaining()));
         if (nul == nullptr) {
-            return fail(MAA_IOS_TR("Key has no NUL terminator in this segment"));
+            return fail("Key has no NUL terminator in this segment");
         }
         out.assign(reinterpret_cast<const char*>(p_), static_cast<std::size_t>(nul - p_));
         p_ = nul + 1;
@@ -252,7 +251,7 @@ public:
     bool enter(std::size_t n, Reader& out)
     {
         if (remaining() < n) {
-            return fail(MAA_IOS_TR("Length prefix exceeds remaining bytes"));
+            return fail("Length prefix exceeds remaining bytes");
         }
         out = Reader(p_, p_ + n);
         p_ += n;
@@ -276,7 +275,7 @@ private:
 bool decode_into(Reader& r, Value& out, int depth)
 {
     if (depth > kMaxDepth) {
-        r.set_err(MAA_IOS_TR("XPC nesting too deep"));
+        r.set_err("XPC nesting too deep");
         return false;
     }
     uint32_t tag = 0;
@@ -336,7 +335,7 @@ bool decode_into(Reader& r, Value& out, int depth)
             return false;
         }
         if (len == 0 || len > kMaxLen) {
-            r.set_err(MAA_IOS_TR("Invalid string length"));
+            r.set_err("Invalid string length");
             return false;
         }
         std::vector<uint8_t> bytes;
@@ -357,9 +356,7 @@ bool decode_into(Reader& r, Value& out, int depth)
         }
         if (len > kMaxLen) {
             // 错误同时记录声明长度与当前限制，便于判断超限幅度。
-            r.set_err(
-                MAA_IOS_TR("Invalid data length: declared ") + std::to_string(len) + MAA_IOS_TR(" bytes, limit ")
-                + std::to_string(kMaxLen));
+            r.set_err("Invalid data length: declared " + std::to_string(len) + " bytes, limit " + std::to_string(kMaxLen));
             return false;
         }
         Value v;
@@ -403,7 +400,7 @@ bool decode_into(Reader& r, Value& out, int depth)
             return false;
         }
         if (total < 4) {
-            r.set_err(MAA_IOS_TR("Container length cannot hold count field"));
+            r.set_err("Container length cannot hold count field");
             return false;
         }
         // 仅在 total 指定的子段内解析条目，不能读取后续同层对象的字节。
@@ -421,7 +418,7 @@ bool decode_into(Reader& r, Value& out, int depth)
         // （NUL 键补齐到 4 字节，加 4 字节值）。分配条目之前先据此检查 count。
         const std::size_t min_entry = tag == static_cast<uint32_t>(Type::Array) ? 4 : 8;
         if (static_cast<std::size_t>(count) > body.remaining() / min_entry) {
-            body.set_err(MAA_IOS_TR("Entry count does not match container size"));
+            body.set_err("Entry count does not match container size");
             r.set_err(body.err());
             return false;
         }
@@ -441,14 +438,14 @@ bool decode_into(Reader& r, Value& out, int depth)
             }
         }
         if (!parsed) {
-            r.set_err(body.err().empty() ? MAA_IOS_TR("Container entry decode failed") : body.err());
+            r.set_err(body.err().empty() ? "Container entry decode failed" : body.err());
             return false;
         }
         out = std::move(v);
         return true;
     }
     default:
-        r.set_err(MAA_IOS_TR("Unsupported XPC type marker 0x") + hex(tag));
+        r.set_err("Unsupported XPC type marker 0x" + hex(tag));
         return false;
     }
 }
@@ -625,13 +622,13 @@ std::vector<uint8_t> encode(const Value& v)
 std::optional<Value> decode(std::span<const uint8_t> buf, std::string& err)
 {
     if (buf.size() > kMaxBuffer) {
-        err = MAA_IOS_TR("Buffer too large");
+        err = "Buffer too large";
         return std::nullopt;
     }
     Reader r(buf.data(), buf.data() + buf.size());
     Value v;
     if (!decode_into(r, v, 0)) {
-        err = r.err().empty() ? MAA_IOS_TR("Decode failed") : r.err();
+        err = r.err().empty() ? "Decode failed" : r.err();
         return std::nullopt;
     }
     return v;
@@ -665,13 +662,13 @@ Status decode_message(std::span<const uint8_t> buf, Message& out, std::size_t& c
 {
     consumed = 0;
     if (buf.size() < 24) {
-        err = MAA_IOS_TR("Envelope shorter than 24 bytes");
+        err = "Envelope shorter than 24 bytes";
         return Status::NeedMore;
     }
     const uint32_t magic = static_cast<uint32_t>(buf[0]) | static_cast<uint32_t>(buf[1]) << 8 | static_cast<uint32_t>(buf[2]) << 16
                            | static_cast<uint32_t>(buf[3]) << 24;
     if (magic != kWrapperMagic) {
-        err = MAA_IOS_TR("Wrapper magic mismatch: 0x") + hex(magic);
+        err = "Wrapper magic mismatch: 0x" + hex(magic);
         return Status::Malformed;
     }
     uint64_t body_len = 0;
@@ -679,12 +676,12 @@ Status decode_message(std::span<const uint8_t> buf, Message& out, std::size_t& c
         body_len |= static_cast<uint64_t>(buf[8 + i]) << (8 * i);
     }
     if (body_len > kMaxBuffer) {
-        err = MAA_IOS_TR("Invalid message length: ") + u64_to_string(body_len);
+        err = "Invalid message length: " + u64_to_string(body_len);
         return Status::Malformed;
     }
     const std::size_t total = 24 + static_cast<std::size_t>(body_len);
     if (buf.size() < total) {
-        err = MAA_IOS_TR("Missing ") + u64_to_string(total - buf.size()) + MAA_IOS_TR(" bytes");
+        err = "Missing " + u64_to_string(total - buf.size()) + " bytes";
         return Status::NeedMore;
     }
 
@@ -698,21 +695,21 @@ Status decode_message(std::span<const uint8_t> buf, Message& out, std::size_t& c
         Reader r(buf.data() + 24, buf.data() + total);
         uint32_t pmagic = 0;
         if (!r.u32(pmagic) || pmagic != kPayloadMagic) {
-            err = MAA_IOS_TR("Payload magic mismatch: 0x") + hex(pmagic);
+            err = "Payload magic mismatch: 0x" + hex(pmagic);
             return Status::Malformed;
         }
         uint32_t version = 0;
         if (!r.u32(version)) {
-            err = MAA_IOS_TR("Cannot read protocol version");
+            err = "Cannot read protocol version";
             return Status::Malformed;
         }
         if (version != kProtocolVersion) {
-            err = MAA_IOS_TR("Unsupported XPC protocol version: 0x") + hex(version);
+            err = "Unsupported XPC protocol version: 0x" + hex(version);
             return Status::Malformed;
         }
         Value v;
         if (!decode_into(r, v, 0)) {
-            err = r.err().empty() ? MAA_IOS_TR("Payload decode failed") : r.err();
+            err = r.err().empty() ? "Payload decode failed" : r.err();
             return Status::Malformed;
         }
         m.has_body = true;
@@ -752,8 +749,8 @@ std::string describe(const Value& v, std::size_t budget)
     case Type::Data:
         return "<" + u64_to_string(v.data.size()) + " bytes>";
     case Type::FileTransfer:
-        return "<file " + u64_to_string(v.file_size) + " bytes, id=" + u64_to_string(v.transfer_id)
-               + (v.data.empty() ? "" : MAA_IOS_TR(", received ")) + ">";
+        return "<file " + u64_to_string(v.file_size) + " bytes, id=" + u64_to_string(v.transfer_id) + (v.data.empty() ? "" : ", received ")
+               + ">";
     case Type::Uuid: {
         static constexpr char kHex[] = "0123456789abcdef";
         std::string s;

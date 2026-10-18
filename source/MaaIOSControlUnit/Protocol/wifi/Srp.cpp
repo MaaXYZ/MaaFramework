@@ -1,5 +1,4 @@
 #include "wifi/Srp.h"
-#include "i18n/Translation.h"
 
 #include <openssl/bn.h>
 #include <openssl/crypto.h>
@@ -140,12 +139,12 @@ bool SrpClient::process(const Bytes& salt, const Bytes& server_public, std::stri
     m2_.clear();
     err.clear();
     if (server_public.empty() || server_public.size() > kWidth) {
-        err = MAA_IOS_TR("SRP server public key is empty or exceeds 384 bytes");
+        err = "SRP server public key is empty or exceeds 384 bytes";
         return false;
     }
     if (!private_hex_.empty()
         && (private_hex_.size() > kWidth * 2 || private_hex_.find_first_not_of("0123456789abcdefABCDEF") != std::string::npos)) {
-        err = MAA_IOS_TR("SRP private key must be a nonzero hexadecimal integer of at most 3072 bits");
+        err = "SRP private key must be a nonzero hexadecimal integer of at most 3072 bits";
         return false;
     }
     try {
@@ -170,7 +169,7 @@ bool SrpClient::process(const Bytes& salt, const Bytes& server_public, std::stri
             require(BN_rand(a.v, 1024, -1, 0) == 1, "BN_rand");
         }
         if (BN_is_zero(a.v)) {
-            err = MAA_IOS_TR("SRP private key must be a nonzero hexadecimal integer of at most 3072 bits");
+            err = "SRP private key must be a nonzero hexadecimal integer of at most 3072 bits";
             return false;
         }
         BN_set_flags(a.v, BN_FLG_CONSTTIME);
@@ -182,7 +181,7 @@ bool SrpClient::process(const Bytes& salt, const Bytes& server_public, std::stri
         Bn mod;
         require(BN_mod(mod.v, B.v, N.v, ctx.get()) == 1, "BN_mod(B)");
         if (BN_is_zero(mod.v)) {
-            err = MAA_IOS_TR("SRP B is a multiple of N; rejected");
+            err = "SRP B is a multiple of N; rejected";
             return false;
         }
 
@@ -223,7 +222,7 @@ bool SrpClient::process(const Bytes& salt, const Bytes& server_public, std::stri
         return true;
     }
     catch (const std::runtime_error& failure) {
-        err = MAA_IOS_TR("SRP cryptographic operation failed: ") + std::string(failure.what());
+        err = "SRP cryptographic operation failed: " + std::string(failure.what());
         return false;
     }
 }
@@ -269,12 +268,12 @@ bool SrpServer::initialize(const Bytes& salt, std::string& err)
     b_public_.clear();
     err.clear();
     if (salt.empty() || salt.size() > 255) {
-        err = MAA_IOS_TR("SRP salt must contain 1 to 255 bytes");
+        err = "SRP salt must contain 1 to 255 bytes";
         return false;
     }
     if (!private_hex_.empty()
         && (private_hex_.size() > kWidth * 2 || private_hex_.find_first_not_of("0123456789abcdefABCDEF") != std::string::npos)) {
-        err = MAA_IOS_TR("SRP private key must be a nonzero hexadecimal integer of at most 3072 bits");
+        err = "SRP private key must be a nonzero hexadecimal integer of at most 3072 bits";
         return false;
     }
     try {
@@ -290,7 +289,7 @@ bool SrpServer::initialize(const Bytes& salt, std::string& err)
             require(BN_priv_rand(b.v, 1024, BN_RAND_TOP_ONE, BN_RAND_BOTTOM_ANY) == 1, "BN_priv_rand");
         }
         if (BN_is_zero(b.v)) {
-            err = MAA_IOS_TR("SRP private key must be a nonzero hexadecimal integer of at most 3072 bits");
+            err = "SRP private key must be a nonzero hexadecimal integer of at most 3072 bits";
             return false;
         }
         BN_set_flags(b.v, BN_FLG_CONSTTIME);
@@ -319,7 +318,7 @@ bool SrpServer::initialize(const Bytes& salt, std::string& err)
     }
     catch (const std::runtime_error& failure) {
         clear_secrets();
-        err = MAA_IOS_TR("SRP cryptographic operation failed: ") + std::string(failure.what());
+        err = "SRP cryptographic operation failed: " + std::string(failure.what());
         return false;
     }
 }
@@ -331,19 +330,19 @@ bool SrpServer::process(const Bytes& client_public, const Bytes& client_proof, s
     err.clear();
     if (!awaiting_client_) {
         clear_secrets();
-        err = MAA_IOS_TR("SRP server requires a new initialized challenge");
+        err = "SRP server requires a new initialized challenge";
         return false;
     }
     // 即使输入不合法也消耗本次 challenge，不能对同一 b 猜测多个 PIN/证明。
     awaiting_client_ = false;
     if (client_public.empty() || client_public.size() > kWidth) {
         clear_secrets();
-        err = MAA_IOS_TR("SRP client public key is empty or exceeds 384 bytes");
+        err = "SRP client public key is empty or exceeds 384 bytes";
         return false;
     }
     if (client_proof.size() != kHashSize) {
         clear_secrets();
-        err = MAA_IOS_TR("SRP client proof must contain 64 bytes");
+        err = "SRP client proof must contain 64 bytes";
         return false;
     }
     try {
@@ -356,7 +355,7 @@ bool SrpServer::process(const Bytes& client_public, const Bytes& client_proof, s
         require(BN_mod(mod.v, A.v, N.v, ctx.get()) == 1, "BN_mod(A)");
         if (BN_is_zero(mod.v)) {
             clear_secrets();
-            err = MAA_IOS_TR("SRP A is a multiple of N; rejected");
+            err = "SRP A is a multiple of N; rejected";
             return false;
         }
         Bn B;
@@ -378,7 +377,7 @@ bool SrpServer::process(const Bytes& client_public, const Bytes& client_proof, s
         if (CRYPTO_memcmp(client_proof.data(), expected.data(), kHashSize) != 0) {
             clear_bytes(key);
             clear_secrets();
-            err = MAA_IOS_TR("SRP client proof mismatch; pairing aborted");
+            err = "SRP client proof mismatch; pairing aborted";
             return false;
         }
         auto proof = sha512({ a_public, expected, key });
@@ -389,7 +388,7 @@ bool SrpServer::process(const Bytes& client_public, const Bytes& client_proof, s
     }
     catch (const std::runtime_error& failure) {
         clear_secrets();
-        err = MAA_IOS_TR("SRP cryptographic operation failed: ") + std::string(failure.what());
+        err = "SRP cryptographic operation failed: " + std::string(failure.what());
         return false;
     }
 }

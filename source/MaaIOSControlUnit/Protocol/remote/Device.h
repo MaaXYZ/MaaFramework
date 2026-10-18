@@ -54,7 +54,7 @@ public:
     /// 经 usbmux 建立会话。udid 为空时自动选择唯一真实 UDID；同设备优先 USB，
     /// 多台设备时返回脱敏候选列表，同一传输条目重复时要求解决歧义后重试。
     /// usb_only 过滤 Network 条目，供首次远程配对等必须使用 USB 的操作调用。
-    /// verbose 向 stderr 报告各阶段进展；失败时已取得的资源随局部对象释放。
+    /// verbose 通过调试日志报告各阶段进展；失败时已取得的资源随局部对象释放。
     static std::optional<Device> establish(std::string_view udid, std::string& err, bool verbose = false, bool usb_only = false);
     static std::optional<Device> establish_bounded(
         std::string_view udid,

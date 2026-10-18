@@ -1,5 +1,4 @@
 #include "rt/RtpHevc.h"
-#include "i18n/Translation.h"
 
 #include <utility>
 
@@ -111,7 +110,7 @@ bool HevcRtpDepacketizer::push_nals(std::span<const uint8_t> datagram, std::vect
         ++stats_.malformed;
         // 无法识别其 PT/来源时，不让无关的坏包作废已收到的 FU。
         // 若缺失的是视频分片，下一条合法 FU 的序号连续性仍会拒绝残缺 NAL。
-        err = MAA_IOS_TR("Not an RTP packet");
+        err = "Not an RTP packet";
         return false;
     }
     err.clear();

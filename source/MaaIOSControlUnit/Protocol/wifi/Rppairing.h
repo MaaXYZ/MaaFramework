@@ -1,6 +1,5 @@
 #pragma once
 
-#include "i18n/Translation.h"
 
 #include <cstdint>
 #include <functional>
@@ -31,7 +30,7 @@ public:
     virtual bool wait_readable(int ms, std::string& err)
     {
         (void)ms;
-        err = MAA_IOS_TR("This stream does not support waiting for readability");
+        err = "This stream does not support waiting for readability";
         return false;
     }
 };

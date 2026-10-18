@@ -1,5 +1,6 @@
 #include "remote/RemoteXpc.h"
-#include "i18n/Translation.h"
+
+#include "MaaUtils/Logger.h"
 
 #include <algorithm>
 #include <atomic>
@@ -147,11 +148,12 @@ std::optional<std::array<uint8_t, 16>> peer_uuid_from_host_id(std::string_view h
 bool Channel::send_bytes(std::span<const uint8_t> data, std::string& err)
 {
     if (verbose_) {
-        std::fprintf(stderr, MAA_IOS_TR("    >> %zu bytes: "), data.size());
+        std::string hex;
+        hex.reserve(data.size() * 2);
         for (const uint8_t b : data) {
-            std::fprintf(stderr, "%02x", b);
+            hex += std::format("{:02x}", b);
         }
-        std::fprintf(stderr, "\n");
+        LogTrace << "HTTP/2 send" << VAR(data.size()) << hex;
     }
     return write_all(socket_, data, err);
 }
@@ -174,20 +176,20 @@ bool Channel::start(std::string& err)
     outbound_streams_.emplace(kReplyStream, peer_initial_window_);
     // 1. 客户端前置签名（不是帧，24 字节裸串）。
     if (!write_all(socket_, std::string_view(http2::kClientPreface, http2::kClientPrefaceSize), err)) {
-        err = MAA_IOS_TR("Failed to send HTTP/2 preface: ") + err;
+        err = "Failed to send HTTP/2 preface: " + err;
         return false;
     }
     // 2. 声明流级接收窗口和并发流数量，沿用已验证的 RemoteXPC 设置。
     if (!send_bytes(
             http2::settings_frame({ { http2::kSettingMaxConcurrentStreams, 100 }, { http2::kSettingInitialWindowSize, kGrantWindow } }),
             err)) {
-        err = MAA_IOS_TR("Failed to send SETTINGS: ") + err;
+        err = "Failed to send SETTINGS: " + err;
         return false;
     }
     // 3. 将连接级接收窗口增加到 16 MiB。
     //    发送窗口仍使用默认值，直到对端 SETTINGS / WINDOW_UPDATE 更新。
     if (!send_bytes(http2::window_update_frame(0, kWindowIncr), err)) {
-        err = MAA_IOS_TR("Failed to send WINDOW_UPDATE: ") + err;
+        err = "Failed to send WINDOW_UPDATE: " + err;
         return false;
     }
     // 4–8. 按设备要求建立主通道和回信通道。
@@ -195,29 +197,29 @@ bool Channel::start(std::string& err)
     // XPC wrapper 必须放入 DATA 帧。直接发送 wrapper 会使其 magic 被当作
     // HTTP/2 帧头，可能表现为帧长度错误。
     if (!send_bytes(http2::headers_frame(kRootStream), err)) {
-        err = MAA_IOS_TR("Failed to send primary channel HEADERS: ") + err;
+        err = "Failed to send primary channel HEADERS: " + err;
         return false;
     }
     auto empty_dict = xpc::make_dict();
     auto opener = xpc::encode_message(wrapper_flags(&empty_dict, false), 0, &empty_dict);
     if (!send_data(kRootStream, opener, err)) {
-        err = MAA_IOS_TR("Failed to send first frame: ") + err;
+        err = "Failed to send first frame: " + err;
         return false;
     }
     next_message_id_ = 1;
     if (!send_bytes(http2::headers_frame(kReplyStream), err)) {
-        err = MAA_IOS_TR("Failed to send reply channel HEADERS: ") + err;
+        err = "Failed to send reply channel HEADERS: " + err;
         return false;
     }
     // 主通道的「终止帧」：空载荷，flags = ALWAYS_SET | 0x200（见常量注释）。
     auto term = xpc::encode_message(xpc::kFlagAlwaysSet | xpc::kFlagTermChannel, 0, nullptr);
     if (!send_data(kRootStream, term, err)) {
-        err = MAA_IOS_TR("Failed to send terminating frame: ") + err;
+        err = "Failed to send terminating frame: " + err;
         return false;
     }
     auto init = xpc::encode_message(xpc::kFlagAlwaysSet | xpc::kFlagInitHandshake, 0, nullptr);
     if (!send_data(kReplyStream, init, err)) {
-        err = MAA_IOS_TR("Failed to send INIT_HANDSHAKE frame: ") + err;
+        err = "Failed to send INIT_HANDSHAKE frame: " + err;
         return false;
     }
 
@@ -226,11 +228,11 @@ bool Channel::start(std::string& err)
     while (!settings_received_) {
         const auto left = remaining_ms(deadline);
         if (left == 0) {
-            err = MAA_IOS_TR("Timed out waiting for device SETTINGS");
+            err = "Timed out waiting for device SETTINGS";
             return false;
         }
         if (!pump(static_cast<int>(left), err)) {
-            err = MAA_IOS_TR("Disconnected while waiting for device SETTINGS: ") + err;
+            err = "Disconnected while waiting for device SETTINGS: " + err;
             return false;
         }
     }
@@ -242,12 +244,12 @@ bool Channel::announce_device(const PeerIdentity& identity, std::string& err)
 {
     auto hs = build_handshake(identity);
     if (!send_request(hs, false, err)) {
-        err = MAA_IOS_TR("Failed to send RemoteXPC identity: ") + err;
+        err = "Failed to send RemoteXPC identity: " + err;
         return false;
     }
     xpc::Value info;
     if (!receive(info, 5000, err)) {
-        err = MAA_IOS_TR("Failed to read peer_info: ") + err;
+        err = "Failed to read peer_info: " + err;
         return false;
     }
     peer_info_ = std::move(info);
@@ -269,7 +271,7 @@ bool Channel::pump(int timeout_ms, std::string& err)
 {
     err.clear();
     if (terminated_) {
-        err = MAA_IOS_TR("Connection terminated");
+        err = "Connection terminated";
         return false;
     }
     maybe_open_dump();
@@ -282,7 +284,7 @@ bool Channel::pump(int timeout_ms, std::string& err)
         if (st == http2::Status::Ok) {
             rx_.erase(rx_.begin(), rx_.begin() + static_cast<std::ptrdiff_t>(used));
             if (verbose_) {
-                std::fprintf(stderr, "    <- %s\n", http2::describe(f).c_str());
+                LogDebug << std::format("<- {}", http2::describe(f));
             }
             if (!handle_frame(f, err)) {
                 // 已消耗导致失败的帧，不能把下一次调用当成同一条健康连接继续。
@@ -297,22 +299,12 @@ bool Channel::pump(int timeout_ms, std::string& err)
             err = perr;
             // 记录缓冲前缀及流内偏移，便于与原始 dump 对照。
             // 这些信息用于定位问题，不足以单独判断是设备、传输还是本地解析错误。
-            std::fprintf(
-                stderr,
-                MAA_IOS_TR(
-                    "    HTTP/2 parse failed: %s; buffered %zu bytes, stream offset %llu (total "
-                    "received %llu), first 64 bytes:\n      "),
-                perr.c_str(),
-                rx_.size(),
-                static_cast<unsigned long long>(rx_total_ - rx_.size()),
-                static_cast<unsigned long long>(rx_total_));
+            std::string hex;
             for (std::size_t i = 0; i < 64 && i < rx_.size(); ++i) {
-                std::fprintf(stderr, "%02x", rx_[i]);
-                if (i % 16 == 15) {
-                    std::fprintf(stderr, "\n      ");
-                }
+                hex += std::format("{:02x}", rx_[i]);
             }
-            std::fprintf(stderr, "\n");
+            LogError << "HTTP/2 parse failed:" << perr << VAR(rx_.size()) << VAR(rx_total_ - rx_.size()) << VAR(rx_total_)
+                     << "first 64 bytes:" << hex;
             return false;
         }
         break; // 缓冲里只剩半帧，去收字节
@@ -335,7 +327,7 @@ bool Channel::pump(int timeout_ms, std::string& err)
     }
     if (got.size() > kMaxBuffered - buffered_bytes()) {
         terminated_ = true;
-        err = MAA_IOS_TR("RemoteXPC connection input exceeds 64 MiB");
+        err = "RemoteXPC connection input exceeds 64 MiB";
         return false;
     }
     rx_.insert(rx_.end(), got.begin(), got.end());
@@ -362,7 +354,7 @@ void Channel::maybe_open_dump()
     const std::string path = std::string(prefix) + "." + std::to_string(seq.fetch_add(1)) + ".bin";
     dump_.reset(std::fopen(path.c_str(), "wb"));
     if (dump_ != nullptr) {
-        std::fprintf(stderr, MAA_IOS_TR("    HTTP/2 input dump -> %s\n"), path.c_str());
+        LogDebug << std::format("HTTP/2 input dump -> {}", path);
     }
 }
 
@@ -385,7 +377,7 @@ bool Channel::handle_frame(const http2::Frame& f, std::string& err)
                 const int64_t delta = static_cast<int64_t>(value) - static_cast<int64_t>(peer_initial_window_);
                 for (const auto& [stream, window] : outbound_streams_) {
                     if (window + delta > http2::kMaxWindowSize) {
-                        err = MAA_IOS_TR("Flow-control window exceeds 2^31 - 1");
+                        err = "Flow-control window exceeds 2^31 - 1";
                         return false;
                     }
                 }
@@ -413,7 +405,7 @@ bool Channel::handle_frame(const http2::Frame& f, std::string& err)
         }
         if (f.stream_id == 0) {
             if (outbound_connection_ > http2::kMaxWindowSize - inc) {
-                err = MAA_IOS_TR("Flow-control window exceeds 2^31 - 1");
+                err = "Flow-control window exceeds 2^31 - 1";
                 return false;
             }
             outbound_connection_ += inc;
@@ -426,7 +418,7 @@ bool Channel::handle_frame(const http2::Frame& f, std::string& err)
             }
             const int64_t base = it->second;
             if (base > http2::kMaxWindowSize - inc) {
-                err = MAA_IOS_TR("Flow-control window exceeds 2^31 - 1");
+                err = "Flow-control window exceeds 2^31 - 1";
                 return false;
             }
             it->second = base + inc;
@@ -435,7 +427,7 @@ bool Channel::handle_frame(const http2::Frame& f, std::string& err)
     }
     case http2::kPing:
         if (f.stream_id != 0 || f.payload.size() != 8) {
-            err = MAA_IOS_TR("PING must use stream 0 and contain exactly 8 bytes");
+            err = "PING must use stream 0 and contain exactly 8 bytes";
             return false;
         }
         // 非 ACK 的 PING 原样应答，维持设备的连接活性检查。
@@ -451,7 +443,7 @@ bool Channel::handle_frame(const http2::Frame& f, std::string& err)
         }
     case http2::kGoAway: {
         if (f.stream_id != 0) {
-            err = MAA_IOS_TR("GOAWAY must use stream 0");
+            err = "GOAWAY must use stream 0";
             return false;
         }
         http2::GoAway g;
@@ -459,7 +451,7 @@ bool Channel::handle_frame(const http2::Frame& f, std::string& err)
             return false;
         }
         terminated_ = true;
-        err = std::string(MAA_IOS_TR("Device sent GOAWAY ")) + http2::error_code_name(g.error_code);
+        err = std::string("Device sent GOAWAY ") + http2::error_code_name(g.error_code);
         if (!g.debug_data.empty()) {
             err += "：\"" + g.debug_data + "\"";
         }
@@ -467,7 +459,7 @@ bool Channel::handle_frame(const http2::Frame& f, std::string& err)
     }
     case http2::kRstStream: {
         if (f.stream_id == 0) {
-            err = MAA_IOS_TR("RST_STREAM must use a nonzero stream");
+            err = "RST_STREAM must use a nonzero stream";
             return false;
         }
         uint32_t code = 0;
@@ -478,12 +470,12 @@ bool Channel::handle_frame(const http2::Frame& f, std::string& err)
             return true;
         }
         // 重置也使该流的缓冲数据失效，不能在同批帧报告重置后仍返回回复或文件。
-        err = std::string(MAA_IOS_TR("RemoteXPC stream reset: ")) + std::to_string(f.stream_id) + ": " + http2::error_code_name(code);
+        err = std::string("RemoteXPC stream reset: ") + std::to_string(f.stream_id) + ": " + http2::error_code_name(code);
         return false;
     }
     case http2::kData: {
         if (f.stream_id == 0) {
-            err = MAA_IOS_TR("DATA must use a nonzero stream");
+            err = "DATA must use a nonzero stream";
             return false;
         }
         std::span<const uint8_t> body;
@@ -496,7 +488,7 @@ bool Channel::handle_frame(const http2::Frame& f, std::string& err)
             auto it = raw_.find(f.stream_id);
             if (it == raw_.end()) {
                 if (raw_.size() >= kMaxFileStreams) {
-                    err = MAA_IOS_TR("RemoteXPC file stream limit exceeded (100)");
+                    err = "RemoteXPC file stream limit exceeded (100)";
                     return false;
                 }
                 it = raw_.try_emplace(f.stream_id).first;
@@ -510,19 +502,19 @@ bool Channel::handle_frame(const http2::Frame& f, std::string& err)
                 return true;
             }
             if (file->consumed || file->ended) {
-                err = MAA_IOS_TR("RemoteXPC file stream cannot be reused: ") + std::to_string(f.stream_id);
+                err = "RemoteXPC file stream cannot be reused: " + std::to_string(f.stream_id);
                 return false;
             }
             buf = &file->bytes;
             const auto limit = file->expected.value_or(xpc::kMaxBuffer);
             if (body.size() > limit - buf->size()) {
-                err = MAA_IOS_TR("RemoteXPC file data exceeds declared size or 32 MiB limit");
+                err = "RemoteXPC file data exceeds declared size or 32 MiB limit";
                 return false;
             }
             if ((f.flags & http2::kFlagEndStream) != 0) {
                 file->ended = true;
                 if (file->expected && buf->size() + body.size() != *file->expected) {
-                    err = MAA_IOS_TR("RemoteXPC file ended before its declared size");
+                    err = "RemoteXPC file ended before its declared size";
                     return false;
                 }
             }
@@ -530,18 +522,18 @@ bool Channel::handle_frame(const http2::Frame& f, std::string& err)
         else {
             const bool upload_ack = f.stream_id >= 5 && f.stream_id < next_outbound_file_stream_;
             if (f.stream_id != kRootStream && f.stream_id != kReplyStream && !upload_ack) {
-                err = MAA_IOS_TR("Unsupported RemoteXPC message stream: ") + std::to_string(f.stream_id);
+                err = "Unsupported RemoteXPC message stream: " + std::to_string(f.stream_id);
                 return false;
             }
             buf = &pending_[f.stream_id];
             const std::size_t limit = upload_ack ? 24 : kMaxXpcStream;
             if (body.size() > limit - buf->size()) {
-                err = MAA_IOS_TR("RemoteXPC message stream input exceeds 32 MiB plus wrapper");
+                err = "RemoteXPC message stream input exceeds 32 MiB plus wrapper";
                 return false;
             }
         }
         if (body.size() > kMaxBuffered - buffered_bytes()) {
-            err = MAA_IOS_TR("RemoteXPC connection input exceeds 64 MiB");
+            err = "RemoteXPC connection input exceeds 64 MiB";
             return false;
         }
         buf->insert(buf->end(), body.begin(), body.end());
@@ -554,7 +546,7 @@ bool Channel::handle_frame(const http2::Frame& f, std::string& err)
         }
         if ((f.flags & http2::kFlagEndStream) != 0 && (f.stream_id == kRootStream || f.stream_id == kReplyStream)) {
             terminated_ = true;
-            err = MAA_IOS_TR("Device set END_STREAM on message channel; connection ended");
+            err = "Device set END_STREAM on message channel; connection ended";
             return false;
         }
         return true;
@@ -571,7 +563,7 @@ bool Channel::replenish_inbound_window(uint32_t stream_id, std::string& err)
     if (consumed_connection_ >= kReplenishThreshold) {
         const auto n = static_cast<uint32_t>(std::min<uint64_t>(consumed_connection_, 0x7FFFFFFF));
         if (!send_bytes(http2::window_update_frame(0, n), err)) {
-            err = MAA_IOS_TR("Failed to replenish connection receive window: ") + err;
+            err = "Failed to replenish connection receive window: " + err;
             return false;
         }
         consumed_connection_ -= n;
@@ -580,7 +572,7 @@ bool Channel::replenish_inbound_window(uint32_t stream_id, std::string& err)
     if (it != consumed_per_stream_.end() && it->second >= kReplenishThreshold) {
         const auto n = static_cast<uint32_t>(std::min<uint64_t>(it->second, 0x7FFFFFFF));
         if (!send_bytes(http2::window_update_frame(stream_id, n), err)) {
-            err = MAA_IOS_TR("Failed to replenish stream receive window: ") + err;
+            err = "Failed to replenish stream receive window: " + err;
             return false;
         }
         it->second -= n;
@@ -600,7 +592,7 @@ bool Channel::send_data(
     while (off < payload.size()) {
         if ((cancelled && cancelled()) || (deadline && remaining_ms(*deadline) == 0)) {
             terminated_ = true;
-            err = MAA_IOS_TR("RemoteXPC upload cancelled or timed out");
+            err = "RemoteXPC upload cancelled or timed out";
             return false;
         }
         auto& stream_window = outbound_streams_.try_emplace(stream_id, peer_initial_window_).first->second;
@@ -610,12 +602,12 @@ bool Channel::send_data(
             // 这是轮数限制，实际总时长仍受底层读写耗时影响。
             if (++idle_rounds > 5 && !deadline) {
                 terminated_ = true;
-                err = MAA_IOS_TR("Peer did not replenish flow-control window; sent ") + std::to_string(off) + "/"
-                      + std::to_string(payload.size()) + MAA_IOS_TR(" bytes");
+                err = "Peer did not replenish flow-control window; sent " + std::to_string(off) + "/" + std::to_string(payload.size())
+                      + " bytes";
                 return false;
             }
             if (!pump(deadline ? static_cast<int>(std::min<int64_t>(1000, remaining_ms(*deadline))) : 1000, err)) {
-                err = MAA_IOS_TR("Disconnected while waiting for flow-control window: ") + err;
+                err = "Disconnected while waiting for flow-control window: " + err;
                 return false;
             }
             continue;
@@ -625,7 +617,7 @@ bool Channel::send_data(
         auto frame = http2::data_frame(stream_id, payload.subspan(off, n));
         if (!send_bytes(frame, err)) {
             terminated_ = true;
-            err = MAA_IOS_TR("Failed to send DATA: ") + err;
+            err = "Failed to send DATA: " + err;
             return false;
         }
         outbound_connection_ -= static_cast<int64_t>(n);
@@ -647,12 +639,12 @@ bool Channel::send_file_transfer(
     err.clear();
     if (terminated_ || timeout_ms <= 0 || transfer_id == 0 || size > (64u << 20) || outbound_transfer_ids_.size() >= kMaxFileStreams
         || outbound_transfer_ids_.contains(transfer_id)) {
-        err = MAA_IOS_TR("Invalid or reused RemoteXPC upload attachment");
+        err = "Invalid or reused RemoteXPC upload attachment";
         return false;
     }
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
     if (cancelled && cancelled()) {
-        err = MAA_IOS_TR("RemoteXPC upload cancelled or timed out");
+        err = "RemoteXPC upload cancelled or timed out";
         return false;
     }
     const uint32_t stream = next_outbound_file_stream_;
@@ -674,7 +666,7 @@ bool Channel::send_file_transfer(
         input.read(reinterpret_cast<char*>(buffer.data()), static_cast<std::streamsize>(n));
         if (input.gcount() != static_cast<std::streamsize>(n)) {
             terminated_ = true;
-            err = MAA_IOS_TR("RemoteXPC upload file ended before its declared size");
+            err = "RemoteXPC upload file ended before its declared size";
             return false;
         }
         if (!send_data(stream, std::span(buffer.data(), n), err, deadline, cancelled)) {
@@ -687,7 +679,7 @@ bool Channel::send_file_transfer(
     }
     if ((cancelled && cancelled()) || remaining_ms(deadline) == 0) {
         terminated_ = true;
-        err = MAA_IOS_TR("RemoteXPC upload cancelled or timed out");
+        err = "RemoteXPC upload cancelled or timed out";
         return false;
     }
     if (!send_bytes(http2::data_frame(stream, { }, http2::kFlagEndStream), err)) {
@@ -703,22 +695,17 @@ bool Channel::send_request(const xpc::Value& body, bool want_reply, std::string&
 {
     err.clear();
     if (terminated_) {
-        err = MAA_IOS_TR("Connection terminated");
+        err = "Connection terminated";
         return false;
     }
     const auto flags = wrapper_flags(&body, want_reply);
     auto wire = xpc::encode_message(flags, next_message_id_, &body);
     if (wire.empty()) {
-        err = MAA_IOS_TR("XPC encoding failed (depth or length limit exceeded)");
+        err = "XPC encoding failed (depth or length limit exceeded)";
         return false;
     }
     if (verbose_) {
-        std::fprintf(
-            stderr,
-            "    -> id=%llu flags=0x%x %s\n",
-            static_cast<unsigned long long>(next_message_id_),
-            flags,
-            xpc::describe(body).substr(0, 200).c_str());
+        LogDebug << std::format("-> id={} flags=0x{:x} {}", next_message_id_, flags, xpc::describe(body).substr(0, 200));
     }
     if (!send_data(kRootStream, wire, err)) {
         return false;
@@ -763,23 +750,23 @@ bool Channel::receive_file(
         auto ack_frame = http2::data_frame(stream_id, accept);
         frames.insert(frames.end(), ack_frame.begin(), ack_frame.end());
         if (!send_bytes(frames, err)) {
-            err = MAA_IOS_TR("Failed to accept file stream: ") + err;
+            err = "Failed to accept file stream: " + err;
             return false;
         }
     }
     while (file.bytes.size() < size) {
         if (file.ended) {
-            err = MAA_IOS_TR("RemoteXPC file ended before its declared size");
+            err = "RemoteXPC file ended before its declared size";
             return false;
         }
         const auto left = remaining_ms(deadline);
         if (left == 0) {
-            err = MAA_IOS_TR("File receive timed out: stream ") + std::to_string(stream_id) + MAA_IOS_TR(" has received ")
-                  + std::to_string(file.bytes.size()) + "/" + std::to_string(size) + MAA_IOS_TR(" bytes");
+            err = "File receive timed out: stream " + std::to_string(stream_id) + " has received " + std::to_string(file.bytes.size()) + "/"
+                  + std::to_string(size) + " bytes";
             return false;
         }
         if (!pump(static_cast<int>(left), err)) {
-            err = MAA_IOS_TR("Disconnected while receiving file: ") + err;
+            err = "Disconnected while receiving file: " + err;
             return false;
         }
     }
@@ -795,7 +782,7 @@ bool Channel::materialize_files(xpc::Value& reply, std::chrono::steady_clock::ti
 {
     std::vector<xpc::Value*> files;
     if (!collect_files(reply, files)) {
-        err = MAA_IOS_TR("RemoteXPC file stream limit exceeded (100)");
+        err = "RemoteXPC file stream limit exceeded (100)";
         return false;
     }
     uint64_t total = 0;
@@ -803,7 +790,7 @@ bool Channel::materialize_files(xpc::Value& reply, std::chrono::steady_clock::ti
     for (std::size_t i = 0; i < files.size(); ++i) {
         const auto size = files[i]->file_size;
         if (size > xpc::kMaxBuffer || size > xpc::kMaxBuffer - total) {
-            err = MAA_IOS_TR("RemoteXPC reply attachments exceed 32 MiB");
+            err = "RemoteXPC reply attachments exceed 32 MiB";
             return false;
         }
         total += size;
@@ -811,7 +798,7 @@ bool Channel::materialize_files(xpc::Value& reply, std::chrono::steady_clock::ti
         auto it = raw_.find(id);
         if (it == raw_.end()) {
             if (raw_.size() >= kMaxFileStreams) {
-                err = MAA_IOS_TR("RemoteXPC file stream limit exceeded (100)");
+                err = "RemoteXPC file stream limit exceeded (100)";
                 return false;
             }
             it = raw_.try_emplace(id).first;
@@ -819,15 +806,15 @@ bool Channel::materialize_files(xpc::Value& reply, std::chrono::steady_clock::ti
         }
         auto& file = it->second;
         if (file.consumed || file.expected) {
-            err = MAA_IOS_TR("RemoteXPC file stream cannot be reused: ") + std::to_string(id);
+            err = "RemoteXPC file stream cannot be reused: " + std::to_string(id);
             return false;
         }
         if (file.bytes.size() > size) {
-            err = MAA_IOS_TR("RemoteXPC file data exceeds declared size or 32 MiB limit");
+            err = "RemoteXPC file data exceeds declared size or 32 MiB limit";
             return false;
         }
         if (file.ended && file.bytes.size() != size) {
-            err = MAA_IOS_TR("RemoteXPC file ended before its declared size");
+            err = "RemoteXPC file ended before its declared size";
             return false;
         }
         file.expected = size;
@@ -837,11 +824,7 @@ bool Channel::materialize_files(xpc::Value& reply, std::chrono::steady_clock::ti
     for (std::size_t i = 0; i < files.size(); ++i) {
         const auto id = static_cast<uint32_t>((i + 1) * 2);
         if (verbose_) {
-            std::fprintf(
-                stderr,
-                MAA_IOS_TR("    Receiving file: %llu bytes on stream %u\n"),
-                static_cast<unsigned long long>(files[i]->file_size),
-                id);
+            LogDebug << std::format("Receiving file: {} bytes on stream {}", files[i]->file_size, id);
         }
         if (!receive_file(id, files[i]->file_size, deadline, files[i]->data, err)) {
             return false;
@@ -859,21 +842,21 @@ bool Channel::take_message(xpc::Value& out, std::chrono::steady_clock::time_poin
             std::string derr;
             const auto st = xpc::decode_message(buf, m, used, derr);
             if (st == xpc::Status::Malformed) {
-                err = MAA_IOS_TR("Stream ") + std::to_string(stream) + MAA_IOS_TR(" contains malformed message: ") + derr;
+                err = "Stream " + std::to_string(stream) + " contains malformed message: " + derr;
                 return false;
             }
             if (st == xpc::Status::NeedMore) {
                 // verbose 记录消息欠缺字节数，便于结合原始入流排查未完成的回复。
                 // 仅凭本地缓冲不足不能断定对端是否已发完。
                 if (verbose_) {
-                    std::fprintf(stderr, MAA_IOS_TR("    Stream %u message incomplete: %s\n"), stream, derr.c_str());
+                    LogDebug << std::format("Stream {} message incomplete: {}", stream, derr);
                 }
                 break;
             }
             buf.erase(buf.begin(), buf.begin() + static_cast<std::ptrdiff_t>(used));
             if (stream >= 5 && stream % 2 == 1 && stream < next_outbound_file_stream_) {
                 if (m.has_body || (m.flags & xpc::kFlagFileTxResponse) == 0) {
-                    err = MAA_IOS_TR("Invalid RemoteXPC upload acknowledgement");
+                    err = "Invalid RemoteXPC upload acknowledgement";
                     return false;
                 }
                 continue;
@@ -881,12 +864,7 @@ bool Channel::take_message(xpc::Value& out, std::chrono::steady_clock::time_poin
             // 跳过握手 ACK 使用的空载荷和空字典；仅向调用方返回非空字典消息。
             if (m.has_body && m.body.is_dict() && !m.body.dict.empty()) {
                 if (verbose_) {
-                    std::fprintf(
-                        stderr,
-                        MAA_IOS_TR("    => stream %u id=%llu %s\n"),
-                        stream,
-                        static_cast<unsigned long long>(m.message_id),
-                        xpc::describe(m.body).substr(0, 300).c_str());
+                    LogDebug << std::format("=> stream {} id={} {}", stream, m.message_id, xpc::describe(m.body).substr(0, 300));
                 }
                 out = std::move(m.body);
                 return materialize_files(out, deadline, err);
@@ -902,7 +880,7 @@ Channel::Wait Channel::wait(xpc::Value& out, int timeout_ms, std::string& err)
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
     for (;;) {
         if (terminated_) {
-            err = MAA_IOS_TR("Connection terminated");
+            err = "Connection terminated";
             return Wait::Broken;
         }
         if (take_message(out, deadline, err)) {
@@ -914,16 +892,16 @@ Channel::Wait Channel::wait(xpc::Value& out, int timeout_ms, std::string& err)
         }
         const auto left = remaining_ms(deadline);
         if (left == 0) {
-            err = MAA_IOS_TR("Timed out waiting for device reply");
+            err = "Timed out waiting for device reply";
             return Wait::Timeout;
         }
         if (terminated_) {
-            err = MAA_IOS_TR("Connection terminated");
+            err = "Connection terminated";
             return Wait::Broken;
         }
         if (!pump(static_cast<int>(left), err)) {
             // 已缓冲的数据不能把重置、资源超限或协议错误转成成功回复。
-            err = MAA_IOS_TR("Disconnected while waiting for device reply: ") + err;
+            err = "Disconnected while waiting for device reply: " + err;
             return Wait::Broken;
         }
     }

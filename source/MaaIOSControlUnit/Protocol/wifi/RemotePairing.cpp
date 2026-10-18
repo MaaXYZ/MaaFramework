@@ -1,5 +1,4 @@
 #include "wifi/RemotePairing.h"
-#include "i18n/Translation.h"
 
 #ifdef _WIN32
 #include <process.h>
@@ -46,12 +45,12 @@ std::optional<uint16_t> request_tcp_listener(Rppairing& channel, const Bytes& tu
                 keys += " " + entry.first;
             }
         }
-        err = MAA_IOS_TR("createListener response missing port (actual fields:") + keys + MAA_IOS_TR(")");
+        err = "createListener response missing port (actual fields:" + keys + ")";
         return std::nullopt;
     }
     const int64_t value = json::as_int_or(*port, 0);
     if (value <= 0 || value > 0xFFFF) {
-        err = MAA_IOS_TR("createListener returned an invalid port: ") + std::to_string(value);
+        err = "createListener returned an invalid port: " + std::to_string(value);
         return std::nullopt;
     }
     return static_cast<uint16_t>(value);

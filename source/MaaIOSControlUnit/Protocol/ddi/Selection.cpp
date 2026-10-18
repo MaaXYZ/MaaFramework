@@ -1,5 +1,4 @@
 #include "ddi/Selection.h"
-#include "i18n/Translation.h"
 
 #include <array>
 #include <limits>
@@ -19,14 +18,14 @@ std::optional<ProductVersion> parse_product_version(std::string_view text, std::
         while (offset < text.size() && text[offset] >= '0' && text[offset] <= '9') {
             const uint32_t digit = static_cast<uint32_t>(text[offset] - '0');
             if (value > (std::numeric_limits<uint32_t>::max() - digit) / 10) {
-                error = MAA_IOS_TR("Invalid numeric Apple ProductVersion");
+                error = "Invalid numeric Apple ProductVersion";
                 return std::nullopt;
             }
             value = value * 10 + digit;
             ++offset;
         }
         if (offset == begin) {
-            error = MAA_IOS_TR("Invalid numeric Apple ProductVersion");
+            error = "Invalid numeric Apple ProductVersion";
             return std::nullopt;
         }
         components[count++] = value;
@@ -34,13 +33,13 @@ std::optional<ProductVersion> parse_product_version(std::string_view text, std::
             break;
         }
         if (text[offset] != '.' || offset + 1 == text.size() || count == components.size()) {
-            error = MAA_IOS_TR("Invalid numeric Apple ProductVersion");
+            error = "Invalid numeric Apple ProductVersion";
             return std::nullopt;
         }
         ++offset;
     }
     if (count == 0 || offset != text.size() || components[0] == 0) {
-        error = MAA_IOS_TR("Invalid numeric Apple ProductVersion");
+        error = "Invalid numeric Apple ProductVersion";
         return std::nullopt;
     }
     return ProductVersion { components[0], components[1], components[2] };
@@ -58,7 +57,7 @@ std::optional<Kind> parse_kind(std::string_view text, std::string& error)
     if (text == "cryptex") {
         return Kind::Cryptex;
     }
-    error = MAA_IOS_TR("DDI kind must be classic, personalized or cryptex");
+    error = "DDI kind must be classic, personalized or cryptex";
     return std::nullopt;
 }
 
@@ -79,11 +78,11 @@ std::optional<Selection> select_for_version(ProductVersion version, std::string&
 {
     error.clear();
     if (version.major == 0) {
-        error = MAA_IOS_TR("Invalid numeric Apple ProductVersion");
+        error = "Invalid numeric Apple ProductVersion";
         return std::nullopt;
     }
     if (version.major > 27) {
-        error = MAA_IOS_TR("DDI selection is not defined for this future Apple OS major version");
+        error = "DDI selection is not defined for this future Apple OS major version";
         return std::nullopt;
     }
     if (version.major < 17) {

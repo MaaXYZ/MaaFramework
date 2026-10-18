@@ -1,6 +1,5 @@
 #include "wifi/HostMetadata.h"
 
-#include "i18n/Translation.h"
 
 #include <algorithm>
 #include <fstream>
@@ -220,7 +219,7 @@ std::optional<HostMetadata> detail::host_metadata_for_uuid(
     err.clear();
     const bool platform = uuid && valid_uuid(*uuid) && source != HostMetadataSource::HostIdentifier;
     if (!platform && host_identifier.empty()) {
-        err = MAA_IOS_TR("Host display metadata requires a platform identifier or host identifier");
+        err = "Host display metadata requires a platform identifier or host identifier";
         return std::nullopt;
     }
     Bytes input = bytes_of("MaaFramework.ios.host-display-serial.v1");
@@ -238,7 +237,7 @@ std::optional<HostMetadata> detail::host_metadata_for_uuid(
     std::array<uint8_t, 32> digest { };
     unsigned int length = 0;
     if (EVP_Digest(input.data(), input.size(), digest.data(), &length, EVP_sha256(), nullptr) != 1 || length != digest.size()) {
-        err = MAA_IOS_TR("Cannot hash the host display serial number");
+        err = "Cannot hash the host display serial number";
         return std::nullopt;
     }
     HostMetadata out { std::string(host_model()), "MAAIOS-", platform ? source : HostMetadataSource::HostIdentifier };

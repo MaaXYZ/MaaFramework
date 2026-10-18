@@ -1,5 +1,4 @@
 #include "Tunnel.h"
-#include "i18n/Translation.h"
 
 #include <cerrno>
 #include <cstring>
@@ -95,7 +94,7 @@ bool PacketTunnel::write_all(const void* data, size_t len, std::string& err)
         const int saved_socket_error = socket_error();
         if (n != static_cast<int>(len)) {
             const int ssl_error = SSL_get_error(tls_.handle(), n);
-            return err = tls_io_failure(MAA_IOS_TR("Tunnel TLS write failed"), n, ssl_error, saved_errno, saved_socket_error), false;
+            return err = tls_io_failure("Tunnel TLS write failed", n, ssl_error, saved_errno, saved_socket_error), false;
         }
         return true;
     }
@@ -114,7 +113,7 @@ bool PacketTunnel::read_all(void* data, size_t len, std::string& err)
             const int saved_socket_error = socket_error();
             if (n <= 0) {
                 const int ssl_error = SSL_get_error(tls_.handle(), n);
-                return err = tls_io_failure(MAA_IOS_TR("Tunnel TLS read failed"), n, ssl_error, saved_errno, saved_socket_error), false;
+                return err = tls_io_failure("Tunnel TLS read failed", n, ssl_error, saved_errno, saved_socket_error), false;
             }
             got += static_cast<size_t>(n);
         }
@@ -236,7 +235,7 @@ bool PacketTunnel::client_handshake(std::string& err)
         return false;
     }
     if (std::memcmp(hdr, kMagic.data(), kMagic.size()) != 0) {
-        err = MAA_IOS_TR("Tunnel handshake response has incorrect magic");
+        err = "Tunnel handshake response has incorrect magic";
         return false;
     }
     const uint16_t payload_len = get_be16(hdr + 8);
@@ -247,7 +246,7 @@ bool PacketTunnel::client_handshake(std::string& err)
 
     auto parsed = json::parse(std::string_view(reinterpret_cast<const char*>(payload.data()), payload.size()));
     if (!parsed) {
-        err = MAA_IOS_TR("Tunnel handshake response is not valid JSON");
+        err = "Tunnel handshake response is not valid JSON";
         return false;
     }
     const auto* cp = json::find(*parsed, "clientParameters");
@@ -264,7 +263,7 @@ bool PacketTunnel::client_handshake(std::string& err)
     params_.mtu = static_cast<uint16_t>(mtu ? json::as_int_or(*mtu) : 0);
 
     if (params_.client_address.empty() || params_.server_address.empty() || params_.rsd_port == 0) {
-        err = MAA_IOS_TR("Tunnel handshake response missing required fields");
+        err = "Tunnel handshake response missing required fields";
         return false;
     }
     return true;
@@ -286,7 +285,7 @@ bool PacketTunnel::wait_readable(int ms, std::string& err, bool* timed_out)
 bool PacketTunnel::send_ipv6(const uint8_t* packet, size_t len, std::string& err)
 {
     if (!sock_.valid()) {
-        err = MAA_IOS_TR("Tunnel not connected");
+        err = "Tunnel not connected";
         return false;
     }
     // 一次一个包。合并写会破坏 CoreDeviceProxy 的读边界，导致隧道死亡。
@@ -296,7 +295,7 @@ bool PacketTunnel::send_ipv6(const uint8_t* packet, size_t len, std::string& err
 bool PacketTunnel::recv_ipv6(std::vector<uint8_t>& out, std::string& err)
 {
     if (!sock_.valid()) {
-        err = MAA_IOS_TR("Tunnel not connected");
+        err = "Tunnel not connected";
         return false;
     }
     uint8_t hdr[kIpv6HeaderLen];
@@ -304,7 +303,7 @@ bool PacketTunnel::recv_ipv6(std::vector<uint8_t>& out, std::string& err)
         return false;
     }
     if ((hdr[0] >> 4) != 6) {
-        err = MAA_IOS_TR("Tunnel packet is not IPv6: version nibble=") + std::to_string(hdr[0] >> 4);
+        err = "Tunnel packet is not IPv6: version nibble=" + std::to_string(hdr[0] >> 4);
         return false;
     }
     const size_t total = kIpv6HeaderLen + get_be16(hdr + 4);

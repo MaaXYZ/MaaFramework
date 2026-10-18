@@ -1,10 +1,10 @@
 #include "remote/DeviceConnection.h"
-#include "i18n/Translation.h"
+
+#include "MaaUtils/Logger.h"
 #include "wifi/PairRecord.h"
 
 #include <algorithm>
 #include <cctype>
-#include <cstdio>
 #include <map>
 #include <tuple>
 
@@ -17,7 +17,7 @@ bool startup_cancelled(const std::function<bool()>& should_cancel, std::string& 
     if (!should_cancel || !should_cancel()) {
         return false;
     }
-    error = MAA_IOS_TR("Device startup cancelled");
+    error = "Device startup cancelled";
     return true;
 }
 
@@ -88,7 +88,7 @@ std::optional<remote::Device> open_discovered_device(
     options.should_cancel = should_cancel;
     const auto discovery = remote::discover_devices(options);
     if (discovery.cancelled || startup_cancelled(should_cancel, error)) {
-        error = MAA_IOS_TR("Device startup cancelled");
+        error = "Device startup cancelled";
         return std::nullopt;
     }
     auto selection = detail::select_paired_wireless_device(discovery.devices, serial, error);
@@ -128,13 +128,13 @@ std::optional<wifi::PairRecord>
             continue;
         }
         if (selected) {
-            error = MAA_IOS_TR("Multiple usable remote pairing records match; select a unique device with -s");
+            error = "Multiple usable remote pairing records match; select a unique device with -s";
             return std::nullopt;
         }
         selected = &record;
     }
     if (!selected) {
-        error = MAA_IOS_TR("No usable remote pairing record matches; pair the device over USB first");
+        error = "No usable remote pairing record matches; pair the device over USB first";
         return std::nullopt;
     }
     return *selected;
@@ -163,11 +163,11 @@ std::optional<detail::WirelessSelection>
         }
     }
     if (choices.empty()) {
-        error = MAA_IOS_TR("No paired wireless device is available; check the network and pair over USB first");
+        error = "No paired wireless device is available; check the network and pair over USB first";
         return std::nullopt;
     }
     if (choices.size() > 1) {
-        error = MAA_IOS_TR("Multiple paired wireless devices are available; select one with -s");
+        error = "Multiple paired wireless devices are available; select one with -s";
         return std::nullopt;
     }
     auto selected = std::move(choices.begin()->second);
@@ -190,11 +190,11 @@ std::optional<remote::Device> detail::connect_wireless_candidates(
         return std::nullopt;
     }
     if (selection.udid.empty() || record.udid != selection.udid || !record.complete() || !record.has_peer_identity()) {
-        error = MAA_IOS_TR("Selected wireless device does not match a usable pairing record");
+        error = "Selected wireless device does not match a usable pairing record";
         return std::nullopt;
     }
     if (!connect || selection.candidates.empty()) {
-        error = MAA_IOS_TR("No usable wireless connection candidate is available");
+        error = "No usable wireless connection candidate is available";
         return std::nullopt;
     }
     std::string failures;
@@ -216,7 +216,7 @@ std::optional<remote::Device> detail::connect_wireless_candidates(
         }
         failures += "\n  " + candidate.address + ":" + std::to_string(candidate.port) + ": " + candidate_error;
     }
-    error = MAA_IOS_TR("Cannot connect to any discovered wireless address");
+    error = "Cannot connect to any discovered wireless address";
     error += failures;
     return std::nullopt;
 }
@@ -236,7 +236,7 @@ std::optional<remote::Device> detail::open_default_device(
     std::string usb_error;
     const auto status = operations.enumerate(devices, std::chrono::milliseconds(1000), should_cancel, usb_error);
     if (status == transport::UsbmuxDiscoveryStatus::cancelled || startup_cancelled(should_cancel, error)) {
-        error = MAA_IOS_TR("Device startup cancelled");
+        error = "Device startup cancelled";
         return std::nullopt;
     }
     if (physical_usb_only) {
@@ -259,7 +259,7 @@ std::optional<remote::Device> detail::open_default_device(
     }
     std::string warning;
     if (status != transport::UsbmuxDiscoveryStatus::complete) {
-        warning = MAA_IOS_TR("USB device enumeration is unavailable");
+        warning = "USB device enumeration is unavailable";
         if (!usb_error.empty()) {
             warning += ": " + usb_error;
         }
@@ -303,7 +303,7 @@ std::optional<remote::Device> open_device(
         }
         if (!physical_usb_only && !wifi.empty()) {
             if (!wifi_port) {
-                error = MAA_IOS_TR("Wi-Fi port must be between 1 and 65535");
+                error = "Wi-Fi port must be between 1 and 65535";
                 return std::nullopt;
             }
             const auto record = load_selected_record(serial, error, cancelled, records);
@@ -338,7 +338,7 @@ std::optional<remote::Device> open_device(
                     }
                     return remote::Device::establish_wifi_bounded(wifi, *record, budget, err, false, wifi_port);
                 },
-                [](const std::string& warning) { std::fprintf(stderr, MAA_IOS_TR("Discovery warning: %s\n"), warning.c_str()); },
+                [](const std::string& warning) { LogWarn << std::format("Discovery warning: {}", warning); },
             },
             physical_usb_only);
     };

@@ -1,5 +1,4 @@
 #include "media/StreamSession.h"
-#include "i18n/Translation.h"
 
 #include <array>
 #include <charconv>
@@ -152,18 +151,18 @@ std::optional<StreamSession::Started>
             // 不代表总会另行生成新值；反馈使用本次 answer 中的两个值。
             if (const auto* source = sc->find("LocalSSRC"); source != nullptr) {
                 if (!parse_ssrc(*source, started.local_ssrc)) {
-                    err = MAA_IOS_TR(
+                    err =
                         "Invalid startmediastream answer: connection.streamConfig.LocalSSRC must "
-                        "be an integer in 0..4294967295");
+                        "be an integer in 0..4294967295";
                     return std::nullopt;
                 }
                 started.has_local_ssrc = true;
             }
             if (const auto* source = sc->find("RemoteSSRC"); source != nullptr) {
                 if (!parse_ssrc(*source, started.remote_ssrc)) {
-                    err = MAA_IOS_TR(
+                    err =
                         "Invalid startmediastream answer: connection.streamConfig.RemoteSSRC must "
-                        "be an integer in 0..4294967295");
+                        "be an integer in 0..4294967295";
                     return std::nullopt;
                 }
                 started.has_remote_ssrc = true;
@@ -190,9 +189,9 @@ std::optional<StreamSession::Started>
                     parsed = result.ec == std::errc { } && result.ptr == end;
                 }
                 if (!parsed || port == 0 || port > std::numeric_limits<uint16_t>::max()) {
-                    err = MAA_IOS_TR(
+                    err =
                         "Invalid startmediastream answer: connection.sender.port must be an integer "
-                        "or decimal string in 1..65535");
+                        "or decimal string in 1..65535";
                     return std::nullopt;
                 }
                 started.sender_port = static_cast<uint16_t>(port);
@@ -230,7 +229,7 @@ std::unique_ptr<StreamSession> StreamSession::start(
     const uint16_t port = request.receiver_port != 0 ? request.receiver_port : pick_port();
     auto socket = std::make_unique<net::UdpSocket>(device.rsd().stack(), port);
     if (!socket->bind(err)) {
-        err = MAA_IOS_TR("Failed to bind UDP port ") + std::to_string(port) + MAA_IOS_TR(": ") + err;
+        err = "Failed to bind UDP port " + std::to_string(port) + ": " + err;
         return nullptr;
     }
 
@@ -271,7 +270,7 @@ std::unique_ptr<StreamSession> StreamSession::start(
             err);
         if (r != remote::CallResult::Ok) {
             if (r == remote::CallResult::TransportError && err.empty()) {
-                err = MAA_IOS_TR("startmediastream failed on the retained connection (transport failed)");
+                err = "startmediastream failed on the retained connection (transport failed)";
             }
             return nullptr;
         }
@@ -374,7 +373,7 @@ StreamSession::ServerState
     // running: false, runDurationSeconds: 0}。
     const auto* sessions = output.find("sessions");
     if (sessions == nullptr || !sessions->is_array()) {
-        err = MAA_IOS_TR("getmediastreamserverstatus response missing sessions array");
+        err = "getmediastreamserverstatus response missing sessions array";
         return ServerState::Unknown;
     }
     for (const auto& s : sessions->array) {

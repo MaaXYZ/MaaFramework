@@ -1,6 +1,5 @@
 #include "remote/WifiPairing.h"
 
-#include "i18n/Translation.h"
 #include "transport/Socket.h"
 #include "wifi/DiscoveryIdentity.h"
 #include "wifi/Mdns.h"
@@ -36,11 +35,11 @@ struct Deadline
     bool active(std::string& error) const
     {
         if (options.should_cancel && options.should_cancel()) {
-            error = MAA_IOS_TR("Wi-Fi pairing cancelled");
+            error = "Wi-Fi pairing cancelled";
             return false;
         }
         if (Clock::now() >= until) {
-            error = MAA_IOS_TR("Wi-Fi pairing timed out");
+            error = "Wi-Fi pairing timed out";
             return false;
         }
         return true;
@@ -62,7 +61,7 @@ bool nonblocking(Socket& socket, std::string& error)
     const bool ok = flags >= 0 && ::fcntl(socket.fd(), F_SETFL, flags | O_NONBLOCK) == 0;
 #endif
     if (!ok) {
-        error = MAA_IOS_TR("Cannot configure Wi-Fi pairing socket: ") + transport::socket_error_message();
+        error = "Cannot configure Wi-Fi pairing socket: " + transport::socket_error_message();
     }
     return ok;
 }
@@ -83,7 +82,7 @@ bool wait(
             return true;
         }
         if (status < 0 && transport::socket_error() != transport::kSocketInterrupted) {
-            error = MAA_IOS_TR("Wi-Fi pairing socket wait failed: ") + transport::socket_error_message();
+            error = "Wi-Fi pairing socket wait failed: " + transport::socket_error_message();
             return false;
         }
     }
@@ -136,11 +135,11 @@ private:
                 if (code == transport::kSocketInterrupted || transport::socket_read_timed_out(code)) {
                     continue;
                 }
-                error = MAA_IOS_TR("Wi-Fi pairing socket I/O failed: ") + transport::socket_error_message(code);
+                error = "Wi-Fi pairing socket I/O failed: " + transport::socket_error_message(code);
                 return false;
             }
             if (done == 0) {
-                error = MAA_IOS_TR("Wi-Fi pairing connection closed");
+                error = "Wi-Fi pairing connection closed";
                 return false;
             }
             bytes += done;
@@ -206,7 +205,7 @@ std::optional<Socket> connect_numeric(const wifi::mdns::Endpoint& endpoint, cons
     const auto service = std::to_string(endpoint.port);
     const int rc = ::getaddrinfo(endpoint.address.c_str(), service.c_str(), &hints, &raw);
     if (rc != 0 || !raw) {
-        error = MAA_IOS_TR("Invalid numeric Wi-Fi pairing endpoint");
+        error = "Invalid numeric Wi-Fi pairing endpoint";
         return std::nullopt;
     }
     std::unique_ptr<addrinfo, decltype(&freeaddrinfo)> addresses(raw, freeaddrinfo);
@@ -302,18 +301,18 @@ bool detail::admit_wifi_pairing(const wifi::PairRecord& record, const WifiPairin
     // and public key, but the responder has not yet emitted its M6 identity.
     if (record.udid.empty() || !record_text_valid(record.udid) || !record.has_peer_identity() || record.peer_alt_irk.size() != 16
         || (!options.udid.empty() && options.udid != record.udid)) {
-        err = MAA_IOS_TR("Wi-Fi pairing returned an incomplete or unexpected device identity");
+        err = "Wi-Fi pairing returned an incomplete or unexpected device identity";
         return false;
     }
     try {
         if (options.should_cancel && options.should_cancel()) {
-            err = MAA_IOS_TR("Wi-Fi pairing cancelled");
+            err = "Wi-Fi pairing cancelled";
             return false;
         }
         return true;
     }
     catch (const std::exception&) {
-        err = MAA_IOS_TR("Wi-Fi pairing workflow failed before completion");
+        err = "Wi-Fi pairing workflow failed before completion";
         return false;
     }
 }
@@ -327,7 +326,7 @@ PairingResult detail::save_wifi_pairing(
     result.udid = record.udid;
     if (!record.complete() || !record.has_peer_identity() || record.peer_alt_irk.size() != 16 || !record_text_valid(record.udid)
         || !record_text_valid(record.host_identifier) || (!options.udid.empty() && options.udid != record.udid)) {
-        result.error = MAA_IOS_TR("Wi-Fi pairing returned an incomplete or unexpected device identity");
+        result.error = "Wi-Fi pairing returned an incomplete or unexpected device identity";
         return result;
     }
     try {
@@ -335,24 +334,24 @@ PairingResult detail::save_wifi_pairing(
             return result;
         }
         if (options.should_cancel && options.should_cancel()) {
-            result.error = MAA_IOS_TR("Wi-Fi pairing cancelled");
+            result.error = "Wi-Fi pairing cancelled";
             return result;
         }
         std::string error;
         const auto verified = verify(record, error);
         if (verified.outcome != wifi::VerifyOutcome::Paired) {
-            result.error = MAA_IOS_TR("New Wi-Fi pairing record verification failed: ") + (verified.error.empty() ? error : verified.error);
+            result.error = "New Wi-Fi pairing record verification failed: " + (verified.error.empty() ? error : verified.error);
             return result;
         }
         if (options.should_cancel && options.should_cancel()) {
-            result.error = MAA_IOS_TR("Wi-Fi pairing cancelled");
+            result.error = "Wi-Fi pairing cancelled";
             return result;
         }
         result.ok = true;
         result.record = record;
     }
     catch (const std::exception&) {
-        result.error = MAA_IOS_TR("Wi-Fi pairing workflow failed before completion");
+        result.error = "Wi-Fi pairing workflow failed before completion";
     }
     return result;
 }
@@ -361,7 +360,7 @@ PairingResult pair_wifi_remote(const WifiPairingOptions& options)
 {
     PairingResult result;
     if (options.timeout_ms < 1 || options.timeout_ms > 300000 || !options.display_pin) {
-        result.error = MAA_IOS_TR("Wi-Fi pairing requires a PIN display callback and a timeout between 1 and 300000 ms");
+        result.error = "Wi-Fi pairing requires a PIN display callback and a timeout between 1 and 300000 ms";
         return result;
     }
     const Deadline deadline { Clock::now() + std::chrono::milliseconds(options.timeout_ms), options };
@@ -409,9 +408,7 @@ PairingResult pair_wifi_remote(const WifiPairingOptions& options)
         if (!advertised) {
             return result;
         }
-        progress(
-            options,
-            MAA_IOS_TR("Open Settings > Privacy & Security > Developer Mode on the device and select Pair with this MaaIOS computer"));
+        progress(options, "Open Settings > Privacy & Security > Developer Mode on the device and select Pair with this MaaIOS computer");
         progress(options, host.host_name);
         Socket accepted;
         std::string peer_address;
@@ -428,7 +425,7 @@ PairingResult pair_wifi_remote(const WifiPairingOptions& options)
                     if (code == transport::kSocketInterrupted || transport::socket_read_timed_out(code)) {
                         continue;
                     }
-                    result.error = MAA_IOS_TR("Cannot accept Wi-Fi pairing connection: ") + transport::socket_error_message(code);
+                    result.error = "Cannot accept Wi-Fi pairing connection: " + transport::socket_error_message(code);
                     return result;
                 }
                 accepted.reset(fd);
@@ -437,7 +434,7 @@ PairingResult pair_wifi_remote(const WifiPairingOptions& options)
                         != 0
                     || !nonblocking(accepted, result.error)) {
                     if (result.error.empty()) {
-                        result.error = MAA_IOS_TR("Cannot identify the Wi-Fi pairing peer address");
+                        result.error = "Cannot identify the Wi-Fi pairing peer address";
                     }
                     return result;
                 }
@@ -469,7 +466,7 @@ PairingResult pair_wifi_remote(const WifiPairingOptions& options)
         }
         accepted.close();
         advertised.reset();
-        progress(options, MAA_IOS_TR("Reconnecting to verify the new Wi-Fi pairing record"));
+        progress(options, "Reconnecting to verify the new Wi-Fi pairing record");
         auto verify = [&](const wifi::PairRecord& record, std::string& error) {
             wifi::PairVerifyResult failed;
             std::vector<wifi::mdns::Endpoint> candidates;
@@ -523,7 +520,7 @@ PairingResult pair_wifi_remote(const WifiPairingOptions& options)
         return saved;
     }
     catch (const std::exception&) {
-        result.error = MAA_IOS_TR("Wi-Fi pairing workflow failed before completion");
+        result.error = "Wi-Fi pairing workflow failed before completion";
         return result;
     }
 }

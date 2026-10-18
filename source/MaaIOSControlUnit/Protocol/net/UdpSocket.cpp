@@ -1,5 +1,4 @@
 #include "net/UdpSocket.h"
-#include "i18n/Translation.h"
 #include "net/LwipRuntime.h"
 #include <algorithm>
 #include <chrono>
@@ -94,7 +93,7 @@ UdpSocket::~UdpSocket()
     auto s = impl_;
     LwipRuntime::instance().call([s] {
         // 移除 PCB 并解除注册，在同一个核心操作中完成；之后不再有引用 Impl 的协议回调。
-        s->fail(MAA_IOS_TR("UDP endpoint closed"));
+        s->fail("UDP endpoint closed");
         s->stack.detach_endpoint(s.get());
     });
 }
@@ -125,7 +124,7 @@ bool UdpSocket::bind(std::string& err)
         s->stack.attach_endpoint(s.get(), [s](const std::string& why) { s->fail(why); });
         return ERR_OK;
     });
-    return result == ERR_OK ? true : (err = MAA_IOS_TR("UDP bind failed (lwIP ") + std::to_string(result) + MAA_IOS_TR(")"), false);
+    return result == ERR_OK ? true : (err = "UDP bind failed (lwIP " + std::to_string(result) + ")", false);
 }
 
 bool UdpSocket::send(const std::vector<uint8_t>& payload, uint16_t port, std::string& err)
@@ -152,7 +151,7 @@ bool UdpSocket::send(const std::vector<uint8_t>& payload, uint16_t port, std::st
         pbuf_free(p);
         return result;
     });
-    return result == ERR_OK ? true : (err = MAA_IOS_TR("UDP send failed (lwIP ") + std::to_string(result) + MAA_IOS_TR(")"), false);
+    return result == ERR_OK ? true : (err = "UDP send failed (lwIP " + std::to_string(result) + ")", false);
 }
 
 bool UdpSocket::recv(std::vector<uint8_t>& payload, uint16_t& port, int timeout_ms, std::string& err)
@@ -164,7 +163,7 @@ bool UdpSocket::recv(std::vector<uint8_t>& payload, uint16_t& port, int timeout_
     if (!s->cv.wait_for(lock, std::chrono::milliseconds(std::max(timeout_ms, 0)), [&] {
             return !s->queue.empty() || !s->failure.empty();
         })) {
-        return err = MAA_IOS_TR("UDP receive timed out"), false;
+        return err = "UDP receive timed out", false;
     }
     if (s->queue.empty()) {
         return err = s->failure, false;

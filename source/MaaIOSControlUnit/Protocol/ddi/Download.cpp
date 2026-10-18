@@ -1,5 +1,4 @@
 #include "ddi/DownloadInternal.h"
-#include "i18n/Translation.h"
 #include "plist/Plist.h"
 
 #include <curl/curl.h>
@@ -26,20 +25,20 @@ using Clock = std::chrono::steady_clock;
 std::string read_file(const fs::path& path, uint64_t limit)
 {
     if (fs::is_symlink(fs::symlink_status(path)) || !fs::is_regular_file(path)) {
-        throw std::runtime_error(MAA_IOS_TR("DDI cache contains a nonregular file"));
+        throw std::runtime_error("DDI cache contains a nonregular file");
     }
     const auto size = fs::file_size(path);
     if (size > limit) {
-        throw std::runtime_error(MAA_IOS_TR("DDI file exceeds its size limit"));
+        throw std::runtime_error("DDI file exceeds its size limit");
     }
     std::ifstream file(path, std::ios::binary);
     if (!file) {
-        throw std::runtime_error(MAA_IOS_TR("Cannot open DDI file"));
+        throw std::runtime_error("Cannot open DDI file");
     }
     std::string bytes(static_cast<size_t>(size), '\0');
     file.read(bytes.data(), static_cast<std::streamsize>(bytes.size()));
     if (file.gcount() != static_cast<std::streamsize>(size)) {
-        throw std::runtime_error(MAA_IOS_TR("Cannot read complete DDI file"));
+        throw std::runtime_error("Cannot read complete DDI file");
     }
     return bytes;
 }
@@ -48,33 +47,33 @@ std::vector<uint8_t> digest_file(const fs::path& path, const EVP_MD* algorithm, 
 {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
-        throw std::runtime_error(MAA_IOS_TR("Cannot open DDI file for checksum"));
+        throw std::runtime_error("Cannot open DDI file for checksum");
     }
     std::unique_ptr<EVP_MD_CTX, decltype(&EVP_MD_CTX_free)> ctx(EVP_MD_CTX_new(), EVP_MD_CTX_free);
     if (!ctx || EVP_DigestInit_ex(ctx.get(), algorithm, nullptr) != 1) {
-        throw std::runtime_error(MAA_IOS_TR("Cannot initialize DDI checksum"));
+        throw std::runtime_error("Cannot initialize DDI checksum");
     }
     if (git_blob) {
         std::string header = "blob " + std::to_string(fs::file_size(path));
         header += '\0';
         if (EVP_DigestUpdate(ctx.get(), header.data(), header.size()) != 1) {
-            throw std::runtime_error(MAA_IOS_TR("Cannot calculate DDI checksum"));
+            throw std::runtime_error("Cannot calculate DDI checksum");
         }
     }
     std::array<char, 64 * 1024> buf { };
     while (file) {
         file.read(buf.data(), buf.size());
         if (file.gcount() && EVP_DigestUpdate(ctx.get(), buf.data(), static_cast<size_t>(file.gcount())) != 1) {
-            throw std::runtime_error(MAA_IOS_TR("Cannot calculate DDI checksum"));
+            throw std::runtime_error("Cannot calculate DDI checksum");
         }
     }
     if (!file.eof()) {
-        throw std::runtime_error(MAA_IOS_TR("Cannot read DDI checksum input"));
+        throw std::runtime_error("Cannot read DDI checksum input");
     }
     std::vector<uint8_t> result(EVP_MAX_MD_SIZE);
     unsigned length = 0;
     if (EVP_DigestFinal_ex(ctx.get(), result.data(), &length) != 1) {
-        throw std::runtime_error(MAA_IOS_TR("Cannot finalize DDI checksum"));
+        throw std::runtime_error("Cannot finalize DDI checksum");
     }
     result.resize(length);
     return result;
@@ -115,7 +114,7 @@ void check_catalog(const detail::Catalog& catalog)
         expected = { "BuildManifest.plist", "Image.dmg", "Image.dmg.trustcache", "Image.dmg.cryptex_info", "Image.dmg.root_hash" };
         break;
     default:
-        throw std::runtime_error(MAA_IOS_TR("Invalid DDI download catalog"));
+        throw std::runtime_error("Invalid DDI download catalog");
     }
     bool build_valid =
         !catalog.build.empty()
@@ -127,7 +126,7 @@ void check_catalog(const detail::Catalog& catalog)
             version && version->major < 17 && catalog.build == std::to_string(version->major) + "." + std::to_string(version->minor);
     }
     if (!build_valid || !catalog.source_url.starts_with("https://") || catalog.assets.size() != expected.size()) {
-        throw std::runtime_error(MAA_IOS_TR("Invalid DDI download catalog"));
+        throw std::runtime_error("Invalid DDI download catalog");
     }
     for (const auto& asset : catalog.assets) {
         const auto position = std::find(expected.begin(), expected.end(), asset.name);
@@ -135,7 +134,7 @@ void check_catalog(const detail::Catalog& catalog)
             || (catalog.kind == Kind::Classic ? !hex_digest(asset.git_blob_sha1, 40) : !hex_digest(asset.sha256, 64))
             || (!asset.sha256.empty() && !hex_digest(asset.sha256, 64))
             || (!asset.git_blob_sha1.empty() && !hex_digest(asset.git_blob_sha1, 40))) {
-            throw std::runtime_error(MAA_IOS_TR("Invalid DDI download asset"));
+            throw std::runtime_error("Invalid DDI download asset");
         }
         expected.erase(position); // Reject duplicates, unexpected names and path traversal.
     }
@@ -204,12 +203,12 @@ void check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
     std::string err;
     auto manifest = plist::parse(read_file(directory / "BuildManifest.plist", 8 * 1024 * 1024), &err);
     if (!manifest || !manifest->is_dict()) {
-        throw std::runtime_error(MAA_IOS_TR("Invalid DDI BuildManifest plist"));
+        throw std::runtime_error("Invalid DDI BuildManifest plist");
     }
     const auto* build = manifest->find("ProductBuildVersion");
     const auto* identities = manifest->find("BuildIdentities");
     if (!build || !build->is_string() || build->string != catalog.build || !identities || !identities->is_array()) {
-        throw std::runtime_error(MAA_IOS_TR("DDI BuildManifest does not match the pinned build"));
+        throw std::runtime_error("DDI BuildManifest does not match the pinned build");
     }
     const std::vector<std::pair<const char*, const char*>> payloads =
         catalog.kind == Kind::Cryptex
@@ -244,7 +243,7 @@ void check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
                     || std::none_of(supported->array.begin(), supported->array.end(), [&](const auto& product) {
                            return product.is_string() && product.string == target->product_type;
                        })) {
-                    throw std::runtime_error(MAA_IOS_TR("DDI manifest does not support the requested product type"));
+                    throw std::runtime_error("DDI manifest does not support the requested product type");
                 }
             }
         }
@@ -258,7 +257,7 @@ void check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
         const auto* entries = identity.find("Manifest");
         if (!entries || !entries->is_dict()) {
             if (catalog.kind == Kind::Cryptex) {
-                throw std::runtime_error(MAA_IOS_TR("DDI Cryptex manifest entries missing"));
+                throw std::runtime_error("DDI Cryptex manifest entries missing");
             }
             continue;
         }
@@ -272,7 +271,7 @@ void check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
             if (!digest || digest->kind != plist::Kind::Data || digest->data.size() != 48 || !path || !path->is_string()
                 || path->string != name || digests[payload_index] != digest->data) {
                 if (catalog.kind == Kind::Cryptex) {
-                    throw std::runtime_error(std::string(MAA_IOS_TR("DDI Cryptex manifest digest mismatch: ")) + name);
+                    throw std::runtime_error(std::string("DDI Cryptex manifest digest mismatch: ") + name);
                 }
                 valid = false;
                 break;
@@ -285,12 +284,12 @@ void check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
     }
     if (!found) {
         if (catalog.kind == Kind::Cryptex) {
-            throw std::runtime_error(MAA_IOS_TR("DDI BuildManifest lacks a Cryptex identity"));
+            throw std::runtime_error("DDI BuildManifest lacks a Cryptex identity");
         }
         if (!matched_hardware) {
-            throw std::runtime_error(MAA_IOS_TR("DDI BuildManifest lacks a matching Personalized hardware identity"));
+            throw std::runtime_error("DDI BuildManifest lacks a matching Personalized hardware identity");
         }
-        throw std::runtime_error(MAA_IOS_TR("DDI Personalized manifest digest mismatch for the requested hardware"));
+        throw std::runtime_error("DDI Personalized manifest digest mismatch for the requested hardware");
     }
 }
 
@@ -304,23 +303,23 @@ bool validate_files(
     try {
         check_catalog(catalog);
         if (fs::is_symlink(fs::symlink_status(directory)) || !fs::is_directory(directory)) {
-            throw std::runtime_error(MAA_IOS_TR("DDI cache directory is missing or is a symbolic link"));
+            throw std::runtime_error("DDI cache directory is missing or is a symbolic link");
         }
         for (const auto& asset : catalog.assets) {
             const auto path = directory / asset.name;
             if (fs::is_symlink(fs::symlink_status(path)) || !fs::is_regular_file(path) || fs::file_size(path) != asset.size) {
-                throw std::runtime_error(std::string(MAA_IOS_TR("DDI cache size or file type mismatch: ")) + asset.name);
+                throw std::runtime_error(std::string("DDI cache size or file type mismatch: ") + asset.name);
             }
             if (!asset.sha256.empty() && hex(digest_file(path, EVP_sha256())) != asset.sha256) {
-                throw std::runtime_error(std::string(MAA_IOS_TR("DDI cache SHA-256 mismatch: ")) + asset.name);
+                throw std::runtime_error(std::string("DDI cache SHA-256 mismatch: ") + asset.name);
             }
             if (!asset.git_blob_sha1.empty() && hex(digest_file(path, EVP_sha1(), true)) != asset.git_blob_sha1) {
-                throw std::runtime_error(std::string(MAA_IOS_TR("DDI cache Git blob SHA-1 mismatch: ")) + asset.name);
+                throw std::runtime_error(std::string("DDI cache Git blob SHA-1 mismatch: ") + asset.name);
             }
         }
         check_manifest(directory, catalog, target);
         if (complete && read_file(directory / ".complete", 4096) != marker(catalog)) {
-            throw std::runtime_error(MAA_IOS_TR("DDI cache completion marker mismatch"));
+            throw std::runtime_error("DDI cache completion marker mismatch");
         }
         error.clear();
         return true;
@@ -391,16 +390,16 @@ bool curl_transfer(
 {
     static const CURLcode initialized = curl_global_init(CURL_GLOBAL_DEFAULT);
     if (initialized != CURLE_OK) {
-        error = MAA_IOS_TR("Cannot initialize HTTPS downloader");
+        error = "Cannot initialize HTTPS downloader";
         return false;
     }
     std::unique_ptr<CURL, decltype(&curl_easy_cleanup)> curl(curl_easy_init(), curl_easy_cleanup);
     if (!curl) {
-        error = MAA_IOS_TR("Cannot create HTTPS downloader");
+        error = "Cannot create HTTPS downloader";
         return false;
     }
     if (!url.starts_with("https://")) {
-        error = MAA_IOS_TR("DDI downloads require HTTPS");
+        error = "DDI downloads require HTTPS";
         return false;
     }
     CurlContext context { &sink, &cancelled };
@@ -409,7 +408,7 @@ bool curl_transfer(
 #define DDI_CURL_OPT(option, value)                                    \
     do {                                                               \
         if (curl_easy_setopt(curl.get(), option, value) != CURLE_OK) { \
-            error = MAA_IOS_TR("Cannot configure HTTPS downloader");   \
+            error = "Cannot configure HTTPS downloader";               \
             return false;                                              \
         }                                                              \
     } while (false)
@@ -433,7 +432,7 @@ bool curl_transfer(
     DDI_CURL_OPT(CURLOPT_CAINFO, static_cast<const char*>(nullptr));
     DDI_CURL_OPT(CURLOPT_CAPATH, static_cast<const char*>(nullptr));
 #else
-    error = MAA_IOS_TR("This Windows libcurl cannot use the native certificate store");
+    error = "This Windows libcurl cannot use the native certificate store";
     return false;
 #endif
 #endif
@@ -453,13 +452,13 @@ bool curl_transfer(
     const auto result = curl_easy_perform(curl.get());
     if (result != CURLE_OK) {
         error = context.callback_failed
-                    ? MAA_IOS_TR("DDI download callback failed")
-                    : std::string(MAA_IOS_TR("HTTPS DDI download failed: ")) + (buffer[0] ? buffer.data() : curl_easy_strerror(result));
+                    ? "DDI download callback failed"
+                    : std::string("HTTPS DDI download failed: ") + (buffer[0] ? buffer.data() : curl_easy_strerror(result));
         return false;
     }
     long status = 0;
     if (curl_easy_getinfo(curl.get(), CURLINFO_RESPONSE_CODE, &status) != CURLE_OK || status != 200) {
-        error = MAA_IOS_TR("DDI download did not return HTTP 200");
+        error = "DDI download did not return HTTP 200";
         return false;
     }
     return true;
@@ -501,21 +500,21 @@ std::optional<DownloadResult> download(
     error.clear();
     try {
         if (options.timeout <= std::chrono::seconds::zero()) {
-            throw std::runtime_error(MAA_IOS_TR("DDI download timeout must be positive"));
+            throw std::runtime_error("DDI download timeout must be positive");
         }
         const auto start = Clock::now();
         // Cap arithmetic before adding to a steady-clock time point.
         if (options.timeout > std::chrono::hours(24)) {
-            throw std::runtime_error(MAA_IOS_TR("DDI download timeout exceeds 24 hours"));
+            throw std::runtime_error("DDI download timeout exceeds 24 hours");
         }
         const auto deadline = start + options.timeout;
         auto stopped = [&] {
             if (options.cancelled && options.cancelled()) {
-                error = MAA_IOS_TR("DDI download cancelled");
+                error = "DDI download cancelled";
                 return true;
             }
             if (Clock::now() >= deadline) {
-                error = MAA_IOS_TR("DDI download timed out");
+                error = "DDI download timed out";
                 return true;
             }
             return false;
@@ -555,12 +554,12 @@ std::optional<DownloadResult> download(
             }
         }
         if (!root.is_absolute()) {
-            throw std::runtime_error(MAA_IOS_TR("DDI cache root must be an absolute path"));
+            throw std::runtime_error("DDI cache root must be an absolute path");
         }
         check_catalog(catalog);
         fs::create_directories(root);
         if (fs::is_symlink(fs::symlink_status(root))) {
-            throw std::runtime_error(MAA_IOS_TR("DDI cache root must not be a symbolic link"));
+            throw std::runtime_error("DDI cache root must not be a symbolic link");
         }
         const auto cache_name = std::string(kind_name(catalog.kind)) + "-" + catalog.build;
         const auto directory = root / cache_name;
@@ -568,7 +567,7 @@ std::optional<DownloadResult> download(
         if (fs::exists(directory) || fs::is_symlink(fs::symlink_status(directory))) {
             if (!validate(directory, catalog, error)) {
                 const auto utf8_path = directory.u8string();
-                error = std::string(MAA_IOS_TR("Existing DDI cache is invalid; remove this version directory and retry: "))
+                error = std::string("Existing DDI cache is invalid; remove this version directory and retry: ")
                         + std::string(utf8_path.begin(), utf8_path.end()) + " (" + error + ")";
                 return std::nullopt;
             }
@@ -582,8 +581,8 @@ std::optional<DownloadResult> download(
         }
         const auto lock_path = root / (cache_name + ".lock");
         if (!fs::create_directory(lock_path)) {
-            throw std::runtime_error(MAA_IOS_TR(
-                "Another DDI download owns this version lock; retry after it finishes (remove the lock only if that process has exited)"));
+            throw std::runtime_error(
+                "Another DDI download owns this version lock; retry after it finishes (remove the lock only if that process has exited)");
         }
         RemovePath lock { lock_path };
         if (fs::exists(directory)) {
@@ -597,11 +596,11 @@ std::optional<DownloadResult> download(
         }
         std::vector<uint8_t> nonce(16);
         if (RAND_bytes(nonce.data(), static_cast<int>(nonce.size())) != 1) {
-            throw std::runtime_error(MAA_IOS_TR("Cannot generate DDI staging directory name"));
+            throw std::runtime_error("Cannot generate DDI staging directory name");
         }
         const auto staging = root / ("." + cache_name + ".partial-" + hex(nonce));
         if (!fs::create_directory(staging)) {
-            throw std::runtime_error(MAA_IOS_TR("Cannot create unique DDI staging directory"));
+            throw std::runtime_error("Cannot create unique DDI staging directory");
         }
         RemovePath cleanup { staging };
         fs::permissions(staging, fs::perms::owner_all, fs::perm_options::replace);
@@ -611,7 +610,7 @@ std::optional<DownloadResult> download(
             }
             std::ofstream file(staging / asset.name, std::ios::binary | std::ios::trunc);
             if (!file) {
-                throw std::runtime_error(std::string(MAA_IOS_TR("Cannot create DDI download file: ")) + asset.name);
+                throw std::runtime_error(std::string("Cannot create DDI download file: ") + asset.name);
             }
             uint64_t received = 0;
             const Sink sink = [&](const char* data, size_t length) {
@@ -619,12 +618,12 @@ std::optional<DownloadResult> download(
                     return false;
                 }
                 if (length > asset.size - received) {
-                    error = std::string(MAA_IOS_TR("DDI download exceeds pinned file size: ")) + asset.name;
+                    error = std::string("DDI download exceeds pinned file size: ") + asset.name;
                     return false;
                 }
                 file.write(data, static_cast<std::streamsize>(length));
                 if (!file) {
-                    error = std::string(MAA_IOS_TR("Cannot write DDI download file: ")) + asset.name;
+                    error = std::string("Cannot write DDI download file: ") + asset.name;
                     return false;
                 }
                 received += length;
@@ -636,7 +635,7 @@ std::optional<DownloadResult> download(
             std::string transfer_error;
             const auto remaining = std::chrono::duration_cast<std::chrono::milliseconds>(deadline - Clock::now());
             if (remaining.count() <= 0) {
-                error = MAA_IOS_TR("DDI download timed out");
+                error = "DDI download timed out";
                 return std::nullopt;
             }
             if (!transfer(catalog.source_url + "/" + asset.name, asset.size, remaining, stopped, sink, transfer_error)) {
@@ -644,20 +643,20 @@ std::optional<DownloadResult> download(
                     error = std::move(transfer_error);
                 }
                 if (error.empty()) {
-                    error = MAA_IOS_TR("DDI download failed");
+                    error = "DDI download failed";
                 }
                 return std::nullopt;
             }
             file.flush();
             if (!file) {
-                throw std::runtime_error(std::string(MAA_IOS_TR("Cannot flush DDI download file: ")) + asset.name);
+                throw std::runtime_error(std::string("Cannot flush DDI download file: ") + asset.name);
             }
             file.close();
             if (!file) {
-                throw std::runtime_error(std::string(MAA_IOS_TR("Cannot close DDI download file: ")) + asset.name);
+                throw std::runtime_error(std::string("Cannot close DDI download file: ") + asset.name);
             }
             if (received != asset.size) {
-                throw std::runtime_error(std::string(MAA_IOS_TR("Incomplete DDI download: ")) + asset.name);
+                throw std::runtime_error(std::string("Incomplete DDI download: ") + asset.name);
             }
         }
         if (stopped() || !validate_files(staging, catalog, error, false, target)) {
@@ -667,13 +666,13 @@ std::optional<DownloadResult> download(
         complete << marker(catalog);
         complete.close();
         if (!complete) {
-            throw std::runtime_error(MAA_IOS_TR("Cannot write DDI completion marker"));
+            throw std::runtime_error("Cannot write DDI completion marker");
         }
         if (stopped()) {
             return std::nullopt;
         }
         if (fs::exists(directory)) {
-            throw std::runtime_error(MAA_IOS_TR("DDI version directory appeared during download; refusing to overwrite it"));
+            throw std::runtime_error("DDI version directory appeared during download; refusing to overwrite it");
         }
         fs::rename(staging, directory);
         cleanup.path.clear();
@@ -710,7 +709,7 @@ std::optional<DownloadResult> download_for_target(const DownloadOptions& options
         break;
     }
     if (!catalog) {
-        error = MAA_IOS_TR("No pinned Classic DDI exists for the requested OS major.minor version");
+        error = "No pinned Classic DDI exists for the requested OS major.minor version";
         return std::nullopt;
     }
     return detail::download(options, *catalog, curl_transfer, error, &target);

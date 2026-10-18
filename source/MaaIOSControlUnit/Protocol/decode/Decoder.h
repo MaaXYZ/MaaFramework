@@ -1,6 +1,5 @@
 #pragma once
 
-#include "i18n/Translation.h"
 
 #include <cstdint>
 #include <memory>
@@ -87,10 +86,10 @@ inline constexpr bool kHaveDecoder = false;
 #endif
 
 /// 本构建未编入 HEVC 后端时的共用提示。
-inline constexpr const char* kNoDecoderMessage = MAA_IOS_N_(
+inline constexpr const char* kNoDecoderMessage =
     "No HEVC decoder in this build. Non-Apple platforms require FFmpeg development "
     "packages. Install them and reconfigure (Debian/Ubuntu: apt install "
     "libavcodec-dev libavutil-dev libswscale-dev; Fedora: dnf install "
-    "ffmpeg-devel).\n");
+    "ffmpeg-devel).\n";
 
 } // namespace maa::ios

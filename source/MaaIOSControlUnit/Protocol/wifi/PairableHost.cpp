@@ -8,7 +8,6 @@
 #include <set>
 #include <utility>
 
-#include "i18n/Translation.h"
 #include "wifi/Opack.h"
 #include "wifi/Srp.h"
 #include "wifi/Tlv.h"
@@ -68,7 +67,7 @@ public:
         if (!envelope->is_object() || envelope->as_object().size() != 3 || !sequence || *sequence != incoming_ || origin == nullptr
             || !origin->is_string() || *origin != "host" || message == nullptr || !message->is_object() || message->as_object().size() != 1
             || plain == nullptr || !plain->is_object() || plain->as_object().size() != 1 || body == nullptr || !body->is_object()) {
-            err = MAA_IOS_TR("Pairable host expected a plain host envelope with the next sequence");
+            err = "Pairable host expected a plain host envelope with the next sequence";
             return std::nullopt;
         }
         ++incoming_;
@@ -104,7 +103,7 @@ public:
             || !kind->is_string() || *kind != "setupManualPairing" || start == nullptr || !start->is_boolean()
             || start->as_boolean() != new_session || encoded == nullptr || !encoded->is_string()
             || encoded->as_string_view().size() > 32768) {
-            err = MAA_IOS_TR("Pairable host expected setupManualPairing data with the correct session flag");
+            err = "Pairable host expected setupManualPairing data with the correct session flag";
             return std::nullopt;
         }
         const auto bytes = b64_decode(encoded->as_string_view(), err);
@@ -117,7 +116,7 @@ public:
         }
         const auto* phase = tlv_get(*fields, TlvType::State);
         if (phase == nullptr || *phase != Bytes { state } || tlv_get(*fields, TlvType::Error) != nullptr) {
-            err = MAA_IOS_TR("Pairable host received an invalid pairing state or peer error");
+            err = "Pairable host received an invalid pairing state or peer error";
             return std::nullopt;
         }
         return fields;
@@ -149,7 +148,7 @@ public:
             const uint8_t type = bytes[offset];
             const size_t length = bytes[offset + 1];
             if (seen.contains(type) && (previous_type != type || previous_length != 255 || length == 0)) {
-                err = MAA_IOS_TR("Pairable host TLV repeated without a valid continuation");
+                err = "Pairable host TLV repeated without a valid continuation";
                 return std::nullopt;
             }
             seen.insert(type);
@@ -178,7 +177,7 @@ std::optional<PairableHostResult> device_identity(const Bytes& key, const Bytes&
     const auto* info = tlv_get(*fields, TlvType::Info);
     if (identifier == nullptr || identifier->empty() || identifier->size() > 1024 || public_key == nullptr || public_key->size() != 32
         || signature == nullptr || signature->size() != 64 || info == nullptr || info->empty() || info->size() > 16384) {
-        err = MAA_IOS_TR("Pairable host M5 is missing a complete signed device identity");
+        err = "Pairable host M5 is missing a complete signed device identity";
         return std::nullopt;
     }
     const auto prefix = hkdf_sha512(key, "Pair-Setup-Controller-Sign-Salt", "Pair-Setup-Controller-Sign-Info", 32, err);
@@ -189,7 +188,7 @@ std::optional<PairableHostResult> device_identity(const Bytes& key, const Bytes&
     signed_data.insert(signed_data.end(), identifier->begin(), identifier->end());
     signed_data.insert(signed_data.end(), public_key->begin(), public_key->end());
     if (!ed25519_verify(sv(*public_key), signed_data, *signature, err)) {
-        err = MAA_IOS_TR("Pairable host M5 device signature verification failed");
+        err = "Pairable host M5 device signature verification failed";
         return std::nullopt;
     }
     OpackValue decoded;
@@ -198,13 +197,13 @@ std::optional<PairableHostResult> device_identity(const Bytes& key, const Bytes&
     }
     std::set<std::string> keys;
     if (decoded.kind != OpackValue::Kind::kDict) {
-        err = MAA_IOS_TR("Pairable host M5 INFO is not a dictionary");
+        err = "Pairable host M5 INFO is not a dictionary";
         return std::nullopt;
     }
     for (const auto& [name, value] : decoded.dict) {
         (void)value;
         if (name.kind != OpackValue::Kind::kString || !keys.insert(name.str).second) {
-            err = MAA_IOS_TR("Pairable host M5 INFO has invalid or duplicate keys");
+            err = "Pairable host M5 INFO has invalid or duplicate keys";
             return std::nullopt;
         }
     }
@@ -214,7 +213,7 @@ std::optional<PairableHostResult> device_identity(const Bytes& key, const Bytes&
     if (udid == nullptr || udid->kind != OpackValue::Kind::kString || !label_valid(udid->str) || irk == nullptr
         || irk->kind != OpackValue::Kind::kBytes || irk->bytes.size() != 16
         || (account != nullptr && (account->kind != OpackValue::Kind::kString || bytes_of(account->str) != *identifier))) {
-        err = MAA_IOS_TR("Pairable host M5 INFO lacks a valid UDID/altIRK or contradicts the signed Identifier");
+        err = "Pairable host M5 INFO lacks a valid UDID/altIRK or contradicts the signed Identifier";
         return std::nullopt;
     }
     PairableHostResult result;
@@ -225,7 +224,7 @@ std::optional<PairableHostResult> device_identity(const Bytes& key, const Bytes&
     for (const auto& [name, output] : std::array { std::pair { "name", &result.peer_name }, std::pair { "model", &result.peer_model } }) {
         if (const auto* value = decoded.find(name)) {
             if (value->kind != OpackValue::Kind::kString || !label_valid(value->str)) {
-                err = MAA_IOS_TR("Pairable host M5 INFO has invalid device labels");
+                err = "Pairable host M5 INFO has invalid device labels";
                 return std::nullopt;
             }
             *output = value->str;
@@ -249,12 +248,12 @@ std::optional<PairableHostResult> accept_pairable_host(
         || options.host_public_key.size() != 32 || options.setup_pin.size() != 6
         || !std::all_of(options.setup_pin.begin(), options.setup_pin.end(), [](char c) { return c >= '0' && c <= '9'; }) || !display_pin
         || options.minimum_wire_protocol_version < 8 || options.wire_protocol_version < options.minimum_wire_protocol_version) {
-        err = MAA_IOS_TR("Pairable host configuration is incomplete or invalid");
+        err = "Pairable host configuration is incomplete or invalid";
         return std::nullopt;
     }
     const auto self_signature = ed25519_sign(sv(options.host_private_key), Bytes { }, err);
     if (!self_signature || !ed25519_verify(sv(options.host_public_key), Bytes { }, *self_signature, err)) {
-        err = MAA_IOS_TR("Pairable host public key does not match its private key");
+        err = "Pairable host public key does not match its private key";
         return std::nullopt;
     }
     const auto metadata = host_metadata(options.host_identifier, err);
@@ -279,7 +278,7 @@ std::optional<PairableHostResult> accept_pairable_host(
         || handshake_branch->as_object().size() != 1 || handshake == nullptr || !handshake->is_object() || !version
         || *version < options.minimum_wire_protocol_version || !peer_minimum || *peer_minimum < 8 || *peer_minimum > *version
         || *peer_minimum > options.wire_protocol_version || verify == nullptr || !verify->is_boolean() || verify->as_boolean()) {
-        err = MAA_IOS_TR("Pairable host rejected an incompatible or pair-verify handshake");
+        err = "Pairable host rejected an incompatible or pair-verify handshake";
         return std::nullopt;
     }
     const json::Value response = { { "response",
@@ -310,7 +309,7 @@ std::optional<PairableHostResult> accept_pairable_host(
     }
     const auto* method = tlv_get(*m1, TlvType::Method);
     if (method == nullptr || *method != Bytes { 0 }) {
-        err = MAA_IOS_TR("Pairable host M1 has an unsupported setup method");
+        err = "Pairable host M1 has an unsupported setup method";
         return std::nullopt;
     }
     SrpServer server("Pair-Setup", options.setup_pin);
@@ -332,12 +331,12 @@ std::optional<PairableHostResult> accept_pairable_host(
         }
     }
     if (!challenge_ready) {
-        err = MAA_IOS_TR("Pairable host could not generate a full-width SRP challenge");
+        err = "Pairable host could not generate a full-width SRP challenge";
         return std::nullopt;
     }
     if (!display_pin(options.setup_pin, err)) {
         if (err.empty()) {
-            err = MAA_IOS_TR("Pairable host PIN display was cancelled");
+            err = "Pairable host PIN display was cancelled";
         }
         return std::nullopt;
     }
@@ -354,7 +353,7 @@ std::optional<PairableHostResult> accept_pairable_host(
     const auto* client_proof = tlv_get(*m3, TlvType::Proof);
     if (client_public == nullptr || client_proof == nullptr || !server.process(*client_public, *client_proof, err)) {
         if (err.empty()) {
-            err = MAA_IOS_TR("Pairable host M3 is missing the SRP public key or proof");
+            err = "Pairable host M3 is missing the SRP public key or proof";
         }
         const std::string first_error = err;
         std::string ignored;
@@ -375,7 +374,7 @@ std::optional<PairableHostResult> accept_pairable_host(
     }
     const auto* sealed = tlv_get(*m5, TlvType::EncryptedData);
     if (sealed == nullptr) {
-        err = MAA_IOS_TR("Pairable host M5 is missing encrypted identity");
+        err = "Pairable host M5 is missing encrypted identity";
         return std::nullopt;
     }
     constexpr char nonce5[] = "\x00\x00\x00\x00PS-Msg05";
@@ -392,7 +391,7 @@ std::optional<PairableHostResult> accept_pairable_host(
     // Unauthenticated M5 data must never reach a filesystem admission callback.
     if (admit && !admit(*result, err)) {
         if (err.empty()) {
-            err = MAA_IOS_TR("Wi-Fi pairing returned an incomplete or unexpected device identity");
+            err = "Wi-Fi pairing returned an incomplete or unexpected device identity";
         }
         return std::nullopt;
     }

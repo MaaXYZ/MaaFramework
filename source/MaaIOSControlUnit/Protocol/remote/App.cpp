@@ -1,9 +1,9 @@
 #include "remote/App.h"
-#include "i18n/Translation.h"
+
+#include "MaaUtils/Logger.h"
 
 #include <algorithm>
 #include <chrono>
-#include <cstdio>
 #include <random>
 #include <thread>
 #include <vector>
@@ -106,10 +106,7 @@ bool App::launch(Device& device, const std::string& bundle_id, std::string& err,
         if (err.find("10004") == std::string::npos || attempt == kAttempts) {
             return false;
         }
-        std::printf(
-            MAA_IOS_TR("Launching %s: previous process has not exited (attempt %d); retry in 500 ms\n"),
-            bundle_id.c_str(),
-            attempt);
+        LogWarn << std::format("Launching {}: previous process has not exited (attempt {}); retry in 500 ms", bundle_id, attempt);
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     return false;
@@ -135,7 +132,7 @@ std::vector<int64_t> App::matching_pids(const xpc::Value& processes, const std::
 bool App::list(Device& device, std::vector<Entry>& out, std::string& err, bool verbose)
 {
     if (!device.rsd().supports(kService, "com.apple.coredevice.feature.streamapplist")) {
-        err = MAA_IOS_TR("Device appservice does not advertise streamapplist; large listapps fallback is disabled");
+        err = "Device appservice does not advertise streamapplist; large listapps fallback is disabled";
         return false;
     }
 
@@ -198,7 +195,7 @@ bool App::stop(Device& device, const std::string& bundle_id, std::string& err, b
     }
     const auto it = std::ranges::find(apps, bundle_id, &Entry::bundle_id);
     if (it == apps.end()) {
-        err = MAA_IOS_TR("Device has no app with bundle ID ") + bundle_id;
+        err = "Device has no app with bundle ID " + bundle_id;
         return false;
     }
 
@@ -210,7 +207,7 @@ bool App::stop(Device& device, const std::string& bundle_id, std::string& err, b
     const auto pids = matching_pids(procs, it->path);
     if (pids.empty()) {
         // 应用已安装，但当前进程表没有匹配项，无需发送信号即可返回成功。
-        std::printf(MAA_IOS_TR("stop_app(%s): app is not running\n"), bundle_id.c_str());
+        LogDebug << std::format("stop_app({}): app is not running", bundle_id);
         return true;
     }
     for (const int64_t pid : pids) {
@@ -230,14 +227,12 @@ bool App::stop(Device& device, const std::string& bundle_id, std::string& err, b
                 killed = true;
             }
             else if (result == CallResult::DeviceError) {
-                err =
-                    MAA_IOS_TR("Failed to terminate ") + bundle_id + MAA_IOS_TR(" process ") + std::to_string(pid) + MAA_IOS_TR(": ") + err;
+                err = "Failed to terminate " + bundle_id + " process " + std::to_string(pid) + ": " + err;
                 return false;
             }
         }
         if (!killed) {
-            err = MAA_IOS_TR("Failed to terminate ") + bundle_id + MAA_IOS_TR(" process ") + std::to_string(pid)
-                  + MAA_IOS_TR("; no reply after three attempts: ") + err;
+            err = "Failed to terminate " + bundle_id + " process " + std::to_string(pid) + "; no reply after three attempts: " + err;
             return false;
         }
     }
@@ -257,7 +252,7 @@ bool App::stop(Device& device, const std::string& bundle_id, std::string& err, b
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
-    std::printf(MAA_IOS_TR("stop_app(%s): signal sent, but process is still listed (exit may be pending)\n"), bundle_id.c_str());
+    LogWarn << std::format("stop_app({}): signal sent, but process is still listed (exit may be pending)", bundle_id);
     return true;
 }
 

@@ -1,5 +1,4 @@
 #include "transport/TcpConnect.h"
-#include "i18n/Translation.h"
 
 #ifndef _WIN32
 #include <fcntl.h>
@@ -31,7 +30,7 @@ std::optional<Socket> connect_tcp(const std::string& host, uint16_t port, int ti
     addrinfo* first = nullptr;
     const int rc = ::getaddrinfo(host.c_str(), service.c_str(), &hints, &first);
     if (rc != 0 || first == nullptr) {
-        err = MAA_IOS_TR("Failed to resolve address ") + host + MAA_IOS_TR(": ") + (rc == 0 ? MAA_IOS_TR("no results") : gai_strerror(rc));
+        err = "Failed to resolve address " + host + ": " + (rc == 0 ? "no results" : gai_strerror(rc));
         return std::nullopt;
     }
     std::unique_ptr<addrinfo, void (*)(addrinfo*)> addresses(first, ::freeaddrinfo);
@@ -59,14 +58,14 @@ std::optional<Socket> connect_tcp(const std::string& host, uint16_t port, int ti
             flags = ::fcntl(fd, F_GETFL, 0);
             if (flags < 0 || ::fcntl(fd, F_SETFL, flags | O_NONBLOCK) != 0) {
 #endif
-                last_error = MAA_IOS_TR("Failed to enable nonblocking mode: ") + socket_error_message();
+                last_error = "Failed to enable nonblocking mode: " + socket_error_message();
                 continue;
             }
         }
         // Native socket lengths differ on Windows. A resolved socket address
         // must fit sockaddr_storage before narrowing to the platform API type.
         if (!ai->ai_addr || ai->ai_addrlen > sizeof(sockaddr_storage)) {
-            last_error = MAA_IOS_TR("Resolved address exceeds socket storage");
+            last_error = "Resolved address exceeds socket storage";
             continue;
         }
         const auto address_length = static_cast<socklen_t>(ai->ai_addrlen);
@@ -87,8 +86,8 @@ std::optional<Socket> connect_tcp(const std::string& host, uint16_t port, int ti
                 ready = wait_socket(fd, true, static_cast<int>(remaining));
             } while (ready < 0 && socket_error() == kSocketInterrupted);
             if (ready <= 0) {
-                last_error = ready == 0 ? MAA_IOS_TR("Connection timed out") + std::to_string(timeout_ms) + "ms"
-                                        : MAA_IOS_TR("Failed to wait for connection: ") + std::string(socket_error_message());
+                last_error = ready == 0 ? "Connection timed out" + std::to_string(timeout_ms) + "ms"
+                                        : "Failed to wait for connection: " + std::string(socket_error_message());
                 continue;
             }
             int so_error = 0;
@@ -105,12 +104,12 @@ std::optional<Socket> connect_tcp(const std::string& host, uint16_t port, int ti
 #else
         if (nonblocking && ::fcntl(fd, F_SETFL, flags) != 0) {
 #endif
-            last_error = MAA_IOS_TR("Failed to restore blocking mode: ") + std::string(socket_error_message());
+            last_error = "Failed to restore blocking mode: " + std::string(socket_error_message());
             continue;
         }
         return socket;
     }
-    err = MAA_IOS_TR("Cannot connect to ") + host + ":" + service + (last_error.empty() ? std::string() : "：" + last_error);
+    err = "Cannot connect to " + host + ":" + service + (last_error.empty() ? std::string() : "：" + last_error);
     return std::nullopt;
 }
 
@@ -131,7 +130,7 @@ std::vector<detail::TcpAddress> resolve_addresses(const std::string& host, uint1
     std::vector<detail::TcpAddress> result;
     if (rc != 0 || !first) {
         if (!numeric) {
-            err = MAA_IOS_TR("Failed to resolve address ") + host + ": " + (rc ? gai_strerror(rc) : MAA_IOS_TR("no results"));
+            err = "Failed to resolve address " + host + ": " + (rc ? gai_strerror(rc) : "no results");
         }
         return result;
     }
@@ -192,7 +191,7 @@ std::optional<Socket> detail::connect_tcp_bounded_with_resolver(
         unsigned count = slots->active.load();
         do {
             if (count >= 2) {
-                err = MAA_IOS_TR("Too many outstanding hostname resolutions; retry later");
+                err = "Too many outstanding hostname resolutions; retry later";
                 return { };
             }
         } while (!slots->active.compare_exchange_weak(count, count + 1));
@@ -205,7 +204,7 @@ std::optional<Socket> detail::connect_tcp_bounded_with_resolver(
                     found = resolver(host, port, error);
                 }
                 catch (...) {
-                    error = MAA_IOS_TR("Hostname resolution failed");
+                    error = "Hostname resolution failed";
                 }
                 {
                     std::lock_guard lock(job->mutex);
@@ -219,7 +218,7 @@ std::optional<Socket> detail::connect_tcp_bounded_with_resolver(
         }
         catch (...) {
             slots->active.fetch_sub(1);
-            err = MAA_IOS_TR("Cannot start hostname resolution");
+            err = "Cannot start hostname resolution";
             return { };
         }
         std::unique_lock lock(job->mutex);
@@ -234,7 +233,7 @@ std::optional<Socket> detail::connect_tcp_bounded_with_resolver(
         }
         addresses = std::move(job->addresses);
         if (addresses.empty()) {
-            err = job->error.empty() ? MAA_IOS_TR("Hostname resolution returned no addresses") : job->error;
+            err = job->error.empty() ? "Hostname resolution returned no addresses" : job->error;
             return { };
         }
     }
@@ -303,7 +302,7 @@ std::optional<Socket> detail::connect_tcp_bounded_with_resolver(
     if (!budget.check(err)) {
         return { };
     }
-    err = MAA_IOS_TR("Cannot connect to ") + host + ":" + std::to_string(port) + (last_error.empty() ? std::string { } : ": " + last_error);
+    err = "Cannot connect to " + host + ":" + std::to_string(port) + (last_error.empty() ? std::string { } : ": " + last_error);
     return { };
 }
 

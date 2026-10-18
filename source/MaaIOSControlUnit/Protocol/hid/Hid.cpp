@@ -1,5 +1,4 @@
 #include "Hid.h"
-#include "i18n/Translation.h"
 
 #include <algorithm>
 #include <chrono>
@@ -99,7 +98,7 @@ uint16_t normalize(double v)
 std::unique_ptr<Service> Service::open(maa::ios::remote::Device& device, std::string& err, bool verbose)
 {
     if (!device.rsd().has_service(kServiceName)) {
-        err = MAA_IOS_TR("RSD directory missing ") + std::string(kServiceName);
+        err = "RSD directory missing " + std::string(kServiceName);
         return nullptr;
     }
     auto conn = device.connect(kServiceName, err, verbose);
@@ -123,7 +122,7 @@ bool Service::surfaces(std::vector<Surface>& out, std::string& err)
     const auto* list = reply.find("connectedServices");
     if (list == nullptr) {
         // 必需字段缺失时保留原始回复供诊断，不推断其它字段为服务目录。
-        err = MAA_IOS_TR("connectedServices response missing connectedServices: ") + xpc::describe(reply);
+        err = "connectedServices response missing connectedServices: " + xpc::describe(reply);
         return false;
     }
     const auto each = [&](const xpc::Value& v) {
@@ -181,7 +180,7 @@ bool Service::tap(double x, double y, int hold_ms, std::string& err)
 bool Service::stroke(const std::vector<std::pair<double, double>>& points, int step_ms, std::string& err)
 {
     if (points.empty()) {
-        err = MAA_IOS_TR("Stroke requires at least one point");
+        err = "Stroke requires at least one point";
         return false;
     }
     for (std::size_t i = 0; i < points.size(); ++i) {
@@ -249,7 +248,7 @@ bool Service::type_text(const std::string& text, int hold_ms, std::string& err)
 std::unique_ptr<Buttons> Buttons::open(maa::ios::remote::Device& device, std::string& err, bool verbose)
 {
     if (!device.rsd().has_service(kIndigoServiceName)) {
-        err = MAA_IOS_TR("RSD directory missing ") + std::string(kIndigoServiceName);
+        err = "RSD directory missing " + std::string(kIndigoServiceName);
         return nullptr;
     }
     auto conn = device.connect(kIndigoServiceName, err, verbose);

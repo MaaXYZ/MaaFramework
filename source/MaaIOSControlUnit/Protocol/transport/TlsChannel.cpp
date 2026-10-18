@@ -1,5 +1,4 @@
 #include "TlsChannel.h"
-#include "i18n/Translation.h"
 
 #include <openssl/err.h>
 #include <openssl/pem.h>
@@ -33,13 +32,13 @@ X509* read_cert_pem(const std::vector<uint8_t>& pem, std::string& err)
 {
     BIO* bio = BIO_new_mem_buf(pem.data(), static_cast<int>(pem.size()));
     if (bio == nullptr) {
-        err = MAA_IOS_TR("BIO_new_mem_buf failed");
+        err = "BIO_new_mem_buf failed";
         return nullptr;
     }
     X509* cert = PEM_read_bio_X509(bio, nullptr, nullptr, nullptr);
     BIO_free(bio);
     if (cert == nullptr) {
-        err = openssl_error(MAA_IOS_TR("Failed to parse certificate PEM"));
+        err = openssl_error("Failed to parse certificate PEM");
     }
     return cert;
 }
@@ -48,13 +47,13 @@ EVP_PKEY* read_key_pem(const std::vector<uint8_t>& pem, std::string& err)
 {
     BIO* bio = BIO_new_mem_buf(pem.data(), static_cast<int>(pem.size()));
     if (bio == nullptr) {
-        err = MAA_IOS_TR("BIO_new_mem_buf failed");
+        err = "BIO_new_mem_buf failed";
         return nullptr;
     }
     EVP_PKEY* key = PEM_read_bio_PrivateKey(bio, nullptr, nullptr, nullptr);
     BIO_free(bio);
     if (key == nullptr) {
-        err = openssl_error(MAA_IOS_TR("Failed to parse private key PEM"));
+        err = openssl_error("Failed to parse private key PEM");
     }
     return key;
 }
@@ -273,11 +272,11 @@ bool TlsChannel::handshake(Socket& sock, const PemIdentity& id, std::string& err
     // 候选对象只在握手成功后交给通道；失败路径直接释放，不对半成品发送 close_notify。
     auto ctx = std::unique_ptr<SSL_CTX, decltype(&SSL_CTX_free)>(SSL_CTX_new(TLS_client_method()), SSL_CTX_free);
     if (!ctx) {
-        return err = openssl_error(MAA_IOS_TR("SSL_CTX_new failed")), false;
+        return err = openssl_error("SSL_CTX_new failed"), false;
     }
     // 设备侧 lockdown 仍接受很旧的 TLS，且需要允许不带 SNI 的裸 IP 连接。
     if (SSL_CTX_set_min_proto_version(ctx.get(), TLS1_VERSION) != 1) {
-        return err = openssl_error(MAA_IOS_TR("Failed to configure TLS protocol version")), false;
+        return err = openssl_error("Failed to configure TLS protocol version"), false;
     }
     SSL_CTX_set_options(ctx.get(), SSL_OP_LEGACY_SERVER_CONNECT);
 
@@ -286,7 +285,7 @@ bool TlsChannel::handshake(Socket& sock, const PemIdentity& id, std::string& err
         return false;
     }
     if (X509_STORE_add_cert(SSL_CTX_get_cert_store(ctx.get()), root.get()) != 1) {
-        return err = openssl_error(MAA_IOS_TR("Failed to add root certificate")), false;
+        return err = openssl_error("Failed to add root certificate"), false;
     }
     SSL_CTX_set_verify(ctx.get(), SSL_VERIFY_PEER, verify_accept_peer);
 
@@ -299,13 +298,13 @@ bool TlsChannel::handshake(Socket& sock, const PemIdentity& id, std::string& err
         return false;
     }
     if (SSL_CTX_use_certificate(ctx.get(), host_cert.get()) != 1) {
-        return err = openssl_error(MAA_IOS_TR("Failed to load client certificate")), false;
+        return err = openssl_error("Failed to load client certificate"), false;
     }
     if (SSL_CTX_use_PrivateKey(ctx.get(), host_key.get()) != 1) {
-        return err = openssl_error(MAA_IOS_TR("Failed to load client private key")), false;
+        return err = openssl_error("Failed to load client private key"), false;
     }
     if (SSL_CTX_check_private_key(ctx.get()) != 1) {
-        return err = MAA_IOS_TR("Client certificate does not match private key"), false;
+        return err = "Client certificate does not match private key", false;
     }
     // 把根证书一并作为链的一部分出示，部分 iOS 版本会要求完整链。
     auto root_for_chain = std::unique_ptr<X509, decltype(&X509_free)>(read_cert_pem(id.root_cert, err), X509_free);
@@ -313,13 +312,13 @@ bool TlsChannel::handshake(Socket& sock, const PemIdentity& id, std::string& err
         return false;
     }
     if (SSL_CTX_add_extra_chain_cert(ctx.get(), root_for_chain.get()) != 1) {
-        return err = openssl_error(MAA_IOS_TR("Failed to add root certificate")), false;
+        return err = openssl_error("Failed to add root certificate"), false;
     }
     root_for_chain.release(); // 成功后根证书由 SSL_CTX 持有。
 
     auto ssl = std::unique_ptr<SSL, decltype(&SSL_free)>(SSL_new(ctx.get()), SSL_free);
     if (!ssl) {
-        return err = openssl_error(MAA_IOS_TR("SSL_new failed")), false;
+        return err = openssl_error("SSL_new failed"), false;
     }
     // 不校验设备证书身份；证书兼容策略见 verify_accept_peer。
     if (!set_socket_bio(ssl.get(), sock, err)) {
@@ -331,7 +330,7 @@ bool TlsChannel::handshake(Socket& sock, const PemIdentity& id, std::string& err
         const int ssl_err = SSL_get_error(ssl.get(), connected);
         char buf[256] = { 0 };
         ERR_error_string_n(ERR_get_error(), buf, sizeof(buf));
-        err = MAA_IOS_TR("TLS handshake failed, ssl_err=") + std::to_string(ssl_err) + " " + buf;
+        err = "TLS handshake failed, ssl_err=" + std::to_string(ssl_err) + " " + buf;
         return false;
     }
     ctx_ = ctx.release();
@@ -345,21 +344,21 @@ bool TlsChannel::handshake_psk(Socket& sock, const std::vector<uint8_t>& psk, st
     ERR_clear_error();
     err.clear();
     if (psk.empty()) {
-        err = MAA_IOS_TR("PSK is empty");
+        err = "PSK is empty";
         return false;
     }
     // SSL ex_data 指向这份独立存储；成功后仅转移所有权，回调使用的地址不变。
     auto stored_psk = std::make_unique<std::vector<uint8_t>>(psk);
     auto ctx = std::unique_ptr<SSL_CTX, decltype(&SSL_CTX_free)>(SSL_CTX_new(TLS_client_method()), SSL_CTX_free);
     if (!ctx) {
-        return err = openssl_error(MAA_IOS_TR("SSL_CTX_new failed")), false;
+        return err = openssl_error("SSL_CTX_new failed"), false;
     }
     // 使用已验证的 TLS 1.2 PSK 路径，未接入 TLS 1.3 external PSK。
     if (SSL_CTX_set_min_proto_version(ctx.get(), TLS1_2_VERSION) != 1 || SSL_CTX_set_max_proto_version(ctx.get(), TLS1_2_VERSION) != 1) {
-        return err = openssl_error(MAA_IOS_TR("Failed to configure TLS protocol version")), false;
+        return err = openssl_error("Failed to configure TLS protocol version"), false;
     }
     if (SSL_CTX_set_cipher_list(ctx.get(), "PSK") != 1) {
-        err = MAA_IOS_TR("TLS backend has no PSK cipher suite; use an OpenSSL build with PSK support");
+        err = "TLS backend has no PSK cipher suite; use an OpenSSL build with PSK support";
         return false;
     }
     // 不使用证书认证；双方通过共享密钥完成认证。
@@ -368,10 +367,10 @@ bool TlsChannel::handshake_psk(Socket& sock, const std::vector<uint8_t>& psk, st
 
     auto ssl = std::unique_ptr<SSL, decltype(&SSL_free)>(SSL_new(ctx.get()), SSL_free);
     if (!ssl) {
-        return err = openssl_error(MAA_IOS_TR("SSL_new failed")), false;
+        return err = openssl_error("SSL_new failed"), false;
     }
     if (SSL_set_ex_data(ssl.get(), psk_ex_index(), stored_psk.get()) != 1) {
-        return err = openssl_error(MAA_IOS_TR("Failed to attach PSK to TLS channel")), false;
+        return err = openssl_error("Failed to attach PSK to TLS channel"), false;
     }
     if (!set_socket_bio(ssl.get(), sock, err)) {
         return false;
@@ -383,10 +382,8 @@ bool TlsChannel::handshake_psk(Socket& sock, const std::vector<uint8_t>& psk, st
         char buf[256] = { 0 };
         ERR_error_string_n(ERR_get_error(), buf, sizeof(buf));
         // PSK 拒绝可能来自 pair-verify 派生结果；保留 OpenSSL 原始原因供排查。
-        err = MAA_IOS_TR("PSK handshake failed, ssl_err=") + std::to_string(ssl_err) + " " + buf
-              + (std::strstr(buf, "psk") != nullptr
-                     ? MAA_IOS_TR(" (device tunnel listener rejected the PSK; check pair-verify key derivation)")
-                     : "");
+        err = "PSK handshake failed, ssl_err=" + std::to_string(ssl_err) + " " + buf
+              + (std::strstr(buf, "psk") != nullptr ? " (device tunnel listener rejected the PSK; check pair-verify key derivation)" : "");
         return false;
     }
     ctx_ = ctx.release();

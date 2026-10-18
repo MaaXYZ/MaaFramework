@@ -1,5 +1,4 @@
 #include "net/TcpStream.h"
-#include "i18n/Translation.h"
 #include "net/LwipRuntime.h"
 #include <algorithm>
 #include <chrono>
@@ -53,7 +52,7 @@ struct TcpStream::Impl
     {
         auto& self = *static_cast<Impl*>(arg);
         self.pcb = nullptr; // 错误回调执行前 lwIP 已释放 PCB，不能再次 abort。
-        self.fail(MAA_IOS_TR("TCP connection terminated (lwIP ") + std::to_string(code) + MAA_IOS_TR(")"));
+        self.fail("TCP connection terminated (lwIP " + std::to_string(code) + ")");
     }
 
     static err_t connected(void* arg, tcp_pcb*, err_t code)
@@ -160,19 +159,19 @@ bool TcpStream::connect(uint16_t port, std::string& err)
             result = tcp_connect(s->pcb, &peer, port, Impl::connected);
         }
         if (result != ERR_OK) {
-            s->fail(MAA_IOS_TR("TCP connect failed (lwIP ") + std::to_string(result) + MAA_IOS_TR(")"));
+            s->fail("TCP connect failed (lwIP " + std::to_string(result) + ")");
         }
         return result;
     });
     if (code != ERR_OK) {
-        return err = MAA_IOS_TR("Cannot create TCP connection (lwIP ") + std::to_string(code) + MAA_IOS_TR(")"), false;
+        return err = "Cannot create TCP connection (lwIP " + std::to_string(code) + ")", false;
     }
     std::unique_lock lock(s->mutex);
     const bool ready = s->cv.wait_for(lock, std::chrono::seconds(15), [&] { return s->established || s->closed || !s->failure.empty(); });
     if (ready && s->established && !s->closed) {
         return true;
     }
-    err = s->failure.empty() ? MAA_IOS_TR("TCP connect timed out or connection closed") : s->failure;
+    err = s->failure.empty() ? "TCP connect timed out or connection closed" : s->failure;
     // 失败收尾需要进入核心线程，先释放应用状态锁，避免与 fail() 的锁形成等待环。
     lock.unlock();
     LwipRuntime::instance().call([s, why = err] { s->fail(why); });
@@ -212,14 +211,14 @@ bool TcpStream::send(std::string_view data, std::string& err)
         offset += result.first;
         if (result.second != ERR_OK && result.second != ERR_MEM) {
             std::lock_guard lock(s->mutex);
-            return err = s->failure.empty() ? MAA_IOS_TR("TCP send failed (connection closed or network error)") : s->failure, false;
+            return err = s->failure.empty() ? "TCP send failed (connection closed or network error)" : s->failure, false;
         }
         if (offset == data.size()) {
             return true;
         }
         std::unique_lock lock(s->mutex);
         if (std::chrono::steady_clock::now() >= deadline) {
-            err = MAA_IOS_TR("TCP send timed out");
+            err = "TCP send timed out";
             lock.unlock();
             LwipRuntime::instance().call([s, why = err] { s->fail(why); });
             return false;
@@ -228,7 +227,7 @@ bool TcpStream::send(std::string_view data, std::string& err)
             return s->progress != progress || s->closed || !s->failure.empty();
         });
     }
-    return connected() ? true : (err = MAA_IOS_TR("TCP connection not established"), false);
+    return connected() ? true : (err = "TCP connection not established", false);
 }
 
 bool TcpStream::recv(std::vector<uint8_t>& out, int timeout_ms, std::string& err, bool* timed_out)
@@ -247,12 +246,12 @@ bool TcpStream::recv(std::vector<uint8_t>& out, int timeout_ms, std::string& err
             *timed_out = true;
         }
         else {
-            err = MAA_IOS_TR("TCP read timed out");
+            err = "TCP read timed out";
         }
         return false;
     }
     if (s->received.empty()) {
-        return err = s->failure.empty() ? MAA_IOS_TR("TCP peer or local endpoint closed") : s->failure, false;
+        return err = s->failure.empty() ? "TCP peer or local endpoint closed" : s->failure, false;
     }
     out.swap(s->received);
     lock.unlock();

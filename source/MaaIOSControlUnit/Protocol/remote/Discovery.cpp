@@ -1,6 +1,5 @@
 #include "remote/Discovery.h"
 
-#include "i18n/Translation.h"
 #include "transport/Usbmux.h"
 #include "wifi/DiscoveryIdentity.h"
 #include "wifi/Mdns.h"
@@ -111,7 +110,7 @@ DiscoveryResult detail::merge_discovery(
             device->name = advertisement.name;
         }
         if (pairing == DiscoveryPairing::crypto_error) {
-            warn(result.warnings, MAA_IOS_TR("Cannot match mDNS advertisements to pairing records"));
+            warn(result.warnings, "Cannot match mDNS advertisements to pairing records");
         }
 
         DiscoveryCandidate candidate;
@@ -152,7 +151,7 @@ DiscoveryResult discover_devices(const DiscoveryOptions& options)
     }
     if (options.timeout.count() < 0 || options.timeout > std::chrono::seconds(60) || options.usb_timeout.count() < 0
         || options.usb_timeout > std::chrono::seconds(60)) {
-        warn(result.warnings, MAA_IOS_TR("Device discovery timeout must be between 0 and 60000 ms"));
+        warn(result.warnings, "Device discovery timeout must be between 0 and 60000 ms");
         return result;
     }
 
@@ -177,7 +176,7 @@ DiscoveryResult discover_devices(const DiscoveryOptions& options)
             return result;
         }
         if (!result.usb_available) {
-            warn(result.warnings, MAA_IOS_TR("USB device enumeration is unavailable"));
+            warn(result.warnings, "USB device enumeration is unavailable");
         }
     }
     if (stop_requested()) {

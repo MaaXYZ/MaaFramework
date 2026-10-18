@@ -1,5 +1,4 @@
 #include "Lockdown.h"
-#include "i18n/Translation.h"
 
 #include <algorithm>
 #include <atomic>
@@ -57,13 +56,13 @@ public:
         stop();
         check();
         if (reason_ == 1) {
-            error = MAA_IOS_TR("Bounded lockdown operation timed out");
+            error = "Bounded lockdown operation timed out";
         }
         else if (reason_ == 2) {
-            error = MAA_IOS_TR("Bounded lockdown operation was cancelled");
+            error = "Bounded lockdown operation was cancelled";
         }
         else if (reason_ == 3) {
-            error = MAA_IOS_TR("Lockdown cancellation callback failed");
+            error = "Lockdown cancellation callback failed";
         }
         return !reason_;
     }
@@ -141,10 +140,10 @@ bool write_frame(SSL* ssl, Socket& sock, std::string_view body, std::string& err
     hdr[3] = static_cast<uint8_t>(n);
     if (ssl != nullptr) {
         if (!tls_exact(ssl, hdr, 4, true)) {
-            return err = MAA_IOS_TR("Failed to write TLS header"), false;
+            return err = "Failed to write TLS header", false;
         }
         if (!tls_exact(ssl, reinterpret_cast<uint8_t*>(const_cast<char*>(body.data())), body.size(), true)) {
-            return err = MAA_IOS_TR("Failed to write TLS body"), false;
+            return err = "Failed to write TLS body", false;
         }
         return true;
     }
@@ -156,7 +155,7 @@ bool read_frame(SSL* ssl, Socket& sock, std::vector<uint8_t>& out, std::string& 
     uint8_t hdr[4];
     if (ssl != nullptr) {
         if (!tls_exact(ssl, hdr, 4, false)) {
-            return err = MAA_IOS_TR("Failed to read TLS header"), false;
+            return err = "Failed to read TLS header", false;
         }
     }
     else if (!sock.read_exact(hdr, 4, err)) {
@@ -164,7 +163,7 @@ bool read_frame(SSL* ssl, Socket& sock, std::vector<uint8_t>& out, std::string& 
     }
     const uint32_t len = uint32_t(hdr[0]) << 24 | uint32_t(hdr[1]) << 16 | uint32_t(hdr[2]) << 8 | hdr[3];
     if (len < 1 || len > (32u << 20)) {
-        return err = MAA_IOS_TR("Invalid lockdown frame length: ") + std::to_string(len), false;
+        return err = "Invalid lockdown frame length: " + std::to_string(len), false;
     }
     out.resize(len);
     if (ssl == nullptr) {
@@ -174,7 +173,7 @@ bool read_frame(SSL* ssl, Socket& sock, std::vector<uint8_t>& out, std::string& 
     while (got < len) {
         const int n = SSL_read(ssl, out.data() + got, static_cast<int>(len - got));
         if (n <= 0) {
-            return err = MAA_IOS_TR("Failed to read TLS body"), false;
+            return err = "Failed to read TLS body", false;
         }
         got += static_cast<size_t>(n);
     }
@@ -216,7 +215,7 @@ bool Lockdown::request(const plist::Value& req, plist::Value& reply, std::string
     }
     auto parsed = plist::parse(std::string_view(reinterpret_cast<const char*>(frame.data()), frame.size()));
     if (!parsed) {
-        return err = MAA_IOS_TR("lockdown response is not a valid plist"), false;
+        return err = "lockdown response is not a valid plist", false;
     }
     reply = std::move(*parsed);
     return true;
@@ -267,7 +266,7 @@ std::optional<Lockdown> Lockdown::establish_bounded(uint32_t device_id, std::str
     }
     auto parsed = plist::parse(std::string_view(reinterpret_cast<const char*>(record.data()), record.size()));
     if (!parsed || !parsed->is_dict()) {
-        err = MAA_IOS_TR("Cannot parse pairing record");
+        err = "Cannot parse pairing record";
         return { };
     }
     auto take = [&](std::string_view key) {
@@ -284,7 +283,7 @@ std::optional<Lockdown> Lockdown::establish_bounded(uint32_t device_id, std::str
     }
     ld.identity_ = PemIdentity { take("HostCertificate"), take("HostPrivateKey"), take("RootCertificate") };
     if (ld.host_id_.empty() || !ld.identity_.complete()) {
-        err = MAA_IOS_TR("Pairing record missing required fields");
+        err = "Pairing record missing required fields";
         return { };
     }
     auto mux = Usbmux::open_for_service(budget.remaining(), cancelled, err);
@@ -311,7 +310,7 @@ std::optional<Lockdown> Lockdown::establish_bounded(uint32_t device_id, std::str
         }
     }
     if (const auto* value = reply.find("Error")) {
-        err = MAA_IOS_TR("StartSession rejected: ") + value->as_string_or("?");
+        err = "StartSession rejected: " + value->as_string_or("?");
         return { };
     }
     if (const auto* value = reply.find("SessionID")) {
@@ -344,7 +343,7 @@ std::optional<Lockdown> Lockdown::establish(uint32_t device_id, std::string_view
     }
     auto parsed = plist::parse(std::string_view(reinterpret_cast<const char*>(record.data()), record.size()));
     if (!parsed) {
-        err = MAA_IOS_TR("Cannot parse pairing record");
+        err = "Cannot parse pairing record";
         return std::nullopt;
     }
     auto take = [&](std::string_view key) -> std::vector<uint8_t> {
@@ -361,7 +360,7 @@ std::optional<Lockdown> Lockdown::establish(uint32_t device_id, std::string_view
     }
     ld.identity_ = PemIdentity { take("HostCertificate"), take("HostPrivateKey"), take("RootCertificate") };
     if (ld.host_id_.empty() || !ld.identity_.complete()) {
-        err = MAA_IOS_TR("Pairing record missing required fields");
+        err = "Pairing record missing required fields";
         return std::nullopt;
     }
 
@@ -384,7 +383,7 @@ std::optional<Lockdown> Lockdown::establish(uint32_t device_id, std::string_view
         return std::nullopt;
     }
     if (const auto* e = reply.find("Error"); e != nullptr) {
-        err = MAA_IOS_TR("StartSession rejected: ") + e->as_string_or("?");
+        err = "StartSession rejected: " + e->as_string_or("?");
         return std::nullopt;
     }
     if (const auto* sid = reply.find("SessionID")) {
@@ -408,12 +407,12 @@ std::optional<Lockdown::ServiceEndpoint> Lockdown::start_service(std::string_vie
         return std::nullopt;
     }
     if (const auto* e = reply.find("Error"); e != nullptr) {
-        err = "StartService(" + std::string(name) + MAA_IOS_TR(") rejected: ") + e->as_string_or("?");
+        err = "StartService(" + std::string(name) + ") rejected: " + e->as_string_or("?");
         return std::nullopt;
     }
     const auto* port = reply.find("Port");
     if (port == nullptr) {
-        err = MAA_IOS_TR("StartService response missing Port");
+        err = "StartService response missing Port";
         return std::nullopt;
     }
     ServiceEndpoint ep;
