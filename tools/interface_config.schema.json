@@ -59,7 +59,7 @@
         },
         "ios": {
             "type": "object",
-            "title": "iOS 用户配置",
+            "title": "iOS配置",
             "properties": {
                 "udid": {
                     "type": "string"
