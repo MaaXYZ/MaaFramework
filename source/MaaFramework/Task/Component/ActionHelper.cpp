@@ -197,6 +197,12 @@ bool ActionHelper::wait_freezes(
         }
     }
 
+    // 跳出循环到返回成功之间仍可能收到 post_stop，此时不应把结果报成成功
+    if (need_to_stop()) {
+        LogWarn << "need_to_stop, abort wait freezes" << VAR(noti_ctx.name) << VAR(noti_ctx.phase) << VAR(duration_since(start_clock));
+        return finish(false);
+    }
+
     return finish(true);
 }
 

@@ -26,7 +26,7 @@ namespace
 constexpr int32_t kScreenWidth = 32;
 constexpr int32_t kScreenHeight = 32;
 constexpr int32_t kScreenType = 16; // CV_8UC3
-constexpr long long kReturnSlackMs = 1000;
+constexpr long long kStopLatencySlackMs = 1000;
 
 std::mutex g_screencap_mutex;
 uint8_t g_frame_counter = 0;
@@ -95,9 +95,13 @@ MaaController* create_changing_controller()
 struct SubTaskProbe
 {
     std::atomic_bool returned { false };
-    std::atomic<long long> elapsed_ms { -1 };
+    std::atomic<long long> total_ms { -1 };           // 进入 run_task 到返回
+    std::atomic<long long> stop_to_return_ms { -1 };  // post_stop 发出到返回，这才是停止延迟
     std::atomic<MaaTaskId> sub_task_id { MaaInvalidId };
     std::chrono::steady_clock::time_point enter_clock;
+
+    // sink 线程写入、主线程读取，用 steady_clock 的原生计数避免跨线程共享 time_point
+    std::atomic<long long> stop_clock_ns { 0 };
 };
 
 // 主任务 CustomAction：MaaContextRunTask 跑子任务，子任务卡在 post_wait_freezes
@@ -128,9 +132,18 @@ MaaBool main_custom_action(
 
     probe->enter_clock = std::chrono::steady_clock::now();
     MaaTaskId sub_task_id = MaaContextRunTask(context, "PostStopInterruptChild", std::string(kChildOverride).c_str());
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - probe->enter_clock);
 
-    probe->elapsed_ms = elapsed.count();
+    const auto return_clock = std::chrono::steady_clock::now();
+    const auto total = std::chrono::duration_cast<std::chrono::milliseconds>(return_clock - probe->enter_clock);
+
+    probe->total_ms = total.count();
+
+    const long long stop_ns = probe->stop_clock_ns;
+    if (stop_ns != 0) {
+        const auto stop_clock = std::chrono::steady_clock::time_point(std::chrono::steady_clock::duration(stop_ns));
+        probe->stop_to_return_ms = std::chrono::duration_cast<std::chrono::milliseconds>(return_clock - stop_clock).count();
+    }
+
     probe->sub_task_id = sub_task_id;
     probe->returned = true;
 
@@ -140,6 +153,7 @@ MaaBool main_custom_action(
 struct StopTrigger
 {
     MaaTasker* tasker = nullptr;
+    SubTaskProbe* probe = nullptr;
     std::atomic_bool fired { false };
 };
 
@@ -162,6 +176,10 @@ void on_context_message(void* handle, const char* message, const char* details_j
     bool expected = false;
     if (!trigger->fired.compare_exchange_strong(expected, true)) {
         return;
+    }
+
+    if (trigger->probe) {
+        trigger->probe->stop_clock_ns = std::chrono::steady_clock::now().time_since_epoch().count();
     }
 
     MaaTaskerPostStop(trigger->tasker);
@@ -207,7 +225,7 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
     SubTaskProbe probe;
     MaaResourceRegisterCustomAction(resource, "PostStopInterruptMainAction", &main_custom_action, &probe);
 
-    StopTrigger trigger { .tasker = tasker };
+    StopTrigger trigger { .tasker = tasker, .probe = &probe };
     auto sink_id = MaaTaskerAddContextSink(tasker, &on_context_message, &trigger);
 
     auto task_id = MaaTaskerPostTask(tasker, "PostStopInterruptMain", "{}");
@@ -223,7 +241,8 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
 
     bool stopped_fired = trigger.fired;
     bool sub_returned = probe.returned;
-    long long sub_elapsed_ms = probe.elapsed_ms;
+    long long total_ms = probe.total_ms;
+    long long stop_to_return_ms = probe.stop_to_return_ms;
 
     bool passed = false;
     if (!stopped_fired) {
@@ -232,12 +251,24 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
     else if (!sub_returned) {
         std::cout << "PostStopInterrupt: MaaContextRunTask did not return after post_stop" << std::endl;
     }
-    else if (sub_elapsed_ms < 0 || sub_elapsed_ms > kReturnSlackMs) {
-        std::cout << std::format("PostStopInterrupt: MaaContextRunTask returned in {}ms, expected <= {}ms", sub_elapsed_ms, kReturnSlackMs)
+    else if (stop_to_return_ms < 0) {
+        std::cout << "PostStopInterrupt: post_stop timestamp missing" << std::endl;
+    }
+    else if (stop_to_return_ms > kStopLatencySlackMs) {
+        // 只计 post_stop 发出到 run_task 返回，不含子任务启动耗时
+        std::cout << std::format(
+                         "PostStopInterrupt: MaaContextRunTask returned {}ms after post_stop (total {}ms), expected <= {}ms",
+                         stop_to_return_ms,
+                         total_ms,
+                         kStopLatencySlackMs)
                   << std::endl;
     }
     else {
-        std::cout << std::format("PostStopInterrupt: MaaContextRunTask returned in {}ms after post_stop", sub_elapsed_ms) << std::endl;
+        std::cout << std::format(
+                         "PostStopInterrupt: MaaContextRunTask returned {}ms after post_stop (total {}ms)",
+                         stop_to_return_ms,
+                         total_ms)
+                  << std::endl;
         passed = true;
     }
 
