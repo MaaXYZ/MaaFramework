@@ -49,6 +49,9 @@ struct MountResult
 
 // Cryptex DDIs are also visible as Personalized to mobile_image_mounter.
 std::optional<MountResult> inspect_mounted(PlistService&, Kind, const MountOptions&, std::string& error);
+// For Classic images, compares the mounted signature with the target's pinned
+// catalog digest without downloading an image or accessing a local cache.
+std::optional<MountResult> inspect_mounted(PlistService&, const DownloadTarget&, const MountOptions&, std::string& error);
 // Explicit replacement only; never rolls a nonce. Verifies the image is gone.
 bool unmount_current(PlistService&, Kind, const MountOptions&, std::string& error);
 // Classic/Personalized only. Validates pinned cache, prepares signature/ticket,

@@ -114,15 +114,16 @@ Json prepare(const Options& o, const Callbacks& callbacks)
     }
     // A mounted image alone does not establish compatibility. On CoreDevice
     // systems also require the controller's screenshot feature to be advertised.
-    if (!o.replace && selected->kind != ddi::Kind::Classic) {
-        if (!device) {
+    if (!o.replace) {
+        if (selected->kind != ddi::Kind::Classic && !device) {
             transport::IoBudget preparation({ seconds(30), cancelled });
             device = remote::Device::establish_bounded(record->udid, preparation, error, false, true);
             if (!device) {
                 return fail();
             }
         }
-        if (device->rsd().supports("com.apple.coredevice.screencaptureservice", "com.apple.coredevice.feature.capturescreenshot")) {
+        if (selected->kind == ddi::Kind::Classic
+            || device->rsd().supports("com.apple.coredevice.screencaptureservice", "com.apple.coredevice.feature.capturescreenshot")) {
             auto adapter = !o.wifi.empty() ? ddi::ServiceTransport::open_remote(*device, seconds(30), cancelled, error)
                                            : ddi::ServiceTransport::open_usb(*lockdown, record->device_id, seconds(30), cancelled, error);
             if (!adapter) {
@@ -132,11 +133,12 @@ Json prepare(const Options& o, const Callbacks& callbacks)
             ddi::MountOptions inspect;
             inspect.timeout = seconds(30);
             inspect.cancelled = cancelled;
-            auto mounted = ddi::inspect_mounted(wire, selected->kind, inspect, error);
+            auto mounted = ddi::inspect_mounted(wire, target, inspect, error);
             if (!mounted) {
                 return fail();
             }
-            if (mounted->state != ddi::MountState::NotMounted) {
+            if (mounted->state != ddi::MountState::NotMounted
+                && (selected->kind != ddi::Kind::Classic || mounted->signature_matches == true)) {
                 return { { "success", true },
                          { "error", "" },
                          { "cancelled", callbacks.stopped() },

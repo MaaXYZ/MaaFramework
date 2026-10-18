@@ -1,4 +1,4 @@
-set(maa_ios_protocol_test_names plist json hid rtp ddi_selection discovery device_selection tls_embedding credentials)
+set(maa_ios_protocol_test_names plist json hid rtp ddi_selection ddi_mounter discovery device_selection tls_embedding credentials)
 if(MAA_IOS_LIBAV)
     list(APPEND maa_ios_protocol_test_names decoder_capability)
 endif()

@@ -370,6 +370,40 @@ std::optional<MountResult> inspect_mounted(PlistService& service, Kind kind, con
     }
 }
 
+std::optional<MountResult>
+    inspect_mounted(PlistService& service, const DownloadTarget& target, const MountOptions& options, std::string& error)
+{
+    const auto selected = select_for_version(target.system_version, error);
+    if (!selected) {
+        return std::nullopt;
+    }
+    auto mounted = inspect_mounted(service, selected->kind, options, error);
+    if (!mounted || mounted->state == MountState::NotMounted || selected->kind != Kind::Classic) {
+        return mounted;
+    }
+    const auto* catalog = detail::classic_catalog(selected->version);
+    if (!catalog) {
+        error = "No pinned Classic DDI exists for the requested OS major.minor version";
+        return std::nullopt;
+    }
+    const auto asset = std::ranges::find(catalog->assets, "DeveloperDiskImage.dmg.signature", &detail::Asset::name);
+    if (asset == catalog->assets.end() || (asset->sha256.empty() && asset->git_blob_sha1.empty())) {
+        error = "Classic DDI catalog has no pinned signature digest";
+        return std::nullopt;
+    }
+    try {
+        mounted->signature_matches =
+            mounted->signature.size() == asset->size
+            && (asset->sha256.empty() || hex(hash_bytes(mounted->signature, EVP_sha256(), false)) == asset->sha256)
+            && (asset->git_blob_sha1.empty() || hex(hash_bytes(mounted->signature, EVP_sha1(), true)) == asset->git_blob_sha1);
+        return mounted;
+    }
+    catch (const std::exception& e) {
+        error = safe_text(e.what());
+        return std::nullopt;
+    }
+}
+
 bool unmount_current(PlistService& service, Kind kind, const MountOptions& options, std::string& error)
 {
     error.clear();
