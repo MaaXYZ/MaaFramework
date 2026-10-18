@@ -110,7 +110,7 @@ bool plane_allows_pair_setup(const json::Value& handshake, std::string& err)
 {
     const json::Value* options = json::find(handshake, "deviceOptions");
     const json::Value* allowed = options != nullptr ? json::find(*options, "allowsPairSetup") : nullptr;
-    if (allowed != nullptr && allowed->is_boolean() && !allowed->get<bool>()) {
+    if (allowed != nullptr && allowed->is_boolean() && !allowed->as_boolean()) {
         err = MAA_IOS_TR(
             "Control channel does not allow pair-setup "
             "(deviceOptions.allowsPairSetup=false). Tested iOS 27 devices require the "

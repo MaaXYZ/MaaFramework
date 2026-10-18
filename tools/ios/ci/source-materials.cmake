@@ -1,5 +1,5 @@
 # Keep the patched sources and build configuration with binary-cache restores.
-if(NOT PORT MATCHES "^(openssl|curl|ffmpeg|pugixml|nlohmann-json|zlib)$")
+if(NOT PORT MATCHES "^(openssl|curl|ffmpeg|pugixml|zlib)$")
     return()
 endif()
 if(NOT IS_DIRECTORY "${SOURCE_PATH}")

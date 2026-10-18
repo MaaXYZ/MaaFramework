@@ -344,8 +344,6 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
      iOS video decoding and pixel conversion.
 - [pugixml](https://github.com/zeux/pugixml)  
      XML parsing for iOS property lists (MIT).
-- [nlohmann-json](https://github.com/nlohmann/json)  
-     iOS protocol JSON messages (MIT).
 - [lwIP](https://github.com/lwip-tcpip/lwip)  
      Userspace TCP/IP for iOS transport (BSD-3-Clause).
 - [mdns](https://github.com/mjansson/mdns)  

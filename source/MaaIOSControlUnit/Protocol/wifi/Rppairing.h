@@ -55,7 +55,7 @@ private:
     transport::Socket& sock_;
 };
 
-/// 配对消息构造辅助函数；值存储使用 nlohmann/json。
+/// 配对消息构造辅助函数。
 json::Value j_str(std::string_view s);
 json::Value j_int(int64_t v);
 json::Value j_bool(bool v);

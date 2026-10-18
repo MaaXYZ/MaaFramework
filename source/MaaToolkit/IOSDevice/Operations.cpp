@@ -66,35 +66,35 @@ Json discover(const Options& options, const Callbacks& callbacks)
     request.should_cancel = callbacks.cancelled;
     request.pairing_records = options.pairing_records;
     const auto found = remote::discover_devices(request);
-    auto devices = Json::array();
+    auto devices = ::json::array { };
     for (const auto& device : found.devices) {
-        auto candidates = Json::array();
+        auto candidates = ::json::array { };
         for (const auto& c : device.candidates) {
             if (c.transport == remote::DiscoveryTransport::usbmux && c.connection_type != "USB") {
                 continue;
             }
-            candidates.push_back(
-                { { "transport", c.transport == remote::DiscoveryTransport::usbmux ? "usbmux" : "remote_pairing" },
-                  { "connection_type", c.connection_type },
-                  { "device_id", c.device_id },
-                  { "address", c.address },
-                  { "port", c.port },
-                  { "interface_index", c.interface_index },
-                  { "interface_name", c.interface_name },
-                  { "instance", c.instance },
-                  { "identifier", c.identifier },
-                  { "pairing", pairing_name(c.pairing) },
-                  { "pairing_state", static_cast<int>(c.pairing) } });
+            candidates.emplace_back(
+                ::json::object { { "transport", c.transport == remote::DiscoveryTransport::usbmux ? "usbmux" : "remote_pairing" },
+                                 { "connection_type", c.connection_type },
+                                 { "device_id", c.device_id },
+                                 { "address", c.address },
+                                 { "port", c.port },
+                                 { "interface_index", c.interface_index },
+                                 { "interface_name", c.interface_name },
+                                 { "instance", c.instance },
+                                 { "identifier", c.identifier },
+                                 { "pairing", pairing_name(c.pairing) },
+                                 { "pairing_state", static_cast<int>(c.pairing) } });
         }
         if (candidates.empty()) {
             continue;
         }
         const auto methods = MaaIOScreencapMethod_ScreenshotService | (kHaveDecoder ? MaaIOScreencapMethod_Stream : 0ULL);
-        devices.push_back(
-            { { "udid", device.udid },
-              { "name", device.name },
-              { "candidates", std::move(candidates) },
-              { "screencap_methods", methods } });
+        devices.emplace_back(
+            ::json::object { { "udid", device.udid },
+                             { "name", device.name },
+                             { "candidates", std::move(candidates) },
+                             { "screencap_methods", methods } });
     }
     const bool ok = !found.cancelled && (found.usb_available || found.wifi_available);
     return { { "success", ok },

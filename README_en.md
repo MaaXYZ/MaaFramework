@@ -348,8 +348,6 @@ _Please note that you only need to read this chapter if you are ready to develop
      iOS video decoding and pixel conversion.
 - [pugixml](https://github.com/zeux/pugixml)  
      XML parsing for iOS property lists (MIT).
-- [nlohmann-json](https://github.com/nlohmann/json)  
-     iOS protocol JSON messages (MIT).
 - [lwIP](https://github.com/lwip-tcpip/lwip)  
      Userspace TCP/IP for iOS transport (BSD-3-Clause).
 - [mdns](https://github.com/mjansson/mdns)  

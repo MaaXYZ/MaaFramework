@@ -41,8 +41,10 @@ std::optional<uint16_t> request_tcp_listener(Rppairing& channel, const Bytes& tu
         // 把实际收到的键打出来：设备在"配好了但不肯给你隧道"的时候回的东西是有名字的，
         // 只说"没有 port"的话，下一次还是要从头猜。
         std::string keys;
-        for (const auto& entry : reply->items()) {
-            keys += " " + entry.key();
+        if (reply->is_object()) {
+            for (const auto& entry : reply->as_object()) {
+                keys += " " + entry.first;
+            }
         }
         err = MAA_IOS_TR("createListener response missing port (actual fields:") + keys + MAA_IOS_TR(")");
         return std::nullopt;

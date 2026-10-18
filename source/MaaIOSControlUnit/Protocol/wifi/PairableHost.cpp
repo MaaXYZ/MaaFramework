@@ -28,13 +28,10 @@ bool label_valid(std::string_view value, bool allow_empty = false)
 
 std::optional<int64_t> integer(const json::Value* value)
 {
-    if (value == nullptr || !value->is_number_integer()) {
+    if (value == nullptr || !value->is<int64_t>()) {
         return std::nullopt;
     }
-    if (value->is_number_unsigned() && value->get<uint64_t>() > static_cast<uint64_t>(std::numeric_limits<int64_t>::max())) {
-        return std::nullopt;
-    }
-    return value->get<int64_t>();
+    return value->as<int64_t>();
 }
 
 const json::Value* path(const json::Value& root, std::initializer_list<std::string_view> keys)
@@ -68,9 +65,9 @@ public:
         const auto* message = json::find(*envelope, "message");
         const auto* plain = path(*envelope, { "message", "plain" });
         const auto* body = path(*envelope, { "message", "plain", "_0" });
-        if (!envelope->is_object() || envelope->size() != 3 || !sequence || *sequence != incoming_ || origin == nullptr
-            || !origin->is_string() || *origin != "host" || message == nullptr || !message->is_object() || message->size() != 1
-            || plain == nullptr || !plain->is_object() || plain->size() != 1 || body == nullptr || !body->is_object()) {
+        if (!envelope->is_object() || envelope->as_object().size() != 3 || !sequence || *sequence != incoming_ || origin == nullptr
+            || !origin->is_string() || *origin != "host" || message == nullptr || !message->is_object() || message->as_object().size() != 1
+            || plain == nullptr || !plain->is_object() || plain->as_object().size() != 1 || body == nullptr || !body->is_object()) {
             err = MAA_IOS_TR("Pairable host expected a plain host envelope with the next sequence");
             return std::nullopt;
         }
@@ -102,15 +99,15 @@ public:
         const auto* kind = data != nullptr ? json::find(*data, "kind") : nullptr;
         const auto* start = data != nullptr ? json::find(*data, "startNewSession") : nullptr;
         const auto* encoded = data != nullptr ? json::find(*data, "data") : nullptr;
-        if (body->size() != 1 || event == nullptr || !event->is_object() || event->size() != 1 || pairing == nullptr
-            || !pairing->is_object() || pairing->size() != 1 || data == nullptr || !data->is_object() || kind == nullptr
+        if (body->as_object().size() != 1 || event == nullptr || !event->is_object() || event->as_object().size() != 1 || pairing == nullptr
+            || !pairing->is_object() || pairing->as_object().size() != 1 || data == nullptr || !data->is_object() || kind == nullptr
             || !kind->is_string() || *kind != "setupManualPairing" || start == nullptr || !start->is_boolean()
-            || start->get<bool>() != new_session || encoded == nullptr || !encoded->is_string()
-            || encoded->get_ref<const std::string&>().size() > 32768) {
+            || start->as_boolean() != new_session || encoded == nullptr || !encoded->is_string()
+            || encoded->as_string_view().size() > 32768) {
             err = MAA_IOS_TR("Pairable host expected setupManualPairing data with the correct session flag");
             return std::nullopt;
         }
-        const auto bytes = b64_decode(encoded->get_ref<const std::string&>(), err);
+        const auto bytes = b64_decode(encoded->as_string_view(), err);
         if (!bytes) {
             return std::nullopt;
         }
@@ -277,11 +274,11 @@ std::optional<PairableHostResult> accept_pairable_host(
     const auto* verify = host_options != nullptr ? json::find(*host_options, "attemptPairVerify") : nullptr;
     const auto* minimum = handshake != nullptr ? json::find(*handshake, "minimumSupportedWireProtocolVersion") : nullptr;
     const auto peer_minimum = minimum != nullptr ? integer(minimum) : std::optional<int64_t> { 8 };
-    if (request->size() != 1 || request_branch == nullptr || !request_branch->is_object() || request_branch->size() != 1
-        || handshake_branch == nullptr || !handshake_branch->is_object() || handshake_branch->size() != 1 || handshake == nullptr
-        || !handshake->is_object() || !version || *version < options.minimum_wire_protocol_version || !peer_minimum || *peer_minimum < 8
-        || *peer_minimum > *version || *peer_minimum > options.wire_protocol_version || verify == nullptr || !verify->is_boolean()
-        || verify->get<bool>()) {
+    if (request->as_object().size() != 1 || request_branch == nullptr || !request_branch->is_object()
+        || request_branch->as_object().size() != 1 || handshake_branch == nullptr || !handshake_branch->is_object()
+        || handshake_branch->as_object().size() != 1 || handshake == nullptr || !handshake->is_object() || !version
+        || *version < options.minimum_wire_protocol_version || !peer_minimum || *peer_minimum < 8 || *peer_minimum > *version
+        || *peer_minimum > options.wire_protocol_version || verify == nullptr || !verify->is_boolean() || verify->as_boolean()) {
         err = MAA_IOS_TR("Pairable host rejected an incompatible or pair-verify handshake");
         return std::nullopt;
     }

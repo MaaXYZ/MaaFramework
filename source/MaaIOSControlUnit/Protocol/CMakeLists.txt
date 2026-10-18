@@ -9,17 +9,6 @@ if(POLICY CMP0135)
 endif()
 option(MAA_IOS_FETCH_DEPENDENCIES "Fetch missing pinned iOS protocol dependencies" ON)
 
-find_package(nlohmann_json 3.12 QUIET CONFIG)
-if(NOT TARGET nlohmann_json::nlohmann_json)
-    if(NOT MAA_IOS_FETCH_DEPENDENCIES AND NOT FETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON)
-        message(FATAL_ERROR "MaaIOSControlUnit requires nlohmann_json >= 3.12")
-    endif()
-    set(JSON_BuildTests OFF CACHE BOOL "" FORCE)
-    FetchContent_Declare(nlohmann_json
-        URL https://codeload.github.com/nlohmann/json/tar.gz/refs/tags/v3.12.0
-        URL_HASH SHA256=4b92eb0c06d10683f7447ce9406cb97cd4b453be18d7279320f7b2f025c10187)
-    FetchContent_MakeAvailable(nlohmann_json)
-endif()
 find_package(pugixml 1.14 QUIET CONFIG)
 if(NOT TARGET pugixml::pugixml)
     if(NOT MAA_IOS_FETCH_DEPENDENCIES AND NOT FETCHCONTENT_SOURCE_DIR_PUGIXML)
@@ -178,7 +167,7 @@ function(maa_ios_apply_protocol_options target visibility)
     endif()
     target_compile_definitions(${target} PRIVATE OPENSSL_SUPPRESS_DEPRECATED)
     target_link_libraries(${target} ${visibility}
-        OpenSSL::SSL OpenSSL::Crypto nlohmann_json::nlohmann_json MaaIOSLibAv Threads::Threads
+        OpenSSL::SSL OpenSSL::Crypto MaaIOSLibAv Threads::Threads
         pugixml::pugixml MaaIOSLwip MaaIOSCurl)
     if(APPLE)
         target_link_libraries(${target} ${visibility} "-framework VideoToolbox" "-framework CoreMedia"

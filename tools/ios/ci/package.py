@@ -87,7 +87,7 @@ def dependencies(arguments, output: Path) -> dict:
     if not libraries:
         raise RuntimeError("No iOS runtime dependencies were packaged")
     sources = output / "source-materials" / "vcpkg"
-    required = {"openssl", "ffmpeg", "pugixml", "nlohmann-json", "zlib"}
+    required = {"openssl", "ffmpeg", "pugixml", "zlib"}
     if system != "macos":
         required.add("curl")
     for package in sorted(packages):

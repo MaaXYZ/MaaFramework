@@ -8,11 +8,11 @@
 
 #include "MaaFramework/MaaDef.h"
 #include "wifi/PairRecord.h"
-#include <nlohmann/json.hpp>
+#include "json/Json.h"
 
 namespace maa::ios::management
 {
-using Json = nlohmann::json;
+using Json = ::json::value;
 
 struct Options
 {

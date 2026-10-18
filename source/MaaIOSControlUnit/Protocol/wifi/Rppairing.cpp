@@ -29,7 +29,7 @@ json::Value j_arr(std::vector<json::Value> items)
 
 json::Value j_obj(std::vector<std::pair<std::string, json::Value>> kv)
 {
-    auto out = json::Value::object();
+    auto out = ::json::object { };
     for (auto& [k, v] : kv) {
         out.emplace(std::move(k), std::move(v));
     }
@@ -253,8 +253,10 @@ std::optional<Bytes> pairing_data_roundtrip(
         const json::Value* bytes = inner_data != nullptr ? json::find(*inner_data, "data") : nullptr;
         if (bytes == nullptr || !bytes->is_string()) {
             err = MAA_IOS_TR("event missing pairingData._0.data; actual fields: ");
-            for (const auto& kv : zero->items()) {
-                err += " " + kv.key();
+            if (zero->is_object()) {
+                for (const auto& kv : zero->as_object()) {
+                    err += " " + kv.first;
+                }
             }
             return std::nullopt;
         }
