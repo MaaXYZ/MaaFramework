@@ -1,6 +1,5 @@
 #include "MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"
 
-#include "LibraryHolder/ControlUnit.h"
 #include "MaaFramework/Utility/MaaBuffer.h"
 #include <memory>
 #include <meojson/json.hpp>
@@ -21,93 +20,63 @@ struct MaaToolkitIOSDeviceList
     std::string warnings = "[]";
 };
 
+#ifndef MAA_WITH_IOS_DEVICE
 namespace
 {
-MaaBool manage(
-    const char* function_name,
-    const char* options_json,
-    MaaToolkitIOSDeviceEventCallback event_callback,
-    MaaToolkitIOSDeviceCancelCallback cancel_callback,
-    void* userdata,
-    MaaStringBuffer* result,
-    MaaStringBuffer* credential = nullptr)
+MaaBool unsupported(MaaStringBuffer* result, MaaStringBuffer* credential = nullptr)
 {
-    if (!result) {
+    if (!result || result == credential) {
         return false;
     }
-    try {
-        if (credential) {
-            MaaStringBufferClear(credential);
-        }
-#ifdef MAA_WITH_IOS_DEVICE
-        return MAA_NS::IOSControlUnitLibraryHolder::management(
-            function_name,
-            options_json,
-            event_callback,
-            cancel_callback,
-            userdata,
-            result,
-            credential);
-#else
-        (void)function_name;
-        (void)options_json;
-        (void)event_callback;
-        (void)cancel_callback;
-        (void)userdata;
-        MaaStringBufferSet(result, R"({"success":false,"cancelled":false,"error":"iOS controller support is disabled in this build"})");
-        return false;
-#endif
+    if (credential) {
+        MaaStringBufferClear(credential);
     }
-    catch (...) {
-        MaaStringBufferSet(result, R"({"success":false,"cancelled":false,"error":"iOS device management failed"})");
-        return false;
-    }
+    MaaStringBufferSet(result, R"({"success":false,"cancelled":false,"error":"iOS controller support is disabled in this build"})");
+    return false;
 }
 }
 
 MaaBool MaaToolkitIOSDeviceDiscover(
-    const char* options_json,
-    MaaToolkitIOSDeviceEventCallback event_callback,
-    MaaToolkitIOSDeviceCancelCallback cancel_callback,
-    void* userdata,
+    const char*,
+    MaaToolkitIOSDeviceEventCallback,
+    MaaToolkitIOSDeviceCancelCallback,
+    void*,
     MaaStringBuffer* result)
 {
-    return manage("MaaIOSControlUnitDiscover", options_json, event_callback, cancel_callback, userdata, result);
+    return unsupported(result);
 }
 
 MaaBool MaaToolkitIOSDevicePair(
-    const char* options_json,
-    MaaToolkitIOSDeviceEventCallback event_callback,
-    MaaToolkitIOSDeviceCancelCallback cancel_callback,
-    void* userdata,
+    const char*,
+    MaaToolkitIOSDeviceEventCallback,
+    MaaToolkitIOSDeviceCancelCallback,
+    void*,
     MaaStringBuffer* result,
     MaaStringBuffer* credential)
 {
-    if (!credential || result == credential) {
-        return false;
-    }
-    return manage("MaaIOSControlUnitPair", options_json, event_callback, cancel_callback, userdata, result, credential);
+    return credential && unsupported(result, credential);
 }
 
 MaaBool MaaToolkitIOSDeviceCheckConnection(
-    const char* options_json,
-    MaaToolkitIOSDeviceEventCallback event_callback,
-    MaaToolkitIOSDeviceCancelCallback cancel_callback,
-    void* userdata,
+    const char*,
+    MaaToolkitIOSDeviceEventCallback,
+    MaaToolkitIOSDeviceCancelCallback,
+    void*,
     MaaStringBuffer* result)
 {
-    return manage("MaaIOSControlUnitCheckConnection", options_json, event_callback, cancel_callback, userdata, result);
+    return unsupported(result);
 }
 
 MaaBool MaaToolkitIOSDevicePrepare(
-    const char* options_json,
-    MaaToolkitIOSDeviceEventCallback event_callback,
-    MaaToolkitIOSDeviceCancelCallback cancel_callback,
-    void* userdata,
+    const char*,
+    MaaToolkitIOSDeviceEventCallback,
+    MaaToolkitIOSDeviceCancelCallback,
+    void*,
     MaaStringBuffer* result)
 {
-    return manage("MaaIOSControlUnitPrepare", options_json, event_callback, cancel_callback, userdata, result);
+    return unsupported(result);
 }
+#endif
 
 MaaToolkitIOSDeviceList* MaaToolkitIOSDeviceListCreate()
 {

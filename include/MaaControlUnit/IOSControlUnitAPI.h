@@ -11,58 +11,6 @@ extern "C"
     MAA_CONTROL_UNIT_API const char* MaaIOSControlUnitGetVersion();
 
     /**
-     * Synchronous device-management events. Return false to reject a PIN or
-     * request cancellation. event_json is borrowed only during this callback.
-     * Events have type "progress" or "pin"; a PIN is temporary pairing material.
-     * Event callbacks are serialized. Cancel callbacks may run on worker/watchdog
-     * threads and must be thread-safe. Callbacks must not throw or reenter the call.
-     */
-    typedef MaaBool (*MaaIOSControlUnitManagementEventCallback)(const char* event_json, void* userdata);
-    typedef MaaBool (*MaaIOSControlUnitManagementCancelCallback)(void* userdata);
-
-    /**
-     * Blocking device management. options_json is an object (NULL means {}).
-     * result is a caller-owned MaaStringBuffer and must remain alive until return.
-     * Results always contain success, error and cancelled, including failures.
-     * Callbacks/userdata are borrowed only until return; no jobs remain afterward.
-     * Wireless first pairing requires an event callback to present its one-use PIN.
-     *
-     * Discover: timeout_ms (0..60000, default 3000), usb_only, wifi_only.
-     * Pair: udid, wifi (empty or "auto"), repair, timeout_ms (1..300000, default 120000).
-     * CheckConnection: udid, wifi (empty/"auto"/address), port (1..65535).
-     * Prepare: connection fields, cache_directory, replace, download_timeout_seconds
-     *          and install_timeout_seconds (1..3600; defaults 300 and 180).
-     * Unknown fields are rejected. CheckConnection closes its session before return.
-     * Failed/cancelled preparation can have changed the device; inspect
-     * device_may_have_changed before retrying with replacement.
-     */
-    MAA_CONTROL_UNIT_API MaaBool MaaIOSControlUnitDiscover(
-        const char* options_json,
-        MaaIOSControlUnitManagementEventCallback event_callback,
-        MaaIOSControlUnitManagementCancelCallback cancel_callback,
-        void* userdata,
-        MaaStringBuffer* result);
-    MAA_CONTROL_UNIT_API MaaBool MaaIOSControlUnitPair(
-        const char* options_json,
-        MaaIOSControlUnitManagementEventCallback event_callback,
-        MaaIOSControlUnitManagementCancelCallback cancel_callback,
-        void* userdata,
-        MaaStringBuffer* result,
-        MaaStringBuffer* credential);
-    MAA_CONTROL_UNIT_API MaaBool MaaIOSControlUnitCheckConnection(
-        const char* options_json,
-        MaaIOSControlUnitManagementEventCallback event_callback,
-        MaaIOSControlUnitManagementCancelCallback cancel_callback,
-        void* userdata,
-        MaaStringBuffer* result);
-    MAA_CONTROL_UNIT_API MaaBool MaaIOSControlUnitPrepare(
-        const char* options_json,
-        MaaIOSControlUnitManagementEventCallback event_callback,
-        MaaIOSControlUnitManagementCancelCallback cancel_callback,
-        void* userdata,
-        MaaStringBuffer* result);
-
-    /**
      * Create a native MaaFramework iOS controller.
      *
      * udid selects the device; empty selects the only eligible device.

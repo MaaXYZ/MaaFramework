@@ -1,8 +1,5 @@
 add_library(MaaIOSControlUnit SHARED
     API/IOSControlUnitAPI.cpp
-    API/IOSManagementAPI.cpp
-    Management/Operations.cpp
-    Management/Prepare.cpp
     Manager/IOSControlUnitMgr.cpp
     Manager/IOSControlUnitMgr.h
     Session/IOSSession.cpp
@@ -11,9 +8,8 @@ add_library(MaaIOSControlUnit SHARED
     Session/HeldInputs.h)
 target_include_directories(MaaIOSControlUnit PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
-target_link_libraries(MaaIOSControlUnit PRIVATE MaaUtils ${OpenCV_LIBS})
+target_link_libraries(MaaIOSControlUnit PRIVATE MaaUtils MaaIOSProtocol ${OpenCV_LIBS})
 target_compile_definitions(MaaIOSControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
-add_subdirectory(Protocol)
 install(TARGETS MaaIOSControlUnit RUNTIME DESTINATION bin LIBRARY DESTINATION bin)
 
 option(BUILD_IOS_CONTROLLER_TESTING "Build offline iOS controller tests" OFF)
@@ -22,9 +18,4 @@ if(BUILD_IOS_CONTROLLER_TESTING)
     add_executable(MaaIOSInputMappingTest ${CMAKE_SOURCE_DIR}/test/ios_test/ios_input_mapping_test.cpp)
     target_include_directories(MaaIOSInputMappingTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     add_test(NAME MaaIOSInputMappingTest COMMAND MaaIOSInputMappingTest)
-    add_executable(MaaIOSManagementAPITest ${CMAKE_SOURCE_DIR}/test/ios_test/ios_management_api_test.cpp)
-    target_include_directories(MaaIOSManagementAPITest PRIVATE ${MAA_PUBLIC_INC} "${MAAUTILS_DIR}/include")
-    target_link_libraries(MaaIOSManagementAPITest PRIVATE MaaIOSControlUnit MaaUtils ${OpenCV_LIBS})
-    add_test(NAME MaaIOSManagementAPITest COMMAND MaaIOSManagementAPITest)
-
 endif()

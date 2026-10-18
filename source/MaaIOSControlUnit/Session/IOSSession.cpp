@@ -1,5 +1,5 @@
 #include "IOSSession.h"
-#include "Management/Credentials.h"
+#include "wifi/Credentials.h"
 
 #include <algorithm>
 #include <chrono>
@@ -72,9 +72,9 @@ bool IOSSession::create(
         err = "no supported iOS screencap method selected";
         return false;
     }
-    const auto parsed = maa::ios::management::Json::parse(config, nullptr, false);
+    const auto parsed = nlohmann::json::parse(config, nullptr, false);
     std::vector<maa::ios::wifi::PairRecord> records;
-    if (!parsed.is_object() || !maa::ios::management::parse_credentials(parsed, records, err)) {
+    if (!parsed.is_object() || !maa::ios::wifi::parse_credentials(parsed, records, err)) {
         if (err.empty()) {
             err = "Invalid iOS controller configuration";
         }

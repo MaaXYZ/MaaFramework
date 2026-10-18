@@ -16,7 +16,6 @@
 #include "MaaControlUnit/ReplayControlUnitAPI.h"
 #include "MaaControlUnit/Win32ControlUnitAPI.h"
 #include "MaaControlUnit/WlRootsControlUnitAPI.h"
-#include "MaaUtils/Buffer/BufferTypes.hpp"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Runtime.h"
 
@@ -427,41 +426,6 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI> MacOSControlUnitLibraryHo
     }
 
     return std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
-}
-
-MaaBool IOSControlUnitLibraryHolder::management(
-    const char* function_name,
-    const char* options_json,
-    MaaIOSControlUnitManagementEventCallback event_callback,
-    MaaIOSControlUnitManagementCancelCallback cancel_callback,
-    void* userdata,
-    MaaStringBuffer* result,
-    MaaStringBuffer* credential)
-{
-    if (!result) {
-        return false;
-    }
-    result->set(R"({"success":false,"cancelled":false,"error":"iOS control unit is unavailable"})");
-    // The backend owns process-wide network workers. Retain one reference rather
-    // than unloading it inside a call and joining DLL workers under loader lock.
-    static std::mutex load_mutex;
-    static bool retained = false;
-    {
-        std::lock_guard lock(load_mutex);
-        if (!retained) {
-            retained = load_library(library_dir() / libname_);
-        }
-        if (!retained) {
-            return false;
-        }
-    }
-    check_version<IOSControlUnitLibraryHolder, decltype(MaaIOSControlUnitGetVersion)>(version_func_name_);
-    if (std::string_view(function_name) == "MaaIOSControlUnitPair") {
-        auto pair = get_function<decltype(MaaIOSControlUnitPair)>(function_name);
-        return pair && pair(options_json, event_callback, cancel_callback, userdata, result, credential);
-    }
-    auto function = get_function<decltype(MaaIOSControlUnitDiscover)>(function_name);
-    return function && function(options_json, event_callback, cancel_callback, userdata, result);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI> IOSControlUnitLibraryHolder::create_control_unit(

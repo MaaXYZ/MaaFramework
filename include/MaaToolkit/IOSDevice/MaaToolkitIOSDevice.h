@@ -11,7 +11,9 @@ extern "C"
     // of opaque credential strings to copy. result receives JSON with success,
     // cancelled and error, including on failure.
     // event_json has type progress or pin. Returning false cancels the operation.
-    // The cancellation callback may run on worker threads and must be thread-safe.
+    // Event callbacks are serialized; cancellation callbacks may run on worker threads
+    // and must be thread-safe. Callbacks must not throw or reenter the operation.
+    // Callbacks and userdata are borrowed until return; no operation jobs remain afterward.
     typedef MaaBool (*MaaToolkitIOSDeviceEventCallback)(const char* event_json, void* userdata);
     typedef MaaBool (*MaaToolkitIOSDeviceCancelCallback)(void* userdata);
 
@@ -24,7 +26,8 @@ extern "C"
         MaaStringBuffer* result);
 
     // Options: udid, wifi (empty or "auto"), repair (USB only),
-    // timeout_ms (1..300000, default 120000). Wi-Fi requires a PIN event callback.
+    // timeout_ms (1..300000, default 120000), host_name (Wi-Fi advertisement).
+    // Wi-Fi requires a PIN event callback.
     // result and credential must be distinct, caller-created MaaStringBuffers.
     // The verified versioned credential is returned separately from status JSON;
     // failures clear credential. Persistence and access control belong to the caller.
@@ -49,7 +52,8 @@ extern "C"
     // download_timeout_seconds (1..3600, default 300),
     // install_timeout_seconds (1..3600, default 180).
     // Empty cache_directory uses temporary files and cleans them after the operation;
-    // only an explicit directory enables persistent caching.
+    // only an explicit directory enables persistent caching. Failed/cancelled preparation
+    // may have changed the device; inspect device_may_have_changed before replacing it.
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDevicePrepare(
         const char* options_json,
         MaaToolkitIOSDeviceEventCallback event_callback,

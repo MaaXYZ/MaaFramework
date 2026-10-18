@@ -1,10 +1,11 @@
 # iOS device management API / iOS 设备管理 API
 
-There is no separate device-manager executable. Applications call MaaToolkit; it loads
-MaaIOSControlUnit through LibraryHolder. Protocol code remains private to the control unit.
+There is no separate device-manager executable. MaaToolkit implements discovery, pairing,
+connection checks and DDI preparation directly. MaaToolkit and MaaIOSControlUnit share
+a private static protocol target; no protocol library is installed.
 
-不再提供独立设备管理程序。应用调用 MaaToolkit，由 LibraryHolder 加载 MaaIOSControlUnit。
-协议、配对和 DDI 操作均位于控制单元内部。
+不再提供独立设备管理程序。发现、配对、连接检查和 DDI 准备直接由 MaaToolkit 实现。
+MaaToolkit 与 MaaIOSControlUnit 共用内部协议静态目标，不安装独立协议库。
 
 ## Credentials / 配对凭据
 

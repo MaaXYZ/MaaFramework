@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Operations.h"
+#include "wifi/PairRecord.h"
+#include <nlohmann/json.hpp>
 #include <set>
 
-namespace maa::ios::management
+namespace maa::ios::wifi
 {
-inline bool parse_credentials(const Json& options, std::vector<wifi::PairRecord>& records, std::string& error)
+inline bool parse_credentials(const nlohmann::json& options, std::vector<PairRecord>& records, std::string& error)
 {
     const auto found = options.find("pairing_records");
     if (found == options.end()) {
@@ -22,7 +23,7 @@ inline bool parse_credentials(const Json& options, std::vector<wifi::PairRecord>
             return false;
         }
         std::string detail;
-        auto record = wifi::parse_record(value.get_ref<const std::string&>(), detail);
+        auto record = parse_record(value.get_ref<const std::string&>(), detail);
         if (!record || !record->complete() || !record->has_peer_identity() || !identities.insert(record->udid).second) {
             error = "Pairing credentials must be complete and have unique device identities";
             return false;

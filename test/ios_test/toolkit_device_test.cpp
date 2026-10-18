@@ -1,4 +1,3 @@
-#include "LibraryHolder/ControlUnit.h"
 #include "MaaFramework/Utility/MaaBuffer.h"
 #include "MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"
 
@@ -11,7 +10,7 @@ namespace
 {
 std::string next_result;
 bool throw_management = false;
-std::string last_function;
+bool discovery_called = false;
 
 void require(bool value, const char* message)
 {
@@ -21,34 +20,20 @@ void require(bool value, const char* message)
 }
 }
 
-MAA_NS_BEGIN
-MaaBool IOSControlUnitLibraryHolder::management(
-    const char* function_name,
+MaaBool MaaToolkitIOSDeviceDiscover(
     const char*,
-    MaaIOSControlUnitManagementEventCallback event_callback,
-    MaaIOSControlUnitManagementCancelCallback cancel_callback,
-    void* userdata,
-    MaaStringBuffer* result,
-    MaaStringBuffer* credential)
+    MaaToolkitIOSDeviceEventCallback,
+    MaaToolkitIOSDeviceCancelCallback,
+    void*,
+    MaaStringBuffer* result)
 {
     if (throw_management) {
         throw std::runtime_error("private protocol failure");
     }
-    last_function = function_name;
-    if (event_callback && !event_callback(R"({"type":"pin","pin":"123456"})", userdata)) {
-        return false;
-    }
-    if (cancel_callback && cancel_callback(userdata)) {
-        return false;
-    }
+    discovery_called = true;
     MaaStringBufferSet(result, next_result.c_str());
-    if (credential) {
-        MaaStringBufferSet(credential, "opaque-test-credential");
-    }
     return true;
 }
-
-MAA_NS_END
 
 int main()
 {
@@ -61,12 +46,12 @@ int main()
                 {"transport":"remote_pairing","address":"fe80::1%14","port":49153,"interface_index":14,"pairing_state":1}]}],
             "warnings":["one source unavailable"]})";
         require(MaaToolkitIOSDeviceFindWithTimeout(5, list), "partial success");
-        require(last_function == "MaaIOSControlUnitDiscover", "discovery uses control unit");
+        require(discovery_called, "device list uses Toolkit discovery");
         const auto* device = MaaToolkitIOSDeviceListAt(list, 0);
         require(device && MaaToolkitIOSDeviceListSize(list) == 1, "list view");
         require(
             MaaToolkitIOSDeviceGetScreencapMethods(device) == (MaaIOScreencapMethod_Stream | MaaIOScreencapMethod_ScreenshotService),
-            "report decoder capability supplied by the loaded control unit");
+            "report decoder capability supplied by Toolkit discovery");
         require(MaaToolkitIOSDeviceGetScreencapMethods(nullptr) == MaaIOScreencapMethod_None, "null device has no capture methods");
         const auto with_video = next_result;
         next_result = R"({"success":true,"devices":[{"udid":"screenshot-only","screencap_methods":2}]})";
@@ -95,43 +80,6 @@ int main()
             std::string(MaaToolkitIOSDeviceListGetWarnings(list)).find("private protocol failure") == std::string::npos,
             "does not leak protocol exception data");
         throw_management = false;
-        auto* result = MaaStringBufferCreate();
-        auto* credential = MaaStringBufferCreate();
-        require(result != nullptr, "result allocation");
-        require(
-            MaaToolkitIOSDevicePair("{}", nullptr, nullptr, nullptr, result, credential) && last_function == "MaaIOSControlUnitPair",
-            "pair uses control unit");
-        require(
-            MaaToolkitIOSDeviceCheckConnection("{}", nullptr, nullptr, nullptr, result)
-                && last_function == "MaaIOSControlUnitCheckConnection",
-            "connection uses control unit");
-        require(
-            MaaToolkitIOSDevicePrepare("{}", nullptr, nullptr, nullptr, result) && last_function == "MaaIOSControlUnitPrepare",
-            "DDI uses control unit");
-        bool pin_seen = false;
-        require(
-            MaaToolkitIOSDevicePair(
-                "{}",
-                [](const char* value, void* data) -> MaaBool {
-                    *static_cast<bool*>(data) = std::string(value).find("123456") != std::string::npos;
-                    return true;
-                },
-                nullptr,
-                &pin_seen,
-                result,
-                credential)
-                && pin_seen,
-            "pairing events reach caller");
-        require(
-            !MaaToolkitIOSDevicePrepare(
-                "{}",
-                nullptr,
-                [](void*) -> MaaBool { return true; },
-                nullptr,
-                result),
-            "cancellation reaches control unit");
-        MaaStringBufferDestroy(result);
-        MaaStringBufferDestroy(credential);
         MaaToolkitIOSDeviceListDestroy(list);
         require(owned_udid == "device-id", "caller copy outlives list");
         require(!MaaToolkitIOSDeviceFind(nullptr) && MaaToolkitIOSDeviceListAt(nullptr, 0) == nullptr, "null handles");

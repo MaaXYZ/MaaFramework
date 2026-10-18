@@ -142,7 +142,7 @@ def main() -> None:
     provenance = {
         "commit": subprocess.check_output(["git", "-C", str(repository), "rev-parse", "HEAD"], text=True).strip(),
         "platform": arguments.platform,
-        "architecture": "MaaToolkit C API -> LibraryHolder -> MaaIOSControlUnit C API",
+        "architecture": "MaaToolkit device management and MaaIOSControlUnit sessions share a private static protocol target",
         "binary_dependencies": "MaaFramework/MaaDeps runtime plus vcpkg DLLs" if arguments.platform.startswith("windows") else "MaaFramework/MaaDeps runtime plus system OpenSSL/FFmpeg/libcurl",
         "maadeps_version": "v3.0.0",
         "submodules": subprocess.check_output(["git", "-C", str(repository), "submodule", "status", "--recursive"], text=True).splitlines(),

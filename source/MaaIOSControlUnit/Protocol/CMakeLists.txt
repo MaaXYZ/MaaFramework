@@ -40,7 +40,8 @@ FetchContent_MakeAvailable(lwip)
 file(GLOB maa_ios_lwip_core CONFIGURE_DEPENDS "${lwip_SOURCE_DIR}/src/core/*.c" "${lwip_SOURCE_DIR}/src/core/ipv6/*.c")
 add_library(MaaIOSLwip STATIC ${maa_ios_lwip_core} net/LwipPort.cpp)
 target_include_directories(MaaIOSLwip PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/net/lwip" "${lwip_SOURCE_DIR}/src/include")
-set_target_properties(MaaIOSLwip PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON POSITION_INDEPENDENT_CODE ON)
+set_target_properties(MaaIOSLwip PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON POSITION_INDEPENDENT_CODE ON
+    C_VISIBILITY_PRESET hidden CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN YES)
 # Upstream conditional IPv6 code leaves parameters and timer state unused in our selected
 # configuration. Keep the framework's own warning policy intact.
 if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
@@ -161,8 +162,8 @@ endif()
 if(NOT MAA_IOS_LIBAV)
     list(FILTER maa_ios_protocol_sources EXCLUDE REGEX "/decode/FFmpegDecoder\\.cpp$")
 endif()
-# The protocol is private implementation of the existing control unit.
-# The test-only archive below never become a separately distributed protocol library.
+# Shared implementation for MaaToolkit and MaaIOSControlUnit.
+# This static target has no installed library or public protocol API.
 set(maa_ios_protocol_root "${CMAKE_CURRENT_SOURCE_DIR}")
 function(maa_ios_apply_protocol_options target visibility)
     target_include_directories(${target} ${visibility} "${maa_ios_protocol_root}")
@@ -186,8 +187,10 @@ function(maa_ios_apply_protocol_options target visibility)
         target_link_libraries(${target} ${visibility} ws2_32 advapi32 iphlpapi)
     endif()
 endfunction()
-target_sources(MaaIOSControlUnit PRIVATE ${maa_ios_protocol_sources})
-maa_ios_apply_protocol_options(MaaIOSControlUnit PRIVATE)
+add_library(MaaIOSProtocol STATIC ${maa_ios_protocol_sources})
+set_target_properties(MaaIOSProtocol PROPERTIES POSITION_INDEPENDENT_CODE ON
+    CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN YES)
+maa_ios_apply_protocol_options(MaaIOSProtocol PUBLIC)
 
 include(CheckCXXSourceCompiles)
 include(CMakePushCheckState)
@@ -199,8 +202,8 @@ if(NOT MAA_IOS_STANDARD_STOP_TOKEN AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_REQUIRED_FLAGS "-fexperimental-library")
     check_cxx_source_compiles("${maa_ios_stop_token_check}" MAA_IOS_EXPERIMENTAL_STOP_TOKEN)
     if(MAA_IOS_EXPERIMENTAL_STOP_TOKEN)
-        target_compile_options(MaaIOSControlUnit PRIVATE -fexperimental-library)
-        target_link_options(MaaIOSControlUnit PRIVATE -fexperimental-library)
+        target_compile_options(MaaIOSProtocol PUBLIC -fexperimental-library)
+        target_link_options(MaaIOSProtocol PUBLIC -fexperimental-library)
     endif()
 endif()
 cmake_pop_check_state()
@@ -210,13 +213,6 @@ endif()
 
 if(MAA_IOS_PROTOCOL_TESTS)
     enable_testing()
-    add_library(MaaIOSProtocolTestSupport STATIC ${maa_ios_protocol_sources})
-    set_target_properties(MaaIOSProtocolTestSupport PROPERTIES POSITION_INDEPENDENT_CODE ON)
-    maa_ios_apply_protocol_options(MaaIOSProtocolTestSupport PUBLIC)
-    if(MAA_IOS_EXPERIMENTAL_STOP_TOKEN)
-        target_compile_options(MaaIOSProtocolTestSupport PUBLIC -fexperimental-library)
-        target_link_options(MaaIOSProtocolTestSupport PUBLIC -fexperimental-library)
-    endif()
     add_subdirectory(tests)
 endif()
 

@@ -1,4 +1,4 @@
-#include "MaaControlUnit/IOSControlUnitAPI.h"
+#include "MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"
 #include "MaaUtils/Buffer/StringBuffer.hpp"
 #include <cstdio>
 #include <meojson/json.hpp>
@@ -31,35 +31,35 @@ int main()
 {
     MAA_NS::StringBuffer result;
     MAA_NS::StringBuffer credential;
-    if (MaaIOSControlUnitDiscover("{}", nullptr, cancelled, nullptr, &result) || cancel_calls != 1 || !result_is(result, true)) {
+    if (MaaToolkitIOSDeviceDiscover("{}", nullptr, cancelled, nullptr, &result) || cancel_calls != 1 || !result_is(result, true)) {
         return 1;
     }
     cancel_calls = 0;
-    if (MaaIOSControlUnitDiscover("{\"timeout_ms\":-1}", nullptr, cancelled, nullptr, &result) || cancel_calls != 0
+    if (MaaToolkitIOSDeviceDiscover("{\"timeout_ms\":-1}", nullptr, cancelled, nullptr, &result) || cancel_calls != 0
         || !result_is(result, false)) {
         return 2;
     }
-    if (MaaIOSControlUnitCheckConnection("{\"wifi\":\"auto\",\"port\":49152}", nullptr, nullptr, nullptr, &result)
+    if (MaaToolkitIOSDeviceCheckConnection("{\"wifi\":\"auto\",\"port\":49152}", nullptr, nullptr, nullptr, &result)
         || !result_is(result, false)) {
         return 3;
     }
-    if (MaaIOSControlUnitPair("{\"wifi\":\"auto\"}", nullptr, nullptr, nullptr, &result, &credential) || !result_is(result, false)
+    if (MaaToolkitIOSDevicePair("{\"wifi\":\"auto\"}", nullptr, nullptr, nullptr, &result, &credential) || !result_is(result, false)
         || !credential.empty()) {
         return 4;
     }
-    if (MaaIOSControlUnitPrepare("{\"replace\":1}", nullptr, nullptr, nullptr, &result) || !result_is(result, false)) {
+    if (MaaToolkitIOSDevicePrepare("{\"replace\":1}", nullptr, nullptr, nullptr, &result) || !result_is(result, false)) {
         return 5;
     }
-    if (MaaIOSControlUnitDiscover("{\"unexpected\":true}", nullptr, nullptr, nullptr, &result) || !result_is(result, false)) {
+    if (MaaToolkitIOSDeviceDiscover("{\"unexpected\":true}", nullptr, nullptr, nullptr, &result) || !result_is(result, false)) {
         return 6;
     }
-    if (MaaIOSControlUnitDiscover("{}", nullptr, throwing_cancel, nullptr, &result) || !result_is(result, true)) {
+    if (MaaToolkitIOSDeviceDiscover("{}", nullptr, throwing_cancel, nullptr, &result) || !result_is(result, true)) {
         return 7;
     }
-    if (MaaIOSControlUnitDiscover(nullptr, nullptr, nullptr, nullptr, nullptr)) {
+    if (MaaToolkitIOSDeviceDiscover(nullptr, nullptr, nullptr, nullptr, nullptr)) {
         return 8;
     }
-    if (MaaIOSControlUnitDiscover("{", nullptr, nullptr, nullptr, &result) || !result_is(result, false)) {
+    if (MaaToolkitIOSDeviceDiscover("{", nullptr, nullptr, nullptr, &result) || !result_is(result, false)) {
         return 9;
     }
     std::puts("iOS management C boundary validation and cancellation passed");

@@ -1,4 +1,4 @@
-#include "MaaControlUnit/IOSControlUnitAPI.h"
+#include "MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"
 
 #include <atomic>
 #include <mutex>
@@ -6,8 +6,8 @@
 #include <string_view>
 
 #include "MaaUtils/Buffer/BufferTypes.hpp"
-#include "Management/Credentials.h"
-#include "Management/Operations.h"
+#include "Operations.h"
+#include "wifi/Credentials.h"
 
 namespace
 {
@@ -97,15 +97,14 @@ bool parse_options(Operation operation, const char* source, Options& options, st
         out = static_cast<int>(number);
         return true;
     };
-    if (!parse_credentials(value, options.pairing_records, error)) {
+    if (!maa::ios::wifi::parse_credentials(value, options.pairing_records, error)) {
         return false;
     }
     options.timeout_ms = operation == Operation::Pair ? 120000 : 3000;
     int port = options.port;
-    if (!string("udid", options.udid) || !string("wifi", options.wifi)
-        || !string("cache_directory", options.cache_directory) || !string("host_name", options.host_name)
-        || !boolean("repair", options.repair) || !boolean("replace", options.replace) || !boolean("usb_only", options.usb_only)
-        || !boolean("wifi_only", options.wifi_only) || !integer("port", 1, 65535, port)
+    if (!string("udid", options.udid) || !string("wifi", options.wifi) || !string("cache_directory", options.cache_directory)
+        || !string("host_name", options.host_name) || !boolean("repair", options.repair) || !boolean("replace", options.replace)
+        || !boolean("usb_only", options.usb_only) || !boolean("wifi_only", options.wifi_only) || !integer("port", 1, 65535, port)
         || !integer("timeout_ms", operation == Operation::Pair ? 1 : 0, operation == Operation::Pair ? 300000 : 60000, options.timeout_ms)
         || !integer("download_timeout_seconds", 1, 3600, options.download_timeout_seconds)
         || !integer("install_timeout_seconds", 1, 3600, options.install_timeout_seconds)) {
@@ -134,8 +133,8 @@ bool parse_options(Operation operation, const char* source, Options& options, st
 MaaBool manage(
     Operation operation,
     const char* options_json,
-    MaaIOSControlUnitManagementEventCallback event_callback,
-    MaaIOSControlUnitManagementCancelCallback cancel_callback,
+    MaaToolkitIOSDeviceEventCallback event_callback,
+    MaaToolkitIOSDeviceCancelCallback cancel_callback,
     void* userdata,
     MaaStringBuffer* output,
     MaaStringBuffer* credential_output = nullptr)
@@ -256,20 +255,20 @@ MaaBool manage(
 
 extern "C"
 {
-    MaaBool MaaIOSControlUnitDiscover(
+    MaaBool MaaToolkitIOSDeviceDiscover(
         const char* options,
-        MaaIOSControlUnitManagementEventCallback event,
-        MaaIOSControlUnitManagementCancelCallback cancel,
+        MaaToolkitIOSDeviceEventCallback event,
+        MaaToolkitIOSDeviceCancelCallback cancel,
         void* userdata,
         MaaStringBuffer* result)
     {
         return manage(Operation::Discover, options, event, cancel, userdata, result);
     }
 
-    MaaBool MaaIOSControlUnitPair(
+    MaaBool MaaToolkitIOSDevicePair(
         const char* options,
-        MaaIOSControlUnitManagementEventCallback event,
-        MaaIOSControlUnitManagementCancelCallback cancel,
+        MaaToolkitIOSDeviceEventCallback event,
+        MaaToolkitIOSDeviceCancelCallback cancel,
         void* userdata,
         MaaStringBuffer* result,
         MaaStringBuffer* credential)
@@ -277,20 +276,20 @@ extern "C"
         return manage(Operation::Pair, options, event, cancel, userdata, result, credential);
     }
 
-    MaaBool MaaIOSControlUnitCheckConnection(
+    MaaBool MaaToolkitIOSDeviceCheckConnection(
         const char* options,
-        MaaIOSControlUnitManagementEventCallback event,
-        MaaIOSControlUnitManagementCancelCallback cancel,
+        MaaToolkitIOSDeviceEventCallback event,
+        MaaToolkitIOSDeviceCancelCallback cancel,
         void* userdata,
         MaaStringBuffer* result)
     {
         return manage(Operation::CheckConnection, options, event, cancel, userdata, result);
     }
 
-    MaaBool MaaIOSControlUnitPrepare(
+    MaaBool MaaToolkitIOSDevicePrepare(
         const char* options,
-        MaaIOSControlUnitManagementEventCallback event,
-        MaaIOSControlUnitManagementCancelCallback cancel,
+        MaaToolkitIOSDeviceEventCallback event,
+        MaaToolkitIOSDeviceCancelCallback cancel,
         void* userdata,
         MaaStringBuffer* result)
     {
