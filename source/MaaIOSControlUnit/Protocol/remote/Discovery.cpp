@@ -45,7 +45,7 @@ DiscoveryPairing pairing_status(const wifi::DiscoveryIdentityMatch& match, const
     case wifi::DiscoveryIdentityStatus::crypto_error:
         return DiscoveryPairing::crypto_error;
     case wifi::DiscoveryIdentityStatus::unmatched:
-        return match.identifier_hints.empty() ? DiscoveryPairing::unmatched : DiscoveryPairing::identifier_hint;
+        return DiscoveryPairing::unmatched;
     }
     return DiscoveryPairing::unmatched;
 }

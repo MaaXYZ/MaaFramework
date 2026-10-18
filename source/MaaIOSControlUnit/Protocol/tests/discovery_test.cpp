@@ -39,7 +39,6 @@ wifi::PairRecord paired_record()
     for (size_t i = 0; i < 16; ++i) {
         record.peer_alt_irk[i] = static_cast<uint8_t>(i);
     }
-    record.advertised_identifier = "old-identifier";
     return record;
 }
 
@@ -128,13 +127,12 @@ void test_merge()
     check(result.devices.size() == 2, "equal instance names do not merge different untrusted identifiers");
 
     auto legacy = record;
-    legacy.advertised_identifier = first_unknown.identifier;
     legacy.peer_alt_irk.clear();
     result = remote::detail::merge_discovery(usb, { first_unknown }, { legacy });
     check(
         result.devices.size() == 3 && result.devices.back().udid.empty()
-            && result.devices.back().candidates[0].pairing == DiscoveryPairing::identifier_hint,
-        "legacy identifier equality is a hint and cannot select a record or merge with USB");
+            && result.devices.back().candidates[0].pairing == DiscoveryPairing::unmatched,
+        "a record without IRK cannot select a wireless device or merge with USB");
     legacy = record;
     legacy.peer_identifier.clear();
     legacy.peer_public_key.clear();

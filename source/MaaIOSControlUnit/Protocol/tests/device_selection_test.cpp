@@ -125,7 +125,6 @@ void test_discovered_selection()
     untrusted.udid.clear();
     check(!remote::detail::select_paired_wireless_device({ untrusted }, { }, error), "unknown untrusted UDID cannot connect automatically");
     for (const auto state : { remote::DiscoveryPairing::unmatched,
-                              remote::DiscoveryPairing::identifier_hint,
                               remote::DiscoveryPairing::needs_pairing,
                               remote::DiscoveryPairing::ambiguous,
                               remote::DiscoveryPairing::invalid_advertisement,

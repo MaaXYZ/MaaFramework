@@ -18,8 +18,6 @@ const char* pairing_name(remote::DiscoveryPairing pairing)
         return "paired";
     case remote::DiscoveryPairing::needs_pairing:
         return "needs_pairing";
-    case remote::DiscoveryPairing::identifier_hint:
-        return "identifier_hint";
     case remote::DiscoveryPairing::ambiguous:
         return "ambiguous";
     case remote::DiscoveryPairing::invalid_advertisement:

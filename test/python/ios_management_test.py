@@ -250,7 +250,8 @@ class NativeIOSManagementBoundaryTest(unittest.TestCase):
         self.assertEqual(Toolkit.parse_ios_pairing_record(record), pairing)
         large = IOSWiFiPairing("%" * 1024, "|" * 1024, "%" * 4096, b"1" * 32, b"2" * 32, b"3" * 32)
         self.assertEqual(Toolkit.parse_ios_pairing_record(Toolkit.format_ios_pairing_record(large)), large)
-        for invalid in (record + "|pid=duplicate", record + "|unknown=value", record + "|",
+        for invalid in (record + "|pid=duplicate", record + "|unknown=value", record + "|aid=value",
+                        record + "|ruk=value", record + "|",
                         record + "\n", record.replace("MaaIOS1", "MaaIOS2", 1),
                         *(record.replace("host%7C%25", value) for value in ("%", "%GG", "%00", "%0A", "%0D"))):
             with self.subTest(invalid=invalid), self.assertRaises(ValueError):

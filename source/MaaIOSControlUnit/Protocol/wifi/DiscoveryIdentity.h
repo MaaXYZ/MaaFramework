@@ -30,12 +30,9 @@ enum class DiscoveryIdentityStatus
 struct DiscoveryIdentityMatch
 {
     DiscoveryIdentityStatus status = DiscoveryIdentityStatus::unmatched;
-    /// 仅唯一 authTag 匹配时有值。索引对应传入 records；调用方保留文件路径映射。
+    /// 仅唯一 authTag 匹配时有值。索引对应传入 records。
     std::optional<size_t> record_index;
     std::vector<size_t> auth_tag_matches;
-    /// advertised_identifier 直接相等的记录，仅供展示旧记录线索，不能据此选择
-    /// 配对密钥。identifier 可轮换，也可被局域网其他主机伪造。
-    std::vector<size_t> identifier_hints;
     std::string error;
 };
 
@@ -44,8 +41,7 @@ struct DiscoveryIdentityMatch
 /// identifier 是原始文本字节，不能转换为 UUID 二进制、改变大小写或去除空白。
 /// 接受非空、最多 255 字节、无 ASCII 空白/控制字符的标识，兼容非 UUID 标识。
 /// authTag 若存在，必须为 8 个标准 Base64 字符，解码后正好 6 字节；不接受
-/// hex、URL-safe Base64、padding 或空白。空 tag 可提供 identifier_hints，
-/// 但不会选出记录。无 16 字节 altIRK 的旧记录只能作为 identifier_hints。
+/// hex、URL-safe Base64、padding 或空白。空 tag 或无 16 字节 altIRK 时不会选出记录。
 ///
 /// 标签来自 SipHash-2-4 的 8 字节小端输出，取前 6 字节再反转。其作用是发现
 /// 候选设备；48 位标签不能替代设备认证。匹配成功也不代表 record.complete()

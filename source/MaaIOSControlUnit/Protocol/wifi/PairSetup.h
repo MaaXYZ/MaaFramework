@@ -29,7 +29,7 @@ struct PairSetupResult
     std::string error;
 };
 
-/// pair-setup 的入口参数。流程包含可选 verify 探测、M1..M6 及远程解锁密钥请求。
+/// pair-setup 的入口参数。流程包含可选 verify 探测及 M1..M6。
 /// 当前 SRP 用户名为 Pair-Setup、PIN 固定为 "000000"，不提供交互输入其他 PIN 的接口。
 /// 已有设备记录显示不同控制面可能有不同确认流程；progress 用于报告中间状态。
 /// 接入其他设备配置时需重新验证，不能假定所有 iOS/tvOS 都采用相同配对方式。
@@ -47,11 +47,11 @@ struct PairSetupOptions
 };
 
 /// 在已连接的控制面执行配对，不负责建立连接或写入记录。成功时安装双向主密钥，
-/// 可选 createRemoteUnlockKey 失败不改变 ok。失败时 ok=false，error 与 err 记录原因；
+/// 失败时 ok=false，error 与 err 记录原因；
 /// 已执行的设备端配对步骤不会由本函数回滚，channel 也不保证恢复到初始状态。
 /// 已有设备在 setup 后关闭连接，后续起隧道需重连并 verify（验证范围见 docs §25）。
 /// 验证 SRP 服务端证明，并要求 M6 身份密文通过 AEAD 和设备 Ed25519 签名校验。
-/// 只有这些检查完成后才安装主密钥、发布含设备长期身份的记录并请求可选解锁密钥。
+/// 只有这些检查完成后才安装主密钥、发布含设备长期身份的记录。
 /// 首次配对的身份信任仍依赖可信入口及用户确认；此处没有 Apple 根证书认证。
 PairSetupResult pair_setup(
     Rppairing& channel,

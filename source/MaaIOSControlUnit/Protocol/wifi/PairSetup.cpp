@@ -184,9 +184,8 @@ PairSetupResult pair_setup(
     }
 
     // 1) 根据选项先执行 verify 探测，或直接以 attemptPairVerify=false 握手。
-    // 两条路径都在任何 pairingData 前检查 allowsPairSetup，并保存设备广播标识。
+    // 两条路径都在任何 pairingData 前检查 allowsPairSetup。
     // 已测字节流入口存在连接关闭限制；入口与选项的验证范围见 docs §25.3/§25.8。
-    std::string advertised;
     if (options.probe_verify_first) {
         const std::optional<json::Value> device_handshake = do_handshake(channel, /*attempt_verify=*/true, err);
         if (!device_handshake) {
@@ -195,11 +194,6 @@ PairSetupResult pair_setup(
         result.device_handshake = *device_handshake;
         if (!plane_allows_pair_setup(*device_handshake, err)) {
             return fail();
-        }
-        if (const json::Value* peer = json::find(*device_handshake, "peerDeviceInfo")) {
-            if (const json::Value* identifier = json::find(*peer, "identifier")) {
-                advertised = json::as_string_or(*identifier);
-            }
         }
         // verify 探测使用本次生成的主机密钥签名，不用占位签名字节。
         // 已有设备日志中，正确生成的签名与未知 identifier 可进入未认证分支；
@@ -291,11 +285,6 @@ PairSetupResult pair_setup(
         result.device_handshake = *device_handshake;
         if (!plane_allows_pair_setup(*device_handshake, err)) {
             return fail();
-        }
-        if (const json::Value* peer = json::find(*device_handshake, "peerDeviceInfo")) {
-            if (const json::Value* identifier = json::find(*peer, "identifier")) {
-                advertised = json::as_string_or(*identifier);
-            }
         }
         if (progress) {
             progress(MAA_IOS_TR("Handshake (attemptPairVerify=false) completed; sending M1"));
@@ -487,23 +476,6 @@ PairSetupResult pair_setup(
     record.host_public_key = host_public;
     record.peer_public_key = peer_identity->public_key;
     record.peer_alt_irk = peer_alt_irk;
-    record.advertised_identifier = advertised;
-
-    // 8) 可选远程解锁密钥。请求失败只通过 progress 报告，不撤销已安装的主密钥，
-    // 也不改变本次 setup 的成功结果；成功响应中没有 hostKey 时字段保持为空。
-    std::string unlock_err;
-    const json::Value unlock_request = j_obj({ { "request", j_obj({ { "_0", j_obj({ { "createRemoteUnlockKey", j_obj({ }) } }) } }) } });
-    const std::optional<json::Value> unlock = channel.encrypted_roundtrip(unlock_request, unlock_err);
-    if (unlock) {
-        const json::Value* created = json::find(*unlock, "createRemoteUnlockKey");
-        const json::Value* host_key_field = created != nullptr ? json::find(*created, "hostKey") : nullptr;
-        if (host_key_field != nullptr) {
-            record.remote_unlock_host_key = json::as_string_or(*host_key_field);
-        }
-    }
-    else if (progress) {
-        progress(std::string(MAA_IOS_TR("createRemoteUnlockKey failed (")) + unlock_err + MAA_IOS_TR("); pairing itself succeeded"));
-    }
 
     result.record = std::move(record);
     result.ok = true;

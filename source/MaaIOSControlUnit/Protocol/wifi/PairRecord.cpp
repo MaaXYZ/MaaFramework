@@ -120,12 +120,6 @@ std::string format_record(const PairRecord& record)
     if (!record.peer_alt_irk.empty()) {
         append_text("irk", hex(record.peer_alt_irk));
     }
-    if (!record.advertised_identifier.empty()) {
-        append_text("aid", record.advertised_identifier);
-    }
-    if (!record.remote_unlock_host_key.empty()) {
-        append_text("ruk", record.remote_unlock_host_key);
-    }
     return out;
 }
 
@@ -220,16 +214,6 @@ std::optional<PairRecord> parse_record(std::string_view text, std::string& err)
         }
         else if (key == "irk") {
             if (!set_hex(record.peer_alt_irk, 16)) {
-                return std::nullopt;
-            }
-        }
-        else if (key == "aid") {
-            if (!set_text(record.advertised_identifier)) {
-                return std::nullopt;
-            }
-        }
-        else if (key == "ruk") {
-            if (!set_text(record.remote_unlock_host_key)) {
                 return std::nullopt;
             }
         }

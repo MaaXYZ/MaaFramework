@@ -326,8 +326,7 @@ PairingResult detail::save_wifi_pairing(
     PairingResult result;
     result.udid = record.udid;
     if (!record.complete() || !record.has_peer_identity() || record.peer_alt_irk.size() != 16 || !record_text_valid(record.udid)
-        || !record_text_valid(record.host_identifier) || !record_text_valid(record.advertised_identifier)
-        || !record_text_valid(record.remote_unlock_host_key) || (!options.udid.empty() && options.udid != record.udid)) {
+        || !record_text_valid(record.host_identifier) || (!options.udid.empty() && options.udid != record.udid)) {
         result.error = MAA_IOS_TR("Wi-Fi pairing returned an incomplete or unexpected device identity");
         return result;
     }

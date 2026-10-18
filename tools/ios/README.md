@@ -55,13 +55,11 @@ MaaIOS1|udid=...|hid=...|pid=...|hsk=...|hpk=...|ppk=...|irk=...
 
 The format header is `MaaIOS1`. Text values encode `%` as `%25` and `|` as `%7C`;
 key bytes use hexadecimal. Line breaks, duplicate fields, unknown fields and malformed
-escapes are rejected. Internal metadata uses optional `aid` (`advertised_identifier`)
-and `ruk` (`remote_unlock_host_key`) fields.
+escapes are rejected.
 
 单行格式头为 `MaaIOS1`，字段间使用 `|`，结尾不添加分隔符。
 文本值中的 `%`、`|` 分别编码为 `%25`、`%7C`；密钥使用十六进制。
 解析拒绝换行、重复字段、未知字段和无效转义。
-内部元数据使用可选的 `aid`（广播标识）和 `ruk`（远程解锁主机密钥）字段。
 
 Device operations accept structured credentials directly:
 

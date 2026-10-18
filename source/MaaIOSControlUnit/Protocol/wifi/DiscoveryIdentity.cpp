@@ -97,9 +97,6 @@ DiscoveryIdentityMatch match_advertisement(std::string_view identifier, std::str
 
     for (size_t i = 0; i < records.size(); ++i) {
         const auto& record = records[i];
-        if (record.advertised_identifier == identifier) {
-            result.identifier_hints.push_back(i);
-        }
         if (auth_tag.empty() || record.peer_alt_irk.size() != 16) {
             continue;
         }

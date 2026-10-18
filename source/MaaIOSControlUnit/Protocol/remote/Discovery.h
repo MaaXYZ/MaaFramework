@@ -36,7 +36,6 @@ enum class DiscoveryPairing
     unmatched,
     ready,
     needs_pairing,
-    identifier_hint,
     ambiguous,
     invalid_advertisement,
     crypto_error,

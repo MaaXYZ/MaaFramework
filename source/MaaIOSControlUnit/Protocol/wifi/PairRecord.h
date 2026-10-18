@@ -12,8 +12,6 @@ namespace maa::ios::wifi
 ///
 /// host_identifier 保存注册时的主机标识，pair-verify 将同一字符串纳入签名。
 /// 主机名变化或迁移记录时应继续使用记录中的值，不能根据当前主机名重新生成。
-/// advertised_identifier 保存设备握手中的广播标识；已有样本中它与 USB 的 UDID
-/// 不同（docs §22.1）。局域网发现与 lockdown 连接使用不同标识，不能相互替代。
 /// 记录包含主机私钥及配对相关密钥，保存位置和访问权限应按敏感数据管理。
 struct PairRecord
 {
@@ -24,8 +22,6 @@ struct PairRecord
     Bytes host_public_key;  ///< Ed25519 公钥，32 字节
     Bytes peer_public_key;  ///< 设备 Ed25519 公钥，32 字节
     Bytes peer_alt_irk;     ///< 设备身份解析密钥，16 字节；未提供时为空
-    std::string advertised_identifier;
-    std::string remote_unlock_host_key;
 
     /// 检查主机签名所需标识和密钥长度，不验证公私钥是否匹配或设备端信任状态。
     /// 设备身份是否齐备由 has_peer_identity() 单独检查。
