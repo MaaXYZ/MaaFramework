@@ -6,6 +6,8 @@ import time
 from typing import Optional
 import uuid
 
+from maa.pipeline import JCustomRecognition, JRecognitionType
+
 
 SERVER_READY_FILE_ENV = "MAAFW_AGENT_SERVER_READY_FILE"
 SINK_REPORT_FILE_ENV = "MAAFW_AGENT_SINK_REPORT_FILE"
@@ -172,10 +174,28 @@ def assert_multi_recognition(tasker) -> None:
     }
     detail = tasker.post_task("Entry", pipeline_override).wait().get()
     assert detail, "pipeline failed for out-of-range index"
-    node = next((n for n in detail.nodes if n.name == "StaleProbe"), None)
-    assert node is None or not node.recognition or not node.recognition.hit, (
+    assert not any(n.name == "StaleProbe" for n in detail.nodes), (
         "out-of-range index should not hit"
     )
+
+    # post_task 未命中时会一直重试到超时，识别详情不会落库；用 post_recognition
+    # 验证框架确实记录了这次未命中，且全部结果仍在，只是没有选中的结果
+    reco_detail = tasker.post_recognition(
+        JRecognitionType.Custom,
+        JCustomRecognition(custom_recognition="MultiRec", index=2),
+        tasker.controller.cached_image,
+    ).wait().get()
+    assert reco_detail and reco_detail.nodes, (
+        "out-of-range index should still record the recognition"
+    )
+    reco = reco_detail.nodes[0].recognition
+    assert reco, "out-of-range index should still record the recognition"
+    assert not reco.hit, "out-of-range index should not hit"
+    assert len(reco.all_results) == 2, f"all results should be kept: {reco.all_results}"
+    assert len(reco.filtered_results) == 2, (
+        f"filtered results should be kept: {reco.filtered_results}"
+    )
+    assert reco.best_result is None, f"no result should be selected: {reco.best_result}"
 
 
 def assert_stale_response_dropped(agent, tasker, report_file: Path) -> None:
