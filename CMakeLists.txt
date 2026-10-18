@@ -9,9 +9,7 @@ include(source/MaaUtils/MaaUtils.cmake)
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_MACOS_CONTROLLER "build with macOS controller" ON)
-# MaaDeps does not yet ship the additional iOS protocol libraries. Keep existing
-# multi-architecture builds intact; enable explicitly with target-compatible dependencies.
-option(WITH_IOS_CONTROLLER "build with iOS device controller (CoreDevice/DDI)" OFF)
+option(WITH_IOS_CONTROLLER "build with iOS device controller (CoreDevice/DDI)" ON)
 option(WITH_ANDROID_NATIVE_CONTROLLER "build with Android native controller" ON)
 option(WITH_CUSTOM_CONTROLLER "build with custom controller" ON)
 option(WITH_PLAYCOVER_CONTROLLER "build with PlayCover controller for macOS" ON)
@@ -28,6 +26,7 @@ option(WITH_MAA_AGENT "build with MaaAgent" ON)
 
 option(BUILD_PICLI "build maa picli" ON)
 option(BUILD_SAMPLE "build a demo" OFF)
+option(MAA_IOS_PROTOCOL_TESTS "Build iOS protocol offline tests" OFF)
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 option(BUILD_NODE_TEST "build node test" OFF)

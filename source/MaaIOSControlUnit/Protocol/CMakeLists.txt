@@ -3,7 +3,6 @@ if(POLICY CMP0135)
     cmake_policy(SET CMP0135 NEW)
 endif()
 option(MAA_IOS_FETCH_DEPENDENCIES "Fetch missing pinned iOS protocol dependencies" ON)
-option(MAA_IOS_PROTOCOL_TESTS "Build iOS protocol offline tests" OFF)
 
 find_package(nlohmann_json 3.12 QUIET CONFIG)
 if(NOT TARGET nlohmann_json::nlohmann_json)
