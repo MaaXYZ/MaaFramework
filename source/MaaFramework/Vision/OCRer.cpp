@@ -137,6 +137,11 @@ OCRer::ResultsVec OCRer::handle_cached() const
             results.emplace_back(c);
         }
         else if (cv::Rect ints = roi_ & c.box; ints.area() > 0) {
+            // 框的垂直中心不在 ROI 内时，交集只是 ROI 上下边缘擦到的一条细缝（可能仅 1px 高）。
+            // rec 会把它按高度缩放到 48px，宽度随之放大数百倍，耗费数 GB 内存，且识别不出有意义的文字。
+            if (int cy = c.box.y + c.box.height / 2; cy < roi_.y || cy >= roi_.y + roi_.height) {
+                continue;
+            }
             intersections.emplace_back(ints);
         }
     }
