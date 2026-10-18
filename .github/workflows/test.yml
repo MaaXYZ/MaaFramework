@@ -210,7 +210,7 @@ jobs:
             - name: Install dep
               run: |
                   sudo apt-get update -y
-                  sudo apt-get install -y ninja-build cmake ccache libpipewire-0.3-dev libdbus-1-dev meson python3-jinja2 patchelf
+                  sudo apt-get install -y ninja-build cmake ccache nasm libpipewire-0.3-dev libdbus-1-dev meson python3-jinja2 patchelf
 
             # noble 自带 libei 1.2.1，缺少 1.6 才引入的文本输入；从源码构建 1.6.0 保证发布产物功能完整
             - name: Build libei 1.6.0 (host)
@@ -446,7 +446,7 @@ jobs:
             - name: Install dep
               run: |
                   brew trust aws/tap 2>/dev/null || true
-                  brew install ninja ccache
+                  brew install ninja ccache nasm
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
