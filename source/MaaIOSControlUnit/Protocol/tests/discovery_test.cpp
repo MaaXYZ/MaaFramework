@@ -31,9 +31,9 @@ wifi::PairRecord paired_record()
     wifi::PairRecord record;
     record.udid = "00008110-TEST:DEVICE";
     record.host_identifier = "synthetic-host";
+    record.peer_identifier = "synthetic-peer";
     record.host_private_key.assign(32, 1);
     record.host_public_key.assign(32, 2);
-    record.peer_identifier = wifi::bytes_of("synthetic-peer");
     record.peer_public_key.assign(32, 3);
     record.peer_alt_irk.resize(16);
     for (size_t i = 0; i < 16; ++i) {

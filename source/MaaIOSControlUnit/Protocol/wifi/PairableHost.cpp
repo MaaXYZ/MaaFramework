@@ -222,7 +222,7 @@ std::optional<PairableHostResult> device_identity(const Bytes& key, const Bytes&
     }
     PairableHostResult result;
     result.record.udid = udid->str;
-    result.record.peer_identifier = *identifier;
+    result.record.peer_identifier.assign(identifier->begin(), identifier->end());
     result.record.peer_public_key = *public_key;
     result.record.peer_alt_irk = irk->bytes;
     for (const auto& [name, output] : std::array { std::pair { "name", &result.peer_name }, std::pair { "model", &result.peer_model } }) {

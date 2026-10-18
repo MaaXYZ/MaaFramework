@@ -21,6 +21,9 @@ void require(bool value, const char* message)
 }
 
 MaaBool MaaToolkitIOSDeviceDiscover(
+    MaaIOSConnectionMethod,
+    const MaaIOSWiFiPairing* const*,
+    MaaSize,
     const char*,
     MaaToolkitIOSDeviceEventCallback,
     MaaToolkitIOSDeviceCancelCallback,

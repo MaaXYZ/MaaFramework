@@ -13,13 +13,13 @@ extern "C"
     /**
      * Create a native MaaFramework iOS controller.
      *
-     * udid selects the device; empty selects the only eligible device.
-     * wifi_address empty prefers USB, then paired Wi-Fi without a USB candidate.
-     * "auto" discovers the paired device over mDNS;
+     * udid is required and must be nonempty; it selects the target device.
+     * Auto prefers physical USB then RemotePairing; USB never connects wirelessly.
+     * WiFi requires wifi_pairing. Empty wifi_address (or "auto") discovers the device;
      * an explicit IPv4/IPv6 address uses its RemotePairing service directly.
-     * Pairing is performed separately through MaaToolkit. config is JSON with
-     * pairing_records: an array of caller-owned opaque credential strings.
-     * The controller owns a copy; no implicit pairing directory is read or written.
+     * Pairing is performed separately through MaaToolkit. The controller copies raw
+     * fields during creation. An explicit udid must match the wireless credential.
+     * USB ignores wifi_address and wifi_pairing and uses system usbmux trust.
      * Development services require a suitable mounted Developer Disk Image;
      * MaaToolkitIOSDevicePrepare downloads and mounts one without installing Xcode.
      *
@@ -39,8 +39,12 @@ extern "C"
      * it first. stop_app stops all processes in its bundle and succeeds if none
      * were running. Both take an application bundle identifier.
      */
-    MAA_CONTROL_UNIT_API MaaIOSControlUnitHandle
-        MaaIOSControlUnitCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods, const char* config);
+    MAA_CONTROL_UNIT_API MaaIOSControlUnitHandle MaaIOSControlUnitCreate(
+        const char* udid,
+        MaaIOScreencapMethod screencap_methods,
+        MaaIOSConnectionMethod connection_method,
+        const char* wifi_address,
+        const MaaIOSWiFiPairing* wifi_pairing);
 
     MAA_CONTROL_UNIT_API void MaaIOSControlUnitDestroy(MaaIOSControlUnitHandle handle);
 

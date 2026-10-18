@@ -1,5 +1,6 @@
 #include "controller.h"
 #include "loader.h"
+#include <cstring>
 #include <meojson/json.hpp>
 
 #include <MaaFramework/MaaAPI.h>
@@ -22,20 +23,63 @@ namespace
     throw maajs::MaaError { std::format("{} is not available in AgentServer builds", api) };
 }
 
+struct IOSPairingView
+{
+    std::string udid;
+    std::string host_identifier;
+    std::string peer_identifier;
+    MaaIOSWiFiPairing value { };
+
+    explicit IOSPairingView(maajs::ObjectType object)
+    {
+        udid = maajs::JSConvert<std::string>::from_value(object.Get("udid"));
+        host_identifier = maajs::JSConvert<std::string>::from_value(object.Get("host_identifier"));
+        peer_identifier = maajs::JSConvert<std::string>::from_value(object.Get("peer_identifier"));
+        if (udid.find('\0') != std::string::npos || host_identifier.find('\0') != std::string::npos
+            || peer_identifier.find('\0') != std::string::npos) {
+            throw maajs::MaaError { "iOS pairing identities must not contain NUL" };
+        }
+        value.udid = udid.c_str();
+        value.host_identifier = host_identifier.c_str();
+        if (peer_identifier.empty() || peer_identifier.size() > 4096) {
+            throw maajs::MaaError { "Invalid iOS pairing peer identifier length" };
+        }
+        value.peer_identifier = peer_identifier.c_str();
+        std::memcpy(value.host_private_key, bytes(object, "host_private_key", 32), 32);
+        std::memcpy(value.host_public_key, bytes(object, "host_public_key", 32), 32);
+        std::memcpy(value.peer_public_key, bytes(object, "peer_public_key", 32), 32);
+        const maajs::ValueType irk = object.Get("peer_alt_irk");
+        if (!irk.IsUndefined() && !irk.IsNull()) {
+            std::memcpy(value.peer_alt_irk, bytes(object, "peer_alt_irk", 16), 16);
+            value.has_peer_alt_irk = true;
+        }
+    }
+
+    static const uint8_t* bytes(maajs::ObjectType object, const char* name, size_t size)
+    {
+        auto buffer = maajs::JSConvert<maajs::ArrayBufferType>::from_value(object.Get(name));
+        if (buffer.ByteLength() != size) {
+            throw maajs::MaaError { std::format("{} must contain {} bytes", name, size) };
+        }
+        return static_cast<const uint8_t*>(buffer.Data());
+    }
+};
+
 #ifdef MAA_JS_WITH_TOOLKIT
-std::optional<std::vector<IOSDevice>> find_ios_devices(int64_t timeout, const std::string& config)
+std::optional<std::vector<IOSDevice>>
+    find_ios_devices(int64_t timeout, MaaIOSConnectionMethod method, const std::vector<std::shared_ptr<IOSPairingView>>& pairings)
 {
     auto list = MaaToolkitIOSDeviceListCreate();
     if (!list) {
         return std::nullopt;
     }
     std::unique_ptr<MaaToolkitIOSDeviceList, decltype(&MaaToolkitIOSDeviceListDestroy)> owned(list, MaaToolkitIOSDeviceListDestroy);
-    auto options = json::parse(config);
-    if (!options || !options->is_object()) {
-        return std::nullopt;
+    const auto options = json::value(json::object { { "timeout_ms", timeout } }).to_string();
+    std::vector<const MaaIOSWiFiPairing*> pointers;
+    for (const auto& pairing : pairings) {
+        pointers.push_back(&pairing->value);
     }
-    (*options)["timeout_ms"] = timeout;
-    if (!MaaToolkitIOSDeviceFindWithOptions(options->to_string().c_str(), list)) {
+    if (!MaaToolkitIOSDeviceFindWithOptions(method, pointers.data(), pointers.size(), options.c_str(), list)) {
         return std::nullopt;
     }
     std::vector<IOSDevice> result;
@@ -533,43 +577,119 @@ maajs::ValueType load_adb_controller(maajs::EnvType env)
     return ctor;
 }
 
-maajs::PromiseType
-    IOSControllerImpl::find(maajs::EnvType env, maajs::OptionalParam<int32_t> timeout_ms, maajs::OptionalParam<std::string> config)
+maajs::PromiseType IOSControllerImpl::find(
+    maajs::EnvType env,
+    maajs::OptionalParam<int32_t> timeout_ms,
+    maajs::OptionalParam<std::vector<maajs::ObjectType>> wifi_pairings,
+    maajs::OptionalParam<MaaIOSConnectionMethod> connection_method)
 {
 #ifdef MAA_JS_WITH_TOOLKIT
     const auto timeout = timeout_ms.value_or(3000);
     if (timeout < 0 || timeout > 60000) {
         throw maajs::MaaError { "timeout_ms must be between 0 and 60000" };
     }
+    const auto method = connection_method.value_or(MaaIOSConnectionMethod_Auto);
+    std::vector<std::shared_ptr<IOSPairingView>> pairings;
+    if (method != MaaIOSConnectionMethod_USB && wifi_pairings) {
+        for (const auto& object : *wifi_pairings) {
+            pairings.push_back(std::make_shared<IOSPairingView>(object));
+        }
+    }
     using Result = std::optional<std::vector<IOSDevice>>;
-    auto worker =
-        new maajs::AsyncWork<Result>(env, [timeout, options = config.value_or("{}")] { return find_ios_devices(timeout, options); });
+    auto worker = new maajs::AsyncWork<Result>(env, [timeout, method, pairings = std::move(pairings)] {
+        return find_ios_devices(timeout, method, pairings);
+    });
     worker->Queue();
     return worker->Promise();
 #else
     std::ignore = env;
     std::ignore = timeout_ms;
-    std::ignore = config;
+    std::ignore = wifi_pairings;
+    std::ignore = connection_method;
     throw_toolkit_unavailable("IOSController.find");
 #endif
 }
 
 IOSControllerImpl* IOSControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [udid, wifi_address, screencap_methods, config] = maajs::UnWrapArgs<IOSControllerCtorParam, void>(info);
-    const auto wifi = wifi_address.value_or("");
-    const auto options = config.value_or("{}");
-    auto ctrl =
-        MaaIOSControllerCreate(udid.c_str(), wifi.c_str(), screencap_methods.value_or(MaaIOScreencapMethod_Default), options.c_str());
-    if (!ctrl) {
-        return nullptr;
+    auto [udid, screencap_methods, connection_method, wifi_address, wifi_pairing] = maajs::UnWrapArgs<IOSControllerCtorParam, void>(info);
+    if (udid.empty() || udid.find('\0') != std::string::npos) {
+        throw maajs::MaaError { "A nonempty iOS device UDID without NUL is required" };
     }
-    return new IOSControllerImpl(ctrl, true);
+    const auto connection = connection_method.value_or(MaaIOSConnectionMethod_Auto);
+    const auto wifi = wifi_address.value_or("");
+    std::optional<IOSPairingView> pairing;
+    if (wifi_pairing && connection != MaaIOSConnectionMethod_USB) {
+        pairing.emplace(*wifi_pairing);
+    }
+    auto ctrl = MaaIOSControllerCreate(
+        udid.c_str(),
+        screencap_methods.value_or(MaaIOScreencapMethod_Default),
+        connection,
+        wifi.c_str(),
+        pairing ? &pairing->value : nullptr);
+    return ctrl ? new IOSControllerImpl(ctrl, true) : nullptr;
+}
+
+maajs::ValueType IOSControllerImpl::parse_pairing_record(maajs::EnvType env, std::string record)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    if (record.find('\0') != std::string::npos) {
+        throw maajs::MaaError { "iOS pairing record must not contain NUL" };
+    }
+    std::unique_ptr<MaaIOSWiFiPairing, decltype(&MaaToolkitIOSDeviceDestroyPairing)> pairing(
+        MaaToolkitIOSDeviceParsePairingRecord(record.c_str()),
+        MaaToolkitIOSDeviceDestroyPairing);
+    if (!pairing) {
+        throw maajs::MaaError { "Invalid iOS pairing record or iOS support is disabled" };
+    }
+    auto result = maajs::ObjectType::New(env);
+    result["udid"] = maajs::JSConvert<std::string>::to_value(env, pairing->udid);
+    result["host_identifier"] = maajs::JSConvert<std::string>::to_value(env, pairing->host_identifier);
+    result["peer_identifier"] = maajs::JSConvert<std::string>::to_value(env, pairing->peer_identifier);
+    const auto put_bytes = [&](const char* name, const uint8_t* data, size_t size) {
+        auto buffer = maajs::ArrayBufferType::New(env, size);
+        std::memcpy(buffer.Data(), data, size);
+        result[name] = buffer;
+    };
+    put_bytes("host_private_key", pairing->host_private_key, 32);
+    put_bytes("host_public_key", pairing->host_public_key, 32);
+    put_bytes("peer_public_key", pairing->peer_public_key, 32);
+    if (pairing->has_peer_alt_irk) {
+        put_bytes("peer_alt_irk", pairing->peer_alt_irk, 16);
+    }
+    return result;
+#else
+    std::ignore = env;
+    std::ignore = record;
+    throw_toolkit_unavailable("IOSController.parse_pairing_record");
+#endif
+}
+
+std::string IOSControllerImpl::format_pairing_record(maajs::ObjectType value)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    IOSPairingView pairing(value);
+    auto* record = MaaStringBufferCreate();
+    if (!record) {
+        throw maajs::MaaError { "Cannot allocate iOS pairing record buffer" };
+    }
+    std::unique_ptr<MaaStringBuffer, decltype(&MaaStringBufferDestroy)> owned(record, MaaStringBufferDestroy);
+    if (!MaaToolkitIOSDeviceFormatPairingRecord(&pairing.value, record)) {
+        throw maajs::MaaError { "Invalid iOS pairing credentials or iOS support is disabled" };
+    }
+    return MaaStringBufferGet(record);
+#else
+    std::ignore = value;
+    throw_toolkit_unavailable("IOSController.format_pairing_record");
+#endif
 }
 
 void IOSControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
 {
     MAA_BIND_FUNC(ctor, "find", find);
+    MAA_BIND_FUNC(ctor, "parse_pairing_record", parse_pairing_record);
+    MAA_BIND_FUNC(ctor, "format_pairing_record", format_pairing_record);
 }
 
 maajs::ValueType load_ios_controller(maajs::EnvType env)

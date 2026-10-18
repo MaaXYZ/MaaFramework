@@ -108,15 +108,26 @@ struct AdbControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
-using IOSControllerCtorParam = std::
-    tuple<std::string, maajs::OptionalParam<std::string>, maajs::OptionalParam<MaaIOScreencapMethod>, maajs::OptionalParam<std::string>>;
+using IOSControllerCtorParam = std::tuple<
+    std::string,
+    maajs::OptionalParam<MaaIOScreencapMethod>,
+    maajs::OptionalParam<MaaIOSConnectionMethod>,
+    maajs::OptionalParam<std::string>,
+    maajs::OptionalParam<maajs::ObjectType>>;
 
 using IOSDevice = std::tuple<std::string, std::string, MaaIOScreencapMethod, std::string>;
 
 struct IOSControllerImpl : public ControllerImpl
 {
     using ControllerImpl::ControllerImpl;
-    static maajs::PromiseType find(maajs::EnvType env, maajs::OptionalParam<int32_t> timeout_ms, maajs::OptionalParam<std::string> config);
+    static maajs::PromiseType find(
+        maajs::EnvType env,
+        maajs::OptionalParam<int32_t> timeout_ms,
+        maajs::OptionalParam<std::vector<maajs::ObjectType>> wifi_pairings,
+        maajs::OptionalParam<MaaIOSConnectionMethod> connection_method);
+
+    static maajs::ValueType parse_pairing_record(maajs::EnvType env, std::string record);
+    static std::string format_pairing_record(maajs::ObjectType pairing);
 
     constexpr static char name[] = "IOSController";
 

@@ -18,10 +18,16 @@ constexpr int kMinStepMs = 12;
 
 } // namespace
 
-IOSControlUnitMgr::IOSControlUnitMgr(std::string udid, std::string wifi_address, MaaIOScreencapMethod screencap_methods, std::string config)
+IOSControlUnitMgr::IOSControlUnitMgr(
+    std::string udid,
+    std::string wifi_address,
+    MaaIOScreencapMethod screencap_methods,
+    MaaIOSConnectionMethod connection_method,
+    std::optional<maa::ios::wifi::PairRecord> pairing)
     : udid_(std::move(udid))
     , wifi_address_(std::move(wifi_address))
-    , config_(std::move(config))
+    , connection_method_(connection_method)
+    , pairing_(std::move(pairing))
     , screencap_methods_(screencap_methods)
 {
 }
@@ -34,7 +40,7 @@ IOSControlUnitMgr::~IOSControlUnitMgr()
 bool IOSControlUnitMgr::connect()
 {
     std::string err;
-    if (!session_.create(udid_, wifi_address_, screencap_methods_, err, config_)) {
+    if (!session_.create(udid_, wifi_address_, screencap_methods_, connection_method_, pairing_, err)) {
         LogError << "Failed to create iOS session" << VAR(err);
         return false;
     }

@@ -7,6 +7,7 @@ from typing import Any, Callable, Optional, Union
 
 from .define import *
 from .library import Library
+from .ios import IOSWiFiPairing
 
 
 _IOSEventCallback = ctypes.CFUNCTYPE(MaaBool, ctypes.c_char_p, ctypes.c_void_p)
@@ -194,7 +195,11 @@ class Toolkit:
         return devices
 
     @staticmethod
-    def find_ios_devices(timeout_ms: int = 3000, pairing_records: Optional[list[str]] = None) -> list[IOSDevice]:
+    def find_ios_devices(
+        timeout_ms: int = 3000,
+        wifi_pairings: Optional[list[IOSWiFiPairing]] = None,
+        connection_method: MaaIOSConnectionMethodEnum = MaaIOSConnectionMethodEnum.Auto,
+    ) -> list[IOSDevice]:
         """Discover USB/Wi-Fi devices without pairing or starting a media session."""
         if timeout_ms < 0 or timeout_ms > 60000:
             raise ValueError("timeout_ms must be between 0 and 60000")
@@ -204,8 +209,9 @@ class Toolkit:
         if not handle:
             raise MemoryError("could not allocate iOS device list")
         try:
-            options = json.dumps({"timeout_ms": timeout_ms, "pairing_records": pairing_records or []}).encode()
-            if not api.MaaToolkitIOSDeviceFindWithOptions(options, handle):
+            options = json.dumps({"timeout_ms": timeout_ms}).encode()
+            values, pointers = Toolkit._ios_pairing_list(wifi_pairings if connection_method != MaaIOSConnectionMethodEnum.USB else None)
+            if not api.MaaToolkitIOSDeviceFindWithOptions(connection_method, pointers, len(values), options, handle):
                 warnings = api.MaaToolkitIOSDeviceListGetWarnings(handle).decode("utf-8")
                 raise RuntimeError(f"iOS discovery failed: {warnings}")
             devices = []
@@ -226,6 +232,9 @@ class Toolkit:
         options: Optional[dict[str, Any]] = None,
         on_event: Optional[Callable[[dict[str, Any]], bool]] = None,
         cancelled: Optional[Callable[[], bool]] = None,
+        *,
+        connection_method: MaaIOSConnectionMethodEnum = MaaIOSConnectionMethodEnum.Auto,
+        wifi_pairings: Optional[list[IOSWiFiPairing]] = None,
     ) -> dict[str, Any]:
         """同步发现设备，返回含 success/cancelled/error 的完整结果。
 
@@ -234,48 +243,101 @@ class Toolkit:
         cancelled may be called on native worker threads and must be thread-safe.
         Callback exceptions cancel native work and are re-raised after cleanup.
         """
-        return Toolkit._ios_manage("Discover", options, on_event, cancelled)
+        return Toolkit._ios_manage("Discover", options, on_event, cancelled,
+                                   connection_method=connection_method, wifi_pairings=wifi_pairings)
 
     @staticmethod
     def ios_pair(
         options: Optional[dict[str, Any]] = None,
         on_event: Optional[Callable[[dict[str, Any]], bool]] = None,
         cancelled: Optional[Callable[[], bool]] = None,
-    ) -> tuple[dict[str, Any], str]:
-        """同步配对，返回 (status, credential) / Returns (status, opaque credential).
+        *,
+        connection_method: MaaIOSConnectionMethodEnum = MaaIOSConnectionMethodEnum.Auto,
+        udid: str = "",
+        wifi_pairing: Optional[IOSWiFiPairing] = None,
+    ) -> tuple[dict[str, Any], Optional[IOSWiFiPairing]]:
+        """Return (status, structured pairing). Failure returns None for pairing.
 
-        Wi-Fi pairing requires on_event to display its PIN. USB pairing may omit it.
-        on_event receives progress/PIN events; True continues, False cancels.
-        Callback threading and error handling are the same as ios_discover.
+        Wi-Fi requires on_event to display the PIN. Callback rules match ios_discover.
         """
+        pairing = ctypes.POINTER(MaaIOSWiFiPairing)()
+        try:
+            result = Toolkit._ios_manage("Pair", options, on_event, cancelled, pairing,
+                                         connection_method=connection_method, udid=udid, wifi_pairing=wifi_pairing)
+            return result, IOSWiFiPairing._from_native(pairing.contents) if pairing else None
+        finally:
+            if pairing:
+                Library.toolkit().MaaToolkitIOSDeviceDestroyPairing(pairing)
+
+    @staticmethod
+    def parse_ios_pairing_record(record: str) -> IOSWiFiPairing:
+        """Restore raw credentials from a MaaIOS1 string without device I/O."""
+        if "\0" in record:
+            raise ValueError("Pairing record must not contain NUL")
+        Toolkit._set_api_properties()
+        value = Library.toolkit().MaaToolkitIOSDeviceParsePairingRecord(record.encode())
+        if not value:
+            raise ValueError("Invalid iOS pairing record or iOS support is disabled")
+        try:
+            return IOSWiFiPairing._from_native(value.contents)
+        finally:
+            Library.toolkit().MaaToolkitIOSDeviceDestroyPairing(value)
+
+    @staticmethod
+    def format_ios_pairing_record(pairing: IOSWiFiPairing) -> str:
+        """Serialize credentials for caller-owned persistence."""
         from .buffer import StringBuffer
-        credential = StringBuffer()
-        result = Toolkit._ios_manage("Pair", options, on_event, cancelled, credential)
-        return result, credential.get()
+        Toolkit._set_api_properties()
+        value = pairing._native()
+        output = StringBuffer()
+        if not Library.toolkit().MaaToolkitIOSDeviceFormatPairingRecord(ctypes.byref(value), output._handle):
+            raise ValueError("Invalid iOS pairing credentials or iOS support is disabled")
+        return output.get()
 
     @staticmethod
     def ios_check_connection(
         options: Optional[dict[str, Any]] = None,
         on_event: Optional[Callable[[dict[str, Any]], bool]] = None,
         cancelled: Optional[Callable[[], bool]] = None,
+        *,
+        connection_method: MaaIOSConnectionMethodEnum = MaaIOSConnectionMethodEnum.Auto,
+        udid: str,
+        wifi_address: Optional[str] = None,
+        wifi_pairing: Optional[IOSWiFiPairing] = None,
     ) -> dict[str, Any]:
         """同步检查连接后释放 / Check a connection synchronously, then release it.
 
         Callback threading and error handling are the same as ios_discover.
         """
-        return Toolkit._ios_manage("CheckConnection", options, on_event, cancelled)
+        return Toolkit._ios_manage("CheckConnection", options, on_event, cancelled,
+                                   connection_method=connection_method, udid=udid,
+                                   wifi_address=wifi_address, wifi_pairing=wifi_pairing)
 
     @staticmethod
     def ios_prepare(
         options: Optional[dict[str, Any]] = None,
         on_event: Optional[Callable[[dict[str, Any]], bool]] = None,
         cancelled: Optional[Callable[[], bool]] = None,
+        *,
+        connection_method: MaaIOSConnectionMethodEnum = MaaIOSConnectionMethodEnum.Auto,
+        udid: str,
+        wifi_address: Optional[str] = None,
+        wifi_pairing: Optional[IOSWiFiPairing] = None,
     ) -> dict[str, Any]:
         """同步准备 DDI / Prepare the device DDI synchronously.
 
         Callback threading and error handling are the same as ios_discover.
         """
-        return Toolkit._ios_manage("Prepare", options, on_event, cancelled)
+        return Toolkit._ios_manage("Prepare", options, on_event, cancelled,
+                                   connection_method=connection_method, udid=udid,
+                                   wifi_address=wifi_address, wifi_pairing=wifi_pairing)
+
+    @staticmethod
+    def _ios_pairing_list(pairings: Optional[list[IOSWiFiPairing]]):
+        values = [pairing._native() for pairing in pairings or []]
+        pointers = (ctypes.POINTER(MaaIOSWiFiPairing) * len(values))(
+            *(ctypes.pointer(value) for value in values))
+        return values, pointers
 
     @staticmethod
     def _ios_manage(
@@ -284,6 +346,12 @@ class Toolkit:
         on_event: Optional[Callable[[dict[str, Any]], bool]],
         cancelled: Optional[Callable[[], bool]],
         credential_buffer: Optional[Any] = None,
+        *,
+        connection_method: MaaIOSConnectionMethodEnum = MaaIOSConnectionMethodEnum.Auto,
+        wifi_pairings: Optional[list[IOSWiFiPairing]] = None,
+        udid: str = "",
+        wifi_address: Optional[str] = None,
+        wifi_pairing: Optional[IOSWiFiPairing] = None,
     ) -> dict[str, Any]:
         from .buffer import StringBuffer
 
@@ -330,10 +398,24 @@ class Toolkit:
         cancel_callback = _IOSCancelCallback(cancel)
         result_buffer = StringBuffer()
         function = getattr(Library.toolkit(), f"MaaToolkitIOSDevice{operation}")
-        if operation == "Pair":
-            function(encoded_options, event_callback, cancel_callback, None, result_buffer._handle, credential_buffer._handle)
+        if operation in ("CheckConnection", "Prepare") and not udid:
+            raise ValueError("A nonempty iOS device UDID is required")
+        if "\0" in udid or (wifi_address is not None and "\0" in wifi_address):
+            raise ValueError("iOS connection arguments must not contain NUL")
+        if operation == "Discover":
+            values, pointers = Toolkit._ios_pairing_list(wifi_pairings if connection_method != MaaIOSConnectionMethodEnum.USB else None)
+            inputs = [connection_method, pointers, len(values)]
         else:
-            function(encoded_options, event_callback, cancel_callback, None, result_buffer._handle)
+            value = wifi_pairing._native() if wifi_pairing and (operation == "Pair" or connection_method != MaaIOSConnectionMethodEnum.USB) else None
+            pointer = ctypes.byref(value) if value is not None else None
+            inputs = [udid.encode(), connection_method]
+            if operation != "Pair":
+                inputs.append(wifi_address.encode() if wifi_address is not None else None)
+            inputs.append(pointer)
+        arguments = inputs + [encoded_options, event_callback, cancel_callback, None, result_buffer._handle]
+        if operation == "Pair":
+            arguments.append(ctypes.byref(credential_buffer))
+        function(*arguments)
         if errors:
             raise errors[0]
         result: dict[str, Any] = json.loads(result_buffer.get())
@@ -481,14 +563,27 @@ class Toolkit:
         ]
 
         api = Library.toolkit()
+        pairing_pointer = ctypes.POINTER(MaaIOSWiFiPairing)
         for name in ("Discover", "Pair", "CheckConnection", "Prepare"):
             function = getattr(api, f"MaaToolkitIOSDevice{name}")
             function.restype = MaaBool
             argument_types = [ctypes.c_char_p, _IOSEventCallback, _IOSCancelCallback,
                               ctypes.c_void_p, MaaStringBufferHandle]
             if name == "Pair":
-                argument_types.append(MaaStringBufferHandle)
-            function.argtypes = argument_types
+                argument_types.append(ctypes.POINTER(ctypes.POINTER(MaaIOSWiFiPairing)))
+            if name == "Discover":
+                inputs = [MaaIOSConnectionMethod, ctypes.POINTER(pairing_pointer), MaaSize]
+            elif name == "Pair":
+                inputs = [ctypes.c_char_p, MaaIOSConnectionMethod, pairing_pointer]
+            else:
+                inputs = [ctypes.c_char_p, MaaIOSConnectionMethod, ctypes.c_char_p, pairing_pointer]
+            function.argtypes = inputs + argument_types
+        api.MaaToolkitIOSDeviceParsePairingRecord.restype = pairing_pointer
+        api.MaaToolkitIOSDeviceParsePairingRecord.argtypes = [ctypes.c_char_p]
+        api.MaaToolkitIOSDeviceFormatPairingRecord.restype = MaaBool
+        api.MaaToolkitIOSDeviceFormatPairingRecord.argtypes = [pairing_pointer, MaaStringBufferHandle]
+        api.MaaToolkitIOSDeviceDestroyPairing.restype = None
+        api.MaaToolkitIOSDeviceDestroyPairing.argtypes = [pairing_pointer]
         api.MaaToolkitIOSDeviceListCreate.restype = ctypes.c_void_p
         api.MaaToolkitIOSDeviceListCreate.argtypes = []
         api.MaaToolkitIOSDeviceListDestroy.restype = None
@@ -496,7 +591,7 @@ class Toolkit:
         api.MaaToolkitIOSDeviceFindWithTimeout.restype = MaaBool
         api.MaaToolkitIOSDeviceFindWithTimeout.argtypes = [ctypes.c_int64, ctypes.c_void_p]
         api.MaaToolkitIOSDeviceFindWithOptions.restype = MaaBool
-        api.MaaToolkitIOSDeviceFindWithOptions.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceFindWithOptions.argtypes = [MaaIOSConnectionMethod, ctypes.POINTER(pairing_pointer), MaaSize, ctypes.c_char_p, ctypes.c_void_p]
         api.MaaToolkitIOSDeviceListSize.restype = MaaSize
         api.MaaToolkitIOSDeviceListSize.argtypes = [ctypes.c_void_p]
         api.MaaToolkitIOSDeviceListAt.restype = ctypes.c_void_p

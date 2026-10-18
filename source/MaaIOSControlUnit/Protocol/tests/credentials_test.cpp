@@ -1,5 +1,6 @@
 #include "ddi/DownloadInternal.h"
 #include "remote/Pairing.h"
+#include "wifi/Credentials.h"
 #include "wifi/PairSetup.h"
 #include "wifi/PairVerify.h"
 #include <filesystem>
@@ -20,9 +21,9 @@ int main()
         wifi::PairRecord record;
         record.udid = "synthetic-device";
         record.host_identifier = "synthetic-host";
+        record.peer_identifier = "synthetic-peer";
         record.host_private_key.assign(32, 1);
         record.host_public_key.assign(32, 2);
-        record.peer_identifier = { 3 };
         record.peer_public_key.assign(32, 4);
         remote::UsbPairingOptions options;
         options.udid = record.udid;

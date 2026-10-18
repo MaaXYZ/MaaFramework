@@ -32,12 +32,39 @@ const char* pairing_name(remote::DiscoveryPairing pairing)
 }
 }
 
+bool resolve_connection(Options& options, const Callbacks& callbacks, std::string& error)
+{
+    if (options.connection_method == MaaIOSConnectionMethod_Auto) {
+        std::vector<transport::DeviceRecord> records;
+        const auto status =
+            transport::Usbmux::list_devices_for_discovery(records, std::chrono::milliseconds(1000), callbacks.cancelled, error);
+        if (callbacks.stopped()) {
+            error = "iOS management cancelled";
+            return false;
+        }
+        std::erase_if(records, [&](const auto& record) {
+            return record.connection_type != "USB" || (!options.udid.empty() && options.udid != record.udid);
+        });
+        if (records.size() > 1) {
+            error = "Multiple USB devices connected; specify a UDID";
+            return false;
+        }
+        options.connection_method = status == transport::UsbmuxDiscoveryStatus::complete && !records.empty() ? MaaIOSConnectionMethod_USB
+                                                                                                             : MaaIOSConnectionMethod_WiFi;
+        error.clear();
+    }
+    if (options.connection_method == MaaIOSConnectionMethod_USB) {
+        options.wifi.clear();
+    }
+    return true;
+}
+
 Json discover(const Options& options, const Callbacks& callbacks)
 {
     remote::DiscoveryOptions request;
     request.timeout = std::chrono::milliseconds(options.timeout_ms);
-    request.include_usb = !options.wifi_only;
-    request.include_wifi = !options.usb_only;
+    request.include_usb = options.connection_method != MaaIOSConnectionMethod_WiFi;
+    request.include_wifi = options.connection_method != MaaIOSConnectionMethod_USB;
     request.should_cancel = callbacks.cancelled;
     request.pairing_records = options.pairing_records;
     const auto found = remote::discover_devices(request);
@@ -45,6 +72,9 @@ Json discover(const Options& options, const Callbacks& callbacks)
     for (const auto& device : found.devices) {
         auto candidates = Json::array();
         for (const auto& c : device.candidates) {
+            if (c.transport == remote::DiscoveryTransport::usbmux && c.connection_type != "USB") {
+                continue;
+            }
             candidates.push_back(
                 { { "transport", c.transport == remote::DiscoveryTransport::usbmux ? "usbmux" : "remote_pairing" },
                   { "connection_type", c.connection_type },
@@ -57,6 +87,9 @@ Json discover(const Options& options, const Callbacks& callbacks)
                   { "identifier", c.identifier },
                   { "pairing", pairing_name(c.pairing) },
                   { "pairing_state", static_cast<int>(c.pairing) } });
+        }
+        if (candidates.empty()) {
+            continue;
         }
         const auto methods = MaaIOScreencapMethod_ScreenshotService | (kHaveDecoder ? MaaIOScreencapMethod_Stream : 0ULL);
         devices.push_back(
@@ -75,7 +108,7 @@ Json discover(const Options& options, const Callbacks& callbacks)
              { "warnings", found.warnings } };
 }
 
-Json pair(const Options& options, const Callbacks& callbacks, std::string& credential)
+Json pair(const Options& options, const Callbacks& callbacks, std::optional<wifi::PairRecord>& credential)
 {
     const auto progress = [&callbacks](std::string_view message) {
         callbacks.notify({ { "type", "progress" }, { "message", message } });
@@ -113,7 +146,7 @@ Json pair(const Options& options, const Callbacks& callbacks, std::string& crede
         result = remote::pair_usb_remote(request);
     }
     if (result.ok && result.record) {
-        credential = wifi::format_record(*result.record);
+        credential = std::move(result.record);
     }
     return { { "success", result.ok },
              { "error", result.error },
@@ -125,7 +158,14 @@ Json pair(const Options& options, const Callbacks& callbacks, std::string& crede
 Json check_connection(const Options& options, const Callbacks& callbacks)
 {
     std::string error;
-    auto device = remote::open_device(options.udid, options.wifi, error, options.port, callbacks.cancelled, options.pairing_records);
+    std::optional<remote::Device> device;
+    if (options.connection_method == MaaIOSConnectionMethod_USB) {
+        transport::IoBudget budget({ std::chrono::seconds(30), callbacks.cancelled });
+        device = remote::Device::establish_bounded(options.udid, budget, error, false, true);
+    }
+    else {
+        device = remote::open_device(options.udid, options.wifi, error, options.port, callbacks.cancelled, options.pairing_records);
+    }
     if (!device) {
         return { { "success", false },
                  { "error", error },

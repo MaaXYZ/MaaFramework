@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 
+#include "MaaFramework/MaaDef.h"
 #include "wifi/PairRecord.h"
 #include <nlohmann/json.hpp>
 
@@ -22,8 +23,7 @@ struct Options
     std::vector<wifi::PairRecord> pairing_records;
     bool repair = false;
     bool replace = false;
-    bool usb_only = false;
-    bool wifi_only = false;
+    MaaIOSConnectionMethod connection_method = MaaIOSConnectionMethod_Auto;
     int timeout_ms = 3000;
     int download_timeout_seconds = 300;
     int install_timeout_seconds = 180;
@@ -40,8 +40,10 @@ struct Callbacks
     bool stopped() const { return cancelled && cancelled(); }
 };
 
+bool resolve_connection(Options&, const Callbacks&, std::string& error);
+
 Json discover(const Options&, const Callbacks&);
-Json pair(const Options&, const Callbacks&, std::string& credential);
+Json pair(const Options&, const Callbacks&, std::optional<wifi::PairRecord>& credential);
 Json check_connection(const Options&, const Callbacks&);
 Json prepare(const Options&, const Callbacks&);
 } // namespace maa::ios::management

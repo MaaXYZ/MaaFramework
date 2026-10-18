@@ -1,5 +1,7 @@
+#include "Common/IOSPairing.h"
 #include "MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"
 
+#include <algorithm>
 #include <atomic>
 #include <mutex>
 #include <set>
@@ -12,6 +14,38 @@
 namespace
 {
 using namespace maa::ios::management;
+
+struct OwnedPairing : MaaIOSWiFiPairing
+{
+    explicit OwnedPairing(maa::ios::wifi::PairRecord record)
+        : MaaIOSWiFiPairing { }
+        , record_(std::move(record))
+    {
+        udid = record_.udid.c_str();
+        host_identifier = record_.host_identifier.c_str();
+        peer_identifier = record_.peer_identifier.c_str();
+        std::copy(record_.host_private_key.begin(), record_.host_private_key.end(), host_private_key);
+        std::copy(record_.host_public_key.begin(), record_.host_public_key.end(), host_public_key);
+        std::copy(record_.peer_public_key.begin(), record_.peer_public_key.end(), peer_public_key);
+        has_peer_alt_irk = !record_.peer_alt_irk.empty();
+        if (has_peer_alt_irk) {
+            std::copy(record_.peer_alt_irk.begin(), record_.peer_alt_irk.end(), peer_alt_irk);
+        }
+    }
+
+private:
+    maa::ios::wifi::PairRecord record_;
+};
+
+std::unique_ptr<OwnedPairing> make_pairing(maa::ios::wifi::PairRecord record)
+{
+    std::string error;
+    if (!maa::ios::wifi::validate_credential(record, error)) {
+        return nullptr;
+    }
+    return std::make_unique<OwnedPairing>(std::move(record));
+}
+
 enum class Operation
 {
     Discover,
@@ -34,17 +68,16 @@ bool parse_options(Operation operation, const char* source, Options& options, st
     }
     std::set<std::string> allowed;
     if (operation == Operation::Discover) {
-        allowed = { "pairing_records", "timeout_ms", "usb_only", "wifi_only" };
+        allowed = { "timeout_ms" };
     }
     else if (operation == Operation::Pair) {
-        allowed = { "pairing_records", "udid", "wifi", "repair", "timeout_ms", "host_name" };
+        allowed = { "repair", "timeout_ms", "host_name" };
     }
     else if (operation == Operation::CheckConnection) {
-        allowed = { "pairing_records", "udid", "wifi", "port" };
+        allowed = { "port" };
     }
     else {
-        allowed = { "pairing_records",        "udid", "wifi", "port", "cache_directory", "replace", "download_timeout_seconds",
-                    "install_timeout_seconds" };
+        allowed = { "port", "cache_directory", "replace", "download_timeout_seconds", "install_timeout_seconds" };
     }
     for (auto iter = value.begin(); iter != value.end(); ++iter) {
         if (!allowed.contains(iter.key())) {
@@ -97,30 +130,18 @@ bool parse_options(Operation operation, const char* source, Options& options, st
         out = static_cast<int>(number);
         return true;
     };
-    if (!maa::ios::wifi::parse_credentials(value, options.pairing_records, error)) {
-        return false;
-    }
     options.timeout_ms = operation == Operation::Pair ? 120000 : 3000;
     int port = options.port;
-    if (!string("udid", options.udid) || !string("wifi", options.wifi) || !string("cache_directory", options.cache_directory)
-        || !string("host_name", options.host_name) || !boolean("repair", options.repair) || !boolean("replace", options.replace)
-        || !boolean("usb_only", options.usb_only) || !boolean("wifi_only", options.wifi_only) || !integer("port", 1, 65535, port)
+    if (!string("cache_directory", options.cache_directory) || !string("host_name", options.host_name) || !boolean("repair", options.repair)
+        || !boolean("replace", options.replace) || !integer("port", 1, 65535, port)
         || !integer("timeout_ms", operation == Operation::Pair ? 1 : 0, operation == Operation::Pair ? 300000 : 60000, options.timeout_ms)
         || !integer("download_timeout_seconds", 1, 3600, options.download_timeout_seconds)
         || !integer("install_timeout_seconds", 1, 3600, options.install_timeout_seconds)) {
         return false;
     }
     options.port = static_cast<unsigned short>(port);
-    if (options.usb_only && options.wifi_only) {
-        error = "usb_only and wifi_only are mutually exclusive";
-        return false;
-    }
-    if (operation == Operation::Pair && !options.wifi.empty() && options.wifi != "auto") {
-        error = "wireless first pairing uses wifi=auto, not a device address";
-        return false;
-    }
-    if (options.repair && !options.wifi.empty()) {
-        error = "repair is only supported for USB pairing";
+    if (options.repair && options.connection_method != MaaIOSConnectionMethod_USB) {
+        error = "repair requires USB pairing";
         return false;
     }
     if (value.contains("port") && (options.wifi.empty() || options.wifi == "auto")) {
@@ -130,32 +151,105 @@ bool parse_options(Operation operation, const char* source, Options& options, st
     return true;
 }
 
+bool copy_inputs(
+    Operation operation,
+    const char* udid,
+    MaaIOSConnectionMethod method,
+    const char* address,
+    const MaaIOSWiFiPairing* const* pairings,
+    MaaSize count,
+    Options& options,
+    std::string& error)
+{
+    if (method < MaaIOSConnectionMethod_Auto || method > MaaIOSConnectionMethod_WiFi) {
+        error = "Invalid iOS connection method";
+        return false;
+    }
+    options.connection_method = method;
+    options.udid = udid ? udid : "";
+    if ((operation == Operation::CheckConnection || operation == Operation::Prepare) && options.udid.empty()) {
+        error = "iOS device UDID is required";
+        return false;
+    }
+    if (options.udid.size() > 1024 || options.udid.find_first_of("\r\n") != std::string::npos) {
+        error = "Invalid iOS device UDID";
+        return false;
+    }
+    if (count > (operation == Operation::Discover ? 256U : 1U) || (count && !pairings)) {
+        error = "Invalid iOS pairing list";
+        return false;
+    }
+    // USB pairing may reuse an existing RemotePairing credential; USB device operations use system trust.
+    if (method != MaaIOSConnectionMethod_USB || operation == Operation::Pair) {
+        if (method != MaaIOSConnectionMethod_USB) {
+            options.wifi = address && *address ? address : "auto";
+        }
+        std::set<std::string> identities;
+        for (MaaSize i = 0; i < count; ++i) {
+            if (!pairings[i]) {
+                error = "NULL iOS pairing credential";
+                return false;
+            }
+            auto record = maa::ios::wifi::copy_pairing(*pairings[i], error);
+            if (!record) {
+                return false;
+            }
+            if (!identities.insert(record->udid).second) {
+                error = "iOS pairing credentials must have unique UDIDs";
+                return false;
+            }
+            if (operation != Operation::Discover) {
+                if (!options.udid.empty() && options.udid != record->udid) {
+                    error = "iOS pairing credential UDID does not match the requested device";
+                    return false;
+                }
+                if (operation == Operation::Pair && options.udid.empty()) {
+                    options.udid = record->udid;
+                }
+            }
+            options.pairing_records.push_back(std::move(*record));
+        }
+        if (method == MaaIOSConnectionMethod_WiFi && operation != Operation::Discover && operation != Operation::Pair
+            && options.pairing_records.empty()) {
+            error = "Wi-Fi connection requires pairing credentials";
+            return false;
+        }
+    }
+    return true;
+}
+
 MaaBool manage(
+    const char* udid,
+    MaaIOSConnectionMethod method,
+    const char* address,
+    const MaaIOSWiFiPairing* const* pairings,
+    MaaSize count,
     Operation operation,
     const char* options_json,
     MaaToolkitIOSDeviceEventCallback event_callback,
     MaaToolkitIOSDeviceCancelCallback cancel_callback,
     void* userdata,
     MaaStringBuffer* output,
-    MaaStringBuffer* credential_output = nullptr)
+    MaaIOSWiFiPairing** credential_output = nullptr)
 {
-    if (operation == Operation::Pair && (!credential_output || output == credential_output)) {
+    if (credential_output) {
+        *credential_output = nullptr;
+    }
+    if (operation == Operation::Pair && !credential_output) {
         return false;
     }
     if (!output) {
         return false;
     }
     try {
-        if (credential_output) {
-            credential_output->clear();
-        }
         Options options;
         std::string error;
-        if (!parse_options(operation, options_json, options, error)) {
+        if (!copy_inputs(operation, udid, method, address, pairings, count, options, error)
+            || !parse_options(operation, options_json, options, error)) {
             output->set(Json({ { "success", false }, { "error", error }, { "cancelled", false } }).dump());
             return false;
         }
-        if (operation == Operation::Pair && !options.wifi.empty() && !event_callback) {
+        if (operation == Operation::Pair && method == MaaIOSConnectionMethod_WiFi && !event_callback) {
             output->set(
                 Json({ { "success", false }, { "error", "wireless pairing requires a PIN event callback" }, { "cancelled", false } })
                     .dump());
@@ -203,9 +297,20 @@ MaaBool manage(
             };
         }
         Json result;
-        std::string credential;
+        std::optional<maa::ios::wifi::PairRecord> credential;
         if (callbacks.stopped()) {
             result = { { "success", false }, { "error", "iOS management cancelled" } };
+        }
+        else if (operation != Operation::Discover && !resolve_connection(options, callbacks, error)) {
+            result = { { "success", false }, { "error", error } };
+        }
+        else if (operation == Operation::Pair && options.connection_method == MaaIOSConnectionMethod_WiFi && !event_callback) {
+            result = { { "success", false }, { "error", "wireless pairing requires a PIN event callback" } };
+        }
+        else if (
+            operation != Operation::Discover && operation != Operation::Pair && options.connection_method == MaaIOSConnectionMethod_WiFi
+            && options.pairing_records.empty()) {
+            result = { { "success", false }, { "error", "Wi-Fi connection requires pairing credentials" } };
         }
         else {
             switch (operation) {
@@ -232,8 +337,14 @@ MaaBool manage(
         }
         const bool success = result.value("success", false);
         output->set(result.dump(-1, ' ', false, Json::error_handler_t::replace));
-        if (success && credential_output) {
-            credential_output->set(std::move(credential));
+        if (success && credential_output && credential) {
+            auto pairing = make_pairing(std::move(*credential));
+            if (!pairing) {
+                output->set(Json({ { "success", false }, { "error", "Device pairing identifier cannot be represented as text" },
+                                   { "cancelled", false } }).dump());
+                return false;
+            }
+            *credential_output = pairing.release();
         }
         return success;
     }
@@ -256,43 +367,146 @@ MaaBool manage(
 extern "C"
 {
     MaaBool MaaToolkitIOSDeviceDiscover(
+        MaaIOSConnectionMethod connection_method,
+        const MaaIOSWiFiPairing* const* wifi_pairings,
+        MaaSize wifi_pairing_count,
         const char* options,
         MaaToolkitIOSDeviceEventCallback event,
         MaaToolkitIOSDeviceCancelCallback cancel,
         void* userdata,
         MaaStringBuffer* result)
     {
-        return manage(Operation::Discover, options, event, cancel, userdata, result);
+        return manage(
+            nullptr,
+            connection_method,
+            nullptr,
+            wifi_pairings,
+            wifi_pairing_count,
+            Operation::Discover,
+            options,
+            event,
+            cancel,
+            userdata,
+            result);
     }
 
     MaaBool MaaToolkitIOSDevicePair(
+        const char* udid,
+        MaaIOSConnectionMethod connection_method,
+        const MaaIOSWiFiPairing* existing_pairing,
         const char* options,
         MaaToolkitIOSDeviceEventCallback event,
         MaaToolkitIOSDeviceCancelCallback cancel,
         void* userdata,
         MaaStringBuffer* result,
-        MaaStringBuffer* credential)
+        MaaIOSWiFiPairing** credential)
     {
-        return manage(Operation::Pair, options, event, cancel, userdata, result, credential);
+        return manage(
+            udid,
+            connection_method,
+            nullptr,
+            &existing_pairing,
+            existing_pairing ? 1 : 0,
+            Operation::Pair,
+            options,
+            event,
+            cancel,
+            userdata,
+            result,
+            credential);
     }
 
     MaaBool MaaToolkitIOSDeviceCheckConnection(
+        const char* udid,
+        MaaIOSConnectionMethod connection_method,
+        const char* wifi_address,
+        const MaaIOSWiFiPairing* wifi_pairing,
         const char* options,
         MaaToolkitIOSDeviceEventCallback event,
         MaaToolkitIOSDeviceCancelCallback cancel,
         void* userdata,
         MaaStringBuffer* result)
     {
-        return manage(Operation::CheckConnection, options, event, cancel, userdata, result);
+        return manage(
+            udid,
+            connection_method,
+            wifi_address,
+            &wifi_pairing,
+            wifi_pairing ? 1 : 0,
+            Operation::CheckConnection,
+            options,
+            event,
+            cancel,
+            userdata,
+            result);
     }
 
     MaaBool MaaToolkitIOSDevicePrepare(
+        const char* udid,
+        MaaIOSConnectionMethod connection_method,
+        const char* wifi_address,
+        const MaaIOSWiFiPairing* wifi_pairing,
         const char* options,
         MaaToolkitIOSDeviceEventCallback event,
         MaaToolkitIOSDeviceCancelCallback cancel,
         void* userdata,
         MaaStringBuffer* result)
     {
-        return manage(Operation::Prepare, options, event, cancel, userdata, result);
+        return manage(
+            udid,
+            connection_method,
+            wifi_address,
+            &wifi_pairing,
+            wifi_pairing ? 1 : 0,
+            Operation::Prepare,
+            options,
+            event,
+            cancel,
+            userdata,
+            result);
     }
+}
+
+MaaIOSWiFiPairing* MaaToolkitIOSDeviceParsePairingRecord(const char* record)
+{
+    if (!record) {
+        return nullptr;
+    }
+    try {
+        std::string error;
+        auto value = maa::ios::wifi::parse_credential(record, error);
+        auto pairing = value ? make_pairing(std::move(*value)) : nullptr;
+        return pairing.release();
+    }
+    catch (...) {
+        return nullptr;
+    }
+}
+
+MaaBool MaaToolkitIOSDeviceFormatPairingRecord(const MaaIOSWiFiPairing* pairing, MaaStringBuffer* record)
+{
+    if (!record) {
+        return false;
+    }
+    try {
+        record->clear();
+        if (!pairing) {
+            return false;
+        }
+        std::string error;
+        auto value = maa::ios::wifi::copy_pairing(*pairing, error);
+        if (!value) {
+            return false;
+        }
+        record->set(maa::ios::wifi::format_record(*value));
+        return true;
+    }
+    catch (...) {
+        return false;
+    }
+}
+
+void MaaToolkitIOSDeviceDestroyPairing(MaaIOSWiFiPairing* pairing)
+{
+    delete static_cast<OwnedPairing*>(pairing);
 }

@@ -206,12 +206,8 @@ bool prepare_ios(const RuntimeParam::IOSParam& ios)
         LogError << "Cannot resolve an absolute iOS DDI cache directory; set ios.ddi_cache_directory";
         return false;
     }
-    json::array records(ios.pairing_records);
     const auto options = json::value(
-                             json::object { { "udid", ios.udid },
-                                            { "wifi", ios.wifi },
-                                            { "pairing_records", std::move(records) },
-                                            { "cache_directory", MAA_NS::path_to_utf8_string(cache) },
+                             json::object { { "cache_directory", MAA_NS::path_to_utf8_string(cache) },
                                             { "download_timeout_seconds", ios.ddi_download_timeout_seconds } })
                              .to_string();
     auto* result = MaaStringBufferCreate();
@@ -227,7 +223,16 @@ bool prepare_ios(const RuntimeParam::IOSParam& ios)
     }
     OnScopeLeave([&]() { std::signal(SIGINT, previous); });
     std::cout << "Preparing iOS developer image..." << std::endl;
-    if (!MaaToolkitIOSDevicePrepare(options.c_str(), print_ios_prepare_progress, is_ios_prepare_cancelled, nullptr, result)) {
+    if (!MaaToolkitIOSDevicePrepare(
+            ios.udid.c_str(),
+            ios.wifi.empty() ? MaaIOSConnectionMethod_Auto : MaaIOSConnectionMethod_WiFi,
+            ios.wifi.c_str(),
+            ios.wifi_pairing.get(),
+            options.c_str(),
+            print_ios_prepare_progress,
+            is_ios_prepare_cancelled,
+            nullptr,
+            result)) {
         const auto status = json::parse(MaaStringBufferGet(result));
         LogError << "iOS developer image preparation failed"
                  << (status ? status->get("error", std::string()) : "Invalid preparation result");
@@ -263,10 +268,10 @@ bool Runner::run(const RuntimeParam& param)
     }
     else if (const auto* p_ios_param = std::get_if<RuntimeParam::IOSParam>(&param.controller_param)) {
 #if defined(MAA_WITH_IOS_CONTROLLER)
-        json::array records(p_ios_param->pairing_records);
-        const auto options = json::value(json::object { { "pairing_records", std::move(records) } }).to_string();
+        const auto connection = p_ios_param->wifi.empty() ? MaaIOSConnectionMethod_Auto : MaaIOSConnectionMethod_WiFi;
+        const auto* address = p_ios_param->wifi == "auto" ? nullptr : p_ios_param->wifi.c_str();
         controller_handle =
-            MaaIOSControllerCreate(p_ios_param->udid.c_str(), p_ios_param->wifi.c_str(), p_ios_param->screencap, options.c_str());
+            MaaIOSControllerCreate(p_ios_param->udid.c_str(), p_ios_param->screencap, connection, address, p_ios_param->wifi_pairing.get());
 #else
         std::ignore = p_ios_param;
         LogError << "iOS controller is disabled in this build";

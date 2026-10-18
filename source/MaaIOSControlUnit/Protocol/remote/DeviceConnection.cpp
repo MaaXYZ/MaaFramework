@@ -225,7 +225,8 @@ std::optional<remote::Device> detail::open_default_device(
     const std::string& serial,
     std::string& error,
     const std::function<bool()>& should_cancel,
-    const DefaultDeviceOperations& operations)
+    const DefaultDeviceOperations& operations,
+    bool physical_usb_only)
 {
     error.clear();
     if (startup_cancelled(should_cancel, error)) {
@@ -237,6 +238,9 @@ std::optional<remote::Device> detail::open_default_device(
     if (status == transport::UsbmuxDiscoveryStatus::cancelled || startup_cancelled(should_cancel, error)) {
         error = MAA_IOS_TR("Device startup cancelled");
         return std::nullopt;
+    }
+    if (physical_usb_only) {
+        std::erase_if(devices, [](const auto& item) { return !item.is_usb(); });
     }
     if (status == transport::UsbmuxDiscoveryStatus::complete && has_usbmux_match(devices, serial)) {
         // 完整快照先应用真实 UDID/传输歧义政策；不可用快照不能冒充空列表。
@@ -282,7 +286,8 @@ std::optional<remote::Device> open_device(
     std::string& error,
     uint16_t wifi_port,
     const std::function<bool()>& should_cancel,
-    const std::vector<wifi::PairRecord>& records)
+    const std::vector<wifi::PairRecord>& records,
+    bool physical_usb_only)
 {
     transport::IoBudget budget({ std::chrono::milliseconds(30000), should_cancel });
     const std::function<bool()> cancelled = [&budget] {
@@ -293,10 +298,10 @@ std::optional<remote::Device> open_device(
         if (startup_cancelled(cancelled, error)) {
             return std::nullopt;
         }
-        if (wifi == "auto") {
+        if (!physical_usb_only && wifi == "auto") {
             return open_discovered_device(serial, error, cancelled, budget, records);
         }
-        if (!wifi.empty()) {
+        if (!physical_usb_only && !wifi.empty()) {
             if (!wifi_port) {
                 error = MAA_IOS_TR("Wi-Fi port must be between 1 and 65535");
                 return std::nullopt;
@@ -320,14 +325,22 @@ std::optional<remote::Device> open_device(
             cancelled,
             {
                 transport::Usbmux::list_devices_for_discovery,
-                [&budget](const std::string& selected, std::string& err) {
-                    return remote::Device::establish_bounded(selected, budget, err);
+                [&budget, physical_usb_only](const std::string& selected, std::string& err) {
+                    return remote::Device::establish_bounded(selected, budget, err, false, physical_usb_only);
                 },
-                [&](const std::string& selected, std::string& err) {
-                    return open_discovered_device(selected, err, cancelled, budget, records);
+                [&](const std::string& selected, std::string& err) -> std::optional<remote::Device> {
+                    if (wifi.empty() || wifi == "auto") {
+                        return open_discovered_device(selected, err, cancelled, budget, records);
+                    }
+                    const auto record = load_selected_record(selected, err, cancelled, records);
+                    if (!record) {
+                        return std::nullopt;
+                    }
+                    return remote::Device::establish_wifi_bounded(wifi, *record, budget, err, false, wifi_port);
                 },
                 [](const std::string& warning) { std::fprintf(stderr, MAA_IOS_TR("Discovery warning: %s\n"), warning.c_str()); },
-            });
+            },
+            physical_usb_only);
     };
     auto device = run();
     if (!budget.check(error)) {

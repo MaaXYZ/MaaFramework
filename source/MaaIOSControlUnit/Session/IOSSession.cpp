@@ -1,5 +1,4 @@
 #include "IOSSession.h"
-#include "wifi/Credentials.h"
 
 #include <algorithm>
 #include <chrono>
@@ -63,8 +62,9 @@ bool IOSSession::create(
     const std::string& udid,
     const std::string& wifi_address,
     MaaIOScreencapMethod methods,
-    std::string& err,
-    const std::string& config)
+    MaaIOSConnectionMethod connection_method,
+    const std::optional<maa::ios::wifi::PairRecord>& pairing,
+    std::string& err)
 {
     close();
     constexpr auto known = MaaIOScreencapMethod_Stream | MaaIOScreencapMethod_ScreenshotService;
@@ -72,23 +72,29 @@ bool IOSSession::create(
         err = "no supported iOS screencap method selected";
         return false;
     }
-    const auto parsed = nlohmann::json::parse(config, nullptr, false);
     std::vector<maa::ios::wifi::PairRecord> records;
-    if (!parsed.is_object() || !maa::ios::wifi::parse_credentials(parsed, records, err)) {
-        if (err.empty()) {
-            err = "Invalid iOS controller configuration";
-        }
-        return false;
+    if (pairing) {
+        records.push_back(*pairing);
     }
     screencap_methods_ = methods & known;
     maa::ios::transport::IoBudget budget;
-    auto device = maa::ios::remote::open_device(
-        udid,
-        wifi_address,
-        err,
-        maa::ios::wifi::kAdvertisedPortFallback,
-        [&budget] { return budget.stopped(); },
-        records);
+    std::optional<maa::ios::remote::Device> device;
+    if (connection_method == MaaIOSConnectionMethod_USB) {
+        device = maa::ios::remote::Device::establish_bounded(udid, budget, err, false, true);
+    }
+    else {
+        const auto address = connection_method == MaaIOSConnectionMethod_WiFi && wifi_address.empty() ? "auto" : wifi_address;
+        // Auto first checks physical USB candidates; Network usbmux entries do not
+        // bypass the caller's choice of RemotePairing credentials.
+        device = maa::ios::remote::open_device(
+            udid,
+            address,
+            err,
+            maa::ios::wifi::kAdvertisedPortFallback,
+            [&budget] { return budget.stopped(); },
+            records,
+            connection_method == MaaIOSConnectionMethod_Auto);
+    }
     if (!device) {
         return false;
     }

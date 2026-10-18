@@ -19,14 +19,12 @@ struct PairRecord
 {
     std::string udid;
     std::string host_identifier;
+    std::string peer_identifier;
     Bytes host_private_key; ///< Ed25519 种子，32 字节
     Bytes host_public_key;  ///< Ed25519 公钥，32 字节
+    Bytes peer_public_key;  ///< 设备 Ed25519 公钥，32 字节
+    Bytes peer_alt_irk;     ///< 设备身份解析密钥，16 字节；未提供时为空
     std::string advertised_identifier;
-    /// 从经过签名校验的 PairSetup M6 保存的设备长期身份。identifier 保留协议原始
-    /// 字节，不能用 USB UDID、广播标识或当前主机标识替代。
-    Bytes peer_identifier;
-    Bytes peer_public_key; ///< 设备 Ed25519 公钥，32 字节；旧记录可以缺失
-    Bytes peer_alt_irk;    ///< 设备的身份解析密钥，16 字节；未提供时可空，兼容旧记录
     std::string remote_unlock_host_key;
 
     /// 检查主机签名所需标识和密钥长度，不验证公私钥是否匹配或设备端信任状态。
@@ -36,15 +34,13 @@ struct PairRecord
         return !udid.empty() && !host_identifier.empty() && host_private_key.size() == 32 && host_public_key.size() == 32;
     }
 
-    /// 旧记录仍可读取以定位设备，但只有保存了长期身份的记录才能认证 PairVerify M2。
     [[nodiscard]] bool has_peer_identity() const { return !peer_identifier.empty() && peer_public_key.size() == 32; }
 };
 
-/// 版本 1 文本格式：首个非空行为固定头，后续为 key=value，二进制字段使用十六进制。
-/// parse_record 检查已知二进制字段长度、拒绝已知键重复并要求私钥存在，忽略未知键。
-/// peer_identifier 存在时不能为空，peer_public_key 存在时必须为 32 字节；旧记录
-/// 可以缺失这些字段。成功解析不等于 complete() 或 has_peer_identity()，调用方
-/// 仍需检查用途所需的字段。format_record 不校验输入记录。
+/// 单行格式：MaaIOS1|udid=...|hid=...|pid=...|hsk=...|hpk=...|ppk=...|irk=...
+/// 密钥使用十六进制；文本中的 % 和 | 分别编码为 %25 和 %7C。
+/// parse_record 校验字段及密钥长度，调用方检查 complete() 和 has_peer_identity()。
+/// format_record 不校验输入记录。
 std::string format_record(const PairRecord& record);
 std::optional<PairRecord> parse_record(std::string_view text, std::string& err);
 

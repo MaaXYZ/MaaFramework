@@ -23,13 +23,13 @@ struct MaaToolkitIOSDeviceList
 #ifndef MAA_WITH_IOS_DEVICE
 namespace
 {
-MaaBool unsupported(MaaStringBuffer* result, MaaStringBuffer* credential = nullptr)
+MaaBool unsupported(MaaStringBuffer* result, MaaIOSWiFiPairing** credential = nullptr)
 {
-    if (!result || result == credential) {
-        return false;
-    }
     if (credential) {
-        MaaStringBufferClear(credential);
+        *credential = nullptr;
+    }
+    if (!result) {
+        return false;
     }
     MaaStringBufferSet(result, R"({"success":false,"cancelled":false,"error":"iOS controller support is disabled in this build"})");
     return false;
@@ -37,6 +37,9 @@ MaaBool unsupported(MaaStringBuffer* result, MaaStringBuffer* credential = nullp
 }
 
 MaaBool MaaToolkitIOSDeviceDiscover(
+    MaaIOSConnectionMethod,
+    const MaaIOSWiFiPairing* const*,
+    MaaSize,
     const char*,
     MaaToolkitIOSDeviceEventCallback,
     MaaToolkitIOSDeviceCancelCallback,
@@ -48,16 +51,23 @@ MaaBool MaaToolkitIOSDeviceDiscover(
 
 MaaBool MaaToolkitIOSDevicePair(
     const char*,
+    MaaIOSConnectionMethod,
+    const MaaIOSWiFiPairing*,
+    const char*,
     MaaToolkitIOSDeviceEventCallback,
     MaaToolkitIOSDeviceCancelCallback,
     void*,
     MaaStringBuffer* result,
-    MaaStringBuffer* credential)
+    MaaIOSWiFiPairing** credential)
 {
     return credential && unsupported(result, credential);
 }
 
 MaaBool MaaToolkitIOSDeviceCheckConnection(
+    const char*,
+    MaaIOSConnectionMethod,
+    const char*,
+    const MaaIOSWiFiPairing*,
     const char*,
     MaaToolkitIOSDeviceEventCallback,
     MaaToolkitIOSDeviceCancelCallback,
@@ -69,12 +79,33 @@ MaaBool MaaToolkitIOSDeviceCheckConnection(
 
 MaaBool MaaToolkitIOSDevicePrepare(
     const char*,
+    MaaIOSConnectionMethod,
+    const char*,
+    const MaaIOSWiFiPairing*,
+    const char*,
     MaaToolkitIOSDeviceEventCallback,
     MaaToolkitIOSDeviceCancelCallback,
     void*,
     MaaStringBuffer* result)
 {
     return unsupported(result);
+}
+
+MaaIOSWiFiPairing* MaaToolkitIOSDeviceParsePairingRecord(const char*)
+{
+    return nullptr;
+}
+
+MaaBool MaaToolkitIOSDeviceFormatPairingRecord(const MaaIOSWiFiPairing*, MaaStringBuffer* record)
+{
+    if (record) {
+        MaaStringBufferClear(record);
+    }
+    return false;
+}
+
+void MaaToolkitIOSDeviceDestroyPairing(MaaIOSWiFiPairing*)
+{
 }
 #endif
 
@@ -110,10 +141,15 @@ MaaBool MaaToolkitIOSDeviceFindWithTimeout(int64_t timeout_ms, MaaToolkitIOSDevi
         return false;
     }
     const auto options = json::value(json::object { { "timeout_ms", timeout_ms } }).to_string();
-    return MaaToolkitIOSDeviceFindWithOptions(options.c_str(), list);
+    return MaaToolkitIOSDeviceFindWithOptions(MaaIOSConnectionMethod_Auto, nullptr, 0, options.c_str(), list);
 }
 
-MaaBool MaaToolkitIOSDeviceFindWithOptions(const char* options_json, MaaToolkitIOSDeviceList* list)
+MaaBool MaaToolkitIOSDeviceFindWithOptions(
+    MaaIOSConnectionMethod connection_method,
+    const MaaIOSWiFiPairing* const* wifi_pairings,
+    MaaSize wifi_pairing_count,
+    const char* options_json,
+    MaaToolkitIOSDeviceList* list)
 {
     if (!list) {
         return false;
@@ -125,7 +161,15 @@ MaaBool MaaToolkitIOSDeviceFindWithOptions(const char* options_json, MaaToolkitI
         if (!result) {
             return false;
         }
-        const bool success = MaaToolkitIOSDeviceDiscover(options_json, nullptr, nullptr, nullptr, result.get());
+        const bool success = MaaToolkitIOSDeviceDiscover(
+            connection_method,
+            wifi_pairings,
+            wifi_pairing_count,
+            options_json,
+            nullptr,
+            nullptr,
+            nullptr,
+            result.get());
         const auto parsed = json::parse(MaaStringBufferGet(result.get()));
         if (!parsed || !parsed->is_object()) {
             list->warnings = "[\"invalid iOS discovery result\"]";

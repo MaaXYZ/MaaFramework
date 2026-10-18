@@ -858,9 +858,19 @@ void Interactor::select_ios_auto_detect()
         return;
     }
     std::unique_ptr<MaaToolkitIOSDeviceList, decltype(&MaaToolkitIOSDeviceListDestroy)> owned(list, MaaToolkitIOSDeviceListDestroy);
-    json::array credentials(config_.configuration().ios.pairing_records);
-    const auto options = json::value(json::object { { "pairing_records", std::move(credentials) } }).to_string();
-    if (!MaaToolkitIOSDeviceFindWithOptions(options.c_str(), list)) {
+    using Pairing = std::unique_ptr<MaaIOSWiFiPairing, decltype(&MaaToolkitIOSDeviceDestroyPairing)>;
+    std::vector<Pairing> owned_pairings;
+    std::vector<const MaaIOSWiFiPairing*> pairings;
+    for (const auto& record : config_.configuration().ios.pairing_records) {
+        auto* pairing = MaaToolkitIOSDeviceParsePairingRecord(record.c_str());
+        if (!pairing) {
+            std::cout << "Invalid saved iOS pairing credential.\n";
+            return;
+        }
+        owned_pairings.emplace_back(pairing, MaaToolkitIOSDeviceDestroyPairing);
+        pairings.push_back(pairing);
+    }
+    if (!MaaToolkitIOSDeviceFindWithOptions(MaaIOSConnectionMethod_Auto, pairings.data(), pairings.size(), nullptr, list)) {
         std::cout << "Device discovery unavailable; enter a UDID/address manually.\n";
         return;
     }
@@ -889,10 +899,23 @@ void Interactor::select_ios_auto_detect()
 bool Interactor::pair_ios(bool wireless)
 {
     auto& ios = config_.configuration().ios;
-    json::array records(ios.pairing_records);
-    const auto options =
-        json::value(json::object { { "udid", ios.udid }, { "wifi", wireless ? "auto" : "" }, { "pairing_records", std::move(records) } })
-            .to_string();
+    using Pairing = std::unique_ptr<MaaIOSWiFiPairing, decltype(&MaaToolkitIOSDeviceDestroyPairing)>;
+    Pairing existing(nullptr, MaaToolkitIOSDeviceDestroyPairing);
+    for (const auto& record : ios.pairing_records) {
+        Pairing value(MaaToolkitIOSDeviceParsePairingRecord(record.c_str()), MaaToolkitIOSDeviceDestroyPairing);
+        if (!value) {
+            std::cout << "Invalid saved iOS pairing credential.\n";
+            return false;
+        }
+        if (!ios.udid.empty() && ios.udid != value->udid) {
+            continue;
+        }
+        if (existing) {
+            std::cout << "Multiple iOS pairing credentials match; specify a UDID or clear old credentials.\n";
+            return false;
+        }
+        existing = std::move(value);
+    }
     using Buffer = std::unique_ptr<MaaStringBuffer, decltype(&MaaStringBufferDestroy)>;
     Buffer result(MaaStringBufferCreate(), MaaStringBufferDestroy);
     Buffer credential(MaaStringBufferCreate(), MaaStringBufferDestroy);
@@ -916,9 +939,21 @@ bool Interactor::pair_ios(bool wireless)
         }
         return true;
     };
-    const bool ok = MaaToolkitIOSDevicePair(options.c_str(), event, nullptr, nullptr, result.get(), credential.get());
+    MaaIOSWiFiPairing* pairing = nullptr;
+    const bool ok = MaaToolkitIOSDevicePair(
+        ios.udid.c_str(),
+        wireless ? MaaIOSConnectionMethod_WiFi : MaaIOSConnectionMethod_USB,
+        existing.get(),
+        nullptr,
+        event,
+        nullptr,
+        nullptr,
+        result.get(),
+        &pairing);
+    std::unique_ptr<MaaIOSWiFiPairing, decltype(&MaaToolkitIOSDeviceDestroyPairing)> owned(pairing, MaaToolkitIOSDeviceDestroyPairing);
+    const bool exported_ok = pairing && MaaToolkitIOSDeviceFormatPairingRecord(pairing, credential.get());
     const auto status = json::parse(MaaStringBufferGet(result.get()));
-    if (!ok || !status || MaaStringBufferSize(credential.get()) == 0) {
+    if (!ok || !status || !exported_ok) {
         std::cout << "Pairing failed: " << (status ? MAA_NS::utf8_to_crt(status->get("error", std::string())) : "Invalid pairing result")
                   << "\n";
         return false;
@@ -977,20 +1012,23 @@ void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Contr
         }
     }
 
-    std::cout << "Device UDID. Leave it empty to use the only connected iPhone\n"
-                 "(if several are connected it will refuse and list them for you).\n";
-    std::cout << "UDID [" << (ios.udid.empty() ? "auto" : ios.udid) << "]: ";
-    std::cin.sync();
+    std::cout << "Device UDID is required. Select a discovered device or enter its UDID.\n";
     std::string buffer;
-    std::getline(std::cin, buffer);
-
-    if (std::cin.eof()) {
-        s_eof = true;
-        return;
-    }
-    if (!buffer.empty()) {
-        ios.udid = buffer;
-    }
+    do {
+        std::cout << "UDID [" << ios.udid << "]: ";
+        std::cin.sync();
+        std::getline(std::cin, buffer);
+        if (std::cin.eof()) {
+            s_eof = true;
+            return;
+        }
+        if (!buffer.empty()) {
+            ios.udid = buffer;
+        }
+        if (ios.udid.empty()) {
+            std::cout << "Device UDID cannot be empty.\n";
+        }
+    } while (ios.udid.empty());
     std::cout << "\n";
 
     if (ios.wifi.empty()) {
@@ -999,7 +1037,7 @@ void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Contr
 
     std::cout << "Device LAN address or auto for Wi-Fi. Empty prefers USB, then paired Wi-Fi discovery.\n"
                  "Wi-Fi uses pairing credentials saved in PiCli configuration;\n"
-                 "over Wi-Fi the UDID above only picks which record to use.\n";
+                 "The selected UDID must match the Wi-Fi pairing credential.\n";
     std::cout << "Wi-Fi address [" << (ios.wifi.empty() ? "auto transport" : ios.wifi) << "]: ";
     std::cin.sync();
     std::getline(std::cin, buffer);

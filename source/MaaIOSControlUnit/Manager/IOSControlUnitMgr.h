@@ -12,7 +12,12 @@ MAA_CTRL_UNIT_NS_BEGIN
 class IOSControlUnitMgr : public IOSControlUnitAPI
 {
 public:
-    IOSControlUnitMgr(std::string udid, std::string wifi_address, MaaIOScreencapMethod screencap_methods, std::string config);
+    IOSControlUnitMgr(
+        std::string udid,
+        std::string wifi_address,
+        MaaIOScreencapMethod screencap_methods,
+        MaaIOSConnectionMethod connection_method,
+        std::optional<maa::ios::wifi::PairRecord> pairing);
     ~IOSControlUnitMgr() override;
 
 public: // from ControlUnitAPI
@@ -51,9 +56,10 @@ private:
     bool refresh_display_size(std::string& err);
 
     std::string udid_;
-    /// 空值优先 USB，无 USB 候选时发现已配对 Wi-Fi；auto 发现无线，显式地址直接连接。
+    /// Auto/WiFi 模式的无线地址，空值或 auto 使用自动发现。
     std::string wifi_address_;
-    std::string config_;
+    MaaIOSConnectionMethod connection_method_;
+    std::optional<maa::ios::wifi::PairRecord> pairing_;
     MaaIOScreencapMethod screencap_methods_ = MaaIOScreencapMethod_Default;
     maa::ios_unit::IOSSession session_;
 

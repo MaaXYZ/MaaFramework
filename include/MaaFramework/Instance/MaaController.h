@@ -31,17 +31,18 @@ extern "C"
 
     /**
      * @brief Create a native MaaFramework iOS controller using CoreDevice/DDI services.
-     * @param udid Device UDID; empty selects the only eligible device.
-     * @param wifi_address Empty prefers USB, then paired Wi-Fi without a USB candidate.
-     *                     "auto" discovers paired wireless candidates;
-     *                     an IPv4/IPv6 address connects directly over Wi-Fi.
+     * @param udid Required nonempty device UDID; must match the wireless credential.
      * @param screencap_methods Bitmask of Stream and/or ScreenshotService.
-     * @param config JSON with pairing_records (opaque credential strings); nullptr is {}.
+     * @param connection_method Auto prefers physical USB, then RemotePairing;
+     *                          USB is physical USB only; WiFi is RemotePairing only.
+     * @param wifi_address Optional IPv4/IPv6 address; empty or "auto" enables discovery.
+     * @param wifi_pairing Optional raw credentials, required for WiFi. USB ignores
+     *                     both wireless parameters. All fields are copied before return.
      * @return Controller handle, or nullptr on failure.
      *
      * @note MaaToolkit provides discovery, pairing and DDI preparation. The caller
      *       holds/persists credentials and passes them explicitly. This controller
-     *       copies config and owns its session; no implicit credential files are used.
+     *       copies credentials and owns its session; no implicit credential files are used.
      * @note Available when the native iOS module is included in the build. Requires
      *       device Developer Mode, trust/pairing and a compatible mounted DDI.
      * @note ScreenshotService requests lossless PNGs without starting video. Stream
@@ -58,8 +59,12 @@ extern "C"
      * @note start_app/stop_app take an application bundle identifier. Starting preserves
      *       running instances; stopping an already stopped app succeeds.
      */
-    MAA_FRAMEWORK_API MaaController*
-        MaaIOSControllerCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods, const char* config);
+    MAA_FRAMEWORK_API MaaController* MaaIOSControllerCreate(
+        const char* udid,
+        MaaIOScreencapMethod screencap_methods,
+        MaaIOSConnectionMethod connection_method,
+        const char* wifi_address,
+        const MaaIOSWiFiPairing* wifi_pairing);
 
     MAA_FRAMEWORK_API MaaController* MaaWin32ControllerCreate(
         void* hWnd,

@@ -7,8 +7,7 @@ extern "C"
 {
 #endif
 
-    // Synchronous operations. options_json may include pairing_records: an array
-    // of opaque credential strings to copy. result receives JSON with success,
+    // Synchronous operations. result receives JSON with success,
     // cancelled and error, including on failure.
     // event_json has type progress or pin. Returning false cancels the operation.
     // Event callbacks are serialized; cancellation callbacks may run on worker threads
@@ -17,44 +16,73 @@ extern "C"
     typedef MaaBool (*MaaToolkitIOSDeviceEventCallback)(const char* event_json, void* userdata);
     typedef MaaBool (*MaaToolkitIOSDeviceCancelCallback)(void* userdata);
 
-    // Options: timeout_ms (0..60000, default 3000), usb_only, wifi_only.
+    // Options: timeout_ms (0..60000, default 3000).
+    // Auto discovers USB and Wi-Fi; USB and WiFi restrict discovery to that transport.
+    // Inputs are borrowed until return and copied before device I/O.
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceDiscover(
+        MaaIOSConnectionMethod connection_method,
+        const MaaIOSWiFiPairing* const* wifi_pairings,
+        MaaSize wifi_pairing_count,
         const char* options_json,
         MaaToolkitIOSDeviceEventCallback event_callback,
         MaaToolkitIOSDeviceCancelCallback cancel_callback,
         void* userdata,
         MaaStringBuffer* result);
 
-    // Options: udid, wifi (empty or "auto"), repair (USB only),
+    // Options: repair (USB only),
     // timeout_ms (1..300000, default 120000), host_name (Wi-Fi advertisement).
-    // Wi-Fi requires a PIN event callback.
-    // result and credential must be distinct, caller-created MaaStringBuffers.
-    // The verified versioned credential is returned separately from status JSON;
-    // failures clear credential. Persistence and access control belong to the caller.
+    // Auto prefers physical USB, then Wi-Fi pairing. Wi-Fi requires a PIN event callback.
+    // existing_pairing is optional: USB verifies/reuses it; Wi-Fi rejects duplicate pairing.
+    // result is a caller-created status buffer. pairing is a non-NULL output pointer;
+    // success returns an owned structured credential, failure sets *pairing to NULL.
+    // Release it with MaaToolkitIOSDeviceDestroyPairing. Its field pointers remain valid
+    // until destruction. Persistence and access control belong to the caller.
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDevicePair(
+        const char* udid,
+        MaaIOSConnectionMethod connection_method,
+        const MaaIOSWiFiPairing* existing_pairing,
         const char* options_json,
         MaaToolkitIOSDeviceEventCallback event_callback,
         MaaToolkitIOSDeviceCancelCallback cancel_callback,
         void* userdata,
         MaaStringBuffer* result,
-        MaaStringBuffer* credential);
+        MaaIOSWiFiPairing** pairing);
 
-    // Options: udid, wifi (empty, "auto" or address), port (explicit address only).
+    // Optional persistence using the versioned "MaaIOS1" text format.
+    // Parse returns an owned object; destroy only objects returned by Parse or Pair.
+    // Export accepts a caller-assembled view as well. These functions perform no device I/O.
+    MAA_TOOLKIT_API MaaIOSWiFiPairing* MaaToolkitIOSDeviceParsePairingRecord(const char* record);
+    MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceFormatPairingRecord(const MaaIOSWiFiPairing* pairing, MaaStringBuffer* record);
+    MAA_TOOLKIT_API void MaaToolkitIOSDeviceDestroyPairing(MaaIOSWiFiPairing* pairing);
+
+    // Options: port (explicit Wi-Fi address only).
+    // Auto prefers physical USB, then Wi-Fi. WiFi requires wifi_pairing.
+    // A nonempty UDID is required and must match wifi_pairing when provided.
+    // Empty/"auto" Wi-Fi address enables discovery. USB ignores Wi-Fi inputs.
     // Closes the verified session before returning; does not create a shared tunnel.
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceCheckConnection(
+        const char* udid,
+        MaaIOSConnectionMethod connection_method,
+        const char* wifi_address,
+        const MaaIOSWiFiPairing* wifi_pairing,
         const char* options_json,
         MaaToolkitIOSDeviceEventCallback event_callback,
         MaaToolkitIOSDeviceCancelCallback cancel_callback,
         void* userdata,
         MaaStringBuffer* result);
 
-    // Connection options plus cache_directory, replace (default false),
+    // A nonempty UDID is required, using the same connection rules as CheckConnection.
+    // Options: port (explicit Wi-Fi address only), cache_directory, replace (default false),
     // download_timeout_seconds (1..3600, default 300),
     // install_timeout_seconds (1..3600, default 180).
     // Empty cache_directory uses temporary files and cleans them after the operation;
     // only an explicit directory enables persistent caching. Failed/cancelled preparation
     // may have changed the device; inspect device_may_have_changed before replacing it.
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDevicePrepare(
+        const char* udid,
+        MaaIOSConnectionMethod connection_method,
+        const char* wifi_address,
+        const MaaIOSWiFiPairing* wifi_pairing,
         const char* options_json,
         MaaToolkitIOSDeviceEventCallback event_callback,
         MaaToolkitIOSDeviceCancelCallback cancel_callback,
@@ -67,8 +95,13 @@ extern "C"
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceFind(MaaToolkitIOSDeviceList* list);
     // timeout_ms: 0..60000; USB enumeration has a separate one-second budget.
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceFindWithTimeout(int64_t timeout_ms, MaaToolkitIOSDeviceList* list);
-    // Same options as Discover, including explicit pairing_records.
-    MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceFindWithOptions(const char* options_json, MaaToolkitIOSDeviceList* list);
+    // Same connection arguments and options as Discover.
+    MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceFindWithOptions(
+        MaaIOSConnectionMethod connection_method,
+        const MaaIOSWiFiPairing* const* wifi_pairings,
+        MaaSize wifi_pairing_count,
+        const char* options_json,
+        MaaToolkitIOSDeviceList* list);
     MAA_TOOLKIT_API MaaSize MaaToolkitIOSDeviceListSize(const MaaToolkitIOSDeviceList* list);
     // Borrowed results remain valid until the next find or list destruction.
     MAA_TOOLKIT_API const MaaToolkitIOSDevice* MaaToolkitIOSDeviceListAt(const MaaToolkitIOSDeviceList* list, MaaSize index);

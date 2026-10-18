@@ -82,6 +82,9 @@ __all__ = [
     "MaaMacOSScreencapMethodEnum",
     "MaaMacOSInputMethodEnum",
     "MaaIOScreencapMethodEnum",
+    "MaaIOSConnectionMethod",
+    "MaaIOSConnectionMethodEnum",
+    "MaaIOSWiFiPairing",
     "MaaLinuxScreencapMethodEnum",
     "MaaLinuxInputMethodEnum",
     "MaaGamepadTypeEnum",
@@ -414,6 +417,28 @@ class MaaAdbInputMethodEnum(IntEnum):
 
     All = ~Null
     Default = All & (~EmulatorExtras)
+
+
+MaaIOSConnectionMethod = ctypes.c_int32
+
+
+class MaaIOSConnectionMethodEnum(IntEnum):
+    Auto = 0
+    USB = 1
+    WiFi = 2
+
+
+class MaaIOSWiFiPairing(ctypes.Structure):
+    _fields_ = [
+        ("udid", ctypes.c_char_p),
+        ("host_identifier", ctypes.c_char_p),
+        ("peer_identifier", ctypes.c_char_p),
+        ("host_private_key", ctypes.c_uint8 * 32),
+        ("host_public_key", ctypes.c_uint8 * 32),
+        ("peer_public_key", ctypes.c_uint8 * 32),
+        ("peer_alt_irk", ctypes.c_uint8 * 16),
+        ("has_peer_alt_irk", MaaBool),
+    ]
 
 
 MaaIOScreencapMethod = ctypes.c_uint64

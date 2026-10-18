@@ -12,6 +12,7 @@ from typing import Any, Optional, Union
 
 import numpy
 
+from .ios import IOSWiFiPairing
 from .buffer import ImageBuffer, StringBuffer
 from .define import *
 from .event_sink import EventSink, NotificationType
@@ -911,42 +912,38 @@ class IOSController(Controller):
 
     def __init__(
         self,
-        udid: str = "",
-        wifi_address: str = "",
+        udid: str,
         screencap_methods: int = MaaIOScreencapMethodEnum.Stream | MaaIOScreencapMethodEnum.ScreenshotService,
-        pairing_records: Optional[list[str]] = None,
+        connection_method: int = MaaIOSConnectionMethodEnum.Auto,
+        wifi_address: Optional[str] = None,
+        wifi_pairing: Optional[IOSWiFiPairing] = None,
     ):
-        """创建 iOS 控制器 / Create iOS controller
+        """Create a controller with explicit transport selection and raw Wi-Fi credentials.
 
-        Args:
-            udid: 设备 UDID，传空串要求仅有一台可用设备 / device UDID, empty requires a unique available device
-            wifi_address: 设备局域网地址或 auto；空串优先 USB，缺少 USB 时发现已配对 Wi-Fi / device LAN address or auto; empty prefers USB, then paired Wi-Fi discovery
-            screencap_methods: 允许的截图方式位掩码 / allowed screencap method bitmask
-            pairing_records: 调用方持有的配对凭据 / caller-owned opaque pairing credentials
-
-        Raises:
-            RuntimeError: 如果创建失败
+        Auto prefers physical USB, then RemotePairing. USB ignores Wi-Fi parameters.
+        WiFi requires wifi_pairing; an empty address discovers the device via mDNS.
+        A nonempty udid is required and must match the wireless credential.
+        Credentials are copied before this constructor returns.
         """
         super().__init__()
         self._set_ios_api_properties()
-
+        self._handle = None
+        if not udid or "\0" in udid:
+            raise ValueError("A nonempty iOS device UDID without NUL is required")
+        pairing = wifi_pairing._native() if wifi_pairing is not None and connection_method != MaaIOSConnectionMethodEnum.USB else None
         self._handle = Library.framework().MaaIOSControllerCreate(
-            udid.encode(),
-            wifi_address.encode(),
-            MaaIOScreencapMethod(screencap_methods),
-            json.dumps({"pairing_records": pairing_records or []}, ensure_ascii=False).encode(),
+            udid.encode(), MaaIOScreencapMethod(screencap_methods), MaaIOSConnectionMethod(connection_method),
+            wifi_address.encode() if wifi_address is not None else None,
+            ctypes.byref(pairing) if pairing is not None else None,
         )
-
         if not self._handle:
             raise RuntimeError("Failed to create iOS controller.")
 
     def _set_ios_api_properties(self):
         Library.framework().MaaIOSControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaIOSControllerCreate.argtypes = [
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-            MaaIOScreencapMethod,
-            ctypes.c_char_p,
+            ctypes.c_char_p, MaaIOScreencapMethod, MaaIOSConnectionMethod,
+            ctypes.c_char_p, ctypes.POINTER(MaaIOSWiFiPairing),
         ]
 
 

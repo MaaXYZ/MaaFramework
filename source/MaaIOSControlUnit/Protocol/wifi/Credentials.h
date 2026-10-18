@@ -1,35 +1,36 @@
 #pragma once
 
 #include "wifi/PairRecord.h"
-#include <nlohmann/json.hpp>
-#include <set>
 
 namespace maa::ios::wifi
 {
-inline bool parse_credentials(const nlohmann::json& options, std::vector<PairRecord>& records, std::string& error)
+inline bool validate_credential(const PairRecord& record, std::string& error)
 {
-    const auto found = options.find("pairing_records");
-    if (found == options.end()) {
-        return true;
-    }
-    if (!found->is_array() || found->size() > 256) {
-        error = "pairing_records must be an array of at most 256 opaque credentials";
+    if (!record.complete() || !record.has_peer_identity() || (!record.peer_alt_irk.empty() && record.peer_alt_irk.size() != 16)) {
+        error = "Pairing credential must contain complete host and device identities";
         return false;
     }
-    std::set<std::string> identities;
-    for (const auto& value : *found) {
-        if (!value.is_string() || value.get_ref<const std::string&>().size() > 16384) {
-            error = "Invalid pairing credential";
-            return false;
-        }
-        std::string detail;
-        auto record = parse_record(value.get_ref<const std::string&>(), detail);
-        if (!record || !record->complete() || !record->has_peer_identity() || !identities.insert(record->udid).second) {
-            error = "Pairing credentials must be complete and have unique device identities";
-            return false;
-        }
-        records.push_back(std::move(*record));
+    if (record.udid.size() > 1024 || record.host_identifier.size() > 1024 || record.peer_identifier.size() > 4096
+        || record.udid.find_first_of("\r\n") != std::string::npos || record.host_identifier.find_first_of("\r\n") != std::string::npos
+        || record.peer_identifier.find_first_of("\r\n") != std::string::npos || record.udid.find('\0') != std::string::npos
+        || record.host_identifier.find('\0') != std::string::npos || record.peer_identifier.find('\0') != std::string::npos) {
+        error = "Invalid iOS pairing identity";
+        return false;
     }
     return true;
 }
+
+inline std::optional<PairRecord> parse_credential(std::string_view value, std::string& error)
+{
+    if (value.size() > 32768) {
+        error = "Invalid pairing credential";
+        return std::nullopt;
+    }
+    auto record = parse_record(value, error);
+    if (!record || !validate_credential(*record, error)) {
+        return std::nullopt;
+    }
+    return record;
+}
+
 }

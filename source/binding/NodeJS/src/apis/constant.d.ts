@@ -58,6 +58,8 @@ declare global {
             ScreencapOrInputMethods
         >
 
+        const IOSConnectionMethod: Record<'Auto' | 'USB' | 'WiFi', number>
+
         /**
          * iOS screencap method flags.
          *

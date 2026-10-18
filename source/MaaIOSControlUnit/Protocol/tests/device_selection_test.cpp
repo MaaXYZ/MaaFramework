@@ -37,9 +37,9 @@ wifi::PairRecord record(std::string udid = "device:one-original")
     wifi::PairRecord paired;
     paired.udid = std::move(udid);
     paired.host_identifier = "synthetic-host";
+    paired.peer_identifier = "synthetic-peer";
     paired.host_private_key.assign(32, 1);
     paired.host_public_key.assign(32, 2);
-    paired.peer_identifier = wifi::bytes_of("synthetic-peer");
     paired.peer_public_key.assign(32, 3);
     return paired;
 }
@@ -328,11 +328,11 @@ void test_default_connection_policy()
         },
         [&](const std::string& warning) { warnings.push_back(warning); },
     };
-    auto open = [&](std::string serial = { }) {
+    auto open = [&](std::string serial = { }, bool physical_usb_only = false) {
         enumerations = usb_attempts = wifi_attempts = 0;
         warnings.clear();
         error = "stale error";
-        return remote::detail::open_default_device(serial, error, [&] { return cancel; }, operations);
+        return remote::detail::open_default_device(serial, error, [&] { return cancel; }, operations, physical_usb_only);
     };
     auto device = open();
     check(
@@ -354,6 +354,12 @@ void test_default_connection_policy()
     records = { { 1, "first", "USB", 0 }, { 2, "first", "Network", 0 } };
     device = open();
     check(device && usb_attempts == 1 && wifi_attempts == 0, "same UDID USB and Network entries keep existing USB selection policy");
+    records = { { 2, "first", "Network", 0 } };
+    device = open("first", true);
+    check(device && usb_attempts == 0 && wifi_attempts == 1, "controller Auto uses RemotePairing instead of a system Network entry");
+    device = open("first");
+    check(device && usb_attempts == 1 && wifi_attempts == 0, "management retains existing system Network connection support");
+    records.push_back({ 1, "first", "USB", 0 });
     fail_usb = true;
     device = open();
     check(

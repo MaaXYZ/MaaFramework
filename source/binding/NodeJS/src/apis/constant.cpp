@@ -51,6 +51,15 @@ static maajs::ValueType load_adb_input_method(maajs::EnvType env)
     return obj;
 }
 
+static maajs::ValueType load_ios_connection_method(maajs::EnvType env)
+{
+    auto obj = maajs::ObjectType::New(env);
+    DE(MaaIOSConnectionMethod, Auto);
+    DE(MaaIOSConnectionMethod, USB);
+    DE(MaaIOSConnectionMethod, WiFi);
+    return obj;
+}
+
 static maajs::ValueType load_ios_screencap_method(maajs::EnvType env)
 {
     auto obj = maajs::ObjectType::New(env);
@@ -209,6 +218,7 @@ std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env)
         { "AdbScreencapMethod", load_adb_screencap_method(env) },
         { "AdbInputMethod", load_adb_input_method(env) },
         { "IOSScreencapMethod", load_ios_screencap_method(env) },
+        { "IOSConnectionMethod", load_ios_connection_method(env) },
         { "Win32ScreencapMethod", load_win32_screencap_method(env) },
         { "Win32InputMethod", load_win32_input_method(env) },
         { "MacOSScreencapMethod", load_macos_screencap_method(env) },

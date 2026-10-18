@@ -2,14 +2,13 @@
 #include "i18n/Translation.h"
 
 #include <set>
-#include <sstream>
 
 namespace maa::ios::wifi
 {
 namespace
 {
 
-constexpr char kHeader[] = "MaaIOS-pair-record 1";
+constexpr std::string_view kHeader = "MaaIOS1";
 
 std::string hex(const Bytes& data)
 {
@@ -54,84 +53,123 @@ std::optional<Bytes> unhex(std::string_view text, std::string& err)
     return out;
 }
 
-std::string_view trim(std::string_view s)
+std::string encode_text(std::string_view value)
 {
-    while (!s.empty() && (s.front() == ' ' || s.front() == '\t')) {
-        s.remove_prefix(1);
+    std::string result;
+    for (const char ch : value) {
+        if (ch == '%') {
+            result += "%25";
+        }
+        else if (ch == '|') {
+            result += "%7C";
+        }
+        else {
+            result += ch;
+        }
     }
-    while (!s.empty() && (s.back() == ' ' || s.back() == '\t' || s.back() == '\r')) {
-        s.remove_suffix(1);
+    return result;
+}
+
+std::optional<std::string> decode_text(std::string_view value, std::string& error)
+{
+    std::string result;
+    for (size_t i = 0; i < value.size(); ++i) {
+        char ch = value[i];
+        if (ch == '%') {
+            if (i + 2 >= value.size()) {
+                error = "Invalid pairing record text escape";
+                return std::nullopt;
+            }
+            auto byte = unhex(value.substr(i + 1, 2), error);
+            if (!byte) {
+                return std::nullopt;
+            }
+            ch = static_cast<char>((*byte)[0]);
+            i += 2;
+        }
+        if (ch == 0 || ch == '\r' || ch == '\n') {
+            error = "Pairing record identity must not contain NUL or line breaks";
+            return std::nullopt;
+        }
+        result += ch;
     }
-    return s;
+    return result;
 }
 
 } // namespace
 
 std::string format_record(const PairRecord& record)
 {
-    std::ostringstream out;
-    out << kHeader << '\n';
-    out << "udid=" << record.udid << '\n';
-    out << "host_identifier=" << record.host_identifier << '\n';
-    out << "host_private_key=" << hex(record.host_private_key) << '\n';
-    out << "host_public_key=" << hex(record.host_public_key) << '\n';
-    if (!record.advertised_identifier.empty()) {
-        out << "advertised_identifier=" << record.advertised_identifier << '\n';
-    }
+    std::string out(kHeader);
+    const auto append_text = [&](std::string_view key, std::string_view value) {
+        out += '|';
+        out += key;
+        out += '=';
+        out += encode_text(value);
+    };
+    append_text("udid", record.udid);
+    append_text("hid", record.host_identifier);
     if (!record.peer_identifier.empty()) {
-        out << "peer_identifier=" << hex(record.peer_identifier) << '\n';
+        append_text("pid", record.peer_identifier);
     }
+    append_text("hsk", hex(record.host_private_key));
+    append_text("hpk", hex(record.host_public_key));
     if (!record.peer_public_key.empty()) {
-        out << "peer_public_key=" << hex(record.peer_public_key) << '\n';
+        append_text("ppk", hex(record.peer_public_key));
     }
     if (!record.peer_alt_irk.empty()) {
-        out << "peer_alt_irk=" << hex(record.peer_alt_irk) << '\n';
+        append_text("irk", hex(record.peer_alt_irk));
+    }
+    if (!record.advertised_identifier.empty()) {
+        append_text("aid", record.advertised_identifier);
     }
     if (!record.remote_unlock_host_key.empty()) {
-        out << "remote_unlock_host_key=" << record.remote_unlock_host_key << '\n';
+        append_text("ruk", record.remote_unlock_host_key);
     }
-    return out.str();
+    return out;
 }
 
 std::optional<PairRecord> parse_record(std::string_view text, std::string& err)
 {
+    err.clear();
+    if (text.size() <= kHeader.size() || text.substr(0, kHeader.size()) != kHeader || text[kHeader.size()] != '|') {
+        err = "Invalid MaaIOS pairing record header";
+        return std::nullopt;
+    }
+    if (text.find_first_of("\r\n") != std::string_view::npos || text.find('\0') != std::string_view::npos || text.back() == '|') {
+        err = "Pairing record must be a single line of nonempty fields";
+        return std::nullopt;
+    }
     PairRecord record;
-    bool first = true;
     bool seen_private = false;
     std::set<std::string_view> seen_fields;
-    size_t pos = 0;
-    while (pos <= text.size()) {
-        size_t nl = text.find('\n', pos);
-        if (nl == std::string_view::npos) {
-            nl = text.size();
+    size_t pos = kHeader.size() + 1;
+    while (pos < text.size()) {
+        size_t end = text.find('|', pos);
+        if (end == std::string_view::npos) {
+            end = text.size();
         }
-        const std::string_view line = trim(text.substr(pos, nl - pos));
-        pos = nl + 1;
-        if (line.empty()) {
-            continue;
+        const std::string_view field = text.substr(pos, end - pos);
+        pos = end + 1;
+        const size_t eq = field.find('=');
+        if (eq == std::string_view::npos || eq == 0) {
+            err = "Pairing record field must be key=value";
+            return std::nullopt;
         }
-        if (first) {
-            first = false;
-            if (line != kHeader) {
-                err = MAA_IOS_TR("Invalid MaaIOS pairing record header");
-                return std::nullopt;
+        const auto key = field.substr(0, eq);
+        const auto value = field.substr(eq + 1);
+        if (!seen_fields.insert(key).second) {
+            err = "Duplicate pairing record field: " + std::string(key);
+            return std::nullopt;
+        }
+        const auto set_text = [&](std::string& target) {
+            auto decoded = decode_text(value, err);
+            if (!decoded) {
+                return false;
             }
-            continue;
-        }
-        const size_t eq = line.find('=');
-        if (eq == std::string_view::npos) {
-            err = MAA_IOS_TR("Record line is not key=value");
-            return std::nullopt;
-        }
-        const std::string_view key = trim(line.substr(0, eq));
-        const std::string_view value = trim(line.substr(eq + 1));
-        const bool known = key == "udid" || key == "host_identifier" || key == "host_private_key" || key == "host_public_key"
-                           || key == "advertised_identifier" || key == "peer_identifier" || key == "peer_public_key"
-                           || key == "peer_alt_irk" || key == "remote_unlock_host_key";
-        if (known && !seen_fields.insert(key).second) {
-            err = MAA_IOS_TR("Duplicate pairing record field: ") + std::string(key);
-            return std::nullopt;
-        }
+            target = std::move(*decoded);
+            return true;
+        };
         auto set_hex = [&](Bytes& field, size_t want) -> bool {
             const std::optional<Bytes> bytes = unhex(value, err);
             if (!bytes) {
@@ -146,53 +184,62 @@ std::optional<PairRecord> parse_record(std::string_view text, std::string& err)
             return true;
         };
         if (key == "udid") {
-            record.udid = value;
+            if (!set_text(record.udid)) {
+                return std::nullopt;
+            }
         }
-        else if (key == "host_identifier") {
-            record.host_identifier = value;
+        else if (key == "hid") {
+            if (!set_text(record.host_identifier)) {
+                return std::nullopt;
+            }
         }
-        else if (key == "host_private_key") {
+        else if (key == "pid") {
+            if (!set_text(record.peer_identifier)) {
+                return std::nullopt;
+            }
+            if (record.peer_identifier.empty() || record.peer_identifier.size() > 4096) {
+                err = "Pairing record pid must be nonempty text";
+                return std::nullopt;
+            }
+        }
+        else if (key == "hsk") {
             if (!set_hex(record.host_private_key, 32)) {
                 return std::nullopt;
             }
             seen_private = true;
         }
-        else if (key == "host_public_key") {
+        else if (key == "hpk") {
             if (!set_hex(record.host_public_key, 32)) {
                 return std::nullopt;
             }
         }
-        else if (key == "advertised_identifier") {
-            record.advertised_identifier = value;
-        }
-        else if (key == "peer_identifier") {
-            const std::optional<Bytes> identifier = unhex(value, err);
-            if (!identifier) {
-                return std::nullopt;
-            }
-            if (identifier->empty()) {
-                err = MAA_IOS_TR("Pairing record peer_identifier must not be empty");
-                return std::nullopt;
-            }
-            record.peer_identifier = *identifier;
-        }
-        else if (key == "peer_public_key") {
+        else if (key == "ppk") {
             if (!set_hex(record.peer_public_key, 32)) {
                 return std::nullopt;
             }
         }
-        else if (key == "peer_alt_irk") {
+        else if (key == "irk") {
             if (!set_hex(record.peer_alt_irk, 16)) {
                 return std::nullopt;
             }
         }
-        else if (key == "remote_unlock_host_key") {
-            record.remote_unlock_host_key = value;
+        else if (key == "aid") {
+            if (!set_text(record.advertised_identifier)) {
+                return std::nullopt;
+            }
         }
-        // 忽略未知键，允许新增可选字段后的记录继续由旧版本解析。
+        else if (key == "ruk") {
+            if (!set_text(record.remote_unlock_host_key)) {
+                return std::nullopt;
+            }
+        }
+        else {
+            err = "Unknown pairing record field: " + std::string(key);
+            return std::nullopt;
+        }
     }
     if (!seen_private) {
-        err = MAA_IOS_TR("Record missing host_private_key");
+        err = MAA_IOS_TR("Record missing hsk");
         return std::nullopt;
     }
     return record;

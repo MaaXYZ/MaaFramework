@@ -113,7 +113,7 @@ PairVerifyResult pair_verify(Rppairing& channel, const PairRecord& host, std::st
         result.error = err;
         return result;
     }
-    if (!authenticate_verify_identity(host.peer_identifier, host.peer_public_key, *peer_pub, our_pub, *peer_identity, err)) {
+    if (!authenticate_verify_identity(bytes_of(host.peer_identifier), host.peer_public_key, *peer_pub, our_pub, *peer_identity, err)) {
         result.error = err;
         return result;
     }

@@ -11,6 +11,7 @@
 #include "HeldInputs.h"
 #include "InputMapping.h"
 #include "MaaFramework/MaaDef.h"
+#include "wifi/PairRecord.h"
 
 namespace maa::ios
 {
@@ -50,8 +51,9 @@ public:
         const std::string& udid,
         const std::string& wifi_address,
         MaaIOScreencapMethod screencap_methods,
-        std::string& err,
-        const std::string& config);
+        MaaIOSConnectionMethod connection_method,
+        const std::optional<maa::ios::wifi::PairRecord>& pairing,
+        std::string& err);
     void close();
 
     [[nodiscard]] bool connected() const { return device_ != nullptr; }

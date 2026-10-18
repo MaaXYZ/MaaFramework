@@ -482,12 +482,12 @@ PairSetupResult pair_setup(
     PairRecord record;
     record.udid = std::string(udid);
     record.host_identifier = std::string(host_identifier);
+    record.peer_identifier.assign(peer_identity->identifier.begin(), peer_identity->identifier.end());
     record.host_private_key.assign(host_key->seed.begin(), host_key->seed.end());
     record.host_public_key = host_public;
-    record.advertised_identifier = advertised;
-    record.peer_identifier = peer_identity->identifier;
     record.peer_public_key = peer_identity->public_key;
     record.peer_alt_irk = peer_alt_irk;
+    record.advertised_identifier = advertised;
 
     // 8) 可选远程解锁密钥。请求失败只通过 progress 报告，不撤销已安装的主密钥，
     // 也不改变本次 setup 的成功结果；成功响应中没有 hostKey 时字段保持为空。

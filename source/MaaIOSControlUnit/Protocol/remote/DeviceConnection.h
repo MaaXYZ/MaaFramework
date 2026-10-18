@@ -20,7 +20,8 @@ std::optional<remote::Device> open_device(
     std::string& err,
     uint16_t wifi_port = wifi::kAdvertisedPortFallback,
     const std::function<bool()>& should_cancel = { },
-    const std::vector<wifi::PairRecord>& pairing_records = { });
+    const std::vector<wifi::PairRecord>& pairing_records = { },
+    bool physical_usb_only = false);
 
 namespace detail
 {
@@ -57,7 +58,8 @@ std::optional<remote::Device> open_default_device(
     const std::string& serial,
     std::string& error,
     const std::function<bool()>& should_cancel,
-    const DefaultDeviceOperations& operations);
+    const DefaultDeviceOperations& operations,
+    bool physical_usb_only = false);
 
 using WifiConnector = std::function<std::optional<remote::Device>(const std::string&, const wifi::PairRecord&, uint16_t, std::string&)>;
 /// 依次连接选择结果，某一候选失败不丢弃其余候选；全部失败时保留各次错误。

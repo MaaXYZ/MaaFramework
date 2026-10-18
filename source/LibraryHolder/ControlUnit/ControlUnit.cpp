@@ -77,9 +77,10 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> AdbControlUnitLibraryHolder
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI> IOSControlUnitLibraryHolder::create_control_unit(
     const char* udid,
-    const char* wifi_address,
     MaaIOScreencapMethod screencap_methods,
-    const char* config)
+    MaaIOSConnectionMethod connection_method,
+    const char* wifi_address,
+    const MaaIOSWiFiPairing* wifi_pairing)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -100,7 +101,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI> IOSControlUnitLibraryHolder
         return nullptr;
     }
 
-    auto control_unit_handle = create_control_unit_func(udid, wifi_address, screencap_methods, config);
+    auto control_unit_handle = create_control_unit_func(udid, screencap_methods, connection_method, wifi_address, wifi_pairing);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";

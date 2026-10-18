@@ -2,6 +2,7 @@
 
 #include <array>
 #include <filesystem>
+#include <memory>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -507,10 +508,10 @@ struct RuntimeParam
     struct IOSParam
     {
         std::string udid;
-        /// 非空 = 走局域网。空 = USB。
+        /// 非空走局域网；空值对指定 UDID 优先 USB，再尝试 Wi-Fi。
         std::string wifi;
         MaaIOScreencapMethod screencap = MaaIOScreencapMethod_Default;
-        std::vector<std::string> pairing_records;
+        std::shared_ptr<MaaIOSWiFiPairing> wifi_pairing;
         bool prepare_ddi = true;
         std::string ddi_cache_directory;
         int ddi_download_timeout_seconds = 300;

@@ -1,4 +1,5 @@
 #include "MaaControlUnit/IOSControlUnitAPI.h"
+#include "Common/IOSPairing.h"
 
 #include <MaaUtils/Logger.h>
 
@@ -13,8 +14,12 @@ extern "C"
         return MAA_VERSION;
     }
 
-    MaaIOSControlUnitHandle
-        MaaIOSControlUnitCreate(const char* udid, const char* wifi_address, MaaIOScreencapMethod screencap_methods, const char* config)
+    MaaIOSControlUnitHandle MaaIOSControlUnitCreate(
+        const char* udid,
+        MaaIOScreencapMethod screencap_methods,
+        MaaIOSConnectionMethod connection_method,
+        const char* wifi_address,
+        const MaaIOSWiFiPairing* wifi_pairing)
     {
         using namespace MAA_CTRL_UNIT_NS;
 
@@ -23,8 +28,36 @@ extern "C"
         const std::string wifi_str = wifi_address ? wifi_address : "";
         LogFunc << VAR(udid_str) << VAR(wifi_str) << VAR(screencap_methods);
 
-        auto unit_mgr = std::make_unique<IOSControlUnitMgr>(udid_str, wifi_str, screencap_methods, config ? config : "{}");
-        return unit_mgr.release();
+        try {
+            if (udid_str.empty()) {
+                LogError << "iOS device UDID is required";
+                return nullptr;
+            }
+            if (connection_method < MaaIOSConnectionMethod_Auto || connection_method > MaaIOSConnectionMethod_WiFi) {
+                LogError << "Invalid iOS connection method";
+                return nullptr;
+            }
+            std::optional<maa::ios::wifi::PairRecord> pairing;
+            if (wifi_pairing && connection_method != MaaIOSConnectionMethod_USB) {
+                std::string error;
+                pairing = maa::ios::wifi::copy_pairing(*wifi_pairing, error);
+                if (!pairing || udid_str != pairing->udid) {
+                    LogError << "Invalid or mismatched iOS Wi-Fi pairing credentials";
+                    return nullptr;
+                }
+            }
+            if (connection_method == MaaIOSConnectionMethod_WiFi && !pairing) {
+                LogError << "Wi-Fi requires pairing credentials";
+                return nullptr;
+            }
+            auto unit_mgr =
+                std::make_unique<IOSControlUnitMgr>(udid_str, wifi_str, screencap_methods, connection_method, std::move(pairing));
+            return unit_mgr.release();
+        }
+        catch (...) {
+            LogError << "Failed to create iOS control unit";
+            return nullptr;
+        }
     }
 
     void MaaIOSControlUnitDestroy(MaaIOSControlUnitHandle handle)
