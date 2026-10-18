@@ -171,22 +171,17 @@ void CustomRecognition::analyze()
         case MultiResultState::Valid: {
             all_results_ = std::move(multi_results.all);
             filtered_results_ = std::move(multi_results.filtered);
-            if (auto index_opt = MAA_VISION_NS::pythonic_index(filtered_results_.size(), param_.result_index)) {
-                best_result_ = filtered_results_.at(*index_opt);
-            }
+            cherry_pick();
         } break;
 
         case MultiResultState::Invalid:
-            // 多结果对象非法时不猜结果，视为本次识别无命中
+            // 多结果对象非法时视为无命中
             break;
 
         case MultiResultState::None: {
             all_results_ = { res };
             filtered_results_ = { res };
-            // 单结果回调同样按 index 选取，越界视为无命中，与内置算法保持一致
-            if (MAA_VISION_NS::pythonic_index(1, param_.result_index)) {
-                best_result_ = res;
-            }
+            cherry_pick();
         } break;
         }
     }
@@ -195,12 +190,20 @@ void CustomRecognition::analyze()
     }
 
     if (debug_draw_ && !image_.empty()) {
-        // 覆盖层绘制最终选中的结果，没有选中时不标记命中
+        // 未选中时画回调返回的框，且不标记命中
         handle_draw(draw_result(best_result_.value_or(res), best_result_.has_value()));
     }
 
     auto cost = duration_since(start_time);
     LogDebug << VAR(name_) << VAR(param_.name) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(ret);
+}
+
+// Custom 的结果顺序由回调决定，不做排序
+void CustomRecognition::cherry_pick()
+{
+    if (auto index_opt = MAA_VISION_NS::pythonic_index(filtered_results_.size(), param_.result_index)) {
+        best_result_ = filtered_results_.at(*index_opt);
+    }
 }
 
 cv::Mat CustomRecognition::draw_result(const Result& res, bool hit) const
