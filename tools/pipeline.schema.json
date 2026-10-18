@@ -1488,9 +1488,9 @@
             "properties": {
                 "sub_name": {
                     "title": "Sub Name Property",
-                    "description": "子识别别名。可选。后续子识别可通过 `roi: sub_name` 引用之前子识别的 `filtered` 作为 ROI；同名以最后一个为准；仅当前节点内有效。若无选中的结果（例如 `index` 越界），则视为无 ROI。（仅支持 `And`）",
+                    "description": "子识别别名。可选。后续子识别可通过 `roi: sub_name` 引用之前子识别的 `filtered` 作为 ROI；同名以最后一个为准；仅当前节点内有效。若无选中的结果（例如 `index` 越界），则视为无 ROI，引用方识别失败。（仅支持 `And`）",
                     "type": "string",
-                    "markdownDescription": "*string*\n\n子识别别名。可选。\n\n后续子识别可通过 `roi: sub_name` 引用之前子识别的 `filtered` 作为 ROI；同名以最后一个为准；仅当前节点内有效。若无选中的结果（例如 `index` 越界），则视为无 ROI。（仅支持 `And`）"
+                    "markdownDescription": "*string*\n\n子识别别名。可选。\n\n后续子识别可通过 `roi: sub_name` 引用之前子识别的 `filtered` 作为 ROI；同名以最后一个为准；仅当前节点内有效。若无选中的结果（例如 `index` 越界），则视为无 ROI，引用方识别失败。（仅支持 `And`）"
                 }
             }
         },
