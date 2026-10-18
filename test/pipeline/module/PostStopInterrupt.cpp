@@ -17,7 +17,7 @@
 // post_stop 后两个阻塞点曾不检查 context_->need_to_stop()：wait_freezes 会跑满 timeout（默认 20s），
 // TaskBase::sleep 是纯 sleep_for。表现为 CustomAction 里的 MaaContextRunTask 永不返回，
 // 宿主超时强杀后 0xC0000005。
-// 本用例用自定义控制器伪造"永不稳定的画面"，在子任务进入 wait_freezes 后 post_stop，
+// 本用例用自定义控制器伪造"永不稳定的画面"，在子任务进入 wait_freezes 后由宿主线程 post_stop，
 // 断言 MaaContextRunTask 在 1s 内返回。
 
 namespace
@@ -94,13 +94,14 @@ MaaController* create_changing_controller()
 
 struct SubTaskProbe
 {
+    std::atomic_bool reached_wait_freezes { false };
     std::atomic_bool returned { false };
     std::atomic<long long> total_ms { -1 };           // 进入 run_task 到返回
     std::atomic<long long> stop_to_return_ms { -1 };  // post_stop 发出到返回，这才是停止延迟
     std::atomic<MaaTaskId> sub_task_id { MaaInvalidId };
     std::chrono::steady_clock::time_point enter_clock;
 
-    // sink 线程写入、主线程读取，用 steady_clock 的原生计数避免跨线程共享 time_point
+    // 宿主线程写入、worker 线程读取
     std::atomic<long long> stop_clock_ns { 0 };
 };
 
@@ -150,39 +151,21 @@ MaaBool main_custom_action(
     return sub_task_id != MaaInvalidId;
 }
 
-struct StopTrigger
-{
-    MaaTasker* tasker = nullptr;
-    SubTaskProbe* probe = nullptr;
-    std::atomic_bool fired { false };
-};
-
-// 等子任务真正进入 wait_freezes（Node.WaitFreezes.Starting）再 post_stop，
-// 避免 post_stop 撞上子任务启动瞬间而被 stop 语义直接吞掉
+// sink 只记录"子任务已进入 wait_freezes"，不在这里调任何宿主 API：
+// dispatch 在 worker 线程上无锁遍历 sink 表，回调里再改 sink 表或重入 tasker 都会踩坏它。
 void on_context_message(void* handle, const char* message, const char* details_json, void* trans_arg)
 {
     std::ignore = handle;
     std::ignore = details_json;
 
-    auto* trigger = static_cast<StopTrigger*>(trans_arg);
-    if (!trigger || !message || !trigger->tasker) {
+    auto* probe = static_cast<SubTaskProbe*>(trans_arg);
+    if (!probe || !message) {
         return;
     }
 
-    if (std::strcmp(message, MaaMsg_Node_WaitFreezes_Starting) != 0) {
-        return;
+    if (std::strcmp(message, MaaMsg_Node_WaitFreezes_Starting) == 0) {
+        probe->reached_wait_freezes = true;
     }
-
-    bool expected = false;
-    if (!trigger->fired.compare_exchange_strong(expected, true)) {
-        return;
-    }
-
-    if (trigger->probe) {
-        trigger->probe->stop_clock_ns = std::chrono::steady_clock::now().time_since_epoch().count();
-    }
-
-    MaaTaskerPostStop(trigger->tasker);
 }
 
 } // namespace
@@ -225,27 +208,46 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
     SubTaskProbe probe;
     MaaResourceRegisterCustomAction(resource, "PostStopInterruptMainAction", &main_custom_action, &probe);
 
-    StopTrigger trigger { .tasker = tasker, .probe = &probe };
-    auto sink_id = MaaTaskerAddContextSink(tasker, &on_context_message, &trigger);
+    auto sink_id = MaaTaskerAddContextSink(tasker, &on_context_message, &probe);
 
     auto task_id = MaaTaskerPostTask(tasker, "PostStopInterruptMain", "{}");
 
-    // 兜底 10s：修复前这里必然等满（或永不返回）
-    constexpr auto kOuterTimeout = std::chrono::seconds(10);
-    auto deadline = std::chrono::steady_clock::now() + kOuterTimeout;
-    while (std::chrono::steady_clock::now() < deadline && !probe.returned) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // 宿主侧等待子任务进入 wait_freezes 后，由本线程（而非 worker 的回调里）发 post_stop，
+    // 与 #1564 的真实调用方一致
+    MaaTaskId stop_task_id = MaaInvalidId;
+    bool sent_stop = false;
+    long long stop_clock_ns = 0;
+
+    {
+        constexpr auto kWaitEnter = std::chrono::seconds(10);
+        auto deadline = std::chrono::steady_clock::now() + kWaitEnter;
+        while (std::chrono::steady_clock::now() < deadline && !probe.reached_wait_freezes) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        }
+
+        if (probe.reached_wait_freezes) {
+            stop_clock_ns = std::chrono::steady_clock::now().time_since_epoch().count();
+            probe.stop_clock_ns = stop_clock_ns;
+            stop_task_id = MaaTaskerPostStop(tasker);
+            sent_stop = true;
+        }
     }
 
-    MaaTaskerRemoveContextSink(tasker, sink_id);
+    // 兜底 10s：修复前这里必然等满（或永不返回）
+    {
+        constexpr auto kOuterTimeout = std::chrono::seconds(10);
+        auto deadline = std::chrono::steady_clock::now() + kOuterTimeout;
+        while (std::chrono::steady_clock::now() < deadline && !probe.returned) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+    }
 
-    bool stopped_fired = trigger.fired;
     bool sub_returned = probe.returned;
     long long total_ms = probe.total_ms;
     long long stop_to_return_ms = probe.stop_to_return_ms;
 
     bool passed = false;
-    if (!stopped_fired) {
+    if (!sent_stop) {
         std::cout << "PostStopInterrupt: sub task never reached wait_freezes" << std::endl;
     }
     else if (!sub_returned) {
@@ -275,9 +277,16 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
     // 断言结论先落盘再清理句柄，避免清理阶段的环境问题掩盖用例结果
     std::cout.flush();
 
+    // 等所有任务退出后再动 sink 表：dispatch 在 worker 线程上无锁遍历 sink 表，
+    // 并发调用 MaaTaskerRemoveContextSink 会踩坏 std::map。
     MaaTaskerWait(tasker, task_id);
-    MaaTaskerDestroy(tasker);
+    if (stop_task_id != MaaInvalidId) {
+        MaaTaskerWait(tasker, stop_task_id);
+    }
 
+    MaaTaskerRemoveContextSink(tasker, sink_id);
+
+    MaaTaskerDestroy(tasker);
     MaaResourceDestroy(resource);
     MaaControllerDestroy(controller);
 
