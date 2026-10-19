@@ -9,6 +9,7 @@
 #include <VideoToolbox/VideoToolbox.h>
 
 #include <cstring>
+#include <mutex>
 
 namespace maa::ios
 {
@@ -222,13 +223,12 @@ private:
     /// 超限关键帧，调用方需改用软件解码；不要依据某个小码流样本假定不会触发。
     static void warn_oversized(size_t n)
     {
-        static bool warned = false;
-        if (!warned) {
-            warned = true;
+        static std::once_flag warned;
+        std::call_once(warned, [n] {
             LogWarn << std::format(
                 "NAL size {} exceeds the 2-byte length prefix; frame dropped. This stream requires software decoding.",
                 n);
-        }
+        });
     }
 
     /// 锁定像素缓冲后按源行跨度读取，复制为紧凑 BGRA；Frame 拥有复制后的像素。

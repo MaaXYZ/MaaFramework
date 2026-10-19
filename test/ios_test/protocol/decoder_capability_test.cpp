@@ -6,6 +6,7 @@
 extern "C"
 {
 #include <libavcodec/avcodec.h>
+#include <libavutil/log.h>
 }
 #endif
 
@@ -20,7 +21,15 @@ int main()
     if (!png) {
         std::fputs("MaaIOS requires an FFmpeg PNG screenshot decoder\n", stderr);
     }
-    return hevc && png ? 0 : 1;
+    const int original_log_level = av_log_get_level();
+    av_log_set_level(AV_LOG_WARNING);
+    auto decoder = maa::ios::create_software_decoder();
+    const bool log_unchanged = av_log_get_level() == AV_LOG_WARNING;
+    av_log_set_level(original_log_level);
+    if (!decoder || !log_unchanged) {
+        std::fputs("Creating an iOS decoder must preserve the host FFmpeg log level\n", stderr);
+    }
+    return hevc && png && decoder && log_unchanged ? 0 : 1;
 #else
     if (maa::ios::create_software_decoder()) {
         std::fputs("FFmpeg-disabled build unexpectedly has a software decoder\n", stderr);

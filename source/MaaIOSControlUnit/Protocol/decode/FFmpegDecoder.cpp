@@ -12,6 +12,7 @@ extern "C"
 }
 
 #include <cstring>
+#include <mutex>
 #include <string>
 
 namespace maa::ios
@@ -106,11 +107,8 @@ public:
         const int send_st = avcodec_send_packet(ctx_, pkt);
         av_packet_free(&pkt);
         if (send_st < 0) {
-            static bool warned = false;
-            if (!warned) {
-                warned = true;
-                LogWarn << std::format("FFmpeg rejected packet: {}", av_strerr(send_st));
-            }
+            static std::once_flag warned;
+            std::call_once(warned, [send_st] { LogWarn << std::format("FFmpeg rejected packet: {}", av_strerr(send_st)); });
             return false;
         }
 
@@ -207,13 +205,6 @@ private:
 
 std::unique_ptr<Decoder> create_software_decoder()
 {
-    // 将 libav 的进程级日志阈值设为 error，抑制已测全范围 yuvj420p 输入的重复
-    // 像素格式警告。这不改变颜色转换配置，也会影响进程内其他 libav 使用者。
-    static bool log_quieted = false;
-    if (!log_quieted) {
-        av_log_set_level(AV_LOG_ERROR);
-        log_quieted = true;
-    }
     return std::make_unique<FFmpegDecoder>();
 }
 
