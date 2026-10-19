@@ -253,6 +253,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MAES](https://github.com/Guili-Ad/MAES) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Guili-Ad/MAES) ![activity](https://img.shields.io/github/commit-activity/m/Guili-Ad/MAES?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Guili-Ad/MAES?style=social)  
     Ensemble Stars!! Music rhythm-game auto-play assistant focused on song play and lane calibration. Powered by MaaFramework.
 
+- [MaaPVZ](https://github.com/Maa-Assistant-PVZ-The-best/MAAPVZ) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Maa-Assistant-PVZ-The-best/MAAPVZ) ![activity](https://img.shields.io/github/commit-activity/m/Maa-Assistant-PVZ-The-best/MAAPVZ?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Maa-Assistant-PVZ-The-best/MAAPVZ?style=social)  
+    PVZ2 (Plants vs. Zombies 2) assistant. Image recognition + simulation control, powered by MaaFramework, bringing you a delightful gaming experience!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
