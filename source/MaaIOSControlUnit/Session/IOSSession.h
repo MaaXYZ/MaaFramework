@@ -50,7 +50,7 @@ public:
     bool create(
         const std::string& udid,
         const std::string& wifi_address,
-        MaaIOScreencapMethod screencap_methods,
+        MaaIOSScreencapMethod screencap_methods,
         MaaIOSConnectionMethod connection_method,
         const std::optional<maa::ios::wifi::PairRecord>& pairing,
         std::string& err);
@@ -92,7 +92,7 @@ private:
     std::unique_ptr<maa::ios::hid::Service> hid_;
     std::unique_ptr<maa::ios::hid::Buttons> buttons_;
     std::string udid_;
-    MaaIOScreencapMethod screencap_methods_ = MaaIOScreencapMethod_Default;
+    MaaIOSScreencapMethod screencap_methods_ = MaaIOSScreencapMethod_Default;
     ImageMapping mapping_;
     HeldInputs inputs_;
 };

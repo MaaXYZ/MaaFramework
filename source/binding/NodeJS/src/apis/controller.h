@@ -110,12 +110,12 @@ struct AdbControllerImpl : public ControllerImpl
 
 using IOSControllerCtorParam = std::tuple<
     std::string,
-    maajs::OptionalParam<MaaIOScreencapMethod>,
+    maajs::OptionalParam<MaaIOSScreencapMethod>,
     maajs::OptionalParam<MaaIOSConnectionMethod>,
     maajs::OptionalParam<std::string>,
     maajs::OptionalParam<maajs::ObjectType>>;
 
-using IOSDevice = std::tuple<std::string, std::string, MaaIOScreencapMethod, std::string>;
+using IOSDevice = std::tuple<std::string, std::string, MaaIOSScreencapMethod, std::string>;
 
 struct IOSControllerImpl : public ControllerImpl
 {

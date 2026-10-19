@@ -122,16 +122,16 @@ MaaMacOSInputMethod parse_macos_input_method(const std::string& method)
     return MaaMacOSInputMethod_None;
 }
 
-MaaIOScreencapMethod parse_ios_screencap_method(const std::string& method)
+MaaIOSScreencapMethod parse_ios_screencap_method(const std::string& method)
 {
-    static const std::unordered_map<std::string, MaaIOScreencapMethod> mapping = {
-        { "Stream", MaaIOScreencapMethod_Stream },
-        { "ScreenshotService", MaaIOScreencapMethod_ScreenshotService },
-        { "Service", MaaIOScreencapMethod_ScreenshotService },
+    static const std::unordered_map<std::string, MaaIOSScreencapMethod> mapping = {
+        { "Stream", MaaIOSScreencapMethod_Stream },
+        { "ScreenshotService", MaaIOSScreencapMethod_ScreenshotService },
+        { "Service", MaaIOSScreencapMethod_ScreenshotService },
     };
 
     // 它是个位掩码，所以允许叠写："Stream|ScreenshotService"、"Stream, ScreenshotService" 都收。
-    MaaIOScreencapMethod result = MaaIOScreencapMethod_None;
+    MaaIOSScreencapMethod result = MaaIOSScreencapMethod_None;
     std::vector<std::string> tokens;
     for (auto&& pipe : string_split(method, '|')) {
         for (auto&& comma : string_split(pipe, ',')) {
@@ -145,13 +145,13 @@ MaaIOScreencapMethod parse_ios_screencap_method(const std::string& method)
             continue;
         }
         if (token == "All" || token == "Default") {
-            result |= MaaIOScreencapMethod_All;
+            result |= MaaIOSScreencapMethod_All;
             continue;
         }
         auto it = mapping.find(token);
         if (it == mapping.end()) {
             LogError << "Unknown iOS screencap method" << VAR(token);
-            return MaaIOScreencapMethod_None;
+            return MaaIOSScreencapMethod_None;
         }
         result |= it->second;
     }
@@ -323,8 +323,8 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         if (!controller.ios.screencap.empty()) {
             ios.screencap = parse_ios_screencap_method(controller.ios.screencap);
         }
-        if (ios.screencap == MaaIOScreencapMethod_None) {
-            ios.screencap = MaaIOScreencapMethod_Default;
+        if (ios.screencap == MaaIOSScreencapMethod_None) {
+            ios.screencap = MaaIOSScreencapMethod_Default;
         }
 
         runtime.controller_param = std::move(ios);

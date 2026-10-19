@@ -624,7 +624,7 @@ IOSControllerImpl* IOSControllerImpl::ctor(const maajs::CallbackInfo& info)
     }
     auto ctrl = MaaIOSControllerCreate(
         udid.c_str(),
-        screencap_methods.value_or(MaaIOScreencapMethod_Default),
+        screencap_methods.value_or(MaaIOSScreencapMethod_Default),
         connection,
         wifi.c_str(),
         pairing ? &pairing->value : nullptr);

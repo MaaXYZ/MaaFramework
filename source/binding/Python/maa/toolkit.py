@@ -599,7 +599,7 @@ class Toolkit:
             function = getattr(api, name)
             function.restype = ctypes.c_char_p
             function.argtypes = [ctypes.c_void_p]
-        api.MaaToolkitIOSDeviceGetScreencapMethods.restype = MaaIOScreencapMethod
+        api.MaaToolkitIOSDeviceGetScreencapMethods.restype = MaaIOSScreencapMethod
         api.MaaToolkitIOSDeviceGetScreencapMethods.argtypes = [ctypes.c_void_p]
 
         Library.toolkit().MaaToolkitAdbDeviceListCreate.restype = MaaToolkitAdbDeviceListHandle

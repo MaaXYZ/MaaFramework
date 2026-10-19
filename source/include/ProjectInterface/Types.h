@@ -26,7 +26,7 @@ struct InterfaceData
             /// 设备的局域网地址；留空走 USB。走无线时 udid 只用来挑配对记录，
             /// 本机恰好只有一条记录时也可以留空。
             std::string wifi;
-            // 取图方式，见 MaaIOScreencapMethod：留空 = 两条都给（快路径优先，解不了自动降级）。
+            // 取图方式，见 MaaIOSScreencapMethod：留空 = 两条都给（快路径优先，解不了自动降级）。
             // 可以叠：用 '|' 或 ',' 分隔，例如 "Stream|ScreenshotService"。
             std::string screencap;
 
@@ -510,7 +510,7 @@ struct RuntimeParam
         std::string udid;
         /// 非空走局域网；空值对指定 UDID 优先 USB，再尝试 Wi-Fi。
         std::string wifi;
-        MaaIOScreencapMethod screencap = MaaIOScreencapMethod_Default;
+        MaaIOSScreencapMethod screencap = MaaIOSScreencapMethod_Default;
         std::shared_ptr<MaaIOSWiFiPairing> wifi_pairing;
         bool prepare_ddi = true;
         std::string ddi_cache_directory;

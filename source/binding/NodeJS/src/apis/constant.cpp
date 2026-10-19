@@ -64,10 +64,10 @@ static maajs::ValueType load_ios_screencap_method(maajs::EnvType env)
 {
     auto obj = maajs::ObjectType::New(env);
 
-    DEM(MaaIOScreencapMethod, Stream);
-    DEM(MaaIOScreencapMethod, ScreenshotService);
-    DEM(MaaIOScreencapMethod, All);
-    DEM(MaaIOScreencapMethod, Default);
+    DEM(MaaIOSScreencapMethod, Stream);
+    DEM(MaaIOSScreencapMethod, ScreenshotService);
+    DEM(MaaIOSScreencapMethod, All);
+    DEM(MaaIOSScreencapMethod, Default);
 
     return obj;
 }

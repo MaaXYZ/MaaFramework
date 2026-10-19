@@ -57,7 +57,7 @@ __all__ = [
     "MaaWin32InputMethod",
     "MaaMacOSScreencapMethod",
     "MaaMacOSInputMethod",
-    "MaaIOScreencapMethod",
+    "MaaIOSScreencapMethod",
     "MaaLinuxScreencapMethod",
     "MaaLinuxInputMethod",
     "MaaGamepadType",
@@ -81,7 +81,7 @@ __all__ = [
     "MaaWin32InputMethodEnum",
     "MaaMacOSScreencapMethodEnum",
     "MaaMacOSInputMethodEnum",
-    "MaaIOScreencapMethodEnum",
+    "MaaIOSScreencapMethodEnum",
     "MaaIOSConnectionMethod",
     "MaaIOSConnectionMethodEnum",
     "MaaIOSWiFiPairing",
@@ -441,10 +441,10 @@ class MaaIOSWiFiPairing(ctypes.Structure):
     ]
 
 
-MaaIOScreencapMethod = ctypes.c_uint64
+MaaIOSScreencapMethod = ctypes.c_uint64
 
 
-class MaaIOScreencapMethodEnum(IntEnum):
+class MaaIOSScreencapMethodEnum(IntEnum):
     """
     iOS screencap method flags.
 

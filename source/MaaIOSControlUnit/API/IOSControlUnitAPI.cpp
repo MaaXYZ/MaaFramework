@@ -16,7 +16,7 @@ extern "C"
 
     MaaIOSControlUnitHandle MaaIOSControlUnitCreate(
         const char* udid,
-        MaaIOScreencapMethod screencap_methods,
+        MaaIOSScreencapMethod screencap_methods,
         MaaIOSConnectionMethod connection_method,
         const char* wifi_address,
         const MaaIOSWiFiPairing* wifi_pairing)

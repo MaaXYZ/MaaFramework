@@ -913,7 +913,7 @@ class IOSController(Controller):
     def __init__(
         self,
         udid: str,
-        screencap_methods: int = MaaIOScreencapMethodEnum.Stream | MaaIOScreencapMethodEnum.ScreenshotService,
+        screencap_methods: int = MaaIOSScreencapMethodEnum.Stream | MaaIOSScreencapMethodEnum.ScreenshotService,
         connection_method: int = MaaIOSConnectionMethodEnum.Auto,
         wifi_address: Optional[str] = None,
         wifi_pairing: Optional[IOSWiFiPairing] = None,
@@ -932,7 +932,7 @@ class IOSController(Controller):
             raise ValueError("A nonempty iOS device UDID without NUL is required")
         pairing = wifi_pairing._native() if wifi_pairing is not None and connection_method != MaaIOSConnectionMethodEnum.USB else None
         self._handle = Library.framework().MaaIOSControllerCreate(
-            udid.encode(), MaaIOScreencapMethod(screencap_methods), MaaIOSConnectionMethod(connection_method),
+            udid.encode(), MaaIOSScreencapMethod(screencap_methods), MaaIOSConnectionMethod(connection_method),
             wifi_address.encode() if wifi_address is not None else None,
             ctypes.byref(pairing) if pairing is not None else None,
         )
@@ -942,7 +942,7 @@ class IOSController(Controller):
     def _set_ios_api_properties(self):
         Library.framework().MaaIOSControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaIOSControllerCreate.argtypes = [
-            ctypes.c_char_p, MaaIOScreencapMethod, MaaIOSConnectionMethod,
+            ctypes.c_char_p, MaaIOSScreencapMethod, MaaIOSConnectionMethod,
             ctypes.c_char_p, ctypes.POINTER(MaaIOSWiFiPairing),
         ]
 

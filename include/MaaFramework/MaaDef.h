@@ -337,7 +337,7 @@ typedef uint64_t MaaAdbInputMethod;
 #define MaaAdbInputMethod_All (~MaaAdbInputMethod_None)
 #define MaaAdbInputMethod_Default (MaaAdbInputMethod_All & (~MaaAdbInputMethod_EmulatorExtras))
 
-// MaaIOScreencapMethod:
+// MaaIOSScreencapMethod:
 /**
  * @brief iOS screencap method flags.
  *
@@ -349,12 +349,12 @@ typedef uint64_t MaaAdbInputMethod;
  * Default: All methods. Reported availability describes supported backends,
  * not a guarantee that every connected device/DDI exposes both services.
  */
-typedef uint64_t MaaIOScreencapMethod;
-#define MaaIOScreencapMethod_None 0ULL
-#define MaaIOScreencapMethod_Stream 1ULL
-#define MaaIOScreencapMethod_ScreenshotService (1ULL << 1)
-#define MaaIOScreencapMethod_All (~MaaIOScreencapMethod_None)
-#define MaaIOScreencapMethod_Default MaaIOScreencapMethod_All
+typedef uint64_t MaaIOSScreencapMethod;
+#define MaaIOSScreencapMethod_None 0ULL
+#define MaaIOSScreencapMethod_Stream 1ULL
+#define MaaIOSScreencapMethod_ScreenshotService (1ULL << 1)
+#define MaaIOSScreencapMethod_All (~MaaIOSScreencapMethod_None)
+#define MaaIOSScreencapMethod_Default MaaIOSScreencapMethod_All
 
 // Connection selection is independent of the wireless credentials.
 typedef int32_t MaaIOSConnectionMethod;

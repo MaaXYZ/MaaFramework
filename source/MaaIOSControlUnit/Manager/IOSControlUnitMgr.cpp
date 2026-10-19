@@ -21,7 +21,7 @@ constexpr int kMinStepMs = 12;
 IOSControlUnitMgr::IOSControlUnitMgr(
     std::string udid,
     std::string wifi_address,
-    MaaIOScreencapMethod screencap_methods,
+    MaaIOSScreencapMethod screencap_methods,
     MaaIOSConnectionMethod connection_method,
     std::optional<maa::ios::wifi::PairRecord> pairing)
     : udid_(std::move(udid))

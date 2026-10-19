@@ -84,12 +84,12 @@ export using ::MaaIOSConnectionMethodEnum;
 export constexpr auto _MaaIOSConnectionMethod_Auto = MaaIOSConnectionMethod_Auto;
 export constexpr auto _MaaIOSConnectionMethod_USB = MaaIOSConnectionMethod_USB;
 export constexpr auto _MaaIOSConnectionMethod_WiFi = MaaIOSConnectionMethod_WiFi;
-export using ::MaaIOScreencapMethod;
-export constexpr auto _MaaIOScreencapMethod_None = MaaIOScreencapMethod_None;
-export constexpr auto _MaaIOScreencapMethod_Stream = MaaIOScreencapMethod_Stream;
-export constexpr auto _MaaIOScreencapMethod_ScreenshotService = MaaIOScreencapMethod_ScreenshotService;
-export constexpr auto _MaaIOScreencapMethod_All = MaaIOScreencapMethod_All;
-export constexpr auto _MaaIOScreencapMethod_Default = MaaIOScreencapMethod_Default;
+export using ::MaaIOSScreencapMethod;
+export constexpr auto _MaaIOSScreencapMethod_None = MaaIOSScreencapMethod_None;
+export constexpr auto _MaaIOSScreencapMethod_Stream = MaaIOSScreencapMethod_Stream;
+export constexpr auto _MaaIOSScreencapMethod_ScreenshotService = MaaIOSScreencapMethod_ScreenshotService;
+export constexpr auto _MaaIOSScreencapMethod_All = MaaIOSScreencapMethod_All;
+export constexpr auto _MaaIOSScreencapMethod_Default = MaaIOSScreencapMethod_Default;
 
 export using ::MaaWin32ScreencapMethod;
 export constexpr auto _MaaWin32ScreencapMethod_None = MaaWin32ScreencapMethod_None;

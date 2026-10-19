@@ -15,7 +15,7 @@ public:
     IOSControlUnitMgr(
         std::string udid,
         std::string wifi_address,
-        MaaIOScreencapMethod screencap_methods,
+        MaaIOSScreencapMethod screencap_methods,
         MaaIOSConnectionMethod connection_method,
         std::optional<maa::ios::wifi::PairRecord> pairing);
     ~IOSControlUnitMgr() override;
@@ -60,7 +60,7 @@ private:
     std::string wifi_address_;
     MaaIOSConnectionMethod connection_method_;
     std::optional<maa::ios::wifi::PairRecord> pairing_;
-    MaaIOScreencapMethod screencap_methods_ = MaaIOScreencapMethod_Default;
+    MaaIOSScreencapMethod screencap_methods_ = MaaIOSScreencapMethod_Default;
     maa::ios_unit::IOSSession session_;
 
     int display_width_ = 0;

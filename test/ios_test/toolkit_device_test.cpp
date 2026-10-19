@@ -50,14 +50,14 @@ int main()
         const auto* device = MaaToolkitIOSDeviceListAt(list, 0);
         require(device && MaaToolkitIOSDeviceListSize(list) == 1, "list view");
         require(
-            MaaToolkitIOSDeviceGetScreencapMethods(device) == (MaaIOScreencapMethod_Stream | MaaIOScreencapMethod_ScreenshotService),
+            MaaToolkitIOSDeviceGetScreencapMethods(device) == (MaaIOSScreencapMethod_Stream | MaaIOSScreencapMethod_ScreenshotService),
             "report decoder capability supplied by Toolkit discovery");
-        require(MaaToolkitIOSDeviceGetScreencapMethods(nullptr) == MaaIOScreencapMethod_None, "null device has no capture methods");
+        require(MaaToolkitIOSDeviceGetScreencapMethods(nullptr) == MaaIOSScreencapMethod_None, "null device has no capture methods");
         const auto with_video = next_result;
         next_result = R"({"success":true,"devices":[{"udid":"screenshot-only","screencap_methods":2}]})";
         require(MaaToolkitIOSDeviceFindWithTimeout(0, list), "screenshot-only discovery");
         require(
-            MaaToolkitIOSDeviceGetScreencapMethods(MaaToolkitIOSDeviceListAt(list, 0)) == MaaIOScreencapMethod_ScreenshotService,
+            MaaToolkitIOSDeviceGetScreencapMethods(MaaToolkitIOSDeviceListAt(list, 0)) == MaaIOSScreencapMethod_ScreenshotService,
             "do not advertise video without a decoder");
         next_result = with_video;
         require(MaaToolkitIOSDeviceFindWithTimeout(5, list), "restore video-capable discovery");

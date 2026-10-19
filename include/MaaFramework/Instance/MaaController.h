@@ -61,7 +61,7 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaController* MaaIOSControllerCreate(
         const char* udid,
-        MaaIOScreencapMethod screencap_methods,
+        MaaIOSScreencapMethod screencap_methods,
         MaaIOSConnectionMethod connection_method,
         const char* wifi_address,
         const MaaIOSWiFiPairing* wifi_pairing);

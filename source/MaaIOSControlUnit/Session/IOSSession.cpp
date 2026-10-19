@@ -61,13 +61,13 @@ IOSSession::~IOSSession()
 bool IOSSession::create(
     const std::string& udid,
     const std::string& wifi_address,
-    MaaIOScreencapMethod methods,
+    MaaIOSScreencapMethod methods,
     MaaIOSConnectionMethod connection_method,
     const std::optional<maa::ios::wifi::PairRecord>& pairing,
     std::string& err)
 {
     close();
-    constexpr auto known = MaaIOScreencapMethod_Stream | MaaIOScreencapMethod_ScreenshotService;
+    constexpr auto known = MaaIOSScreencapMethod_Stream | MaaIOSScreencapMethod_ScreenshotService;
     if ((methods & known) == 0) {
         err = "no supported iOS screencap method selected";
         return false;
@@ -123,7 +123,7 @@ bool IOSSession::prepare_services(std::string& err)
         LogWarn << "iOS display subscription unavailable" << VAR(watcher_err);
     }
 
-    if ((screencap_methods_ & MaaIOScreencapMethod_Stream) != 0) {
+    if ((screencap_methods_ & MaaIOSScreencapMethod_Stream) != 0) {
         maa::ios::media::FramePump::Options options;
         options.silence_restart_ms = 0;
         options.frame_geometry = [this]() -> std::optional<maa::ios::FrameGeometry> {
@@ -134,7 +134,7 @@ bool IOSSession::prepare_services(std::string& err)
             return maa::ios::FrameGeometry { state.width, state.height, state.orientation };
         };
         pump_ = maa::ios::media::FramePump::start(*device_, options, err);
-        if (!pump_ && (screencap_methods_ & MaaIOScreencapMethod_ScreenshotService) == 0) {
+        if (!pump_ && (screencap_methods_ & MaaIOSScreencapMethod_ScreenshotService) == 0) {
             return false;
         }
         if (!pump_) {
@@ -221,7 +221,7 @@ bool IOSSession::screencap(cv::Mat& image, std::string& err)
         err = "not connected";
         return false;
     }
-    const bool allow_service = (screencap_methods_ & MaaIOScreencapMethod_ScreenshotService) != 0;
+    const bool allow_service = (screencap_methods_ & MaaIOSScreencapMethod_ScreenshotService) != 0;
     if (pump_ && !pump_->video_unusable()) {
         const auto floor = pump_->serial();
         const auto before = pump_->stats();

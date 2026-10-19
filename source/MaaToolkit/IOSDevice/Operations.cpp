@@ -89,7 +89,7 @@ Json discover(const Options& options, const Callbacks& callbacks)
         if (candidates.empty()) {
             continue;
         }
-        const auto methods = MaaIOScreencapMethod_ScreenshotService | (kHaveDecoder ? MaaIOScreencapMethod_Stream : 0ULL);
+        const auto methods = MaaIOSScreencapMethod_ScreenshotService | (kHaveDecoder ? MaaIOSScreencapMethod_Stream : 0ULL);
         devices.emplace_back(
             ::json::object { { "udid", device.udid },
                              { "name", device.name },
