@@ -35,12 +35,12 @@ struct PairVerifyResult
 /// 在已连接的控制面执行 handshake + pair-verify，成功后安装双向主密钥。
 /// 主机 Ed25519 签名输入按固定顺序拼接：本次主机 X25519 公钥、记录中的
 /// host_identifier、设备 X25519 公钥；标识必须与 setup 注册时一致。
-/// 发送主机签名前解密 PV-Msg02，并用 USB 配对时保存的设备长期公钥校验签名，
-/// 要求设备标识与记录中的原始字节一致。旧记录缺少设备身份时应重新通过 USB 配对，
+/// 发送主机签名前解密 PV-Msg02，并用配对时保存的设备长期公钥校验签名，
+/// 要求设备标识与记录一致。记录缺少设备身份时应重新配对，
 /// 不能在网络重连时接受回复中的新公钥。失败时不保证 channel 可直接用于下一次握手。
 /// announce_failure 控制设备返回 Error TLV 后是否尽力发送 pairVerifyFailed；
 /// 发送失败不覆盖原配对错误。产品默认开启，实验入口可关闭，以研究同连接后续流程。
-/// 已测 iOS 27 中该事件可能伴随连接关闭，具体入口限制见 docs §25.2/§25.6。
+/// 设备可能在收到失败通知后关闭连接。
 PairVerifyResult pair_verify(Rppairing& channel, const PairRecord& host, std::string& err, bool announce_failure = true);
 
 } // namespace maa::ios::wifi

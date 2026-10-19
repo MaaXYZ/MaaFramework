@@ -58,8 +58,7 @@ std::vector<uint8_t> field_varint(uint32_t field, uint64_t v)
 // 各层字段号和默认值来自已成功建立的媒体会话样本；未确认的含义在对应字段处说明。
 
 /// 分辨率条目的 f1..f4 为 {1, pair_index, 50115, 0}，pair_index 与 50115 的含义未确认。
-/// 已测设备将 pair_index 从 0 改到 6 时，编码尺寸仍为 1136x2464；该结果不足以将它
-/// 解释为分辨率档位。对照范围见 docs/coredevice.md §11，不能直接用于其他设备。
+/// 不将 pair_index 作为分辨率档位。
 std::vector<uint8_t> res_entry(uint64_t pair_index)
 {
     return msg({ field_varint(1, 1), field_varint(2, pair_index), field_varint(3, 50115), field_varint(4, 0) });
@@ -87,15 +86,13 @@ std::vector<uint8_t> session_blob(const Offer& offer)
 {
     std::vector<uint8_t> out;
     put_field_varint(out, 1, offer.session_id);
-    // 参考实现根据 `VCMediaNegotiationBlobVideoSettings` 的 `__objc_methname` 恢复了
-    // 以下字段名：f1 SSRC(=session_id)、f2 allowRTCPFB、f3 videoPayloadCollections
+    // `VCMediaNegotiationBlobVideoSettings` 的字段名：f1 SSRC(=session_id)、f2 allowRTCPFB、f3 videoPayloadCollections
     // （编码器能力条目）、f4 customVideoWidth、f5 customVideoHeight、f6 tilesPerFrame、
     // f7 ltrpEnabled、f8 pixelFormats、f9 hdrModesSupported、f10 fecEnabled、f11 rtxEnabled、
     // f12 blackFrameOnClearScreenEnabled、f13 foveationSupported、f14 enableInterleavedEncoding。
     // 按恢复的名称，f8=63 可能是像素格式位掩码（低六位为 1，具体格式未确认），
     // f10=1 对应 fecEnabled，f12=1 对应 blackFrameOnClearScreenEnabled。字段名提供
-    // 解释线索，不代表已经验证各项功能或所有取值；参考实现记录 f11=1 被拒为
-    // Invalid Parameter。样本未包含 f6/f9/f13/f14，因此当前省略这些字段。
+    // 解释线索，不代表各项功能或所有取值都受支持。省略 f6/f9/f11/f13/f14。
     //
     // 按字段号递增写入并保留默认结构，便于对照序列化样本。allowRTCPFB 与
     // ltrpEnabled 的对照范围见 MediaOffer.h；不将这种写入顺序或样本字节数视为
@@ -112,12 +109,7 @@ std::vector<uint8_t> session_blob(const Offer& offer)
 
 /// 码率参数表，记录保存在重复的 f9 中。部分 f2 值与码率相关，f1/f3 的完整含义
 /// 尚未确认，不能仅凭数值将整张表解释为编码器码率或 QP 的直接配置接口。
-///
-/// 参考实现曾将 f2、f3 分别或同时缩为 0.25；该次主屏 IDR 大小为
-/// 49652 / 49789 / 49852 字节，基线为 49652 字节，没有观察到明显缩小。
-/// 本项目的档位删除和替换对照见 MediaOffer.h 与 docs/coredevice.md §11：
-/// 已测修改未提高 TXMaxBitrate，部分删除操作降低码率或帧率，因此产品保留原表。
-/// 这些结果只限定于已测配置；超大 NAL 的处理由解码后端承担，不能依赖此表保证上限。
+/// 超大 NAL 的处理由解码后端承担，不能依赖此表保证长度上限。
 std::vector<uint8_t> rate_table(const Offer& offer)
 {
     std::vector<uint8_t> out;
@@ -198,8 +190,7 @@ std::vector<uint8_t> media_blob(const Offer& offer)
     put_field_varint(out, 8, 0);
     auto rates = rate_table(offer);
     out.insert(out.end(), rates.begin(), rates.end());
-    // f13 保留可用会话中的 64 位常量，参考实现也使用固定值。它曾被描述为时间戳，
-    // 但含义和设备校验方式尚未确认；当前配置成功不代表任意值或过期值都可被接受。
+    // f13 的含义和设备校验方式尚未确认，保留可用会话中的固定值。
     put_field_varint(out, 13, 17'137'042'128'614'416'384ULL);
     put_field_varint(out, 14, 2);
     put_field_varint(out, 16, 0);

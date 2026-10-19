@@ -65,7 +65,6 @@ PairVerifyResult pair_verify(Rppairing& channel, const PairRecord& host, std::st
         return result;
     }
     // M2 已含 Error 时不再发送 PV-Msg03，返回 NotPaired，并按选项尽力通知失败。
-    // 已测设备在此继续接收 Msg03 会关闭连接，兼容约束见 docs §25.6。
     if (tlv_get(second, TlvType::Error) != nullptr) {
         if (announce_failure) {
             std::string ignored;

@@ -25,8 +25,7 @@ public:
     virtual bool write_all(const void* data, size_t len, std::string& err) = 0;
     virtual bool read_exact(void* data, size_t len, std::string& err) = 0;
 
-    /// 在 ms 毫秒内会不会有字节可读。pair-setup 的 verify 探针要用它判"设备这次
-    /// 到底回不回话"（iOS 27 上签名有效但 identifier 未知时它**不回**，docs §25.6）。
+    /// 在 ms 毫秒内等待可读字节，供 pair-setup 的 verify 探针使用。
     virtual bool wait_readable(int ms, std::string& err)
     {
         (void)ms;
@@ -61,17 +60,14 @@ json::Value j_bool(bool v);
 json::Value j_arr(std::vector<json::Value> items);
 json::Value j_obj(std::vector<std::pair<std::string, json::Value>> kv);
 
-/// 主机报的"我自己会说这套协议的版本"。设备 TXT 里那个 `ver=26` 是**它**的版本，
-/// 不是我们该发的值——实测对 iOS 27 发 19 能用（docs §22.3）。pair-setup 与
-/// pair-verify 的 handshake 用的是同一条，所以放在这里共用。
+/// 主机申报的协议版本，供 pair-setup 与 pair-verify 共用；不能用设备 TXT 的 ver 替代。
 inline constexpr int64_t kWireProtocolVersion = 19;
 
 /// 信封的搬运工。同一套 RemotePairing 信封有两种载体：
 ///   字节流上的 `"RPPairing" + u16 长度 + JSON 文本`（Wi-Fi 手动配对面 49152、
 ///   lockdown 服务 `com.apple.dt.remotepairingdeviced.lockdown`）；
 ///   RemoteXPC 上的一个 XPC 字典（隧道内的 untrusted.tunnelservice）。
-/// iOS 27 只在后者上收 pair-setup，前者一律 M1 即 invalidated（docs §25.6/§25.8），
-/// 所以配对的逻辑必须与载体解耦——这层就是那个缝。
+/// 不同控制面可能接受不同配对流程，配对逻辑通过此接口复用载体。
 class EnvelopeCarrier
 {
 public:
@@ -80,14 +76,13 @@ public:
     virtual bool write_envelope(const json::Value& envelope, std::string& err) = 0;
     /// 收一条完整信封。
     virtual std::optional<json::Value> read_envelope(std::string& err) = 0;
-    /// ms 毫秒内有没有回信可读。pair-setup 的 verify 探针要用它判"设备这次到底
-    /// 回不回话"（iOS 27 上签名有效但 identifier 未知时它**不回**，docs §25.6）。
+    /// 在 ms 毫秒内等待回信，供 pair-setup 的 verify 探针使用。
     virtual bool wait_readable(int ms, std::string& err) = 0;
 };
 
 inline constexpr std::string_view kRpPairingMagic = "RPPairing";
 
-/// 字节流载体：帧格式实测来自 iOS 27 上的往返，不是文档。
+/// 字节流载体，使用 RPPairing 帧头和 JSON 信封。
 class FramedCarrier final : public EnvelopeCarrier
 {
 public:
@@ -140,8 +135,7 @@ public:
     /// 一次加密往返：`request` 形如 `{"request":{…}}`，返回解出来的 `response._1`。
     std::optional<json::Value> encrypted_roundtrip(const json::Value& request, std::string& err);
 
-    /// ms 毫秒内有没有回信可读。pair-setup 的 verify 探针靠它区分"设备不回话"与
-    /// "设备回了 Msg04"（iOS 27 上前者才是"没配对"的正常表现，docs §25.6）。
+    /// 在 ms 毫秒内等待回信，避免 verify 探针在无回复时阻塞。
     bool reply_pending(int ms, std::string& err) { return carrier_.wait_readable(ms, err); }
 
     [[nodiscard]] uint64_t sequence() const { return sequence_; }

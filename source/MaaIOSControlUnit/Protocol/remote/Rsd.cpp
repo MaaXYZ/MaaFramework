@@ -680,7 +680,7 @@ std::string Rsd::remote_control_version_hint(const std::string_view device_detai
     }
     return " (device rejected the system version: live media worked on tested iOS 27 "
            "devices and was rejected on tested iOS 18 devices. Screenshot fallback and "
-           "button input may still be available; see docs/coredevice.md section 23)";
+           "button input may still be available)";
 }
 
 const xpc::Value* Rsd::properties() const

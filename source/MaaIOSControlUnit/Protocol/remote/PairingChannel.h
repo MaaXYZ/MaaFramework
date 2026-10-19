@@ -16,10 +16,9 @@ inline constexpr std::string_view kPairingEnvelopeType = "RemotePairing.ControlC
 
 /// JSON → XPC，带 RemotePairing 的三条类型规则。
 ///
-/// 同一套信封在两种载体上长得不一样（docs §25.8）：字节流上是 JSON 文本，TLV 与密文
+/// 同一套信封在两种载体上使用不同类型：字节流上是 JSON 文本，TLV 与密文
 /// 这些二进制字段用 base64 字符串表示；RemoteXPC 上是一个 XPC 字典，同样的字段必须是
-/// **真的 XPC data**，序号必须是 XPC uint64。类型不对设备当场把连接 invalidate 掉，
-/// 现场看起来跟"它不喜欢我们的字段"一模一样，所以这三条规则值得单独立个函数。
+/// XPC data，序号必须是 XPC uint64；类型错误会使设备关闭连接。
 ///
 ///   sequenceNumber              整数    → uint64（设备按无符号读）
 ///   message.streamEncrypted._0  base64  → data
@@ -36,9 +35,8 @@ std::optional<json::Value> xpc_to_json(const xpc::Value& value, std::string& err
 /// RemoteXPC 载体上的配对通道：把信封裹进 `{mangledTypeName, value}` 发出去，收回来
 /// 再拆出 `value`。
 ///
-/// 这条载体上发送**不带** WANTING_REPLY（参考实现在这条通道上就是这么发的，设备的
-/// 回信照样来），而且发与收必须能分开：设备对一次发送可能回两条（先
-/// `awaitingUserConsent` 再给数据），也可能一条都不回（iOS 27 的 verify 探针）。
+/// 发送时不带 WANTING_REPLY。设备可能先回复 awaitingUserConsent，再回复数据，
+/// 也可能不回复，因此发与收分开处理。
 /// 多收下来的那条消息存在 `pending_` 里，下一次 `read_envelope` 直接取走，不会因为
 /// "探一眼有没有回信"就把回信吃掉。
 class XpcPairingCarrier final : public wifi::EnvelopeCarrier

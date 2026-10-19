@@ -25,11 +25,8 @@ class Device;
 ///
 /// 1. bundle ID 放在顶层 `applicationSpecifier.bundleIdentifier._0`。
 ///    `_0` 是 bundleIdentifier 枚举分支关联值的编码，不能将应用标识移入 options。
-///    历史测试中，错误的嵌套曾得到要求提供 URL 的回复；该回复不足以说明应改用 URL。
-/// 2. `platformSpecificOptions` 使用 Data 携带可解析的 plist。设备曾拒绝零长度
-///    Data；没有额外平台选项时仍发送空字典的 plist，而不是空字节或 XPC 字符串。
-///
-/// 字段验证与历史设备回复见 docs/coredevice.md 第 14 节。
+/// 2. `platformSpecificOptions` 使用 Data 携带可解析的 plist；没有额外平台选项时
+///    发送空字典的 plist，而不是空字节或 XPC 字符串。
 class App
 {
 public:
@@ -42,9 +39,7 @@ public:
     };
 
     /// 启动应用。terminate_existing=true 请求终止已有实例后重新启动；false 允许
-    /// 直接唤起已有实例。此 API 的默认值为 true；命令行 --start-app 默认显式传入
-    /// false，只有 + 前缀才请求终止重启，两者的默认行为不同。
-    /// 终止后立即启动曾出现错误 10004，当前实现对该错误最多尝试四次，间隔 500 ms。
+    /// 直接唤起已有实例。错误 10004 最多尝试四次，间隔 500 ms。
     static bool
         launch(Device& device, const std::string& bundle_id, std::string& err, bool terminate_existing = true, bool verbose = false);
 
@@ -55,10 +50,8 @@ public:
 
     /// 列出设备上已安装的应用，包括系统应用。
     ///
-    /// 使用 streamapplist 逐批接收列表。历史 listapps 测试出现过大回复超时，
-    /// 因此设备未声明 streamapplist 时直接失败，不回退到 listapps。
+    /// 使用 streamapplist 逐批接收，避免单条列表回复过大；设备未声明该功能时失败。
     /// out 逐批追加；传输重试前会清空，最终失败时可能保留已收到的部分结果。
-    /// 历史样本和流式回复结构见 docs/coredevice.md 第 14 节。
     static bool list(Device& device, std::vector<Entry>& out, std::string& err, bool verbose = false);
 
     /// 构造 launchapplication 的 input，供启动调用及离线字段、嵌套结构检查复用。

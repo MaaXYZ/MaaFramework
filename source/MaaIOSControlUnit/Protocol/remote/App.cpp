@@ -22,7 +22,7 @@ constexpr std::string_view kAction = "com.apple.coredevice.action.launch";
 constexpr int kSigKill = 9;
 
 /// 将空字典序列化为 plist 字节，作为 platformSpecificOptions 的 Data。
-/// 没有平台选项时仍需可解析的 plist；设备曾拒绝零长度 Data。
+/// 没有平台选项时发送空字典的 plist，不能使用零长度 Data。
 std::vector<uint8_t> empty_plist()
 {
     const std::string text = plist::write(plist::Value::Dict());
@@ -92,10 +92,8 @@ xpc::Value App::build_launch(const std::string& bundle_id, bool terminate_existi
 bool App::launch(Device& device, const std::string& bundle_id, std::string& err, bool terminate_existing, bool verbose)
 {
     const auto input = build_launch(bundle_id, terminate_existing);
-    // 历史测试中，终止后立即启动曾返回 10004（未取得新进程标识），稍后重试成功。
-    // 当前据此提供有限重试，但错误码本身不能证明旧进程尚未退出。
-    // feature() 将设备错误汇总到 err 字符串，因此这里用 10004 文本作为重试判据。
-    // 设备样本与完整失败回复见 docs/coredevice.md 第 14 节。
+    // 错误 10004 表示未取得新进程标识，允许有限重试。
+    // feature() 将设备错误汇总到 err 字符串，因此以错误码文本判断。
     constexpr int kAttempts = 4;
     for (int attempt = 1; attempt <= kAttempts; ++attempt) {
         xpc::Value output;

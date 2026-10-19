@@ -103,8 +103,6 @@ std::optional<std::map<uint8_t, Bytes>>
 
 /// 在发送 pairingData 前检查设备是否明确声明 allowsPairSetup=false。
 /// 字段缺失或非布尔值时当前实现继续尝试，不将其当作已确认允许配对。
-/// 已测 iOS 27 的字节流入口声明 false，而隧道内 RemoteXPC 入口声明 true
-/// （docs §25.8）；此兼容性结论仅覆盖已记录的设备与入口。
 bool plane_allows_pair_setup(const json::Value& handshake, std::string& err)
 {
     const json::Value* options = json::find(handshake, "deviceOptions");
@@ -184,7 +182,6 @@ PairSetupResult pair_setup(
 
     // 1) 根据选项先执行 verify 探测，或直接以 attemptPairVerify=false 握手。
     // 两条路径都在任何 pairingData 前检查 allowsPairSetup。
-    // 已测字节流入口存在连接关闭限制；入口与选项的验证范围见 docs §25.3/§25.8。
     if (options.probe_verify_first) {
         const std::optional<json::Value> device_handshake = do_handshake(channel, /*attempt_verify=*/true, err);
         if (!device_handshake) {
@@ -195,8 +192,7 @@ PairSetupResult pair_setup(
             return fail();
         }
         // verify 探测使用本次生成的主机密钥签名，不用占位签名字节。
-        // 已有设备日志中，正确生成的签名与未知 identifier 可进入未认证分支；
-        // 无效签名可能保留 verify 进行中状态，影响后续 upgrade（docs §25.6）。
+        // 无效签名可能使设备停留在 verify 状态，影响后续 upgrade。
         const std::optional<X25519KeyPair> vk = x25519_keypair(err);
         if (!vk) {
             return fail();
@@ -218,7 +214,7 @@ PairSetupResult pair_setup(
         };
         if (tlv_get(*vf, TlvType::Error) != nullptr) {
             // M2 已含 Error 时结束 verify 探测，不再发送 Msg03。
-            // 尽力通知 pairVerifyFailed 后继续 setup；该事件的设备行为见 docs §25.6。
+            // 尽力通知 pairVerifyFailed 后继续 setup。
             send_verify_failed();
         }
         else {
@@ -365,7 +361,7 @@ PairSetupResult pair_setup(
 
     // 5) M5 的主机信息使用 OPACK 字典。altIRK 是随机生成的主机身份解析密钥，
     // mac/btAddr 来自同一组随机六字节，不读取真实网卡地址。设备对这些字段的
-    // 必需性和具体使用方式尚未在本项目逐项验证。
+    // 必需性和具体使用方式尚未确认。
     const std::optional<Bytes> our_alt_irk = random_bytes(16, err);
     if (!our_alt_irk) {
         return fail();

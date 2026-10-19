@@ -44,7 +44,6 @@ enum class NokeyAction
 NokeyAction plan_nokey(int restarts, int max_restarts, bool already_unusable);
 
 /// 后台执行收包、组帧和视频恢复，默认解码供调用方取得最新画面。
-/// 截图服务实测一次约 344–613 ms，视频可提供更高刷新率。
 /// 本类不承担 HID 认证；设备输入控制可以独立于视频会话运行。
 class FramePump
 {
@@ -56,8 +55,7 @@ public:
         // an old cached image using a newer orientation snapshot.
         std::function<std::optional<FrameGeometry>()> frame_geometry;
         /// 丢包后等待干净关键帧的最长时间，0 禁用此项后备重建。
-        /// 优先发 PLI 请求 IDR，超时后重建会话。早期“设备不响应 PLI”的结论
-        /// 来自错误的 UDP 封包；修复后真机已确认 PLI 有效，见 docs/coredevice.md §13。
+        /// 优先发 PLI 请求 IDR，超时后重建会话。
         int stall_restart_ms = 2000;
         /// 数据报完全停止后的直接重建阈值，0 禁用静默检查。
         /// 序号缺口无法发现完全无包的情况。较短静默（约 1.2 s）先查询设备状态，
@@ -66,7 +64,7 @@ public:
         /// 起流时用的 offer（码率、能力串都在这里）。每次重起沿用同一份。
         Offer offer;
         /// 使用平台硬件后端，macOS 当前为 VideoToolbox。默认软件解码可处理
-        /// 超过当前硬件适配 2 字节 NAL 长度上限的帧；实测 NAL 曾达 256278 字节。
+        /// 超过当前硬件适配 2 字节 NAL 长度上限的帧。
         /// 软件解码消耗更多 CPU，硬件解码遇到过大帧时可能切换后端或丢帧恢复。
         bool use_hardware = false;
 
@@ -162,7 +160,7 @@ public:
 
     /// 通知媒体泵用户刚操作或请求新画面。流仍有新数据时不处理；静默超过可疑
     /// 阈值时查询设备，超过直接重建阈值时重建会话。当前会话申请 20 秒租期，
-    /// 通过周期 RR 保活，详情见 docs/coredevice.md §13。
+    /// 通过周期 RR 保活。
     void wake() { wake_requested_ = true; }
 
     /// 返回是否正在查询状态或重建会话，直到新会话输出首帧或校验通过首个 IDR。
@@ -273,7 +271,7 @@ struct DisplayCrop
 
 /// 设备查询不可用时的编码尺寸到可见区映射表，文件回放也使用此表。
 /// 主路径为 remote::fetch_display_info / displayinfoupdates。
-/// iPhone 13 mini 实测 1136x2464 编码对应 1125x2436 可见区，右侧 11 px、
+/// iPhone 13 mini 的 1136x2464 编码对应 1125x2436 可见区，右侧 11 px、
 /// 底部 28 px 为填充；触摸归一化必须使用可见区尺寸。
 /// 未知机型保留完整编码尺寸，避免猜测裁剪。SPS conformance window 解析尚未实现。
 [[nodiscard]] DisplayCrop display_crop(int coded_w, int coded_h);

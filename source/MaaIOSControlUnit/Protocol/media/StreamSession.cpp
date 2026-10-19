@@ -99,9 +99,8 @@ xpc::Value build_start_request(
     // "Expected to decode UUID but found a OS_xpc_string instead"（code 4864）。
     //
     // shared_client_session_uuid 非空时原样使用，否则生成本次请求的标识。
-    // DeviceHub 样本先起音频再起视频，两次请求共用 ClientSessionID；本项目已验证
-    // 独立 UUID 也能并行起流，产品采用独立标识，避免状态查询把另一条流视为本条存活。
-    // 共用 UUID 时，probe() 只能确认至少一条匹配会话存在，见 docs/coredevice.md §17.2。
+    // 各流使用独立 UUID，避免状态查询把另一条流视为本条存活。
+    // 共用 UUID 时，probe() 只能确认至少一条匹配会话存在。
     std::vector<uint8_t> session_id = shared_client_session_uuid;
     if (session_id.empty()) {
         const auto fresh = random_uuid_bytes();
@@ -219,7 +218,6 @@ std::unique_ptr<StreamSession> StreamSession::start(
     const auto info = device.rsd().service("com.apple.coredevice.displayservice");
     if (!info) {
         // 错误中同时列出实际 RSD 目录，便于区分 DDI 状态与设备/系统服务差异。
-        // iPad mini / iOS 18 的外部反馈曾缺少 displayservice，不能仅据缺失名称断定原因。
         err = maa::ios::remote::Rsd::missing_service_message("com.apple.coredevice.displayservice", device.rsd().services());
         return nullptr;
     }
@@ -238,7 +236,7 @@ std::unique_ptr<StreamSession> StreamSession::start(
     offer.session_id = static_cast<uint32_t>(std::random_device { }());
     offer.call_id = remote::random_uuid_text();
     // raw_offer 非空时原样发送，跳过本地 XML offer 构造。该入口用于完整样本重放和
-    // binary/XML 对照，不只比较已识别的字段；历史 DeviceHub 视频样本为 482 字节。
+    // binary/XML 对照，不只比较已识别的字段。
     // 样本内的 SSRC/CallID 保持原值，与上面新生成的 Offer 字段无关。后续 RTCP 应
     // 使用本次 answer 的 LocalSSRC/RemoteSSRC，不能采用未进入 raw_offer 的本地身份。
     // 样本重放本身不能排除反馈送达或其他请求参数的影响，验证范围见 Request::raw_offer。
@@ -322,8 +320,7 @@ bool StreamSession::send_rtp(const std::vector<uint8_t>& payload, uint16_t peer_
 
 bool StreamSession::stop(remote::Device& device, std::string& err, bool verbose) const
 {
-    // feature() 为本次调用新建连接。已测设备复用起流连接发送 stop 曾出现服务异常，
-    // 因此 stop 不使用原连接；stopAll 会停止设备上的所有媒体会话。
+    // 使用新连接，避免干扰起流连接；stopAll 会停止设备上的所有媒体会话。
     auto input = xpc::make_dict();
     xpc::dict_set(input, "stopAll", xpc::make_bool(true));
     xpc::Value output;

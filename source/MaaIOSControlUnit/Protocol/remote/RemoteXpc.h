@@ -22,9 +22,7 @@ namespace maa::ios::remote
 
 /// RSD 使用的客户端身份。
 ///
-/// 已有设备测试中，更换 UUID 可能触发 peer 重新 attach，使已公布的服务端口失效。
-/// 调用方应复用配对记录中的稳定身份；不要为每个服务连接临时生成 UUID。
-/// 这是当前适配的设备行为，不能据此推定所有 iOS 版本的连接策略。
+/// 复用配对记录中的稳定身份，避免更换 UUID 触发 peer 重新 attach、使已公布的服务端口失效。
 struct PeerIdentity
 {
     std::array<uint8_t, 16> uuid { };
@@ -52,7 +50,7 @@ public:
     /// 完成 HTTP/2 握手，建立流并等待对端 SETTINGS。
     ///
     /// 当前设备要求 stream 1 的 HEADERS 先于 TermChannel，stream 3 的 HEADERS
-    /// 先于 InitHandshake。顺序依据已验证的 RemoteXPC 握手，不能按普通 HTTP 请求重排。
+    /// 先于 InitHandshake，不能按普通 HTTP 请求重排。
     static std::optional<Channel> open(net::ByteStream& socket, std::string& err, bool verbose = false);
 
     /// 在 RSD 通道申报身份并读取 peer_info。服务连接不执行身份申报，

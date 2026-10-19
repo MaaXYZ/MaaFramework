@@ -58,7 +58,7 @@ xpc::Value build_handshake(const PeerIdentity& identity)
     xpc::dict_set(d, "UUID", xpc::make_uuid(std::span<const uint8_t>(identity.uuid.data(), identity.uuid.size())));
     auto props = xpc::make_dict();
     xpc::dict_set(props, "RemoteXPCVersionFlags", xpc::make_uint64(identity.version_flags));
-    // 请求展示敏感属性；已验证的服务发现路径依赖此标志。
+    // 请求展示服务发现所需的敏感属性。
     xpc::dict_set(props, "SensitivePropertiesVisible", xpc::make_bool(true));
     xpc::dict_set(d, "Properties", std::move(props));
     xpc::dict_set(d, "Services", xpc::make_dict());
@@ -179,7 +179,7 @@ bool Channel::start(std::string& err)
         err = "Failed to send HTTP/2 preface: " + err;
         return false;
     }
-    // 2. 声明流级接收窗口和并发流数量，沿用已验证的 RemoteXPC 设置。
+    // 2. 声明流级接收窗口和并发流数量。
     if (!send_bytes(
             http2::settings_frame({ { http2::kSettingMaxConcurrentStreams, 100 }, { http2::kSettingInitialWindowSize, kGrantWindow } }),
             err)) {

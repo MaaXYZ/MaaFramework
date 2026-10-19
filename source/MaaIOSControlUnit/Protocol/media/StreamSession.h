@@ -15,9 +15,7 @@ namespace maa::ios::media
 
 /// 建立一条设备视频或音频媒体会话，并拥有该会话的 UDP 接收套接字。
 ///
-/// UDP 端口先绑定，再调用 startmediastream。已测设备在起流回复后立即发送 RTP，
-/// 提前绑定可以接住视频参数集和首个关键帧，避免在后续恢复之前无法解码。
-/// 起流顺序见 [CoreDevice §11](../../docs/coredevice.md#11-屏幕视频流的线上细节实测iphone-144--ios-270--usb)。
+/// UDP 端口先绑定，再调用 startmediastream，避免丢失设备立即发送的参数集和首个关键帧。
 class StreamSession
 {
 public:
@@ -27,37 +25,28 @@ public:
         /// 视频目标的显示器 ID；音频请求不携带显示器 options。
         uint32_t display_id = 1;
         /// 发往设备的 timeout，单位为秒，是 RTCP 空闲超时，不是等待起流 RPC 回复的时限。
-        /// 已测设备在 answer 的 RTCPTimeoutInterval 中回显此值；有效 RR 可重置计时器。
-        /// UDP 发送修复后的续期对照见 [CoreDevice §13](../../docs/coredevice.md#udp-修复后的反馈对照)。
+        /// 对应 answer 的 RTCPTimeoutInterval；有效 RR 可重置计时器。
         ///
         /// 此低层接口默认使用 3600。产品 FramePump 和 AudioPump
         /// 显式使用 20 秒，并每秒发送 RR。默认值、保留起流连接或查询状态都不能替代 RTCP。
-        /// 视频和音频可以同时存在，各自有会话与续期状态，见
-        /// [CoreDevice §17.2](../../docs/coredevice.md#172-音频腿接进产品四个问题的真机读数toolsaudio_pump_probeasan-下跑)。
+        /// 视频和音频各自有独立的会话与续期状态。
         ///
-        /// nullopt 表示省略整个键，保留给协议探针使用。已测 CoreDevice feature 在省略时
-        /// 返回 code 4865 / Expected to find key timeout，正常起流应提供此参数。
+        /// nullopt 表示省略整个键，供协议探针使用；正常起流应提供此参数。
         std::optional<uint32_t> timeout_seconds = 3600;
         /// 可选的 sessionEventChannel，值为 16 字节 XPC UUID；未提供或为空时省略。
         /// 其事件通道的注册与对端语义尚未确认，不能把一个 UUID 本身当作保活机制。
-        /// 抓包中显示几何推送属于 deviceinfo 的 displayinfoupdates，不能据此推断此字段
-        /// 是否有对端；UUID 仅在抓包中出现一次也不能证明没有注册过程。
-        /// 相关观察见 [CoreDevice §13](../../docs/coredevice.md#13-停流关键帧请求与恢复实测) 和
-        /// [§16](../../docs/coredevice.md#16-displayinfoupdates设备自己报的显示几何实测iphone144--ios-270--usb)。
         std::optional<std::vector<uint8_t>> session_event_channel;
         /// 申报的客户端能力位掩码，默认 140 来自可用请求的观测。
         /// 设备回复的 supportedFeatures=972 是设备能力，不能直接当作客户端应申报的值。
-        /// 已测更改未获得稳定的编码提升；各位的含义尚未完整确认，见
-        /// [CoreDevice §11](../../docs/coredevice.md#11-屏幕视频流的线上细节实测iphone-144--ios-270--usb)。
+        /// 各位的含义尚未完整确认。
         uint64_t client_supported_features = 140;
         /// 选择音频请求：type 为 audio，省略显示器选择 options，本地 offer 默认 mode 10；
         /// offer.audio_dup 使用旧 mode 6，保留手机播放。
         /// 视频请求的 type 为 video，本地生成的 offer 使用 mode 5；raw_offer 自身的 mode 不改写。
         bool audio = false;
         /// avcMediaStreamOptionClientSessionID 的 16 字节 XPC UUID 数据；为空时为本次请求生成。
-        /// 参考客户端曾为音视频共用此值；已测独立 UUID 同样可以并行起流，产品分别使用。
+        /// 音视频分别使用独立 UUID，以便查询各自状态。
         /// 若共享 UUID，probe() 的 Alive 只能表示至少一条同 UUID 会话存在，无法区分音视频。
-        /// 验证范围见 [CoreDevice §17.2](../../docs/coredevice.md#172-音频腿接进产品四个问题的真机读数toolsaudio_pump_probeasan-下跑)。
         std::vector<uint8_t> client_session_uuid;
         /// 普通路径的 offer 参数。start() 会根据 audio 设置 is_audio，并为本次协商
         /// 生成 session_id 和 call_id，覆盖传入 Offer 中这三个字段。
@@ -67,7 +56,6 @@ public:
         /// 此字段只提供 offer 内容，type、options、接收端口等仍由 Request 的其他字段构造。
         /// 调用方负责选择与 audio 请求类型相符的样本。
         /// 发送 RTCP 应使用本次 answer 的 SSRC，不能使用普通构造路径另外生成的身份。
-        /// 当前格式验证见 [BPLIST_COMPATIBILITY](../../docs/BPLIST_COMPATIBILITY.md#真机对照)。
         std::vector<uint8_t> raw_offer;
     };
 
@@ -121,9 +109,8 @@ public:
     ///
     /// 默认通过 Device::feature 新建服务连接，调用结束后释放。on_conn 非空时借用
     /// 调用方持有的连接，不取得所有权，也不在调用结束后关闭它。
-    /// 已测设备在同一起流连接上接收第二次请求时会关闭连接并结束媒体会话，因此后续
-    /// status、stop 等请求使用新连接；保留连接本身不能替代周期 RTCP。
-    /// 连接复用的观测范围见 [CoreDevice §13](../../docs/coredevice.md#13-停流关键帧请求与恢复实测)。
+    /// 后续 status、stop 等请求使用新连接，避免设备结束原媒体会话；
+    /// 保留连接本身不能替代周期 RTCP。
     static std::unique_ptr<StreamSession> start(
         maa::ios::remote::Device& device,
         const Request& request,
@@ -141,15 +128,13 @@ public:
     /// 同上，并返回该数据报的源端口，供调用方识别对端和确定反馈目的地。
     bool next_packet(std::vector<uint8_t>& packet, uint16_t& peer_port, int timeout_ms, std::string& err);
 
-    /// 向隧道对端指定端口发送原始 UDP 载荷；send_rtp 是历史命名，当前用于 RTCP 反馈。
+    /// 向隧道对端指定端口发送原始 UDP 载荷，用于 RTCP 反馈。
     /// 不添加 RTP 头；调用方负责完整的 RTCP 编码、SSRC 和目的端口。
     bool send_rtp(const std::vector<uint8_t>& payload, uint16_t peer_port, std::string& err);
 
     /// 通过新服务连接发送 stopmediastream，当前入参固定为 stopAll: XPC Bool true。
     /// 该操作停止设备上所有媒体会话，包括音频和视频，不只停止本对象对应的会话。
-    /// 已测设备要求 stopAll 为 Bool；回复 stoppedStreams 中的编号对应 offer 的
-    /// u32 session_id，而非 ClientSessionID UUID。复用起流连接发送 stop 曾导致设备服务异常。
-    /// 参数形状与作用范围见 [CoreDevice §13](../../docs/coredevice.md#13-停流关键帧请求与恢复实测)。
+    /// 回复 stoppedStreams 中的编号对应 offer 的 u32 session_id，而非 ClientSessionID UUID。
     bool stop(maa::ios::remote::Device& device, std::string& err, bool verbose = false) const;
 
     [[nodiscard]] uint16_t receiver_port() const;
@@ -207,7 +192,6 @@ private:
 /// XPC UUID 对象，不能用 UUID 文本代替。offer_bytes 原样放入 XPC Data，不转换 plist 格式。
 /// audio 决定请求类型及是否省略显示器 options；空共享 UUID 会生成本次 ClientSessionID，
 /// 空事件通道 UUID 和 nullopt timeout 分别省略对应键。省略 timeout 在已测设备上被拒。
-/// 类型约束和请求样本见 [CoreDevice §13、§14](../../docs/coredevice.md#14-让设备自己交代入参形状toolsfeature_schema_probe)。
 [[nodiscard]] maa::ios::xpc::Value build_start_request(
     const std::string& receiver_ip,
     uint16_t receiver_port,

@@ -15,8 +15,7 @@ namespace maa::ios::transport
 
 /// lockdown 客户端：连接、建立配对 session（含双向 TLS）、起服务端口。
 ///
-/// 实测确认 iOS 27 上不经 session 直接 StartService 会得到
-/// Error=SessionInactive，所以 StartSession + TLS 这一段无法省。
+/// StartService 前先执行 StartSession 和 TLS 握手，避免 SessionInactive。
 ///
 /// 帧格式是 [len:u32 大端][XML plist]——注意字节序和 usbmuxd 帧（小端）相反。
 class Lockdown
@@ -51,8 +50,7 @@ public:
 
     /// 起服务并返回可 Connect 的端口。
     ///
-    /// 部分服务（如 CoreDeviceProxy）实测带 EnableServiceSSL=true，意味着
-    /// 后续那条连接也要用同一套证书套 TLS——所以这里一并把它标出来。
+    /// EnableServiceSSL=true 时，后续服务连接也需使用配对证书建立 TLS。
     struct ServiceEndpoint
     {
         uint16_t port = 0;

@@ -23,14 +23,13 @@ struct TunnelParams
 
 /// CoreDeviceProxy 数据包隧道。
 ///
-/// 帧格式（实测自参考实现）：
+/// 帧格式：
 ///   控制帧 = "CDTunnel"(8B magic) + u16 BE 长度 + JSON body
 ///   握手后线上是**裸 IPv6 包**：读时先取 40 字节 IPv6 头，用头内
 ///   bytes[4:5] 的 u16 BE payload 长度再取 body；写时不带任何帧头。
 ///
 /// 一个必须遵守的约束：每个 IPv6 包要单独一次 write()，**不能合并写**。
-/// CoreDeviceProxy 的转发路径对读边界敏感，合并突发会破坏包边界——
-/// 实测 iOS 26.5/USB 上上传会塌到 ~1 MB/s 且隧道连接最终直接死掉。
+/// CoreDeviceProxy 的转发路径对读边界敏感，合并写入可能破坏包边界。
 class PacketTunnel : public PacketIo
 {
 public:
@@ -42,8 +41,7 @@ public:
 
     /// proxy 来自 lockdown StartService(CoreDeviceProxy)。
     ///
-    /// 实测该服务带 EnableServiceSSL=true，即连上之后必须先按同一套配对证书
-    /// 做 TLS 握手，再发 CDTunnel 控制帧；直接发明文会被对端立刻关闭连接。
+    /// use_tls=true 时，先用配对证书建立 TLS，再发送 CDTunnel 控制帧。
     static std::optional<PacketTunnel>
         establish(uint32_t device_id, uint16_t proxy_port, const PemIdentity& identity, bool use_tls, std::string& err);
 

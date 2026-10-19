@@ -58,7 +58,7 @@ EVP_PKEY* read_key_pem(const std::vector<uint8_t>& pem, std::string& err)
     return key;
 }
 
-/// 已验证的 lockdown 会话中，设备返回空 subject/issuer 的自签证书。
+/// lockdown 对端可返回空 subject/issuer 的自签证书。
 /// 当前兼容策略接受对端证书，以本机 usbmux 配对记录中的主机证书向设备认证。
 /// 本回调跳过链校验，不提供独立的设备身份认证；安全边界包括本机配对服务。
 int verify_accept_peer(int preverify_ok, X509_STORE_CTX* ctx)
@@ -353,7 +353,7 @@ bool TlsChannel::handshake_psk(Socket& sock, const std::vector<uint8_t>& psk, st
     if (!ctx) {
         return err = openssl_error("SSL_CTX_new failed"), false;
     }
-    // 使用已验证的 TLS 1.2 PSK 路径，未接入 TLS 1.3 external PSK。
+    // 使用 TLS 1.2 PSK，不使用 TLS 1.3 external PSK。
     if (SSL_CTX_set_min_proto_version(ctx.get(), TLS1_2_VERSION) != 1 || SSL_CTX_set_max_proto_version(ctx.get(), TLS1_2_VERSION) != 1) {
         return err = openssl_error("Failed to configure TLS protocol version"), false;
     }

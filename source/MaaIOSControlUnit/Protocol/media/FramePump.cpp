@@ -20,15 +20,15 @@ namespace maa::ios::media
 namespace
 {
 
-/// 设备 SR 的典型周期为一秒，画面静止时也曾观察到持续发送。
-/// 作为静默阈值的基准，但缺少 SR 本身不证明会话已经终止。
+/// 以一秒 SR 周期作为静默阈值基准，静止画面也可能持续收到 SR。
+/// 缺少 SR 本身不证明会话已经终止。
 constexpr uint64_t kSrPeriodMs = 1000;
 /// 超过一个 SR 周期加余量后查询设备状态，区分会话结束与 UDP 丢失。
 constexpr uint64_t kQuietSuspiciousMs = kSrPeriodMs + 200;
 /// 超过两个 SR 周期加余量后直接重建，减少继续查询造成的恢复延迟。
 constexpr uint64_t kQuietCertainMs = 2 * kSrPeriodMs + 500;
 /// 连续三次因帧过大重建后降级，避免对后端持续不支持的画面频繁建立会话。
-/// 实测复杂画面的 IDR 可达 256278 字节，重建并不保证帧尺寸变小。
+/// 重建并不保证复杂画面的 NAL 变小。
 constexpr int kMaxOversizedRestarts = 3;
 /// 降级期间每分钟重试，允许画面复杂度降低后恢复；成功解码后回到正常策略。
 constexpr uint64_t kOversizedRetryMs = 60000;
@@ -39,14 +39,11 @@ constexpr uint64_t kNokeyBlindMs = 5000;
 constexpr int kMaxNokeyRestarts = 3;
 /// startmediastream 请求的 timeout 决定 answer 的 RTCPTimeoutInterval。
 /// 设备从上次收到有效 RTCP 开始计时；周期 RR 可延长会话，不是启动后的硬到期。
-/// 采用 20 秒，兼顾异常退出后设备会话占用的释放时间。修复 UDP 封包后，
-/// 真机在每秒 RR 下运行超过 40 秒；无反馈约 20 秒结束。实验表见
-/// docs/coredevice.md §13，较大的 timeout 仅延长无反馈时的观察窗口。
+/// 采用 20 秒，限制异常退出后设备会话占用的释放时间。
 constexpr uint32_t kSessionLeaseSeconds = 20;
-/// 每秒发送 RR，沿用已验证的视频反馈频率，较 20 秒租期留有余量。
+/// 每秒发送 RR，较 20 秒租期留有余量。
 constexpr uint64_t kRtcpPeriodMs = 1000;
-/// 等待关键帧期间每秒重发 PLI，限制请求频率。真机曾在 20–35 ms 内
-/// 响应 IDR；未恢复时由 stall_restart_ms 的后备会话重建处理。
+/// 等待关键帧期间每秒重发 PLI；未恢复时由 stall_restart_ms 触发会话重建。
 constexpr uint64_t kPliPeriodMs = 1000;
 /// 静默判断使用最后一个数据报而非最后一个视频包，画面不变时 SR 仍可能
 /// 到达。可疑区间查询设备，避免仅凭旧视频帧误判连接。
@@ -246,9 +243,6 @@ void FramePump::loop()
     uint64_t video_seen = 0;
 
     /// 丢包后优先用 12 字节 PLI 请求 IDR，再等待完整关键帧解码；重建作为后备。
-    /// 真机 PLI 响应曾为 20–35 ms，重建会话 RPC 约 37–90 ms，另需等待首帧。
-    /// 产品继续使用已验证的 RR 保活和 PLI 恢复。早期错误构造的 FIR
-    /// 不能证明标准 FIR 不可用；标准 FIR 对照及验证范围见 docs/coredevice.md §30.3。
     auto request_keyframe = [&] {
         // 在所有提前返回之前记录本轮等待起点，包括探针禁止 PLI 的情况。
         // 后备超时从首次请求计算，不能使用每秒重发都会更新的 last_pli_ms_。
@@ -324,8 +318,7 @@ void FramePump::loop()
                 std::lock_guard<std::mutex> lock(mutex_);
                 ++stats_.aus;
             }
-            // NAL 超过平台后端的长度上限时尝试软件解码。实测 IDR 可达
-            // 49652–70101 字节，转场中的非关键帧切片也曾达到 256278 字节。
+            // NAL 超过平台后端的长度上限时尝试软件解码。
             const size_t biggest = largest_nal(au);
             if (biggest > decoder->max_nal_size()) {
                 // 仅在关键帧切换后端，新解码器尚无旧参考帧。超大非关键帧只记录
@@ -618,8 +611,8 @@ void FramePump::loop()
         }
         // 每秒发送 RR，延长设备 RTCPTimeoutInterval 定义的空闲租期。
         // 调度置于每轮循环，不能依赖读包超时，否则连续视频包会阻止发送。
-        // 沿用真机验证的 32 字节裸 RR：发送者为 answer.RemoteSSRC，
-        // 报告块指向设备 LocalSSRC，发至 sender.port（已验证与 SourcePort 一致）。
+        // 32 字节裸 RR：发送者为 answer.RemoteSSRC，报告块指向
+        // 设备 LocalSSRC，发至 sender.port。
         if (!options_.debug_suppress_rr && media_source && now_ms() >= next_rtcp_ms_) {
             next_rtcp_ms_ += kRtcpPeriodMs;
             const auto rr = maa::ios::rt::build_rr(
@@ -705,7 +698,7 @@ void FramePump::loop()
 
         // 启动后无关键帧输出时按 plan_nokey 执行有限快速重试，再转定时重试。
         // 此计时每轮检查，不能只放在 next_packet 超时分支：连续收包但解码
-        // 无输出时仍需要恢复。实测回归过程见 docs/coredevice.md §20。
+        // 无输出时仍需要恢复。
         if (!ever_keyframe_ && now_ms() - session_start_ms_ > kNokeyBlindMs) {
             switch (plan_nokey(nokey_restarts_, kMaxNokeyRestarts, video_unusable_)) {
             case NokeyAction::kRetry:
@@ -768,7 +761,7 @@ void FramePump::loop()
         }
         else {
             // 合法的短 RR 等控制包不占用 RTP 序号，也不能让待提交 AU 失效。
-            // 保留上述设备心跳分类；这里仅将其他已验证 RTCP 隔离出视频拆包路径。
+            // 保留上述设备心跳分类，将其他合法 RTCP 隔离出视频拆包路径。
             if (valid_rtcp) {
                 continue;
             }

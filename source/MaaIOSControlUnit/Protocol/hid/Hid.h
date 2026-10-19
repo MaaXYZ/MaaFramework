@@ -18,10 +18,7 @@ namespace maa::ios::hid
 /// 触摸坐标使用归一化的 0..65535，报告构造无需知道屏幕像素尺寸；坐标轴与
 /// 屏幕方向的对应关系仍需由调用方处理。
 ///
-/// 已有设备验证表明：媒体会话运行、结束以及从未启动时，触摸报告都能生效。
-/// 因此本模块不以运行中的媒体会话为输入前提，也不为媒体状态增加等待。
-/// 该结论限于已有设备和 DDI 配置；认证状态的完整机制尚未确定。
-/// 验证记录见 docs/coredevice.md 第 12 节。
+/// 输入控制独立于媒体会话，不为媒体状态增加等待。
 ///
 /// `hid.indigo` 的 digitizer、keyboard 和 scroll 路径使用 Apple Mercury 事件包装，
 /// 当前尚未适配，已有请求未能完成注入。本模块的触摸与键盘使用 universalhidservice；
@@ -142,7 +139,7 @@ public:
     /// 按点序发送触摸报告：除末点外均为 CONTACT，末点为 RELEASE。
     /// 空列表返回错误；只有一个点时仅发送 RELEASE，不构成点击或拖动。
     /// step_ms > 0 时在相邻报告间等待，配合时间戳表达移动速度；具体间隔的
-    /// 适用范围取决于设备手势处理，已有测试记录见 docs/coredevice.md 第 12 节。
+    /// 适用范围取决于设备手势处理。
     bool stroke(const std::vector<std::pair<double, double>>& points, int step_ms, std::string& err);
 
     /// 向指定键盘面发送 usages 完整集合，等待 hold_ms 后发送空集合松键。
