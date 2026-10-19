@@ -42,16 +42,6 @@
             ] // 💡 v2.3.0 控制器级选项。该选项会参与到所有使用该控制器的任务的 pipeline override 中
         },
         {
-            "name": "iPhone",
-            "label": "$iPhone端",
-            "description": "通过 Xcode CoreDevice 通道连接真机 iPhone（仅 macOS，USB 即可）",
-            "type": "IOS",
-            "ios": {
-                "udid": "", // 留空表示"只连了一台就用它"
-                "screencap": "Stream|ScreenshotService" // 截图方式，可叠加；详见 2.4-控制方式说明.md 的 iOS Screencap
-            }
-        },
-        {
             "name": "Windows",
             "label": "$电脑端", // 显示名称，支持国际化。所有具有name字段的对象都应添加label字段
             "description": "通过 Win32 API 连接 Windows 应用程序",

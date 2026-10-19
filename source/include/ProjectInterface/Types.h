@@ -23,8 +23,7 @@ struct InterfaceData
         struct IOSConfig
         {
             std::string udid;
-            /// 设备的局域网地址；留空走 USB。走无线时 udid 只用来挑配对记录，
-            /// 本机恰好只有一条记录时也可以留空。
+            /// 设备的局域网地址；留空按默认连接策略优先尝试 USB，也可设为 "auto" 自动发现无线设备。
             std::string wifi;
             // 取图方式，见 MaaIOSScreencapMethod：留空 = 两条都给（快路径优先，解不了自动降级）。
             // 可以叠：用 '|' 或 ',' 分隔，例如 "Stream|ScreenshotService"。

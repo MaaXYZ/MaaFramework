@@ -345,7 +345,7 @@ void Interactor::print_config() const
     case InterfaceData::Controller::Type::IOS: {
         const auto& ios = config_.configuration().ios;
         std::cout << MAA_NS::utf8_to_crt(
-            std::format("\t\tUDID: {}\n\t\tScreencap: {}\n", ios.udid.empty() ? "(any single connected device)" : ios.udid, ios.screencap));
+            std::format("\t\tUDID: {}\n\t\tScreencap: {}\n", ios.udid.empty() ? "(not configured)" : ios.udid, ios.screencap));
         if (!kIOSSupported) {
             std::cout << "\t\t(iOS is disabled in this build)\n";
         }

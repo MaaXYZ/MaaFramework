@@ -14,17 +14,17 @@ runs:
           with:
               repository: microsoft/vcpkg
               ref: e456309491fd875487bf02b8a0dca76c1b1b00cc
-              path: .ios-vcpkg
+              path: build-ios-vcpkg
               persist-credentials: false
         - name: Bootstrap vcpkg
           if: runner.os != 'Windows'
           shell: bash
-          run: ./.ios-vcpkg/bootstrap-vcpkg.sh -disableMetrics
+          run: ./build-ios-vcpkg/bootstrap-vcpkg.sh -disableMetrics
         - name: Bootstrap vcpkg on Windows
           if: runner.os == 'Windows'
           shell: pwsh
           run: |
-              & ./.ios-vcpkg/bootstrap-vcpkg.bat -disableMetrics
+              & ./build-ios-vcpkg/bootstrap-vcpkg.bat -disableMetrics
               if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         - name: Build protocol dependencies
           shell: bash
@@ -33,6 +33,6 @@ runs:
               MAA_IOS_ARCHITECTURE: ${{ inputs.architecture }}
               VCPKG_MAX_CONCURRENCY: '3'
           run: |
-              python3 tools/ios/ci/dependencies.py --vcpkg "$PWD/.ios-vcpkg" \
+              python3 tools/ios/ci/dependencies.py --vcpkg "$PWD/build-ios-vcpkg" \
                 --work "$RUNNER_TEMP/maa-ios-dependencies" \
                 --platform "$MAA_IOS_PLATFORM" --architecture "$MAA_IOS_ARCHITECTURE"
