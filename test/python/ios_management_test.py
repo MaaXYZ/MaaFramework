@@ -190,6 +190,7 @@ class IOSControllerCredentialTest(unittest.TestCase):
         seen = []
 
         def create(udid, methods, connection, address, pointer):
+            self.assertEqual(methods.value, (1 << 64) - 1)
             native = ctypes.cast(pointer, ctypes.POINTER(MaaIOSWiFiPairing)).contents
             seen.append((udid, connection.value, address, IOSWiFiPairing._from_native(native)))
             return 1

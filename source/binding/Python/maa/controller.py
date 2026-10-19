@@ -913,7 +913,7 @@ class IOSController(Controller):
     def __init__(
         self,
         udid: str,
-        screencap_methods: int = MaaIOSScreencapMethodEnum.Stream | MaaIOSScreencapMethodEnum.ScreenshotService,
+        screencap_methods: int = MaaIOSScreencapMethodEnum.Default,
         connection_method: int = MaaIOSConnectionMethodEnum.Auto,
         wifi_address: Optional[str] = None,
         wifi_pairing: Optional[IOSWiFiPairing] = None,

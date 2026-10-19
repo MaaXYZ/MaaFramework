@@ -63,19 +63,13 @@ declare global {
         /**
          * iOS screencap method flags.
          *
-         * Use bitwise OR to set the methods you need.
-         * MaaFramework will use the fastest allowed one and fall back when it cannot.
+         * Use bitwise OR to select the permitted backends. Video frames are preferred
+         * when Stream is enabled; ScreenshotService provides a lossless RPC fallback.
+         * Stream alone has no screenshot fallback. ScreenshotService alone starts no
+         * video session or background video decoder. Stream carries lossy HEVC video.
          *
-         * Default: both methods
-         *
-         * | Method            | Speed     | Compatibility | Lossless | Notes                                              |
-         * |-------------------|-----------|---------------|----------|----------------------------------------------------|
-         * | Stream            | Very Fast | Medium        | Lossy    | Latest frame of the device media stream, 14-17ms   |
-         * | ScreenshotService | Slow      | High          | Lossless | One RPC per shot, 113-891ms, see note below        |
-         *
-         * ScreenshotService cost tracks how large the device's PNG comes out, not how busy the
-         * screen looks: 167ms on a list screen, 743ms on a marker-filled board, 518ms on a far
-         * denser fine-line mesh. Do not treat it as a constant multiple of Stream.
+         * Default: All methods. Reported availability describes supported backends,
+         * not a guarantee that every connected device/DDI exposes both services.
          */
         const IOSScreencapMethod: Record<
             | 'Stream'

@@ -448,29 +448,22 @@ class MaaIOSScreencapMethodEnum(IntEnum):
     """
     iOS screencap method flags.
 
-    Use bitwise OR to set the methods you need.
-    MaaFramework will use the fastest method that is actually working and fall
-    back to the slower ones when it is not.
+    Use bitwise OR to select the permitted backends. Video frames are preferred
+    when Stream is enabled; ScreenshotService provides a lossless RPC fallback.
+    Stream alone has no screenshot fallback. ScreenshotService alone starts no
+    video session or background video decoder. Stream carries lossy HEVC video.
 
-    Default: All methods
-
-    Note: Stream carries HEVC, so it is lossy. Pick ScreenshotService only when
-    pixel-exact matching matters more than per-frame latency.
-
-    | Method            | Speed     | Compatibility | Encoding | Notes                              |
-    |-------------------|-----------|---------------|----------|------------------------------------|
-    | Stream            | Very Fast | Medium        | Lossy    | 14-17ms/frame, decodes in background |
-    | ScreenshotService | Slow      | High          | Lossless | 113-891ms/frame, no media session    |
-
-    ScreenshotService cost tracks how large the device's PNG comes out, not how busy the
-    screen looks: 167ms on a list screen, 743ms on a marker-filled board, 518ms on a far
-    denser fine-line mesh. Do not treat it as a constant multiple of Stream.
+    Default: All methods. Reported availability describes supported backends,
+    not a guarantee that every connected device/DDI exposes both services.
     """
 
     Null = 0
 
     Stream = 1
     ScreenshotService = 1 << 1
+
+    All = ~Null
+    Default = All
 
 
 MaaWin32ScreencapMethod = ctypes.c_uint64
