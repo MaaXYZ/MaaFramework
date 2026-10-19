@@ -29,10 +29,9 @@ extern "C"
         void* userdata,
         MaaStringBuffer* result);
 
-    // Options: repair (USB only),
-    // timeout_ms (1..300000, default 120000), host_name (Wi-Fi advertisement).
+    // Options: timeout_ms (1..300000, default 120000), host_name (Wi-Fi advertisement).
     // Auto prefers physical USB, then Wi-Fi pairing. Wi-Fi requires a PIN event callback.
-    // existing_pairing is optional: USB verifies/reuses it; Wi-Fi rejects duplicate pairing.
+    // Creates a new RemotePairing credential for Wi-Fi; USB uses the existing system trust to pair.
     // result is a caller-created status buffer. pairing is a non-NULL output pointer;
     // success returns an owned structured credential, failure sets *pairing to NULL.
     // Release it with MaaToolkitIOSDeviceDestroyPairing. Its field pointers remain valid
@@ -40,7 +39,6 @@ extern "C"
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDevicePair(
         const char* udid,
         MaaIOSConnectionMethod connection_method,
-        const MaaIOSWiFiPairing* existing_pairing,
         const char* options_json,
         MaaToolkitIOSDeviceEventCallback event_callback,
         MaaToolkitIOSDeviceCancelCallback cancel_callback,

@@ -291,12 +291,6 @@ bool record_text_valid(std::string_view value)
 bool detail::admit_wifi_pairing(const wifi::PairRecord& record, const WifiPairingOptions& options, std::string& err)
 {
     err.clear();
-    for (const auto& existing : options.existing_records) {
-        if (existing.udid == record.udid) {
-            err = "A credential for this device was supplied; verify it instead of pairing again";
-            return false;
-        }
-    }
     // Only peer fields are available here: M5 has authenticated the Identifier
     // and public key, but the responder has not yet emitted its M6 identity.
     if (record.udid.empty() || !record_text_valid(record.udid) || !record.has_peer_identity() || record.peer_alt_irk.size() != 16

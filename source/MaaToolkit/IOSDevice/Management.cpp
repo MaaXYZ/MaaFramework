@@ -72,7 +72,7 @@ bool parse_options(Operation operation, const char* source, Options& options, st
         allowed = { "timeout_ms" };
     }
     else if (operation == Operation::Pair) {
-        allowed = { "repair", "timeout_ms", "host_name" };
+        allowed = { "timeout_ms", "host_name" };
     }
     else if (operation == Operation::CheckConnection) {
         allowed = { "port" };
@@ -133,7 +133,7 @@ bool parse_options(Operation operation, const char* source, Options& options, st
     };
     options.timeout_ms = operation == Operation::Pair ? 120000 : 3000;
     int port = options.port;
-    if (!string("cache_directory", options.cache_directory) || !string("host_name", options.host_name) || !boolean("repair", options.repair)
+    if (!string("cache_directory", options.cache_directory) || !string("host_name", options.host_name)
         || !boolean("replace", options.replace) || !integer("port", 1, 65535, port)
         || !integer("timeout_ms", operation == Operation::Pair ? 1 : 0, operation == Operation::Pair ? 300000 : 60000, options.timeout_ms)
         || !integer("download_timeout_seconds", 1, 3600, options.download_timeout_seconds)
@@ -141,10 +141,6 @@ bool parse_options(Operation operation, const char* source, Options& options, st
         return false;
     }
     options.port = static_cast<unsigned short>(port);
-    if (options.repair && options.connection_method != MaaIOSConnectionMethod_USB) {
-        error = "repair requires USB pairing";
-        return false;
-    }
     if (value.contains("port") && (options.wifi.empty() || options.wifi == "auto")) {
         error = "port requires an explicit Wi-Fi address";
         return false;
@@ -180,11 +176,8 @@ bool copy_inputs(
         error = "Invalid iOS pairing list";
         return false;
     }
-    // USB pairing may reuse an existing RemotePairing credential; USB device operations use system trust.
-    if (method != MaaIOSConnectionMethod_USB || operation == Operation::Pair) {
-        if (method != MaaIOSConnectionMethod_USB) {
-            options.wifi = address && *address ? address : "auto";
-        }
+    if (method != MaaIOSConnectionMethod_USB) {
+        options.wifi = address && *address ? address : "auto";
         std::set<std::string> identities;
         for (MaaSize i = 0; i < count; ++i) {
             if (!pairings[i]) {
@@ -203,9 +196,6 @@ bool copy_inputs(
                 if (!options.udid.empty() && options.udid != record->udid) {
                     error = "iOS pairing credential UDID does not match the requested device";
                     return false;
-                }
-                if (operation == Operation::Pair && options.udid.empty()) {
-                    options.udid = record->udid;
                 }
             }
             options.pairing_records.push_back(std::move(*record));
@@ -400,7 +390,6 @@ extern "C"
     MaaBool MaaToolkitIOSDevicePair(
         const char* udid,
         MaaIOSConnectionMethod connection_method,
-        const MaaIOSWiFiPairing* existing_pairing,
         const char* options,
         MaaToolkitIOSDeviceEventCallback event,
         MaaToolkitIOSDeviceCancelCallback cancel,
@@ -408,19 +397,7 @@ extern "C"
         MaaStringBuffer* result,
         MaaIOSWiFiPairing** credential)
     {
-        return manage(
-            udid,
-            connection_method,
-            nullptr,
-            &existing_pairing,
-            existing_pairing ? 1 : 0,
-            Operation::Pair,
-            options,
-            event,
-            cancel,
-            userdata,
-            result,
-            credential);
+        return manage(udid, connection_method, nullptr, nullptr, 0, Operation::Pair, options, event, cancel, userdata, result, credential);
     }
 
     MaaBool MaaToolkitIOSDeviceCheckConnection(

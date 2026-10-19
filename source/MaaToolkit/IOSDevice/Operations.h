@@ -21,7 +21,6 @@ struct Options
     std::string cache_directory;
     std::string host_name;
     std::vector<wifi::PairRecord> pairing_records;
-    bool repair = false;
     bool replace = false;
     MaaIOSConnectionMethod connection_method = MaaIOSConnectionMethod_Auto;
     int timeout_ms = 3000;

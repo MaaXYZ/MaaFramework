@@ -196,70 +196,15 @@ PairingResult detail::run_usb_pairing_workflow(
     }
 
     try {
-        std::optional<wifi::PairRecord> existing;
-        for (const auto& candidate : options.existing_records) {
-            if (candidate.udid != selected_udid) {
-                continue;
-            }
-            if (existing) {
-                result.error = "Multiple credentials match the USB device";
-                return result;
-            }
-            existing = candidate;
-        }
-        if (existing && existing->udid != result.udid) {
-            result.error = "Supplied pairing credential belongs to another device";
-            return result;
-        }
-        if (existing) {
-            std::string error;
-            if (existing->complete() && existing->has_peer_identity()) {
-                progress(options, "Verifying the existing USB pairing record");
-                if (cancelled(options, result.error)) {
-                    return result;
-                }
-                const auto verified = operations.verify(*existing, error);
-                if (cancelled(options, result.error)) {
-                    return result;
-                }
-                if (verified.outcome == wifi::VerifyOutcome::Paired) {
-                    result.ok = true;
-                    result.reused = true;
-                    result.record = *existing;
-                    return result;
-                }
-                if (verified.outcome != wifi::VerifyOutcome::NotPaired) {
-                    result.error = "Existing pairing record verification failed: " + (verified.error.empty() ? error : verified.error);
-                    return result;
-                }
-                if (!options.allow_repair) {
-                    result.error = "Device rejected the pairing record; enable USB repair explicitly";
-                    return result;
-                }
-            }
-            else if (existing && !options.allow_repair) {
-                result.error = "Existing pairing record is incomplete; enable USB repair explicitly";
-                return result;
-            }
-        }
-
         if (hostname.empty()) {
             result.error = "Cannot obtain the local hostname for USB pairing";
             return result;
         }
-        // Independent applications must not replace each other's pairing identity
-        // merely because they run on the same computer. Repairs keep the identity.
-        std::string host_identifier;
-        if (existing) {
-            host_identifier = existing->host_identifier;
+        const auto nonce = wifi::random_bytes(16, result.error);
+        if (!nonce) {
+            return result;
         }
-        else {
-            const auto nonce = wifi::random_bytes(16, result.error);
-            if (!nonce) {
-                return result;
-            }
-            host_identifier = wifi::host_identifier_uuid3(wifi::b64_encode(*nonce));
-        }
+        const auto host_identifier = wifi::host_identifier_uuid3(wifi::b64_encode(*nonce));
         if (host_identifier.empty()) {
             result.error = "Cannot generate a host identifier for USB pairing";
             return result;

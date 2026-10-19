@@ -900,22 +900,6 @@ bool Interactor::pair_ios(bool wireless)
 {
     auto& ios = config_.configuration().ios;
     using Pairing = std::unique_ptr<MaaIOSWiFiPairing, decltype(&MaaToolkitIOSDeviceDestroyPairing)>;
-    Pairing existing(nullptr, MaaToolkitIOSDeviceDestroyPairing);
-    for (const auto& record : ios.pairing_records) {
-        Pairing value(MaaToolkitIOSDeviceParsePairingRecord(record.c_str()), MaaToolkitIOSDeviceDestroyPairing);
-        if (!value) {
-            std::cout << "Invalid saved iOS pairing credential.\n";
-            return false;
-        }
-        if (!ios.udid.empty() && ios.udid != value->udid) {
-            continue;
-        }
-        if (existing) {
-            std::cout << "Multiple iOS pairing credentials match; specify a UDID or clear old credentials.\n";
-            return false;
-        }
-        existing = std::move(value);
-    }
     using Buffer = std::unique_ptr<MaaStringBuffer, decltype(&MaaStringBufferDestroy)>;
     Buffer result(MaaStringBufferCreate(), MaaStringBufferDestroy);
     Buffer credential(MaaStringBufferCreate(), MaaStringBufferDestroy);
@@ -943,7 +927,6 @@ bool Interactor::pair_ios(bool wireless)
     const bool ok = MaaToolkitIOSDevicePair(
         ios.udid.c_str(),
         wireless ? MaaIOSConnectionMethod_WiFi : MaaIOSConnectionMethod_USB,
-        existing.get(),
         nullptr,
         event,
         nullptr,
@@ -959,9 +942,11 @@ bool Interactor::pair_ios(bool wireless)
         return false;
     }
     const std::string exported = MaaStringBufferGet(credential.get());
-    if (!status->get("reused", false) && std::ranges::find(ios.pairing_records, exported) == ios.pairing_records.end()) {
-        ios.pairing_records.push_back(exported);
-    }
+    std::erase_if(ios.pairing_records, [pairing](const std::string& record) {
+        Pairing saved(MaaToolkitIOSDeviceParsePairingRecord(record.c_str()), MaaToolkitIOSDeviceDestroyPairing);
+        return saved && std::string_view(saved->udid) == pairing->udid;
+    });
+    ios.pairing_records.push_back(exported);
     ios.udid = status->get("udid", ios.udid);
     ios.wifi = wireless ? "auto" : "";
     config_.save(user_path_);

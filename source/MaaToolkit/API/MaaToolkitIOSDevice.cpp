@@ -52,7 +52,6 @@ MaaBool MaaToolkitIOSDeviceDiscover(
 MaaBool MaaToolkitIOSDevicePair(
     const char*,
     MaaIOSConnectionMethod,
-    const MaaIOSWiFiPairing*,
     const char*,
     MaaToolkitIOSDeviceEventCallback,
     MaaToolkitIOSDeviceCancelCallback,

@@ -13,7 +13,6 @@ struct WifiPairingOptions
     /// Name advertised to the phone's pairing UI. Empty keeps the platform hostname, which on
     /// Android is often the meaningless "localhost"; callers own their own product identity.
     std::string host_name;
-    std::vector<wifi::PairRecord> existing_records;
     /// Cooperative total deadline including discovery, PIN and verification.
     /// Socket waits check it every 50ms; callbacks must return promptly.
     /// Filesystem calls cannot be preempted; expiry is checked before publishing.
@@ -34,8 +33,8 @@ PairingResult pair_wifi_remote(const WifiPairingOptions& options = { });
 namespace detail
 {
 /// Read-only admission after authenticated M5, before successful M6 is sent.
-/// Checks the expected peer against explicitly supplied credentials. Host keys
-/// need not be populated yet. Call only after M5 authentication.
+/// Checks the expected device UDID and peer identity. Host keys need not be
+/// populated yet. Call only after M5 authentication.
 bool admit_wifi_pairing(const wifi::PairRecord& record, const WifiPairingOptions& options, std::string& err);
 
 /// Credential return gate used after authenticated M5/M6.

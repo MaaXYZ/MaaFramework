@@ -53,7 +53,7 @@ int main()
         || !result_is(result, false)) {
         return 3;
     }
-    if (MaaToolkitIOSDevicePair(nullptr, MaaIOSConnectionMethod_WiFi, nullptr, "{}", nullptr, nullptr, nullptr, &result, &credential)
+    if (MaaToolkitIOSDevicePair(nullptr, MaaIOSConnectionMethod_WiFi, "{}", nullptr, nullptr, nullptr, &result, &credential)
         || !result_is(result, false) || credential != nullptr) {
         return 4;
     }
@@ -205,6 +205,20 @@ int main()
     result.set("old value");
     if (MaaToolkitIOSDeviceFormatPairingRecord(nullptr, &result) || !result.empty()) {
         return 14;
+    }
+    cancel_calls = 0;
+    if (MaaToolkitIOSDevicePair(
+            "synthetic-device",
+            MaaIOSConnectionMethod_USB,
+            R"({"repair":true})",
+            nullptr,
+            cancelled,
+            nullptr,
+            &result,
+            &credential)
+        || credential || cancel_calls != 0 || !result_is(result, false)
+        || result.get().find("unknown iOS management option: repair") == std::string::npos) {
+        return 29;
     }
     std::puts("iOS management C boundary validation and cancellation passed");
     return 0;

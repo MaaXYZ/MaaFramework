@@ -254,7 +254,6 @@ class Toolkit:
         *,
         connection_method: MaaIOSConnectionMethodEnum = MaaIOSConnectionMethodEnum.Auto,
         udid: str = "",
-        wifi_pairing: Optional[IOSWiFiPairing] = None,
     ) -> tuple[dict[str, Any], Optional[IOSWiFiPairing]]:
         """Return (status, structured pairing). Failure returns None for pairing.
 
@@ -263,7 +262,7 @@ class Toolkit:
         pairing = ctypes.POINTER(MaaIOSWiFiPairing)()
         try:
             result = Toolkit._ios_manage("Pair", options, on_event, cancelled, pairing,
-                                         connection_method=connection_method, udid=udid, wifi_pairing=wifi_pairing)
+                                         connection_method=connection_method, udid=udid)
             return result, IOSWiFiPairing._from_native(pairing.contents) if pairing else None
         finally:
             if pairing:
@@ -406,12 +405,11 @@ class Toolkit:
             values, pointers = Toolkit._ios_pairing_list(wifi_pairings if connection_method != MaaIOSConnectionMethodEnum.USB else None)
             inputs = [connection_method, pointers, len(values)]
         else:
-            value = wifi_pairing._native() if wifi_pairing and (operation == "Pair" or connection_method != MaaIOSConnectionMethodEnum.USB) else None
-            pointer = ctypes.byref(value) if value is not None else None
             inputs = [udid.encode(), connection_method]
             if operation != "Pair":
-                inputs.append(wifi_address.encode() if wifi_address is not None else None)
-            inputs.append(pointer)
+                value = wifi_pairing._native() if wifi_pairing and connection_method != MaaIOSConnectionMethodEnum.USB else None
+                pointer = ctypes.byref(value) if value is not None else None
+                inputs += [wifi_address.encode() if wifi_address is not None else None, pointer]
         arguments = inputs + [encoded_options, event_callback, cancel_callback, None, result_buffer._handle]
         if operation == "Pair":
             arguments.append(ctypes.byref(credential_buffer))
@@ -574,7 +572,7 @@ class Toolkit:
             if name == "Discover":
                 inputs = [MaaIOSConnectionMethod, ctypes.POINTER(pairing_pointer), MaaSize]
             elif name == "Pair":
-                inputs = [ctypes.c_char_p, MaaIOSConnectionMethod, pairing_pointer]
+                inputs = [ctypes.c_char_p, MaaIOSConnectionMethod]
             else:
                 inputs = [ctypes.c_char_p, MaaIOSConnectionMethod, ctypes.c_char_p, pairing_pointer]
             function.argtypes = inputs + argument_types

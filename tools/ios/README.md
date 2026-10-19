@@ -8,7 +8,7 @@ MaaToolkit 与 MaaIOSControlUnit 共用内部协议静态目标。
 
 ## Credentials / 配对凭据
 
-`MaaToolkitIOSDevicePair(udid, method, existing_pairing, options, event, cancelled, userdata, result, &pairing)` receives
+`MaaToolkitIOSDevicePair(udid, method, options, event, cancelled, userdata, result, &pairing)` receives
 status JSON in a caller-created `MaaStringBuffer` and returns an owned `MaaIOSWiFiPairing*`.
 On failure `pairing` is NULL. Destroy successful outputs with `MaaToolkitIOSDeviceDestroyPairing`.
 Its identity-string pointers remain valid until destruction; controllers copy all data during creation.
@@ -66,28 +66,28 @@ Device operations accept structured credentials directly:
 | Operation / 操作 | Credentials / 凭据 |
 | --- | --- |
 | Discover / FindWithOptions | `const MaaIOSWiFiPairing* const*` + count; up to 256 unique UDIDs / 最多 256 条、UDID 不重复 |
-| Pair | One optional existing pairing: USB verification/reuse, Wi-Fi duplicate protection / 可选的一条已有凭据：USB 验证复用、无线防止重复配对 |
+| Pair | No input credential; returns a new pairing / 不接收凭据，返回新配对 |
 | CheckConnection / Prepare | One target `const MaaIOSWiFiPairing*` / 目标设备的单条凭据 |
 
 All operations take an explicit `MaaIOSConnectionMethod`. Connection checks and DDI preparation
 also require a nonempty `udid` and take `wifi_address`, just like the controller. Pairing uses a transport and UDID;
 Wi-Fi pairing advertises the host instead of connecting to a device address. Discovery works
 without credentials, but cannot mark unmatched advertisements as paired. JSON options contain
-only operation settings (timeouts, cache and repair).
+only operation settings (timeouts and cache).
 Inputs are copied before device I/O and borrowed only until the synchronous call returns.
 
 所有设备操作显式接收 `MaaIOSConnectionMethod`。连接检查和 DDI 准备与控制器一样，
 必须填写非空 `udid`；`wifi_address` 和无线凭据按连接方式提供。配对传入连接方式和 UDID；无线配对广播主机，
 不指定设备地址。无凭据也能发现广播，但不会标记为已配对。
-JSON 选项包含超时、缓存、修复等操作设置。
+JSON 选项包含超时、缓存等操作设置。
 输入在设备 I/O 前复制，调用返回后可释放。
 
 PiCli saves credential strings in `ios.pairing_records` in `config/maa_pi_config.json`.
-It parses them when loading credentials, then passes structures to discovery, pairing,
+It parses them when loading credentials, then passes structures to discovery, connection checks,
 DDI preparation and controller creation. Formatting is used only when saving credentials.
 
 PiCli 在 `config/maa_pi_config.json` 的 `ios.pairing_records` 中保存凭据字符串；
-加载时解析，发现、配对、DDI 准备和控制器创建都直接传结构体，仅保存时序列化。
+加载时解析，发现、连接检查、DDI 准备和控制器创建都直接传结构体，仅保存时序列化。
 
 Connection modes / 连接方式：
 
@@ -100,7 +100,7 @@ MaaStringBuffer* status = MaaStringBufferCreate();
 MaaIOSWiFiPairing* pairing = NULL;
 /* event_callback displays the PIN; see the callback contract below. */
 if (MaaToolkitIOSDevicePair(
-        NULL, MaaIOSConnectionMethod_WiFi, NULL, NULL,
+        NULL, MaaIOSConnectionMethod_WiFi, NULL,
         event_callback, NULL, NULL, status, &pairing)) {
     MaaController* controller = MaaIOSControllerCreate(
         pairing->udid, MaaIOScreencapMethod_Default, MaaIOSConnectionMethod_WiFi, NULL, pairing);
@@ -153,14 +153,16 @@ controller = IOSController(
 ```
 
 Pair with `connection_method=USB` or `WiFi`; Wi-Fi first pairing requires an event
-callback that displays the PIN. Auto prefers physical USB, then advertises for Wi-Fi pairing. Existing credentials may be supplied for USB verification;
-`repair=true` explicitly permits repairing a device-rejected credential. Pair timeout is
+callback that displays the PIN. Auto prefers physical USB, then advertises for Wi-Fi pairing.
+Both modes create a new RemotePairing credential for Wi-Fi. USB pairing uses the existing
+system trust to establish the pairing channel. Use CheckConnection to verify saved credentials. Pair timeout is
 1..300000 ms (default 120000). Discovery uses timeout_ms 0..60000 (default 3000).
 CheckConnection validates authentication/tunnel/RSD and closes its own session on return.
 It does not provide a shared tunnel or persistent server.
 
-配对显式选择 `USB` 或 `WiFi`；`Auto` 优先物理 USB，否则广播无线配对。无线配对需要显示 PIN。USB 可传入已有凭据进行验证；
-仅显式 `repair=true` 才允许修复被设备拒绝的凭据。连接检查完成后释放会话，控制器自行建连。
+配对显式选择 `USB` 或 `WiFi`；`Auto` 优先物理 USB，否则广播无线配对。无线配对需要显示 PIN。
+两种方式都创建供 Wi-Fi 使用的新 RemotePairing 凭据；USB 配对通过已有系统信任建立配对通道。
+已有凭据使用 CheckConnection 验证。连接检查完成后释放会话，控制器自行建连。
 
 ## Optional DDI cache / 可选 DDI 缓存
 

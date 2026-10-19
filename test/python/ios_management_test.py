@@ -34,7 +34,7 @@ class NativeFunction:
         if self.name == "MaaToolkitIOSDeviceDestroyPairing":
             self.api.pairings.pop(ctypes.addressof(args[0].contents))
             return
-        size = 3 if self.name.endswith(("Discover", "Pair")) else 4
+        size = 2 if self.name.endswith("Pair") else (3 if self.name.endswith("Discover") else 4)
         inputs = args[:size]
         options, on_event, cancelled, userdata, result = args[size:size + 5]
         credential = args[size + 5] if self.name.endswith("Pair") else None
@@ -125,8 +125,8 @@ class IOSManagementBindingTest(unittest.TestCase):
             udid, connection, address, pointer = self.api.inputs
             self.assertEqual((udid, connection, address), (b"device", MaaIOSConnectionMethodEnum.WiFi, b"10.0.0.1"))
             self.assertEqual(IOSWiFiPairing._from_native(ctypes.cast(pointer, ctypes.POINTER(MaaIOSWiFiPairing)).contents), pairing)
-        Toolkit.ios_pair(udid="device", wifi_pairing=pairing, connection_method=MaaIOSConnectionMethodEnum.USB)
-        self.assertEqual(self.api.inputs[:2], (b"device", MaaIOSConnectionMethodEnum.USB))
+        Toolkit.ios_pair(udid="device", connection_method=MaaIOSConnectionMethodEnum.USB)
+        self.assertEqual(self.api.inputs, (b"device", MaaIOSConnectionMethodEnum.USB))
 
     def test_event_false_cancels_before_returning_result(self):
         result, credential = Toolkit.ios_pair(on_event=lambda event: False)
@@ -174,7 +174,7 @@ class IOSManagementBindingTest(unittest.TestCase):
         for name in ("Discover", "Pair", "CheckConnection", "Prepare"):
             function = getattr(self.api, f"MaaToolkitIOSDevice{name}")
             self.assertIs(function.restype, MaaBool)
-            offset = 3 if name in ("Discover", "Pair") else 4
+            offset = 2 if name == "Pair" else (3 if name == "Discover" else 4)
             self.assertIs(function.argtypes[offset + 1], _IOSEventCallback)
             self.assertIs(function.argtypes[offset + 2], _IOSCancelCallback)
             self.assertIs(function.argtypes[offset + 4], MaaStringBufferHandle)

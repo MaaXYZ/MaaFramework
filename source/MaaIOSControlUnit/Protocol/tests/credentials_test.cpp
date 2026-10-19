@@ -27,7 +27,6 @@ int main()
         record.peer_public_key.assign(32, 4);
         remote::UsbPairingOptions options;
         options.udid = record.udid;
-        options.existing_records = { record };
         remote::detail::PairingWorkflowOperations operations;
         operations.verify = [](const auto&, std::string&) {
             wifi::PairVerifyResult result;
@@ -45,10 +44,12 @@ int main()
             return result;
         };
         auto paired = remote::detail::run_usb_pairing_workflow(record.udid, "test-host", options, operations);
-        require(paired.ok && paired.reused && paired.record && setups == 0, "reuse supplied credential after verification");
-        options.existing_records.clear();
+        require(paired.ok && paired.record && setups == 1, "new credential returned to caller");
+        const auto first_host = paired.record->host_identifier;
         paired = remote::detail::run_usb_pairing_workflow(record.udid, "test-host", options, operations);
-        require(paired.ok && !paired.reused && paired.record && setups == 1, "new credential returned to caller");
+        require(
+            paired.ok && paired.record && setups == 2 && paired.record->host_identifier != first_host,
+            "each pairing creates a new host identity");
         std::string error;
         const auto exported = wifi::format_record(*paired.record);
         auto imported = wifi::parse_record(exported, error);

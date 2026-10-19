@@ -114,7 +114,6 @@ Json pair(const Options& options, const Callbacks& callbacks, std::optional<wifi
     remote::PairingResult result;
     if (!options.wifi.empty()) {
         remote::WifiPairingOptions request;
-        request.existing_records = options.pairing_records;
         request.udid = options.udid;
         request.host_name = options.host_name;
         request.timeout_ms = options.timeout_ms;
@@ -135,10 +134,8 @@ Json pair(const Options& options, const Callbacks& callbacks, std::optional<wifi
     }
     else {
         remote::UsbPairingOptions request;
-        request.existing_records = options.pairing_records;
         request.udid = options.udid;
         request.timeout_ms = options.timeout_ms;
-        request.allow_repair = options.repair;
         request.should_cancel = callbacks.cancelled;
         request.progress = progress;
         result = remote::pair_usb_remote(request);
@@ -146,11 +143,7 @@ Json pair(const Options& options, const Callbacks& callbacks, std::optional<wifi
     if (result.ok && result.record) {
         credential = std::move(result.record);
     }
-    return { { "success", result.ok },
-             { "error", result.error },
-             { "cancelled", callbacks.stopped() },
-             { "udid", result.udid },
-             { "reused", result.reused } };
+    return { { "success", result.ok }, { "error", result.error }, { "cancelled", callbacks.stopped() }, { "udid", result.udid } };
 }
 
 Json check_connection(const Options& options, const Callbacks& callbacks)
