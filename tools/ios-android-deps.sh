@@ -9,9 +9,7 @@
 # Targets arm64-android only for now. Downloads pinned upstream tarballs
 # (sources are never vendored into git), verifies sha256, builds
 # OpenSSL, curl and a minimal HEVC/PNG FFmpeg build into the requested prefix, and prints the
-# CMake -D flags the caller must pass so this composes with
-#   scripts/build-sdk.py --android --android-deps <prefix>
-# on the consuming side.
+# CMake command to configure MaaFramework with those dependencies.
 #
 # Idempotent: a component whose libraries already exist in the prefix is
 # skipped. Re-running is cheap; delete the prefix (or a component's libs) to
@@ -21,8 +19,7 @@
 #   tools/ios-android-deps.sh [-j N] <output-prefix>
 #
 # Environment:
-#   ANDROID_NDK_ROOT / NDK_HOME   NDK location (first one wins). Default:
-#                                 /Users/YJBeetle/Library/Android/sdk/ndk/29.0.14206865
+#   ANDROID_NDK_ROOT / NDK_HOME   required NDK location (first one wins).
 #   ANDROID_API                   Bionic API level (default 24; required -
 #                                 getifaddrs landed in API 24 and the iOS
 #                                 controller enumerates network interfaces).
@@ -52,7 +49,6 @@ FFMPEG_VERSION="9.0.2"
 FFMPEG_URL="https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.xz"
 FFMPEG_SHA256="8c3850283eb25fa026482078a04051e0be17347b09ef81a0849bec15a96e002e"
 
-DEFAULT_NDK="/Users/YJBeetle/Library/Android/sdk/ndk/29.0.14206865"
 ANDROID_API="${ANDROID_API:-24}"
 TRIPLE="aarch64-linux-android"
 
@@ -95,7 +91,8 @@ mkdir -p "$WORK_DIR"
 # ---------------------------------------------------------------------------
 # NDK resolution
 # ---------------------------------------------------------------------------
-NDK="${ANDROID_NDK_ROOT:-${NDK_HOME:-$DEFAULT_NDK}}"
+NDK="${ANDROID_NDK_ROOT:-${NDK_HOME:-}}"
+[ -n "$NDK" ] || die "set ANDROID_NDK_ROOT or NDK_HOME to the Android NDK directory"
 [ -d "$NDK" ] || die "NDK not found at '$NDK' (set ANDROID_NDK_ROOT or NDK_HOME)"
 NDK=$(cd "$NDK" && pwd)
 
@@ -275,18 +272,22 @@ done
 log "done. arm64-android dependency prefix ready at: $PREFIX"
 cat <<EOF
 
-Pass these CMake flags when configuring MaaFramework for Android, e.g.:
+Run from the MaaFramework repository root (requires Android arm64 MaaDeps):
 
-  scripts/build-sdk.py --android --android-deps $PREFIX
-
-  -DOPENSSL_ROOT_DIR=$PREFIX
-  -DOPENSSL_INCLUDE_DIR=$PREFIX/include
-  -DOPENSSL_CRYPTO_LIBRARY=$PREFIX/lib/libcrypto.a
-  -DOPENSSL_SSL_LIBRARY=$PREFIX/lib/libssl.a
-  -DCURL_INCLUDE_DIR=$PREFIX/include
-  -DCURL_LIBRARY=$PREFIX/lib/libcurl.a
-  -DMAA_IOS_FFMPEG_INCLUDE_DIR=$PREFIX/include
-  -DMAA_IOS_AVCODEC_LIBRARY=$PREFIX/lib/libavcodec.so
-  -DMAA_IOS_AVUTIL_LIBRARY=$PREFIX/lib/libavutil.so
-  -DMAA_IOS_SWSCALE_LIBRARY=$PREFIX/lib/libswscale.so
+  cmake -S . -B build/android/arm64-v8a -G "Ninja Multi-Config" \\
+    -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \\
+    -DANDROID_ABI=arm64-v8a \\
+    -DANDROID_PLATFORM=android-$ANDROID_API \\
+    -DMAADEPS_TRIPLET=maa-arm64-android \\
+    -DWITH_IOS_CONTROLLER=ON \\
+    -DOPENSSL_ROOT_DIR="$PREFIX" \\
+    -DOPENSSL_INCLUDE_DIR="$PREFIX/include" \\
+    -DOPENSSL_CRYPTO_LIBRARY="$PREFIX/lib/libcrypto.a" \\
+    -DOPENSSL_SSL_LIBRARY="$PREFIX/lib/libssl.a" \\
+    -DCURL_INCLUDE_DIR="$PREFIX/include" \\
+    -DCURL_LIBRARY="$PREFIX/lib/libcurl.a" \\
+    -DMAA_IOS_FFMPEG_INCLUDE_DIR="$PREFIX/include" \\
+    -DMAA_IOS_AVCODEC_LIBRARY="$PREFIX/lib/libavcodec.so" \\
+    -DMAA_IOS_AVUTIL_LIBRARY="$PREFIX/lib/libavutil.so" \\
+    -DMAA_IOS_SWSCALE_LIBRARY="$PREFIX/lib/libswscale.so"
 EOF
