@@ -112,7 +112,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake -C "$env:MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON -DBUILD_IOS_CONTROLLER_TESTING=ON -DMAA_IOS_PROTOCOL_TESTS=ON --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON -DBUILD_PICLI=OFF -DWITH_REPLAY_CONTROLLER=ON -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+                  cmake -C "$env:MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON -DBUILD_IOS_TEST=ON --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON -DBUILD_PICLI=OFF -DWITH_REPLAY_CONTROLLER=ON -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Debug" -j 16
 
@@ -339,7 +339,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake -C "$MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON -DBUILD_IOS_CONTROLLER_TESTING=ON -DMAA_IOS_PROTOCOL_TESTS=ON --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
+                  cmake -C "$MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON -DBUILD_IOS_TEST=ON --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
@@ -506,7 +506,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake -C "$MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON -DBUILD_IOS_CONTROLLER_TESTING=ON -DMAA_IOS_PROTOCOL_TESTS=ON --preset 'NinjaMulti' \
+                  cmake -C "$MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON -DBUILD_IOS_TEST=ON --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DCMAKE_OSX_SYSROOT=macosx \

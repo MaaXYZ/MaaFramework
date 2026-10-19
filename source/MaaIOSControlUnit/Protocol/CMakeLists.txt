@@ -1,3 +1,6 @@
+option(MAA_IOS_USE_FFMPEG "Use FFmpeg for iOS video decoding when available" ON)
+option(MAA_IOS_FETCH_DEPENDENCIES "Fetch missing pinned iOS protocol dependencies" ON)
+
 if(MAA_IOS_DEPENDENCIES_ROOT)
     list(PREPEND CMAKE_PREFIX_PATH "${MAA_IOS_DEPENDENCIES_ROOT}")
     list(PREPEND CMAKE_FIND_ROOT_PATH "${MAA_IOS_DEPENDENCIES_ROOT}")

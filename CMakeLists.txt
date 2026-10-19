@@ -27,16 +27,12 @@ option(WITH_NCNN "build with ncnn inference backend (Android only)" ${ANDROID})
 
 option(BUILD_PICLI "build maa picli" ON)
 option(BUILD_SAMPLE "build a demo" OFF)
-option(BUILD_IOS_CONTROLLER_TESTING "Build offline iOS controller tests" OFF)
-option(MAA_IOS_PROTOCOL_TESTS "Build iOS protocol offline tests" OFF)
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 option(BUILD_NODE_TEST "build node test" OFF)
 option(BUILD_MACOS_TEST "build macOS test" OFF)
 option(BUILD_LINUX_TEST "build Linux test" OFF)
-
-option(MAA_IOS_USE_FFMPEG "Use FFmpeg for iOS video decoding when available" ON)
-option(MAA_IOS_FETCH_DEPENDENCIES "Fetch missing pinned iOS protocol dependencies" ON)
+option(BUILD_IOS_TEST "build iOS test" OFF)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)
 option(ENABLE_HASH_VERSION "enable hash version from git" OFF)
@@ -96,7 +92,7 @@ if(WITH_IOS_CONTROLLER)
     add_compile_definitions(MAA_WITH_IOS_CONTROLLER=1)
 endif()
 
-if(WITH_IOS_CONTROLLER AND (BUILD_IOS_CONTROLLER_TESTING OR MAA_IOS_PROTOCOL_TESTS))
+if(WITH_IOS_CONTROLLER AND BUILD_IOS_TEST)
     enable_testing()
 endif()
 
@@ -116,10 +112,6 @@ if(BUILD_PIPELINE_TESTING)
     endif()
 endif()
 
-if(WITH_IOS_CONTROLLER AND (BUILD_IOS_CONTROLLER_TESTING OR MAA_IOS_PROTOCOL_TESTS))
-    add_subdirectory(test/ios_test)
-endif()
-
 if(BUILD_DLOPEN_TESTING)
     add_subdirectory(test/dlopen)
 endif()
@@ -135,6 +127,10 @@ endif()
 if (BUILD_LINUX_TEST)
     add_subdirectory(test/linux_test)
 endif ()
+
+if(WITH_IOS_CONTROLLER AND BUILD_IOS_TEST)
+    add_subdirectory(test/ios_test)
+endif()
 
 maadeps_install(bin)
 
