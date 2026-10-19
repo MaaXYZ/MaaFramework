@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Collect the iOS framework runtime, exact source, dependency recipes and notices."""
+"""Collect the iOS framework runtime, optional source bundle, dependency recipes and notices."""
 
 import argparse
 import hashlib
@@ -7,6 +7,7 @@ import json
 import shutil
 import subprocess
 from pathlib import Path
+from typing import Optional
 
 
 def copy_tree(source: Path, destination: Path) -> None:
@@ -56,7 +57,7 @@ def relocate_runtime(output: Path, prefix: Path, libraries: list[Path], system: 
             subprocess.run(["codesign", "--force", "--sign", "-", str(binary)], check=True)
 
 
-def dependencies(arguments, output: Path, source_output: Path) -> dict:
+def dependencies(arguments, output: Path, source_output: Optional[Path]) -> dict:
     vcpkg = arguments.vcpkg.resolve()
     installed = vcpkg / "installed"
     prefix = installed / arguments.triplet
@@ -87,7 +88,6 @@ def dependencies(arguments, output: Path, source_output: Path) -> dict:
         runtime.append({"file": library.name, "package": owner})
     if not libraries:
         raise RuntimeError("No iOS runtime dependencies were packaged")
-    sources = source_output / "vcpkg"
     required = {"openssl", "ffmpeg", "pugixml", "zlib"}
     if system != "macos":
         required.add("curl")
@@ -99,19 +99,22 @@ def dependencies(arguments, output: Path, source_output: Path) -> dict:
         licenses = output / "bin/licenses/ios" / package
         licenses.mkdir(parents=True, exist_ok=True)
         shutil.copy2(license_file, licenses / "copyright")
-        materials = share / "source-materials"
-        if package in required and not (materials / "source.tar.gz").is_file():
-            raise RuntimeError(f"Missing corresponding sources: {package}")
-        if materials.is_dir():
-            copy_tree(materials, sources / "dependencies" / package)
+        if source_output is not None:
+            materials = share / "source-materials"
+            if package in required and not (materials / "source.tar.gz").is_file():
+                raise RuntimeError(f"Missing corresponding sources: {package}")
+            if materials.is_dir():
+                copy_tree(materials, source_output / "vcpkg/dependencies" / package)
     if not required.issubset(packages):
         raise RuntimeError(f"Missing installed dependencies: {required - packages}")
-    for directory in ["scripts", "triplets"]:
-        copy_tree(vcpkg / directory, sources / directory)
-    copy_tree(prefix / "include", sources / "installed-headers")
-    shutil.copy2(vcpkg / "LICENSE.txt", sources / "LICENSE.txt")
-    shutil.copy2(arguments.dependency_config, sources / "framework.cmake")
-    copy_tree(arguments.dependency_config.parent / "triplets", sources / "overlay-triplets")
+    if source_output is not None:
+        sources = source_output / "vcpkg"
+        for directory_name in ["scripts", "triplets"]:
+            copy_tree(vcpkg / directory_name, sources / directory_name)
+        copy_tree(prefix / "include", sources / "installed-headers")
+        shutil.copy2(vcpkg / "LICENSE.txt", sources / "LICENSE.txt")
+        shutil.copy2(arguments.dependency_config, sources / "framework.cmake")
+        copy_tree(arguments.dependency_config.parent / "triplets", sources / "overlay-triplets")
     relocate_runtime(output, prefix, libraries, system)
     for library in runtime:
         library["sha256"] = digest(output / "bin" / library["file"])
@@ -123,27 +126,7 @@ def dependencies(arguments, output: Path, source_output: Path) -> dict:
     }
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--repository", type=Path, required=True)
-    parser.add_argument("--build", type=Path, required=True)
-    parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--source-output", type=Path, required=True)
-    parser.add_argument("--platform", required=True)
-    parser.add_argument("--vcpkg", type=Path, required=True)
-    parser.add_argument("--triplet", required=True)
-    parser.add_argument("--configuration", choices=("Debug", "Release", "RelWithDebInfo"), required=True)
-    parser.add_argument("--dependency-config", type=Path, required=True)
-    arguments = parser.parse_args()
-    repository = arguments.repository.resolve()
-    output = arguments.output.resolve()
-    materials = arguments.source_output.resolve()
-    if output == materials or output in materials.parents or materials in output.parents:
-        raise RuntimeError("Binary and source output directories must not overlap")
-    if (output / "source-materials").exists():
-        raise RuntimeError("Remove legacy source-materials from the binary output before packaging")
-    output.mkdir(parents=True, exist_ok=True)
-    (output / "licenses").mkdir(exist_ok=True)
+def collect_source_materials(repository: Path, build: Path, materials: Path) -> None:
     for directory in ["source", "include", "3rdparty", "cmake", "tools", "test"]:
         source = repository / directory
         if not source.is_dir():
@@ -152,50 +135,74 @@ def main() -> None:
     for filename in ["CMakeLists.txt", "CMakePresets.json", "LICENSE.md"]:
         shutil.copy2(repository / filename, materials / filename)
     recipes = materials / "build-recipes"
-    recipes.mkdir(exist_ok=True)
+    recipes.mkdir(parents=True, exist_ok=True)
     for name in ["build.yml", "test.yml"]:
         shutil.copy2(repository / ".github/workflows" / name, recipes / name)
     copy_tree(repository / ".github/actions/ios-dependencies", recipes / "ios-dependencies")
     maadeps = repository / "source/MaaUtils/MaaDeps"
-    for triplet in (maadeps / "vcpkg/installed").iterdir():
-        if triplet.is_dir() and (triplet / "share").is_dir():
-            copy_tree(triplet / "share", output / "licenses/MaaDeps" / triplet.name)
     maadeps_source = materials / "source/MaaUtils/MaaDeps"
     maadeps_source.mkdir(parents=True, exist_ok=True)
     shutil.copy2(maadeps / "maadeps.cmake", maadeps_source / "maadeps.cmake")
-    shutil.copy2(arguments.build / "CMakeCache.txt", materials / "CMakeCache.txt")
-    dependency_sources = arguments.build / "_deps"
+    dependency_sources = build / "_deps"
     if dependency_sources.is_dir():
         for source in dependency_sources.glob("*-src"):
             if source.is_dir():
                 copy_tree(source, materials / "fetched-dependencies" / source.name)
-    cache_text = (arguments.build / "CMakeCache.txt").read_text(encoding="utf-8")
-    for line in cache_text.splitlines():
-        if line.startswith("FETCHCONTENT_SOURCE_DIR_") and "=" in line:
-            key, value = line.split("=", 1)
-            if value and Path(value).is_dir():
-                copy_tree(Path(value), materials / "fetched-dependencies" / key.split(":")[0].lower())
+    cache_file = build / "CMakeCache.txt"
+    if cache_file.is_file():
+        cache_text = cache_file.read_text(encoding="utf-8")
+        for line in cache_text.splitlines():
+            if line.startswith("FETCHCONTENT_SOURCE_DIR_") and "=" in line:
+                key, value = line.split("=", 1)
+                if value and Path(value).is_dir():
+                    copy_tree(Path(value), materials / "fetched-dependencies" / key.split(":")[0].lower())
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--repository", type=Path, required=True)
+    parser.add_argument("--build", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--source-output", type=Path, default=None)
+    parser.add_argument("--platform", required=True)
+    parser.add_argument("--vcpkg", type=Path, required=True)
+    parser.add_argument("--triplet", required=True)
+    parser.add_argument("--configuration", choices=("Debug", "Release", "RelWithDebInfo"), required=True)
+    parser.add_argument("--dependency-config", type=Path, required=True)
+    arguments = parser.parse_args()
+    repository = arguments.repository.resolve()
+    output = arguments.output.resolve()
+    materials = arguments.source_output.resolve() if arguments.source_output is not None else None
+    if materials is not None and (output == materials or output in materials.parents or materials in output.parents):
+        raise RuntimeError("Binary and source output directories must not overlap")
+    if (output / "source-materials").exists():
+        raise RuntimeError("Remove legacy source-materials from the binary output before packaging")
+    output.mkdir(parents=True, exist_ok=True)
+    if materials is not None:
+        collect_source_materials(repository, arguments.build, materials)
+    source_artifact = f"ios-source-{arguments.platform}"
     provenance = {
         "commit": subprocess.check_output(["git", "-C", str(repository), "rev-parse", "HEAD"], text=True).strip(),
         "platform": arguments.platform,
-        "architecture": "MaaToolkit device management and MaaIOSControlUnit sessions share a private static protocol target",
         "binary_dependencies": "MaaFramework/MaaDeps runtime and target-built iOS protocol dependencies",
         "maadeps_version": "v3.0.0",
         "submodules": subprocess.check_output(["git", "-C", str(repository), "submodule", "status", "--recursive"], text=True).splitlines(),
+        "source_artifact": source_artifact,
     }
-    source_artifact = f"ios-source-{arguments.platform}"
-    provenance["source_artifact"] = source_artifact
     provenance.update(dependencies(arguments, output, materials))
-    note = ("iOS protocol runtime dependencies are listed in provenance.json. Licenses are in bin/licenses/ios.\n"
+    ios_license_dir = output / "bin/licenses/ios"
+    ios_license_dir.mkdir(parents=True, exist_ok=True)
+    note = ("iOS protocol runtime dependencies are listed in bin/licenses/ios/provenance.json.\n"
             f"Corresponding sources and build recipes are distributed separately as {source_artifact}-<version>.zip.\n")
     if arguments.platform.startswith("windows"):
         note += "The Microsoft Visual C++ 2015-2022 runtime for the target architecture is required.\n"
-    (output / "RUNTIME.txt").write_text(note, encoding="utf-8")
-    for directory in [output, materials]:
-        (directory / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
-        hashes = {str(path.relative_to(directory)): digest(path) for path in sorted(directory.rglob("*"))
+    (ios_license_dir / "RUNTIME.txt").write_text(note, encoding="utf-8")
+    (ios_license_dir / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
+    if materials is not None:
+        (materials / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
+        hashes = {str(path.relative_to(materials)): digest(path) for path in sorted(materials.rglob("*"))
                   if path.is_file() and path.name != "SHA256SUMS.json"}
-        (directory / "SHA256SUMS.json").write_text(json.dumps(hashes, indent=2) + "\n", encoding="utf-8")
+        (materials / "SHA256SUMS.json").write_text(json.dumps(hashes, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

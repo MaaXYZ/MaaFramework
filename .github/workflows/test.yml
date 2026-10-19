@@ -125,20 +125,13 @@ jobs:
               run: |
                   cmake --install build --prefix install --config Debug
 
-            - name: Collect iOS runtime dependencies and source materials
+            - name: Collect iOS runtime dependencies
               shell: bash
               run: |
                   python3 tools/ios/ci/package.py --repository "$PWD" --build "build" \
-                    --output "$PWD/install" --source-output "$PWD/ios-source-materials" --platform "windows-${{ matrix.arch }}" \
+                    --output "$PWD/install" --platform "windows-${{ matrix.arch }}" \
                     --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
                     --configuration "Debug" --dependency-config "$MAA_IOS_CMAKE"
-
-            - name: Upload iOS source materials
-              uses: actions/upload-artifact@v7
-              with:
-                  name: ios-source-windows-${{ matrix.arch }}
-                  path: 'ios-source-materials'
-                  if-no-files-found: error
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -358,20 +351,13 @@ jobs:
               run: |
                   cmake --install build --prefix install --config Debug
 
-            - name: Collect iOS runtime dependencies and source materials
+            - name: Collect iOS runtime dependencies
               shell: bash
               run: |
                   python3 tools/ios/ci/package.py --repository "$PWD" --build "build" \
-                    --output "$PWD/install" --source-output "$PWD/ios-source-materials" --platform "linux-${{ matrix.arch }}" \
+                    --output "$PWD/install" --platform "linux-${{ matrix.arch }}" \
                     --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
                     --configuration "Debug" --dependency-config "$MAA_IOS_CMAKE"
-
-            - name: Upload iOS source materials
-              uses: actions/upload-artifact@v7
-              with:
-                  name: ios-source-linux-${{ matrix.arch }}
-                  path: 'ios-source-materials'
-                  if-no-files-found: error
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -527,20 +513,13 @@ jobs:
               run: |
                   cmake --install build --prefix install --config Debug
 
-            - name: Collect iOS runtime dependencies and source materials
+            - name: Collect iOS runtime dependencies
               shell: bash
               run: |
                   python3 tools/ios/ci/package.py --repository "$PWD" --build "build" \
-                    --output "$PWD/install" --source-output "$PWD/ios-source-materials" --platform "macos-${{ matrix.arch }}" \
+                    --output "$PWD/install" --platform "macos-${{ matrix.arch }}" \
                     --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
                     --configuration "Debug" --dependency-config "$MAA_IOS_CMAKE"
-
-            - name: Upload iOS source materials
-              uses: actions/upload-artifact@v7
-              with:
-                  name: ios-source-macos-${{ matrix.arch }}
-                  path: 'ios-source-materials'
-                  if-no-files-found: error
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
