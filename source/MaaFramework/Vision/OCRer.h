@@ -12,22 +12,9 @@
 
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/JsonExt.hpp"
+#include "OCRSession.h"
 #include "VisionBase.h"
 #include "VisionTypes.h"
-
-namespace fastdeploy
-{
-namespace vision::ocr
-{
-class DBDetector;
-class Recognizer;
-}
-
-namespace pipeline
-{
-class PPOCRv4;
-}
-}
 
 MAA_VISION_NS_BEGIN
 
@@ -55,9 +42,7 @@ public:
         cv::Mat image,
         std::vector<cv::Rect> rois,
         OCRerParam param,
-        std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
-        std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
-        std::shared_ptr<fastdeploy::pipeline::PPOCRv4> ocrer,
+        OCRSessionPtr session,
         std::string name = "",
         std::optional<ColorFilterConfig> color_filter = std::nullopt);
 
@@ -66,7 +51,7 @@ public:
         std::vector<cv::Rect> rois,
         OCRerParam param,
         const ResultsVec& cached,
-        std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
+        OCRSessionPtr session,
         std::string name = "");
 
 private:
@@ -100,9 +85,7 @@ private:
 
     std::optional<ResultsVec> cache_;
 
-    std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;
-    std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
-    std::shared_ptr<fastdeploy::pipeline::PPOCRv4> ocrer_ = nullptr;
+    OCRSessionPtr session_ = nullptr;
 
     inline static std::mutex s_predict_mutex_;
 };
