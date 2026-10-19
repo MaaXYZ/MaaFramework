@@ -86,12 +86,12 @@ std::optional<Selection> select_for_version(ProductVersion version, std::string&
         return std::nullopt;
     }
     if (version.major < 17) {
-        return Selection { Kind::Classic, version, false };
+        return Selection { Kind::Classic, version };
     }
     if (version.major < 27) {
-        return Selection { Kind::Personalized, version, true };
+        return Selection { Kind::Personalized, version };
     }
-    return Selection { Kind::Cryptex, version, false };
+    return Selection { Kind::Cryptex, version };
 }
 
 std::optional<Selection> select_for_version(std::string_view text, std::string& error)

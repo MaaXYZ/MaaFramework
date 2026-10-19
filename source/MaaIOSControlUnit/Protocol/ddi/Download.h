@@ -44,9 +44,9 @@ struct DownloadResult
 };
 
 // Selects the image category from the OS version. Personalized images validate
-// any supplied model, board and chip against one manifest identity; generic
-// Cryptex images only precheck a supplied product type. Downloading does not
-// personalize or install an image, or establish which MaaFramework features work.
+// any supplied model, board and chip against one manifest identity. Cryptex
+// uses a generic identity; device support is checked during personalization and
+// installation. Downloading alone does not establish MaaFramework feature support.
 std::optional<DownloadResult> download_for_target(const DownloadOptions& options, const DownloadTarget& target, std::string& error);
 
 // Downloads the pinned Cryptex DDI only. Does not connect to or modify a device.

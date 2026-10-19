@@ -259,18 +259,8 @@ bool check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
             if (!variant->string.ends_with("Developer Disk Image Cryptex")) {
                 continue;
             }
-            // Cryptex is a generic identity on some images. Where a product is
-            // supplied, the manifest must at least declare it as supported.
-            if (target && !target->product_type.empty()) {
-                const auto* supported = manifest->find("SupportedProductTypes");
-                if (!supported || !supported->is_array()
-                    || std::none_of(supported->array.begin(), supported->array.end(), [&](const auto& product) {
-                           return product.is_string() && product.string == target->product_type;
-                       })) {
-                    error = "DDI manifest does not support the requested product type";
-                    return false;
-                }
-            }
+            // The Cryptex identity is generic; device support is decided by
+            // personalization and installation, not SupportedProductTypes.
         }
         else {
             if (!variant->string.ends_with("Developer PDI") || variant->string.find("Cryptex") != std::string::npos

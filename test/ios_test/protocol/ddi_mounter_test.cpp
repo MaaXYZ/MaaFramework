@@ -4,7 +4,9 @@
 #include "ddi/Tss.h"
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
+#include <openssl/evp.h>
 #include <stdexcept>
 
 namespace
@@ -233,6 +235,111 @@ void test_inspection_failures()
         "missing callback is rejected");
 }
 
+void test_download_hardware_identity()
+{
+    const auto digest = [](const std::string& bytes, const EVP_MD* algorithm) {
+        std::vector<uint8_t> result(EVP_MAX_MD_SIZE);
+        unsigned length = 0;
+        require(EVP_Digest(bytes.data(), bytes.size(), result.data(), &length, algorithm, nullptr) == 1, "fixture checksum");
+        result.resize(length);
+        return result;
+    };
+    const auto sha256 = [&](const std::string& bytes) {
+        constexpr char digits[] = "0123456789abcdef";
+        std::string result;
+        for (const auto byte : digest(bytes, EVP_sha256())) {
+            result += digits[byte >> 4];
+            result += digits[byte & 15];
+        }
+        return result;
+    };
+    for (const auto kind : { ddi::Kind::Personalized, ddi::Kind::Cryptex }) {
+        const bool cryptex = kind == ddi::Kind::Cryptex;
+        const std::vector<std::pair<std::string, std::string>> payloads =
+            cryptex ? std::vector<std::pair<std::string, std::string>> { { "Cryptex1,GenericDmg", "Image.dmg" },
+                                                                         { "Cryptex1,GenericTrustCache", "Image.dmg.trustcache" },
+                                                                         { "Cryptex1,CryptexInfoPlist", "Image.dmg.cryptex_info" },
+                                                                         { "Cryptex1,GenericVolume", "Image.dmg.root_hash" } }
+                    : std::vector<std::pair<std::string, std::string>> { { "PersonalizedDMG", "Image.dmg" },
+                                                                         { "LoadableTrustCache", "Image.dmg.trustcache" } };
+        std::vector<std::pair<std::string, std::string>> files;
+        auto entries = V::Dict();
+        for (const auto& [key, name] : payloads) {
+            auto entry = V::Dict();
+            auto info = V::Dict();
+            info.set("Path", V::Str(name));
+            entry.set("Info", std::move(info));
+            entry.set("Digest", V::OfData(digest("x", EVP_sha384())));
+            entries.set(key, std::move(entry));
+            files.emplace_back(name, "x");
+        }
+        auto identity = V::Dict();
+        auto info = V::Dict();
+        info.set("Variant", V::Str(cryptex ? "Developer Disk Image Cryptex" : "Developer PDI"));
+        if (!cryptex) {
+            info.set("DeviceClass", V::Str("testap"));
+            identity.set("Ap,ProductType", V::Str("iPhone1,1"));
+            identity.set("ApBoardID", V::UInt(1));
+            identity.set("ApChipID", V::UInt(2));
+        }
+        else {
+            identity.set("Cryptex1,UseProductClass", V::Bool(true));
+        }
+        identity.set("Info", std::move(info));
+        identity.set("Manifest", std::move(entries));
+        auto identities = V::Array();
+        identities.push(std::move(identity));
+        auto products = V::Array();
+        products.push(V::Str("iPhone1,1"));
+        auto manifest = V::Dict();
+        manifest.set("ProductBuildVersion", V::Str("27Test"));
+        manifest.set("BuildIdentities", std::move(identities));
+        manifest.set("SupportedProductTypes", std::move(products));
+        files.emplace_back("BuildManifest.plist", plist::write(manifest));
+        ddi::detail::Catalog catalog { "27Test", "https://example.invalid/ddi", { }, kind };
+        for (const auto& [name, bytes] : files) {
+            catalog.assets.push_back({ name, bytes.size(), sha256(bytes), "" });
+        }
+        std::string error;
+        ddi::DownloadTarget target;
+        target.system_version = cryptex ? "27.0" : "18.7.8";
+        target.product_type = "iPhone1,1";
+        target.hardware_model = "TestAP";
+        target.board_id = 1;
+        target.chip_id = 2;
+        auto image = ddi::detail::download(
+            { },
+            catalog,
+            [&](const std::string& url, auto, auto, const auto&, const auto& sink, std::string&) {
+                for (const auto& [name, bytes] : files) {
+                    if (url.ends_with("/" + name)) {
+                        return sink(bytes.data(), bytes.size());
+                    }
+                }
+                return false;
+            },
+            error,
+            &target);
+        require(image.has_value(), error.c_str());
+        target.product_type = "iPhone99,1";
+        require(
+            ddi::detail::validate(image->directory, catalog, error, &target) == cryptex,
+            "only Personalized requires a matching product identity");
+        target.product_type = "iPhone1,1";
+        if (!cryptex) {
+            ++*target.board_id;
+            require(!ddi::detail::validate(image->directory, catalog, error, &target), "Personalized rejects a mismatched board");
+            target.board_id = 1;
+        }
+        std::ofstream(image->directory / "Image.dmg", std::ios::binary) << 'y';
+        catalog.assets.front().sha256 = sha256("y");
+        require(
+            !ddi::detail::validate(image->directory, catalog, error, &target)
+                && error.find("manifest digest mismatch") != std::string::npos,
+            "both image kinds still validate payloads against the manifest");
+    }
+}
+
 void test_signing_metadata_failures()
 {
     auto manifest = V::Dict();
@@ -298,8 +405,9 @@ int main()
         test_classic_reuse_without_download();
         test_existing_classic_signature_mismatch();
         test_inspection_failures();
+        test_download_hardware_identity();
         test_signing_metadata_failures();
-        std::cout << "Classic DDI mounted-image checks passed\n";
+        std::cout << "DDI download and mounted-image checks passed\n";
         return 0;
     }
     catch (const std::exception& error) {

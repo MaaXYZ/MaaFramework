@@ -26,9 +26,6 @@ struct Selection
 {
     Kind kind;
     ProductVersion version;
-    // Personalized manifests must match the device's model, board and chip.
-    // Selecting a download category alone does not perform that check.
-    bool hardware_identity_required = false;
 };
 
 // Apple ProductVersion is numeric (e.g. "18.7.8"); a release/build label is not

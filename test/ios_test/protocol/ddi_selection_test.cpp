@@ -24,20 +24,16 @@ int main()
     const auto ipad = ddi::select_for_version("18.7.8", error);
     check(
         ipad && ipad->kind == ddi::Kind::Personalized && ipad->version.major == 18 && ipad->version.minor == 7 && ipad->version.patch == 8
-            && ipad->hardware_identity_required && error.empty(),
+            && error.empty(),
         "iPadOS 18.7.8 selects Personalized without claiming hardware compatibility");
     const auto classic = ddi::select_for_version("16.7.12", error);
-    check(
-        classic && classic->kind == ddi::Kind::Classic && !classic->hardware_identity_required,
-        "pre-17 selects Classic; actual catalog availability is separate");
+    check(classic && classic->kind == ddi::Kind::Classic, "pre-17 selects Classic; actual catalog availability is separate");
     const auto boundary = ddi::select_for_version("17.0", error);
     check(boundary && boundary->kind == ddi::Kind::Personalized, "17.0 is the Personalized category boundary");
     const auto transitional = ddi::select_for_version("26.4", error);
     check(transitional && transitional->kind == ddi::Kind::Personalized, "26.4 does not imply Cryptex capability");
     const auto current = ddi::select_for_version("27.0.1", error);
-    check(
-        current && current->kind == ddi::Kind::Cryptex && !current->hardware_identity_required,
-        "27.0.1 selects the generic Cryptex download category");
+    check(current && current->kind == ddi::Kind::Cryptex, "27.0.1 selects the generic Cryptex download category");
     check(!ddi::select_for_version("28.0", error) && !error.empty(), "future major does not silently reuse the current DDI");
     check(!ddi::select_for_version(ddi::ProductVersion { }, error) && !error.empty(), "constructed zero major is rejected");
     const auto major_only = ddi::parse_product_version("18", error);
