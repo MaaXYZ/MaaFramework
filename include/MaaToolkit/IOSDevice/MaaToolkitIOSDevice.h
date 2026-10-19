@@ -13,8 +13,8 @@ extern "C"
     // Event callbacks are serialized; cancellation callbacks may run on worker threads
     // and must be thread-safe. Callbacks must not throw or reenter the operation.
     // Callbacks and userdata are borrowed until return; no operation jobs remain afterward.
-    typedef MaaBool (*MaaToolkitIOSDeviceEventCallback)(const char* event_json, void* userdata);
-    typedef MaaBool (*MaaToolkitIOSDeviceCancelCallback)(void* userdata);
+    typedef MaaBool(MAA_CALL* MaaToolkitIOSDeviceEventCallback)(const char* event_json, void* userdata);
+    typedef MaaBool(MAA_CALL* MaaToolkitIOSDeviceCancelCallback)(void* userdata);
 
     // Options: timeout_ms (0..60000, default 3000).
     // Auto discovers USB and Wi-Fi; USB and WiFi restrict discovery to that transport.

@@ -10,8 +10,8 @@ from .library import Library
 from .ios import IOSWiFiPairing
 
 
-_IOSEventCallback = ctypes.CFUNCTYPE(MaaBool, ctypes.c_char_p, ctypes.c_void_p)
-_IOSCancelCallback = ctypes.CFUNCTYPE(MaaBool, ctypes.c_void_p)
+_IOSEventCallback = FUNCTYPE(MaaBool, ctypes.c_char_p, ctypes.c_void_p)
+_IOSCancelCallback = FUNCTYPE(MaaBool, ctypes.c_void_p)
 
 
 @dataclass

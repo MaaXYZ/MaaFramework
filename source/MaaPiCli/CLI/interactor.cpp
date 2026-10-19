@@ -896,6 +896,21 @@ void Interactor::select_ios_auto_detect()
     config_.configuration().ios.udid = MaaToolkitIOSDeviceGetUdid(devices[choice - 1]);
 }
 
+static MaaBool MAA_CALL print_ios_pairing_event(const char* text, void*)
+{
+    const auto value = json::parse(text);
+    if (!value) {
+        return false;
+    }
+    if (value->get("type", std::string()) == "pin") {
+        std::cout << "Pairing code: " << value->get("pin", std::string()) << std::endl;
+    }
+    else {
+        std::cout << MAA_NS::utf8_to_crt(value->get("message", std::string())) << std::endl;
+    }
+    return true;
+}
+
 bool Interactor::pair_ios(bool wireless)
 {
     auto& ios = config_.configuration().ios;
@@ -910,25 +925,12 @@ bool Interactor::pair_ios(bool wireless)
     std::cout
         << (wireless ? "Open Settings > Privacy & Security > Developer Mode, select this computer and enter the displayed code.\n"
                      : "Keep the device unlocked and accept any trust or pairing prompts.\n");
-    const auto event = +[](const char* text, void*) -> MaaBool {
-        const auto value = json::parse(text);
-        if (!value) {
-            return false;
-        }
-        if (value->get("type", std::string()) == "pin") {
-            std::cout << "Pairing code: " << value->get("pin", std::string()) << std::endl;
-        }
-        else {
-            std::cout << MAA_NS::utf8_to_crt(value->get("message", std::string())) << std::endl;
-        }
-        return true;
-    };
     MaaIOSWiFiPairing* pairing = nullptr;
     const bool ok = MaaToolkitIOSDevicePair(
         ios.udid.c_str(),
         wireless ? MaaIOSConnectionMethod_WiFi : MaaIOSConnectionMethod_USB,
         nullptr,
-        event,
+        print_ios_pairing_event,
         nullptr,
         nullptr,
         result.get(),

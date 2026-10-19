@@ -145,7 +145,7 @@ extern "C" void cancel_ios_prepare(int)
     ios_prepare_cancelled.store(true, std::memory_order_relaxed);
 }
 
-MaaBool is_ios_prepare_cancelled(void*)
+MaaBool MAA_CALL is_ios_prepare_cancelled(void*)
 {
     return ios_prepare_cancelled.load(std::memory_order_relaxed);
 }
@@ -182,7 +182,7 @@ std::filesystem::path default_ios_ddi_cache()
     return { };
 }
 
-MaaBool print_ios_prepare_progress(const char* text, void*)
+MaaBool MAA_CALL print_ios_prepare_progress(const char* text, void*)
 {
     const auto event = json::parse(text);
     if (event) {

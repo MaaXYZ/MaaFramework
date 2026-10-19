@@ -8,13 +8,13 @@ namespace
 {
 int cancel_calls = 0;
 
-MaaBool cancelled(void*)
+MaaBool MAA_CALL cancelled(void*)
 {
     ++cancel_calls;
     return true;
 }
 
-MaaBool throwing_cancel(void*)
+MaaBool MAA_CALL throwing_cancel(void*)
 {
     throw std::runtime_error("caller failure");
 }
