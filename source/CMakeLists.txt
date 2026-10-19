@@ -3,7 +3,6 @@ if(WITH_ADB_CONTROLLER)
 endif()
 
 if(WITH_IOS_CONTROLLER)
-    add_subdirectory(MaaIOSControlUnit/Protocol)
     add_subdirectory(MaaIOSControlUnit)
 endif()
 

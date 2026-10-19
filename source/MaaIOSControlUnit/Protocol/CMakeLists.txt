@@ -153,13 +153,15 @@ endif()
 file(GLOB_RECURSE maa_ios_protocol_sources CONFIGURE_DEPENDS *.cpp *.h)
 list(FILTER maa_ios_protocol_sources EXCLUDE REGEX "/CMakeFiles/")
 list(FILTER maa_ios_protocol_sources EXCLUDE REGEX "/net/LwipPort\\.cpp$")
+file(GLOB_RECURSE maa_ios_media_sources CONFIGURE_DEPENDS decode/*.cpp decode/*.h media/*.cpp media/*.h)
+list(FILTER maa_ios_protocol_sources EXCLUDE REGEX "/(decode|media)/")
 if(NOT APPLE)
-    list(FILTER maa_ios_protocol_sources EXCLUDE REGEX "/decode/VideoToolboxDecoder\\.cpp$")
+    list(FILTER maa_ios_media_sources EXCLUDE REGEX "/decode/VideoToolboxDecoder\\.cpp$")
 endif()
 if(NOT MAA_IOS_LIBAV)
-    list(FILTER maa_ios_protocol_sources EXCLUDE REGEX "/decode/FFmpegDecoder\\.cpp$")
+    list(FILTER maa_ios_media_sources EXCLUDE REGEX "/decode/FFmpegDecoder\\.cpp$")
 endif()
-# Shared implementation for MaaToolkit and MaaIOSControlUnit.
+# Shared device protocol/management implementation for MaaToolkit and MaaIOSControlUnit.
 set(maa_ios_protocol_root "${CMAKE_CURRENT_SOURCE_DIR}")
 function(maa_ios_apply_protocol_options target visibility)
     target_include_directories(${target} ${visibility} "${maa_ios_protocol_root}")
@@ -170,11 +172,10 @@ function(maa_ios_apply_protocol_options target visibility)
     endif()
     target_compile_definitions(${target} PRIVATE OPENSSL_SUPPRESS_DEPRECATED)
     target_link_libraries(${target} ${visibility}
-        MaaUtils ${OpenCV_LIBS} OpenSSL::SSL OpenSSL::Crypto MaaIOSLibAv Threads::Threads
+        MaaUtils ${OpenCV_LIBS} OpenSSL::SSL OpenSSL::Crypto Threads::Threads
         pugixml::pugixml MaaIOSLwip MaaIOSCurl)
     if(APPLE)
-        target_link_libraries(${target} ${visibility} "-framework VideoToolbox" "-framework CoreMedia"
-            "-framework CoreVideo" "-framework CoreFoundation" "-framework IOKit")
+        target_link_libraries(${target} ${visibility} "-framework CoreFoundation" "-framework IOKit")
     elseif(WIN32)
         target_compile_definitions(${target} ${visibility} WIN32_LEAN_AND_MEAN NOMINMAX)
         if(MSVC)
@@ -187,6 +188,15 @@ add_library(MaaIOSProtocol STATIC ${maa_ios_protocol_sources})
 set_target_properties(MaaIOSProtocol PROPERTIES POSITION_INDEPENDENT_CODE ON
     CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN YES)
 maa_ios_apply_protocol_options(MaaIOSProtocol PUBLIC)
+
+add_library(MaaIOSMedia STATIC ${maa_ios_media_sources})
+set_target_properties(MaaIOSMedia PROPERTIES POSITION_INDEPENDENT_CODE ON
+    CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN YES)
+target_compile_definitions(MaaIOSMedia PRIVATE OPENSSL_SUPPRESS_DEPRECATED $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>)
+target_link_libraries(MaaIOSMedia PUBLIC MaaIOSProtocol MaaIOSLibAv)
+if(APPLE)
+    target_link_libraries(MaaIOSMedia PUBLIC "-framework VideoToolbox" "-framework CoreMedia" "-framework CoreVideo")
+endif()
 
 include(CheckCXXSourceCompiles)
 include(CMakePushCheckState)

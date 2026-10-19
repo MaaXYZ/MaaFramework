@@ -1,14 +1,20 @@
 set(maa_ios_control_unit_dir "${CMAKE_SOURCE_DIR}/source/MaaIOSControlUnit")
 
-set(maa_ios_protocol_test_names plist json hid rtp ddi_selection ddi_mounter discovery device_selection tls_embedding credentials decoder_capability)
+set(maa_ios_protocol_test_names plist json hid rtp ddi_selection ddi_mounter discovery device_selection tls_embedding credentials)
 foreach(name IN LISTS maa_ios_protocol_test_names)
     add_executable(maa_ios_${name}_test protocol/${name}_test.cpp)
     target_link_libraries(maa_ios_${name}_test PRIVATE MaaIOSProtocol)
     add_test(NAME maa_ios_${name} COMMAND maa_ios_${name}_test)
     set_tests_properties(maa_ios_${name} PROPERTIES TIMEOUT 30)
 endforeach()
-add_executable(maa_ios_frame_delivery_test protocol/frame_delivery_test.cpp "${maa_ios_control_unit_dir}/Protocol/media/FramePump.cpp")
-target_link_libraries(maa_ios_frame_delivery_test PRIVATE MaaIOSProtocol)
+
+add_executable(maa_ios_decoder_capability_test protocol/decoder_capability_test.cpp)
+target_link_libraries(maa_ios_decoder_capability_test PRIVATE MaaIOSMedia)
+add_test(NAME maa_ios_decoder_capability COMMAND maa_ios_decoder_capability_test)
+set_tests_properties(maa_ios_decoder_capability PROPERTIES TIMEOUT 30)
+
+add_executable(maa_ios_frame_delivery_test protocol/frame_delivery_test.cpp)
+target_link_libraries(maa_ios_frame_delivery_test PRIVATE MaaIOSMedia)
 add_test(NAME maa_ios_frame_delivery COMMAND maa_ios_frame_delivery_test)
 set_tests_properties(maa_ios_frame_delivery PROPERTIES TIMEOUT 15)
 
