@@ -238,7 +238,7 @@ bool prepare_ios(const RuntimeParam::IOSParam& ios)
                  << (status ? status->get("error", std::string()) : "Invalid preparation result");
         return false;
     }
-    return true;
+    return !is_ios_prepare_cancelled(nullptr);
 }
 } // namespace
 #endif
@@ -247,9 +247,6 @@ bool Runner::run(const RuntimeParam& param)
 {
 #if defined(MAA_WITH_IOS_CONTROLLER)
     if (const auto* ios = std::get_if<RuntimeParam::IOSParam>(&param.controller_param); ios && !prepare_ios(*ios)) {
-        if (is_ios_prepare_cancelled(nullptr)) {
-            std::exit(130);
-        }
         return false;
     }
 #endif
