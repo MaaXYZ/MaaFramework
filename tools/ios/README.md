@@ -183,17 +183,9 @@ set `replace: true` to explicitly replace it. Download/install timeout defaults 
 
 ## Build / 构建
 
-Configure the MaaFramework repository root with `WITH_IOS_CONTROLLER=ON`. Supply normal
-MaaDeps plus target-compatible OpenSSL, FFmpeg and libcurl. The framework `build.yml` uses
-`ci/` recipes to build and package these dependencies for each target. `test.yml` runs the offline
-iOS tests and Python management tests. Artifacts include runtime licenses, dependency sources
-and build recipes.
-Python exposes management calls. NodeJS exposes controller/discovery configuration; interactive
-pairing/preparation is currently available through C/Python APIs.
+See [Building iOS support](../../docs/en_us/4.1-BuildGuide.md#building-ios-support) for dependencies, build recipes, test switches and distribution packaging.
 
-从仓库根目录启用 `WITH_IOS_CONTROLLER=ON` 构建。框架 `build.yml` 使用 `ci/` 配方构建并打包各目标平台的依赖；
-`test.yml` 运行 iOS 离线测试和 Python 管理接口测试。产物包含运行库许可证、依赖源码和构建配方。
-Python 提供设备管理方法；NodeJS 提供控制器和发现配置，交互式配对/准备通过 C/Python API 调用。
+依赖、构建配方、测试开关及发行包说明见 [构建 iOS 支持](../../docs/zh_cn/4.1-构建指南.md#构建-ios-支持)。
 
 ## PiCli 自动准备 DDI / Automatic DDI preparation in PiCli
 
