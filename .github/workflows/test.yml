@@ -404,7 +404,9 @@ jobs:
               env:
                   MAAFW_BINARY_PATH: ${{ github.workspace }}/install/bin
                   PYTHONPATH: ${{ github.workspace }}/source/binding/Python
-              run: python3 test/python/ios_management_test.py
+              run: |
+                  source .venv/bin/activate
+                  python3 test/python/ios_management_test.py
 
             - name: Run NodeJS testing
               shell: bash
@@ -560,7 +562,9 @@ jobs:
               env:
                   MAAFW_BINARY_PATH: ${{ github.workspace }}/install/bin
                   PYTHONPATH: ${{ github.workspace }}/source/binding/Python
-              run: python3 test/python/ios_management_test.py
+              run: |
+                  source .venv/bin/activate
+                  python3 test/python/ios_management_test.py
 
             - name: Run NodeJS testing
               shell: bash
