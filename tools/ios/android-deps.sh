@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# tools/ios-android-deps.sh
+# tools/ios/android-deps.sh
 #
 # Build the arm64-android OpenSSL + curl and shared FFmpeg dependency prefix that the
 # MaaFramework iOS control unit needs when it is cross-compiled for an Android
@@ -16,7 +16,7 @@
 # force a rebuild.
 #
 # Usage:
-#   tools/ios-android-deps.sh [-j N] <output-prefix>
+#   tools/ios/android-deps.sh [-j N] <output-prefix>
 #
 # Environment:
 #   ANDROID_NDK_ROOT / NDK_HOME   required NDK location (first one wins).
