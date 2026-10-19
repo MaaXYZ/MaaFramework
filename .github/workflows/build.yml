@@ -156,9 +156,16 @@ jobs:
               shell: bash
               run: |
                   python3 tools/ios/ci/package.py --repository "$PWD" --build "build" \
-                    --output "$PWD/install" --platform "windows-${{ matrix.arch }}" \
+                    --output "$PWD/install" --source-output "$PWD/ios-source-materials" --platform "windows-${{ matrix.arch }}" \
                     --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
                     --configuration "${{ needs.meta.outputs.build-config }}" --dependency-config "$MAA_IOS_CMAKE"
+
+            - name: Upload iOS source materials
+              uses: actions/upload-artifact@v7
+              with:
+                  name: ios-source-windows-${{ matrix.arch }}
+                  path: 'ios-source-materials'
+                  if-no-files-found: error
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -339,9 +346,16 @@ jobs:
               shell: bash
               run: |
                   python3 tools/ios/ci/package.py --repository "$PWD" --build "build" \
-                    --output "$PWD/install" --platform "linux-${{ matrix.arch }}" \
+                    --output "$PWD/install" --source-output "$PWD/ios-source-materials" --platform "linux-${{ matrix.arch }}" \
                     --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
                     --configuration "${{ needs.meta.outputs.build-config }}" --dependency-config "$MAA_IOS_CMAKE"
+
+            - name: Upload iOS source materials
+              uses: actions/upload-artifact@v7
+              with:
+                  name: ios-source-linux-${{ matrix.arch }}
+                  path: 'ios-source-materials'
+                  if-no-files-found: error
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -454,9 +468,16 @@ jobs:
               shell: bash
               run: |
                   python3 tools/ios/ci/package.py --repository "$PWD" --build "build" \
-                    --output "$PWD/install" --platform "macos-${{ matrix.arch }}" \
+                    --output "$PWD/install" --source-output "$PWD/ios-source-materials" --platform "macos-${{ matrix.arch }}" \
                     --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
                     --configuration "${{ needs.meta.outputs.build-config }}" --dependency-config "$MAA_IOS_CMAKE"
+
+            - name: Upload iOS source materials
+              uses: actions/upload-artifact@v7
+              with:
+                  name: ios-source-macos-${{ matrix.arch }}
+                  path: 'ios-source-materials'
+                  if-no-files-found: error
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -565,9 +586,16 @@ jobs:
               shell: bash
               run: |
                   python3 tools/ios/ci/package.py --repository "$PWD" --build "build/android/${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64-v8a' }}" \
-                    --output "$PWD/install" --platform "android-${{ matrix.arch }}" \
+                    --output "$PWD/install" --source-output "$PWD/ios-source-materials" --platform "android-${{ matrix.arch }}" \
                     --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
                     --configuration "${{ needs.meta.outputs.build-config }}" --dependency-config "$MAA_IOS_CMAKE"
+
+            - name: Upload iOS source materials
+              uses: actions/upload-artifact@v7
+              with:
+                  name: ios-source-android-${{ matrix.arch }}
+                  path: 'ios-source-materials'
+                  if-no-files-found: error
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -599,6 +627,7 @@ jobs:
             - uses: actions/checkout@v7
             - uses: actions/download-artifact@v8
               with:
+                  pattern: MAA-*
                   path: assets
 
             - name: Nuget Pack
@@ -619,6 +648,7 @@ jobs:
             - uses: actions/checkout@v7
             - uses: actions/download-artifact@v8
               with:
+                  pattern: MAA-*
                   path: assets
 
             - name: Pip Pack
@@ -640,6 +670,7 @@ jobs:
             - uses: actions/checkout@v7
             - uses: actions/download-artifact@v8
               with:
+                  pattern: MAA-*
                   path: assets
 
             - uses: pnpm/action-setup@v6

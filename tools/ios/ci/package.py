@@ -13,7 +13,8 @@ def copy_tree(source: Path, destination: Path) -> None:
     shutil.copytree(source, destination, dirs_exist_ok=True,
                     ignore=shutil.ignore_patterns(
                         ".git", "__pycache__", "*.pyc", "CMakeFiles", "MaaDeps", "node_modules",
-                        ".pnpm-store", ".venv", "venv", ".cache", "build", "build-*", "*.o", "*.obj", "*.node"))
+                        ".pnpm-store", ".venv", "venv", ".cache", "build", "build-*", "TestingDataSet",
+                        "CMakeCache.txt", "*.o", "*.obj", "*.node"))
 
 
 def digest(path: Path) -> str:
@@ -55,7 +56,7 @@ def relocate_runtime(output: Path, prefix: Path, libraries: list[Path], system: 
             subprocess.run(["codesign", "--force", "--sign", "-", str(binary)], check=True)
 
 
-def dependencies(arguments, output: Path) -> dict:
+def dependencies(arguments, output: Path, source_output: Path) -> dict:
     vcpkg = arguments.vcpkg.resolve()
     installed = vcpkg / "installed"
     prefix = installed / arguments.triplet
@@ -86,7 +87,7 @@ def dependencies(arguments, output: Path) -> dict:
         runtime.append({"file": library.name, "package": owner})
     if not libraries:
         raise RuntimeError("No iOS runtime dependencies were packaged")
-    sources = output / "source-materials" / "vcpkg"
+    sources = source_output / "vcpkg"
     required = {"openssl", "ffmpeg", "pugixml", "zlib"}
     if system != "macos":
         required.add("curl")
@@ -127,6 +128,7 @@ def main() -> None:
     parser.add_argument("--repository", type=Path, required=True)
     parser.add_argument("--build", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--source-output", type=Path, required=True)
     parser.add_argument("--platform", required=True)
     parser.add_argument("--vcpkg", type=Path, required=True)
     parser.add_argument("--triplet", required=True)
@@ -135,9 +137,13 @@ def main() -> None:
     arguments = parser.parse_args()
     repository = arguments.repository.resolve()
     output = arguments.output.resolve()
+    materials = arguments.source_output.resolve()
+    if output == materials or output in materials.parents or materials in output.parents:
+        raise RuntimeError("Binary and source output directories must not overlap")
+    if (output / "source-materials").exists():
+        raise RuntimeError("Remove legacy source-materials from the binary output before packaging")
     output.mkdir(parents=True, exist_ok=True)
     (output / "licenses").mkdir(exist_ok=True)
-    materials = output / "source-materials"
     for directory in ["source", "include", "3rdparty", "cmake", "tools", "test"]:
         source = repository / directory
         if not source.is_dir():
@@ -177,14 +183,19 @@ def main() -> None:
         "maadeps_version": "v3.0.0",
         "submodules": subprocess.check_output(["git", "-C", str(repository), "submodule", "status", "--recursive"], text=True).splitlines(),
     }
-    provenance.update(dependencies(arguments, output))
-    note = "iOS protocol runtime dependencies are listed in provenance.json. Licenses are in bin/licenses/ios; corresponding sources and build recipes are in source-materials.\n"
+    source_artifact = f"ios-source-{arguments.platform}"
+    provenance["source_artifact"] = source_artifact
+    provenance.update(dependencies(arguments, output, materials))
+    note = ("iOS protocol runtime dependencies are listed in provenance.json. Licenses are in bin/licenses/ios.\n"
+            f"Corresponding sources and build recipes are distributed separately as {source_artifact}-<version>.zip.\n")
     if arguments.platform.startswith("windows"):
         note += "The Microsoft Visual C++ 2015-2022 runtime for the target architecture is required.\n"
     (output / "RUNTIME.txt").write_text(note, encoding="utf-8")
-    (output / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
-    hashes = {str(path.relative_to(output)): digest(path) for path in sorted(output.rglob("*")) if path.is_file() and path.name != "SHA256SUMS.json"}
-    (output / "SHA256SUMS.json").write_text(json.dumps(hashes, indent=2) + "\n", encoding="utf-8")
+    for directory in [output, materials]:
+        (directory / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
+        hashes = {str(path.relative_to(directory)): digest(path) for path in sorted(directory.rglob("*"))
+                  if path.is_file() and path.name != "SHA256SUMS.json"}
+        (directory / "SHA256SUMS.json").write_text(json.dumps(hashes, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
