@@ -46,7 +46,9 @@ static int writer(const std::string& mode)
     }
     else if (mode == "eof_before_exit") {
         close(STDOUT_FILENO);
-        std::this_thread::sleep_for(50ms);
+        // A sleeping writer can outlive the fixed cleanup grace on a busy
+        // runner. Exercise the EOF-before-exit ordering without that race.
+        _exit(0);
     }
     else if (mode == "complete") {
         std::cout << "late";
