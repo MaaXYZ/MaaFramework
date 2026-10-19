@@ -7,12 +7,48 @@
 #include "remote/DeviceConnection.h"
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
 #include <filesystem>
 #include <limits>
 #include <ostream>
 
 namespace maa::ios::management
 {
+namespace
+{
+std::filesystem::path default_ddi_cache_directory()
+{
+#if defined(_WIN32)
+    wchar_t* local = nullptr;
+    size_t length = 0;
+    if (_wdupenv_s(&local, &length, L"LOCALAPPDATA") != 0) {
+        return { };
+    }
+    const auto root = local ? std::filesystem::path(local) : std::filesystem::path();
+    std::free(local);
+    if (root.is_absolute()) {
+        return root / "MaaFramework" / "cache" / "ddi";
+    }
+#else
+#if !defined(__APPLE__)
+    const auto* xdg = std::getenv("XDG_CACHE_HOME");
+    if (xdg && *xdg && std::filesystem::path(xdg).is_absolute()) {
+        return std::filesystem::path(xdg) / "MaaFramework" / "ddi";
+    }
+#endif
+    const auto* home = std::getenv("HOME");
+    if (home && *home && std::filesystem::path(home).is_absolute()) {
+#if defined(__APPLE__)
+        return std::filesystem::path(home) / "Library" / "Caches" / "MaaFramework" / "ddi";
+#else
+        return std::filesystem::path(home) / ".cache" / "MaaFramework" / "ddi";
+#endif
+    }
+#endif
+    return { };
+}
+} // namespace
+
 Json prepare(const Options& o, const Callbacks& callbacks)
 {
     using namespace std::chrono;
@@ -162,7 +198,14 @@ Json prepare(const Options& o, const Callbacks& callbacks)
     ddi::DownloadOptions download;
     download.cancelled = cancelled;
     download.timeout = seconds(o.download_timeout_seconds);
-    if (!o.cache_directory.empty()) {
+    if (o.cache_directory == "auto") {
+        download.cache_root = default_ddi_cache_directory();
+        if (download.cache_root.empty()) {
+            error = "Cannot resolve an absolute iOS DDI cache directory; set cache_directory";
+            return fail();
+        }
+    }
+    else if (!o.cache_directory.empty()) {
         std::error_code ec;
         download.cache_root = std::filesystem::absolute(MAA_NS::path(o.cache_directory), ec);
         if (ec) {

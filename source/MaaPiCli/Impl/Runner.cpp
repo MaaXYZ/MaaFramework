@@ -150,38 +150,6 @@ MaaBool MAA_CALL is_ios_prepare_cancelled(void*)
     return ios_prepare_cancelled.load(std::memory_order_relaxed);
 }
 
-std::filesystem::path default_ios_ddi_cache()
-{
-#if defined(_WIN32)
-    wchar_t* local = nullptr;
-    size_t length = 0;
-    if (_wdupenv_s(&local, &length, L"LOCALAPPDATA") != 0) {
-        return {};
-    }
-    const auto root = local ? std::filesystem::path(local) : std::filesystem::path();
-    std::free(local);
-    if (root.is_absolute()) {
-        return root / "MaaPiCli" / "cache" / "ddi";
-    }
-#else
-#if !defined(__APPLE__)
-    const auto* xdg = std::getenv("XDG_CACHE_HOME");
-    if (xdg && *xdg && std::filesystem::path(xdg).is_absolute()) {
-        return std::filesystem::path(xdg) / "MaaPiCli" / "ddi";
-    }
-#endif
-    const auto* home = std::getenv("HOME");
-    if (home && *home && std::filesystem::path(home).is_absolute()) {
-#if defined(__APPLE__)
-        return std::filesystem::path(home) / "Library" / "Caches" / "MaaPiCli" / "ddi";
-#else
-        return std::filesystem::path(home) / ".cache" / "MaaPiCli" / "ddi";
-#endif
-    }
-#endif
-    return { };
-}
-
 MaaBool MAA_CALL print_ios_prepare_progress(const char* text, void*)
 {
     const auto event = json::parse(text);
@@ -201,13 +169,13 @@ bool prepare_ios(const RuntimeParam::IOSParam& ios)
         LogError << "iOS DDI download timeout must be between 1 and 3600 seconds";
         return false;
     }
-    const auto cache = ios.ddi_cache_directory.empty() ? default_ios_ddi_cache() : MAA_NS::path(ios.ddi_cache_directory);
-    if (cache.empty() || !cache.is_absolute()) {
+    if (!ios.ddi_cache_directory.empty() && !MAA_NS::path(ios.ddi_cache_directory).is_absolute()) {
         LogError << "Cannot resolve an absolute iOS DDI cache directory; set ios.ddi_cache_directory";
         return false;
     }
+    const auto cache = ios.ddi_cache_directory.empty() ? std::string("auto") : ios.ddi_cache_directory;
     const auto options = json::value(
-                             json::object { { "cache_directory", MAA_NS::path_to_utf8_string(cache) },
+                             json::object { { "cache_directory", cache },
                                             { "download_timeout_seconds", ios.ddi_download_timeout_seconds } })
                              .to_string();
     auto* result = MaaStringBufferCreate();
