@@ -647,10 +647,10 @@ maajs::ValueType IOSControllerImpl::parse_pairing_record(maajs::EnvType env, std
     result["udid"] = maajs::JSConvert<std::string>::to_value(env, pairing->udid);
     result["host_identifier"] = maajs::JSConvert<std::string>::to_value(env, pairing->host_identifier);
     result["peer_identifier"] = maajs::JSConvert<std::string>::to_value(env, pairing->peer_identifier);
-    const auto put_bytes = [&](const char* name, const uint8_t* data, size_t size) {
+    const auto put_bytes = [&](const char* property_name, const uint8_t* data, size_t size) {
         auto buffer = maajs::ArrayBufferType::New(env, size);
         std::memcpy(buffer.Data(), data, size);
-        result[name] = buffer;
+        result[property_name] = buffer;
     };
     put_bytes("host_private_key", pairing->host_private_key, 32);
     put_bytes("host_public_key", pairing->host_public_key, 32);
