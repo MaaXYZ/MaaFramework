@@ -10,11 +10,11 @@
 #include <array>
 #include <charconv>
 #include <cstdlib>
+#include <exception>
 #include <fstream>
 #include <limits>
 #include <memory>
 #include <sstream>
-#include <stdexcept>
 
 namespace maa::ios::ddi
 {
@@ -23,58 +23,68 @@ namespace
 namespace fs = std::filesystem;
 using Clock = std::chrono::steady_clock;
 
-std::string read_file(const fs::path& path, uint64_t limit)
+std::optional<std::string> read_file(const fs::path& path, uint64_t limit, std::string& error)
 {
     if (fs::is_symlink(fs::symlink_status(path)) || !fs::is_regular_file(path)) {
-        throw std::runtime_error("DDI cache contains a nonregular file");
+        error = "DDI cache contains a nonregular file";
+        return std::nullopt;
     }
     const auto size = fs::file_size(path);
     if (size > limit) {
-        throw std::runtime_error("DDI file exceeds its size limit");
+        error = "DDI file exceeds its size limit";
+        return std::nullopt;
     }
     std::ifstream file(path, std::ios::binary);
     if (!file) {
-        throw std::runtime_error("Cannot open DDI file");
+        error = "Cannot open DDI file";
+        return std::nullopt;
     }
     std::string bytes(static_cast<size_t>(size), '\0');
     file.read(bytes.data(), static_cast<std::streamsize>(bytes.size()));
     if (file.gcount() != static_cast<std::streamsize>(size)) {
-        throw std::runtime_error("Cannot read complete DDI file");
+        error = "Cannot read complete DDI file";
+        return std::nullopt;
     }
     return bytes;
 }
 
-std::vector<uint8_t> digest_file(const fs::path& path, const EVP_MD* algorithm, bool git_blob = false)
+std::optional<std::vector<uint8_t>> digest_file(const fs::path& path, const EVP_MD* algorithm, std::string& error, bool git_blob = false)
 {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
-        throw std::runtime_error("Cannot open DDI file for checksum");
+        error = "Cannot open DDI file for checksum";
+        return std::nullopt;
     }
     std::unique_ptr<EVP_MD_CTX, decltype(&EVP_MD_CTX_free)> ctx(EVP_MD_CTX_new(), EVP_MD_CTX_free);
     if (!ctx || EVP_DigestInit_ex(ctx.get(), algorithm, nullptr) != 1) {
-        throw std::runtime_error("Cannot initialize DDI checksum");
+        error = "Cannot initialize DDI checksum";
+        return std::nullopt;
     }
     if (git_blob) {
         std::string header = "blob " + std::to_string(fs::file_size(path));
         header += '\0';
         if (EVP_DigestUpdate(ctx.get(), header.data(), header.size()) != 1) {
-            throw std::runtime_error("Cannot calculate DDI checksum");
+            error = "Cannot calculate DDI checksum";
+            return std::nullopt;
         }
     }
     std::array<char, 64 * 1024> buf { };
     while (file) {
         file.read(buf.data(), buf.size());
         if (file.gcount() && EVP_DigestUpdate(ctx.get(), buf.data(), static_cast<size_t>(file.gcount())) != 1) {
-            throw std::runtime_error("Cannot calculate DDI checksum");
+            error = "Cannot calculate DDI checksum";
+            return std::nullopt;
         }
     }
     if (!file.eof()) {
-        throw std::runtime_error("Cannot read DDI checksum input");
+        error = "Cannot read DDI checksum input";
+        return std::nullopt;
     }
     std::vector<uint8_t> result(EVP_MAX_MD_SIZE);
     unsigned length = 0;
     if (EVP_DigestFinal_ex(ctx.get(), result.data(), &length) != 1) {
-        throw std::runtime_error("Cannot finalize DDI checksum");
+        error = "Cannot finalize DDI checksum";
+        return std::nullopt;
     }
     result.resize(length);
     return result;
@@ -101,7 +111,7 @@ bool hex_digest(std::string_view value, size_t length)
     return value.size() == length && value.find_first_not_of("0123456789abcdef") == std::string_view::npos;
 }
 
-void check_catalog(const detail::Catalog& catalog)
+bool check_catalog(const detail::Catalog& catalog, std::string& error)
 {
     std::vector<std::string_view> expected;
     switch (catalog.kind) {
@@ -115,19 +125,21 @@ void check_catalog(const detail::Catalog& catalog)
         expected = { "BuildManifest.plist", "Image.dmg", "Image.dmg.trustcache", "Image.dmg.cryptex_info", "Image.dmg.root_hash" };
         break;
     default:
-        throw std::runtime_error("Invalid DDI download catalog");
+        error = "Invalid DDI download catalog";
+        return false;
     }
     bool build_valid =
         !catalog.build.empty()
         && catalog.build.find_first_not_of("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz") == std::string::npos;
     if (catalog.kind == Kind::Classic) {
-        std::string error;
-        const auto version = parse_product_version(catalog.build, error);
+        std::string version_error;
+        const auto version = parse_product_version(catalog.build, version_error);
         build_valid =
             version && version->major < 17 && catalog.build == std::to_string(version->major) + "." + std::to_string(version->minor);
     }
     if (!build_valid || !catalog.source_url.starts_with("https://") || catalog.assets.size() != expected.size()) {
-        throw std::runtime_error("Invalid DDI download catalog");
+        error = "Invalid DDI download catalog";
+        return false;
     }
     for (const auto& asset : catalog.assets) {
         const auto position = std::find(expected.begin(), expected.end(), asset.name);
@@ -135,10 +147,12 @@ void check_catalog(const detail::Catalog& catalog)
             || (catalog.kind == Kind::Classic ? !hex_digest(asset.git_blob_sha1, 40) : !hex_digest(asset.sha256, 64))
             || (!asset.sha256.empty() && !hex_digest(asset.sha256, 64))
             || (!asset.git_blob_sha1.empty() && !hex_digest(asset.git_blob_sha1, 40))) {
-            throw std::runtime_error("Invalid DDI download asset");
+            error = "Invalid DDI download asset";
+            return false;
         }
         expected.erase(position); // Reject duplicates, unexpected names and path traversal.
     }
+    return true;
 }
 
 std::optional<uint64_t> numeric_identity(const plist::Value* value)
@@ -196,20 +210,25 @@ bool matches_target(const plist::Value& identity, const DownloadTarget* target)
            && (!target->chip_id || numeric_identity(identity.find("ApChipID")) == target->chip_id);
 }
 
-void check_manifest(const fs::path& directory, const detail::Catalog& catalog, const DownloadTarget* target)
+bool check_manifest(const fs::path& directory, const detail::Catalog& catalog, const DownloadTarget* target, std::string& error)
 {
     if (catalog.kind == Kind::Classic) {
-        return;
+        return true;
     }
-    std::string err;
-    auto manifest = plist::parse(read_file(directory / "BuildManifest.plist", 8 * 1024 * 1024), &err);
+    const auto contents = read_file(directory / "BuildManifest.plist", 8 * 1024 * 1024, error);
+    if (!contents) {
+        return false;
+    }
+    auto manifest = plist::parse(*contents, &error);
     if (!manifest || !manifest->is_dict()) {
-        throw std::runtime_error("Invalid DDI BuildManifest plist");
+        error = "Invalid DDI BuildManifest plist";
+        return false;
     }
     const auto* build = manifest->find("ProductBuildVersion");
     const auto* identities = manifest->find("BuildIdentities");
     if (!build || !build->is_string() || build->string != catalog.build || !identities || !identities->is_array()) {
-        throw std::runtime_error("DDI BuildManifest does not match the pinned build");
+        error = "DDI BuildManifest does not match the pinned build";
+        return false;
     }
     const std::vector<std::pair<const char*, const char*>> payloads =
         catalog.kind == Kind::Cryptex
@@ -222,7 +241,11 @@ void check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
     std::vector<std::vector<uint8_t>> digests;
     for (const auto& [key, name] : payloads) {
         (void)key;
-        digests.push_back(digest_file(directory / name, EVP_sha384()));
+        auto digest = digest_file(directory / name, EVP_sha384(), error);
+        if (!digest) {
+            return false;
+        }
+        digests.push_back(std::move(*digest));
     }
     bool found = false;
     bool matched_hardware = false;
@@ -244,7 +267,8 @@ void check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
                     || std::none_of(supported->array.begin(), supported->array.end(), [&](const auto& product) {
                            return product.is_string() && product.string == target->product_type;
                        })) {
-                    throw std::runtime_error("DDI manifest does not support the requested product type");
+                    error = "DDI manifest does not support the requested product type";
+                    return false;
                 }
             }
         }
@@ -258,7 +282,8 @@ void check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
         const auto* entries = identity.find("Manifest");
         if (!entries || !entries->is_dict()) {
             if (catalog.kind == Kind::Cryptex) {
-                throw std::runtime_error("DDI Cryptex manifest entries missing");
+                error = "DDI Cryptex manifest entries missing";
+                return false;
             }
             continue;
         }
@@ -272,7 +297,8 @@ void check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
             if (!digest || digest->kind != plist::Kind::Data || digest->data.size() != 48 || !path || !path->is_string()
                 || path->string != name || digests[payload_index] != digest->data) {
                 if (catalog.kind == Kind::Cryptex) {
-                    throw std::runtime_error(std::string("DDI Cryptex manifest digest mismatch: ") + name);
+                    error = std::string("DDI Cryptex manifest digest mismatch: ") + name;
+                    return false;
                 }
                 valid = false;
                 break;
@@ -285,13 +311,17 @@ void check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
     }
     if (!found) {
         if (catalog.kind == Kind::Cryptex) {
-            throw std::runtime_error("DDI BuildManifest lacks a Cryptex identity");
+            error = "DDI BuildManifest lacks a Cryptex identity";
+            return false;
         }
         if (!matched_hardware) {
-            throw std::runtime_error("DDI BuildManifest lacks a matching Personalized hardware identity");
+            error = "DDI BuildManifest lacks a matching Personalized hardware identity";
+            return false;
         }
-        throw std::runtime_error("DDI Personalized manifest digest mismatch for the requested hardware");
+        error = "DDI Personalized manifest digest mismatch for the requested hardware";
+        return false;
     }
+    return true;
 }
 
 bool validate_files(
@@ -302,25 +332,52 @@ bool validate_files(
     const DownloadTarget* target)
 {
     try {
-        check_catalog(catalog);
+        if (!check_catalog(catalog, error)) {
+            return false;
+        }
         if (fs::is_symlink(fs::symlink_status(directory)) || !fs::is_directory(directory)) {
-            throw std::runtime_error("DDI cache directory is missing or is a symbolic link");
+            error = "DDI cache directory is missing or is a symbolic link";
+            return false;
         }
         for (const auto& asset : catalog.assets) {
             const auto path = directory / asset.name;
             if (fs::is_symlink(fs::symlink_status(path)) || !fs::is_regular_file(path) || fs::file_size(path) != asset.size) {
-                throw std::runtime_error(std::string("DDI cache size or file type mismatch: ") + asset.name);
+                error = std::string("DDI cache size or file type mismatch: ") + asset.name;
+                return false;
             }
-            if (!asset.sha256.empty() && hex(digest_file(path, EVP_sha256())) != asset.sha256) {
-                throw std::runtime_error(std::string("DDI cache SHA-256 mismatch: ") + asset.name);
+            if (!asset.sha256.empty()) {
+                const auto digest = digest_file(path, EVP_sha256(), error);
+                if (!digest) {
+                    return false;
+                }
+                if (hex(*digest) != asset.sha256) {
+                    error = std::string("DDI cache SHA-256 mismatch: ") + asset.name;
+                    return false;
+                }
             }
-            if (!asset.git_blob_sha1.empty() && hex(digest_file(path, EVP_sha1(), true)) != asset.git_blob_sha1) {
-                throw std::runtime_error(std::string("DDI cache Git blob SHA-1 mismatch: ") + asset.name);
+            if (!asset.git_blob_sha1.empty()) {
+                const auto digest = digest_file(path, EVP_sha1(), error, true);
+                if (!digest) {
+                    return false;
+                }
+                if (hex(*digest) != asset.git_blob_sha1) {
+                    error = std::string("DDI cache Git blob SHA-1 mismatch: ") + asset.name;
+                    return false;
+                }
             }
         }
-        check_manifest(directory, catalog, target);
-        if (complete && read_file(directory / ".complete", 4096) != marker(catalog)) {
-            throw std::runtime_error("DDI cache completion marker mismatch");
+        if (!check_manifest(directory, catalog, target, error)) {
+            return false;
+        }
+        if (complete) {
+            const auto contents = read_file(directory / ".complete", 4096, error);
+            if (!contents) {
+                return false;
+            }
+            if (*contents != marker(catalog)) {
+                error = "DDI cache completion marker mismatch";
+                return false;
+            }
         }
         error.clear();
         return true;
@@ -501,12 +558,14 @@ std::optional<DownloadResult> download(
     error.clear();
     try {
         if (options.timeout <= std::chrono::seconds::zero()) {
-            throw std::runtime_error("DDI download timeout must be positive");
+            error = "DDI download timeout must be positive";
+            return std::nullopt;
         }
         const auto start = Clock::now();
         // Cap arithmetic before adding to a steady-clock time point.
         if (options.timeout > std::chrono::hours(24)) {
-            throw std::runtime_error("DDI download timeout exceeds 24 hours");
+            error = "DDI download timeout exceeds 24 hours";
+            return std::nullopt;
         }
         const auto deadline = start + options.timeout;
         auto stopped = [&] {
@@ -530,7 +589,8 @@ std::optional<DownloadResult> download(
             for (int attempt = 0; attempt != 16; ++attempt) {
                 std::array<unsigned char, 16> random;
                 if (RAND_bytes(random.data(), static_cast<int>(random.size())) != 1) {
-                    throw std::runtime_error("Cannot create a unique temporary DDI directory");
+                    error = "Cannot create a unique temporary DDI directory";
+                    return std::nullopt;
                 }
                 constexpr char hex[] = "0123456789abcdef";
                 std::string name = "maafw-ddi-";
@@ -551,16 +611,21 @@ std::optional<DownloadResult> download(
                 break;
             }
             if (root.empty()) {
-                throw std::runtime_error("Cannot create a temporary DDI directory");
+                error = "Cannot create a temporary DDI directory";
+                return std::nullopt;
             }
         }
         if (!root.is_absolute()) {
-            throw std::runtime_error("DDI cache root must be an absolute path");
+            error = "DDI cache root must be an absolute path";
+            return std::nullopt;
         }
-        check_catalog(catalog);
+        if (!check_catalog(catalog, error)) {
+            return std::nullopt;
+        }
         fs::create_directories(root);
         if (fs::is_symlink(fs::symlink_status(root))) {
-            throw std::runtime_error("DDI cache root must not be a symbolic link");
+            error = "DDI cache root must not be a symbolic link";
+            return std::nullopt;
         }
         const auto cache_name = std::string(kind_name(catalog.kind)) + "-" + catalog.build;
         const auto directory = root / cache_name;
@@ -571,8 +636,8 @@ std::optional<DownloadResult> download(
                         + MAA_NS::path_to_utf8_string(directory) + " (" + error + ")";
                 return std::nullopt;
             }
-            if (target) {
-                check_manifest(directory, catalog, target);
+            if (target && !check_manifest(directory, catalog, target, error)) {
+                return std::nullopt;
             }
             if (stopped()) {
                 return std::nullopt;
@@ -581,26 +646,29 @@ std::optional<DownloadResult> download(
         }
         const auto lock_path = root / (cache_name + ".lock");
         if (!fs::create_directory(lock_path)) {
-            throw std::runtime_error(
-                "Another DDI download owns this version lock; retry after it finishes (remove the lock only if that process has exited)");
+            error =
+                "Another DDI download owns this version lock; retry after it finishes (remove the lock only if that process has exited)";
+            return std::nullopt;
         }
         RemovePath lock { lock_path };
         if (fs::exists(directory)) {
             if (!validate(directory, catalog, error) || stopped()) {
                 return std::nullopt;
             }
-            if (target) {
-                check_manifest(directory, catalog, target);
+            if (target && !check_manifest(directory, catalog, target, error)) {
+                return std::nullopt;
             }
             return DownloadResult { directory, catalog.build, catalog.source_url, true, catalog.kind, temporary_storage };
         }
         std::vector<uint8_t> nonce(16);
         if (RAND_bytes(nonce.data(), static_cast<int>(nonce.size())) != 1) {
-            throw std::runtime_error("Cannot generate DDI staging directory name");
+            error = "Cannot generate DDI staging directory name";
+            return std::nullopt;
         }
         const auto staging = root / ("." + cache_name + ".partial-" + hex(nonce));
         if (!fs::create_directory(staging)) {
-            throw std::runtime_error("Cannot create unique DDI staging directory");
+            error = "Cannot create unique DDI staging directory";
+            return std::nullopt;
         }
         RemovePath cleanup { staging };
         fs::permissions(staging, fs::perms::owner_all, fs::perm_options::replace);
@@ -610,7 +678,8 @@ std::optional<DownloadResult> download(
             }
             std::ofstream file(staging / asset.name, std::ios::binary | std::ios::trunc);
             if (!file) {
-                throw std::runtime_error(std::string("Cannot create DDI download file: ") + asset.name);
+                error = std::string("Cannot create DDI download file: ") + asset.name;
+                return std::nullopt;
             }
             uint64_t received = 0;
             const Sink sink = [&](const char* data, size_t length) {
@@ -649,14 +718,17 @@ std::optional<DownloadResult> download(
             }
             file.flush();
             if (!file) {
-                throw std::runtime_error(std::string("Cannot flush DDI download file: ") + asset.name);
+                error = std::string("Cannot flush DDI download file: ") + asset.name;
+                return std::nullopt;
             }
             file.close();
             if (!file) {
-                throw std::runtime_error(std::string("Cannot close DDI download file: ") + asset.name);
+                error = std::string("Cannot close DDI download file: ") + asset.name;
+                return std::nullopt;
             }
             if (received != asset.size) {
-                throw std::runtime_error(std::string("Incomplete DDI download: ") + asset.name);
+                error = std::string("Incomplete DDI download: ") + asset.name;
+                return std::nullopt;
             }
         }
         if (stopped() || !validate_files(staging, catalog, error, false, target)) {
@@ -666,13 +738,15 @@ std::optional<DownloadResult> download(
         complete << marker(catalog);
         complete.close();
         if (!complete) {
-            throw std::runtime_error("Cannot write DDI completion marker");
+            error = "Cannot write DDI completion marker";
+            return std::nullopt;
         }
         if (stopped()) {
             return std::nullopt;
         }
         if (fs::exists(directory)) {
-            throw std::runtime_error("DDI version directory appeared during download; refusing to overwrite it");
+            error = "DDI version directory appeared during download; refusing to overwrite it";
+            return std::nullopt;
         }
         fs::rename(staging, directory);
         cleanup.path.clear();

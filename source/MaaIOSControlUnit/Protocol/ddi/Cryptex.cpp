@@ -3,11 +3,11 @@
 #include "ddi/Tss.h"
 #include <algorithm>
 #include <array>
+#include <exception>
 #include <fstream>
 #include <limits>
 #include <openssl/evp.h>
 #include <sstream>
-#include <stdexcept>
 #include <thread>
 
 namespace maa::ios::ddi
@@ -18,66 +18,67 @@ constexpr std::string_view service_name = "com.apple.security.cryptexd.remote";
 constexpr std::string_view ddi_identifier = "com.apple.MobileAsset.DDI";
 using Clock = std::chrono::steady_clock;
 
-const plist::Value& need(const plist::Value& v, std::string_view key)
+std::optional<uint64_t> number(const plist::Value* value, std::string& error)
 {
-    auto p = v.find(key);
-    if (!p) {
-        throw std::runtime_error("Cryptex manifest is missing a required field");
+    if (value && value->is_uint()) {
+        return value->unsigned_integer;
     }
-    return *p;
+    if (value && value->is_int() && value->integer >= 0) {
+        return static_cast<uint64_t>(value->integer);
+    }
+    error = "Cryptex manifest has an invalid integer";
+    return std::nullopt;
 }
 
-uint64_t number(const plist::Value& v)
+std::optional<std::string> text(const plist::Value* value, std::string& error)
 {
-    if (v.is_uint()) {
-        return v.unsigned_integer;
+    if (!value || !value->is_string() || value->string.empty() || value->string.size() > 256
+        || std::any_of(value->string.begin(), value->string.end(), [](unsigned char c) { return c < 32 || c == 127; })) {
+        error = "Cryptex manifest has an invalid string";
+        return std::nullopt;
     }
-    if (v.is_int() && v.integer >= 0) {
-        return static_cast<uint64_t>(v.integer);
-    }
-    throw std::runtime_error("Cryptex manifest has an invalid integer");
+    return value->string;
 }
 
-std::string text(const plist::Value& v)
-{
-    if (!v.is_string() || v.string.empty() || v.string.size() > 256
-        || std::any_of(v.string.begin(), v.string.end(), [](unsigned char c) { return c < 32 || c == 127; })) {
-        throw std::runtime_error("Cryptex manifest has an invalid string");
-    }
-    return v.string;
-}
-
-std::string read_file(const std::filesystem::path& path, uint64_t limit)
+std::optional<std::string> read_file(const std::filesystem::path& path, uint64_t limit, std::string& error)
 {
     if (std::filesystem::is_symlink(std::filesystem::symlink_status(path)) || !std::filesystem::is_regular_file(path)) {
-        throw std::runtime_error("Cryptex asset is not a bounded regular file");
+        error = "Cryptex asset is not a bounded regular file";
+        return std::nullopt;
     }
     const auto size = std::filesystem::file_size(path);
     if (size > limit) {
-        throw std::runtime_error("Cryptex asset is not a bounded regular file");
+        error = "Cryptex asset is not a bounded regular file";
+        return std::nullopt;
     }
     std::string bytes(static_cast<std::size_t>(size), '\0');
     std::ifstream file(path, std::ios::binary);
     file.read(bytes.data(), static_cast<std::streamsize>(size));
     if (!file || static_cast<uint64_t>(file.gcount()) != size) {
-        throw std::runtime_error("Cannot read the complete Cryptex asset");
+        error = "Cannot read the complete Cryptex asset";
+        return std::nullopt;
     }
     return bytes;
 }
 
-std::string pinned_snapshot(const std::filesystem::path& directory, std::string_view name)
+std::optional<std::string> pinned_snapshot(const std::filesystem::path& directory, std::string_view name, std::string& error)
 {
     const auto& catalog = detail::cryptex_catalog();
     const auto asset = std::find_if(catalog.assets.begin(), catalog.assets.end(), [&](const auto& a) { return a.name == name; });
     if (asset == catalog.assets.end()) {
-        throw std::runtime_error("Unknown pinned Cryptex asset");
+        error = "Unknown pinned Cryptex asset";
+        return std::nullopt;
     }
-    auto bytes = read_file(directory / asset->name, asset->size);
+    auto bytes = read_file(directory / asset->name, asset->size, error);
+    if (!bytes) {
+        return std::nullopt;
+    }
     std::array<uint8_t, EVP_MAX_MD_SIZE> digest { };
     unsigned int length = 0;
-    if (bytes.size() != asset->size || EVP_Digest(bytes.data(), bytes.size(), digest.data(), &length, EVP_sha256(), nullptr) != 1
+    if (bytes->size() != asset->size || EVP_Digest(bytes->data(), bytes->size(), digest.data(), &length, EVP_sha256(), nullptr) != 1
         || length != 32) {
-        throw std::runtime_error("Cryptex asset snapshot checksum failed");
+        error = "Cryptex asset snapshot checksum failed";
+        return std::nullopt;
     }
     constexpr char hex[] = "0123456789abcdef";
     std::string checksum;
@@ -86,15 +87,17 @@ std::string pinned_snapshot(const std::filesystem::path& directory, std::string_
         checksum += hex[digest[i] & 15];
     }
     if (checksum != asset->sha256) {
-        throw std::runtime_error("Cryptex asset changed before installation");
+        error = "Cryptex asset changed before installation";
+        return std::nullopt;
     }
     return bytes;
 }
 
-plist::Value to_plist(const xpc::Value& v, unsigned depth = 0)
+std::optional<plist::Value> to_plist(const xpc::Value& v, std::string& error, unsigned depth = 0)
 {
     if (depth > 32) {
-        throw std::runtime_error("Cryptex identifiers exceed the nesting limit");
+        error = "Cryptex identifiers exceed the nesting limit";
+        return std::nullopt;
     }
     switch (v.type) {
     case xpc::Type::Bool:
@@ -110,12 +113,17 @@ plist::Value to_plist(const xpc::Value& v, unsigned depth = 0)
     case xpc::Type::Dict: {
         auto r = plist::Value::Dict();
         for (const auto& e : v.dict) {
-            r.set(e.key, to_plist(e.value, depth + 1));
+            auto child = to_plist(e.value, error, depth + 1);
+            if (!child) {
+                return std::nullopt;
+            }
+            r.set(e.key, std::move(*child));
         }
         return r;
     }
     default:
-        throw std::runtime_error("Cryptex identifiers contain an unsupported value");
+        error = "Cryptex identifiers contain an unsupported value";
+        return std::nullopt;
     }
 }
 
@@ -132,12 +140,17 @@ struct Session
         , options(o)
         , deadline(Clock::now() + o.timeout)
         , watcher([this](std::stop_token token) {
-            while (!token.stop_requested()) {
-                if (Clock::now() >= deadline || (options.cancelled && options.cancelled())) {
-                    stop.request_stop();
-                    return;
+            try {
+                while (!token.stop_requested()) {
+                    if (Clock::now() >= deadline || (options.cancelled && options.cancelled())) {
+                        stop.request_stop();
+                        return;
+                    }
+                    std::this_thread::sleep_for(std::chrono::milliseconds(25));
                 }
-                std::this_thread::sleep_for(std::chrono::milliseconds(25));
+            }
+            catch (...) {
+                stop.request_stop();
             }
         })
     {
@@ -238,54 +251,70 @@ namespace detail
 std::optional<CryptexMetadata> parse_cryptex_metadata(const plist::Value& manifest, const plist::Value& info, std::string& error)
 {
     error.clear();
-    try {
-        const auto& identities = need(manifest, "BuildIdentities");
-        if (!identities.is_array()) {
-            throw std::runtime_error("Cryptex manifest identities are invalid");
-        }
-        const plist::Value* identity = nullptr;
-        for (const auto& candidate : identities.array) {
-            const auto metadata = candidate.find("Info");
-            const auto variant = metadata ? metadata->find("Variant") : nullptr;
-            if (variant && variant->is_string() && variant->string.ends_with("Developer Disk Image Cryptex")) {
-                if (identity) {
-                    throw std::runtime_error("Cryptex manifest has ambiguous identities");
-                }
-                identity = &candidate;
+    const auto* identities = manifest.find("BuildIdentities");
+    if (!identities || !identities->is_array()) {
+        error = "Cryptex manifest identities are invalid";
+        return std::nullopt;
+    }
+    const plist::Value* identity = nullptr;
+    for (const auto& candidate : identities->array) {
+        const auto* metadata = candidate.find("Info");
+        const auto* variant = metadata ? metadata->find("Variant") : nullptr;
+        if (variant && variant->is_string() && variant->string.ends_with("Developer Disk Image Cryptex")) {
+            if (identity) {
+                error = "Cryptex manifest has ambiguous identities";
+                return std::nullopt;
             }
+            identity = &candidate;
         }
-        if (!identity) {
-            throw std::runtime_error("Cryptex manifest lacks its generic identity");
-        }
-        CryptexMetadata result;
-        result.identity = *identity;
-        result.identifier = text(need(info, "CFBundleIdentifier"));
-        result.version = text(need(info, "CFBundleVersion"));
-        if (result.identifier != ddi_identifier || text(need(info, "RequiredMountPath")) != "/System/Developer") {
-            throw std::runtime_error("Cryptex asset is not a Developer Disk Image");
-        }
-        result.nonce_domain = number(need(*identity, "Cryptex1,NonceDomain"));
-        if (result.nonce_domain != 4) {
-            throw std::runtime_error("Cryptex DDI nonce-domain handle is unsupported");
-        }
-        const auto& product_class = need(*identity, "Cryptex1,UseProductClass");
-        if (!product_class.is_bool()) {
-            throw std::runtime_error("Cryptex product-class flag is invalid");
-        }
-        auto& p = result.properties;
-        p = xpc::make_dict();
-        xpc::dict_set(p, "Cryptex1,UseProductClass", xpc::make_bool(product_class.boolean));
-        xpc::dict_set(p, "MountedCryptex", xpc::make_bool(false));
-        xpc::dict_set(p, "Cryptex1,SubType", xpc::make_uint64(number(need(*identity, "Cryptex1,SubType"))));
-        xpc::dict_set(p, "Cryptex1,NonceDomain", xpc::make_uint64(result.nonce_domain));
-        xpc::dict_set(p, "Cryptex1,Version", xpc::make_string(text(need(*identity, "Cryptex1,Version"))));
-        xpc::dict_set(p, "Cryptex1,PreauthVersion", xpc::make_string(text(need(*identity, "Cryptex1,PreauthorizationVersion"))));
-        return result;
     }
-    catch (const std::exception& e) {
-        error = e.what();
-        return { };
+    if (!identity) {
+        error = "Cryptex manifest lacks its generic identity";
+        return std::nullopt;
     }
+    const auto identifier = text(info.find("CFBundleIdentifier"), error);
+    const auto version = text(info.find("CFBundleVersion"), error);
+    const auto mount_path = text(info.find("RequiredMountPath"), error);
+    if (!identifier || !version || !mount_path) {
+        return std::nullopt;
+    }
+    if (*identifier != ddi_identifier || *mount_path != "/System/Developer") {
+        error = "Cryptex asset is not a Developer Disk Image";
+        return std::nullopt;
+    }
+    const auto nonce_domain = number(identity->find("Cryptex1,NonceDomain"), error);
+    if (!nonce_domain) {
+        return std::nullopt;
+    }
+    if (*nonce_domain != 4) {
+        error = "Cryptex DDI nonce-domain handle is unsupported";
+        return std::nullopt;
+    }
+    const auto* product_class = identity->find("Cryptex1,UseProductClass");
+    if (!product_class || !product_class->is_bool()) {
+        error = "Cryptex product-class flag is invalid";
+        return std::nullopt;
+    }
+    const auto subtype = number(identity->find("Cryptex1,SubType"), error);
+    const auto cryptex_version = text(identity->find("Cryptex1,Version"), error);
+    const auto preauth_version = text(identity->find("Cryptex1,PreauthorizationVersion"), error);
+    if (!subtype || !cryptex_version || !preauth_version) {
+        return std::nullopt;
+    }
+    CryptexMetadata result;
+    result.identity = *identity;
+    result.identifier = *identifier;
+    result.version = *version;
+    result.nonce_domain = *nonce_domain;
+    auto& properties = result.properties;
+    properties = xpc::make_dict();
+    xpc::dict_set(properties, "Cryptex1,UseProductClass", xpc::make_bool(product_class->boolean));
+    xpc::dict_set(properties, "MountedCryptex", xpc::make_bool(false));
+    xpc::dict_set(properties, "Cryptex1,SubType", xpc::make_uint64(*subtype));
+    xpc::dict_set(properties, "Cryptex1,NonceDomain", xpc::make_uint64(result.nonce_domain));
+    xpc::dict_set(properties, "Cryptex1,Version", xpc::make_string(*cryptex_version));
+    xpc::dict_set(properties, "Cryptex1,PreauthVersion", xpc::make_string(*preauth_version));
+    return result;
 }
 
 bool unwrap_cryptex_reply(const xpc::Value& reply, xpc::Value& argv, std::string& error)
@@ -422,9 +451,20 @@ std::optional<CryptexInstallResult> install_cryptex(
         if (!detail::validate(download.directory, detail::cryptex_catalog(), error, &target)) {
             return { };
         }
-        auto manifest = plist::parse(pinned_snapshot(download.directory, "BuildManifest.plist"), &error);
-        auto info = plist::parse(pinned_snapshot(download.directory, "Image.dmg.cryptex_info"), &error);
-        if (!manifest || !info) {
+        const auto manifest_bytes = pinned_snapshot(download.directory, "BuildManifest.plist", error);
+        if (!manifest_bytes) {
+            return std::nullopt;
+        }
+        auto manifest = plist::parse(*manifest_bytes, &error);
+        if (!manifest) {
+            return std::nullopt;
+        }
+        const auto info_bytes = pinned_snapshot(download.directory, "Image.dmg.cryptex_info", error);
+        if (!info_bytes) {
+            return std::nullopt;
+        }
+        auto info = plist::parse(*info_bytes, &error);
+        if (!info) {
             return { };
         }
         auto metadata = detail::parse_cryptex_metadata(*manifest, *info, error);
@@ -490,7 +530,11 @@ std::optional<CryptexInstallResult> install_cryptex(
         if (!nonce) {
             return { };
         }
-        auto tss = build_cryptex_tss_request(metadata->identity, to_plist(identifiers), *nonce, error);
+        const auto personalization = to_plist(identifiers, error);
+        if (!personalization) {
+            return std::nullopt;
+        }
+        auto tss = build_cryptex_tss_request(metadata->identity, *personalization, *nonce, error);
         if (!tss) {
             return { };
         }
@@ -520,9 +564,12 @@ std::optional<CryptexInstallResult> install_cryptex(
         std::array<std::istringstream, 4> files;
         std::array<uint64_t, 5> sizes { };
         for (std::size_t i = 0; i < files.size(); ++i) {
-            auto snapshot = pinned_snapshot(download.directory, names[i]);
-            sizes[i < 2 ? i : i + 1] = snapshot.size();
-            files[i].str(std::move(snapshot));
+            auto snapshot = pinned_snapshot(download.directory, names[i], error);
+            if (!snapshot) {
+                return std::nullopt;
+            }
+            sizes[i < 2 ? i : i + 1] = snapshot->size();
+            files[i].str(std::move(*snapshot));
         }
         sizes[2] = ticket->size();
         // Signing is an HTTP round trip. A reboot or another installer may

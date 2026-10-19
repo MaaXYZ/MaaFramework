@@ -1,5 +1,7 @@
+#include "ddi/Cryptex.h"
 #include "ddi/DownloadInternal.h"
 #include "ddi/Mounter.h"
+#include "ddi/Tss.h"
 
 #include <algorithm>
 #include <iostream>
@@ -165,13 +167,128 @@ void test_existing_classic_signature_mismatch()
     require(!result && !error.empty(), "mounted Classic image without a verifiable signature is rejected");
 
     mock.signature = { 'z' };
-    mock.commands.clear();
     options.replace_existing = true;
+    const auto request = service.request;
+    for (const auto failure : { "LookupImage", "UnmountImage", "ReceiveBytes" }) {
+        mock.commands.clear();
+        mock.mounted = true;
+        mock.uploaded = 0;
+        service.request = [&, failure](const V& value, auto timeout, std::string& message) -> std::optional<V> {
+            if (value.find("Command")->as_string_or() == failure) {
+                mock.commands.emplace_back(failure);
+                message = "device disconnected";
+                return std::nullopt;
+            }
+            return request(value, timeout, message);
+        };
+        result = ddi::detail::mount_image_with_catalog(service, *download, target, 0, options, catalog, error);
+        require(!result && error == "device disconnected", "device error is propagated");
+        require(mock.commands.back() == failure && mock.uploaded == 0, "failed request stops subsequent device operations");
+        require(mock.mounted == (std::string_view(failure) != "ReceiveBytes"), "failure cannot trigger an extra unmount");
+    }
+    service.request = request;
+    mock.mounted = true;
+    mock.commands.clear();
     result = ddi::detail::mount_image_with_catalog(service, *download, target, 0, options, catalog, error);
     require(
         result && result->state == ddi::MountState::Mounted && result->signature_matches == true && mock.uploaded == 1,
         "explicit replacement uploads and verifies the selected image");
     require(std::ranges::find(mock.commands, "UnmountImage") != mock.commands.end(), "replacement explicitly unmounts the previous image");
+}
+
+void test_inspection_failures()
+{
+    ImageMounter mock;
+    auto service = mock.service();
+    ddi::DownloadTarget target;
+    target.system_version = "11.4.1";
+    ddi::MountOptions options;
+    std::string error;
+    options.timeout = std::chrono::seconds::zero();
+    require(!ddi::inspect_mounted(service, target, options, error) && !error.empty(), "invalid timeout fails before I/O");
+    options.timeout = std::chrono::seconds(30);
+    options.cancelled = [] {
+        return true;
+    };
+    require(
+        !ddi::inspect_mounted(service, target, options, error) && error.find("cancelled") != std::string::npos,
+        "cancelled inspection fails");
+    require(mock.commands.empty(), "invalid or cancelled inspection makes no device request");
+    options.cancelled = { };
+    service.request = [](const V&, auto, std::string&) -> std::optional<V> {
+        return V::Array();
+    };
+    require(
+        !ddi::inspect_mounted(service, target, options, error) && error.find("reply") != std::string::npos,
+        "malformed reply is rejected");
+    service.request = [](const V&, auto, std::string&) -> std::optional<V> {
+        throw std::runtime_error("callback failure");
+    };
+    require(
+        !ddi::inspect_mounted(service, target, options, error) && error == "callback failure",
+        "callback exception is contained at the boundary");
+    service.request = { };
+    require(
+        !ddi::inspect_mounted(service, target, options, error) && error.find("callback") != std::string::npos,
+        "missing callback is rejected");
+}
+
+void test_signing_metadata_failures()
+{
+    auto manifest = V::Dict();
+    auto identities = V::Array();
+    auto identity = V::Dict();
+    identity.set("ApBoardID", V::Int(1));
+    identity.set("ApChipID", V::Int(2));
+    auto info = V::Dict();
+    info.set("Variant", V::Str("Developer PDI"));
+    identity.set("Info", info);
+    auto components = V::Dict();
+    auto component = V::Dict();
+    component.set("Info", V::Dict());
+    component.set("Trusted", V::Bool(true));
+    component.set("Digest", V::OfData({ 1, 2 }));
+    components.set("PersonalizedDMG", component);
+    components.set("LoadableTrustCache", component);
+    identity.set("Manifest", components);
+    identities.push(identity);
+    manifest.set("BuildIdentities", identities);
+    auto identifiers = V::Dict();
+    identifiers.set("BoardId", V::Int(1));
+    identifiers.set("ChipID", V::Int(2));
+    std::string error;
+    auto request = ddi::build_personalized_tss_request(manifest, identifiers, 3, { 4 }, error);
+    require(request && error.empty() && request->find("PersonalizedDMG"), "valid metadata produces a signing request");
+    require(!ddi::build_personalized_tss_request(manifest, identifiers, 3, { }, error) && !error.empty(), "empty nonce is rejected");
+    auto rules = V::Dict();
+    rules.set("RestoreRequestRules", V::Str("invalid"));
+    component.set("Info", rules);
+    components.set("LoadableTrustCache", component);
+    identity.set("Manifest", components);
+    identities.array[0] = identity;
+    manifest.set("BuildIdentities", identities);
+    require(
+        !ddi::build_personalized_tss_request(manifest, identifiers, 3, { 4 }, error) && error.find("rules") != std::string::npos,
+        "malformed signing rules cannot produce a request");
+
+    info.set("Variant", V::Str("Developer Disk Image Cryptex"));
+    identity.set("Info", info);
+    identity.set("Cryptex1,NonceDomain", V::Int(4));
+    identity.set("Cryptex1,UseProductClass", V::Bool(false));
+    identity.set("Cryptex1,SubType", V::Int(1));
+    identity.set("Cryptex1,Version", V::Str("1"));
+    identity.set("Cryptex1,PreauthorizationVersion", V::Str("1"));
+    identities.array[0] = identity;
+    manifest.set("BuildIdentities", identities);
+    auto bundle = V::Dict();
+    bundle.set("CFBundleIdentifier", V::Str("com.apple.MobileAsset.DDI"));
+    bundle.set("CFBundleVersion", V::Str("1"));
+    bundle.set("RequiredMountPath", V::Str("/System/Developer"));
+    require(
+        ddi::detail::parse_cryptex_metadata(manifest, bundle, error).has_value() && error.empty(),
+        "valid cryptex metadata is accepted");
+    bundle.set("RequiredMountPath", V::Int(1));
+    require(!ddi::detail::parse_cryptex_metadata(manifest, bundle, error) && !error.empty(), "malformed cryptex properties are rejected");
 }
 } // namespace
 
@@ -180,6 +297,8 @@ int main()
     try {
         test_classic_reuse_without_download();
         test_existing_classic_signature_mismatch();
+        test_inspection_failures();
+        test_signing_metadata_failures();
         std::cout << "Classic DDI mounted-image checks passed\n";
         return 0;
     }

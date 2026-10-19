@@ -4,10 +4,10 @@
 #include <array>
 #include <charconv>
 #include <curl/curl.h>
+#include <exception>
 #include <limits>
 #include <memory>
 #include <openssl/rand.h>
-#include <stdexcept>
 
 namespace maa::ios::ddi
 {
@@ -18,13 +18,6 @@ constexpr size_t kMaxResponse = 4u << 20;
 constexpr size_t kMaxTicket = 1u << 20;
 constexpr size_t kMaxRequest = 2u << 20;
 constexpr char kTssUrl[] = "https://gs.apple.com/TSS/controller?action=2";
-
-void require(bool condition, const char* message)
-{
-    if (!condition) {
-        throw std::runtime_error(message);
-    }
-}
 
 bool valid_shape(const V& value, unsigned depth = 0)
 {
@@ -72,13 +65,6 @@ std::optional<uint64_t> number(const V* value)
     return out;
 }
 
-uint64_t required_number(const V& dict, std::string_view key)
-{
-    auto n = number(dict.find(key));
-    require(n.has_value(), "DDI signing metadata contains an invalid numeric identifier");
-    return *n;
-}
-
 V integer(uint64_t number)
 {
     return number <= static_cast<uint64_t>(INT64_MAX) ? V::Int(static_cast<int64_t>(number)) : V::UInt(number);
@@ -96,10 +82,13 @@ bool truth(const V* value)
     return n && *n != 0;
 }
 
-V request_base()
+std::optional<V> request_base(std::string& error)
 {
     std::array<uint8_t, 16> bytes { };
-    require(RAND_bytes(bytes.data(), static_cast<int>(bytes.size())) == 1, "Cannot generate DDI signing request identifier");
+    if (RAND_bytes(bytes.data(), static_cast<int>(bytes.size())) != 1) {
+        error = "Cannot generate DDI signing request identifier";
+        return std::nullopt;
+    }
     bytes[6] = (bytes[6] & 15) | 0x40;
     bytes[8] = (bytes[8] & 63) | 0x80;
     constexpr char hex[] = "0123456789ABCDEF";
@@ -118,9 +107,12 @@ V request_base()
     return request;
 }
 
-V without_info(const V& entry)
+std::optional<V> without_info(const V& entry, std::string& error)
 {
-    require(entry.is_dict() && entry.keys.size() == entry.values.size(), "DDI signing manifest component is malformed");
+    if (!entry.is_dict() || entry.keys.size() != entry.values.size()) {
+        error = "DDI signing manifest component is malformed";
+        return std::nullopt;
+    }
     auto result = V::Dict();
     for (size_t i = 0; i < entry.keys.size(); ++i) {
         if (entry.keys[i] != "Info") {
@@ -130,18 +122,22 @@ V without_info(const V& entry)
     return result;
 }
 
-void apply_rules(V& entry, const V* rules)
+bool apply_rules(V& entry, const V* rules, std::string& error)
 {
     if (!rules) {
-        return;
+        return true;
     }
-    require(rules->is_array(), "DDI restore request rules are malformed");
+    if (!rules->is_array()) {
+        error = "DDI restore request rules are malformed";
+        return false;
+    }
     for (const auto& rule : rules->array) {
         const auto *conditions = rule.find("Conditions"), *actions = rule.find("Actions");
-        require(
-            rule.is_dict() && conditions && conditions->is_dict() && actions && actions->is_dict()
-                && conditions->keys.size() == conditions->values.size() && actions->keys.size() == actions->values.size(),
-            "DDI restore request rules are malformed");
+        if (!(rule.is_dict() && conditions && conditions->is_dict() && actions && actions->is_dict()
+              && conditions->keys.size() == conditions->values.size() && actions->keys.size() == actions->values.size())) {
+            error = "DDI restore request rules are malformed";
+            return false;
+        }
         bool match = true;
         for (size_t i = 0; i < conditions->keys.size(); ++i) {
             const auto& key = conditions->keys[i];
@@ -167,11 +163,7 @@ void apply_rules(V& entry, const V* rules)
             entry.set(actions->keys[i], value);
         }
     }
-}
-
-void check_nonce(const std::vector<uint8_t>& nonce)
-{
-    require(!nonce.empty() && nonce.size() <= 64, "DDI signing nonce has an invalid length");
+    return true;
 }
 
 struct CurlContext
@@ -228,12 +220,28 @@ std::optional<V> build_personalized_tss_request(
 {
     error.clear();
     try {
-        require(valid_shape(build_manifest) && valid_shape(identifiers), "DDI signing metadata is malformed");
-        check_nonce(nonce);
-        require(ecid != 0 && identifiers.is_dict(), "DDI signing device identifiers are missing");
-        const auto board = required_number(identifiers, "BoardId"), chip = required_number(identifiers, "ChipID");
+        if (!valid_shape(build_manifest) || !valid_shape(identifiers)) {
+            error = "DDI signing metadata is malformed";
+            return std::nullopt;
+        }
+        if (nonce.empty() || nonce.size() > 64) {
+            error = "DDI signing nonce has an invalid length";
+            return std::nullopt;
+        }
+        if (ecid == 0 || !identifiers.is_dict()) {
+            error = "DDI signing device identifiers are missing";
+            return std::nullopt;
+        }
+        const auto board = number(identifiers.find("BoardId")), chip = number(identifiers.find("ChipID"));
+        if (!board || !chip) {
+            error = "DDI signing metadata contains an invalid numeric identifier";
+            return std::nullopt;
+        }
         const auto* identities = build_manifest.find("BuildIdentities");
-        require(identities && identities->is_array(), "DDI signing build identities are missing");
+        if (!identities || !identities->is_array()) {
+            error = "DDI signing build identities are missing";
+            return std::nullopt;
+        }
         const V* identity = nullptr;
         for (const auto& candidate : identities->array) {
             if (number(candidate.find("ApBoardID")) != board || number(candidate.find("ApChipID")) != chip) {
@@ -244,13 +252,26 @@ std::optional<V> build_personalized_tss_request(
             if (!variant || !variant->is_string() || !variant->string.ends_with("Developer PDI")) {
                 continue;
             }
-            require(!identity, "DDI signing hardware identity is ambiguous");
+            if (identity) {
+                error = "DDI signing hardware identity is ambiguous";
+                return std::nullopt;
+            }
             identity = &candidate;
         }
-        require(identity, "DDI signing manifest has no matching hardware identity");
+        if (!identity) {
+            error = "DDI signing manifest has no matching hardware identity";
+            return std::nullopt;
+        }
         const auto* manifest = identity->find("Manifest");
-        require(manifest && manifest->is_dict(), "DDI signing component manifest is missing");
-        auto request = request_base();
+        if (!manifest || !manifest->is_dict()) {
+            error = "DDI signing component manifest is missing";
+            return std::nullopt;
+        }
+        auto base = request_base(error);
+        if (!base) {
+            return std::nullopt;
+        }
+        auto request = std::move(*base);
         for (size_t i = 0; i < identifiers.keys.size(); ++i) {
             if (identifiers.keys[i].starts_with("Ap,")) {
                 request.set(identifiers.keys[i], identifiers.values[i]);
@@ -258,8 +279,8 @@ std::optional<V> build_personalized_tss_request(
         }
         request.set("@ApImg4Ticket", V::Bool(true));
         request.set("@BBTicket", V::Bool(true));
-        request.set("ApBoardID", integer(board));
-        request.set("ApChipID", integer(chip));
+        request.set("ApBoardID", integer(*board));
+        request.set("ApChipID", integer(*chip));
         request.set("ApECID", integer(ecid));
         request.set("ApNonce", V::OfData(nonce));
         request.set("ApProductionMode", V::Bool(true));
@@ -277,19 +298,27 @@ std::optional<V> build_personalized_tss_request(
             if (!info || !info->is_dict() || !truth(entry.find("Trusted"))) {
                 continue;
             }
-            auto signed_entry = without_info(entry);
+            auto signed_entry = without_info(entry, error);
             // PDI's shared trust-cache rules also describe the DMG, whose Info has no rules.
-            apply_rules(signed_entry, common_rules);
-            const auto* digest = entry.find("Digest");
-            require(!digest || digest->kind == plist::Kind::Data, "DDI signing component digest is malformed");
-            if (!digest) {
-                signed_entry.set("Digest", V::OfData({ }));
+            if (!signed_entry || !apply_rules(*signed_entry, common_rules, error)) {
+                return std::nullopt;
             }
-            request.set(manifest->keys[i], std::move(signed_entry));
+            const auto* digest = entry.find("Digest");
+            if (digest && digest->kind != plist::Kind::Data) {
+                error = "DDI signing component digest is malformed";
+                return std::nullopt;
+            }
+            if (!digest) {
+                signed_entry->set("Digest", V::OfData({ }));
+            }
+            request.set(manifest->keys[i], std::move(*signed_entry));
             has_dmg |= manifest->keys[i] == "PersonalizedDMG";
             has_trust |= manifest->keys[i] == "LoadableTrustCache";
         }
-        require(has_dmg && has_trust, "DDI signing manifest lacks trusted image components");
+        if (!has_dmg || !has_trust) {
+            error = "DDI signing manifest lacks trusted image components";
+            return std::nullopt;
+        }
         return request;
     }
     catch (const std::exception& e) {
@@ -302,13 +331,31 @@ std::optional<V> build_cryptex_tss_request(const V& identity, const V& chip_inst
 {
     error.clear();
     try {
-        require(valid_shape(identity) && valid_shape(chip_instance), "DDI signing metadata is malformed");
-        check_nonce(nonce);
-        require(identity.is_dict() && chip_instance.is_dict(), "Cryptex signing identifiers are missing");
-        auto request = request_base();
+        if (!valid_shape(identity) || !valid_shape(chip_instance)) {
+            error = "DDI signing metadata is malformed";
+            return std::nullopt;
+        }
+        if (nonce.empty() || nonce.size() > 64) {
+            error = "DDI signing nonce has an invalid length";
+            return std::nullopt;
+        }
+        if (!identity.is_dict() || !chip_instance.is_dict()) {
+            error = "Cryptex signing identifiers are missing";
+            return std::nullopt;
+        }
+        auto base = request_base(error);
+        if (!base) {
+            return std::nullopt;
+        }
+        auto request = std::move(*base);
         request.set("@Cryptex1,Ticket", V::Bool(true));
         for (const char* key : { "Cryptex1,ChipID", "Cryptex1,ProductClass" }) {
-            request.set(key, integer(required_number(identity, key)));
+            const auto value = number(identity.find(key));
+            if (!value) {
+                error = "DDI signing metadata contains an invalid numeric identifier";
+                return std::nullopt;
+            }
+            request.set(key, integer(*value));
         }
         for (const char* key : { "Cryptex1,Type",
                                  "Cryptex1,SubType",
@@ -317,16 +364,29 @@ std::optional<V> build_cryptex_tss_request(const V& identity, const V& chip_inst
                                  "Cryptex1,Version",
                                  "Cryptex1,PreauthorizationVersion" }) {
             const auto* value = identity.find(key);
-            require(value, "Cryptex signing build identity is incomplete");
+            if (!value) {
+                error = "Cryptex signing build identity is incomplete";
+                return std::nullopt;
+            }
             request.set(key, *value);
         }
-        const auto chip = required_number(chip_instance, "img4_chip_chip");
-        const auto ecid = required_number(chip_instance, "img4_chip_ecid");
-        require(ecid != 0, "Cryptex signing device ECID is missing");
+        const auto chip = number(chip_instance.find("img4_chip_chip"));
+        const auto ecid = number(chip_instance.find("img4_chip_ecid"));
+        if (!chip || !ecid) {
+            error = "DDI signing metadata contains an invalid numeric identifier";
+            return std::nullopt;
+        }
+        if (*ecid == 0) {
+            error = "Cryptex signing device ECID is missing";
+            return std::nullopt;
+        }
         const auto* production = chip_instance.find("img4_chip_cpro");
-        require(production && (production->is_bool() || number(production)), "Cryptex signing production mode is missing");
+        if (!(production && (production->is_bool() || number(production)))) {
+            error = "Cryptex signing production mode is missing";
+            return std::nullopt;
+        }
         std::vector<uint8_t> udid;
-        for (const auto number : { chip, ecid }) {
+        for (const auto number : { *chip, *ecid }) {
             for (int shift = 56; shift >= 0; shift -= 8) {
                 udid.push_back(static_cast<uint8_t>(number >> shift));
             }
@@ -336,7 +396,10 @@ std::optional<V> build_cryptex_tss_request(const V& identity, const V& chip_inst
         request.set("Cryptex1,Nonce", V::OfData(nonce));
         request.set("Cryptex1,UniqueTagList", V::OfData({ }));
         const auto* manifest = identity.find("Manifest");
-        require(manifest && manifest->is_dict(), "Cryptex signing component manifest is missing");
+        if (!manifest || !manifest->is_dict()) {
+            error = "Cryptex signing component manifest is missing";
+            return std::nullopt;
+        }
         size_t components = 0;
         for (size_t i = 0; i < manifest->keys.size(); ++i) {
             if (!manifest->keys[i].starts_with("Cryptex1,")) {
@@ -348,15 +411,19 @@ std::optional<V> build_cryptex_tss_request(const V& identity, const V& chip_inst
                 continue;
             }
             const auto* digest = entry.find("Digest");
-            require(
-                digest && digest->kind == plist::Kind::Data && !digest->data.empty() && digest->data.size() <= 64,
-                "Cryptex signing component digest is missing");
+            if (!(digest && digest->kind == plist::Kind::Data && !digest->data.empty() && digest->data.size() <= 64)) {
+                error = "Cryptex signing component digest is missing";
+                return std::nullopt;
+            }
             auto signed_entry = V::Dict();
             signed_entry.set("Digest", *digest);
             request.set(manifest->keys[i], std::move(signed_entry));
             ++components;
         }
-        require(components != 0, "Cryptex signing manifest has no personalized components");
+        if (components == 0) {
+            error = "Cryptex signing manifest has no personalized components";
+            return std::nullopt;
+        }
         return request;
     }
     catch (const std::exception& e) {
@@ -371,8 +438,15 @@ bool configure_tss_https(CURL* curl, std::string& error)
 {
     error.clear();
     try {
-        require(curl != nullptr, "Cannot create DDI signing HTTPS transport");
-#define TLS_OPT(option, value) require(curl_easy_setopt(curl, option, value) == CURLE_OK, "Cannot configure DDI signing HTTPS transport")
+        if (!curl) {
+            error = "Cannot create DDI signing HTTPS transport";
+            return false;
+        }
+#define TLS_OPT(option, value)                                  \
+    if (curl_easy_setopt(curl, option, value) != CURLE_OK) {    \
+        error = "Cannot configure DDI signing HTTPS transport"; \
+        return false;                                           \
+    }
         TLS_OPT(CURLOPT_URL, kTssUrl);
 #if LIBCURL_VERSION_NUM >= 0x075500
         TLS_OPT(CURLOPT_PROTOCOLS_STR, "https");
@@ -387,9 +461,10 @@ bool configure_tss_https(CURL* curl, std::string& error)
 #ifndef __APPLE__
 #if LIBCURL_VERSION_NUM >= 0x074D00
         const auto* version = curl_version_info(CURLVERSION_NOW);
-        require(
-            version && version->version_num >= 0x074D00 && version->ssl_version,
-            "DDI signing requires libcurl 7.77.0 or later with CA bundle support");
+        if (!(version && version->version_num >= 0x074D00 && version->ssl_version)) {
+            error = "DDI signing requires libcurl 7.77.0 or later with CA bundle support";
+            return false;
+        }
         const std::string_view backend = version->ssl_version;
         // These versions are documented by libcurl's CAINFO_BLOB API. Reject
         // unknown/older backends instead of falling back to unverified TLS.
@@ -399,7 +474,10 @@ bool configure_tss_https(CURL* curl, std::string& error)
                                || (backend.starts_with("mbedTLS/") && version->version_num >= 0x075100)
                                || (backend.starts_with("rustls/") && version->version_num >= 0x075200)
                                || (backend.starts_with("wolfSSL/") && version->version_num >= 0x080200);
-        require(supported, "This libcurl TLS backend cannot use the DDI signing CA bundle");
+        if (!supported) {
+            error = "This libcurl TLS backend cannot use the DDI signing CA bundle";
+            return false;
+        }
         // TSS uses one dedicated public Apple root, independent of incomplete
         // VM/system CA stores. Do not widen this handle with native/default CAs.
         TLS_OPT(CURLOPT_SSL_OPTIONS, 0L);
@@ -407,11 +485,15 @@ bool configure_tss_https(CURL* curl, std::string& error)
         const auto clear_path = curl_easy_setopt(curl, CURLOPT_CAPATH, static_cast<const char*>(nullptr));
         // Schannel/Rustls have no CA-directory support. NOT_BUILT_IN here
         // means there is no directory to clear, not a failed trust-bundle load.
-        require(clear_path == CURLE_OK || clear_path == CURLE_NOT_BUILT_IN, "Cannot configure DDI signing HTTPS transport");
+        if (!(clear_path == CURLE_OK || clear_path == CURLE_NOT_BUILT_IN)) {
+            error = "Cannot configure DDI signing HTTPS transport";
+            return false;
+        }
         curl_blob root { const_cast<char*>(kAppleTssRootPem.data()), kAppleTssRootPem.size(), CURL_BLOB_COPY };
         TLS_OPT(CURLOPT_CAINFO_BLOB, &root);
 #else
-        throw std::runtime_error("DDI signing requires libcurl 7.77.0 or later with CA bundle support");
+        error = "DDI signing requires libcurl 7.77.0 or later with CA bundle support";
+        return false;
 #endif
 #endif
 #undef TLS_OPT
@@ -502,32 +584,60 @@ std::optional<std::vector<uint8_t>> request_tss_ticket(const V& request, const T
 {
     error.clear();
     try {
-        require(valid_shape(request), "DDI signing metadata is malformed");
-        require(request.is_dict(), "DDI signing request is not a dictionary");
+        if (!valid_shape(request)) {
+            error = "DDI signing metadata is malformed";
+            return std::nullopt;
+        }
+        if (!request.is_dict()) {
+            error = "DDI signing request is not a dictionary";
+            return std::nullopt;
+        }
         const bool cryptex = truth(request.find("@Cryptex1,Ticket"));
-        require(cryptex != truth(request.find("@ApImg4Ticket")), "DDI signing request ticket type is ambiguous");
-        require(options.timeout.count() > 0, "DDI signing timed out");
-        require(!options.cancelled || !options.cancelled(), "DDI signing was cancelled");
+        if (cryptex == truth(request.find("@ApImg4Ticket"))) {
+            error = "DDI signing request ticket type is ambiguous";
+            return std::nullopt;
+        }
+        if (options.timeout.count() <= 0) {
+            error = "DDI signing timed out";
+            return std::nullopt;
+        }
+        if (options.cancelled && options.cancelled()) {
+            error = "DDI signing was cancelled";
+            return std::nullopt;
+        }
         auto body = plist::write(request);
-        require(body.size() <= kMaxRequest, "DDI signing request exceeds its size limit");
+        if (body.size() > kMaxRequest) {
+            error = "DDI signing request exceeds its size limit";
+            return std::nullopt;
+        }
         static const auto initialized = curl_global_init(CURL_GLOBAL_DEFAULT);
-        require(initialized == CURLE_OK, "Cannot initialize DDI signing HTTPS transport");
+        if (initialized != CURLE_OK) {
+            error = "Cannot initialize DDI signing HTTPS transport";
+            return std::nullopt;
+        }
         std::unique_ptr<CURL, decltype(&curl_easy_cleanup)> curl(curl_easy_init(), curl_easy_cleanup);
-        require(bool(curl), "Cannot create DDI signing HTTPS transport");
+        if (!curl) {
+            error = "Cannot create DDI signing HTTPS transport";
+            return std::nullopt;
+        }
         CurlContext context { { }, &options };
         curl_slist* raw_headers = nullptr;
         for (const char* header : { "Cache-Control: no-cache", "Content-Type: text/xml; charset=utf-8", "Expect:" }) {
             auto* next = curl_slist_append(raw_headers, header);
             if (!next) {
                 curl_slist_free_all(raw_headers);
-                throw std::runtime_error("Cannot create DDI signing HTTPS headers");
+                error = "Cannot create DDI signing HTTPS headers";
+                return std::nullopt;
             }
             raw_headers = next;
         }
         std::unique_ptr<curl_slist, decltype(&curl_slist_free_all)> headers(raw_headers, curl_slist_free_all);
         const auto timeout = static_cast<long>(std::clamp<int64_t>(options.timeout.count(), 1, std::numeric_limits<long>::max()));
-#define TSS_OPT(option, value) \
-    require(curl_easy_setopt(curl.get(), option, value) == CURLE_OK, "Cannot configure DDI signing HTTPS transport")
+#define TSS_OPT(option, value)                                     \
+    if (curl_easy_setopt(curl.get(), option, value) != CURLE_OK) { \
+        error = "Cannot configure DDI signing HTTPS transport";    \
+        return std::nullopt;                                       \
+    }
         if (!detail::configure_tss_https(curl.get(), error)) {
             return { };
         }
@@ -565,9 +675,10 @@ std::optional<std::vector<uint8_t>> request_tss_ticket(const V& request, const T
             return { };
         }
         long status = 0;
-        require(
-            curl_easy_getinfo(curl.get(), CURLINFO_RESPONSE_CODE, &status) == CURLE_OK && status == 200,
-            "DDI signing server did not return HTTP 200");
+        if (!(curl_easy_getinfo(curl.get(), CURLINFO_RESPONSE_CODE, &status) == CURLE_OK && status == 200)) {
+            error = "DDI signing server did not return HTTP 200";
+            return std::nullopt;
+        }
         return detail::parse_tss_response(context.response, cryptex, error);
     }
     catch (const std::exception& e) {

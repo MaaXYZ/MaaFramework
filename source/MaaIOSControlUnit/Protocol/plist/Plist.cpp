@@ -1,7 +1,10 @@
 #include "plist/Plist.h"
 #include "util/Base64.h"
 
+#include <cerrno>
+#include <charconv>
 #include <cmath>
+#include <cstdlib>
 #include <pugixml.hpp>
 #include <sstream>
 #include <stdexcept>
@@ -19,7 +22,7 @@ bool whitespace(std::string_view text)
 }
 
 // 容器只容许元素、格式空白及注释/处理指令。XML 语法由 pugixml 处理。
-std::vector<pugi::xml_node> elements(pugi::xml_node node)
+std::optional<std::vector<pugi::xml_node>> elements(pugi::xml_node node, std::string& error)
 {
     std::vector<pugi::xml_node> result;
     for (auto child : node.children()) {
@@ -27,13 +30,14 @@ std::vector<pugi::xml_node> elements(pugi::xml_node node)
             result.push_back(child);
         }
         else if ((child.type() == pugi::node_pcdata || child.type() == pugi::node_cdata) && !whitespace(child.value())) {
-            throw std::runtime_error("Container contains nonempty text");
+            error = "Container contains nonempty text";
+            return std::nullopt;
         }
     }
     return result;
 }
 
-std::string text(pugi::xml_node node)
+std::optional<std::string> text(pugi::xml_node node, std::string& error)
 {
     std::string result;
     for (auto child : node.children()) {
@@ -41,87 +45,123 @@ std::string text(pugi::xml_node node)
             result += child.value();
         }
         else if (child.type() == pugi::node_element) {
-            throw std::runtime_error("Scalar cannot contain nested elements");
+            error = "Scalar cannot contain nested elements";
+            return std::nullopt;
         }
     }
     return result;
 }
 
-Value read_value(pugi::xml_node node, int depth)
+std::optional<Value> read_value(pugi::xml_node node, int depth, std::string& error)
 {
     if (depth > kMaxDepth) {
-        throw std::runtime_error("Nesting too deep");
+        error = "Nesting too deep";
+        return std::nullopt;
     }
     const std::string_view name = node.name();
     if (name == "dict" || name == "array") {
-        const auto children = elements(node);
+        const auto children = elements(node, error);
+        if (!children) {
+            return std::nullopt;
+        }
         auto out = name == "dict" ? Value::Dict() : Value::Array();
         if (name == "array") {
-            for (auto child : children) {
-                out.push(read_value(child, depth + 1));
-            }
-        }
-        else {
-            if (children.size() % 2 != 0) {
-                throw std::runtime_error("Dictionary key missing value");
-            }
-            for (size_t i = 0; i < children.size(); i += 2) {
-                if (std::string_view(children[i].name()) != "key") {
-                    throw std::runtime_error("Expected <key> in dictionary");
+            for (auto child : *children) {
+                auto value = read_value(child, depth + 1, error);
+                if (!value) {
+                    return std::nullopt;
                 }
-                out.set(text(children[i]), read_value(children[i + 1], depth + 1));
+                out.push(std::move(*value));
             }
+            return out;
+        }
+        if (children->size() % 2 != 0) {
+            error = "Dictionary key missing value";
+            return std::nullopt;
+        }
+        for (size_t i = 0; i < children->size(); i += 2) {
+            if (std::string_view((*children)[i].name()) != "key") {
+                error = "Expected <key> in dictionary";
+                return std::nullopt;
+            }
+            auto key = text((*children)[i], error);
+            if (!key) {
+                return std::nullopt;
+            }
+            auto value = read_value((*children)[i + 1], depth + 1, error);
+            if (!value) {
+                return std::nullopt;
+            }
+            out.set(std::move(*key), std::move(*value));
         }
         return out;
     }
-    const auto content = text(node);
+    const auto content = text(node, error);
+    if (!content) {
+        return std::nullopt;
+    }
     if (name == "true" || name == "false") {
-        if (!whitespace(content)) {
-            throw std::runtime_error("Boolean element must be empty");
+        if (!whitespace(*content)) {
+            error = "Boolean element must be empty";
+            return std::nullopt;
         }
         return Value::Bool(name == "true");
     }
     if (name == "string") {
-        return Value::Str(content);
+        return Value::Str(*content);
     }
     if (name == "data") {
-        std::string err;
-        auto bytes = util::base64_decode(content, err);
+        auto bytes = util::base64_decode(*content, error);
         if (!bytes) {
-            throw std::runtime_error("Invalid base64 in data: " + err);
+            error = "Invalid base64 in data: " + error;
+            return std::nullopt;
         }
         return Value::OfData(std::move(*bytes));
     }
     if (name == "integer" || name == "real") {
-        const auto first = content.find_first_not_of(" \t\r\n");
+        const auto first = content->find_first_not_of(" \t\r\n");
         if (first == std::string::npos) {
-            throw std::runtime_error("Numeric value is empty");
+            error = "Numeric value is empty";
+            return std::nullopt;
         }
-        const auto number = content.substr(first, content.find_last_not_of(" \t\r\n") - first + 1);
-        size_t end = 0;
-        Value out;
+        auto number = std::string_view(*content).substr(first, content->find_last_not_of(" \t\r\n") - first + 1);
         if (name == "integer") {
-            if (number.front() == '-') {
-                out = Value::Int(std::stoll(number, &end, 0));
+            const bool negative = number.front() == '-';
+            if (negative || number.front() == '+') {
+                number.remove_prefix(1);
             }
-            else {
-                const auto value = std::stoull(number, &end, 0);
-                out = value <= static_cast<uint64_t>(INT64_MAX) ? Value::Int(static_cast<int64_t>(value)) : Value::UInt(value);
+            int base = 10;
+            if (number.starts_with("0x") || number.starts_with("0X")) {
+                base = 16;
+                number.remove_prefix(2);
             }
+            else if (number.starts_with('0')) {
+                base = 8;
+            }
+            uint64_t value = 0;
+            const auto [end, status] = std::from_chars(number.data(), number.data() + number.size(), value, base);
+            if (status != std::errc() || end != number.data() + number.size() || (negative && value > (uint64_t { 1 } << 63))) {
+                error = "Invalid or out-of-range integer";
+                return std::nullopt;
+            }
+            if (negative) {
+                return Value::Int(value == (uint64_t { 1 } << 63) ? INT64_MIN : -static_cast<int64_t>(value));
+            }
+            return value <= static_cast<uint64_t>(INT64_MAX) ? Value::Int(static_cast<int64_t>(value)) : Value::UInt(value);
         }
-        else {
-            out.kind = Kind::Real;
-            out.real = std::stod(number, &end);
-            if (!std::isfinite(out.real)) {
-                throw std::runtime_error("Real must be finite");
-            }
-        }
-        if (end != number.size()) {
-            throw std::runtime_error("Trailing content in numeric value");
+        char* end = nullptr;
+        errno = 0;
+        Value out;
+        out.kind = Kind::Real;
+        out.real = std::strtod(number.data(), &end);
+        if (errno == ERANGE || end == number.data() || end != number.data() + number.size() || !std::isfinite(out.real)) {
+            error = "Invalid or non-finite real";
+            return std::nullopt;
         }
         return out;
     }
-    throw std::runtime_error("Unsupported element " + std::string(name));
+    error = "Unsupported element " + std::string(name);
+    return std::nullopt;
 }
 
 const char* xml_text(const std::string& value)
@@ -183,37 +223,42 @@ void write_value(pugi::xml_node parent, const Value& v, int depth)
 
 std::optional<Value> parse(std::string_view xml, std::string* err)
 {
-    if (err) {
-        err->clear();
-    }
+    std::string ignored;
+    auto& error = err ? *err : ignored;
+    error.clear();
     if (xml.size() > kMaxInput || xml.find('\0') != std::string_view::npos) {
-        if (err) {
-            *err = "XML input too large or contains NUL";
-        }
+        error = "XML input too large or contains NUL";
         return std::nullopt;
     }
     try {
         pugi::xml_document doc;
-        // 保留文本空白；fragment 让根外文本也进入 DOM，以便拒绝尾部垃圾。
+        // Preserve whitespace and root-level text so trailing garbage can be rejected.
         const auto result =
             doc.load_buffer(xml.data(), xml.size(), pugi::parse_full | pugi::parse_ws_pcdata | pugi::parse_fragment, pugi::encoding_utf8);
         if (!result) {
-            throw std::runtime_error(result.description());
+            error = result.description();
+            return std::nullopt;
         }
-        const auto roots = elements(doc);
-        if (roots.size() != 1 || std::string_view(roots[0].name()) != "plist") {
-            throw std::runtime_error("Root must be a single <plist> element");
+        const auto roots = elements(doc, error);
+        if (!roots) {
+            return std::nullopt;
         }
-        const auto values = elements(roots[0]);
-        if (values.size() != 1) {
-            throw std::runtime_error("plist root must contain a single value");
+        if (roots->size() != 1 || std::string_view((*roots)[0].name()) != "plist") {
+            error = "Root must be a single <plist> element";
+            return std::nullopt;
         }
-        return read_value(values[0], 0);
+        const auto values = elements((*roots)[0], error);
+        if (!values) {
+            return std::nullopt;
+        }
+        if (values->size() != 1) {
+            error = "plist root must contain a single value";
+            return std::nullopt;
+        }
+        return read_value((*values)[0], 0, error);
     }
     catch (const std::exception& e) {
-        if (err) {
-            *err = e.what();
-        }
+        error = e.what();
         return std::nullopt;
     }
 }
