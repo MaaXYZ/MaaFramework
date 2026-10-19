@@ -1,6 +1,7 @@
 #include "IOSControlUnitMgr.h"
 
 #include <algorithm>
+#include <tuple>
 #include <vector>
 
 #include <MaaUtils/Logger.h>
@@ -180,7 +181,7 @@ bool IOSControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 
 bool IOSControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
-    (void)pressure;
+    std::ignore = pressure;
     if (contact != 0 || session_.touch_active()) {
         LogError << "iOS controller requires one inactive contact numbered 0" << VAR(contact);
         return false;
@@ -196,7 +197,7 @@ bool IOSControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 
 bool IOSControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 {
-    (void)pressure;
+    std::ignore = pressure;
     if (contact != 0 || !session_.touch_active()) {
         LogError << "iOS touch_move needs the active contact numbered 0" << VAR(contact);
         return false;
