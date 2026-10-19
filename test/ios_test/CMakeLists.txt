@@ -24,7 +24,7 @@ add_test(NAME MaaIOSInputMappingTest COMMAND MaaIOSInputMappingTest)
 
 add_executable(MaaIOSManagementAPITest ios_management_api_test.cpp)
 target_include_directories(MaaIOSManagementAPITest PRIVATE ${MAA_PUBLIC_INC} "${MAAUTILS_DIR}/include")
-target_link_libraries(MaaIOSManagementAPITest PRIVATE MaaToolkit MaaUtils ${OpenCV_LIBS})
+target_link_libraries(MaaIOSManagementAPITest PRIVATE MaaToolkit MaaUtils ${OpenCV_LIBS} ${CMAKE_DL_LIBS})
 add_test(NAME MaaIOSManagementAPITest COMMAND MaaIOSManagementAPITest)
 
 add_executable(MaaIOSToolkitTest

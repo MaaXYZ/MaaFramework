@@ -161,7 +161,7 @@ endif()
 if(NOT MAA_IOS_LIBAV)
     list(FILTER maa_ios_media_sources EXCLUDE REGEX "/decode/FFmpegDecoder\\.cpp$")
 endif()
-# Shared device protocol/management implementation for MaaToolkit and MaaIOSControlUnit.
+# Device protocol shared by the iOS control unit and its offline tests.
 set(maa_ios_protocol_root "${CMAKE_CURRENT_SOURCE_DIR}")
 function(maa_ios_apply_protocol_options target visibility)
     target_include_directories(${target} ${visibility} "${maa_ios_protocol_root}")

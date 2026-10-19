@@ -1,11 +1,37 @@
 #include "MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"
 #include "MaaUtils/Buffer/StringBuffer.hpp"
+#include "MaaUtils/Runtime.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
 #include <cstdio>
 #include <meojson/json.hpp>
 #include <stdexcept>
 
 namespace
 {
+bool backend_loaded()
+{
+#ifdef _WIN32
+    return GetModuleHandleW(L"MaaIOSControlUnit.dll") != nullptr;
+#else
+#ifdef __APPLE__
+    const auto name = "libMaaIOSControlUnit.dylib";
+#else
+    const auto name = "libMaaIOSControlUnit.so";
+#endif
+    auto* module = dlopen((MAA_NS::library_dir() / name).c_str(), RTLD_NOW | RTLD_NOLOAD);
+    if (!module) {
+        return false;
+    }
+    dlclose(module);
+    return true;
+#endif
+}
+
 int cancel_calls = 0;
 
 MaaBool MAA_CALL cancelled(void*)
@@ -29,11 +55,17 @@ bool result_is(const MAA_NS::StringBuffer& buffer, bool stopped)
 
 int main()
 {
+    if (backend_loaded()) {
+        return 30;
+    }
     MAA_NS::StringBuffer result;
     MaaIOSWiFiPairing* credential = nullptr;
     if (MaaToolkitIOSDeviceDiscover(MaaIOSConnectionMethod_Auto, nullptr, 0, "{}", nullptr, cancelled, nullptr, &result)
         || cancel_calls != 1 || !result_is(result, true)) {
         return 1;
+    }
+    if (!backend_loaded()) {
+        return 31;
     }
     cancel_calls = 0;
     if (MaaToolkitIOSDeviceDiscover(MaaIOSConnectionMethod_Auto, nullptr, 0, "{\"timeout_ms\":-1}", nullptr, cancelled, nullptr, &result)
@@ -85,9 +117,8 @@ int main()
         || !result_is(result, false)) {
         return 9;
     }
-    const std::string record =
-        "MaaIOS1|udid=synthetic-device|hid=synthetic-host|pid=peer|hsk="
-        + std::string(64, '1') + "|hpk=" + std::string(64, '2') + "|ppk=" + std::string(64, '4');
+    const std::string record = "MaaIOS1|udid=synthetic-device|hid=synthetic-host|pid=peer|hsk=" + std::string(64, '1')
+                               + "|hpk=" + std::string(64, '2') + "|ppk=" + std::string(64, '4');
     auto* pairing = MaaToolkitIOSDeviceParsePairingRecord(record.c_str());
     if (!pairing || std::string(pairing->udid) != "synthetic-device" || std::string(pairing->peer_identifier) != "peer"
         || pairing->host_private_key[0] != 0x11) {

@@ -12,6 +12,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitAPI;
 class AdbControlUnitAPI;
 class IOSControlUnitAPI;
+class IOSDeviceAPI;
 class Win32ControlUnitAPI;
 class MacOSControlUnitAPI;
 class GamepadControlUnitAPI;
@@ -46,6 +47,8 @@ private:
 class IOSControlUnitLibraryHolder : public LibraryHolder<IOSControlUnitLibraryHolder>
 {
 public:
+    static MAA_CTRL_UNIT_NS::IOSDeviceAPI* device_api();
+
     static std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI> create_control_unit(
         const char* udid,
         MaaIOSScreencapMethod screencap_methods,

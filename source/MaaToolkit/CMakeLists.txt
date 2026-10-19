@@ -82,6 +82,5 @@ install(DIRECTORY "${MAA_PUBLIC_INC}/MaaToolkit" DESTINATION "include")
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_toolkit_src})
 
 if(WITH_IOS_CONTROLLER)
-    target_link_libraries(MaaToolkit PRIVATE MaaIOSProtocol)
     target_compile_definitions(MaaToolkit PRIVATE MAA_WITH_IOS_DEVICE=1)
 endif()

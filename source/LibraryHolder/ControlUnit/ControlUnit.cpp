@@ -2,6 +2,9 @@
 
 #include <filesystem>
 
+#include "ControlUnit/IOSDeviceAPI.h"
+#include "MaaUtils/ScopeLeave.hpp"
+
 #include "MaaControlUnit/AdbControlUnitAPI.h"
 #include "MaaControlUnit/AndroidNativeControlUnitAPI.h"
 #include "MaaControlUnit/CustomControlUnitAPI.h"
@@ -73,6 +76,41 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> AdbControlUnitLibraryHolder
     }
 
     return std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+}
+
+MAA_CTRL_UNIT_NS::IOSDeviceAPI* IOSControlUnitLibraryHolder::device_api()
+{
+    static std::mutex mutex;
+    static MAA_CTRL_UNIT_NS::IOSDeviceAPI* instance = nullptr;
+    std::lock_guard lock(mutex);
+    if (instance) {
+        return instance;
+    }
+    if (!load_library(library_dir() / libname_)) {
+        return nullptr;
+    }
+    bool retained = false;
+    OnScopeLeave([&]() {
+        if (!retained) {
+            unload_library();
+        }
+    });
+    if (!check_version<IOSControlUnitLibraryHolder, decltype(MaaIOSControlUnitGetVersion)>(version_func_name_)) {
+        return nullptr;
+    }
+    const auto getter = get_function<decltype(MaaIOSControlUnitGetDeviceAPI)>("MaaIOSControlUnitGetDeviceAPI");
+    if (!getter) {
+        return nullptr;
+    }
+    auto* api = getter();
+    if (!api) {
+        return nullptr;
+    }
+    // Hostname resolution can outlive a cancelled request. Keep a successful
+    // backend loaded until process shutdown instead of unloading its worker code.
+    retained = true;
+    instance = api;
+    return instance;
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI> IOSControlUnitLibraryHolder::create_control_unit(
