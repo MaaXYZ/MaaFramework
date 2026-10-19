@@ -85,7 +85,7 @@ bool start_app(const std::string& intent, const std::string& search_path)
 
             ~LaunchResult() { dispatch_release(semaphore); }
         };
-        // The completion handler may outlive this call when launching times out.
+        // The completion handler may outlive this call on the main thread or after a timeout.
         const auto result = std::make_shared<LaunchResult>();
         [[NSWorkspace sharedWorkspace] openApplicationAtURL:url
                                               configuration:[NSWorkspaceOpenConfiguration configuration]
@@ -94,17 +94,21 @@ bool start_app(const std::string& intent, const std::string& search_path)
                                               if (error) {
                                                   result->error = error.localizedDescription.UTF8String;
                                               }
+                                              if (!result->started) {
+                                                  LogError << "Application launch failed" << VAR(result->error);
+                                              }
                                               dispatch_semaphore_signal(result->semaphore);
                                           }];
+        if ([NSThread isMainThread]) {
+            LogWarn << "Skipping launch completion wait on the main thread. Success only indicates the launch request was sent."
+                    << VAR(intent);
+            return true;
+        }
         if (dispatch_semaphore_wait(result->semaphore, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC)) != 0) {
             LogError << "Application launch timed out" << VAR(intent);
             return false;
         }
-        if (!result->started) {
-            LogError << "Application launch failed" << VAR(intent) << VAR(result->error);
-            return false;
-        }
-        return true;
+        return result->started;
     }
 }
 
