@@ -34,6 +34,7 @@ option(BUILD_NODE_TEST "build node test" OFF)
 option(BUILD_MACOS_TEST "build macOS test" OFF)
 option(BUILD_LINUX_TEST "build Linux test" OFF)
 
+option(MAA_IOS_USE_FFMPEG "Use FFmpeg for iOS video decoding when available" ON)
 option(MAA_IOS_FETCH_DEPENDENCIES "Fetch missing pinned iOS protocol dependencies" ON)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)

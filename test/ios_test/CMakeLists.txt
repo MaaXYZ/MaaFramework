@@ -1,11 +1,7 @@
 set(maa_ios_control_unit_dir "${CMAKE_SOURCE_DIR}/source/MaaIOSControlUnit")
 
 if(MAA_IOS_PROTOCOL_TESTS)
-    set(maa_ios_protocol_test_names plist json hid rtp ddi_selection ddi_mounter discovery device_selection tls_embedding credentials)
-    get_target_property(maa_ios_protocol_definitions MaaIOSProtocol INTERFACE_COMPILE_DEFINITIONS)
-    if("MAA_IOS_HAVE_LIBAV=1" IN_LIST maa_ios_protocol_definitions)
-        list(APPEND maa_ios_protocol_test_names decoder_capability)
-    endif()
+    set(maa_ios_protocol_test_names plist json hid rtp ddi_selection ddi_mounter discovery device_selection tls_embedding credentials decoder_capability)
     foreach(name IN LISTS maa_ios_protocol_test_names)
         add_executable(maa_ios_${name}_test protocol/${name}_test.cpp)
         target_link_libraries(maa_ios_${name}_test PRIVATE MaaIOSProtocol)
