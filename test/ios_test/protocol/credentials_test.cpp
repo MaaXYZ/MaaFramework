@@ -4,6 +4,7 @@
 #include "wifi/Credentials.h"
 #include "wifi/PairSetup.h"
 #include "wifi/PairVerify.h"
+#include "wifi/Srp.h"
 #include <filesystem>
 #include <iostream>
 #include <stdexcept>
@@ -15,10 +16,46 @@ void require(bool value, const char* message)
     }
 }
 
+void test_srp_failure_state()
+{
+    using namespace maa::ios::wifi;
+    const Bytes salt(16, 0x11);
+    SrpClient client("Pair-Setup", "123456", "1");
+    SrpServer server("Pair-Setup", "123456", "2");
+    std::string error;
+    require(server.initialize(salt, error), "SRP server initializes");
+    require(client.process(salt, server.server_public(), error), "SRP client derives its proof");
+    const auto public_key = client.client_public();
+    const auto proof = client.client_proof();
+    require(server.process(public_key, proof, error), "SRP server accepts matching proof");
+    require(
+        client.session_key().size() == 64 && client.session_key() == server.session_key()
+            && client.verify_server_proof(server.server_proof()),
+        "SRP peers agree on the key and verify the server proof");
+    require(!server.process(public_key, proof, error), "a consumed SRP challenge cannot be reused");
+    require(server.session_key().empty() && server.server_proof().empty(), "rejected SRP replay clears published secrets");
+
+    require(!client.process(salt, Bytes { 0 }, error), "zero server public key is rejected");
+    require(
+        client.client_public().empty() && client.session_key().empty() && client.client_proof().empty()
+            && !client.verify_server_proof(Bytes(64, 0)),
+        "failed SRP client calculation does not expose previous results");
+
+    require(server.initialize(salt, error) && client.process(salt, server.server_public(), error), "SRP peers can start a fresh challenge");
+    auto invalid_proof = client.client_proof();
+    invalid_proof[0] ^= 1;
+    require(!server.process(client.client_public(), invalid_proof, error), "incorrect SRP proof is rejected");
+    require(server.session_key().empty() && server.server_proof().empty(), "proof rejection does not publish SRP secrets");
+    require(!server.process(client.client_public(), client.client_proof(), error), "proof rejection consumes the SRP challenge");
+    require(server.initialize(salt, error) && !server.initialize({ }, error), "invalid SRP initialization fails after clearing state");
+    require(!server.process(client.client_public(), client.client_proof(), error), "failed initialization cannot leave a usable challenge");
+}
+
 int main()
 {
     using namespace maa::ios;
     try {
+        test_srp_failure_state();
         wifi::PairRecord record;
         record.udid = "synthetic-device";
         record.host_identifier = "synthetic-host";

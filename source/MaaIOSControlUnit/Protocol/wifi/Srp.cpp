@@ -196,7 +196,10 @@ bool SrpClient::process(const Bytes& salt, const Bytes& server_public, std::stri
         const Bytes u = sha512({ pad_bn(A.v, kWidth), pad_bn(B.v, kWidth) });
         Bn ub;
         require(BN_bin2bn(u.data(), static_cast<int>(u.size()), ub.v) != nullptr, "BN_bin2bn(u)");
-        require(!BN_is_zero(ub.v), "SRP u == 0");
+        if (BN_is_zero(ub.v)) {
+            err = "SRP u is zero; rejected";
+            return false;
+        }
 
         // v = g^x mod N; S = (B - k*v)^(a + u*x) mod N
         Bn v, kv, base, ux, exponent, S;
@@ -304,7 +307,11 @@ bool SrpServer::initialize(const Bytes& salt, std::string& err)
         require(BN_mod_exp(gb.v, g.v, b.v, N.v, ctx.get()) == 1, "BN_mod_exp(g^b)");
         require(BN_mod_mul(kv.v, kb.v, v.v, N.v, ctx.get()) == 1, "BN_mod_mul(k*v)");
         require(BN_mod_add(B.v, kv.v, gb.v, N.v, ctx.get()) == 1, "BN_mod_add(B)");
-        require(!BN_is_zero(B.v), "SRP B == 0");
+        if (BN_is_zero(B.v)) {
+            clear_secrets();
+            err = "SRP B is zero; rejected";
+            return false;
+        }
         // 所有计算成功后再发布 challenge，密钥和证明仍为空。
         auto private_value = bytes_of_bn(b.v);
         auto verifier = bytes_of_bn(v.v);
@@ -362,7 +369,11 @@ bool SrpServer::process(const Bytes& client_public, const Bytes& client_proof, s
         require(BN_bin2bn(b_public_.data(), static_cast<int>(b_public_.size()), B.v) != nullptr, "BN_bin2bn(B)");
         const auto u_hash = sha512({ pad_bn(A.v, kWidth), pad_bn(B.v, kWidth) });
         require(BN_bin2bn(u_hash.data(), static_cast<int>(u_hash.size()), u.v) != nullptr, "BN_bin2bn(u)");
-        require(!BN_is_zero(u.v), "SRP u == 0");
+        if (BN_is_zero(u.v)) {
+            clear_secrets();
+            err = "SRP u is zero; rejected";
+            return false;
+        }
         require(BN_bin2bn(b_private_.data(), static_cast<int>(b_private_.size()), b.v) != nullptr, "BN_bin2bn(b)");
         require(BN_bin2bn(verifier_.data(), static_cast<int>(verifier_.size()), v.v) != nullptr, "BN_bin2bn(v)");
         BN_set_flags(b.v, BN_FLG_CONSTTIME);
