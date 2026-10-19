@@ -31,7 +31,8 @@ extern "C"
 
     // Options: timeout_ms (1..300000, default 120000), host_name (Wi-Fi advertisement).
     // Auto prefers physical USB, then Wi-Fi pairing. Wi-Fi requires a PIN event callback.
-    // Creates a new RemotePairing credential for Wi-Fi; USB uses the existing system trust to pair.
+    // Both transports create a new RemotePairing credential for subsequent Wi-Fi connections.
+    // USB opens the pairing channel through usbmux using the system-managed USB trust record.
     // result is a caller-created status buffer. pairing is a non-NULL output pointer;
     // success returns an owned structured credential, failure sets *pairing to NULL.
     // Release it with MaaToolkitIOSDeviceDestroyPairing. Its field pointers remain valid
