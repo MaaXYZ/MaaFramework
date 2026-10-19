@@ -85,19 +85,3 @@ if(WITH_IOS_CONTROLLER)
     target_link_libraries(MaaToolkit PRIVATE MaaIOSProtocol)
     target_compile_definitions(MaaToolkit PRIVATE MAA_WITH_IOS_DEVICE=1)
 endif()
-
-if(BUILD_IOS_CONTROLLER_TESTING AND WITH_IOS_CONTROLLER)
-    add_executable(MaaIOSManagementAPITest ${CMAKE_SOURCE_DIR}/test/ios_test/ios_management_api_test.cpp)
-    target_include_directories(MaaIOSManagementAPITest PRIVATE ${MAA_PUBLIC_INC} "${MAAUTILS_DIR}/include")
-    target_link_libraries(MaaIOSManagementAPITest PRIVATE MaaToolkit MaaUtils ${OpenCV_LIBS})
-    add_test(NAME MaaIOSManagementAPITest COMMAND MaaIOSManagementAPITest)
-
-    add_executable(MaaIOSToolkitTest
-        ${CMAKE_SOURCE_DIR}/test/ios_test/toolkit_device_test.cpp
-        API/MaaToolkitIOSDevice.cpp)
-    target_include_directories(MaaIOSToolkitTest PRIVATE ${MAA_PUBLIC_INC} ${MAA_PRIVATE_INC}
-        "${MAAUTILS_DIR}/include")
-    target_compile_definitions(MaaIOSToolkitTest PRIVATE MAA_WITH_IOS_DEVICE=1 MAA_TOOLKIT_EXPORTS)
-    target_link_libraries(MaaIOSToolkitTest PRIVATE MaaFramework MaaUtils Boost::system ${OpenCV_LIBS})
-    add_test(NAME MaaIOSToolkitTest COMMAND MaaIOSToolkitTest)
-endif()

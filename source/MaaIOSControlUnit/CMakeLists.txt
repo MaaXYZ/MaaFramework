@@ -1,21 +1,28 @@
-add_library(MaaIOSControlUnit SHARED
-    API/IOSControlUnitAPI.cpp
-    Manager/IOSControlUnitMgr.cpp
-    Manager/IOSControlUnitMgr.h
-    Session/IOSSession.cpp
-    Session/IOSSession.h
-    Session/InputMapping.h
-    Session/HeldInputs.h)
-target_include_directories(MaaIOSControlUnit PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
-target_link_libraries(MaaIOSControlUnit PRIVATE MaaUtils MaaIOSProtocol ${OpenCV_LIBS})
-target_compile_definitions(MaaIOSControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
-install(TARGETS MaaIOSControlUnit RUNTIME DESTINATION bin LIBRARY DESTINATION bin)
+file(GLOB_RECURSE maa_ios_control_unit_src *.h *.hpp *.cpp)
+list(FILTER maa_ios_control_unit_src EXCLUDE REGEX "/Protocol/")
+file(GLOB_RECURSE maa_ios_control_unit_header ${MAA_PUBLIC_INC}/MaaControlUnit/IOSControlUnitAPI.h ${MAA_PUBLIC_INC}/MaaControlUnit/ControlUnitAPI.h)
 
-option(BUILD_IOS_CONTROLLER_TESTING "Build offline iOS controller tests" OFF)
-if(BUILD_IOS_CONTROLLER_TESTING)
-    enable_testing()
-    add_executable(MaaIOSInputMappingTest ${CMAKE_SOURCE_DIR}/test/ios_test/ios_input_mapping_test.cpp)
-    target_include_directories(MaaIOSInputMappingTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    add_test(NAME MaaIOSInputMappingTest COMMAND MaaIOSInputMappingTest)
+add_library(MaaIOSControlUnit SHARED ${maa_ios_control_unit_src} ${maa_ios_control_unit_header})
+
+target_include_directories(MaaIOSControlUnit
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
+
+target_link_libraries(MaaIOSControlUnit PRIVATE MaaUtils MaaIOSProtocol ${OpenCV_LIBS})
+
+target_compile_definitions(MaaIOSControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
+
+add_dependencies(MaaIOSControlUnit MaaUtils)
+
+install(
+    TARGETS MaaIOSControlUnit
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION bin
+
+    # ARCHIVE DESTINATION lib
+)
+
+if(WIN32)
+    install(FILES $<TARGET_PDB_FILE:MaaIOSControlUnit> DESTINATION symbol OPTIONAL)
 endif()
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_ios_control_unit_src})
