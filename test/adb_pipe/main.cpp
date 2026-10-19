@@ -1,6 +1,10 @@
 #include "Base/UnitBase.h"
+#include "MaaUtils/ScopeLeave.hpp"
 
 #include <cerrno>
+#include <cstdlib>
+#include <fcntl.h>
+#include <fstream>
 #include <iostream>
 #include <sys/wait.h>
 #include <thread>
@@ -16,7 +20,7 @@ public:
     using UnitBase::startup_and_read_pipe;
 };
 
-static int writer(const std::string& mode)
+static int writer(const std::string& mode, const std::string& marker_path)
 {
     if (mode == "empty") {
         return 0;
@@ -25,12 +29,23 @@ static int writer(const std::string& mode)
         std::cout << "failure";
         return 42;
     }
-    if (mode == "inherited_writer") {
-        const pid_t pid = fork();
+    if (mode == "inherited_writer" || mode == "inherited_writer_fork_failure") {
+        const pid_t pid = mode == "inherited_writer_fork_failure" ? -1 : fork();
         if (pid < 0) {
             return 1;
         }
         if (pid == 0) {
+            // The result is nullopt on failure too, so acknowledge setup through
+            // a separate channel only after the stdout-holding descendant starts.
+            const int fd = open(marker_path.c_str(), O_WRONLY);
+            if (fd < 0) {
+                _exit(1);
+            }
+            const bool ready = write(fd, "1", 1) == 1;
+            close(fd);
+            if (!ready) {
+                _exit(1);
+            }
             std::this_thread::sleep_for(2s);
             _exit(0);
         }
@@ -61,22 +76,42 @@ static int writer(const std::string& mode)
 
 int main(int argc, char** argv)
 {
-    if (argc == 3 && std::string(argv[1]) == "--child") {
-        return writer(argv[2]);
+    if (argc == 4 && std::string(argv[1]) == "--child") {
+        return writer(argv[2], argv[3]);
     }
     if (argc != 2) {
         return 2;
     }
     const std::string mode = argv[1];
     const auto executable = std::filesystem::absolute(argv[0]);
+    const bool inherited_writer = mode == "inherited_writer" || mode == "inherited_writer_fork_failure";
+    std::string marker_path;
+    if (inherited_writer) {
+        marker_path = (std::filesystem::temp_directory_path() / "maa-adb-writer-XXXXXX").string();
+        const int fd = mkstemp(marker_path.data());
+        if (fd < 0) {
+            std::cerr << "could not create descendant readiness marker\n";
+            return 1;
+        }
+        close(fd);
+    }
+    OnScopeLeave([&]() {
+        if (!marker_path.empty()) {
+            unlink(marker_path.c_str());
+        }
+    });
     TestUnit unit;
     const auto start = std::chrono::steady_clock::now();
-    const auto result = unit.startup_and_read_pipe({ executable, { "--child", mode } }, 100ms);
+    const auto result = unit.startup_and_read_pipe({ executable, { "--child", mode, marker_path } }, 100ms);
     const auto elapsed = std::chrono::steady_clock::now() - start;
     std::cout << mode << ": elapsed_ms=" << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()
               << " accepted=" << result.has_value() << '\n';
     if (elapsed >= 700ms) {
         std::cerr << "read and cleanup exceeded the deadline allowance\n";
+        return 1;
+    }
+    if (inherited_writer && std::ifstream(marker_path).get() != '1') {
+        std::cerr << "stdout-holding descendant did not confirm readiness\n";
         return 1;
     }
 
@@ -90,7 +125,7 @@ int main(int argc, char** argv)
     else if (mode == "eof_before_exit") {
         valid = result && *result == "early";
     }
-    else if (mode == "grace_exit" || mode == "timeout_retry" || mode == "inherited_writer" || mode == "nonzero") {
+    else if (mode == "grace_exit" || mode == "timeout_retry" || inherited_writer || mode == "nonzero") {
         valid = !result;
     }
     if (!valid) {
@@ -98,7 +133,7 @@ int main(int argc, char** argv)
         return 1;
     }
     if (mode == "timeout_retry") {
-        const auto retry = unit.startup_and_read_pipe({ executable, { "--child", "complete" } }, 1s);
+        const auto retry = unit.startup_and_read_pipe({ executable, { "--child", "complete", "" } }, 1s);
         if (!retry || *retry != "earlylate") {
             std::cerr << "next command did not succeed after timeout\n";
             return 1;

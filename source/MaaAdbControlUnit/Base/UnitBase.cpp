@@ -61,14 +61,15 @@ std::optional<std::string> UnitBase::startup_and_read_pipe(const ProcessArgv& ar
     if (!output_complete) {
         LogError << "child stdout incomplete (timeout or read error)" << VAR(timeout) << VAR(output.size()) << VAR(argv.exec)
                  << VAR(argv.args);
-        return std::nullopt;
     }
-    if (!output.empty() && output.size() < 4096) {
+    if (output_complete && !output.empty() && output.size() < 4096) {
         LogDebug << MAA_LOG_NS::separator::newline << "output:" << output;
     }
 
     if (!ret) {
         LogError << "child return error" << VAR(argv.exec) << VAR(argv.args);
+    }
+    if (!output_complete || !ret) {
         return std::nullopt;
     }
 

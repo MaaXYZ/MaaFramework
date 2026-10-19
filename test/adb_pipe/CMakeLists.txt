@@ -14,3 +14,8 @@ foreach(case complete empty grace_exit timeout_retry nonzero eof_before_exit inh
     add_test(NAME adb_pipe_${case} COMMAND AdbPipeTesting ${case})
     set_tests_properties(adb_pipe_${case} PROPERTIES TIMEOUT 8)
 endforeach()
+
+add_test(NAME adb_pipe_failure_checks
+    COMMAND ${CMAKE_COMMAND} -DTEST_EXECUTABLE=$<TARGET_FILE:AdbPipeTesting>
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/check_failures.cmake)
+set_tests_properties(adb_pipe_failure_checks PROPERTIES TIMEOUT 8)
