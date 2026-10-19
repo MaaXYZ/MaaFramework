@@ -1,4 +1,5 @@
 #include "transport/SocketPlatform.h"
+#include "MaaUtils/Platform.h"
 #include <cstring>
 #ifndef _WIN32
 #include <unistd.h>
@@ -53,11 +54,7 @@ std::string socket_error_message(int code)
     // 系统消息先取 UTF-16，再转 UTF-8，避免中文 Windows 输出混用代码页。
     wchar_t text[1024] { };
     const DWORD size = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, code, 0, text, 1024, nullptr);
-    const int bytes = WideCharToMultiByte(CP_UTF8, 0, text, size, nullptr, 0, nullptr, nullptr);
-    std::string result(bytes, '\0');
-    if (bytes) {
-        WideCharToMultiByte(CP_UTF8, 0, text, size, result.data(), bytes, nullptr, nullptr);
-    }
+    auto result = MAA_NS::from_osstring({ text, size });
     while (!result.empty() && (result.back() == '\r' || result.back() == '\n')) {
         result.pop_back();
     }

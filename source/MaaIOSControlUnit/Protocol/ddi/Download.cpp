@@ -1,3 +1,4 @@
+#include "MaaUtils/Platform.h"
 #include "ddi/DownloadInternal.h"
 #include "plist/Plist.h"
 
@@ -566,9 +567,8 @@ std::optional<DownloadResult> download(
         // Only a complete, fully rehashed cache is reused.
         if (fs::exists(directory) || fs::is_symlink(fs::symlink_status(directory))) {
             if (!validate(directory, catalog, error)) {
-                const auto utf8_path = directory.u8string();
                 error = std::string("Existing DDI cache is invalid; remove this version directory and retry: ")
-                        + std::string(utf8_path.begin(), utf8_path.end()) + " (" + error + ")";
+                        + MAA_NS::path_to_utf8_string(directory) + " (" + error + ")";
                 return std::nullopt;
             }
             if (target) {

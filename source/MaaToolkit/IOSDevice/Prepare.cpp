@@ -1,3 +1,4 @@
+#include "MaaUtils/Platform.h"
 #include "Operations.h"
 #include "ddi/Cryptex.h"
 #include "ddi/Mounter.h"
@@ -163,8 +164,7 @@ Json prepare(const Options& o, const Callbacks& callbacks)
     download.timeout = seconds(o.download_timeout_seconds);
     if (!o.cache_directory.empty()) {
         std::error_code ec;
-        download.cache_root =
-            std::filesystem::absolute(std::filesystem::path(std::u8string(o.cache_directory.begin(), o.cache_directory.end())), ec);
+        download.cache_root = std::filesystem::absolute(MAA_NS::path(o.cache_directory), ec);
         if (ec) {
             error = ec.message();
             return fail();

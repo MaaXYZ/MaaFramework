@@ -1,3 +1,4 @@
+#include "MaaUtils/Platform.h"
 #include "ddi/DownloadInternal.h"
 #include "remote/Pairing.h"
 #include "wifi/Credentials.h"
@@ -66,19 +67,26 @@ int main()
                                          { "DeveloperDiskImage.dmg.signature", 1, "", "e25f1814e51579d5f55c0f1fe0135ddb28a47f4a" } },
                                        ddi::Kind::Classic };
         ddi::DownloadOptions download;
-        auto result = ddi::detail::download(
-            download,
-            catalog,
-            [](const std::string& url, auto, auto, const auto&, const auto& sink, std::string&) {
-                const char value = url.ends_with(".signature") ? 'y' : 'x';
-                return sink(&value, 1);
-            },
-            error);
+        const auto fetch = [](const std::string& url, auto, auto, const auto&, const auto& sink, std::string&) {
+            const char value = url.ends_with(".signature") ? 'y' : 'x';
+            return sink(&value, 1);
+        };
+        auto result = ddi::detail::download(download, catalog, fetch, error);
         require(result.has_value(), error.c_str());
         const auto temporary_root = result->directory.parent_path();
         auto copy = *result;
         result.reset();
         require(std::filesystem::exists(copy.directory), "temporary DDI remains alive while an owner exists");
+        download.cache_root = temporary_root / MAA_NS::path("DDI 缓存 🙂");
+        const auto cached = ddi::detail::download(download, catalog, fetch, error);
+        require(cached.has_value(), error.c_str());
+        const auto reused = ddi::detail::download(download, catalog, fetch, error);
+        require(reused && reused->cache_hit && reused->directory == cached->directory, "Unicode cache path can be reused");
+        std::filesystem::remove(cached->directory / "DeveloperDiskImage.dmg");
+        const auto invalid = ddi::detail::download(download, catalog, fetch, error);
+        require(
+            !invalid && error.find(MAA_NS::path_to_utf8_string(cached->directory)) != std::string::npos,
+            "invalid cache diagnostic contains the UTF-8 path");
         copy.temporary_storage.reset();
         require(!std::filesystem::exists(temporary_root), "temporary DDI removed with its last owner");
         std::cout << "caller-owned credentials and temporary DDI lifetime passed\n";
