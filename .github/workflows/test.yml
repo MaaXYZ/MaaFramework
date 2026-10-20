@@ -4,7 +4,6 @@ on:
     push:
         branches:
             - 'main'
-            - 'feat/ios-control-unit' # Remove before merging into main.
         paths:
             - '.github/workflows/test.yml'
             - '.github/actions/ios-dependencies/**'

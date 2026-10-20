@@ -6,7 +6,6 @@ on:
             - 'v*'
         branches:
             - 'main'
-            - 'feat/ios-control-unit' # Remove before merging into main.
         paths:
             - '.github/workflows/build.yml'
             - '.github/actions/ios-dependencies/**'
