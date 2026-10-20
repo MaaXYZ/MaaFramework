@@ -180,6 +180,7 @@ jobs:
                   if_no_artifact_found: fail
 
             - name: Download iOS source materials
+              if: ${{ hashFiles('assets/**/MaaIOSControlUnit.dll', 'assets/**/libMaaIOSControlUnit.so', 'assets/**/libMaaIOSControlUnit.dylib') != '' }}
               uses: dawidd6/action-download-artifact@v21
               with:
                   workflow: build.yml
