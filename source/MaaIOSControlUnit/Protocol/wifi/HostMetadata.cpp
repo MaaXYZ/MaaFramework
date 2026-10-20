@@ -110,13 +110,15 @@ std::optional<PlatformIdentity> platform_identity()
 std::string_view host_model()
 {
 #ifdef __APPLE__
-    return "MaaIOS-macos";
+    return "MaaFW-MacOS";
 #elif defined(_WIN32)
-    return "MaaIOS-windows";
+    return "MaaFW-Windows";
+#elif defined(__ANDROID__)
+    return "MaaFW-Android";
 #elif defined(__linux__)
-    return "MaaIOS-linux";
+    return "MaaFW-Linux";
 #else
-    return "MaaFramework/iOS";
+    return "MaaFW-Unknown";
 #endif
 }
 
@@ -240,7 +242,7 @@ std::optional<HostMetadata> detail::host_metadata_for_uuid(
         err = "Cannot hash the host display serial number";
         return std::nullopt;
     }
-    HostMetadata out { std::string(host_model()), "MAAIOS-", platform ? source : HostMetadataSource::HostIdentifier };
+    HostMetadata out { std::string(host_model()), "MaaFW-", platform ? source : HostMetadataSource::HostIdentifier };
     constexpr char hex[] = "0123456789ABCDEF";
     for (size_t i = 0; i < 8; ++i) {
         out.serial_number += hex[digest[i] >> 4];

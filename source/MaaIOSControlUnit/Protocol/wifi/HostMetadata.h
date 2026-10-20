@@ -29,7 +29,7 @@ struct HostMetadata
     HostMetadataSource source = HostMetadataSource::HostIdentifier;
 };
 
-/// MAAIOS- plus 16 uppercase hex digits from an application-specific SHA-256.
+/// MaaFW- plus 16 uppercase hex digits from an application-specific SHA-256.
 /// Uses a readable machine UUID, then a system-instance ID (Linux machine-id or
 /// Windows MachineGuid), then the exact existing host_identifier. Raw platform
 /// identifiers and hardware serials are never published or persisted.
