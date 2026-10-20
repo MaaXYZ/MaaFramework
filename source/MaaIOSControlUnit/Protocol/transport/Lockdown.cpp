@@ -313,9 +313,6 @@ std::optional<Lockdown> Lockdown::establish_bounded(uint32_t device_id, std::str
         err = "StartSession rejected: " + value->as_string_or("?");
         return { };
     }
-    if (const auto* value = reply.find("SessionID")) {
-        ld.session_id_ = value->as_string_or();
-    }
     const auto* want_ssl = reply.find("EnableSessionSSL");
     if (!want_ssl || want_ssl->as_bool_or(true)) {
         if (!ld.tls_.handshake_bounded(ld.sock_, ld.identity_, budget, err)) {

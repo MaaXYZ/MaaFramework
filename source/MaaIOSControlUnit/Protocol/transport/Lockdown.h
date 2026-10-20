@@ -39,7 +39,6 @@ public:
     static std::optional<Lockdown> establish_bounded(uint32_t device_id, std::string_view udid, const IoBudget& budget, std::string& err);
 
     /// 发一个 lockdown 请求并等回复。自动补 Label 字段。
-    bool request(const plist::Value& req, plist::Value& reply, std::string& err);
     bool request_bounded(
         const plist::Value&,
         plist::Value&,
@@ -70,19 +69,18 @@ public:
     /// 已公布的服务端口，所以「每次运行都随机生成」是不能接受的写法。
     [[nodiscard]] const std::string& host_id() const { return host_id_; }
 
-    [[nodiscard]] const std::string& session_id() const { return session_id_; }
-
     // Interrupt an in-flight I/O without transferring ownership. The caller
     // must join its watchdog before moving or destroying this session.
     void interrupt();
 
 private:
+    bool request(const plist::Value& req, plist::Value& reply, std::string& err);
+
     Socket sock_;
     TlsChannel tls_;
     PemIdentity identity_;
     std::string host_id_;
     std::string system_buid_;
-    std::string session_id_;
     bool bounded_io_ = false;
 };
 
