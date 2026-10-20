@@ -39,7 +39,6 @@ enum class UsbmuxDiscoveryStatus
 ///
 /// 连接约束：
 ///   - Connect 不能在发过 Listen 的连接上用，否则回 Number=5(NOT_CONNECTED)。
-///     所以本类走 ListDevices + Connect 的同一条连接。
 ///   - PortNumber 必须是网络序（htons）。传主机序会回 Number=3(CONNREFUSED)。
 class Usbmux
 {
@@ -51,11 +50,11 @@ public:
     Usbmux& operator=(const Usbmux&) = delete;
 
     /// 连接 usbmux 服务：macOS/Linux 为 /var/run/usbmuxd，Windows 为 127.0.0.1:27015。
-    static std::optional<Usbmux> open(std::string& err);
-    // Dedicated deadline/cancellation-aware connection for installation.
-    // Existing discovery/pairing/media open/connect semantics are unchanged.
+    /// 连接和请求支持超时及取消。
     static std::optional<Usbmux>
         open_for_service(std::chrono::milliseconds timeout, const std::function<bool()>& cancelled, std::string& err);
+    /// 把 socket 转发到 device_id:port。成功后本对象失效，返回的 Socket
+    /// 就是到该端口的透明通道（lockdown 即接在这上面）。
     std::optional<Socket> connect_for_service(
         uint32_t device_id,
         uint16_t port,
@@ -63,7 +62,6 @@ public:
         const std::function<bool()>& cancelled,
         std::string& err);
 
-    bool list_devices(std::vector<DeviceRecord>& out, std::string& err);
     bool list_devices_for_service(
         std::vector<DeviceRecord>& out,
         std::chrono::milliseconds timeout,
@@ -72,22 +70,17 @@ public:
 
     /// 仅供设备发现使用的独立连接。connect/send/header/payload 共用绝对预算，
     /// socket 等待以最多 50 ms 切片检查取消；失败时 out 为空。err 仅用于系统或协议错误，
-    /// 超时/取消由返回状态区分，不改变 open/list_devices 的既有阻塞语义。
+    /// 超时/取消由返回状态区分。
     static UsbmuxDiscoveryStatus list_devices_for_discovery(
         std::vector<DeviceRecord>& out,
         std::chrono::milliseconds timeout,
         const std::function<bool()>& should_cancel,
         std::string& err);
 
-    /// 把 socket 转发到 device_id:port。成功后本对象失效，返回的 Socket
-    /// 就是到该端口的透明通道（lockdown 即接在这上面）。
-    std::optional<Socket> connect(uint32_t device_id, uint16_t port, std::string& err);
-
     /// 读配对记录（bplist 字节）。
     ///
     /// 必须走 usbmuxd 而不是直接读文件：macOS 上 /var/db/lockdown 是 root-only，
     /// 而 usbmuxd 有权限代读。返回的 blob 里含私钥与证书，**绝不可写进日志**。
-    bool read_pair_record(std::string_view udid, std::vector<uint8_t>& out, std::string& err);
     bool read_pair_record_for_service(
         std::string_view udid,
         std::vector<uint8_t>& out,
@@ -98,7 +91,6 @@ public:
     [[nodiscard]] static std::string socket_path();
 
 private:
-    bool round_trip(const plist::Value& request, plist::Value& reply, std::string& err);
     bool round_trip_for_service(const plist::Value&, plist::Value&, std::chrono::milliseconds, const std::function<bool()>&, std::string&);
 
     Socket sock_;

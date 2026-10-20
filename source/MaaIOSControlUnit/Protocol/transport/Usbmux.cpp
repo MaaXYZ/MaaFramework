@@ -1,6 +1,5 @@
 #include "Usbmux.h"
 
-#include "transport/TcpConnect.h"
 #ifndef _WIN32
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -12,6 +11,7 @@
 #include <cerrno>
 #include <climits>
 #include <cstring>
+#include <utility>
 
 namespace maa::ios::transport
 {
@@ -301,37 +301,6 @@ std::string Usbmux::socket_path()
 #endif
 }
 
-std::optional<Usbmux> Usbmux::open(std::string& err)
-{
-#ifdef _WIN32
-    // Apple Mobile Device Service 在 Windows 提供本地 TCP usbmux 服务。
-    auto socket = connect_tcp("127.0.0.1", 27015, 3000, err);
-    if (!socket) {
-        return std::nullopt;
-    }
-    Usbmux mux;
-    mux.sock_ = std::move(*socket);
-    return mux;
-#else
-    const int fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
-    if (fd < 0) {
-        err = std::string("socket failed: ") + std::strerror(errno);
-        return std::nullopt;
-    }
-    sockaddr_un addr { };
-    addr.sun_family = AF_UNIX;
-    std::strncpy(addr.sun_path, socket_path().c_str(), sizeof(addr.sun_path) - 1);
-    if (::connect(fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0) {
-        err = "Connect to " + socket_path() + " failed: " + std::strerror(errno);
-        ::close(fd);
-        return std::nullopt;
-    }
-    Usbmux mux;
-    mux.sock_.reset(fd);
-    return mux;
-#endif
-}
-
 std::optional<Usbmux> Usbmux::open_for_service(std::chrono::milliseconds timeout, const std::function<bool()>& cancelled, std::string& err)
 {
     err.clear();
@@ -544,69 +513,6 @@ Usbmux& Usbmux::operator=(Usbmux&& other) noexcept
     return *this;
 }
 
-bool Usbmux::round_trip(const plist::Value& request, plist::Value& reply, std::string& err)
-{
-    std::string body = plist::write(request);
-    body.push_back('\0');
-
-    uint8_t hdr[kHeaderLen];
-    put_u32_le(hdr, static_cast<uint32_t>(kHeaderLen + body.size()));
-    put_u32_le(hdr + 4, kProtoVersion);
-    put_u32_le(hdr + 8, kMsgPlist);
-    put_u32_le(hdr + 12, tag_);
-    if (!sock_.write_all(hdr, kHeaderLen, err)) {
-        return false;
-    }
-    if (!sock_.write_all(body.data(), body.size(), err)) {
-        return false;
-    }
-    ++tag_;
-
-    uint8_t rhdr[kHeaderLen];
-    if (!sock_.read_exact(rhdr, kHeaderLen, err)) {
-        return false;
-    }
-    const uint32_t total = get_u32_le(rhdr);
-    // 上限必须有，且不能只判下界：total 是对方给的 32 位数，只挡 `< kHeaderLen`
-    // 的话，一个 0xFFFFFFFF 就会让我们先去申请 4GB 内存——那是 DoS，不是解析失败。
-    // usbmuxd 的回复实际是 KB 级（设备列表、配对记录），16MB 已经宽到没边。
-    if (total < kHeaderLen || total - kHeaderLen > kMaxPayload) {
-        err = "Invalid mux frame length: " + std::to_string(total);
-        return false;
-    }
-    std::vector<uint8_t> payload(total - kHeaderLen);
-    if (!payload.empty() && !sock_.read_exact(payload.data(), payload.size(), err)) {
-        return false;
-    }
-    while (!payload.empty() && payload.back() == 0) {
-        payload.pop_back();
-    }
-    auto parsed = plist::parse(std::string_view(reinterpret_cast<const char*>(payload.data()), payload.size()));
-    if (!parsed) {
-        err = "mux response is not a valid plist";
-        return false;
-    }
-    reply = std::move(*parsed);
-    return true;
-}
-
-bool Usbmux::list_devices(std::vector<DeviceRecord>& out, std::string& err)
-{
-    plist::Value reply;
-    if (!round_trip(base_request("ListDevices"), reply, err)) {
-        return false;
-    }
-    const auto* list = reply.find("DeviceList");
-    if (list == nullptr) {
-        err = "ListDevices response missing DeviceList";
-        return false;
-    }
-    for (const auto& rec : list->array) {
-        out.push_back(parse_record(rec));
-    }
-    return true;
-}
-
 bool Usbmux::list_devices_for_service(
     std::vector<DeviceRecord>& out,
     std::chrono::milliseconds timeout,
@@ -626,49 +532,6 @@ bool Usbmux::list_devices_for_service(
     for (const auto& rec : list->array) {
         out.push_back(parse_record(rec));
     }
-    return true;
-}
-
-std::optional<Socket> Usbmux::connect(uint32_t device_id, uint16_t port, std::string& err)
-{
-    plist::Value req = base_request("Connect");
-    req.set("DeviceID", plist::Value::Int(device_id));
-    // 必须网络序：传主机序会得到 Number=3 (CONNREFUSED)。
-    req.set("PortNumber", plist::Value::Int(htons(port)));
-
-    plist::Value reply;
-    if (!round_trip(req, reply, err)) {
-        return std::nullopt;
-    }
-    const auto* number_val = reply.find("Number");
-    const int number = number_val != nullptr ? static_cast<int>(number_val->as_int_or(-1)) : -1;
-    if (number != 0) {
-        err = "Connect failed, usbmuxd returned Number=" + std::to_string(number);
-        return std::nullopt;
-    }
-    // 此后同一 socket 即到 device:port 的透明通道，把 fd 交出去。
-    Socket tunnel;
-    tunnel.reset(sock_.release());
-    return tunnel;
-}
-
-bool Usbmux::read_pair_record(std::string_view udid, std::vector<uint8_t>& out, std::string& err)
-{
-    plist::Value req = base_request("ReadPairRecord");
-    req.set("PairRecordID", plist::Value::Str(std::string(udid)));
-
-    plist::Value reply;
-    if (!round_trip(req, reply, err)) {
-        return false;
-    }
-    const auto* data = reply.find("PairRecordData");
-    if (data == nullptr || data->data.empty()) {
-        const auto* e = reply.find("MessageType");
-        err = "ReadPairRecord response missing PairRecordData (response " + std::string(e ? e->as_string_or("?") : "?")
-              + "); device may not trust this computer yet";
-        return false;
-    }
-    out = data->data;
     return true;
 }
 
