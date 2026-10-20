@@ -32,6 +32,6 @@ add_executable(MaaIOSToolkitTest
     ${CMAKE_SOURCE_DIR}/source/MaaToolkit/API/MaaToolkitIOSDevice.cpp)
 target_include_directories(MaaIOSToolkitTest PRIVATE ${MAA_PUBLIC_INC} ${MAA_PRIVATE_INC}
     "${MAAUTILS_DIR}/include")
-target_compile_definitions(MaaIOSToolkitTest PRIVATE MAA_WITH_IOS_DEVICE=1 MAA_TOOLKIT_EXPORTS)
+target_compile_definitions(MaaIOSToolkitTest PRIVATE MAA_TOOLKIT_EXPORTS)
 target_link_libraries(MaaIOSToolkitTest PRIVATE MaaFramework MaaUtils Boost::system ${OpenCV_LIBS})
 add_test(NAME MaaIOSToolkitTest COMMAND MaaIOSToolkitTest)
