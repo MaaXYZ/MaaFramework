@@ -47,6 +47,11 @@ if(NOT WITH_REPLAY_CONTROLLER)
     set(BUILD_PIPELINE_TESTING OFF)
 endif()
 
+if(NOT WITH_IOS_CONTROLLER)
+    message(STATUS "iOS controller is disabled, disable BUILD_IOS_TEST")
+    set(BUILD_IOS_TEST OFF)
+endif()
+
 # check options
 if(BUILD_PIPELINE_TESTING AND NOT WITH_DBG_CONTROLLER)
     message(FATAL_ERROR
@@ -88,10 +93,6 @@ if(WITH_MAA_AGENT)
     find_package(cppzmq REQUIRED)
 endif()
 
-if(WITH_IOS_CONTROLLER AND BUILD_IOS_TEST)
-    enable_testing()
-endif()
-
 add_subdirectory(3rdparty)
 add_subdirectory(source)
 add_subdirectory(tools)
@@ -124,7 +125,8 @@ if (BUILD_LINUX_TEST)
     add_subdirectory(test/linux_test)
 endif ()
 
-if(WITH_IOS_CONTROLLER AND BUILD_IOS_TEST)
+if(BUILD_IOS_TEST)
+    enable_testing()
     add_subdirectory(test/ios_test)
 endif()
 
