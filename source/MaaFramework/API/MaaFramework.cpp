@@ -61,15 +61,6 @@ MaaController* MaaIOSControllerCreate(
         return nullptr;
     }
 
-#ifndef MAA_WITH_IOS_CONTROLLER
-    (void)connection_method;
-    (void)wifi_pairing;
-
-    LogError << "This API " << __FUNCTION__ << " is disabled in this build";
-    return nullptr;
-
-#else
-
     auto control_unit = MAA_NS::IOSControlUnitLibraryHolder::create_control_unit(
         selected_udid,
         screencap_methods,
@@ -83,7 +74,6 @@ MaaController* MaaIOSControllerCreate(
     }
 
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
-#endif
 }
 
 MaaController* MaaWin32ControllerCreate(

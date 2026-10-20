@@ -134,7 +134,6 @@ std::string reconfig_linux(const RuntimeParam::LinuxParam& raw)
     return obj.dumps();
 }
 
-#if defined(MAA_WITH_IOS_CONTROLLER)
 namespace
 {
 std::atomic<bool> ios_prepare_cancelled = false;
@@ -209,15 +208,12 @@ bool prepare_ios(const RuntimeParam::IOSParam& ios)
     return !is_ios_prepare_cancelled(nullptr);
 }
 } // namespace
-#endif
 
 bool Runner::run(const RuntimeParam& param)
 {
-#if defined(MAA_WITH_IOS_CONTROLLER)
     if (const auto* ios = std::get_if<RuntimeParam::IOSParam>(&param.controller_param); ios && !prepare_ios(*ios)) {
         return false;
     }
-#endif
     MaaTasker* tasker_handle = MaaTaskerCreate();
 
     MaaController* controller_handle = nullptr;
@@ -232,16 +228,10 @@ bool Runner::run(const RuntimeParam& param)
             adb_param.agent_path.c_str());
     }
     else if (const auto* p_ios_param = std::get_if<RuntimeParam::IOSParam>(&param.controller_param)) {
-#if defined(MAA_WITH_IOS_CONTROLLER)
         const auto connection = p_ios_param->wifi.empty() ? MaaIOSConnectionMethod_Auto : MaaIOSConnectionMethod_WiFi;
         const auto* address = p_ios_param->wifi == "auto" ? nullptr : p_ios_param->wifi.c_str();
         controller_handle =
             MaaIOSControllerCreate(p_ios_param->udid.c_str(), p_ios_param->screencap, connection, address, p_ios_param->wifi_pairing.get());
-#else
-        std::ignore = p_ios_param;
-        LogError << "iOS controller is disabled in this build";
-        return false;
-#endif
     }
     else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
         controller_handle =

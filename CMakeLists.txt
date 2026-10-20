@@ -88,10 +88,6 @@ if(WITH_MAA_AGENT)
     find_package(cppzmq REQUIRED)
 endif()
 
-if(WITH_IOS_CONTROLLER)
-    add_compile_definitions(MAA_WITH_IOS_CONTROLLER=1)
-endif()
-
 if(WITH_IOS_CONTROLLER AND BUILD_IOS_TEST)
     enable_testing()
 endif()

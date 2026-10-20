@@ -15,12 +15,6 @@
 #include <sys/system_properties.h>
 #endif
 
-#if defined(MAA_WITH_IOS_CONTROLLER)
-static constexpr bool kIOSSupported = true;
-#else
-static constexpr bool kIOSSupported = false;
-#endif
-
 #if defined(_WIN32)
 #include "MaaUtils/SafeWindows.hpp"
 #include <shellapi.h>
@@ -351,9 +345,6 @@ void Interactor::print_config() const
         const auto& ios = config_.configuration().ios;
         std::cout << MAA_NS::utf8_to_crt(
             std::format("\t\tUDID: {}\n\t\tScreencap: {}\n", ios.udid.empty() ? "(not configured)" : ios.udid, ios.screencap));
-        if (!kIOSSupported) {
-            std::cout << "\t\t(iOS is disabled in this build)\n";
-        }
     } break;
     case InterfaceData::Controller::Type::Win32:
         if (config_.configuration().win32.hwnd) {
@@ -627,9 +618,6 @@ void Interactor::select_controller()
             if (ctrl.type == InterfaceData::Controller::Type::Gamepad && !kGamepadSupported) {
                 std::cout << " (Windows only)";
             }
-            if (ctrl.type == InterfaceData::Controller::Type::IOS && !kIOSSupported) {
-                std::cout << " (disabled in this build)";
-            }
             std::cout << "\n";
             if (!ctrl.description.empty()) {
                 std::string desc_text = read_text_content(ctrl.description);
@@ -653,21 +641,6 @@ void Interactor::select_controller()
         select_adb();
         break;
     case InterfaceData::Controller::Type::IOS:
-        if (!kIOSSupported) {
-            std::cout << "\niOS controller is disabled in this build.\n";
-            bool has_other_controllers =
-                std::ranges::any_of(all_controllers, [](const auto& ctrl) { return ctrl.type != InterfaceData::Controller::Type::IOS; });
-            if (has_other_controllers) {
-                std::cout << "Please select another controller.\n\n";
-                mpause();
-                select_controller();
-            }
-            else {
-                std::cout << "No other controllers available.\n\n";
-                mpause();
-            }
-            return;
-        }
         config_.configuration().controller.type = InterfaceData::Controller::Type::IOS;
         select_ios(controller.ios);
         break;
@@ -2076,12 +2049,6 @@ bool Interactor::check_validity()
     }
 
     if (config_.configuration().controller.type == InterfaceData::Controller::Type::IOS) {
-        if (!kIOSSupported) {
-            LogError << "iOS controller is disabled in this build";
-            return false;
-        }
-
-        // udid 可以留空（"只连了一台就用它"），所以它不是必填项；取图方式空着补成默认。
         auto& ios = config_.configuration().ios;
         if (ios.screencap.empty()) {
             ios.screencap = "Stream|ScreenshotService";
