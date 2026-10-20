@@ -77,8 +77,7 @@ xpc::Value build_start_request(
     std::optional<uint32_t> timeout_seconds,
     uint64_t client_supported_features,
     const std::vector<uint8_t>& event_channel_uuid,
-    bool audio,
-    const std::vector<uint8_t>& shared_client_session_uuid)
+    const std::vector<uint8_t>& client_session_uuid)
 {
     auto d = xpc::make_dict();
     xpc::dict_set(d, "clientSupportedFeatures", xpc::make_uint64(client_supported_features));
@@ -88,20 +87,15 @@ xpc::Value build_start_request(
     auto options = xpc::make_dict();
     xpc::dict_set(options, "AVCMediaStreamNegotiatorAccessNetworkType", typed("int", xpc::make_int64(kAccessNetworkType)));
     xpc::dict_set(options, "AVCMediaStreamNegotiatorTransportProtocolType", typed("int", xpc::make_int64(kTransportProtocolType)));
-    // 已验证的音频请求仅包含 AccessNetworkType / TransportProtocolType /
-    // ClientSessionID；视频请求另含显示器选择参数。音频请求省略下面两个键，
-    // 对应已测 answer 中的 source: {audioSystemOutput: {}}。
-    if (!audio) {
-        xpc::dict_set(options, "CoreDeviceVideoDisplayMode", typed("string", xpc::make_string("DisplayByID")));
-        xpc::dict_set(options, "VideoStreamForDisplayID", typed("int", xpc::make_int64(display_id)));
-    }
+    xpc::dict_set(options, "CoreDeviceVideoDisplayMode", typed("string", xpc::make_string("DisplayByID")));
+    xpc::dict_set(options, "VideoStreamForDisplayID", typed("int", xpc::make_int64(display_id)));
     // ClientSessionID 必须编码为 16 字节 XPC UUID；已测 Swift Codable 类型错误为
     // "Expected to decode UUID but found a OS_xpc_string instead"（code 4864）。
     //
-    // shared_client_session_uuid 非空时原样使用，否则生成本次请求的标识。
+    // client_session_uuid 非空时原样使用，否则生成本次请求的标识。
     // 各流使用独立 UUID，避免状态查询把另一条流视为本条存活。
     // 共用 UUID 时，probe() 只能确认至少一条匹配会话存在。
-    std::vector<uint8_t> session_id = shared_client_session_uuid;
+    std::vector<uint8_t> session_id = client_session_uuid;
     if (session_id.empty()) {
         const auto fresh = random_uuid_bytes();
         session_id.assign(fresh.begin(), fresh.end());
@@ -118,7 +112,7 @@ xpc::Value build_start_request(
     if (timeout_seconds.has_value()) {
         xpc::dict_set(d, "timeout", xpc::make_uint64(*timeout_seconds));
     }
-    xpc::dict_set(d, "type", xpc::make_string(audio ? "audio" : "video"));
+    xpc::dict_set(d, "type", xpc::make_string("video"));
     // DeviceHub 请求样本包含 sessionEventChannel。本构造器允许提供该 UUID，
     // 空 vector 时省略；通道注册过程和对端语义尚未确认，不能仅凭此字段判断续期。
     if (!event_channel_uuid.empty()) {
@@ -232,15 +226,9 @@ std::unique_ptr<StreamSession> StreamSession::start(
     }
 
     Offer offer = request.offer;
-    offer.is_audio = request.audio;
     offer.session_id = static_cast<uint32_t>(std::random_device { }());
     offer.call_id = remote::random_uuid_text();
-    // raw_offer 非空时原样发送，跳过本地 XML offer 构造。该入口用于完整样本重放和
-    // binary/XML 对照，不只比较已识别的字段。
-    // 样本内的 SSRC/CallID 保持原值，与上面新生成的 Offer 字段无关。后续 RTCP 应
-    // 使用本次 answer 的 LocalSSRC/RemoteSSRC，不能采用未进入 raw_offer 的本地身份。
-    // 样本重放本身不能排除反馈送达或其他请求参数的影响，验证范围见 Request::raw_offer。
-    std::vector<uint8_t> blob = request.raw_offer.empty() ? build_negotiator_offer(offer) : request.raw_offer;
+    const auto blob = build_negotiator_offer(offer);
 
     const auto& tunnel_params = device.tunnel_params();
     const std::vector<uint8_t> event_channel = request.session_event_channel.value_or(std::vector<uint8_t> { });
@@ -253,7 +241,6 @@ std::unique_ptr<StreamSession> StreamSession::start(
         request.timeout_seconds,
         request.client_supported_features,
         event_channel,
-        request.audio,
         request.client_session_uuid);
     xpc::Value output;
     if (on_conn != nullptr) {

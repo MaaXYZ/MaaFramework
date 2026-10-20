@@ -110,7 +110,7 @@ std::vector<uint8_t> session_blob(const Offer& offer)
 /// 码率参数表，记录保存在重复的 f9 中。部分 f2 值与码率相关，f1/f3 的完整含义
 /// 尚未确认，不能仅凭数值将整张表解释为编码器码率或 QP 的直接配置接口。
 /// 超大 NAL 的处理由解码后端承担，不能依赖此表保证长度上限。
-std::vector<uint8_t> rate_table(const Offer& offer)
+std::vector<uint8_t> rate_table()
 {
     std::vector<uint8_t> out;
     auto entry = [&out](std::vector<std::pair<uint32_t, uint64_t>> fields) {
@@ -122,14 +122,6 @@ std::vector<uint8_t> rate_table(const Offer& offer)
     };
     // 样本每条都包含 f1，包括值为 0 的记录。保留显式零值以维持已验证的编码形状，
     // 不在未知消息定义的情况下假定字段省略与显式写零完全等价。
-    auto f2_of = [](const std::vector<std::pair<uint32_t, uint64_t>>& e) {
-        for (const auto& [f, v] : e) {
-            if (f == 2) {
-                return v;
-            }
-        }
-        return uint64_t { 0 };
-    };
     const std::vector<std::vector<std::pair<uint32_t, uint64_t>>> observed = {
         { { 1, 4074 }, { 2, 0 }, { 3, 16384 } },        { { 1, 0 }, { 2, 75'000'000 }, { 3, 524288 } },
         { { 1, 0 }, { 2, 40'000'000 }, { 3, 12288 } },  { { 1, 16 }, { 2, 4100 } },
@@ -137,41 +129,9 @@ std::vector<uint8_t> rate_table(const Offer& offer)
         { { 1, 0 }, { 2, 6'000'000 }, { 3, 131072 } },  { { 1, 0 }, { 2, 100'000'000 }, { 3, 1'048'576 } },
         { { 1, 0 }, { 2, 60'000'000 }, { 3, 262144 } }, { { 1, 1 }, { 2, 299 } },
     };
-    for (auto e : observed) {
-        if (offer.rate_variant == 1 && f2_of(e) == 6'000'000) {
-            continue; // 对照变体 1：删除 f2=6000000 的记录。
-        }
-        if (offer.rate_variant == 2 && f2_of(e) == 6'000'000) {
-            for (auto& [f, v] : e) {
-                if (f == 2) {
-                    v = 60'000'000;
-                }
-            }
-        }
-        if (offer.rate_variant == 3 && f2_of(e) >= 1000 && f2_of(e) < 20'000'000) {
-            continue; // 对照变体 3：删除 1000 <= f2 < 20000000 的记录。
-        }
+    for (const auto& e : observed) {
         entry(e);
     }
-    return out;
-}
-
-/// 音频设置放在媒体参数容器的 f3；视频设置使用 f5（VideoSettings）。
-///
-/// 结构来自 Xcode DeviceHub 的音频样本：negotiatorOffer 为 433 字节，解开后的
-/// 媒体参数为 169 字节。f1 是客户端声明的 SSRC；已测 answer 的 RemoteSSRC 回显
-/// 该值，客户端 RTCP 使用本次 answer 中的值作为发送者 SSRC。
-/// f4=24191 的含义未确认；对应音频 streamConfig 观察到 AudioStreamMode=8、
-/// RxPayloadType=101。f2/f3/f5/f6 保留样本中的零值，当前不赋予未验证的字段名称。
-std::vector<uint8_t> audio_settings_blob(const Offer& offer)
-{
-    std::vector<uint8_t> out;
-    put_field_varint(out, 1, offer.session_id);
-    put_field_varint(out, 2, 0);
-    put_field_varint(out, 3, 0);
-    put_field_varint(out, 4, 24191);
-    put_field_varint(out, 5, 0);
-    put_field_varint(out, 6, 0);
     return out;
 }
 
@@ -180,15 +140,10 @@ std::vector<uint8_t> media_blob(const Offer& offer)
     std::vector<uint8_t> out;
     put_field_varint(out, 1, 1);
     put_field_varint(out, 2, 1);
-    if (offer.is_audio) {
-        put_field_bytes(out, 3, audio_settings_blob(offer));
-    }
-    else {
-        put_field_bytes(out, 5, session_blob(offer));
-    }
+    put_field_bytes(out, 5, session_blob(offer));
     put_field_string(out, 6, "Viceroy 1.7.0");
     put_field_varint(out, 8, 0);
-    auto rates = rate_table(offer);
+    auto rates = rate_table();
     out.insert(out.end(), rates.begin(), rates.end());
     // f13 的含义和设备校验方式尚未确认，保留可用会话中的固定值。
     put_field_varint(out, 13, 17'137'042'128'614'416'384ULL);
@@ -215,7 +170,7 @@ std::vector<uint8_t> build_negotiator_offer(const Offer& offer)
 {
     auto d = plist::Value::Dict();
     d.set("avcMediaStreamNegotiatorMediaBlob", plist::Value::OfData(util::zlib_store(media_blob(offer))));
-    d.set("avcMediaStreamNegotiatorMode", plist::Value::Int(offer.is_audio ? (offer.audio_dup ? 6 : 10) : 5));
+    d.set("avcMediaStreamNegotiatorMode", plist::Value::Int(5));
     d.set("avcMediaStreamOptionCallID", plist::Value::Str(offer.call_id));
     d.set("avcMediaStreamOptionRemoteEndpointInfo", plist::Value::OfData(remote_endpoint_info(offer)));
     const auto xml = plist::write(d);

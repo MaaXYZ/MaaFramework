@@ -13,7 +13,7 @@
 namespace maa::ios::media
 {
 
-/// 建立一条设备视频或音频媒体会话，并拥有该会话的 UDP 接收套接字。
+/// 建立一条设备视频媒体会话，并拥有该会话的 UDP 接收套接字。
 ///
 /// UDP 端口先绑定，再调用 startmediastream，避免丢失设备立即发送的参数集和首个关键帧。
 class StreamSession
@@ -22,14 +22,13 @@ public:
     struct Request
     {
         uint16_t receiver_port = 0; ///< 0 表示从 49152..65151 中随机选择端口，随后尝试绑定。
-        /// 视频目标的显示器 ID；音频请求不携带显示器 options。
+        /// 视频目标的显示器 ID。
         uint32_t display_id = 1;
         /// 发往设备的 timeout，单位为秒，是 RTCP 空闲超时，不是等待起流 RPC 回复的时限。
         /// 对应 answer 的 RTCPTimeoutInterval；有效 RR 可重置计时器。
         ///
-        /// 此低层接口默认使用 3600。产品 FramePump 和 AudioPump
+        /// 此低层接口默认使用 3600。FramePump
         /// 显式使用 20 秒，并每秒发送 RR。默认值、保留起流连接或查询状态都不能替代 RTCP。
-        /// 视频和音频各自有独立的会话与续期状态。
         ///
         /// nullopt 表示省略整个键，供协议探针使用；正常起流应提供此参数。
         std::optional<uint32_t> timeout_seconds = 3600;
@@ -40,23 +39,10 @@ public:
         /// 设备回复的 supportedFeatures=972 是设备能力，不能直接当作客户端应申报的值。
         /// 各位的含义尚未完整确认。
         uint64_t client_supported_features = 140;
-        /// 选择音频请求：type 为 audio，省略显示器选择 options，本地 offer 默认 mode 10；
-        /// offer.audio_dup 使用旧 mode 6，保留手机播放。
-        /// 视频请求的 type 为 video，本地生成的 offer 使用 mode 5；raw_offer 自身的 mode 不改写。
-        bool audio = false;
         /// avcMediaStreamOptionClientSessionID 的 16 字节 XPC UUID 数据；为空时为本次请求生成。
-        /// 音视频分别使用独立 UUID，以便查询各自状态。
-        /// 若共享 UUID，probe() 的 Alive 只能表示至少一条同 UUID 会话存在，无法区分音视频。
         std::vector<uint8_t> client_session_uuid;
-        /// 普通路径的 offer 参数。start() 会根据 audio 设置 is_audio，并为本次协商
-        /// 生成 session_id 和 call_id，覆盖传入 Offer 中这三个字段。
+        /// offer 参数。start() 为本次协商生成 session_id 和 call_id，覆盖传入值。
         Offer offer;
-        /// 非空时跳过本地 XML offer 构造，原样作为 negotiatorOffer 的 XPC Data。
-        /// 供抓包重放和 binary / XML 格式对照，不修改样本中的 SSRC、CallID 或其他内容。
-        /// 此字段只提供 offer 内容，type、options、接收端口等仍由 Request 的其他字段构造。
-        /// 调用方负责选择与 audio 请求类型相符的样本。
-        /// 发送 RTCP 应使用本次 answer 的 SSRC，不能使用普通构造路径另外生成的身份。
-        std::vector<uint8_t> raw_offer;
     };
 
     struct Started
@@ -64,10 +50,10 @@ public:
         /// answer 的 connection.sender.port，设备发送媒体使用的端口。
         /// 显式提供时须为 1..65535 的整数或十进制字符串；非法值使起流失败。
         /// 缺失时保留 0，仍可收包，但 UdpSocket 拒绝向 0 发送反馈。
-        /// 当前 FramePump / AudioPump 不会用收包源端口自动补全反馈目的端口。
+        /// FramePump 不会用收包源端口自动补全反馈目的端口。
         uint16_t sender_port = 0;
         /// 协商的媒体 RTP payload type，来自 streamConfig.RxPayloadType 的低七位。
-        /// 缺失时保留默认 100；音频也使用协商值。拆包前需区分同端口收到的裸 RTCP。
+        /// 缺失时保留默认 100。拆包前需区分同端口收到的裸 RTCP。
         uint8_t payload_type = 100;
         /// answer 的 streamConfig.LocalSSRC，名字采用设备视角。
         /// 已测值与设备发送的 RTP SSRC 一致；客户端 RTCP 报告块用它指明被报告的媒体源。
@@ -102,7 +88,7 @@ public:
     /// 在已建立隧道并取得 RSD 目录的 Device 上起流，先绑定接收 UDP 端口。
     /// 失败时返回 nullptr，并通过 err 提供传输、CoreDevice 或回复解析错误。
     /// 设备已接受请求后若回复解析失败，只释放本地 UDP 套接字，不发送 stopAll，
-    /// 避免停止并存的音视频会话。本次设备流可能已开始，依赖请求中的 RTCP 租期释放；
+    /// 避免停止其他媒体会话。本次设备流可能已开始，依赖请求中的 RTCP 租期释放；
     /// 产品请求为 20 秒，低层 Request 默认 3600 秒，此处不更改租期。
     /// start_status 非空时写入明确结果，答复解析失败为 AcceptedInvalidAnswer；
     /// 调用方无需匹配 err 文本，也不应把这种结果当作普通连接失败反复重试。
@@ -190,7 +176,7 @@ private:
 /// 组装 startmediastream 的 CoreDevice.input，不进行网络 I/O，供起流和离线协议校验使用。
 /// options 的参数按 int / string / uuid 标签包装；会话与事件通道 UUID 使用 16 字节
 /// XPC UUID 对象，不能用 UUID 文本代替。offer_bytes 原样放入 XPC Data，不转换 plist 格式。
-/// audio 决定请求类型及是否省略显示器 options；空共享 UUID 会生成本次 ClientSessionID，
+/// 空会话 UUID 会生成本次 ClientSessionID；
 /// 空事件通道 UUID 和 nullopt timeout 分别省略对应键。省略 timeout 在已测设备上被拒。
 [[nodiscard]] maa::ios::xpc::Value build_start_request(
     const std::string& receiver_ip,
@@ -201,7 +187,6 @@ private:
     std::optional<uint32_t> timeout_seconds,
     uint64_t client_supported_features,
     const std::vector<uint8_t>& event_channel_uuid,
-    bool audio = false,
-    const std::vector<uint8_t>& shared_client_session_uuid = { });
+    const std::vector<uint8_t>& client_session_uuid = { });
 
 } // namespace maa::ios::media
