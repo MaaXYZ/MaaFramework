@@ -353,6 +353,27 @@ struct Configuration
         MEO_JSONIZATION(name);
     };
 
+    struct Win32Config
+    {
+        void* hwnd = nullptr;
+        std::wstring class_name;
+        std::wstring window_name;
+
+        int _placeholder = 0;
+
+        MEO_JSONIZATION(MEO_OPT _placeholder);
+    };
+
+    struct MacOSConfig
+    {
+        uint32_t window_id = 0;
+        std::string title;
+        std::string screencap;
+        std::string input;
+
+        MEO_JSONIZATION(MEO_OPT window_id, MEO_OPT title, MEO_OPT screencap, MEO_OPT input);
+    };
+
     struct AdbConfig
     {
         std::string name;
@@ -380,27 +401,6 @@ struct Configuration
             MEO_OPT prepare_ddi,
             MEO_OPT ddi_cache_directory,
             MEO_OPT ddi_download_timeout_seconds);
-    };
-
-    struct Win32Config
-    {
-        void* hwnd = nullptr;
-        std::wstring class_name;
-        std::wstring window_name;
-
-        int _placeholder = 0;
-
-        MEO_JSONIZATION(MEO_OPT _placeholder);
-    };
-
-    struct MacOSConfig
-    {
-        uint32_t window_id = 0;
-        std::string title;
-        std::string screencap;
-        std::string input;
-
-        MEO_JSONIZATION(MEO_OPT window_id, MEO_OPT title, MEO_OPT screencap, MEO_OPT input);
     };
 
     struct PlayCoverConfig
