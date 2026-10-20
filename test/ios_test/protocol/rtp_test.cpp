@@ -27,6 +27,7 @@ void check(bool ok, const std::string& what)
 }
 
 using maa::ios::rt::HevcRtpDepacketizer;
+using maa::ios::rt::ReceivedNal;
 using maa::ios::rt::RtpSeq;
 
 /// 一个 RTP 包，按真机的样子构造：12 字节头（X=1）+ 8 字节扩展头 + HEVC 载荷。
@@ -90,39 +91,6 @@ std::vector<uint8_t> single(uint8_t type, const std::vector<uint8_t>& body)
     return out;
 }
 
-bool at_start_code(const std::vector<uint8_t>& s, std::size_t k)
-{
-    return s[k] == 0 && s[k + 1] == 0 && s[k + 2] == 0 && s[k + 3] == 1;
-}
-
-std::size_t next_start_code(const std::vector<uint8_t>& s, std::size_t from)
-{
-    for (std::size_t k = from; k + 4 <= s.size(); ++k) {
-        if (at_start_code(s, k)) {
-            return k;
-        }
-    }
-    return s.size(); // 最后一个 NAL 一直到串尾，不能少算尾巴那几字节
-}
-
-/// 把解出来的 Annex-B 串切成 NAL，方便断言。
-std::vector<std::vector<uint8_t>> split_annexb(const std::vector<uint8_t>& stream)
-{
-    std::vector<std::vector<uint8_t>> out;
-    std::size_t i = 0;
-    while (i + 4 <= stream.size()) {
-        if (!at_start_code(stream, i)) {
-            ++i;
-            continue;
-        }
-        const std::size_t begin = i + 4;
-        const std::size_t end = next_start_code(stream, begin);
-        out.emplace_back(stream.begin() + static_cast<long>(begin), stream.begin() + static_cast<long>(end));
-        i = end;
-    }
-    return out;
-}
-
 uint8_t nal_type(const std::vector<uint8_t>& nal)
 {
     return nal.empty() ? 0xFF : static_cast<uint8_t>((nal[0] >> 1) & 0x3F);
@@ -142,13 +110,13 @@ void test_aggregation()
     auto p = packet(1, 0, false, aggregation({ vps, sps }));
     HevcRtpDepacketizer d;
     std::string err;
-    std::vector<uint8_t> out;
-    check(d.push(p, out, err), "聚合包可解: " + err);
-    auto nals = split_annexb(out);
+    std::vector<ReceivedNal> out;
+    check(d.push_nals(p, out, err), "聚合包可解: " + err);
+    const auto& nals = out;
     check(nals.size() == 2, "出两个 NAL");
     if (nals.size() == 2) {
-        check(nal_type(nals[0]) == 32 && nals[0].size() == 24, "VPS 类型与长度");
-        check(nal_type(nals[1]) == 33 && nals[1] == sps, "SPS 内容逐字节一致");
+        check(nal_type(nals[0].bytes) == 32 && nals[0].bytes.size() == 24, "VPS 类型与长度");
+        check(nal_type(nals[1].bytes) == 33 && nals[1].bytes == sps, "SPS 内容逐字节一致");
     }
 }
 
@@ -161,23 +129,25 @@ void test_fragmentation()
     }
     HevcRtpDepacketizer d;
     std::string err;
-    std::vector<uint8_t> out;
+    std::vector<ReceivedNal> out;
     const auto f1 = fragment(20, { body.begin(), body.begin() + 120 }, true, false);
     const auto f2 = fragment(20, { body.begin() + 120, body.begin() + 240 }, false, false);
     const auto f3 = fragment(20, { body.begin() + 240, body.end() }, false, true);
-    d.push(packet(10, 5000, false, f1), out, err);
+    d.push_nals(packet(10, 5000, false, f1), out, err);
     check(d.mid_fragment(), "起始分片后处于半成品状态");
-    d.push(packet(11, 5000, false, f2), out, err);
-    d.push(packet(12, 5000, true, f3), out, err);
+    d.push_nals(packet(11, 5000, false, f2), out, err);
+    d.push_nals(packet(12, 5000, true, f3), out, err);
     check(!d.mid_fragment(), "结尾分片后清空");
-    auto nals = split_annexb(out);
+    const auto& nals = out;
     check(nals.size() == 1, "三片拼成一个 NAL");
     if (nals.size() == 1) {
-        check(nal_type(nals[0]) == 20, "TU 还原成 NAL 类型");
-        check(nals[0].size() == 2 + 300, "长度 = NAL 头 + 全部分片数据");
+        check(nal_type(nals[0].bytes) == 20, "TU 还原成 NAL 类型");
+        check(nals[0].bytes.size() == 2 + 300, "长度 = NAL 头 + 全部分片数据");
         // 这一条专门钉住"没有 DONL"：起始分片 FU 头之后的两字节就是码流本身。
         // 若按 RFC 7798 把它当 DONL 跳掉，这里会少 2 字节且整体错位。
-        check(std::equal(body.begin(), body.end(), nals[0].begin() + 2), "起始分片 FU 头后的字节被当码流保留（这条流没有 DONL 字段）");
+        check(
+            std::equal(body.begin(), body.end(), nals[0].bytes.begin() + 2),
+            "起始分片 FU 头后的字节被当码流保留（这条流没有 DONL 字段）");
     }
 }
 
@@ -186,22 +156,22 @@ void test_lost_fragments()
     std::printf("\n== 丢分片 ==\n");
     HevcRtpDepacketizer d;
     std::string err;
-    std::vector<uint8_t> out;
+    std::vector<ReceivedNal> out;
     // 中间片先到（起始片丢了）：整个 NAL 拼不出来，必须丢，不能交半截给解码器
-    d.push(packet(1, 100, false, fragment(1, { 0xAA, 0xBB }, false, false)), out, err);
-    check(split_annexb(out).empty(), "缺起始片的中间片不产出 NAL");
-    d.push(packet(2, 100, true, fragment(1, { 0xCC }, false, true)), out, err);
-    check(split_annexb(out).empty(), "缺起始片的结尾片也不产出 NAL");
+    d.push_nals(packet(1, 100, false, fragment(1, { 0xAA, 0xBB }, false, false)), out, err);
+    check(out.empty(), "缺起始片的中间片不产出 NAL");
+    d.push_nals(packet(2, 100, true, fragment(1, { 0xCC }, false, true)), out, err);
+    check(out.empty(), "缺起始片的结尾片也不产出 NAL");
     check(d.stats().dropped_fragments == 2, "两次都记进 dropped_fragments: " + std::to_string(d.stats().dropped_fragments));
 
     // 起始片来了两次（上一帧的结尾片丢了）：旧的半成品要作废，不能串帧
     out.clear();
-    d.push(packet(3, 200, false, fragment(1, { 0x11, 0x11 }, true, false)), out, err);
-    d.push(packet(4, 300, false, fragment(1, { 0x22, 0x22 }, true, false)), out, err);
-    d.push(packet(5, 300, true, fragment(1, { 0x33, 0x33 }, false, true)), out, err);
-    auto nals = split_annexb(out);
-    check(nals.size() == 1 && nals[0].size() == 2 + 4, "新起始片丢弃上一帧的半成品");
-    check(nals.size() == 1 && nals[0][2] == 0x22, "产出的是第二个 NAL 的内容");
+    d.push_nals(packet(3, 200, false, fragment(1, { 0x11, 0x11 }, true, false)), out, err);
+    d.push_nals(packet(4, 300, false, fragment(1, { 0x22, 0x22 }, true, false)), out, err);
+    d.push_nals(packet(5, 300, true, fragment(1, { 0x33, 0x33 }, false, true)), out, err);
+    const auto& nals = out;
+    check(nals.size() == 1 && nals[0].bytes.size() == 2 + 4, "新起始片丢弃上一帧的半成品");
+    check(nals.size() == 1 && nals[0].bytes[2] == 0x22, "产出的是第二个 NAL 的内容");
     d.reset();
     check(!d.mid_fragment(), "reset 清空半成品");
 }
@@ -211,10 +181,10 @@ void test_single_and_offsets()
     std::printf("\n== 单一 NAL 与头偏移 ==\n");
     HevcRtpDepacketizer d;
     std::string err;
-    std::vector<uint8_t> out;
-    d.push(packet(7, 900, true, single(1, { 0xA4, 0x01, 0x02 })), out, err);
-    auto nals = split_annexb(out);
-    check(nals.size() == 1 && nal_type(nals[0]) == 1 && nals[0].size() == 5, "单一 NAL 直通");
+    std::vector<ReceivedNal> out;
+    d.push_nals(packet(7, 900, true, single(1, { 0xA4, 0x01, 0x02 })), out, err);
+    const auto& nals = out;
+    check(nals.size() == 1 && nal_type(nals[0].bytes) == 1 && nals[0].bytes.size() == 5, "单一 NAL 直通");
 
     // 带 CSRC 与扩展头的包：偏移算错就会把 CSRC/扩展当载荷，解出垃圾 NAL 类型
     auto base = single(1, { 0xA4 });
@@ -237,10 +207,10 @@ void test_single_and_offsets()
         with_csrc.push_back(0x5A);
     }
     with_csrc.insert(with_csrc.end(), base.begin(), base.end());
-    std::vector<uint8_t> out2;
-    check(d.push(with_csrc, out2, err), "带 CSRC 的包可解");
-    auto n2 = split_annexb(out2);
-    check(n2.size() == 1 && nal_type(n2[0]) == 1, "CSRC 被正确跳过");
+    std::vector<ReceivedNal> out2;
+    check(d.push_nals(with_csrc, out2, err), "带 CSRC 的包可解");
+    const auto& n2 = out2;
+    check(n2.size() == 1 && nal_type(n2[0].bytes) == 1, "CSRC 被正确跳过");
 
     std::vector<uint8_t> with_ext;
     with_ext.push_back(0x90); // V=2, X=1, CC=0
@@ -259,16 +229,16 @@ void test_single_and_offsets()
     }
     // 这个包自己带一个 2 字的扩展，覆盖"按扩展自身长度跳"的分支
     with_ext.insert(with_ext.end(), base.begin(), base.end());
-    std::vector<uint8_t> out3;
-    check(d.push(with_ext, out3, err), "带扩展头的包可解");
-    auto n3 = split_annexb(out3);
-    check(n3.size() == 1 && nal_type(n3[0]) == 1, "扩展头按自身长度跳过");
+    std::vector<ReceivedNal> out3;
+    check(d.push_nals(with_ext, out3, err), "带扩展头的包可解");
+    const auto& n3 = out3;
+    check(n3.size() == 1 && nal_type(n3[0].bytes) == 1, "扩展头按自身长度跳过");
 
     // 非 RTP / 太短
     std::vector<uint8_t> junk = { 1, 2, 3 };
-    check(!d.push(junk, out3, err), "3 字节的垃圾被拒");
+    check(!d.push_nals(junk, out3, err), "3 字节的垃圾被拒");
     std::vector<uint8_t> v1(30, 0x40);
-    check(!d.push(v1, out3, err), "RTP 版本不是 2 被拒");
+    check(!d.push_nals(v1, out3, err), "RTP 版本不是 2 被拒");
 }
 
 void test_payload_type_filter()
@@ -282,27 +252,27 @@ void test_payload_type_filter()
     rtcp.insert(rtcp.end(), 20, 0x00);
     HevcRtpDepacketizer d;
     std::string err;
-    std::vector<uint8_t> out;
-    d.push(packet(1, 0, false, aggregation({ nal_header(32) })), out, err);
+    std::vector<ReceivedNal> out;
+    d.push_nals(packet(1, 0, false, aggregation({ nal_header(32) })), out, err);
     const auto after_video = out.size();
-    d.push(rtcp, out, err);
-    check(out.size() == after_video, "RTCP 包不产出任何字节");
+    d.push_nals(rtcp, out, err);
+    check(out.size() == after_video, "RTCP 包不产出 NAL");
     check(d.stats().other_payload == 1 && d.stats().packets == 1, "RTCP 记成 other_payload，不计入视频包数与序号");
     // 序号也不能被它带跳：再来一个正常的下一号包，不该算丢包
-    d.push(packet(2, 100, true, single(1, { 0xA4 })), out, err);
+    d.push_nals(packet(2, 100, true, single(1, { 0xA4 })), out, err);
     check(d.stats().seq_gaps == 0, "夹了 RTCP 之后视频序号仍然连续");
 
     // 配成别的 PT（比如协商到 96）时，100 的包不该被解
     HevcRtpDepacketizer other(96);
-    std::vector<uint8_t> none;
-    other.push(packet(1, 0, false, single(1, { 0xA4 })), none, err);
+    std::vector<ReceivedNal> none;
+    other.push_nals(packet(1, 0, false, single(1, { 0xA4 })), none, err);
     check(none.empty() && other.stats().other_payload == 1, "PT 不匹配就整包跳过");
 }
 
 void test_feeds_annexb_parser()
 {
-    std::printf("\n== 与 M1 的 AU 切分器对接 ==\n");
-    // 拆包输出直接喂给 AnnexBParser，验证一帧一包 + 一帧多包都能切成 AU
+    std::printf("\n== 与 AU 切分器对接 ==\n");
+    // 将完整 NAL 编码为 Annex-B，验证字节流解析器对单包与多包图像的 AU 切分。
     HevcRtpDepacketizer d;
     std::vector<std::size_t> au_sizes;
     std::size_t keyframes = 0;
@@ -313,20 +283,28 @@ void test_feeds_annexb_parser()
         }
     });
     std::string err;
-    std::vector<uint8_t> out;
+    std::vector<ReceivedNal> out;
     std::vector<uint8_t> vps_nal = nal_header(32);
     vps_nal.push_back(0x01);
     std::vector<uint8_t> sps_nal = nal_header(33);
     sps_nal.push_back(0x02);
-    std::vector<uint8_t> idr = nal_header(20);
-    idr.push_back(0x80);
-    d.push(packet(1, 0, false, aggregation({ vps_nal, sps_nal })), out, err);
-    d.push(packet(2, 0, false, fragment(20, { 0x80, 0x01 }, true, false)), out, err);
-    d.push(packet(3, 0, true, fragment(20, { 0x02, 0x03 }, false, true)), out, err);
-    parser.feed(out.data(), out.size());
+    d.push_nals(packet(1, 0, false, aggregation({ vps_nal, sps_nal })), out, err);
+    d.push_nals(packet(2, 0, false, fragment(20, { 0x80, 0x01 }, true, false)), out, err);
+    d.push_nals(packet(3, 0, true, fragment(20, { 0x02, 0x03 }, false, true)), out, err);
+    for (const auto& nal : out) {
+        const uint8_t start_code[] = { 0, 0, 0, 1 };
+        check(
+            parser.feed(start_code, sizeof(start_code)) && parser.feed(nal.bytes.data(), nal.bytes.size()),
+            "完整 NAL 可转为 Annex-B 字节流");
+    }
     out.clear();
-    d.push(packet(4, 400, true, single(1, { 0xA4, 0x11 })), out, err);
-    parser.feed(out.data(), out.size());
+    d.push_nals(packet(4, 400, true, single(1, { 0xA4, 0x11 })), out, err);
+    for (const auto& nal : out) {
+        const uint8_t start_code[] = { 0, 0, 0, 1 };
+        check(
+            parser.feed(start_code, sizeof(start_code)) && parser.feed(nal.bytes.data(), nal.bytes.size()),
+            "完整 NAL 可转为 Annex-B 字节流");
+    }
     parser.flush();
     check(au_sizes.size() == 2, "切出 2 个 AU: " + std::to_string(au_sizes.size()));
     check(keyframes == 1, "其中 1 个是关键帧");
@@ -361,9 +339,7 @@ void test_complete_nal_metadata()
         "AP retains each NAL and attaches the packet marker only to its final NAL");
     out.clear();
     d.push_nals(packet(65003, 140, false, aggregation({ vps })), out, err);
-    check(
-        out.size() == 1 && out[0].bytes == vps && !out[0].ends_access_unit,
-        "one-NAL AP remains accepted for compatibility with the previous entry point");
+    check(out.size() == 1 && out[0].bytes == vps && !out[0].ends_access_unit, "one-NAL AP is accepted");
 
     HevcRtpDepacketizer fu;
     out.clear();
@@ -410,20 +386,15 @@ void test_aggregation_atomicity()
     malformed.push_back(nal_header(48));
 
     for (std::size_t i = 0; i < malformed.size(); ++i) {
-        HevcRtpDepacketizer typed, legacy;
+        HevcRtpDepacketizer typed;
         std::string err;
         const maa::ios::rt::ReceivedNal sentinel = { first, 10, 11, 12, 12, false };
         std::vector<maa::ios::rt::ReceivedNal> nals { sentinel };
-        std::vector<uint8_t> bytes { 0xde, 0xad };
         const auto bad = packet(1, 500, true, malformed[i]);
         check(
             typed.push_nals(bad, nals, err) && nals.size() == 1 && nals[0] == sentinel && typed.stats().nals == 0
                 && typed.stats().malformed == 1,
             "malformed AP retains typed output without publishing its valid prefix: " + std::to_string(i));
-        check(
-            legacy.push(bad, bytes, err) && bytes == std::vector<uint8_t>({ 0xde, 0xad }) && legacy.stats().nals == 0
-                && legacy.stats().malformed == 1,
-            "malformed AP retains Annex-B output without publishing its valid prefix: " + std::to_string(i));
     }
 }
 
@@ -562,15 +533,11 @@ void test_rtp_padding()
     check(
         maa::ios::rt::parse_rtp_header(valid, info) && info.payload_offset == 20 && info.payload_size == original.size(),
         "RTP accepts three padding bytes and reports only the actual payload size");
-    HevcRtpDepacketizer typed, legacy;
+    HevcRtpDepacketizer typed;
     std::vector<maa::ios::rt::ReceivedNal> nals;
-    std::vector<uint8_t> bytes;
     std::string err;
     typed.push_nals(valid, nals, err);
-    legacy.push(valid, bytes, err);
-    check(
-        nals.size() == 1 && nals[0].bytes == original && split_annexb(bytes) == std::vector<std::vector<uint8_t>>({ original }),
-        "padding is absent from both complete-NAL and Annex-B outputs");
+    check(nals.size() == 1 && nals[0].bytes == original, "padding is absent from the complete NAL");
 
     HevcRtpDepacketizer fu;
     nals.clear();
@@ -619,25 +586,25 @@ void test_rtp_padding()
     }
 }
 
-void test_shared_output_paths()
+void test_consecutive_fragments()
 {
-    std::printf("\n== Shared complete-NAL and Annex-B state ==\n");
+    std::printf("\n== Consecutive complete-NAL assemblies ==\n");
     HevcRtpDepacketizer d;
-    std::vector<uint8_t> bytes;
-    std::vector<maa::ios::rt::ReceivedNal> nals;
+    std::vector<ReceivedNal> nals;
     std::string err;
-    d.push(packet(1, 400, false, fragment(20, { 0x80, 1 }, true, false)), bytes, err);
+    d.push_nals(packet(1, 400, false, fragment(20, { 0x80, 1 }, true, false)), nals, err);
+    check(nals.empty(), "FU start does not publish a partial NAL");
     d.push_nals(packet(2, 400, true, fragment(20, { 2 }, false, true)), nals, err);
     check(
-        bytes.empty() && nals.size() == 1 && nals[0].bytes == single(20, { 0x80, 1, 2 }) && nals[0].first_sequence == 1
-            && nals[0].last_sequence == 2,
-        "Annex-B start and complete-NAL finish use the same FU assembly state");
+        nals.size() == 1 && nals[0] == ReceivedNal { single(20, { 0x80, 1, 2 }), 400, 0xdeadbeefU, 1, 2, true },
+        "first FU publishes complete bytes and metadata");
     nals.clear();
     d.push_nals(packet(3, 800, false, fragment(1, { 0x80, 3 }, true, false)), nals, err);
-    d.push(packet(4, 800, true, fragment(1, { 4 }, false, true)), bytes, err);
+    check(nals.empty(), "next FU start does not publish data from the previous assembly");
+    d.push_nals(packet(4, 800, true, fragment(1, { 4 }, false, true)), nals, err);
     check(
-        nals.empty() && split_annexb(bytes) == std::vector<std::vector<uint8_t>>({ single(1, { 0x80, 3, 4 }) }) && d.stats().nals == 2,
-        "complete-NAL start and Annex-B finish share bytes and count completed NALs only once");
+        nals.size() == 1 && nals[0] == ReceivedNal { single(1, { 0x80, 3, 4 }), 800, 0xdeadbeefU, 3, 4, true } && d.stats().nals == 2,
+        "next FU publishes only its own bytes and counts completed NALs once");
 }
 
 void test_invalid_nal_headers()
@@ -672,29 +639,22 @@ void test_late_payload_isolation()
     const auto next = single(1, { 0x80, 2 });
     for (const bool aggregate : { false, true }) {
         const auto old_payload = aggregate ? aggregation({ idr, single(40, { 3 }) }) : idr;
-        HevcRtpDepacketizer typed, legacy;
+        HevcRtpDepacketizer typed;
         std::vector<maa::ios::rt::ReceivedNal> nals;
-        std::vector<uint8_t> bytes;
         std::string err;
         const auto old = packet(100, 400, true, old_payload);
         const auto later = packet(102, 1200, true, next);
         typed.push_nals(old, nals, err);
         typed.push_nals(later, nals, err);
-        legacy.push(old, bytes, err);
-        legacy.push(later, bytes, err);
         const auto before_nals = nals;
-        const auto before_bytes = bytes;
         // seq=101 从未交付，迟到时补齐接收缺口；seq=100 是重复旧 IDR。
         for (const auto& old_packet : { packet(101, 800, true, old_payload), old }) {
-            check(
-                typed.push_nals(old_packet, nals, err) && legacy.push(old_packet, bytes, err),
-                "late/duplicate valid RTP is accepted for reception accounting");
+            check(typed.push_nals(old_packet, nals, err), "late/duplicate valid RTP is accepted for reception accounting");
         }
         check(
-            nals == before_nals && bytes == before_bytes && typed.stats().seq_gaps == 1 && typed.stats().seq_lost == 0
-                && typed.stats().reordered == 2 && typed.last_sequence() == 102 && legacy.stats().seq_lost == 0
-                && legacy.stats().reordered == 2,
-            "late or repeated complete IDR cannot publish again through either output path");
+            nals == before_nals && typed.stats().seq_gaps == 1 && typed.stats().seq_lost == 0 && typed.stats().reordered == 2
+                && typed.last_sequence() == 102,
+            "late or repeated complete IDR cannot publish again through the complete-NAL output");
     }
 
     auto bad_old = idr;
@@ -704,10 +664,9 @@ void test_late_payload_isolation()
                                                            fragment(20, { 0x80, 9 }, true, false),
                                                            bad_old };
     for (const auto& old_payload : old_payloads) {
-        HevcRtpDepacketizer typed, legacy;
+        HevcRtpDepacketizer typed;
         std::string err;
         std::vector<maa::ios::rt::ReceivedNal> nals;
-        std::vector<uint8_t> bytes;
         const auto initial = packet(100, 400, true, idr);
         const auto start = packet(101, 800, false, fragment(20, { 0x80, 4 }, true, false, 37, 4));
         const auto old = packet(100, 400, true, old_payload);
@@ -715,26 +674,22 @@ void test_late_payload_isolation()
         const auto duplicate = packet(101, 999, true, fragment(21, { 0x80, 9 }, true, false));
         const auto finish = packet(102, 800, true, fragment(20, { 5 }, false, true, 37, 4));
         typed.push_nals(initial, nals, err);
-        legacy.push(initial, bytes, err);
         nals.clear();
         for (const auto& p : { start, old, duplicate }) {
             typed.push_nals(p, nals, err);
-            legacy.push(p, bytes, err);
         }
         check(
-            nals.empty() && typed.mid_fragment() && legacy.mid_fragment() && typed.fragment_timestamp() == 800
-                && typed.last_sequence() == 101 && typed.stats().dropped_fragments == 0 && typed.stats().malformed == 0,
+            nals.empty() && typed.mid_fragment() && typed.fragment_timestamp() == 800 && typed.last_sequence() == 101
+                && typed.stats().dropped_fragments == 0 && typed.stats().malformed == 0,
             "late single/AP/FU/bad payload and changed duplicate leave current FU untouched");
         typed.push_nals(finish, nals, err);
-        legacy.push(finish, bytes, err);
         auto complete = nal_header(20, 37, 4);
         complete.insert(complete.end(), { 0x80, 4, 5 });
         check(
             nals.size() == 1 && nals[0].bytes == complete && nals[0].timestamp == 800 && nals[0].ssrc == 0xdeadbeefU
-                && nals[0].first_sequence == 101 && nals[0].last_sequence == 102 && nals[0].ends_access_unit
-                && split_annexb(bytes) == std::vector<std::vector<uint8_t>>({ idr, complete }) && typed.stats().nals == 2
+                && nals[0].first_sequence == 101 && nals[0].last_sequence == 102 && nals[0].ends_access_unit && typed.stats().nals == 2
                 && typed.stats().reordered == 2 && typed.stats().seq_gaps == 0 && typed.stats().seq_lost == 0
-                && typed.stats().dropped_fragments == 0 && legacy.stats().dropped_fragments == 0,
+                && typed.stats().dropped_fragments == 0,
             "continuous FU end after old packets publishes original bytes and metadata once");
     }
 
@@ -1029,14 +984,14 @@ void test_sequence_reordering()
     // 端到端：喂真的 RTP 包，判拆包器的账与它回 RR 用的那个数。
     HevcRtpDepacketizer d;
     std::string err;
-    std::vector<uint8_t> out;
+    std::vector<ReceivedNal> out;
     for (const uint16_t s : arrival) {
-        d.push(packet(s, 1000, false, single(1, { 0xA4 })), out, err);
+        d.push_nals(packet(s, 1000, false, single(1, { 0xA4 })), out, err);
     }
     check(d.stats().seq_gaps == 1 && d.stats().seq_lost == 0, "拆包器：一次缺口，补齐之后真丢 0 个");
     check(d.stats().reordered == 1, "迟到单独计一位 reordered");
     check(d.last_sequence() == 103 && d.extended_sequence() == 103, "未回绕时原始与扩展最高序号相同，迟到不让水位回退");
-    d.push(packet(105, 1000, false, single(1, { 0xA4 })), out, err);
+    d.push_nals(packet(105, 1000, false, single(1, { 0xA4 })), out, err);
     check(d.stats().seq_gaps == 2 && d.stats().seq_lost == 1, "接着真丢一个 104：seq_lost 从 0 变 1，说明它是当前欠账而不是历史累计");
 }
 
@@ -1085,10 +1040,10 @@ void test_extended_sequence()
 
     HevcRtpDepacketizer video;
     std::string error;
-    std::vector<uint8_t> out;
+    std::vector<ReceivedNal> out;
     const uint16_t video_sequences[] = { 65535, 0, 1, 0, 65535, 1, 2 };
     for (const uint16_t arrival : video_sequences) {
-        video.push(packet(arrival, 1000, false, single(1, { 0xA4 })), out, error);
+        video.push_nals(packet(arrival, 1000, false, single(1, { 0xA4 })), out, error);
     }
     check(
         video.last_sequence() == 2 && video.extended_sequence() == 65538 && video.stats().seq_gaps == 0 && video.stats().seq_lost == 0
@@ -1119,7 +1074,7 @@ int main()
     test_aggregation_atomicity();
     test_fragment_integrity();
     test_rtp_padding();
-    test_shared_output_paths();
+    test_consecutive_fragments();
     test_invalid_nal_headers();
     test_late_payload_isolation();
     test_rtcp_shapes();

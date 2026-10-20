@@ -72,16 +72,10 @@ public:
         uint64_t other_payload = 0;
     };
 
-    /// 处理一个 UDP 数据报，将重组完成的 NAL 以 Annex-B 四字节起始码追加到 out。
-    /// false 表示 RTP 头解析失败，err 给出原因；true 不保证本包产生 NAL。
-    /// 复用 push_nals()，仅为完成的 NAL 添加 Annex-B 起始码。
-    /// 分片或聚合载荷异常计入统计并丢弃，不交付有效前缀。
-    bool push(std::span<const uint8_t> datagram, std::vector<uint8_t>& out, std::string& err);
-
     /// 将本包完成的 NAL 追加到 out，不替换调用方已有内容。
     /// false 仅表示 RTP 头（含 padding）无效；HEVC 载荷异常返回 true 并计入
     /// malformed 或 dropped_fragments，不产出伪完整 NAL。AP 先验证全包再交付。
-    /// 保留旧入口对仅一个 NAL 的 AP 的容忍；RFC 7798 标准形态至少含两个 NAL。
+    /// 接受仅含一个 NAL 的 AP；RFC 7798 标准形态至少含两个 NAL。
     /// FU 不缓存乱序分片：缺口或身份不符会作废当前 NAL，等待下一个起始分片。
     /// 所有迟到/重复序号只更新接收统计，不交付载荷，也不改变当前 FU。
     /// 采样时间回退本身不被丢弃：序号向前的合法包仍可按原始时间交付。

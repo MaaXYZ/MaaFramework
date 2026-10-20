@@ -21,12 +21,6 @@ uint32_t be32(const uint8_t* p)
     return uint32_t(p[0]) << 24 | uint32_t(p[1]) << 16 | uint32_t(p[2]) << 8 | p[3];
 }
 
-void append_start_code(std::vector<uint8_t>& out)
-{
-    static const uint8_t kStartCode[4] = { 0, 0, 0, 1 };
-    out.insert(out.end(), kStartCode, kStartCode + 4);
-}
-
 bool valid_nal_header(std::span<const uint8_t> nal)
 {
     // 只交付未标记语法损坏的 NAL；temporal_id_plus1 必须非零。
@@ -90,17 +84,6 @@ void HevcRtpDepacketizer::reset()
         ++stats_.dropped_fragments;
     }
     partial_ = { };
-}
-
-bool HevcRtpDepacketizer::push(std::span<const uint8_t> datagram, std::vector<uint8_t>& out, std::string& err)
-{
-    std::vector<ReceivedNal> nals;
-    const bool ok = push_nals(datagram, nals, err);
-    for (const auto& nal : nals) {
-        append_start_code(out);
-        out.insert(out.end(), nal.bytes.begin(), nal.bytes.end());
-    }
-    return ok;
 }
 
 bool HevcRtpDepacketizer::push_nals(std::span<const uint8_t> datagram, std::vector<ReceivedNal>& out, std::string& err)
