@@ -134,7 +134,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake -C "$env:MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
+                  cmake -C "$env:MAA_IOS_CMAKE" --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - ${{ needs.meta.outputs.build-config }}" -j 16
 
@@ -199,7 +199,7 @@ jobs:
             - name: Install dep
               run: |
                   sudo apt-get update -y
-                  sudo apt-get install -y ninja-build cmake ccache nasm libpipewire-0.3-dev libdbus-1-dev meson python3-jinja2 patchelf
+                  sudo apt-get install -y ninja-build cmake ccache libpipewire-0.3-dev libdbus-1-dev meson python3-jinja2
 
             # noble 自带 libei 1.2.1，缺少 1.6 才引入的文本输入；从源码构建 1.6.0 保证发布产物功能完整
             - name: Build libei 1.6.0 (host)
@@ -318,7 +318,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake -C "$MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
+                  cmake -C "$MAA_IOS_CMAKE" --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
@@ -402,7 +402,7 @@ jobs:
             - name: Install dep
               run: |
                   brew trust aws/tap 2>/dev/null || true
-                  brew install ninja ccache nasm
+                  brew install ninja ccache
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
@@ -438,7 +438,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake -C "$MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON --preset 'NinjaMulti' \
+                  cmake -C "$MAA_IOS_CMAKE" --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DCMAKE_OSX_SYSROOT=macosx \
@@ -522,7 +522,7 @@ jobs:
             - name: Install dep
               run: |
                   sudo apt-get update -y
-                  sudo apt-get install -y ninja-build cmake ccache nasm
+                  sudo apt-get install -y ninja-build cmake ccache
 
             - uses: nttld/setup-ndk@v1
               id: setup-ndk
@@ -558,7 +558,7 @@ jobs:
                       preset='NinjaMulti Android arm64'
                   fi
 
-                  cmake -C "$MAA_IOS_CMAKE" -DWITH_IOS_CONTROLLER=ON --preset "$preset" \
+                  cmake -C "$MAA_IOS_CMAKE" --preset "$preset" \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
                   cmake --build --preset "$preset - ${{ needs.meta.outputs.build-config }}" -j 16

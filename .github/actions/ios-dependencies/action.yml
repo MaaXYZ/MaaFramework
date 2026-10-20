@@ -10,6 +10,16 @@ inputs:
 runs:
     using: composite
     steps:
+        - name: Install iOS build tools on Linux
+          if: runner.os == 'Linux'
+          shell: bash
+          run: |
+              sudo apt-get update -y
+              sudo apt-get install -y nasm ${{ inputs.platform == 'linux' && 'patchelf' || '' }}
+        - name: Install iOS build tools on macOS
+          if: runner.os == 'macOS'
+          shell: bash
+          run: brew install nasm
         - uses: actions/checkout@v7
           with:
               repository: microsoft/vcpkg
@@ -36,3 +46,7 @@ runs:
               python3 tools/ios/ci/dependencies.py --vcpkg "$PWD/build-ios-vcpkg" \
                 --work "$RUNNER_TEMP/maa-ios-dependencies" \
                 --platform "$MAA_IOS_PLATFORM" --architecture "$MAA_IOS_ARCHITECTURE"
+        - name: Enable iOS in the framework build
+          shell: bash
+          run: |
+              printf '%s\n' 'set(WITH_IOS_CONTROLLER ON CACHE BOOL "Build iOS controller in CI" FORCE)' >> "$MAA_IOS_CMAKE"
