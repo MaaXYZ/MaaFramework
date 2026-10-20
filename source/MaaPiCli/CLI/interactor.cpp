@@ -8,7 +8,12 @@
 #include <ranges>
 #include <unordered_set>
 
+#include <boost/asio/ip/host_name.hpp>
 #include <boost/regex.hpp>
+
+#if defined(__ANDROID__)
+#include <sys/system_properties.h>
+#endif
 
 #if defined(MAA_WITH_IOS_CONTROLLER)
 static constexpr bool kIOSSupported = true;
@@ -896,6 +901,28 @@ void Interactor::select_ios_auto_detect()
     config_.configuration().ios.udid = MaaToolkitIOSDeviceGetUdid(devices[choice - 1]);
 }
 
+static std::string ios_pairing_host_name()
+{
+    std::string device_name;
+#if defined(__ANDROID__)
+    for (const char* key : { "ro.product.marketname", "ro.product.model" }) {
+        char value[PROP_VALUE_MAX] = { };
+        if (__system_property_get(key, value) > 0 && std::string_view(value) != "localhost"
+            && !std::string_view(value).starts_with("android")) {
+            device_name = value;
+            break;
+        }
+    }
+#else
+    boost::system::error_code error;
+    const auto hostname = boost::asio::ip::host_name(error);
+    if (!error) {
+        device_name = hostname;
+    }
+#endif
+    return device_name.empty() ? "PiCli" : std::format("PiCli - {}", device_name);
+}
+
 static MaaBool MAA_CALL print_ios_pairing_event(const char* text, void*)
 {
     const auto value = json::parse(text);
@@ -925,11 +952,12 @@ bool Interactor::pair_ios(bool wireless)
     std::cout
         << (wireless ? "Open Settings > Privacy & Security > Developer Mode, select this computer and enter the displayed code.\n"
                      : "Keep the device unlocked and accept any trust or pairing prompts.\n");
+    const auto options = wireless ? json::value(json::object { { "host_name", ios_pairing_host_name() } }).to_string() : "{}";
     MaaIOSWiFiPairing* pairing = nullptr;
     const bool ok = MaaToolkitIOSDevicePair(
         ios.udid.c_str(),
         wireless ? MaaIOSConnectionMethod_WiFi : MaaIOSConnectionMethod_USB,
-        nullptr,
+        options.c_str(),
         print_ios_pairing_event,
         nullptr,
         nullptr,
