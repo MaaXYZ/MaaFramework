@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>自动取色工具 v1.0 - 网页版</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Microsoft YaHei", "微软雅黑", sans-serif; background: #f0f0f0; color: #333; font-size: 13px; }
+  .app { display: flex; flex-direction: column; height: 100vh; }
+  .toolbar { background: #2c3e50; color: #fff; padding: 8px 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .toolbar h1 { font-size: 15px; margin-right: 12px; }
+  .toolbar button { background: #3498db; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+  .toolbar button:hover { background: #2980b9; }
+  .toolbar button.secondary { background: #7f8c8d; }
+  .toolbar button.secondary:hover { background: #636e72; }
+  .main { flex: 1; display: flex; overflow: hidden; position: relative; }
+  /* 全图导航小窗：不拦截鼠标，光标压过来时自动躲避 */
+  .nav-mini { position: absolute; z-index: 70; display: none; padding: 3px; background: rgba(20,24,30,.92); border: 1px solid #7f8c8d; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,.5); pointer-events: none; }
+  .nav-mini.show { display: block; }
+  #navCanvas { display: block; }
+  .canvas-area { flex: 1; background: #2c3e50; overflow: auto; position: relative; display: flex; padding: 10px; }
+  #imageCanvas { display: block; cursor: crosshair; background: #1a1a1a; box-shadow: 0 0 20px rgba(0,0,0,0.5); margin: auto; }
+  .magnifier { position: fixed; width: 110px; height: 110px; border: 2px solid #e74c3c; background: #000; pointer-events: none; z-index: 100; display: none; image-rendering: pixelated; overflow: hidden; }
+  .magnifier canvas { display: block; }
+  .magnifier .cross { position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; border: 1px solid #e74c3c; transform: translate(-50%, -50%); pointer-events: none; }
+  /* 图片上的取点十字光标（中间留空，不遮挡当前像素） */
+  .cursor-cross { position: absolute; width: 19px; height: 19px; pointer-events: none; z-index: 60; display: none; transform: translate(-50%, -50%); }
+  .cursor-cross span { position: absolute; background: #ff2d2d; box-shadow: 0 0 2px #000; }
+  .cursor-cross .v1 { left: 9px; top: 0; width: 1px; height: 7px; }
+  .cursor-cross .v2 { left: 9px; bottom: 0; width: 1px; height: 7px; }
+  .cursor-cross .h1 { top: 9px; left: 0; width: 7px; height: 1px; }
+  .cursor-cross .h2 { top: 9px; right: 0; width: 7px; height: 1px; }
+  .side { width: 420px; background: #ecf0f1; overflow-y: auto; padding: 10px; border-left: 1px solid #bdc3c7; }
+  .group { background: #fff; border: 1px solid #bdc3c7; border-radius: 4px; margin-bottom: 10px; }
+  .group-title { background: #34495e; color: #fff; padding: 6px 10px; font-weight: bold; font-size: 12px; }
+  .group-body { padding: 8px; }
+  .row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
+  .row label { width: 70px; font-size: 12px; color: #555; }
+  .row input[type="text"], .row input[type="number"] { flex: 1; min-width: 50px; padding: 3px 6px; border: 1px solid #bdc3c7; border-radius: 3px; font-size: 12px; font-family: Consolas, monospace; }
+  /* 两行一组的范围输入：右侧“清除”按钮跨 2 行居中 */
+  .pair { display: grid; grid-template-columns: 1fr auto; column-gap: 6px; }
+  .pair > .row:nth-of-type(1) { grid-area: 1 / 1; }
+  .pair > .row:nth-of-type(2) { grid-area: 2 / 1; }
+  .pair > .pair-clear { grid-area: 1 / 2 / 3 / 3; align-self: stretch; margin-bottom: 6px; }
+  .color-swatch { width: 24px; height: 24px; border: 1px solid #999; border-radius: 3px; flex-shrink: 0; }
+  .btn { padding: 4px 10px; border: none; border-radius: 3px; cursor: pointer; font-size: 12px; background: #3498db; color: #fff; }
+  .btn:hover { background: #2980b9; }
+  .btn-sm { padding: 2px 6px; font-size: 11px; }
+  .btn-green { background: #27ae60; } .btn-green:hover { background: #1e8449; }
+  .btn-orange { background: #e67e22; } .btn-orange:hover { background: #ca6f1e; }
+  .btn-gray { background: #95a5a6; } .btn-gray:hover { background: #7f8c8d; }
+  .btn-blue { background: #2980b9; } .btn-blue:hover { background: #21618c; }
+  #codes { width: 100%; height: 100px; padding: 6px; border: 1px solid #bdc3c7; border-radius: 3px; font-family: Consolas, monospace; font-size: 12px; resize: vertical; }
+  #status { font-size: 12px; padding: 4px 10px; background: #34495e; color: #ecf0f1; display: flex; gap: 20px; align-items: center; }
+  #status .msg { font-weight: bold; }
+  .slot-row { display: grid; grid-template-columns: 40px 40px 16px 1fr 1fr 1.4fr 24px 38px; gap: 4px; align-items: center; margin-bottom: 6px; }
+  .slot-row input { padding: 3px 4px; border: 1px solid #bdc3c7; border-radius: 3px; font-size: 11px; font-family: Consolas, monospace; width: 100%; }
+  .slot-row .chk { display: flex; align-items: center; gap: 2px; font-size: 11px; white-space: nowrap; }
+  .slot-row .slot-num { text-align: center; font-weight: bold; color: #3498db; font-size: 12px; }
+  .preview-box { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .preview-canvas-wrap { margin-top: 8px; background: #1a1a1a; border: 1px solid #bdc3c7; border-radius: 3px; padding: 4px; overflow: auto; max-height: 260px; }
+  #previewCanvas { display: block; image-rendering: pixelated; }
+  .preview-info { font-size: 11px; color: #7f8c8d; margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .preview-info .sw { display:inline-block; width:12px; height:12px; vertical-align:middle; border:1px solid #999; margin-right:3px; }
+  .find-list { margin-top: 6px; max-height: 150px; overflow: auto; font-size: 11px; font-family: Consolas, monospace; color: #2c3e50; border-top: 1px dashed #bdc3c7; padding-top: 4px; display: none; }
+  .find-list.show { display: block; }
+  .find-list .hit { padding: 1px 0; }
+  .find-list .hit b { color: #c0392b; }
+  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+  .modal.show { display: flex; }
+  .modal-content { background: #fff; padding: 16px; border-radius: 6px; width: 480px; max-width: 90vw; }
+  .modal-content h3 { margin-bottom: 10px; }
+  .modal-content textarea { width: 100%; height: 120px; padding: 8px; border: 1px solid #bdc3c7; border-radius: 3px; font-family: Consolas, monospace; font-size: 12px; }
+  .modal-actions { text-align: right; margin-top: 10px; }
+  .hint { font-size: 11px; color: #7f8c8d; margin-top: 6px; line-height: 1.5; }
+  .tag { display: inline-block; padding: 1px 5px; background: #ecf0f1; border-radius: 2px; font-size: 10px; font-family: Consolas, monospace; color: #2c3e50; }
+  /* 小窗设置弹窗：一行式复选框 / 滑条行（覆盖 .row label 的固定宽度） */
+  .row label.nav-chk { display: flex; align-items: center; gap: 6px; width: auto; font-size: 13px; color: #333; line-height: 1.5; }
+  .nav-set-row { display: flex; align-items: center; gap: 8px; margin: 14px 0; }
+  .nav-set-row > label { width: auto; font-size: 13px; color: #333; white-space: nowrap; }
+  .nav-set-row input[type="range"] { flex: 1; min-width: 120px; }
+  .nav-set-row .val { width: 46px; text-align: right; font-family: Consolas, monospace; font-size: 13px; }
+
+  /* ===== 图案预览页（内置 page预览.html 的解析与渲染） ===== */
+  .pv-view { position: fixed; inset: 0; z-index: 150; background: #1c1f26; color: #dfe4ec; display: none; flex-direction: column; }
+  .pv-view.show { display: flex; }
+  .pv-head { background: #252a33; border-bottom: 1px solid #3a4150; padding: 10px 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .pv-head h1 { font-size: 14px; margin: 0; }
+  .pv-view .btn { background: #2d333d; border: 1px solid #3a4150; color: #dfe4ec; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+  .pv-view .btn:hover { border-color: #4da3ff; color: #fff; }
+  .pv-view .btn-green { background: #27ae60; } .pv-view .btn-green:hover { background: #1e8449; }
+  .pv-view .btn-gray { background: #3a4150; } .pv-view .btn-gray:hover { background: #4a5364; }
+  .pv-stat { color: #95a0b0; font-size: 12px; }
+  .pv-view input[type="text"] { background: #1a1e24; border: 1px solid #3a4150; color: #dfe4ec; border-radius: 5px; padding: 5px 8px; font-size: 12px; }
+  .pv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; padding: 14px; overflow: auto; flex: 1; min-height: 0; align-content: start; }
+  .pv-card { background: #252a33; border: 1px solid #3a4150; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 7px; cursor: pointer; }
+  .pv-card:hover { border-color: #4da3ff; }
+  .pv-cname { font-weight: 700; font-size: 13px; }
+  .pv-badges { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+  .pv-b { font-size: 11px; padding: 1px 6px; border-radius: 10px; background: #333c49; color: #b9c4d4; }
+  .pv-b.k { background: #1e3d2a; color: #7ee2a8; }
+  .pv-b.g { background: #3a3520; color: #e0c86a; }
+  .pv-b.s { background: #2a3348; color: #8fb8ff; }
+  .pv-del { font-size: 10px; padding: 1px 6px; border-radius: 10px; background: #4a2020; color: #ff9a9a; border: none; cursor: pointer; }
+  .pv-del:hover { background: #6a2a2a; color: #fff; }
+  .pv-cvs { text-align: center; }
+  .pv-view canvas { display: block; background: #0e1116; border: 1px solid #3a4150; border-radius: 4px; margin: 0 auto; image-rendering: pixelated; }
+  .pv-meta { font-size: 11px; color: #95a0b0; }
+  .pv-err { padding: 14px; color: #e74c3c; font-size: 12px; }
+  .pv-sw { display: inline-block; width: 15px; height: 15px; border-radius: 3px; border: 1px solid #000; margin: 1px 3px 1px 0; vertical-align: -3px; }
+  .pv-view .modal-content { background: #252a33; color: #dfe4ec; border: 1px solid #3a4150; }
+  .pv-view pre { background: #14181e; border: 1px solid #3a4150; border-radius: 6px; padding: 8px; max-height: 200px; overflow: auto; font-size: 11px; margin: 8px 0 0; white-space: pre-wrap; word-break: break-all; color: #dfe4ec; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="toolbar">
+    <h1>🎨 自动取色工具 v1.0（网页版）</h1>
+    <button id="btnLoad">📁 载入图像</button>
+    <button id="btnRotateL" class="secondary">↺ 左转</button>
+    <button id="btnRotateR" class="secondary">↻ 右转</button>
+    <button id="btnSetCode">⚙ 设置代码格式</button>
+    <button id="btnHelp" class="secondary">❓ 使用说明</button>
+    <button id="btnNavSet" class="secondary">🖼 小窗设置</button>
+    <button id="btnPreviewView" class="secondary">🗂 图案预览</button>
+    <input type="file" id="fileInput" accept="image/*" style="display:none">
+  </div>
+
+  <div class="main">
+    <div class="canvas-area" id="canvasArea">
+      <canvas id="imageCanvas"></canvas>
+      <div class="cursor-cross" id="cursorCross"><span class="v1"></span><span class="v2"></span><span class="h1"></span><span class="h2"></span></div>
+      <div class="magnifier" id="magnifier"><canvas id="magCanvas" width="100" height="100"></canvas><div class="cross"></div></div>
+    </div>
+
+    <!-- 全图导航小窗 -->
+    <div class="nav-mini" id="navMini"><canvas id="navCanvas"></canvas></div>
+
+    <div class="side">
+      <!-- 取色点 -->
+      <div class="group">
+        <div class="group-title">取色点（鼠标移到图上按 1-5 取色，右键默认取到1）</div>
+        <div class="group-body" id="slots"></div>
+      </div>
+
+      <!-- 自动取色范围 -->
+      <div class="group">
+        <div class="group-title">自动取色范围（左键拖拽） / 找色范围（按 A 开始，S 结束）</div>
+        <div class="group-body">
+          <div class="pair">
+            <div class="row"><label>自动 X1,Y1</label><input type="text" id="x1" style="width:60px"><input type="text" id="y1" style="width:60px"></div>
+            <div class="row"><label>自动 X2,Y2</label><input type="text" id="x2" style="width:60px"><input type="text" id="y2" style="width:60px"></div>
+            <button class="btn btn-gray btn-sm pair-clear" data-clear="range1">清除</button>
+          </div>
+          <div class="pair">
+            <div class="row"><label>找色 X3,Y3</label><input type="text" id="x3" style="width:60px"><input type="text" id="y3" style="width:60px"></div>
+            <div class="row"><label>找色 X4,Y4</label><input type="text" id="x4" style="width:60px"><input type="text" id="y4" style="width:60px"></div>
+            <button class="btn btn-gray btn-sm pair-clear" data-clear="range2">清除</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 参数 -->
+      <div class="group">
+        <div class="group-title">参数</div>
+        <div class="group-body">
+          <div class="row"><label>精度(jd)</label><input type="number" id="jd" value="100" min="0" max="255"><span style="font-size:11px;color:#7f8c8d">RGB 容差 0-255</span></div>
+          <div class="row"><label>色块半径</label><input type="number" id="skbj" value="0" min="0"><span style="font-size:11px;color:#7f8c8d">0=仅判断当前点</span></div>
+          <button class="btn btn-green" id="btnGen" style="width:100%;margin-top:6px">▶ 生成代码</button>
+        </div>
+      </div>
+
+      <!-- 生成结果 -->
+      <div class="group">
+        <div class="group-title">生成代码</div>
+        <div class="group-body">
+          <textarea id="codes" placeholder="生成的代码将显示在这里..."></textarea>
+          <div class="row" style="margin-top:6px">
+            <button class="btn btn-orange" id="btnCopy" style="flex:1">📋 复制到剪切板</button>
+            <button class="btn btn-blue" id="btnTest" style="flex:1">🔍 测试找色</button>
+            <button class="btn btn-green" id="btnSave" style="flex:1">💾 保存</button>
+          </div>
+          <div class="preview-canvas-wrap"><canvas id="previewCanvas"></canvas></div>
+          <div class="preview-info" id="previewInfo"></div>
+          <div class="find-list" id="findList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="status">
+    <span>当前分辨率：<b id="resInfo">未载入</b></span>
+    <span>当前坐标颜色：<b id="coordColor">-</b></span>
+    <span>坐标：<b id="coordXY">-</b></span>
+    <span class="msg" id="msg" style="margin-left:auto;color:#2ecc71">就绪</span>
+  </div>
+</div>
+
+<!-- 代码格式设置 -->
+<div class="modal" id="codeModal">
+  <div class="modal-content">
+    <h3>设置生成代码模板</h3>
+    <p class="hint">
+      占位符：<span class="tag">[0]</span> 取色点颜色(不带坐标) &nbsp; <span class="tag">[1]</span> 其余命中点(x|y|0xRRGGBB，逗号分隔) &nbsp; <span class="tag">[2]</span> 精度 &nbsp; <span class="tag">[3]</span> 范围(x3,y3,x4,y4) &nbsp; <span class="tag">[4]</span> 宽 &nbsp; <span class="tag">[5]</span> 高 &nbsp; <span class="tag">[6]</span> 其余命中点({x, y, 0xRRGGBB}，逗号分隔)<br>
+      模板中可直接写 <span class="tag">{ }</span>，换行会原样输出<br>
+      示例：<span class="tag">c="0|0|[0],[1]",d=[2],r={[3]},w=[4],h=[5]</span>
+    </p>
+    <div class="modal-actions" style="justify-content:flex-start;margin-bottom:6px">
+      <button class="btn btn-gray" id="btnTplPipe">预设：点串格式</button>
+      <button class="btn btn-gray" id="btnTplLua">预设：screen.find_color</button>
+      <button class="btn btn-gray" id="btnTplLuaAll">预设：find_color(find_all)</button>
+    </div>
+    <textarea id="tplInput"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-gray" onclick="document.getElementById('codeModal').classList.remove('show')">取消</button>
+      <button class="btn btn-green" id="btnSaveTpl">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 帮助 -->
+<div class="modal" id="helpModal">
+  <div class="modal-content" style="width:560px;max-height:85vh;overflow:auto">
+    <h3>使用说明</h3>
+    <ol style="line-height:1.8;padding-left:20px;font-size:12px">
+      <li>点<b>载入图像</b>打开截图，<b>左转 / 右转</b>可旋转 90°。画布按 1:1 原始像素显示，图片超出时用滚动条查看。</li>
+      <li>点顶部<b>小窗设置</b>：可开启/关闭画布右上角的<b>全图导航小窗</b>（显示整图缩略图 + 当前可见区域黄框），并用滑条调整它的大小（按画布区的百分比）。鼠标移到小窗上时它会自动躲到其他角落；设置会记在浏览器本地。</li>
+      <li>鼠标移到画布上按数字 <b>1-5</b> 取色（仅鼠标在画布内时响应），鼠标<b>右键</b>默认取色到 1。</li>
+      <li>取色点每行自左到右：<b>自动</b>、<b>有效</b>、序号、X、Y、0xRRGGBB、颜色块，最右边是<b>清除</b>。<b>自动</b>：目前只支持序号 1 自动取色；<b>有效</b>：勾选后才会加入生成的代码。</li>
+      <li>鼠标在画布内按 <b>↑ ↓ ← →</b>，十字光标会逐像素移动，方便定位取点。</li>
+      <li><b>左键拖拽</b>画自动取色范围（扫描时用序号 1 的颜色和精度逐点匹配该范围）；每组范围最右侧的<b>清除</b>按钮可清空该组。</li>
+      <li>按 <b>A</b> 开始画找色范围，鼠标移动后按 <b>S</b> 结束。找色范围只写进生成的代码，不参与扫描。</li>
+      <li><b>精度</b>：越接近 100 越严格，容差 = 100 - 精度（100 为精确匹配）；<b>色块半径</b>：0 为只判断当前点，大于 0 时判断周围半径内颜色，扫描步长也改为该半径。</li>
+      <li>点<b>生成代码</b>：预览区显示取到的点阵，代码框中为生成的代码。第一个点是原点 <b>0|0</b>，其余点是相对第一个点的差值。</li>
+      <li>点<b>复制到剪切板</b>，再到 IDE 代码中粘贴。</li>
+      <li>点<b>测试找色</b>：直接用代码框里的代码（无需先生成）在整张图上查找。代码中没有 <b>[3]</b> 范围时<b>全图匹配</b>，有 <b>[3]</b> 时只在 <b>[3]</b> 范围内匹配。命中点会标在图上、在预览区画出点阵，下方列出命中位置（最多显示前 5 处；一处都没命中时预览区显示模式本身的图案）。</li>
+      <li>点<b>保存</b>：先输入注释文字，再把当前代码存进图案预览的缓存（存在浏览器本地，可继续累积）。</li>
+      <li>点顶部<b>图案预览</b>：查看缓存中保存的图案（可<b>删除</b>）和读取到的 page.lua 图案（可筛选、点卡片放大看逐点清单）；<b>选择文件…</b>可载入 page.lua；<b>下载 page.lua</b> 会把缓存里保存的内容和载入的 page.lua 合并导出。</li>
+      <li>点<b>设置代码格式</b>可修改生成模板：<span class="tag">[0]</span> 取色点颜色(无坐标) <span class="tag">[1]</span> 其余命中点(x|y|0xRRGGBB) <span class="tag">[2]</span> 精度 <span class="tag">[3]</span> 范围(x3,y3,x4,y4) <span class="tag">[4]</span> 宽 <span class="tag">[5]</span> 高 <span class="tag">[6]</span> 其余命中点({x, y, 0xRRGGBB}，逗号分隔)。模板里可直接写 <span class="tag">{ }</span>；内置 3 个预设：点串格式、screen.find_color、find_all。</li>
+    </ol>
+    <div class="modal-actions">
+      <button class="btn" onclick="document.getElementById('helpModal').classList.remove('show')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 小窗设置 -->
+<div class="modal" id="navModal">
+  <div class="modal-content" style="width:420px">
+    <h3>全图导航小窗</h3>
+    <div class="row" style="margin:14px 0">
+      <label class="nav-chk"><input type="checkbox" id="navOn"> 开启小窗（画布右上角显示整图缩略图）</label>
+    </div>
+    <div class="nav-set-row">
+      <label for="navScale">小窗大小</label>
+      <input type="range" id="navScale" min="20" max="100" step="5">
+      <b class="val" id="navScaleVal">60%</b>
+    </div>
+    <p class="hint" style="margin-top:0">大小按画布区的百分比计算；鼠标移到小窗上时它会自动躲到其他角落，不会挡住光标。</p>
+    <div class="modal-actions">
+      <button class="btn" id="navMclose">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 保存到图案预览：输入注释 -->
+<div class="modal" id="saveModal">
+  <div class="modal-content">
+    <h3>保存到图案预览</h3>
+    <p class="hint">输入注释文字，会作为该图案的名称一起保存到缓存。</p>
+    <textarea id="saveComment" style="height:56px" placeholder="例如：当前地图"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-gray" onclick="document.getElementById('saveModal').classList.remove('show')">取消</button>
+      <button class="btn btn-green" id="btnSaveOk">确定保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 图案预览页（内置 page预览.html） -->
+<div class="pv-view" id="pvView">
+  <header class="pv-head">
+    <button class="btn" id="pvBack">← 返回取色工具</button>
+    <h1>图案预览</h1>
+    <span class="pv-stat" id="pvStat">-</span>
+    <input type="text" id="pvFilter" placeholder="按名称筛选…" style="width:150px">
+    <button class="btn" id="pvReload">刷新</button>
+    <button class="btn btn-green" id="pvDownload">下载 page.lua</button>
+    <label class="btn" style="display:inline-block">选择文件…<input type="file" id="pvFile" accept=".lua,.txt" style="display:none"></label>
+  </header>
+  <div class="pv-err" id="pvErr"></div>
+  <div class="pv-grid" id="pvGrid"></div>
+  <div class="modal" id="pvModal"><div class="modal-content" id="pvMbox" style="width:auto;max-width:92vw;max-height:90vh;overflow:auto"></div></div>
+</div>
+
+<script>
+// ============ 全局状态 ============
+const state = {
+  img: null,
+  imgCanvas: null,
+  imgCtx: null,
+  memCanvas: null,   // 与原图同尺寸的内存画布，用于取像素
+  memCtx: null,
+  width: 0, height: 0,
+  scale: 1,           // 显示缩放（canvas显示尺寸 / 原图尺寸）
+  // 5 个颜色槽: {x,y,color,hex,auto,valid}
+  slots: Array.from({length:5}, ()=>({x:'',y:'',color:null,hex:'',auto:false,valid:false})),
+  // 自动范围 x1,y1,x2,y2 ; 找色范围 x3,y3,x4,y4
+  r1: {x1:'',y1:'',x2:'',y2:''},
+  r2: {x3:'',y3:'',x4:'',y4:''},
+  jd: 100, skbj: 0,
+  basecl: null,       // 基准颜色（槽1的颜色）
+  template: '[0],[1],[2]',
+  // 交互
+  dragging: false,
+  findMode: false,    // A 按下后等待 S
+  findStart: null,
+  keydownl: {x:0,y:0},
+  mouseInCanvas: false, // 鼠标是否悬停在画布区域（决定快捷键是否生效）
+  pattern: null,        // 最近一次生成的结构化匹配模式 {pts:[{dx,dy,r,g,b}], jd, skbj}
+  testHits: [],         // 测试找色的命中位置 [{x,y}]
+};
+
+// ============ 工具函数 ============
+function $(id){return document.getElementById(id);}
+function setMsg(text, color='#2ecc71'){ $('msg').textContent=text; $('msg').style.color=color; }
+function pad2(n){return n.toString(16).toUpperCase().padStart(2,'0');}
+function colorToHex(c){return '0x'+pad2(c.R)+pad2(c.G)+pad2(c.B);}
+function rgbToCss(c){return 'rgb('+c.R+','+c.G+','+c.B+')';}
+
+function isNumeric(s){return s!==''&&!isNaN(Number(s));}
+
+// 统一的显示尺寸计算：1:1 原始尺寸显示，超出容器部分滚动查看
+function fitSize(imgW, imgH){
+  return { dw: imgW, dh: imgH, scale: 1 };
+}
+
+// 判断像素 (x,y) 是否匹配基准颜色（精度 jd，半径 skbj）
+function isColor(x, y){
+  const base = state.basecl;
+  if(!base) return false;
+  const jd = state.jd;
+  const radius = state.skbj;
+  const ctx = state.memCtx;
+  const W = state.width, H = state.height;
+  const check = (px,py)=>{
+    if(px<0||py<0||px>=W||py>=H) return false;
+    const d = ctx.getImageData(px,py,1,1).data;
+    const tol = 100 - jd;
+    return Math.abs(d[0]-base.R)<=tol && Math.abs(d[1]-base.G)<=tol && Math.abs(d[2]-base.B)<=tol;
+  };
+  if(radius<=0) return check(x,y);
+  // 半径范围内所有像素都要符合（步长1，任一点超差即返回false）
+  for(let dy=-radius; dy<=radius; dy++){
+    for(let dx=-radius; dx<=radius; dx++){
+      if(!check(x+dx, y+dy)) return false;
+    }
+  }
+  return true;
+}
+
+// ============ 载入图像 ============
+$('btnLoad').onclick = ()=> $('fileInput').click();
+$('fileInput').onchange = (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    const img = new Image();
+    img.onload = ()=>{
+      state.img = img;
+      state.width = img.width; state.height = img.height;
+      // 内存画布 = 原图尺寸
+      state.memCanvas = document.createElement('canvas');
+      state.memCanvas.width = img.width; state.memCanvas.height = img.height;
+      state.memCtx = state.memCanvas.getContext('2d');
+      state.memCtx.drawImage(img,0,0);
+      // 显示画布：按容器自适应，完整显示
+      const fit = fitSize(img.width, img.height);
+      state.scale = fit.scale;
+      state.imgCanvas = $('imageCanvas');
+      state.imgCanvas.width = fit.dw;
+      state.imgCanvas.height = fit.dh;
+      state.imgCtx = state.imgCanvas.getContext('2d');
+      state.imgCtx.drawImage(img,0,0,fit.dw,fit.dh);
+      $('resInfo').textContent = img.width+' x '+img.height;
+      setMsg('图像载入成功：'+img.width+'x'+img.height);
+      updateNav();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(f);
+};
+
+// ============ 旋转 ============
+function rotate(deg){
+  if(!state.img) return;
+  const c = document.createElement('canvas');
+  const rad = deg*Math.PI/180;
+  const w = state.width, h = state.height;
+  // 90° 的奇数倍旋转会互换宽高
+  const swap = Math.abs(deg) % 180 === 90;
+  if(swap){ c.width=h; c.height=w; } else { c.width=w; c.height=h; }
+  const cx = c.getContext('2d');
+  cx.translate(c.width/2, c.height/2);
+  cx.rotate(rad);
+  cx.drawImage(state.img, -w/2, -h/2);
+  const newImg = new Image();
+  newImg.onload = ()=>{
+    state.img = newImg;
+    state.width = newImg.width; state.height = newImg.height;
+    state.memCanvas.width = newImg.width; state.memCanvas.height = newImg.height;
+    state.memCtx.drawImage(newImg,0,0);
+    // 旋转后用统一的适配策略重新计算显示尺寸，保证图像完整
+    const fit = fitSize(newImg.width, newImg.height);
+    state.scale = fit.scale;
+    state.imgCanvas.width = fit.dw;
+    state.imgCanvas.height = fit.dh;
+    state.imgCtx.drawImage(newImg,0,0,fit.dw,fit.dh);
+    $('resInfo').textContent = newImg.width+' x '+newImg.height;
+    setMsg('图像已旋转 '+deg+'°');
+    updateNav();
+  };
+  newImg.src = c.toDataURL();
+}
+$('btnRotateL').onclick = ()=>rotate(-90);
+$('btnRotateR').onclick = ()=>rotate(90);
+
+// ============ 全图导航小窗 ============
+const NAV_MARGIN = 10;
+// 配置：是否开启 / 大小（占画布区的百分比），存在浏览器本地
+let navCfg = (function(){
+  try{
+    const o = JSON.parse(localStorage.getItem('rea_nav_cfg'));
+    if(o && typeof o === 'object') return { on: o.on !== false, scale: +o.scale || 60 };
+  }catch(e){}
+  return { on: true, scale: 60 };
+})();
+function saveNavCfg(){ try{ localStorage.setItem('rea_nav_cfg', JSON.stringify(navCfg)); }catch(e){} }
+// 小窗尺寸 = 画布区尺寸 × 百分比（留出边距，最小 120×90）
+function navSize(){
+  const a = $('canvasArea').getBoundingClientRect();
+  const p = navCfg.scale / 100;
+  return {
+    W: Math.round(Math.max(120, Math.min(a.width  - NAV_MARGIN*2, a.width  * p))),
+    H: Math.round(Math.max(90,  Math.min(a.height - NAV_MARGIN*2, a.height * p)))
+  };
+}
+let navCorner = 'tr';        // 当前所在角落：tr/tl/br/bl
+let navRect = null;          // 小窗当前屏幕矩形，用来判断光标是否压住它
+
+// 四个角落的坐标（相对 .main）
+function navBox(){
+  const main = document.querySelector('.main').getBoundingClientRect();
+  const area = $('canvasArea').getBoundingClientRect();
+  const el = $('navMini'), w = el.offsetWidth, h = el.offsetHeight;
+  const L = area.left - main.left, T = area.top - main.top;
+  const R = area.right - main.left, B = area.bottom - main.top;
+  return {
+    tr: { left: R-w-NAV_MARGIN, top: T+NAV_MARGIN },
+    tl: { left: L+NAV_MARGIN,   top: T+NAV_MARGIN },
+    br: { left: R-w-NAV_MARGIN, top: B-h-NAV_MARGIN },
+    bl: { left: L+NAV_MARGIN,   top: B-h-NAV_MARGIN }
+  };
+}
+function navPlace(){
+  const el = $('navMini');
+  el.classList.add('show');        // 先显示，才量得到真实尺寸
+  const p = navBox()[navCorner];
+  el.style.left = Math.max(0, p.left) + 'px';
+  el.style.top  = Math.max(0, p.top) + 'px';
+  navRect = el.getBoundingClientRect();
+}
+// 只重画内容：整图缩略图 + 当前可见区域框
+function navDraw(){
+  const cv = $('navCanvas'), g = cv.getContext('2d');
+  const W = state.width, H = state.height;
+  const box = navSize();
+  const s = Math.min(1, box.W/W, box.H/H);
+  cv.width = Math.max(1, Math.round(W*s));
+  cv.height = Math.max(1, Math.round(H*s));
+  g.clearRect(0,0,cv.width,cv.height);
+  g.drawImage(state.img, 0, 0, cv.width, cv.height);
+  // 画布视口在原图中的范围
+  const a = $('canvasArea').getBoundingClientRect();
+  const c = state.imgCanvas.getBoundingClientRect();
+  const sc = state.scale;
+  const x1 = Math.max(0, (a.left  - c.left)/sc), y1 = Math.max(0, (a.top    - c.top)/sc);
+  const x2 = Math.min(W, (a.right - c.left)/sc), y2 = Math.min(H, (a.bottom - c.top)/sc);
+  if(x2>x1 && y2>y1){
+    g.strokeStyle = '#ffcc00'; g.lineWidth = 1;
+    g.strokeRect(x1*s+.5, y1*s+.5, Math.max(1,(x2-x1)*s-1), Math.max(1,(y2-y1)*s-1));
+  }
+}
+function updateNav(){
+  if(!navCfg.on || !state.img || !state.imgCanvas){ $('navMini').classList.remove('show'); navRect = null; return; }
+  navDraw();
+  navPlace();
+}
+// 选一个不挡光标、且离光标最远的角落（纯计算，便于单独验证）
+function navPickCorner(cur, all, w, h, cx, cy){
+  const cand = ['tr','tl','br','bl'].filter(k=>k!==cur)
+    .map(k=>({ k:k, d:Math.hypot(all[k].left+w/2-cx, all[k].top+h/2-cy) }))
+    .sort((a,b)=>b.d-a.d);
+  for(const c of cand){                       // 优先选不包含光标的角落
+    const p = all[c.k];
+    if(cx < p.left || cx > p.left+w || cy < p.top || cy > p.top+h) return c.k;
+  }
+  return cand.length ? cand[0].k : cur;
+}
+// 光标压到小窗上（含 4px 提前量）时，躲到不挡光标的角落
+document.addEventListener('mousemove', e=>{
+  if(!navRect) return;
+  if(e.clientX < navRect.left-4 || e.clientX > navRect.right+4 ||
+     e.clientY < navRect.top-4  || e.clientY > navRect.bottom+4) return;
+  const main = document.querySelector('.main').getBoundingClientRect();
+  const el = $('navMini');
+  navCorner = navPickCorner(navCorner, navBox(), el.offsetWidth, el.offsetHeight,
+                            e.clientX - main.left, e.clientY - main.top);
+  navPlace();
+});
+$('canvasArea').addEventListener('scroll', ()=>{ if(state.img) navDraw(); });
+window.addEventListener('resize', updateNav);
+
+// 小窗设置：开关 + 大小滑条
+$('btnNavSet').onclick = ()=>{
+  $('navOn').checked = navCfg.on;
+  $('navScale').value = navCfg.scale;
+  $('navScale').disabled = !navCfg.on;
+  $('navScaleVal').textContent = navCfg.scale + '%';
+  $('navModal').classList.add('show');
+};
+$('navOn').onchange = ()=>{
+  navCfg.on = $('navOn').checked;
+  $('navScale').disabled = !navCfg.on;
+  saveNavCfg(); updateNav();
+};
+$('navScale').oninput = ()=>{
+  navCfg.scale = +$('navScale').value;
+  $('navScaleVal').textContent = navCfg.scale + '%';
+  saveNavCfg(); updateNav();
+};
+$('navMclose').onclick = ()=> $('navModal').classList.remove('show');
+$('navModal').onclick = function(ev){ if(ev.target === this) this.classList.remove('show'); };
+
+// ============ 坐标转换（显示 -> 原图） ============
+function getImgXY(e){
+  const rect = state.imgCanvas.getBoundingClientRect();
+  const sx = e.clientX - rect.left;
+  const sy = e.clientY - rect.top;
+  return { x: Math.floor(sx/state.scale), y: Math.floor(sy/state.scale), sx, sy };
+}
+
+// ============ 颜色槽 UI ============
+function buildSlots(){
+  const box = $('slots'); box.innerHTML = '';
+  const labels = ['1','2','3','4','5'];
+  state.slots.forEach((s,i)=>{
+    const row = document.createElement('div');
+    row.className = 'slot-row';
+    row.innerHTML = `
+      <label class="chk"><input type="checkbox" data-chk="auto" data-i="${i}" ${s.auto?'checked':''} ${i!==0?'disabled':''}>自动</label>
+      <label class="chk"><input type="checkbox" data-chk="valid" data-i="${i}" ${s.valid?'checked':''}>有效</label>
+      <div class="slot-num">${labels[i]}</div>
+      <input type="text" data-field="x" data-i="${i}" value="${s.x}" placeholder="X">
+      <input type="text" data-field="y" data-i="${i}" value="${s.y}" placeholder="Y">
+      <input type="text" data-field="hex" data-i="${i}" value="${s.hex}" placeholder="0xRRGGBB">
+      <div class="color-swatch" data-swatch="${i}" style="background:${s.color?rgbToCss(s.color):'#fff'}"></div>
+      <button class="btn btn-gray btn-sm" data-clear-slot="${i}">清除</button>
+    `;
+    box.appendChild(row);
+  });
+  box.querySelectorAll('input[data-field]').forEach(inp=>{
+    inp.oninput = e=>{
+      const i=+e.target.dataset.i, f=e.target.dataset.field;
+      state.slots[i][f] = e.target.value;
+      if(f==='x'||f==='y') updateBaseColor();
+    };
+  });
+  box.querySelectorAll('input[data-chk]').forEach(inp=>{
+    inp.onchange = e=>{
+      const i=+e.target.dataset.i, f=e.target.dataset.chk;
+      state.slots[i][f] = e.target.checked;
+      if(f==='auto' && i===0) updateBaseColor();
+    };
+  });
+  box.querySelectorAll('[data-clear-slot]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const i=+btn.dataset.clearSlot;
+      state.slots[i] = {x:'',y:'',color:null,hex:'',auto:false,valid:false};
+      buildSlots();
+      updateBaseColor();
+    };
+  });
+}
+
+function updateBaseColor(){
+  // 基准颜色 = 槽1 的颜色
+  const s0 = state.slots[0];
+  state.basecl = s0.color || null;
+}
+
+function pickColor(slotIdx, imgX, imgY){
+  if(!state.memCtx) return;
+  if(imgX<0||imgY<0||imgX>=state.width||imgY>=state.height) return;
+  const d = state.memCtx.getImageData(imgX,imgY,1,1).data;
+  const color = {R:d[0],G:d[1],B:d[2]};
+  const s = state.slots[slotIdx];
+  s.x = imgX; s.y = imgY; s.color = color; s.hex = colorToHex(color);
+  if(slotIdx===0){ s.auto = true; s.valid = true; state.basecl = color; }
+  buildSlots();
+  setMsg(`已取色到槽${slotIdx+1}: ${s.hex} @(${imgX},${imgY})`);
+}
+
+// ============ 鼠标 / 键盘交互 ============
+const canvas = $('imageCanvas');
+const magnifier = $('magnifier');
+const magCanvas = $('magCanvas');
+const magCtx = magCanvas.getContext('2d');
+
+canvas.addEventListener('contextmenu', e=>e.preventDefault());
+
+// 图片上的取点十字光标：跟随鼠标与方向键移动到对应像素
+function updateCrosshair(){
+  const el = $('cursorCross');
+  const p = state.keydownl;
+  if(!state.img || p.x<0 || p.y<0 || p.x>=state.width || p.y>=state.height){
+    el.style.display = 'none'; return;
+  }
+  const area = $('canvasArea');
+  const cRect = canvas.getBoundingClientRect();
+  const aRect = area.getBoundingClientRect();
+  const half = state.scale/2;   // 对准像素中心
+  el.style.left = (cRect.left - aRect.left + area.scrollLeft + p.x*state.scale + half) + 'px';
+  el.style.top  = (cRect.top  - aRect.top  + area.scrollTop  + p.y*state.scale + half) + 'px';
+  el.style.display = 'block';
+}
+
+// 移动取点光标并刷新坐标/颜色读数与放大镜
+// clientX/clientY 用于定位放大镜；方向键无鼠标事件时按图像坐标推算位置
+function setCursor(p, clientX, clientY){
+  state.keydownl = {x:p.x, y:p.y};
+  $('coordXY').textContent = `(${p.x}, ${p.y})`;
+  if(state.memCtx && p.x>=0 && p.y>=0 && p.x<state.width && p.y<state.height){
+    const d = state.memCtx.getImageData(p.x,p.y,1,1).data;
+    const hex = '0x'+pad2(d[0])+pad2(d[1])+pad2(d[2]);
+    $('coordColor').textContent = hex;
+    $('coordColor').style.color = 'rgb('+d[0]+','+d[1]+','+d[2]+')';
+    $('coordColor').style.textShadow = '0 0 2px #000,0 0 2px #000';
+    // 放大镜
+    const zoom = 8, size = 100, half = Math.floor(size/zoom/2);
+    magCtx.imageSmoothingEnabled = false;
+    magCtx.clearRect(0,0,size,size);
+    magCtx.drawImage(state.memCanvas, p.x-half, p.y-half, half*2, half*2, 0,0,size,size);
+    magnifier.style.display = 'block';
+    if(clientX!=null){
+      magnifier.style.left = (clientX+15)+'px';
+      magnifier.style.top = (clientY+15)+'px';
+    } else {
+      const rect = canvas.getBoundingClientRect();
+      magnifier.style.left = (rect.left + p.x*state.scale + 15)+'px';
+      magnifier.style.top = (rect.top + p.y*state.scale + 15)+'px';
+    }
+  } else {
+    magnifier.style.display = 'none';
+  }
+  updateCrosshair();
+}
+
+canvas.addEventListener('mousemove', e=>{
+  const p = getImgXY(e);
+  state.mouseInCanvas = true;
+  setCursor(p, e.clientX, e.clientY);
+  // 拖拽画自动范围
+  if(state.dragging){
+    redrawCanvas();
+    drawRect(state.findStart, {x:p.x,y:p.y}, '#e74c3c');
+  }
+});
+
+canvas.addEventListener('mouseleave', ()=>{ magnifier.style.display='none'; $('cursorCross').style.display='none'; state.mouseInCanvas=false; });
+
+canvas.addEventListener('mousedown', e=>{
+  if(e.button===0){ // 左键 - 画自动范围
+    const p = getImgXY(e);
+    state.dragging = true;
+    state.findStart = {x:p.x, y:p.y};
+  } else if(e.button===2){ // 右键 - 取色到槽1
+    const p = getImgXY(e);
+    pickColor(0, p.x, p.y);
+  }
+});
+
+canvas.addEventListener('mouseup', e=>{
+  if(e.button===0 && state.dragging){
+    state.dragging = false;
+    const p = getImgXY(e);
+    const s = state.findStart;
+    state.r1.x1 = Math.min(s.x,p.x);
+    state.r1.y1 = Math.min(s.y,p.y);
+    state.r1.x2 = Math.max(s.x,p.x);
+    state.r1.y2 = Math.max(s.y,p.y);
+    syncRangeInputs();
+    redrawCanvas();
+    setMsg(`自动取色范围: (${state.r1.x1},${state.r1.y1}) - (${state.r1.x2},${state.r1.y2})`);
+  }
+});
+
+// 键盘
+document.addEventListener('keydown', e=>{
+  if(!state.img) return;
+  // 正在输入框/文本域中打字时，快捷键不生效（避免坐标输入与数字取色冲突）
+  const el = e.target;
+  const tag = el && el.tagName ? el.tagName.toLowerCase() : '';
+  if(tag==='input' || tag==='textarea' || tag==='select' || (el && el.isContentEditable)) return;
+  // 鼠标不在画布区域时，快捷键不生效
+  if(!state.mouseInCanvas) return;
+  const k = e.key;
+  if(k==='ArrowUp'||k==='ArrowDown'||k==='ArrowLeft'||k==='ArrowRight'){
+    // 方向键微调取点位置：每按一次移动 1 像素
+    e.preventDefault();
+    let nx = state.keydownl.x, ny = state.keydownl.y;
+    if(k==='ArrowUp') ny--;
+    else if(k==='ArrowDown') ny++;
+    else if(k==='ArrowLeft') nx--;
+    else nx++;
+    nx = Math.max(0, Math.min(nx, state.width-1));
+    ny = Math.max(0, Math.min(ny, state.height-1));
+    setCursor({x:nx, y:ny});
+  } else if(k>='1'&&k<='5'){
+    pickColor(+k-1, state.keydownl.x, state.keydownl.y);
+  } else if(k==='a'||k==='A'){
+    state.findMode = true;
+    state.findStart = {x:state.keydownl.x, y:state.keydownl.y};
+    state.r2.x3 = state.keydownl.x; state.r2.y3 = state.keydownl.y;
+    syncRangeInputs();
+    setMsg('已开始画找色范围，移动鼠标后按 S 结束', '#e67e22');
+  } else if(k==='s'||k==='S'){
+    if(state.findMode){
+      state.findMode = false;
+      state.r2.x4 = state.keydownl.x; state.r2.y4 = state.keydownl.y;
+      // 规范化
+      if(state.r2.x4<state.r2.x3){[state.r2.x3,state.r2.x4]=[state.r2.x4,state.r2.x3];}
+      if(state.r2.y4<state.r2.y3){[state.r2.y3,state.r2.y4]=[state.r2.y4,state.r2.y3];}
+      syncRangeInputs();
+      redrawCanvas();
+      setMsg(`找色范围: (${state.r2.x3},${state.r2.y3}) - (${state.r2.x4},${state.r2.y4})`);
+    }
+  }
+});
+
+function syncRangeInputs(){
+  $('x1').value=state.r1.x1; $('y1').value=state.r1.y1;
+  $('x2').value=state.r1.x2; $('y2').value=state.r1.y2;
+  $('x3').value=state.r2.x3; $('y3').value=state.r2.y3;
+  $('x4').value=state.r2.x4; $('y4').value=state.r2.y4;
+}
+['x1','y1','x2','y2'].forEach(id=>{
+  $(id).oninput = e=>{ const k=e.target.id; state.r1[k]=e.target.value; redrawCanvas(); };
+});
+['x3','y3','x4','y4'].forEach(id=>{
+  $(id).oninput = e=>{ const k=e.target.id; state.r2[k]=e.target.value; redrawCanvas(); };
+});
+document.querySelectorAll('[data-clear]').forEach(btn=>{
+  btn.onclick = ()=>{
+    const t=btn.dataset.clear;
+    if(t==='range1'){ state.r1={x1:'',y1:'',x2:'',y2:''}; }
+    else { state.r2={x3:'',y3:'',x4:'',y4:''}; }
+    syncRangeInputs(); redrawCanvas();
+  };
+});
+$('jd').oninput = e=> state.jd = +e.target.value||0;
+$('skbj').oninput = e=> state.skbj = +e.target.value||0;
+
+// ============ 画布重绘 ============
+function redrawCanvas(){
+  if(!state.imgCtx) return;
+  state.imgCtx.clearRect(0,0,state.imgCanvas.width,state.imgCanvas.height);
+  state.imgCtx.drawImage(state.img,0,0,state.imgCanvas.width,state.imgCanvas.height);
+  const s = state.scale;
+  // 自动范围
+  if(state.r1.x1!==''&&state.r1.x2!==''){
+    const x=+state.r1.x1*s, y=+state.r1.y1*s, w=(+state.r1.x2-state.r1.x1)*s, h=(+state.r1.y2-state.r1.y1)*s;
+    state.imgCtx.strokeStyle='#e74c3c'; state.imgCtx.lineWidth=1;
+    state.imgCtx.strokeRect(x,y,w,h);
+  }
+  // 找色范围
+  if(state.r2.x3!==''&&state.r2.x4!==''){
+    const x=+state.r2.x3*s, y=+state.r2.y3*s, w=(+state.r2.x4-state.r2.x3)*s, h=(+state.r2.y4-state.r2.y3)*s;
+    state.imgCtx.strokeStyle='#3498db'; state.imgCtx.lineWidth=1;
+    state.imgCtx.strokeRect(x,y,w,h);
+  }
+  // 取色点标记
+  state.slots.forEach((sl,i)=>{
+    if(sl.x===''||sl.y===''||!sl.color) return;
+    const x=+sl.x*s, y=+sl.y*s;
+    state.imgCtx.beginPath();
+    state.imgCtx.arc(x,y,5,0,Math.PI*2);
+    state.imgCtx.fillStyle=rgbToCss(sl.color);
+    state.imgCtx.fill();
+    state.imgCtx.strokeStyle='#fff'; state.imgCtx.lineWidth=1;
+    state.imgCtx.stroke();
+    state.imgCtx.fillStyle='#000';
+    state.imgCtx.font='bold 11px sans-serif';
+    state.imgCtx.fillText((i+1), x+7, y-5);
+  });
+  // 测试找色命中点（绿色十字圆环 + 序号，只标前 5 处）
+  state.testHits.slice(0,5).forEach((h,i)=>{
+    const x=h.x*s, y=h.y*s;
+    state.imgCtx.strokeStyle='#00ff66'; state.imgCtx.lineWidth=1;
+    state.imgCtx.beginPath();
+    state.imgCtx.arc(x,y,6,0,Math.PI*2);
+    state.imgCtx.stroke();
+    state.imgCtx.beginPath();
+    state.imgCtx.moveTo(x-8,y); state.imgCtx.lineTo(x+8,y);
+    state.imgCtx.moveTo(x,y-8); state.imgCtx.lineTo(x,y+8);
+    state.imgCtx.stroke();
+    state.imgCtx.fillStyle='#00ff66';
+    state.imgCtx.font='bold 11px sans-serif';
+    state.imgCtx.fillText('#'+(i+1), x+7, y-7);
+  });
+  updateCrosshair();   // 缩放/旋转后重新对准十字光标
+}
+function drawRect(p1,p2,color){
+  if(!state.imgCtx) return;
+  const s=state.scale;
+  const x=Math.min(p1.x,p2.x)*s, y=Math.min(p1.y,p2.y)*s;
+  const w=Math.abs(p2.x-p1.x)*s, h=Math.abs(p2.y-p1.y)*s;
+  state.imgCtx.strokeStyle=color; state.imgCtx.lineWidth=1;
+  state.imgCtx.strokeRect(x,y,w,h);
+}
+
+// ============ 生成代码 (MakeCodes) ============
+$('btnGen').onclick = makeCodes;
+
+// 清空预览区（生成失败时调用，避免残留上一次的绘制缓存）
+function clearPreview(){
+  drawPreview([]);
+  state.testHits = [];
+  $('findList').classList.remove('show');
+  $('findList').innerHTML = '';
+  if(state.imgCtx) redrawCanvas();
+}
+
+// ============ 测试找色：用生成的点阵模式在整张图片中反查 ============
+$('btnTest').onclick = testFind;
+
+// 单点颜色匹配（tol=RGB容差；radius>0 时要求半径块内所有像素都符合，与生成逻辑一致）
+function pointMatch(idata, W, H, x, y, r, g, b, tol, radius){
+  if(radius<=0){
+    if(x<0||y<0||x>=W||y>=H) return false;
+    const o=(y*W+x)*4;
+    return Math.abs(idata[o]-r)<=tol && Math.abs(idata[o+1]-g)<=tol && Math.abs(idata[o+2]-b)<=tol;
+  }
+  for(let dy=-radius; dy<=radius; dy++){
+    for(let dx=-radius; dx<=radius; dx++){
+      const px=x+dx, py=y+dy;
+      if(px<0||py<0||px>=W||py>=H) return false;
+      const o=(py*W+px)*4;
+      if(Math.abs(idata[o]-r)>tol||Math.abs(idata[o+1]-g)>tol||Math.abs(idata[o+2]-b)>tol) return false;
+    }
+  }
+  return true;
+}
+
+// 从代码框文本解析点阵（同时支持手工粘贴进来的代码）：
+//   首个裸 0xRRGGBB 视为原点(0|0)；形如 x|y|0xRRGGBB 的为相对原点的点
+//   点列表之后出现的第一个整数(0~100)视为精度，即模板中 [2] 的位置
+function parseCodePattern(text){
+  const s = String(text||'');
+  const pts = [];
+  let tail = [];
+
+  // ① Lua 表格格式：{dx, dy, 0xRRGGBB[, 相似度]}（触动精灵 screen.find_color 等）
+  //    第 1 行是起始点(原点)，其余行是相对起始点的偏移点
+  const rows = [];
+  const rowRe = /\{\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*0x([0-9a-fA-F]{6})(?:\s*,\s*-?\d+)?\s*\}/g;
+  let m;
+  while((m = rowRe.exec(s))!==null) rows.push({a:+m[1], b:+m[2], hex:m[3]});
+  if(rows.length){
+    const mk = h => ({r:parseInt(h.substr(0,2),16), g:parseInt(h.substr(2,2),16), b:parseInt(h.substr(4,2),16)});
+    pts.push(Object.assign({dx:0, dy:0}, mk(rows[0].hex)));
+    for(let i=1;i<rows.length;i++){
+      pts.push(Object.assign({dx:rows[i].a-rows[0].a, dy:rows[i].b-rows[0].b}, mk(rows[i].hex)));
+    }
+    // 表尾参数：全局相似度, 左, 上, 右, 下
+    const lb = s.lastIndexOf('}');
+    const rp = lb>-1 ? s.indexOf(')', lb) : -1;
+    if(rp>-1) tail = (s.slice(lb+1, rp).match(/\d+/g)||[]).map(Number);
+  } else {
+    // ② 点串格式：首个裸 0xRRGGBB 视为原点(0|0)；x|y|0xRRGGBB 为相对原点的点
+    const tokens = s.split(/[,\s;]+/).filter(Boolean);
+    let originAdded = false, lastPtIdx = -1;
+    tokens.forEach((t,i)=>{
+      let mm = t.match(/^(-?\d+)\|(-?\d+)\|0x([0-9a-fA-F]{6})$/);
+      if(mm){
+        pts.push({dx:+mm[1], dy:+mm[2],
+          r:parseInt(mm[3].substr(0,2),16), g:parseInt(mm[3].substr(2,2),16), b:parseInt(mm[3].substr(4,2),16)});
+        lastPtIdx = i; return;
+      }
+      mm = t.match(/^0x([0-9a-fA-F]{6})$/);
+      if(mm && !originAdded){   // 第一个不带坐标的颜色 = 原点颜色
+        pts.push({dx:0, dy:0,
+          r:parseInt(mm[1].substr(0,2),16), g:parseInt(mm[1].substr(2,2),16), b:parseInt(mm[1].substr(4,2),16)});
+        originAdded = true;
+      }
+    });
+    // 点列表之后的整数按模板顺序为：[2]精度, [3]x3 y3 x4 y4, [4]宽, [5]高
+    for(let i=lastPtIdx+1; i<tokens.length; i++){
+      if(/^\d+$/.test(tokens[i])) tail.push(+tokens[i]);
+    }
+  }
+
+  if(!pts.length) return null;
+  let jdCode = null, range = null;
+  if(tail.length>=4){
+    let rest = tail;
+    if(tail[0]<=100 && tail.length>=5){ jdCode = tail[0]; rest = tail.slice(1); }  // [2] 精度 / 全局相似度
+    range = {x3:rest[0], y3:rest[1], x4:rest[2], y4:rest[3]};                     // [3] 范围 / 左上右下
+  } else if(tail.length===1 && tail[0]<=100){
+    jdCode = tail[0];
+  }
+  return {pts, jdCode, range};
+}
+
+function testFind(){
+  if(!state.memCtx || !state.img){ setMsg('请先载入图像', '#e74c3c'); return; }
+  const parsed = parseCodePattern($('codes').value);
+  if(!parsed){ setMsg('代码框里没有可识别的颜色点数据', '#e74c3c'); clearPreview(); return; }
+
+  const W=state.width, H=state.height;
+  let jd = parsed.jdCode;
+  if(jd==null) jd = parseFloat($('jd').value);   // 代码里没有精度时退回界面上的精度
+  if(!isFinite(jd)){ setMsg('精度不是数字', '#e74c3c'); clearPreview(); return; }
+  const tol = 100 - jd;          // 与原软件 IsColor 一致：容差 = 100 - jd
+  const radius = Math.max(0, parseInt($('skbj').value)||0);
+  const pts = parsed.pts;
+  const idata = state.memCtx.getImageData(0,0,W,H).data;
+
+  // 以 (0,0) 处的点为锚点做预筛，减少逐点验证次数
+  const anchor = pts.find(p=>p.dx===0&&p.dy===0) || pts[0];
+  const others = pts.filter(p=>p!==anchor);
+
+  // 锚点可行范围：保证所有 Pattern 点都在图内
+  let minDx=0,maxDx=0,minDy=0,maxDy=0;
+  for(const p of pts){
+    if(p.dx<minDx)minDx=p.dx; if(p.dx>maxDx)maxDx=p.dx;
+    if(p.dy<minDy)minDy=p.dy; if(p.dy>maxDy)maxDy=p.dy;
+  }
+  let axMin=Math.max(0,-minDx), axMax=Math.min(W-1,W-1-maxDx);
+  let ayMin=Math.max(0,-minDy), ayMax=Math.min(H-1,H-1-maxDy);
+
+  // 代码里带 [3] 找色范围时只在该范围内找（限制锚点位置）；没有 [3] 则全图找
+  let scopeLabel = '全图匹配';
+  if(parsed.range){
+    const r = parsed.range;
+    const rxMin=Math.min(r.x3,r.x4), rxMax=Math.max(r.x3,r.x4);
+    const ryMin=Math.min(r.y3,r.y4), ryMax=Math.max(r.y3,r.y4);
+    axMin=Math.max(axMin, Math.max(0,rxMin));  axMax=Math.min(axMax, Math.min(W-1,rxMax));
+    ayMin=Math.max(ayMin, Math.max(0,ryMin));  ayMax=Math.min(ayMax, Math.min(H-1,ryMax));
+    scopeLabel = `范围[${r.x3},${r.y3}-${r.x4},${r.y4}]内匹配`;
+  }
+
+  const hits=[];
+  const LIMIT = 500;
+  let truncated = false;
+
+  for(let ay=ayMin; ay<=ayMax && !truncated; ay++){
+    for(let ax=axMin; ax<=axMax; ax++){
+      if(!pointMatch(idata,W,H,ax,ay,anchor.r,anchor.g,anchor.b,tol,radius)) continue;
+      let ok=true;
+      for(let k=0;k<others.length;k++){
+        const p=others[k];
+        if(!pointMatch(idata,W,H,ax+p.dx,ay+p.dy,p.r,p.g,p.b,tol,radius)){ ok=false; break; }
+      }
+      if(ok){
+        hits.push({x:ax,y:ay});
+        if(hits.length>=LIMIT){ truncated=true; break; }
+      }
+    }
+  }
+
+  state.testHits = hits;
+  redrawCanvas();
+
+  // 预览区：把命中处的点阵画出来（只画前 5 处命中）；
+  //   一处都没命中时，就把模式本身的图案画出来，方便看清实际是什么图形
+  const MAX_DRAW_HITS = 5, MAX_PREVIEW_PTS = 20000;
+  const previewPts = [];
+  const drawList = hits.length ? hits.slice(0, MAX_DRAW_HITS)
+                               : [{x:-minDx, y:-minDy}];   // 未命中时以模式自身为锚点
+  for(const h of drawList){
+    for(const p of pts){
+      if(previewPts.length >= MAX_PREVIEW_PTS) break;
+      previewPts.push({x:h.x+p.dx, y:h.y+p.dy, color:{R:p.r,G:p.g,B:p.b}});
+    }
+    if(previewPts.length >= MAX_PREVIEW_PTS) break;
+  }
+  drawPreview(previewPts);
+  // 未命中时补一个说明
+  if(hits.length===0 && previewPts.length)
+    $('previewInfo').innerHTML += '<span style="color:#e74c3c">（未命中，显示模式本身）</span>';
+
+  const list = $('findList');
+  list.classList.add('show');
+  if(hits.length===0){
+    list.innerHTML = `<div style="color:#e74c3c">未找到匹配（模式共 ${pts.length} 个点，精度 ${jd}，容差 ±${tol}，${scopeLabel}）</div>`;
+    setMsg('测试找色：未找到匹配', '#e74c3c');
+  } else {
+    const items = hits.slice(0,5).map((h,i)=>`<div class="hit"><b>#${i+1}</b> (${h.x}, ${h.y})</div>`).join('');
+    const more = hits.length>5 ? `，仅显示前 5 处` : '';
+    const trunc = truncated ? `（已统计到 ${LIMIT} 处上限）` : '';
+    list.innerHTML = `<div style="margin-bottom:3px">命中 <b>${hits.length}</b> 处${trunc}${more}，模式共 ${pts.length} 个点，精度 ${jd}，容差 ±${tol}，${scopeLabel}</div>` + items;
+    setMsg(`测试找色：命中 ${hits.length} 处`, '#2ecc71');
+  }
+}
+
+function makeCodes(){
+  const s0 = state.slots[0];
+  // 校验
+  if(s0.x===''||s0.y===''||s0.hex===''){ setMsg('还未取色', '#e74c3c'); clearPreview(); return; }
+  if(state.r1.x1===''||state.r1.x2===''){ setMsg('还未划定自动取色范围', '#e74c3c'); clearPreview(); return; }
+  if(!isNumeric($('jd').value)){ setMsg('精度不是数字', '#e74c3c'); clearPreview(); return; }
+  if(!isNumeric($('skbj').value)){ setMsg('色块半径不是数字', '#e74c3c'); clearPreview(); return; }
+
+  state.jd = +$('jd').value;
+  state.skbj = +$('skbj').value;
+  updateBaseColor();
+
+  const ctx = state.memCtx;
+  const radius = state.skbj;
+  const step = radius>0 ? radius : 1;
+
+  // 原软件：遍历始终使用自动取色范围(x1,y1,x2,y2)，找色范围仅用于[3]输出
+  let x1=+state.r1.x1, y1=+state.r1.y1, x2=+state.r1.x2, y2=+state.r1.y2;
+  x1=Math.max(0,Math.min(x1,state.width-1));
+  x2=Math.max(0,Math.min(x2,state.width-1));
+  y1=Math.max(0,Math.min(y1,state.height-1));
+  y2=Math.max(0,Math.min(y2,state.height-1));
+
+  // [3] = 找色范围原始值(x3,y3,x4,y4)，原软件直接输出绝对值
+  const ox3 = state.r2.x3!=='' ? +state.r2.x3 : +state.r1.x1;
+  const oy3 = state.r2.y3!=='' ? +state.r2.y3 : +state.r1.y1;
+  const ox4 = state.r2.x4!=='' ? +state.r2.x4 : +state.r1.x2;
+  const oy4 = state.r2.y4!=='' ? +state.r2.y4 : +state.r1.y2;
+
+  let otherCodes = [];  // [1] 的元素
+  let count = 0;
+  const foundPoints = [];  // {x, y, color} 用于预览绘制
+  // 坐标原点 = 取色点（槽 1 手动取色的像素）
+  const ax = +s0.x, ay = +s0.y;
+
+  // 遍历范围
+  for(let py=y1; py<=y2; py+=step){
+    for(let px=x1; px<=x2; px+=step){
+      if(isColor(px,py)){
+        if(px===ax && py===ay) continue;   // 原点(取色点)自身不列入点列表
+        const d = ctx.getImageData(px,py,1,1).data;
+        const color = {R:d[0],G:d[1],B:d[2]};
+        otherCodes.push(`${px-ax}|${py-ay}|${colorToHex(color)}`);
+        foundPoints.push({x:px, y:py, color});
+        count++;
+      }
+    }
+  }
+
+  // 处理槽 2-4 的颜色（自动取色 + 有效）；坐标同样相对取色点
+  for(let i=1;i<5;i++){
+    const sl = state.slots[i];
+    if(!sl.valid || sl.x===''||sl.hex==='') continue;
+    otherCodes.push(`${sl.x-ax}|${sl.y-ay}|${sl.hex}`);
+  }
+
+  if(count===0 && otherCodes.length===0){
+    setMsg('精度过高或范围过小生成失败', '#e74c3c');
+    $('codes').value = '';
+    clearPreview();
+    return;
+  }
+
+  const v1 = s0.hex || '';   // [0] = 取色点(原点)的颜色，不带坐标
+  const v2 = otherCodes.join(',');
+  const v3 = String(state.jd);
+  const v4 = `${ox3},${oy3},${ox4},${oy4}`;
+  const v5 = String(state.width);
+  const v6 = String(state.height);
+  // [6] = 其余命中点（Lua 表格行格式：{dx,dy,0xRRGGBB}，单行逗号分隔）
+  const v7 = otherCodes.map(s=>{
+    const p = s.split('|');
+    return `{${p[0]},${p[1]},${p[2]}}`;
+  }).join(',');
+
+  // 模板替换: [0]-[6] -> {0}-{6} -> String.Format 风格
+  let tpl = state.template;
+  // 先把 { } 转义为 <>
+  tpl = tpl.replace(/\{/g,'<').replace(/\}/g,'>');
+  tpl = tpl.replace(/\[(\d)\]/g, (m,n)=>'{'+n+'}');
+  // 手动 format
+  const args = [v1,v2,v3,v4,v5,v6,v7];
+  let result = tpl.replace(/\{(\d)\}/g, (m,n)=> args[+n] ?? '');
+  // 还原 < > 为 { }
+  result = result.replace(/</g,'{').replace(/>/g,'}');
+
+  $('codes').value = result;
+  setMsg(`代码生成成功，共计[${count}]个点`, '#2ecc71');
+
+  // 新代码生成后，清除上一次的测试命中缓存
+  state.testHits = [];
+  $('findList').classList.remove('show');
+  $('findList').innerHTML = '';
+  redrawCanvas();
+
+  // 预览：把找到的颜色点按相对位置画成分布图（仿原软件 PboxView）
+  drawPreview(foundPoints);
+}
+
+// 在预览画布上绘制找到的颜色点分布图
+function drawPreview(points){
+  const canvas = $('previewCanvas');
+  const pctx = canvas.getContext('2d');
+  const info = $('previewInfo');
+  if(!points || points.length===0){
+    canvas.width = 0; canvas.height = 0;
+    info.innerHTML = '';
+    return;
+  }
+  // 以第一个点为原点，计算所有点的相对坐标范围
+  const first = points[0];
+  let minX=0, maxX=0, minY=0, maxY=0;
+  for(const p of points){
+    const dx = p.x - first.x, dy = p.y - first.y;
+    if(dx<minX) minX=dx; if(dx>maxX) maxX=dx;
+    if(dy<minY) minY=dy; if(dy>maxY) maxY=dy;
+  }
+  const spanX = maxX - minX + 1;
+  const spanY = maxY - minY + 1;
+  // 每个点用 cell×cell 像素的色块表示；自动缩放使预览不超过最大尺寸
+  const MAX = 320;
+  let cell = 2;
+  if(spanX * cell > MAX || spanY * cell > MAX){
+    cell = Math.max(1, Math.floor(MAX / Math.max(spanX, spanY)));
+  }
+  const margin = 4;
+  const W = spanX * cell + margin*2;
+  const H = spanY * cell + margin*2;
+  canvas.width = W; canvas.height = H;
+  pctx.fillStyle = '#1a1a1a';
+  pctx.fillRect(0,0,W,H);
+  // 绘制每个点
+  for(const p of points){
+    const dx = p.x - first.x - minX;
+    const dy = p.y - first.y - minY;
+    pctx.fillStyle = rgbToCss(p.color);
+    pctx.fillRect(margin + dx*cell, margin + dy*cell, cell, cell);
+  }
+  // 第一个点高亮（白色边框）
+  const fx = first.x - first.x - minX;
+  const fy = first.y - first.y - minY;
+  pctx.strokeStyle = '#fff';
+  pctx.lineWidth = 1;
+  pctx.strokeRect(margin + fx*cell - 1, margin + fy*cell - 1, cell+2, cell+2);
+
+  // 信息栏：首个颜色、点数、范围
+  const fc = first.color;
+  info.innerHTML =
+    `<span><span class="sw" style="background:${rgbToCss(fc)}"></span>首色 ${colorToHex(fc)}</span>` +
+    `<span>共 ${points.length} 点</span>` +
+    `<span>相对范围 X[${minX},${maxX}] Y[${minY},${maxY}]</span>` +
+    `<span>色块 ${cell}px</span>`;
+}
+
+// ============ 复制 ============
+$('btnCopy').onclick = ()=>{
+  const txt = $('codes').value;
+  if(!txt){ setMsg('代码还没生成', '#e74c3c'); return; }
+  navigator.clipboard.writeText(txt).then(()=>{
+    setMsg('代码已经复制到剪切板', '#2ecc71');
+  }).catch(()=>{
+    $('codes').select(); document.execCommand('copy');
+    setMsg('代码已经复制到剪切板', '#2ecc71');
+  });
+};
+
+// ============ 代码格式设置 ============
+$('btnSetCode').onclick = ()=>{ $('tplInput').value = state.template; $('codeModal').classList.add('show'); };
+
+// 模板格式预设
+$('btnTplPipe').onclick = ()=>{ $('tplInput').value = '[0],[1],[2]'; };
+$('btnTplLua').onclick = ()=>{ $('tplInput').value =
+  'x, y = screen.find_color({ {0,0,[0]},[6] }, [2], [3])'; };
+$('btnTplLuaAll').onclick = ()=>{ $('tplInput').value =
+  'results = screen.find_color({ {0,0,[0]},[6],find_all = true }, [2], [3])'; };
+
+$('btnSaveTpl').onclick = ()=>{
+  state.template = $('tplInput').value.trim() || '[0],[1],[2]';
+  $('codeModal').classList.remove('show');
+  setMsg('模板已保存');
+  // 持久化到 localStorage
+  try{ localStorage.setItem('rea_tpl', state.template); }catch(e){}
+};
+
+// 帮助
+$('btnHelp').onclick = ()=> $('helpModal').classList.add('show');
+
+// ============ 图案预览（内置 page预览.html 的解析与渲染） ============
+// 生成的代码保存到 localStorage 缓存，可在此预览、删除、下载为 page.lua
+const PV_KEY = 'rea_saved_patterns';
+let pvPageLua = '';      // 导入的 page.lua 原文
+let pvEntries = [];
+
+function pvSavedItems(){
+  try{ const a = JSON.parse(localStorage.getItem(PV_KEY)||'[]'); return Array.isArray(a)?a:[]; }
+  catch(e){ return []; }
+}
+function pvSaveItems(arr){ try{ localStorage.setItem(PV_KEY, JSON.stringify(arr)); }catch(e){} }
+
+// 单条保存记录 -> page.lua 文本（自动区分表格式 / screen.find_color 写法）
+function pvSerializeOne(it){
+  const code = String(it.code||'').trim().replace(/;+\s*$/,'');
+  if(/screen\.find_color/.test(code)) return '-- ' + it.name + '\n' + code;
+  return it.name + ' = {' + code + '};';
+}
+// 取出 lua 文本的“表体”：t={ ... } / { ... } 去掉外层包裹；否则原样返回
+function pvLuaBody(text){
+  const t = String(text||'').trim();
+  const open = t.indexOf('{');
+  if(open >= 0){
+    const end = pvFindBraceEnd(t, open);
+    if(end === t.length-1){
+      const head = t.slice(0, open).trim();
+      if(head==='' || /^[A-Za-z_][\w\.]*\s*=\s*$/.test(head)) return t.slice(open+1, end).trim();
+    }
+  }
+  return t;
+}
+// 导出文本 = 缓存里保存的图案 + 当前载入的 page.lua 内容，统一包在 t={ ... } 里
+function pvExportText(){
+  const out = ['t={'];
+  for(const it of pvSavedItems()) out.push(pvSerializeOne(it));
+  const body = pvLuaBody(pvPageLua);
+  if(body) out.push(body);
+  out.push('}');
+  return out.join('\n');
+}
+
+function pvSplitTop(s){
+  let out=[], cur='', q=false;
+  for(let i=0;i<s.length;i++){
+    const ch = s.charAt(i);
+    if(ch==='"'){ q=!q; cur+=ch; continue; }
+    if(ch===',' && !q){ out.push(cur); cur=''; continue; }
+    cur += ch;
+  }
+  out.push(cur);
+  return out.map(t=>t.trim()).filter(t=>t!=='');
+}
+function pvUnq(s){ return String(s).replace(/^\s*"/,'').replace(/"\s*$/,'').trim(); }
+function pvHex6(s){
+  s = String(s).trim().replace(/^0x/i,'');
+  return /^[0-9a-fA-F]{6}$/.test(s) ? s.toLowerCase() : null;
+}
+function pvParseEntry(name, inner){
+  const f = pvSplitTop(inner);
+  if(!f.length) return null;
+  // 格式一：{0xRRGGBB, "dx|dy|0xRRGGBB,...", 精度, x3,y3,x4,y4[, 附加]}
+  if(f.length>=7 && /^0x[0-9a-fA-F]{6}$/.test(f[0])){
+    const base = pvHex6(f[0]);
+    const pts = [{dx:0, dy:0, hex:base}];
+    for(const a of pvUnq(f[1]).split(',')){
+      const m = a.trim().match(/^(-?\d+)\|(-?\d+)\|0?x?([0-9a-fA-F]{6})$/);
+      if(!m) continue;
+      if(+m[1]===0 && +m[2]===0) continue;
+      pts.push({dx:+m[1], dy:+m[2], hex:m[3].toLowerCase()});
+    }
+    return { kind:'pattern', name:name, base:base, pts:pts,
+      jd:+f[2], range:{x3:+f[3],y3:+f[4],x4:+f[5],y4:+f[6]},
+      extra: f.length>7 ? f[7] : null };
+  }
+  // 格式二：{"文字", x1,y1,x2,y2, "颜色串", 相似度}
+  if(/^"/.test(f[0]) && f.length>=7){
+    const colors = [];
+    for(const g of pvUnq(f[5]).split('#'))
+      for(const c of g.split(',')){ const h=pvHex6(c); if(h) colors.push(h); }
+    return { kind:'legacy', name:name, label:pvUnq(f[0]), colors:colors, sim:+f[6],
+      box:{x1:+f[1],y1:+f[2],x2:+f[3],y2:+f[4]} };
+  }
+  return { kind:'other', name:name, raw:inner };
+}
+function pvFindBraceEnd(s, i){
+  let depth=0, q=false;
+  for(let j=i;j<s.length;j++){
+    const ch=s.charAt(j);
+    if(q){ if(ch==='\\'){j++;continue;} if(ch==='"') q=false; continue; }
+    if(ch==='"'){ q=true; continue; }
+    if(ch==='{') depth++;
+    else if(ch==='}'){ depth--; if(depth===0) return j; }
+  }
+  return -1;
+}
+function pvScanEntries(text, out){
+  const re = /([^\s=\n,{}\[\]]+)\s*=\s*\{/g; let m;
+  while((m=re.exec(text))!==null){
+    const open = m.index + m[0].length - 1;
+    const end = pvFindBraceEnd(text, open);
+    if(end<0) continue;
+    const body = text.slice(open+1, end);
+    const e = pvParseEntry(m[1], body);
+    if(e && e.kind!=='other') out.push(e);
+    else pvScanEntries(body, out);          // 外层包裹表 -> 递归
+    re.lastIndex = end+1;
+  }
+}
+function pvParseFindColorCalls(text, out){
+  const re = /screen\.find_color\s*\(\s*\{/g; let m, auto=0;
+  while((m=re.exec(text))!==null){
+    const open = m.index + m[0].length - 1;
+    const end = pvFindBraceEnd(text, open);
+    if(end<0) continue;
+    const rowsText = text.slice(open+1, end);
+    const rows=[]; let mm;
+    const r2 = /\{\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*0x([0-9a-fA-F]{6})(?:\s*,\s*-?\d+)?\s*\}/g;
+    while((mm=r2.exec(rowsText))!==null) rows.push({dx:+mm[1], dy:+mm[2], hex:mm[3].toLowerCase()});
+    const close = text.indexOf(')', end);
+    let tail=[];
+    if(close>end) tail=(text.slice(end+1,close).match(/-?\d+/g)||[]).map(Number);
+    if(rows.length>=2){
+      // 名称：前面的“名称 = ” > 上一行的 “-- 注释” > 自动编号
+      const before = text.slice(Math.max(0, m.index-120), m.index);
+      const asg = before.match(/([^\s=\n,{}\[\]]+)\s*=\s*$/);
+      let name = asg ? asg[1] : null;
+      if(name && /^[xyXY_]$/.test(name)) name = null;
+      if(!name){
+        const pre = before.replace(/[^\n]*=\s*$/,'');
+        const cm = pre.match(/--\s*([^\n]+?)\s*$/);
+        if(cm) name = cm[1];
+      }
+      if(!name) name = 'find_color #' + (++auto);
+      out.push({ kind:'pattern', name:name, base:rows[0].hex, pts:rows,
+        jd: tail.length ? tail[0] : null,
+        range: tail.length>=5 ? {x3:tail[1],y3:tail[2],x4:tail[3],y4:tail[4]} : null });
+    }
+    re.lastIndex = (close>end) ? close+1 : end+1;
+  }
+}
+function pvParseLua(text){
+  const out=[];
+  pvScanEntries(text, out);
+  pvParseFindColorCalls(text, out);
+  return out;
+}
+function pvBbox(pts){
+  let minX=0,maxX=0,minY=0,maxY=0;
+  for(const p of pts){
+    if(p.dx<minX)minX=p.dx; if(p.dx>maxX)maxX=p.dx;
+    if(p.dy<minY)minY=p.dy; if(p.dy>maxY)maxY=p.dy;
+  }
+  return {minX:minX,maxX:maxX,minY:minY,maxY:maxY,sx:maxX-minX+1,sy:maxY-minY+1};
+}
+function pvCellFor(sx, sy, maxpx, cap){
+  let c = Math.floor(maxpx/Math.max(sx,sy));
+  if(c>cap) c=cap; if(c<1) c=1; return c;
+}
+function pvDrawShape(cv, pts, cell){
+  const b=pvBbox(pts), margin=3, g=cv.getContext('2d');
+  cv.width = b.sx*cell + margin*2; cv.height = b.sy*cell + margin*2;
+  g.fillStyle='#0e1116'; g.fillRect(0,0,cv.width,cv.height);
+  g.strokeStyle='rgba(255,255,255,.06)'; g.lineWidth=1;
+  for(let gx=margin; gx<=cv.width-margin; gx+=cell){ g.beginPath(); g.moveTo(gx+.5,margin); g.lineTo(gx+.5,cv.height-margin); g.stroke(); }
+  for(let gy=margin; gy<=cv.height-margin; gy+=cell){ g.beginPath(); g.moveTo(margin,gy+.5); g.lineTo(cv.width-margin,gy+.5); g.stroke(); }
+  for(const p of pts){
+    g.fillStyle='#'+p.hex;
+    g.fillRect(margin+(p.dx-b.minX)*cell, margin+(p.dy-b.minY)*cell, cell, cell);
+  }
+  const ox=margin+(0-b.minX)*cell, oy=margin+(0-b.minY)*cell;   // 起始点(0,0)虚线框
+  g.strokeStyle='rgba(0,0,0,.85)'; g.lineWidth=1; g.strokeRect(ox-.5,oy-.5,cell+1,cell+1);
+  g.strokeStyle='#fff'; g.setLineDash([2,2]); g.strokeRect(ox-1.5,oy-1.5,cell+3,cell+3); g.setLineDash([]);
+}
+function pvRangeText(r){
+  if(!r) return '全屏（未指定范围）';
+  const x1=Math.min(r.x3,r.x4), x2=Math.max(r.x3,r.x4);
+  const y1=Math.min(r.y3,r.y4), y2=Math.max(r.y3,r.y4);
+  return '(' + x1 + ',' + y1 + ')-(' + x2 + ',' + y2 + ') → ' + (x2-x1+1) + '×' + (y2-y1+1);
+}
+function pvBuildCard(e){
+  const card = document.createElement('div');
+  card.className = 'pv-card';
+  let html = '<div class="pv-cname">' + e.name + '</div><div class="pv-badges">';
+  if(e.kind==='pattern'){
+    const colors={}; for(const p of e.pts) colors[p.hex]=1;
+    if(e.saved) html += '<span class="pv-b s">已保存</span>';
+    html += '<span class="pv-b k">点阵</span>'
+      + '<span class="pv-b">精度 ' + (e.jd===null?'—':e.jd) + '</span>'
+      + '<span class="pv-b">点数 ' + e.pts.length + '</span>'
+      + '<span class="pv-b">颜色 ' + Object.keys(colors).length + '</span>'
+      + '<span class="pv-b">起始 0x' + e.base + '</span>';
+    if(e.saved) html += '<button class="pv-del" data-del="' + e.savedIndex + '">删除</button>';
+    html += '</div><div class="pv-cvs"></div><div class="pv-meta">范围 ' + pvRangeText(e.range);
+    if(e.extra!=null && e.extra!=='') html += '<br>附加参数: ' + e.extra;
+    html += '</div>';
+  } else if(e.kind==='legacy'){
+    html += '<span class="pv-b g">单点多色</span><span class="pv-b">相似度 ' + e.sim + '</span>'
+      + '<span class="pv-b">颜色 ' + e.colors.length + '</span></div>'
+      + '<div>' + e.colors.map(c=>'<span class="pv-sw" style="background:#'+c+'" title="0x'+c+'"></span>').join('') + '</div>'
+      + '<div class="pv-meta">文字: ' + e.label + '<br>范围 ' + pvRangeText(e.box) + '</div>';
+  } else {
+    html += '<span class="pv-b">未识别</span></div><div class="pv-meta">' + (e.raw||'') + '</div>';
+  }
+  card.innerHTML = html;
+  if(e.kind==='pattern'){
+    const cv = document.createElement('canvas');
+    card.querySelector('.pv-cvs').appendChild(cv);
+    const b = pvBbox(e.pts);
+    pvDrawShape(cv, e.pts, pvCellFor(b.sx, b.sy, 300, 6));
+    card.title = '点击放大';
+    card.onclick = ()=> pvOpenModal(e);
+  }
+  const del = card.querySelector('[data-del]');
+  if(del) del.onclick = ev=>{ ev.stopPropagation(); pvDeleteItem(+del.dataset.del); };
+  return card;
+}
+function pvRender(){
+  const grid = $('pvGrid'); grid.innerHTML = '';
+  const kw = $('pvFilter').value.trim().toLowerCase();
+  let shown=0, np=0;
+  for(const e of pvEntries){
+    if(e.kind==='pattern') np++;
+    if(kw && String(e.name||'').toLowerCase().indexOf(kw)<0) continue;
+    grid.appendChild(pvBuildCard(e));
+    shown++;
+  }
+  const savedN = pvSavedItems().length;
+  $('pvStat').textContent = '共 ' + pvEntries.length + ' 条（点阵 ' + np + '，其中已保存 ' + savedN + '）'
+    + (kw ? '，筛选出 ' + shown + ' 条' : '');
+}
+function pvOpenModal(e){
+  const m = $('pvMbox');
+  const colors={}; for(const p of e.pts) colors[p.hex]=1;
+  m.innerHTML = '<h3>' + e.name + '</h3>'
+    + '<div class="pv-badges"><span class="pv-b">精度 ' + (e.jd===null?'—':e.jd) + '</span><span class="pv-b">点数 '
+    + e.pts.length + '</span><span class="pv-b">颜色 ' + Object.keys(colors).length + '</span><span class="pv-b">起始 0x'
+    + e.base + '</span></div>'
+    + '<div class="pv-meta" style="margin:6px 0">范围 ' + pvRangeText(e.range) + '</div>'
+    + '<div class="pv-cvs"></div>'
+    + '<div class="pv-meta" style="margin-top:8px">虚线框 = 起始点 (0,0)</div>'
+    + '<pre></pre>'
+    + '<div style="text-align:right;margin-top:8px"><button class="btn btn-gray" id="pvClose">关闭</button></div>';
+  const cv = document.createElement('canvas');
+  m.querySelector('.pv-cvs').appendChild(cv);
+  const b = pvBbox(e.pts);
+  pvDrawShape(cv, e.pts, pvCellFor(b.sx, b.sy, 640, 14));
+  m.querySelector('pre').textContent =
+    e.pts.map((p,i)=>'0x' + p.hex + '   ' + p.dx + '|' + p.dy + (i===0 ? '   ← 起始点' : '')).join('\n');
+  $('pvClose').onclick = ()=> $('pvModal').classList.remove('show');
+  $('pvModal').classList.add('show');
+}
+function pvDeleteItem(i){
+  const items = pvSavedItems();
+  items.splice(i,1);
+  pvSaveItems(items);
+  pvRefresh();
+}
+// 缓存里的每条记录单独解析，保证 savedIndex 与缓存数组一一对应
+function pvSavedEntries(items){
+  const out=[];
+  for(let i=0;i<items.length;i++){
+    const es = pvParseLua(pvSerializeOne(items[i]));
+    if(es.length){ es[0].saved = true; es[0].savedIndex = i; out.push(es[0]); }
+    else out.push({kind:'other', name:items[i].name, raw:String(items[i].code||''), saved:true, savedIndex:i});
+  }
+  return out;
+}
+function pvRefresh(){
+  const saved = pvSavedEntries(pvSavedItems());
+  const lua = pvPageLua ? pvParseLua(pvPageLua) : [];
+  pvEntries = saved.concat(lua);
+  $('pvErr').textContent = (!pvEntries.length && !pvPageLua)
+    ? '还没有图案：先用上方“选择文件…”载入 page.lua，或在取色工具里「💾 保存」。' : '';
+  pvRender();
+}
+function pvLoadPageLua(){
+  $('pvErr').textContent = '';
+  fetch('page.lua')
+    .then(r=>{ if(!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(t=>{ pvPageLua = t; pvRefresh(); })
+    .catch(err=>{
+      $('pvErr').textContent = '读取 page.lua 失败（' + err.message + '）。可改用“选择文件…”手动导入。';
+      pvRefresh();
+    });
+}
+function pvDownload(){
+  const saved = pvSavedItems();
+  const body = pvLuaBody(pvPageLua);
+  if(!saved.length && !body){ $('pvErr').textContent = '还没有可导出的图案：先在取色工具里「💾 保存」，或用上方“选择文件…”载入 page.lua。'; return; }
+  const blob = new Blob([pvExportText()], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'page.lua';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 0);
+  setMsg('已下载 page.lua（缓存 ' + saved.length + ' 条' + (body ? ' + 载入的 page.lua' : '') + '）', '#2ecc71');
+}
+
+// 打开 / 关闭图案预览页
+$('btnPreviewView').onclick = ()=>{
+  $('pvView').classList.add('show');
+  if(!pvPageLua) pvLoadPageLua(); else pvRefresh();
+};
+$('pvBack').onclick = ()=> $('pvView').classList.remove('show');
+$('pvReload').onclick = pvLoadPageLua;
+$('pvDownload').onclick = pvDownload;
+$('pvFilter').oninput = pvRender;
+$('pvFile').onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const fr = new FileReader();
+  fr.onload = ()=>{ pvPageLua = String(fr.result); pvRefresh(); };
+  fr.readAsText(f);
+};
+$('pvModal').onclick = e=>{ if(e.target===$('pvModal')) $('pvModal').classList.remove('show'); };
+
+// 保存当前生成的代码到图案预览（先用弹窗输入注释）
+$('btnSave').onclick = ()=>{
+  if(!$('codes').value.trim()){ setMsg('代码还没生成，无法保存', '#e74c3c'); return; }
+  $('saveComment').value = '';
+  $('saveModal').classList.add('show');
+  $('saveComment').focus();
+};
+$('btnSaveOk').onclick = ()=>{
+  const name = $('saveComment').value.trim() || ('未命名 ' + new Date().toLocaleString());
+  const items = pvSavedItems();
+  items.push({name:name, code:$('codes').value.trim(), ts:Date.now()});
+  pvSaveItems(items);
+  $('saveModal').classList.remove('show');
+  setMsg('已保存“' + name + '”到图案预览', '#2ecc71');
+  $('pvView').classList.add('show');   // 保存后直接切到图案预览页
+  pvRefresh();
+};
+
+// ============ 初始化 ============
+buildSlots();
+try{ const t = localStorage.getItem('rea_tpl'); if(t) state.template = t; }catch(e){}
+// 默认载入示例图（如果有）
+window.addEventListener('load', ()=>{
+  const demo = 'tpian.png';
+  // 尝试自动载入同目录示例图
+  fetch(demo).then(r=>{ if(!r.ok) throw 0; return r.blob(); }).then(b=>{
+    const url = URL.createObjectURL(b);
+    const img = new Image();
+    img.onload = ()=>{
+      state.img = img; state.width=img.width; state.height=img.height;
+      state.memCanvas = document.createElement('canvas');
+      state.memCanvas.width=img.width; state.memCanvas.height=img.height;
+      state.memCtx = state.memCanvas.getContext('2d');
+      state.memCtx.drawImage(img,0,0);
+      state.imgCanvas = $('imageCanvas');
+      const fit = fitSize(img.width, img.height);
+      state.scale = fit.scale;
+      state.imgCanvas.width = fit.dw; state.imgCanvas.height = fit.dh;
+      state.imgCtx = state.imgCanvas.getContext('2d');
+      state.imgCtx.drawImage(img,0,0,fit.dw,fit.dh);
+      $('resInfo').textContent = img.width+' x '+img.height;
+      setMsg('已载入示例图像 tpian.png');
+      updateNav();
+    };
+    img.src = url;
+  }).catch(()=>{ /* 无示例图 */ });
+});
+</script>
+</body>
+</html>

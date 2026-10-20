@@ -150,6 +150,41 @@ struct ColorMatcherParam : public RoiTargetParamBase
     int result_index = 0;
 };
 
+struct MultiColorMatcherParam : public RoiTargetParamBase
+{
+    inline static constexpr int kDefaultDegree = 90;
+    inline static constexpr int kDefaultOrient = 0;
+
+    // Base point color, 0xRRGGBB
+    int base_color = 0;
+
+    struct OffsetPoint
+    {
+        int dx = 0;
+        int dy = 0;
+        int color = 0; // 0xRRGGBB
+    };
+    std::vector<OffsetPoint> points;
+
+    // Accuracy 1~100, 100 means exact match; tolerance = 100 - degree
+    int degree = kDefaultDegree;
+
+    // Color deviation for the base point (0xRRGGBB); 0 means using the tolerance from degree
+    int main = 0;
+    // Color deviation for the offset points (0xRRGGBB); 0 means using the tolerance from degree
+    int list = 0;
+
+    // Max number of results; 0 means unlimited
+    int count = 0;
+    // Clustering distance in pixels; 0 means no clustering
+    int miss = 0;
+    // Search direction, 0~8
+    int orient = kDefaultOrient;
+
+    ResultOrderBy order_by = ResultOrderBy::Horizontal;
+    int result_index = 0;
+};
+
 struct FeatureMatcherParam : public RoiTargetParamBase
 {
     enum class Detector

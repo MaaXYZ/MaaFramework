@@ -1182,6 +1182,155 @@
                 }
             }
         },
+        "MultiColorMatch": {
+            "type": "object",
+            "properties": {
+                "roi": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi"
+                },
+                "roi_offset": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi_offset"
+                },
+                "base_color": {
+                    "title": "Base Color Property",
+                    "description": "Base point color, RGB (0xRRGGBB). Required unless pattern is used.",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\nBase point color, RGB (0xRRGGBB). Required unless pattern is used."
+                },
+                "points": {
+                    "title": "Points Property",
+                    "description": "Offset points relative to the base point. Required unless pattern is used.",
+                    "anyOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "dx": { "type": "integer" },
+                                    "dy": { "type": "integer" },
+                                    "color": { "type": "integer" }
+                                },
+                                "required": ["dx", "dy", "color"]
+                            }
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "markdownDescription": "*array<object> | string*\n\nOffset points relative to the base point.\n\nArray format: `[{\"dx\":1,\"dy\":2,\"color\":16711680}]`.\n\nString format: TSLib-style `\"dx|dy|0xRRGGBB,dx|dy|0xRRGGBB\"`."
+                },
+                "degree": {
+                    "title": "Degree Property",
+                    "description": "Matching accuracy, 1-100. Optional, default 90.",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\nMatching accuracy, 1-100. 100 means exact match, tolerance = 100 - degree. Optional, default 90.",
+                    "default": 90
+                },
+                "main": {
+                    "title": "Main Deviation Property",
+                    "description": "Color deviation for base point (0xRRGGBB). Optional, default 0 (use degree).",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\nColor deviation for base point (0xRRGGBB). 0 means using the tolerance computed from degree. Optional, default 0.",
+                    "default": 0
+                },
+                "list": {
+                    "title": "List Deviation Property",
+                    "description": "Color deviation for offset points (0xRRGGBB). Optional, default 0 (use degree).",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\nColor deviation for offset points (0xRRGGBB). 0 means using the tolerance computed from degree. Optional, default 0.",
+                    "default": 0
+                },
+                "count": {
+                    "title": "Count Property",
+                    "description": "Max number of results. Optional, default 0 (unlimited).",
+                    "$ref": "#/$defs/jsonNInt32",
+                    "markdownDescription": "*uint*\n\nMax number of results. 0 means unlimited. Optional, default 0.",
+                    "default": 0
+                },
+                "miss": {
+                    "title": "Miss Property",
+                    "description": "Clustering distance in pixels. Optional, default 0 (no clustering).",
+                    "$ref": "#/$defs/jsonNInt32",
+                    "markdownDescription": "*uint*\n\nClustering distance in pixels. 0 means no clustering. Optional, default 0.",
+                    "default": 0
+                },
+                "orient": {
+                    "title": "Orient Property",
+                    "description": "Search direction, 0-8. Optional, default 0.",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\nSearch direction, 0-8. Optional, default 0.",
+                    "default": 0
+                },
+                "pattern": {
+                    "title": "Pattern Property",
+                    "description": "Pattern name referencing .lua files under the pattern/ directory. Optional.",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\nPattern name referencing .lua files under the pattern/ directory. Optional.\n\nFields explicitly set in the node take precedence; the pattern only fills in unspecified fields."
+                },
+                "order_by": {
+                    "title": "Order By Property",
+                    "description": "How the results are sorted. Optional, default `Horizontal`.",
+                    "enum": [
+                        "Horizontal",
+                        "Vertical",
+                        "Score",
+                        "Area",
+                        "Random"
+                    ],
+                    "markdownDescription": "*string*\n\nHow the results are sorted. Optional, default `Horizontal`.\n\nPossible values: `Horizontal` | `Vertical` | `Score` | `Area` | `Random`.\n\nYou can use it with the `index` field.",
+                    "default": "Horizontal"
+                },
+                "index": {
+                    "title": "Index Property",
+                    "description": "Index to hit. Optional, default 0.",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\nIndex to hit. Optional, default 0.\n\nIf there are N results in total, the value range of `index` is [-N, N - 1], where negative numbers are converted to N - index using Python-like rules. If it exceeds the range, it is considered that there is no result in the current identification."
+                }
+            },
+            "anyOf": [
+                {
+                    "required": ["base_color", "points"]
+                },
+                {
+                    "required": ["pattern"]
+                }
+            ]
+        },
+        "MultiColorMatchV1": {
+            "properties": {
+                "recognition": {
+                    "const": "MultiColorMatch"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/MultiColorMatch"
+                }
+            ]
+        },
+        "MultiColorMatchV2": {
+            "properties": {
+                "type": {
+                    "const": "MultiColorMatch"
+                },
+                "param": {
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/MultiColorMatch"
+                        },
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
         "Ocr": {
             "type": "object",
             "properties": {
@@ -1729,6 +1878,7 @@
                 "TemplateMatch",
                 "FeatureMatch",
                 "ColorMatch",
+                "MultiColorMatch",
                 "OCR",
                 "NeuralNetworkClassify",
                 "NeuralNetworkDetect",
@@ -2125,6 +2275,9 @@
                     "$ref": "#/$defs/ColorMatchV1"
                 },
                 {
+                    "$ref": "#/$defs/MultiColorMatchV1"
+                },
+                {
                     "$ref": "#/$defs/OcrV1"
                 },
                 {
@@ -2177,6 +2330,9 @@
                         },
                         {
                             "$ref": "#/$defs/ColorMatchV2"
+                        },
+                        {
+                            "$ref": "#/$defs/MultiColorMatchV2"
                         },
                         {
                             "$ref": "#/$defs/OcrV2"

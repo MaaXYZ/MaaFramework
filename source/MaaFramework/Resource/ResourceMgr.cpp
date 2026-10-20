@@ -266,6 +266,7 @@ bool ResourceMgr::clear()
     ocr_res_.clear();
     inference_res_.clear();
     template_res_.clear();
+    pattern_res_.clear();
     paths_.clear();
     hash_cache_.clear();
 
@@ -815,10 +816,19 @@ bool ResourceMgr::load_bundle(const std::filesystem::path& path)
         ret &= default_pipeline_.load(j_path);
     }
 
+    // Pattern files must be loaded before the pipeline so that the parser can
+    // reference them via the "pattern" field
+    if (auto p = path / "pattern"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= pattern_res_.lazy_load(p);
+    }
+
+    PatternResMgr::current_for_parse = &pattern_res_;
     if (auto p = path / "pipeline"_path; std::filesystem::exists(p)) {
         to_load = true;
         ret &= pipeline_res_.load(p, default_pipeline_);
     }
+    PatternResMgr::current_for_parse = nullptr;
     if (auto p = path / "model"_path / "ocr"_path; std::filesystem::exists(p)) {
         to_load = true;
         ret &= ocr_res_.lazy_load(p);
@@ -931,6 +941,9 @@ std::optional<json::object> ResourceMgr::get_default_recognition_param(const std
         break;
     case Type::ColorMatch:
         param = default_pipeline_.get_recognition_param<MAA_VISION_NS::ColorMatcherParam>(type);
+        break;
+    case Type::MultiColorMatch:
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::MultiColorMatcherParam>(type);
         break;
     case Type::OCR:
         param = default_pipeline_.get_recognition_param<MAA_VISION_NS::OCRerParam>(type);
