@@ -1,10 +1,11 @@
 #include "ddi/Cryptex.h"
 #include "ddi/DownloadInternal.h"
+#include "ddi/File.h"
 #include "ddi/Tss.h"
+#include "util/Hex.h"
 #include <algorithm>
 #include <array>
 #include <exception>
-#include <fstream>
 #include <limits>
 #include <openssl/evp.h>
 #include <sstream>
@@ -40,27 +41,6 @@ std::optional<std::string> text(const plist::Value* value, std::string& error)
     return value->string;
 }
 
-std::optional<std::string> read_file(const std::filesystem::path& path, uint64_t limit, std::string& error)
-{
-    if (std::filesystem::is_symlink(std::filesystem::symlink_status(path)) || !std::filesystem::is_regular_file(path)) {
-        error = "Cryptex asset is not a bounded regular file";
-        return std::nullopt;
-    }
-    const auto size = std::filesystem::file_size(path);
-    if (size > limit) {
-        error = "Cryptex asset is not a bounded regular file";
-        return std::nullopt;
-    }
-    std::string bytes(static_cast<std::size_t>(size), '\0');
-    std::ifstream file(path, std::ios::binary);
-    file.read(bytes.data(), static_cast<std::streamsize>(size));
-    if (!file || static_cast<uint64_t>(file.gcount()) != size) {
-        error = "Cannot read the complete Cryptex asset";
-        return std::nullopt;
-    }
-    return bytes;
-}
-
 std::optional<std::string> pinned_snapshot(const std::filesystem::path& directory, std::string_view name, std::string& error)
 {
     const auto& catalog = detail::cryptex_catalog();
@@ -69,7 +49,7 @@ std::optional<std::string> pinned_snapshot(const std::filesystem::path& director
         error = "Unknown pinned Cryptex asset";
         return std::nullopt;
     }
-    auto bytes = read_file(directory / asset->name, asset->size, error);
+    auto bytes = detail::read_file(directory / asset->name, asset->size, error);
     if (!bytes) {
         return std::nullopt;
     }
@@ -80,12 +60,7 @@ std::optional<std::string> pinned_snapshot(const std::filesystem::path& director
         error = "Cryptex asset snapshot checksum failed";
         return std::nullopt;
     }
-    constexpr char hex[] = "0123456789abcdef";
-    std::string checksum;
-    for (unsigned i = 0; i < length; ++i) {
-        checksum += hex[digest[i] >> 4];
-        checksum += hex[digest[i] & 15];
-    }
+    const auto checksum = util::hex_encode(std::span(digest).first(length));
     if (checksum != asset->sha256) {
         error = "Cryptex asset changed before installation";
         return std::nullopt;

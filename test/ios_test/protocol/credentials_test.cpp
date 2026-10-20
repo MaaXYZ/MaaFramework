@@ -1,11 +1,13 @@
 #include "MaaUtils/Platform.h"
 #include "ddi/DownloadInternal.h"
+#include "ddi/File.h"
 #include "remote/Pairing.h"
 #include "wifi/Credentials.h"
 #include "wifi/PairSetup.h"
 #include "wifi/PairVerify.h"
 #include "wifi/Srp.h"
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 
@@ -124,6 +126,21 @@ int main()
         require(
             !invalid && error.find(MAA_NS::path_to_utf8_string(cached->directory)) != std::string::npos,
             "invalid cache diagnostic contains the UTF-8 path");
+        error.clear();
+        require(
+            !ddi::detail::read_file(copy.directory / "DeveloperDiskImage.dmg", 0, error) && !error.empty(),
+            "bounded DDI reader rejects an oversized asset");
+        const auto empty_asset = temporary_root / "empty-asset";
+        std::ofstream(empty_asset, std::ios::binary).close();
+        error.clear();
+        const auto empty = ddi::detail::read_file(empty_asset, 0, error);
+        require(empty && empty->empty() && error.empty(), "bounded DDI reader accepts an empty regular file at its limit");
+        const auto link = temporary_root / "linked-asset";
+        std::error_code link_error;
+        std::filesystem::create_symlink(empty_asset, link, link_error);
+        if (!link_error) {
+            require(!ddi::detail::read_file(link, 0, error), "bounded DDI reader rejects symlinks");
+        }
         copy.temporary_storage.reset();
         require(!std::filesystem::exists(temporary_root), "temporary DDI removed with its last owner");
         std::cout << "caller-owned credentials and temporary DDI lifetime passed\n";

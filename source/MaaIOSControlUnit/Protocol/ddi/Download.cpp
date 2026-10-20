@@ -1,6 +1,8 @@
 #include "MaaUtils/Platform.h"
 #include "ddi/DownloadInternal.h"
+#include "ddi/File.h"
 #include "plist/Plist.h"
+#include "util/Hex.h"
 
 #include <curl/curl.h>
 #include <openssl/evp.h>
@@ -22,31 +24,6 @@ namespace
 {
 namespace fs = std::filesystem;
 using Clock = std::chrono::steady_clock;
-
-std::optional<std::string> read_file(const fs::path& path, uint64_t limit, std::string& error)
-{
-    if (fs::is_symlink(fs::symlink_status(path)) || !fs::is_regular_file(path)) {
-        error = "DDI cache contains a nonregular file";
-        return std::nullopt;
-    }
-    const auto size = fs::file_size(path);
-    if (size > limit) {
-        error = "DDI file exceeds its size limit";
-        return std::nullopt;
-    }
-    std::ifstream file(path, std::ios::binary);
-    if (!file) {
-        error = "Cannot open DDI file";
-        return std::nullopt;
-    }
-    std::string bytes(static_cast<size_t>(size), '\0');
-    file.read(bytes.data(), static_cast<std::streamsize>(bytes.size()));
-    if (file.gcount() != static_cast<std::streamsize>(size)) {
-        error = "Cannot read complete DDI file";
-        return std::nullopt;
-    }
-    return bytes;
-}
 
 std::optional<std::vector<uint8_t>> digest_file(const fs::path& path, const EVP_MD* algorithm, std::string& error, bool git_blob = false)
 {
@@ -90,17 +67,6 @@ std::optional<std::vector<uint8_t>> digest_file(const fs::path& path, const EVP_
     return result;
 }
 
-std::string hex(const std::vector<uint8_t>& bytes)
-{
-    constexpr char digits[] = "0123456789abcdef";
-    std::string result;
-    for (auto byte : bytes) {
-        result += digits[byte >> 4];
-        result += digits[byte & 15];
-    }
-    return result;
-}
-
 std::string marker(const detail::Catalog& catalog)
 {
     return catalog.build + "\n" + catalog.source_url + "\n";
@@ -108,7 +74,7 @@ std::string marker(const detail::Catalog& catalog)
 
 bool hex_digest(std::string_view value, size_t length)
 {
-    return value.size() == length && value.find_first_not_of("0123456789abcdef") == std::string_view::npos;
+    return value.size() == length && util::is_lower_hex(value);
 }
 
 bool check_catalog(const detail::Catalog& catalog, std::string& error)
@@ -215,7 +181,7 @@ bool check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
     if (catalog.kind == Kind::Classic) {
         return true;
     }
-    const auto contents = read_file(directory / "BuildManifest.plist", 8 * 1024 * 1024, error);
+    const auto contents = detail::read_file(directory / "BuildManifest.plist", 8 * 1024 * 1024, error);
     if (!contents) {
         return false;
     }
@@ -340,7 +306,7 @@ bool validate_files(
                 if (!digest) {
                     return false;
                 }
-                if (hex(*digest) != asset.sha256) {
+                if (util::hex_encode(*digest) != asset.sha256) {
                     error = std::string("DDI cache SHA-256 mismatch: ") + asset.name;
                     return false;
                 }
@@ -350,7 +316,7 @@ bool validate_files(
                 if (!digest) {
                     return false;
                 }
-                if (hex(*digest) != asset.git_blob_sha1) {
+                if (util::hex_encode(*digest) != asset.git_blob_sha1) {
                     error = std::string("DDI cache Git blob SHA-1 mismatch: ") + asset.name;
                     return false;
                 }
@@ -360,7 +326,7 @@ bool validate_files(
             return false;
         }
         if (complete) {
-            const auto contents = read_file(directory / ".complete", 4096, error);
+            const auto contents = detail::read_file(directory / ".complete", 4096, error);
             if (!contents) {
                 return false;
             }
@@ -582,12 +548,7 @@ std::optional<DownloadResult> download(
                     error = "Cannot create a unique temporary DDI directory";
                     return std::nullopt;
                 }
-                constexpr char hex[] = "0123456789abcdef";
-                std::string name = "maafw-ddi-";
-                for (auto value : random) {
-                    name += hex[value >> 4];
-                    name += hex[value & 15];
-                }
+                const auto name = "maafw-ddi-" + util::hex_encode(random);
                 const auto candidate = temporary_root / name;
                 if (!fs::create_directory(candidate)) {
                     continue;
@@ -655,7 +616,7 @@ std::optional<DownloadResult> download(
             error = "Cannot generate DDI staging directory name";
             return std::nullopt;
         }
-        const auto staging = root / ("." + cache_name + ".partial-" + hex(nonce));
+        const auto staging = root / ("." + cache_name + ".partial-" + util::hex_encode(nonce));
         if (!fs::create_directory(staging)) {
             error = "Cannot create unique DDI staging directory";
             return std::nullopt;
