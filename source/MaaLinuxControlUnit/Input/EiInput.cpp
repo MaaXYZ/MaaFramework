@@ -162,7 +162,7 @@ bool EiInput::scroll(int dx, int dy)
 {
     // 对 dy 取反，在行为上和 Win32 保持一致
     return send({ EI_DEVICE_CAP_SCROLL }, [dx, dy](struct ei_device* d) {
-        ei_device_scroll_delta(d, static_cast<double>(dx), static_cast<double>(-dy));
+        ei_device_scroll_discrete(d, static_cast<double>(dx), static_cast<double>(-dy));
     });
 }
 
