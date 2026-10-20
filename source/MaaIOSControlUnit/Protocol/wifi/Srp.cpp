@@ -1,4 +1,5 @@
 #include "wifi/Srp.h"
+#include "util/Hex.h"
 
 #include <openssl/bn.h>
 #include <openssl/crypto.h>
@@ -142,8 +143,7 @@ bool SrpClient::process(const Bytes& salt, const Bytes& server_public, std::stri
         err = "SRP server public key is empty or exceeds 384 bytes";
         return false;
     }
-    if (!private_hex_.empty()
-        && (private_hex_.size() > kWidth * 2 || private_hex_.find_first_not_of("0123456789abcdefABCDEF") != std::string::npos)) {
+    if (!private_hex_.empty() && (private_hex_.size() > kWidth * 2 || !util::is_hex(private_hex_))) {
         err = "SRP private key must be a nonzero hexadecimal integer of at most 3072 bits";
         return false;
     }
@@ -274,8 +274,7 @@ bool SrpServer::initialize(const Bytes& salt, std::string& err)
         err = "SRP salt must contain 1 to 255 bytes";
         return false;
     }
-    if (!private_hex_.empty()
-        && (private_hex_.size() > kWidth * 2 || private_hex_.find_first_not_of("0123456789abcdefABCDEF") != std::string::npos)) {
+    if (!private_hex_.empty() && (private_hex_.size() > kWidth * 2 || !util::is_hex(private_hex_))) {
         err = "SRP private key must be a nonzero hexadecimal integer of at most 3072 bits";
         return false;
     }

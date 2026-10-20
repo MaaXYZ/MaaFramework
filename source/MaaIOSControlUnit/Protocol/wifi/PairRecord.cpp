@@ -1,4 +1,5 @@
 #include "wifi/PairRecord.h"
+#include "util/Hex.h"
 
 #include <set>
 
@@ -8,49 +9,6 @@ namespace
 {
 
 constexpr std::string_view kHeader = "MaaIOS1";
-
-std::string hex(const Bytes& data)
-{
-    static constexpr char kDigits[] = "0123456789abcdef";
-    std::string out;
-    out.reserve(data.size() * 2);
-    for (const uint8_t b : data) {
-        out += kDigits[b >> 4];
-        out += kDigits[b & 0xF];
-    }
-    return out;
-}
-
-std::optional<Bytes> unhex(std::string_view text, std::string& err)
-{
-    if (text.size() % 2 != 0) {
-        err = "Hex length must be even";
-        return std::nullopt;
-    }
-    auto nibble = [](char c) -> int {
-        if (c >= '0' && c <= '9') {
-            return c - '0';
-        }
-        if (c >= 'a' && c <= 'f') {
-            return c - 'a' + 10;
-        }
-        if (c >= 'A' && c <= 'F') {
-            return c - 'A' + 10;
-        }
-        return -1;
-    };
-    Bytes out;
-    out.reserve(text.size() / 2);
-    for (size_t i = 0; i < text.size(); i += 2) {
-        const int hi = nibble(text[i]), lo = nibble(text[i + 1]);
-        if (hi < 0 || lo < 0) {
-            err = "Invalid hex character";
-            return std::nullopt;
-        }
-        out.push_back(static_cast<uint8_t>((hi << 4) | lo));
-    }
-    return out;
-}
 
 std::string encode_text(std::string_view value)
 {
@@ -79,7 +37,7 @@ std::optional<std::string> decode_text(std::string_view value, std::string& erro
                 error = "Invalid pairing record text escape";
                 return std::nullopt;
             }
-            auto byte = unhex(value.substr(i + 1, 2), error);
+            auto byte = util::hex_decode(value.substr(i + 1, 2), error);
             if (!byte) {
                 return std::nullopt;
             }
@@ -111,13 +69,13 @@ std::string format_record(const PairRecord& record)
     if (!record.peer_identifier.empty()) {
         append_text("pid", record.peer_identifier);
     }
-    append_text("hsk", hex(record.host_private_key));
-    append_text("hpk", hex(record.host_public_key));
+    append_text("hsk", util::hex_encode(record.host_private_key));
+    append_text("hpk", util::hex_encode(record.host_public_key));
     if (!record.peer_public_key.empty()) {
-        append_text("ppk", hex(record.peer_public_key));
+        append_text("ppk", util::hex_encode(record.peer_public_key));
     }
     if (!record.peer_alt_irk.empty()) {
-        append_text("irk", hex(record.peer_alt_irk));
+        append_text("irk", util::hex_encode(record.peer_alt_irk));
     }
     return out;
 }
@@ -164,7 +122,7 @@ std::optional<PairRecord> parse_record(std::string_view text, std::string& err)
             return true;
         };
         auto set_hex = [&](Bytes& field, size_t want) -> bool {
-            const std::optional<Bytes> bytes = unhex(value, err);
+            const std::optional<Bytes> bytes = util::hex_decode(value, err);
             if (!bytes) {
                 return false;
             }

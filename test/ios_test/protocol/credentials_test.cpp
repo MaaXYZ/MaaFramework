@@ -20,8 +20,8 @@ void test_srp_failure_state()
 {
     using namespace maa::ios::wifi;
     const Bytes salt(16, 0x11);
-    SrpClient client("Pair-Setup", "123456", "1");
-    SrpServer server("Pair-Setup", "123456", "2");
+    SrpClient client("Pair-Setup", "123456", "a");
+    SrpServer server("Pair-Setup", "123456", "B");
     std::string error;
     require(server.initialize(salt, error), "SRP server initializes");
     require(client.process(salt, server.server_public(), error), "SRP client derives its proof");
@@ -60,7 +60,7 @@ int main()
         record.udid = "synthetic-device";
         record.host_identifier = "synthetic-host";
         record.peer_identifier = "synthetic-peer";
-        record.host_private_key.assign(32, 1);
+        record.host_private_key.assign(32, 0xab);
         record.host_public_key.assign(32, 2);
         record.peer_public_key.assign(32, 4);
         remote::UsbPairingOptions options;

@@ -1,4 +1,5 @@
 #include "http2/Framing.h"
+#include "util/Bytes.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -23,17 +24,6 @@ void put_u32(std::vector<uint8_t>& out, uint32_t v)
     out.push_back(static_cast<uint8_t>(v >> 16));
     out.push_back(static_cast<uint8_t>(v >> 8));
     out.push_back(static_cast<uint8_t>(v));
-}
-
-uint16_t be16(const uint8_t* p)
-{
-    return static_cast<uint16_t>(p[0] << 8 | p[1]);
-}
-
-uint32_t be32(const uint8_t* p)
-{
-    return static_cast<uint32_t>(p[0]) << 24 | static_cast<uint32_t>(p[1]) << 16 | static_cast<uint32_t>(p[2]) << 8
-           | static_cast<uint32_t>(p[3]);
 }
 
 std::string hex32(uint32_t v)
@@ -174,7 +164,7 @@ Status parse_frame(std::span<const uint8_t> buf, Frame& out, std::size_t& consum
     }
     out.type = buf[3];
     out.flags = buf[4];
-    out.stream_id = be32(buf.data() + 5) & kStreamIdMask;
+    out.stream_id = util::read_be32(buf.data() + 5) & kStreamIdMask;
     out.payload.assign(buf.begin() + static_cast<std::ptrdiff_t>(kFrameHeaderSize), buf.begin() + static_cast<std::ptrdiff_t>(total));
     consumed = total;
     return Status::Ok;
@@ -223,8 +213,8 @@ bool parse_settings(const Frame& f, std::vector<std::pair<uint16_t, uint32_t>>& 
         return false;
     }
     for (std::size_t i = 0; i + 6 <= f.payload.size(); i += 6) {
-        const auto id = be16(f.payload.data() + i);
-        const auto value = be32(f.payload.data() + i + 2);
+        const auto id = util::read_be16(f.payload.data() + i);
+        const auto value = util::read_be32(f.payload.data() + i + 2);
         if (id == kSettingInitialWindowSize && value > kMaxWindowSize) {
             err = "SETTINGS_INITIAL_WINDOW_SIZE exceeds 2^31 - 1";
             return false;
@@ -244,7 +234,7 @@ bool parse_window_update(const Frame& f, uint32_t& increment, std::string& err)
         err = "WINDOW_UPDATE payload must be 4 bytes; got " + std::to_string(f.payload.size());
         return false;
     }
-    increment = be32(f.payload.data()) & kStreamIdMask;
+    increment = util::read_be32(f.payload.data()) & kStreamIdMask;
     if (increment == 0) {
         err = "WINDOW_UPDATE increment must be nonzero";
         return false;
@@ -258,8 +248,8 @@ bool parse_goaway(const Frame& f, GoAway& out, std::string& err)
         err = "GOAWAY payload shorter than 8 bytes";
         return false;
     }
-    out.last_stream_id = be32(f.payload.data()) & kStreamIdMask;
-    out.error_code = be32(f.payload.data() + 4);
+    out.last_stream_id = util::read_be32(f.payload.data()) & kStreamIdMask;
+    out.error_code = util::read_be32(f.payload.data() + 4);
     out.debug_data.assign(reinterpret_cast<const char*>(f.payload.data()) + 8, f.payload.size() - 8);
     // 调试串是不可信输入，只留可打印字符，别让它把终端控制序列打出来。
     std::erase_if(out.debug_data, [](char c) {
@@ -275,7 +265,7 @@ bool parse_rst_stream(const Frame& f, uint32_t& error_code, std::string& err)
         err = "RST_STREAM payload must be 4 bytes; got " + std::to_string(f.payload.size());
         return false;
     }
-    error_code = be32(f.payload.data());
+    error_code = util::read_be32(f.payload.data());
     return true;
 }
 

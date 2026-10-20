@@ -1,4 +1,5 @@
 #include "remote/RemoteXpc.h"
+#include "util/Hex.h"
 
 #include "MaaUtils/Logger.h"
 
@@ -71,20 +72,6 @@ int64_t remaining_ms(std::chrono::steady_clock::time_point deadline)
     return left > 0 ? left : 0;
 }
 
-int nibble_value(char c)
-{
-    if (c >= '0' && c <= '9') {
-        return c - '0';
-    }
-    if (c >= 'a' && c <= 'f') {
-        return c - 'a' + 10;
-    }
-    if (c >= 'A' && c <= 'F') {
-        return c - 'A' + 10;
-    }
-    return -1;
-}
-
 } // namespace
 
 std::optional<std::array<uint8_t, 16>> parse_uuid_text(std::string_view text)
@@ -96,7 +83,7 @@ std::optional<std::array<uint8_t, 16>> parse_uuid_text(std::string_view text)
         if (c == '-') {
             continue;
         }
-        const int v = nibble_value(c);
+        const int v = util::hex_digit(c);
         if (v < 0) {
             return std::nullopt;
         }

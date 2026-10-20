@@ -1,5 +1,6 @@
 #include "ddi/Mounter.h"
 #include "ddi/DownloadInternal.h"
+#include "util/Hex.h"
 #include <algorithm>
 #include <array>
 #include <exception>
@@ -373,16 +374,6 @@ std::optional<std::vector<uint8_t>> hash_bytes(const std::vector<uint8_t>& data,
     return output;
 }
 
-std::string hex(const std::vector<uint8_t>& data)
-{
-    std::string text;
-    for (auto b : data) {
-        text += "0123456789abcdef"[b >> 4];
-        text += "0123456789abcdef"[b & 15];
-    }
-    return text;
-}
-
 std::optional<std::map<std::string, std::vector<uint8_t>>>
     load_assets(Session& s, const DownloadResult& download, const detail::Catalog& catalog, std::string& error)
 {
@@ -411,7 +402,7 @@ std::optional<std::map<std::string, std::vector<uint8_t>>>
             if (!digest) {
                 return std::nullopt;
             }
-            if (hex(*digest) != expected) {
+            if (util::hex_encode(*digest) != expected) {
                 error = "DDI install asset changed after cache validation";
                 return std::nullopt;
             }
@@ -478,7 +469,7 @@ std::optional<MountResult>
             if (!digest) {
                 return std::nullopt;
             }
-            mounted->signature_matches = hex(*digest) == expected;
+            mounted->signature_matches = util::hex_encode(*digest) == expected;
         }
         return mounted;
     }
