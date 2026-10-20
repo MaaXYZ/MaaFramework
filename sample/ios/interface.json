@@ -1,9 +1,17 @@
 {
     "interface_version": 2,
+    "languages": {
+        "zh_cn": "interface_zh.json",
+        "en_us": "interface_en.json"
+    },
     "name": "MaaFramework iOS sample",
+    "label": "$IOSSample",
+    "description": "$IOSSampleDescription",
     "controller": [
         {
             "name": "iOS",
+            "label": "$IOSController",
+            "description": "$IOSControllerDescription",
             "type": "IOS",
             "display_short_side": 720
         }
@@ -11,6 +19,8 @@
     "resource": [
         {
             "name": "iOS sample",
+            "label": "$IOSResource",
+            "description": "$IOSResourceDescription",
             "path": [
                 "resource"
             ]
@@ -19,11 +29,15 @@
     "task": [
         {
             "name": "iOS screenshot check",
+            "label": "$IOSScreenshotCheck",
+            "description": "$IOSScreenshotCheckDescription",
             "entry": "IOSCapture",
             "default_check": true
         },
         {
             "name": "Freeform Apple drawing",
+            "label": "$FreeformAppleDrawing",
+            "description": "$FreeformAppleDrawingDescription",
             "entry": "StartFreeform",
             "default_check": false
         }
