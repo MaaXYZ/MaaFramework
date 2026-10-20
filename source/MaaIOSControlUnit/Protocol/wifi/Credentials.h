@@ -10,7 +10,7 @@ inline bool validate_credential(const PairRecord& record, std::string& error)
         error = "Pairing credential must contain complete host and device identities";
         return false;
     }
-    if (record.udid.size() > 1024 || record.host_identifier.size() > 1024 || record.peer_identifier.size() > 4096
+    if (record.udid.size() > 1024 || record.host_identifier.size() > 1024 || record.peer_identifier.size() > kMaxPeerIdentifier
         || record.udid.find_first_of("\r\n") != std::string::npos || record.host_identifier.find_first_of("\r\n") != std::string::npos
         || record.peer_identifier.find_first_of("\r\n") != std::string::npos || record.udid.find('\0') != std::string::npos
         || record.host_identifier.find('\0') != std::string::npos || record.peer_identifier.find('\0') != std::string::npos) {

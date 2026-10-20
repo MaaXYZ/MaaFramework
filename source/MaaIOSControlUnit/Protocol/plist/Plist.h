@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -8,6 +9,8 @@
 
 namespace maa::ios::plist
 {
+
+inline constexpr std::size_t kMaxInput = 8u << 20;
 
 enum class Kind
 {

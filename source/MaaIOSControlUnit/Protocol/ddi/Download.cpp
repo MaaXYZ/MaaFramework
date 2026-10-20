@@ -181,7 +181,7 @@ bool check_manifest(const fs::path& directory, const detail::Catalog& catalog, c
     if (catalog.kind == Kind::Classic) {
         return true;
     }
-    const auto contents = detail::read_file(directory / "BuildManifest.plist", 8 * 1024 * 1024, error);
+    const auto contents = detail::read_file(directory / "BuildManifest.plist", plist::kMaxInput, error);
     if (!contents) {
         return false;
     }

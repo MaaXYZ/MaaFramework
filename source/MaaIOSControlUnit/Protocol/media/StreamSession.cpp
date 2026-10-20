@@ -4,6 +4,7 @@
 #include <charconv>
 #include <limits>
 #include <random>
+#include <string_view>
 
 #include "remote/Device.h"
 
@@ -14,6 +15,7 @@ namespace
 
 using namespace maa::ios;
 
+constexpr std::string_view kDisplayService = "com.apple.coredevice.displayservice";
 constexpr int64_t kAccessNetworkType = 1;
 constexpr int64_t kTransportProtocolType = 2;
 
@@ -194,10 +196,10 @@ std::unique_ptr<StreamSession> StreamSession::start(
     if (start_status != nullptr) {
         *start_status = StartStatus::NotConfirmed;
     }
-    const auto info = device.rsd().service("com.apple.coredevice.displayservice");
+    const auto info = device.rsd().service(kDisplayService);
     if (!info) {
         // 错误中同时列出实际 RSD 目录，便于区分 DDI 状态与设备/系统服务差异。
-        err = maa::ios::remote::Rsd::missing_service_message("com.apple.coredevice.displayservice", device.rsd().services());
+        err = maa::ios::remote::Rsd::missing_service_message(kDisplayService, device.rsd().services());
         return nullptr;
     }
 
@@ -243,7 +245,7 @@ std::unique_ptr<StreamSession> StreamSession::start(
         }
     }
     else if (!device.feature(
-                 "com.apple.coredevice.displayservice",
+                 kDisplayService,
                  "com.apple.coredevice.feature.startmediastream",
                  "com.apple.coredevice.action.mediastreamstart",
                  input,
@@ -294,7 +296,7 @@ bool StreamSession::stop(remote::Device& device, std::string& err, bool verbose)
     xpc::dict_set(input, "stopAll", xpc::make_bool(true));
     xpc::Value output;
     return device.feature(
-        "com.apple.coredevice.displayservice",
+        kDisplayService,
         "com.apple.coredevice.feature.stopmediastream",
         "com.apple.coredevice.action.mediastreamstop",
         input,
@@ -314,7 +316,7 @@ xpc::Value StreamSession::status(remote::Device& device, std::string& err, bool 
     auto input = xpc::make_dict();
     xpc::Value output;
     if (!device.feature(
-            "com.apple.coredevice.displayservice",
+            kDisplayService,
             "com.apple.coredevice.feature.getmediastreamserverstatus",
             "com.apple.coredevice.action.mediastreamstatus",
             input,

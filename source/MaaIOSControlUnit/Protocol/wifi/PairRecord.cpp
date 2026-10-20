@@ -148,7 +148,7 @@ std::optional<PairRecord> parse_record(std::string_view text, std::string& err)
             if (!set_text(record.peer_identifier)) {
                 return std::nullopt;
             }
-            if (record.peer_identifier.empty() || record.peer_identifier.size() > 4096) {
+            if (record.peer_identifier.empty() || record.peer_identifier.size() > kMaxPeerIdentifier) {
                 err = "Pairing record pid must be nonempty text";
                 return std::nullopt;
             }

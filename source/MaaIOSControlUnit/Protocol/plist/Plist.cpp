@@ -14,7 +14,6 @@ namespace maa::ios::plist
 namespace
 {
 constexpr int kMaxDepth = 64;
-constexpr size_t kMaxInput = 8u << 20;
 
 bool whitespace(std::string_view text)
 {

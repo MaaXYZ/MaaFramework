@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <string>
 #include <vector>
 
@@ -7,6 +8,8 @@
 
 namespace maa::ios::wifi
 {
+
+inline constexpr std::size_t kMaxPeerIdentifier = 4096;
 
 /// 一台设备的远程配对记录。
 ///
