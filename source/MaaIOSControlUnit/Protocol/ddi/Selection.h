@@ -31,7 +31,6 @@ struct Selection
 // Apple ProductVersion is numeric (e.g. "18.7.8"); a release/build label is not
 // accepted. One to three unsigned decimal components are allowed.
 std::optional<ProductVersion> parse_product_version(std::string_view text, std::string& error);
-std::optional<Kind> parse_kind(std::string_view text, std::string& error);
 std::string_view kind_name(Kind kind);
 
 // This selects a category, not a catalog asset or a supported MaaFramework feature.

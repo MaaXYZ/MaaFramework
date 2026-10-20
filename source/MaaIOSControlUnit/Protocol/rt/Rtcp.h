@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <span>
-#include <string_view>
 #include <vector>
 
 namespace maa::ios::rt
@@ -37,7 +36,7 @@ struct SenderReport
 ///
 /// RFC 3550 §6.1 公共头为 4 字节：V/RC 1 字节、PT 1 字节、length 2 字节。
 /// length 是整个 RTCP 包的 32 位字数减一，各构造函数的长度由离线用例检查。
-/// 当前产品发送 RR 等报告；厂商私有 APP（PT=204、名称 RCTL）仅保留在研究探针。
+/// 产品使用 RR 保活，并通过 PLI 请求关键帧。
 
 /// RR（RFC 3550 §6.4.2）：V=2、RC=1、PT=201、length=7，共 32 字节，
 /// 包含发送者 SSRC 和一个 24 字节接收报告块。
@@ -47,32 +46,13 @@ struct SenderReport
 /// 当前构造器将丢包比例、累计丢包、抖动、LSR 和 DLSR 写为 0，未填入实际接收统计。
 [[nodiscard]] std::vector<uint8_t> build_rr(uint32_t sender_ssrc, uint32_t media_ssrc, uint32_t ext_high);
 
-/// SR（RFC 3550 §6.4.1）：V=2、RC=0、PT=200、length=6，共 28 字节。
-/// packets/octets 是调用方发送的 RTP 包数与载荷字节数，不是接收量。
-/// 当前只接收媒体时应传入 0；NTP 和 RTP 时间戳在本构造器中固定写为 0。
-[[nodiscard]] std::vector<uint8_t> build_sr(uint32_t sender_ssrc, uint32_t packets, uint32_t octets);
-
-/// SDES（PT=202、SC=1）包含一个空 CNAME，连同 END 与对齐填充共 12 字节。
-/// 此形态用于与已观察的 RR+SDES 复合包兼容；空 CNAME 不是通用 RTCP 身份策略。
-[[nodiscard]] std::vector<uint8_t> build_sdes(uint32_t sender_ssrc);
-
-/// 构造带指定 CNAME 的 SDES，按 32 位字补齐并计算公共头长度。
-/// CNAME 项的长度字段为一个字节，调用方需保证内容不超过 255 字节。
-[[nodiscard]] std::vector<uint8_t> build_sdes_cname(uint32_t sender_ssrc, std::string_view cname);
-
 /// PLI（RFC 4585 §6.3.1，PT=206/PSFB、FMT=1、length=2）：共 12 字节，
 /// 仅含公共头、发送者 SSRC 和媒体 SSRC，没有 FCI。
 /// 表示图像数据丢失、预测参考链可能受损；是否发送帧内刷新由发送端决定，不保证返回 IDR。
 [[nodiscard]] std::vector<uint8_t> build_pli(uint32_t sender_ssrc, uint32_t media_ssrc);
 
-/// FIR（RFC 5104 §4.3.1，PT=206/PSFB、FMT=4）请求解码刷新点。
-/// 构造单项 FCI：目标 SSRC、8 位请求序号及 24 位保留零，共 20 字节，length=4。
-/// 公共媒体 SSRC 固定为 0。调用方对新请求按模 256 增加序号，重发同一请求保持序号。
-/// 媒体恢复路径使用 PLI；FIR 仅供协议探针使用。
-[[nodiscard]] std::vector<uint8_t> build_fir(uint32_t sender_ssrc, uint8_t fir_seq, uint32_t target_ssrc);
-
 /// 识别当前设备已观察到的 SR 心跳形态：至少 28 字节，开头为 81 c8（V=2、RC=1、PT=200）。
-/// 此检查不解析长度字段和报告块，不是通用 RTCP SR 校验；build_sr() 使用 RC=0，不匹配此形态。
+/// 此检查不解析长度字段和报告块，不是通用 RTCP SR 校验；RC=0 的 SR 不匹配此形态。
 /// 当前设备的 SR 与视频共用 UDP 端口，画面静止时仍可观察到 SR；上层可分别记录
 /// 媒体与心跳活动，结合超时判断会话状态，单个 SR 本身不能证明解码参考链健康。
 [[nodiscard]] bool is_rtcp_sr(std::span<const uint8_t> datagram);

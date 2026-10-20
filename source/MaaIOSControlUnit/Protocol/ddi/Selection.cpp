@@ -45,22 +45,6 @@ std::optional<ProductVersion> parse_product_version(std::string_view text, std::
     return ProductVersion { components[0], components[1], components[2] };
 }
 
-std::optional<Kind> parse_kind(std::string_view text, std::string& error)
-{
-    error.clear();
-    if (text == "classic") {
-        return Kind::Classic;
-    }
-    if (text == "personalized") {
-        return Kind::Personalized;
-    }
-    if (text == "cryptex") {
-        return Kind::Cryptex;
-    }
-    error = "DDI kind must be classic, personalized or cryptex";
-    return std::nullopt;
-}
-
 std::string_view kind_name(Kind kind)
 {
     switch (kind) {

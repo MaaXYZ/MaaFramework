@@ -66,17 +66,6 @@ int main()
         }
     }
     check(invalid_rejected, "malformed, nonnumeric and overflowing ProductVersion values are rejected");
-    bool kinds_roundtrip = true;
-    for (const auto kind : { ddi::Kind::Classic, ddi::Kind::Personalized, ddi::Kind::Cryptex }) {
-        const auto parsed = ddi::parse_kind(ddi::kind_name(kind), error);
-        if (!parsed || *parsed != kind || !error.empty()) {
-            kinds_roundtrip = false;
-        }
-    }
-    check(kinds_roundtrip, "all explicit download kinds round trip");
-    check(
-        !ddi::parse_kind("auto", error) && !error.empty() && !ddi::parse_kind("Cryptex", error),
-        "unrecognized explicit kind is rejected");
     check(ddi::select_for_version("18.7.8", error).has_value() && error.empty(), "successful selection clears a previous diagnostic");
     return failures ? 1 : 0;
 }

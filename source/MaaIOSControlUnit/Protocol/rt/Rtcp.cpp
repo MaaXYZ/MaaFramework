@@ -25,26 +25,6 @@ void put32(std::vector<uint8_t>& v, uint32_t x)
     v.push_back(static_cast<uint8_t>(x));
 }
 
-/// 构造 SDES 的 SSRC、CNAME 和 END，补齐到 32 位字后写入公共头长度。
-std::vector<uint8_t> sdes_with_cname(uint32_t sender_ssrc, std::string_view cname)
-{
-    std::vector<uint8_t> body;
-    put32(body, sender_ssrc);
-    body.push_back(1); // CNAME
-    body.push_back(static_cast<uint8_t>(cname.size()));
-    body.insert(body.end(), cname.begin(), cname.end());
-    body.push_back(0); // END
-    while (body.size() % 4 != 0) {
-        body.push_back(0);
-    }
-    std::vector<uint8_t> v;
-    v.push_back(0x81); // V=2, SC=1
-    v.push_back(202);
-    put16(v, static_cast<uint16_t>(body.size() / 4));
-    v.insert(v.end(), body.begin(), body.end());
-    return v;
-}
-
 } // namespace
 
 bool parse_sender_reports(std::span<const uint8_t> datagram, std::vector<SenderReport>& reports)
@@ -109,31 +89,6 @@ std::vector<uint8_t> build_rr(uint32_t sender_ssrc, uint32_t media_ssrc, uint32_
     return v;
 }
 
-std::vector<uint8_t> build_sr(uint32_t sender_ssrc, uint32_t packets, uint32_t octets)
-{
-    std::vector<uint8_t> v;
-    v.push_back(0x80); // V=2, RC=0
-    v.push_back(200);  // PT = SR
-    put16(v, 6);       // 头之后还有 6 个字
-    put32(v, sender_ssrc);
-    put32(v, 0);       // NTP 时间戳高位，当前固定为 0
-    put32(v, 0);       // NTP 低位
-    put32(v, 0);       // RTP 时间戳
-    put32(v, packets);
-    put32(v, octets);
-    return v;
-}
-
-std::vector<uint8_t> build_sdes(uint32_t sender_ssrc)
-{
-    return sdes_with_cname(sender_ssrc, { });
-}
-
-std::vector<uint8_t> build_sdes_cname(uint32_t sender_ssrc, std::string_view cname)
-{
-    return sdes_with_cname(sender_ssrc, cname);
-}
-
 bool is_rtcp_sr(std::span<const uint8_t> datagram)
 {
     return datagram.size() >= 28 && datagram[0] == 0x81 && datagram[1] == 0xc8;
@@ -147,19 +102,6 @@ std::vector<uint8_t> build_pli(uint32_t sender_ssrc, uint32_t media_ssrc)
     put16(v, 2);       // 头之后两个字：发送者 SSRC + 媒体 SSRC
     put32(v, sender_ssrc);
     put32(v, media_ssrc);
-    return v;
-}
-
-std::vector<uint8_t> build_fir(uint32_t sender_ssrc, uint8_t fir_seq, uint32_t target_ssrc)
-{
-    std::vector<uint8_t> v;
-    v.push_back(0x84);                              // V=2, FMT=4（FIR）
-    v.push_back(206);                               // PT = PSFB
-    put16(v, 4);                                    // RFC 5104：length=2+2*N，单项 FCI 时 N=1
-    put32(v, sender_ssrc);
-    put32(v, 0);                                    // FIR 的公共媒体 SSRC 不使用，固定为 0
-    put32(v, target_ssrc);
-    put32(v, static_cast<uint32_t>(fir_seq) << 24); // 8 位请求序号 + 24 位保留零
     return v;
 }
 

@@ -39,11 +39,7 @@ public:
     PacketTunnel(const PacketTunnel&) = delete;
     PacketTunnel& operator=(const PacketTunnel&) = delete;
 
-    /// Wi-Fi 那条路：连接是普通的局域网 TCP，加密是 TLS-PSK（密钥来自 pair-verify），
-    /// 之后的 CDTunnel 控制帧与 USB 那条**一模一样**，所以复用同一个对象、同一套
-    /// 隧道内用户态栈。
-    static std::optional<PacketTunnel> establish_psk(Socket&& sock, const std::vector<uint8_t>& psk, std::string& err);
-
+    /// 经 usbmux 的代理端口建立隧道，握手共用调用方的绝对预算。
     static std::optional<PacketTunnel> establish_bounded(
         uint32_t device_id,
         uint16_t proxy_port,
@@ -51,6 +47,7 @@ public:
         bool use_tls,
         const IoBudget& budget,
         std::string& err);
+    /// 经 pair-verify 得到的 PSK 建立 Wi-Fi 隧道，握手共用调用方的绝对预算。
     static std::optional<PacketTunnel>
         establish_psk_bounded(Socket&& sock, const std::vector<uint8_t>& psk, const IoBudget& budget, std::string& err);
 

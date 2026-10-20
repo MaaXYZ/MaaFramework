@@ -91,7 +91,11 @@ void tunnel_tls_failures(Check check)
         std::promise<void> stop;
         auto release = stop.get_future();
         auto peer = std::async(std::launch::async, [&] { return tunnel_failure_peer(server, end, release); });
-        auto tunnel = PacketTunnel::establish_psk(std::move(client), { move_psk.begin(), move_psk.end() }, err);
+        auto tunnel = PacketTunnel::establish_psk_bounded(
+            std::move(client),
+            { move_psk.begin(), move_psk.end() },
+            IoBudget(StartupOptions { std::chrono::milliseconds(2000), { } }),
+            err);
         check(tunnel.has_value(), "local PSK peer completes PacketTunnel handshake");
         if (!tunnel) {
             stop.set_value();

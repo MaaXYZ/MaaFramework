@@ -122,20 +122,6 @@ bool PacketTunnel::read_all(void* data, size_t len, std::string& err)
     return sock_.read_exact(data, len, err);
 }
 
-std::optional<PacketTunnel> PacketTunnel::establish_psk(Socket&& sock, const std::vector<uint8_t>& psk, std::string& err)
-{
-    PacketTunnel t;
-    t.sock_ = std::move(sock);
-    // PSK 要在 CDTunnel 控制帧之前：明文发过去会被立刻关掉，和 lockdown 那条一样。
-    if (!t.tls_.handshake_psk(t.sock_, psk, err)) {
-        return std::nullopt;
-    }
-    if (!t.client_handshake(err)) {
-        return std::nullopt;
-    }
-    return t;
-}
-
 std::optional<PacketTunnel> PacketTunnel::establish_bounded(
     uint32_t device_id,
     uint16_t proxy_port,

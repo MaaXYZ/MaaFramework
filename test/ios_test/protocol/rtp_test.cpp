@@ -730,73 +730,29 @@ void test_rtcp_shapes()
     // 头 4 + 发送者 SSRC 4 + 报告块 24 = 32，与长度字段自洽：7 个字 + 首字 = 8 字。
     check(rr.size() == std::size_t(4 + 7 * 4), "长度字段 7 与真实字节数自洽");
 
-    const auto sr = maa::ios::rt::build_sr(our, 0, 0);
-    check(sr.size() == 28, "SR 一共 28 字节: " + std::to_string(sr.size()));
-    check(sr[0] == 0x80 && sr[1] == 200, "SR 首两字节 0x80 PT=200（RC=0）");
-    check((sr[2] << 8 | sr[3]) == 6, "SR 长度字段=6");
-    check(sr.size() == std::size_t(4 + 6 * 4), "SR 长度字段与真实字节数自洽");
-
-    const auto sdes = maa::ios::rt::build_sdes(our);
-    check(sdes.size() == 12, "空 CNAME 的 SDES 是 12 字节: " + std::to_string(sdes.size()));
-    check(sdes[0] == 0x81 && sdes[1] == 202, "SDES 首两字节 0x81 PT=202");
-    check((sdes[2] << 8 | sdes[3]) == 2, "SDES 长度字段=2");
-    // RR + 空 CNAME 的复合包正是苹果音频腿实测那一种，44 字节一个不多一个不少。
-    // 这条是"我们对苹果包形状的对齐"里唯一能离线验的部分。
-    std::vector<uint8_t> compound = rr;
-    compound.insert(compound.end(), sdes.begin(), sdes.end());
-    check(compound.size() == 44, "RR+SDES 复合包 = 44 字节（苹果实测的那个形状）");
-
-    const auto named = maa::ios::rt::build_sdes_cname(our, "MaaIOS");
-    check(named.size() % 4 == 0, "带实义 CNAME 的 SDES 补齐到 4 字节边界");
-    check((named[2] << 8 | named[3]) == named.size() / 4 - 1, "它的长度字段按真实字数走（不是空 CNAME 那档的 2）");
-    check(named.size() == 20, "CNAME=\"MaaIOS\" 时 SDES = 20 字节: " + std::to_string(named.size()));
-
-    // 设备的 SR 和视频共用一个 UDP 端口，靠开头两字节分。判错会把每秒那个心跳记成视频包，
-    // "画面静止"和"流死了"就分不开了。
-    // 注意这一位认的是**设备那条心跳**：它带 RC=1，所以首字节是 0x81；我们自己发的 SR 是
-    // RC=0（首字节 0x80，上面 `build_sr` 的形状）。两者不是同一个字节串，别混用。
+    // SR 的 RC=0 形态不匹配设备心跳分类。
+    std::vector<uint8_t> sr(28, 0);
+    sr[0] = 0x80;
+    sr[1] = 200;
+    sr[3] = 6;
     std::vector<uint8_t> dev_sr(28, 0);
     dev_sr[0] = 0x81;
     dev_sr[1] = 0xc8; // PT=200
     check(maa::ios::rt::is_rtcp_sr(dev_sr), "0x81 0xc8 且 >=28 字节的认成 SR（设备那条心跳）");
-    check(!maa::ios::rt::is_rtcp_sr(sr), "我们自己 RC=0 的 SR（0x80 0xc8）不认成设备心跳");
+    check(!maa::ios::rt::is_rtcp_sr(sr), "RC=0 的 SR（0x80 0xc8）不认成设备心跳");
     const auto pkt = packet(1, 0, true, single(1, { 0x01, 0x02 }));
     check(!maa::ios::rt::is_rtcp_sr(pkt), "RTP 视频包不认成 SR");
     check(!maa::ios::rt::is_rtcp_sr(std::span<const uint8_t>(rr)), "RR(PT=201) 不认成 SR");
     const std::vector<uint8_t> tiny = { 0x81, 0xc8 };
     check(!maa::ios::rt::is_rtcp_sr(tiny), "短于 28 字节的 0x81 0xc8 不认成 SR（不越界读）");
 
-    // 关键帧请求的两种包。它们的长度字段以前从来没被钉过，而"设备不理 PLI"这个结论
-    // 正是建立在形状未经核对的包上——先把形状钉死，再去问设备。
+    // 校验 PLI 的公共头、包长和 SSRC 字节序。
     const auto pli = maa::ios::rt::build_pli(our, media);
     check(pli.size() == 12, "PLI 是 12 字节: " + std::to_string(pli.size()));
     check(pli[0] == 0x81 && pli[1] == 206, "PLI 首两字节 0x81 PT=206（PSFB）/FMT=1");
     check((pli[2] << 8 | pli[3]) == 2, "PLI 长度字段=2");
     check(pli.size() == std::size_t(4 + 2 * 4), "PLI 长度字段与真实字节数自洽");
     check(pli[4] == 0x11 && pli[11] == 0x88, "PLI 后面是发送者 SSRC + 媒体 SSRC");
-
-    // RFC 5104 §4.3.1.1：单项 FCI 为目标 SSRC、8 位请求序号和 24 位保留位。
-    // 公共媒体 SSRC 为零；整个包 20 字节，length=2+2*N=4。
-    for (const uint8_t seq : { uint8_t(0), uint8_t(7), uint8_t(255) }) {
-        const std::vector<uint8_t> expected = {
-            0x84, 0xce, 0x00, 0x04, 0x11, 0x22, 0x33, 0x44, 0x00, 0x00, 0x00, 0x00, 0x55, 0x66, 0x77, 0x88, seq, 0x00, 0x00, 0x00,
-        };
-        const auto fir = maa::ios::rt::build_fir(our, seq, media);
-        check(fir == expected, "FIR 与 RFC 5104 单项 FCI 字节序列一致，序号=" + std::to_string(seq));
-        check(fir.size() == 20, "FIR 单项 FCI 共 20 字节");
-        if (fir.size() < 20) {
-            continue;
-        }
-        check(fir[0] == 0x84 && fir[1] == 206, "FIR 使用 FMT=4、PT=206（PSFB）");
-        const auto length = static_cast<std::size_t>(fir[2] << 8 | fir[3]);
-        check(length == 4 && fir.size() == (length + 1) * 4, "FIR 长度字段为 4，与真实包长一致");
-        check(
-            std::all_of(fir.begin() + 8, fir.begin() + 12, [](uint8_t b) { return b == 0; }),
-            "FIR 公共媒体 SSRC 为 0，不用于承载请求序号");
-        check(fir[12] == 0x55 && fir[13] == 0x66 && fir[14] == 0x77 && fir[15] == 0x88, "FIR FCI 目标 SSRC 在偏移 12，按网络字节序编码");
-        check(fir[16] == seq && fir[17] == 0 && fir[18] == 0 && fir[19] == 0, "FIR FCI 请求序号在偏移 16，随后 24 位保留位为 0");
-        check(maa::ios::rt::build_fir(our, seq, media) == fir, "FIR 重发保持调用方给定的请求序号和字节序列");
-    }
 }
 
 void test_sender_reports()
@@ -807,10 +763,10 @@ void test_sender_reports()
             bytes[at + i] = uint8_t(value >> (24 - i * 8));
         }
     };
-    auto sr = maa::ios::rt::build_sr(0xb6d5b756, 364, 401673);
-    write32(sr, 8, 0xee5fe7ad);
-    write32(sr, 12, 0xce849000);
-    write32(sr, 16, 0x57fb);
+    const std::vector<uint8_t> sr = {
+        0x80, 0xc8, 0x00, 0x06, 0xb6, 0xd5, 0xb7, 0x56, 0xee, 0x5f, 0xe7, 0xad, 0xce, 0x84,
+        0x90, 0x00, 0x00, 0x00, 0x57, 0xfb, 0x00, 0x00, 0x01, 0x6c, 0x00, 0x06, 0x21, 0x09,
+    };
     const maa::ios::rt::SenderReport expected { 0xb6d5b756, 0xee5fe7ad, 0xce849000, 0x57fb, 364, 401673 };
     std::vector<maa::ios::rt::SenderReport> reports;
     check(
@@ -822,7 +778,7 @@ void test_sender_reports()
     counted[0] = 0x81;
     counted[3] = 12;
     counted.resize(52, 0);
-    auto sdes = maa::ios::rt::build_sdes(expected.ssrc);
+    const std::vector<uint8_t> sdes = { 0x81, 0xca, 0, 2, 0xb6, 0xd5, 0xb7, 0x56, 1, 0, 0, 0 };
     auto compound = counted;
     compound.insert(compound.end(), sdes.begin(), sdes.end());
     check(
@@ -838,8 +794,11 @@ void test_sender_reports()
             && reports[1].rtp_timestamp == 0xfffffff0,
         "复合包内多个SR保留各自时钟和顺序");
     check(maa::ios::rt::parse_sender_reports(maa::ios::rt::build_rr(1, 2, 3), reports) && reports.empty(), "有效RR没有SR，清空旧锚点");
+    auto zero_ntp = sr;
+    write32(zero_ntp, 4, 9);
+    std::fill(zero_ntp.begin() + 8, zero_ntp.end(), 0);
     check(
-        maa::ios::rt::parse_sender_reports(maa::ios::rt::build_sr(9, 0, 0), reports) && reports.size() == 1 && reports[0].ntp_seconds == 0
+        maa::ios::rt::parse_sender_reports(zero_ntp, reports) && reports.size() == 1 && reports[0].ntp_seconds == 0
             && reports[0].ntp_fraction == 0,
         "全零NTP保持原值，解析层不伪造时间");
 
