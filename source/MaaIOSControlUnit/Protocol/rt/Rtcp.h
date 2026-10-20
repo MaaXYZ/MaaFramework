@@ -21,6 +21,9 @@ struct SenderReport
     bool operator==(const SenderReport&) const = default;
 };
 
+/// Validates RTCP boundaries, padding and SR/RR report blocks without collecting reports.
+[[nodiscard]] bool validate_rtcp(std::span<const uint8_t> datagram);
+
 /// 从单个或复合 RTCP 数据报提取全部 SR。校验公共头、声明长度、末包填充，
 /// 以及 SR/RR 的固定字段与 RC 个 24 字节报告块；其他 PT 仅校验帧边界。
 /// 允许独立 SR 及 profile 扩展，不要求完整会话的 SDES/CNAME 策略。

@@ -812,15 +812,24 @@ void test_sender_reports()
     extended.insert(extended.end(), { 1, 2, 3, 4 });
     check(maa::ios::rt::parse_sender_reports(extended, reports) && reports == std::vector { expected }, "允许SR末尾profile扩展");
 
+    check(
+        maa::ios::rt::validate_rtcp(sr) && maa::ios::rt::validate_rtcp(compound)
+            && maa::ios::rt::validate_rtcp(maa::ios::rt::build_rr(1, 2, 3)) && maa::ios::rt::validate_rtcp(padded)
+            && maa::ios::rt::validate_rtcp(extended),
+        "validation-only path accepts the same SR, compound, RR, padding and profile extensions");
     const auto reject = [&](const std::vector<uint8_t>& bytes, const std::string& why) {
         reports = { expected };
-        check(!maa::ios::rt::parse_sender_reports(bytes, reports) && reports == std::vector { expected }, why + "；失败保留原输出");
+        check(
+            !maa::ios::rt::validate_rtcp(bytes) && !maa::ios::rt::parse_sender_reports(bytes, reports)
+                && reports == std::vector { expected },
+            why + "；失败保留原输出");
     };
     bool truncations_rejected = true;
     for (std::size_t size = 0; size < sr.size(); ++size) {
         reports = { expected };
-        truncations_rejected &=
-            !maa::ios::rt::parse_sender_reports(std::span<const uint8_t>(sr).first(size), reports) && reports == std::vector { expected };
+        truncations_rejected &= !maa::ios::rt::validate_rtcp(std::span<const uint8_t>(sr).first(size))
+                                && !maa::ios::rt::parse_sender_reports(std::span<const uint8_t>(sr).first(size), reports)
+                                && reports == std::vector { expected };
     }
     check(truncations_rejected, "SR每个截断位置均拒绝，且不交付部分锚点");
     auto bad = sr;

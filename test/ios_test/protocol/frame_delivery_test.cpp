@@ -211,6 +211,19 @@ void decoded_frames()
     check(
         serial && first.width == 64 && first.height == 64 && first.geometry && first.geometry->orientation == "portrait",
         "display metadata travels with decoded pixels");
+    Bytes heartbeat(28, 0);
+    heartbeat[0] = 0x81;
+    heartbeat[1] = 0xc8;
+    put32(heartbeat, 20, 17);
+    put32(heartbeat, 24, 1700);
+    check(
+        maa::ios::rt::is_rtcp_sr(heartbeat) && !maa::ios::rt::validate_rtcp(heartbeat),
+        "device heartbeat classification remains distinct from strict RTCP validation");
+    script.enqueue(heartbeat);
+    check(
+        wait([&] { return pump->stats().dev_sent_packets == 17 && pump->stats().dev_sent_octets == 1700; }),
+        "device heartbeat counters are retained without collected sender reports");
+    check(pump->serial() == serial, "heartbeat does not publish a video frame");
     orientation = 90;
     maa::ios::Frame cached;
     check(
