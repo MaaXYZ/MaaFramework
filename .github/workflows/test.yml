@@ -117,7 +117,7 @@ jobs:
 
             - name: Run iOS offline tests
               shell: bash
-              run: ctest --test-dir build -C Debug -R '^(maa_ios_|MaaIOS)' --output-on-failure --no-tests=error --timeout 60
+              run: ctest --test-dir build -C Debug -R '^MaaIOS' --output-on-failure --no-tests=error --timeout 60
 
             - name: Install
               shell: bash
@@ -343,7 +343,7 @@ jobs:
 
             - name: Run iOS offline tests
               shell: bash
-              run: ctest --test-dir build -C Debug -R '^(maa_ios_|MaaIOS)' --output-on-failure --no-tests=error --timeout 60
+              run: ctest --test-dir build -C Debug -R '^MaaIOS' --output-on-failure --no-tests=error --timeout 60
 
             - name: Install
               shell: bash
@@ -505,7 +505,7 @@ jobs:
 
             - name: Run iOS offline tests
               shell: bash
-              run: ctest --test-dir build -C Debug -R '^(maa_ios_|MaaIOS)' --output-on-failure --no-tests=error --timeout 60
+              run: ctest --test-dir build -C Debug -R '^MaaIOS' --output-on-failure --no-tests=error --timeout 60
 
             - name: Install
               shell: bash
