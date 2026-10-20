@@ -33,48 +33,7 @@ uint16_t get16(const uint8_t* p)
     return static_cast<uint16_t>(p[0] << 8 | p[1]);
 }
 
-uint32_t fold_sum(uint32_t sum, const uint8_t* p, std::size_t n)
-{
-    for (std::size_t i = 0; i + 1 < n; i += 2) {
-        sum += get16(p + i);
-    }
-    if (n & 1) {
-        sum += static_cast<uint32_t>(p[n - 1]) << 8;
-    }
-    return sum;
-}
-
-uint16_t finish_sum(uint32_t sum)
-{
-    while (sum >> 16) {
-        sum = (sum & 0xFFFF) + (sum >> 16);
-    }
-    return static_cast<uint16_t>(~sum & 0xFFFF);
-}
-
 } // namespace
-
-uint16_t l4_checksum(const uint8_t src[16], const uint8_t dst[16], const uint8_t* l4, std::size_t len, uint8_t next_header)
-{
-    uint32_t sum = 0;
-    sum = fold_sum(sum, src, 16);
-    sum = fold_sum(sum, dst, 16);
-    // IPv6 伪头包含 4 字节上层长度、3 字节零和 next header；与 L4 数据
-    // 连续累加，最后统一折叠进位并取反。
-    const uint8_t pseudo[8] = {
-        static_cast<uint8_t>(len >> 24),
-        static_cast<uint8_t>(len >> 16),
-        static_cast<uint8_t>(len >> 8),
-        static_cast<uint8_t>(len),
-        0,
-        0,
-        0,
-        next_header,
-    };
-    sum = fold_sum(sum, pseudo, sizeof(pseudo));
-    sum = fold_sum(sum, l4, len);
-    return finish_sum(sum);
-}
 
 struct Stack::Impl
 {
@@ -228,9 +187,6 @@ void Stack::stop_pump()
     if (!impl_->registered) {
         return;
     }
-    if (net_debug_) {
-        LogDebug << "tunnel: local shutdown requested";
-    }
     stopping_ = true;
     {
         std::lock_guard lock(err_mu_);
@@ -272,10 +228,6 @@ bool Stack::enqueue(std::vector<uint8_t> packet)
     if (stopping_ || packet.size() < 40) {
         return false;
     }
-    const uint32_t label = flow_label_;
-    packet[1] = static_cast<uint8_t>((packet[1] & 0xf0) | (label >> 16));
-    packet[2] = static_cast<uint8_t>(label >> 8);
-    packet[3] = static_cast<uint8_t>(label);
     std::lock_guard lock(impl_->queue_mutex);
     constexpr size_t max_bytes = 4u << 20;
     // 限制待写入隧道的总字节数；慢隧道不能让核心线程持续积压包或等待 I/O。
@@ -285,14 +237,6 @@ bool Stack::enqueue(std::vector<uint8_t> packet)
     const auto size = packet.size();
     impl_->outgoing.push_back(std::move(packet));
     impl_->queued_bytes += size;
-    return true;
-}
-
-bool Stack::send(const std::vector<uint8_t>& packet, std::string& err)
-{
-    if (!pumping_ || !enqueue(packet)) {
-        return err = "Tunnel stopped or send queue full", false;
-    }
     return true;
 }
 
@@ -335,13 +279,8 @@ void Stack::pump_loop()
             if (packet.size() < 40 || packet.size() > 65535 || packet[0] >> 4 != 6) {
                 continue;
             }
-            // 这里只记录直接位于 IPv6 头之后的协议诊断；完整扩展头、TCP、UDP
-            // 和 ICMP 处理仍交给 lwIP，诊断计数不会替代协议校验或拦截输入。
+            // 记录直接位于 IPv6 头之后的 ICMP 诊断；扩展头及协议校验交给 lwIP。
             const uint8_t protocol = packet[6];
-            if ((protocol == 6 || protocol == 17) && packet.size() >= 48
-                && l4_checksum(packet.data() + 8, packet.data() + 24, packet.data() + 40, packet.size() - 40, protocol) != 0) {
-                ++bad_checksums_;
-            }
             if (protocol == 58 && packet.size() >= 44) {
                 observe_icmpv6(packet.data() + 40, packet.size() - 40);
             }
@@ -368,34 +307,10 @@ void Stack::pump_loop()
             std::lock_guard lock(err_mu_);
             pump_err_ = error.empty() ? "Tunnel read failed" : error;
         }
-        // 后续端点可能只报告 lwIP 已关闭；诊断模式先保留隧道的首个错误。
-        if (net_debug_) {
-            LogWarn << std::format("tunnel: pump failed: {}", pump_error());
-        }
         stopping_ = true;
         fail_endpoints(pump_error());
     }
     pumping_ = false;
-}
-
-std::vector<uint8_t> Stack::wrap(const std::vector<uint8_t>& l4, uint8_t protocol) const
-{
-    std::vector<uint8_t> packet(40 + l4.size());
-    packet[0] = 0x60;
-    packet[4] = static_cast<uint8_t>(l4.size() >> 8);
-    packet[5] = static_cast<uint8_t>(l4.size());
-    packet[6] = protocol;
-    packet[7] = 64;
-    std::copy(local_addr_.begin(), local_addr_.end(), packet.begin() + 8);
-    std::copy(peer_addr_.begin(), peer_addr_.end(), packet.begin() + 24);
-    std::copy(l4.begin(), l4.end(), packet.begin() + 40);
-    return packet;
-}
-
-std::string Stack::icmp_last() const
-{
-    std::lock_guard<std::mutex> lock(icmp_mu_);
-    return icmp_last_;
 }
 
 /// 记录 ICMPv6 头及错误消息引用的内层 IPv6 包，供诊断对端回复及触发报文。
@@ -445,14 +360,6 @@ void Stack::observe_icmpv6(const uint8_t* icmp, std::size_t len)
             const uint16_t dp = get16(inner + 42);
             line += " ports " + std::to_string(sp) + "->" + std::to_string(dp);
         }
-    }
-    {
-        std::lock_guard<std::mutex> lock(icmp_mu_);
-        ++icmp_seen_;
-        if (type == 129) {
-            ++echo_replies_;
-        }
-        icmp_last_ = line;
     }
     LogDebug << std::format("<- {}", line);
 }

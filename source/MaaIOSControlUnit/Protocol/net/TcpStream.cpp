@@ -91,7 +91,6 @@ struct TcpStream::Impl
                 catch (const std::bad_alloc&) {
                     return ERR_MEM;
                 }
-                self.stack.note_tcp_recv(p->tot_len);
                 pbuf_free(p);
                 // 应用取走字节后才调用 tcp_recved；慢读者通过接收窗口形成背压。
             }
