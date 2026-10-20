@@ -67,25 +67,6 @@ public:
         /// 超过当前硬件适配 2 字节 NAL 长度上限的帧。
         /// 软件解码消耗更多 CPU，硬件解码遇到过大帧时可能切换后端或丢帧恢复。
         bool use_hardware = false;
-
-        /// 以下 debug 选项仅供探针，生产默认关闭。
-        /// 在拆包前丢弃第 N 个视频包，确定性地产生序号缺口；0 禁用，SR 不计入序号。
-        int debug_drop_nth_packet = 0;
-        /// 禁止发送 PLI。结合丢包注入及禁用静默重建，可单独验证 stall_restart_ms
-        /// 等待超时后的恢复路径。
-        bool debug_suppress_pli = false;
-        /// 第 M 个视频包后忽略视频，但仍处理 SR，用于验证只有心跳时的恢复判断。
-        int debug_ignore_video_after = 0;
-        /// 将接下来 N 个用于修复丢包的关键帧 AU 判为解码失败，不交给解码器。
-        /// 使用进入回调时的等待状态，排除会话首帧，验证恢复标记只能在成功解码后清除。
-        int debug_fail_decode_of_keyframe = 0;
-        /// 与上项配合时，对所有关键帧注入失败，包括启动首帧；用于验证持续无输出时的降级。
-        bool debug_fail_any_keyframe = false;
-        /// 首次注入解码失败后禁用后续 PLI，避免下一次正常 IDR 恢复掩盖后备重建路径。
-        bool debug_suppress_pli_after_fail = false;
-        /// 仅供无反馈到期实验：禁止周期 RR，默认 false 保留生产保活。
-        /// 关闭自动重建不会关闭 RR；探针必须单独选择此项。
-        bool debug_suppress_rr = false;
     };
 
     struct Stats
@@ -123,15 +104,8 @@ public:
         /// PLI 发送成功次数，配合关键帧、等待丢弃及输出计数观察恢复。
         /// 单独的发送计数不能证明设备响应。
         uint64_t pli_sent = 0;
-        /// 丢包后等待 IDR 超时触发的会话重建次数。stall_probe 可隔离这条恢复路径。
+        /// 丢包后等待 IDR 超时触发的会话重建次数。
         uint64_t stall_restarts = 0;
-        /// 被测试选项禁止发送的 PLI 数，用于确认请求分支确实执行。
-        uint64_t pli_suppressed = 0;
-        /// 探针主动丢包的单调时钟时刻（毫秒），用于测量后备重建延迟。
-        uint64_t debug_dropped_at_ms = 0;
-        /// 探针注入的解码失败累计数。探针在计数增长时保存快照，按失败之后的增量
-        /// 判断恢复行为，避免混入失败前的正常等待。
-        uint64_t forced_decode_failures = 0;
         /// 当前会话开始时本地 packets 的快照，用于扣除旧会话累计值。
         /// 该计数仍包含 SR，不能直接与设备视频发送计数相减。
         uint64_t session_packets_base = 0;
@@ -154,9 +128,6 @@ public:
 
     /// 等待真实解码像素帧。停止、不可用或超时返回 false。
     bool wait_ready(int timeout_ms);
-    /// 复制导致 worker 永久终止的错误。
-    /// 可恢复的视频不可用标记不在此接口中；不会借用 worker 的字符串。
-    [[nodiscard]] std::string capture_error() const;
 
     /// 通知媒体泵用户刚操作或请求新画面。流仍有新数据时不处理；静默超过可疑
     /// 阈值时查询设备，超过直接重建阈值时重建会话。当前会话申请 20 秒租期，
@@ -180,12 +151,6 @@ public:
 
     [[nodiscard]] uint64_t serial() const;
     [[nodiscard]] Stats stats() const;
-    /// 协商到的视频 payload type，HID 之外的调试用得上；重建或失败时为 0。
-    /// getter 只读取 mutex_ 保护的标量快照，不访问 worker 正在替换的会话。
-    [[nodiscard]] uint8_t payload_type() const;
-    [[nodiscard]] uint16_t receiver_port() const;
-    /// 最近已解码像素帧的编码尺寸；还没有有效尺寸时为 0。
-    void size(int& width, int& height) const;
 
 private:
     FramePump(maa::ios::remote::Device& device, Options options, bool verbose);
@@ -202,13 +167,11 @@ private:
     bool worker_running_ = false;
     /// 仅由启动线程/worker 访问；已接受但不可用的答复使本泵停止重试及续期。
     bool negotiation_invalid_ = false;
-    std::string terminal_error_;
 
     /// 解析器仅由后台线程访问，每次重建会话时替换。
     std::unique_ptr<AnnexBParser> parser_;
 
-    /// 下列帧、尺寸、会话信息及统计由 mutex_ 保护；原子状态另行声明。
-    /// 尺寸保留独立快照，查询宽高不需要复制像素。
+    /// 下列帧及统计由 mutex_ 保护；原子状态另行声明。
     mutable std::mutex mutex_;
     std::condition_variable cv_;
     Frame frame_;
@@ -219,11 +182,6 @@ private:
     /// 救流进行中：决定去问设备/重起时置位，新会话第一帧交出来时清掉。
     std::atomic<bool> reviving_ { false };
     bool stopping_ = false;
-    int width_ = 0;
-    int height_ = 0;
-    /// session_ 只由 worker 管理；外部读取这两个快照，避免重建时借用已销毁对象。
-    uint8_t payload_type_ = 0;
-    uint16_t receiver_port_ = 0;
     Stats stats_;
     /// 最近收到数据报的时刻，用于检测完全无包；不能仅依赖序号缺口。
     uint64_t last_packet_ms_ = 0;
@@ -240,8 +198,6 @@ private:
     /// 当前"等关键帧"的成因是不是丢包。只有它才走后备重起；超大 NAL 那种成因有自己的
     /// 上限与降级，不能被通用判据抢走（见 FramePump.cpp 的 stalled 那段）。
     bool awaiting_idr_from_loss_ = false;
-    /// 测试选项首次注入失败后禁止 PLI 的状态，仅在工作线程访问。
-    bool pli_off_ = false;
     /// 最近成功输出关键帧，或解码模式通过参数/语法/时间校验的 IDR 时刻。
     /// 启动和后备重建前以当前时刻建立等待基线；不完整或校验失败的关键帧
     /// 不更新它，避免持续失败无限延后恢复。

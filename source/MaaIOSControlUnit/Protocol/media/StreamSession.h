@@ -32,15 +32,10 @@ public:
         ///
         /// nullopt 表示省略整个键，供协议探针使用；正常起流应提供此参数。
         std::optional<uint32_t> timeout_seconds = 3600;
-        /// 可选的 sessionEventChannel，值为 16 字节 XPC UUID；未提供或为空时省略。
-        /// 其事件通道的注册与对端语义尚未确认，不能把一个 UUID 本身当作保活机制。
-        std::optional<std::vector<uint8_t>> session_event_channel;
         /// 申报的客户端能力位掩码，默认 140 来自可用请求的观测。
         /// 设备回复的 supportedFeatures=972 是设备能力，不能直接当作客户端应申报的值。
         /// 各位的含义尚未完整确认。
         uint64_t client_supported_features = 140;
-        /// avcMediaStreamOptionClientSessionID 的 16 字节 XPC UUID 数据；为空时为本次请求生成。
-        std::vector<uint8_t> client_session_uuid;
         /// offer 参数。start() 为本次协商生成 session_id 和 call_id，覆盖传入值。
         Offer offer;
     };
@@ -174,10 +169,9 @@ private:
     StreamSession::StartStatus* start_status = nullptr);
 
 /// 组装 startmediastream 的 CoreDevice.input，不进行网络 I/O，供起流和离线协议校验使用。
-/// options 的参数按 int / string / uuid 标签包装；会话与事件通道 UUID 使用 16 字节
-/// XPC UUID 对象，不能用 UUID 文本代替。offer_bytes 原样放入 XPC Data，不转换 plist 格式。
-/// 空会话 UUID 会生成本次 ClientSessionID；
-/// 空事件通道 UUID 和 nullopt timeout 分别省略对应键。省略 timeout 在已测设备上被拒。
+/// options 的参数按 int / string / uuid 标签包装；为每次请求生成 16 字节 XPC UUID。
+/// offer_bytes 原样放入 XPC Data，不转换 plist 格式。
+/// nullopt timeout 省略对应键；省略 timeout 在已测设备上被拒。
 [[nodiscard]] maa::ios::xpc::Value build_start_request(
     const std::string& receiver_ip,
     uint16_t receiver_port,
@@ -185,8 +179,6 @@ private:
     const std::vector<uint8_t>& offer_bytes,
     uint32_t display_id,
     std::optional<uint32_t> timeout_seconds,
-    uint64_t client_supported_features,
-    const std::vector<uint8_t>& event_channel_uuid,
-    const std::vector<uint8_t>& client_session_uuid = { });
+    uint64_t client_supported_features);
 
 } // namespace maa::ios::media

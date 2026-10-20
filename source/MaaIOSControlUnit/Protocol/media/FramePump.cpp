@@ -144,11 +144,9 @@ bool FramePump::restart(std::string& err)
     /// 开始重建时标记恢复中，新会话首帧输出后清除，供调用方区分恢复和静止。
     reviving_ = true;
     {
-        // 先撤销旧会话信息，再做耗时的停流和起流 RPC；网络 I/O 不持有此锁。
+        // 网络 I/O 不持有帧状态锁。
         std::lock_guard<std::mutex> lock(mutex_);
         ready_ = false;
-        payload_type_ = 0;
-        receiver_port_ = 0;
     }
 
     if (session_ != nullptr) {
@@ -172,12 +170,9 @@ bool FramePump::restart(std::string& err)
             // 设备可能已经起流；再次请求会产生无人接收的会话。停止视频接收和
             // 续期，等待本次租期释放，不能用 stopAll 中断可能仍在播放的音频。
             negotiation_invalid_ = true;
-            video_unusable_ = true;
             {
                 std::lock_guard<std::mutex> lock(mutex_);
-                if (terminal_error_.empty()) {
-                    terminal_error_ = err;
-                }
+                video_unusable_ = true;
             }
             cv_.notify_all();
             if (worker_running_) {
@@ -188,14 +183,6 @@ bool FramePump::restart(std::string& err)
         return false;
     }
     last_packet_ms_ = now_ms();
-
-    {
-        // 会话创建成功后一次发布两个标量。session_ 仍只由起流线程/worker 使用，
-        // getter 无需借用其生命周期，也不会在 RPC 期间阻塞。
-        std::lock_guard<std::mutex> lock(mutex_);
-        payload_type_ = session_->started().payload_type;
-        receiver_port_ = session_->receiver_port();
-    }
 
     // 首次启动时 worker 尚未运行，不计入重建次数，也不输出重建提示。
     // 线程创建由 start() 统一管理。
@@ -239,24 +226,16 @@ void FramePump::loop()
     maa::ios::rt::RtpTimestamp sampling_clock;
     // 0 是合法 SSRC，不能用其数值区分缺失。没有协商来源时只由合法的视频 RTP 绑定。
     std::optional<uint32_t> media_source;
-    /// 探针用视频接收计数，不包含 SR。
-    uint64_t video_seen = 0;
 
     /// 丢包后优先用 12 字节 PLI 请求 IDR，再等待完整关键帧解码；重建作为后备。
     auto request_keyframe = [&] {
-        // 在所有提前返回之前记录本轮等待起点，包括探针禁止 PLI 的情况。
+        // 在所有提前返回之前记录本轮等待起点。
         // 后备超时从首次请求计算，不能使用每秒重发都会更新的 last_pli_ms_。
         if (first_pli_ms_ == 0) {
             first_pli_ms_ = now_ms();
         }
         if (!media_source) {
             return; // 尚无来源可作为 PLI 目标，不构造猜测的 0 SSRC。
-        }
-        if (options_.debug_suppress_pli || pli_off_) {
-            // 测试模式可禁止 PLI，用来单独验证等待超时后的会话重建路径。
-            std::lock_guard<std::mutex> lock(mutex_);
-            ++stats_.pli_suppressed;
-            return;
         }
         if (now_ms() < next_pli_ms_) {
             return; // 限制重复关键帧请求的频率。
@@ -400,9 +379,6 @@ void FramePump::loop()
             // 后续完整关键帧可直接恢复，不能再用旧的损失标记额外丢掉它。
             // 保存进入回调时的等待状态，成功解码并取得像素后才解除。
             const bool was_awaiting = need_keyframe_;
-            // 故障注入使用进入回调时的快照，避免测试触发条件依赖随后被修改的
-            // 恢复状态。否则提前清除状态会使注入失效，无法验证恢复逻辑。
-            const bool awaiting_at_entry = awaiting_idr_from_loss_;
             if (need_keyframe_) {
                 if (!keyframe) {
                     // 非关键帧不能修复参考链，继续请求关键帧。
@@ -417,26 +393,7 @@ void FramePump::loop()
             // 避免 clear() 后 resize() 对整个图像缓冲区重新填零。
             Frame& f = publishing_;
             const uint64_t t_decode0 = now_ms();
-            bool ok = false;
-            // 默认仅向丢包恢复期间的关键帧注入失败，验证解码无输出后仍会继续
-            // 等待并触发恢复。debug_fail_any_keyframe 可扩大到启动阶段。
-            if (keyframe && (awaiting_at_entry || options_.debug_fail_any_keyframe) && options_.debug_fail_decode_of_keyframe > 0) {
-                --options_.debug_fail_decode_of_keyframe;
-                // 可同时禁止后续 PLI，排除新关键帧请求对会话重建测试的影响。
-                if (options_.debug_suppress_pli_after_fail) {
-                    pli_off_ = true;
-                }
-                {
-                    std::lock_guard<std::mutex> lock(mutex_);
-                    ++stats_.forced_decode_failures;
-                }
-                LogDebug << std::format(
-                    "Test: injected keyframe decode failure ({})",
-                    options_.debug_suppress_pli_after_fail ? "further PLI disabled" : "PLI continues");
-            }
-            else {
-                ok = decoder->decode(au, f);
-            }
+            const bool ok = decoder->decode(au, f);
             const uint64_t t_published0 = now_ms();
             {
                 std::lock_guard<std::mutex> lock(mutex_);
@@ -470,8 +427,6 @@ void FramePump::loop()
             // 交换两个帧缓冲区，下一次解码复用上一帧的内存，避免 move 后
             // 解码目标失去缓冲区并重新分配。尺寸变化仍由解码器处理。
             std::swap(frame_, publishing_);
-            width_ = static_cast<int>(frame_.width);
-            height_ = static_cast<int>(frame_.height);
             ++serial_;
             ready_ = true;
             ++stats_.decoded;
@@ -481,7 +436,7 @@ void FramePump::loop()
     };
 
     /// 重建后重置解析器、计时器及丢包标记，避免旧状态导致新会话首个
-    /// 关键帧被误判为不完整。跨会话的重试策略与测试选项另行保留。
+    /// 关键帧被误判为不完整。跨会话的重试策略另行保留。
     auto new_session_state = [&] {
         depacketizer = std::make_unique<maa::ios::rt::HevcRtpDepacketizer>(session_->started().payload_type);
         sampling_clock.reset();
@@ -500,9 +455,6 @@ void FramePump::loop()
         ever_keyframe_ = false;
         need_keyframe_ = false;
         loss_seen_ = 0;
-        // 测试禁止 PLI 的选项跨会话保留，继续隔离会话重建恢复路径。
-        // 视频故障注入的计数则按会话归零，避免新会话也被持续忽略。
-        video_seen = 0;
         // SR 中的设备视频包计数按会话归零，本地数据报总数跨会话累计。
         // 保存本地会话起点并清空旧 SR 读数，避免新 SR 到达前显示旧设备计数。
         // 两者统计对象不同：本地含 RTCP，设备只报视频，不能直接相减估计丢包。
@@ -613,7 +565,7 @@ void FramePump::loop()
         // 调度置于每轮循环，不能依赖读包超时，否则连续视频包会阻止发送。
         // 32 字节裸 RR：发送者为 answer.RemoteSSRC，报告块指向
         // 设备 LocalSSRC，发至 sender.port。
-        if (!options_.debug_suppress_rr && media_source && now_ms() >= next_rtcp_ms_) {
+        if (media_source && now_ms() >= next_rtcp_ms_) {
             next_rtcp_ms_ += kRtcpPeriodMs;
             const auto rr = maa::ios::rt::build_rr(
                 session_->started().remote_ssrc,
@@ -805,19 +757,6 @@ void FramePump::loop()
             continue;
         }
 
-        ++video_seen;
-        if (options_.debug_drop_nth_packet > 0 && video_seen == static_cast<uint64_t>(options_.debug_drop_nth_packet)) {
-            LogDebug << std::format("Test: dropped video packet {} to inject a sequence gap", options_.debug_drop_nth_packet);
-            options_.debug_drop_nth_packet = 0;    // 一次性：重起之后的新会话不该再被丢
-            std::lock_guard<std::mutex> lock(mutex_);
-            stats_.debug_dropped_at_ms = now_ms(); // 记录故障注入时间，供测试检查恢复期限。
-            continue;
-        }
-        if (options_.debug_ignore_video_after > 0 && video_seen > static_cast<uint64_t>(options_.debug_ignore_video_after)) {
-            // 测试模式忽略超过指定计数的视频包，仅保留 SR，用于验证持续收到
-            // RTCP 但无视频输出时恢复计时仍能触发。
-            continue;
-        }
         std::vector<maa::ios::rt::ReceivedNal> nals;
         const uint64_t t_dp0 = now_ms();
         const bool pushed = depacketizer->push_nals(datagram, nals, err);
@@ -869,12 +808,6 @@ bool FramePump::wait_ready(int timeout_ms)
     return ready_ && !stopping_ && !video_unusable_;
 }
 
-std::string FramePump::capture_error() const
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-    return terminal_error_;
-}
-
 uint64_t FramePump::newer(Frame& out, uint64_t since, int timeout_ms)
 {
     std::unique_lock<std::mutex> lock(mutex_);
@@ -896,25 +829,6 @@ FramePump::Stats FramePump::stats() const
 {
     std::lock_guard<std::mutex> lock(mutex_);
     return stats_;
-}
-
-uint8_t FramePump::payload_type() const
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-    return payload_type_;
-}
-
-uint16_t FramePump::receiver_port() const
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-    return receiver_port_;
-}
-
-void FramePump::size(int& width, int& height) const
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-    width = width_;
-    height = height_;
 }
 
 DisplayCrop display_crop(int coded_w, int coded_h)

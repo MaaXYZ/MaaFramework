@@ -147,25 +147,6 @@ Device& Device::operator=(Device&& other) noexcept
 
 Device::~Device() = default;
 
-std::vector<transport::DeviceRecord> Device::list(std::string& err)
-{
-    std::vector<transport::DeviceRecord> out;
-    auto mux = transport::Usbmux::open(err);
-    if (!mux) {
-        return out;
-    }
-    if (!mux->list_devices(out, err)) {
-        out.clear();
-    }
-    return out;
-}
-
-std::optional<Device> Device::establish(std::string_view udid, std::string& err, bool verbose, bool usb_only)
-{
-    transport::IoBudget budget;
-    return establish_bounded(udid, budget, err, verbose, usb_only);
-}
-
 std::optional<Device>
     Device::establish_bounded(std::string_view udid, const transport::IoBudget& budget, std::string& err, bool verbose, bool usb_only)
 {
@@ -261,13 +242,6 @@ bool Device::finish_session(
     }
     stage(verbose, "Ready");
     return true;
-}
-
-std::optional<Device>
-    Device::establish_wifi(const std::string& address, const wifi::PairRecord& record, std::string& err, bool verbose, uint16_t port)
-{
-    transport::IoBudget budget;
-    return establish_wifi_bounded(address, record, budget, err, verbose, port);
 }
 
 std::optional<Device> Device::establish_wifi_bounded(

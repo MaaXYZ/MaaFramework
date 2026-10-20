@@ -75,9 +75,7 @@ xpc::Value build_start_request(
     const std::vector<uint8_t>& offer_bytes,
     uint32_t display_id,
     std::optional<uint32_t> timeout_seconds,
-    uint64_t client_supported_features,
-    const std::vector<uint8_t>& event_channel_uuid,
-    const std::vector<uint8_t>& client_session_uuid)
+    uint64_t client_supported_features)
 {
     auto d = xpc::make_dict();
     xpc::dict_set(d, "clientSupportedFeatures", xpc::make_uint64(client_supported_features));
@@ -91,15 +89,7 @@ xpc::Value build_start_request(
     xpc::dict_set(options, "VideoStreamForDisplayID", typed("int", xpc::make_int64(display_id)));
     // ClientSessionID 必须编码为 16 字节 XPC UUID；已测 Swift Codable 类型错误为
     // "Expected to decode UUID but found a OS_xpc_string instead"（code 4864）。
-    //
-    // client_session_uuid 非空时原样使用，否则生成本次请求的标识。
-    // 各流使用独立 UUID，避免状态查询把另一条流视为本条存活。
-    // 共用 UUID 时，probe() 只能确认至少一条匹配会话存在。
-    std::vector<uint8_t> session_id = client_session_uuid;
-    if (session_id.empty()) {
-        const auto fresh = random_uuid_bytes();
-        session_id.assign(fresh.begin(), fresh.end());
-    }
+    const auto session_id = random_uuid_bytes();
     xpc::dict_set(options, "avcMediaStreamOptionClientSessionID", typed("uuid", xpc::make_uuid(std::span<const uint8_t>(session_id))));
     xpc::dict_set(d, "options", std::move(options));
 
@@ -113,11 +103,6 @@ xpc::Value build_start_request(
         xpc::dict_set(d, "timeout", xpc::make_uint64(*timeout_seconds));
     }
     xpc::dict_set(d, "type", xpc::make_string("video"));
-    // DeviceHub 请求样本包含 sessionEventChannel。本构造器允许提供该 UUID，
-    // 空 vector 时省略；通道注册过程和对端语义尚未确认，不能仅凭此字段判断续期。
-    if (!event_channel_uuid.empty()) {
-        xpc::dict_set(d, "sessionEventChannel", xpc::make_uuid(std::span<const uint8_t>(event_channel_uuid)));
-    }
     return d;
 }
 
@@ -217,7 +202,7 @@ std::unique_ptr<StreamSession> StreamSession::start(
     }
 
     // 已测设备在起流回复后立即发送 RTP；提前绑定接收端口，避免丢失视频参数集
-    // VPS/SPS/PPS 与首个关键帧。音频请求同样先准备接收端口。
+    // VPS/SPS/PPS 与首个关键帧。
     const uint16_t port = request.receiver_port != 0 ? request.receiver_port : pick_port();
     auto socket = std::make_unique<net::UdpSocket>(device.rsd().stack(), port);
     if (!socket->bind(err)) {
@@ -231,7 +216,6 @@ std::unique_ptr<StreamSession> StreamSession::start(
     const auto blob = build_negotiator_offer(offer);
 
     const auto& tunnel_params = device.tunnel_params();
-    const std::vector<uint8_t> event_channel = request.session_event_channel.value_or(std::vector<uint8_t> { });
     auto input = build_start_request(
         tunnel_params.client_address,
         port,
@@ -239,9 +223,7 @@ std::unique_ptr<StreamSession> StreamSession::start(
         blob,
         request.display_id,
         request.timeout_seconds,
-        request.client_supported_features,
-        event_channel,
-        request.client_session_uuid);
+        request.client_supported_features);
     xpc::Value output;
     if (on_conn != nullptr) {
         // 借用调用方持有的连接，不转移所有权。invoke() 的非 Ok 结果均表示起流失败；
