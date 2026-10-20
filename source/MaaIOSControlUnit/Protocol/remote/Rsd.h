@@ -113,8 +113,6 @@ public:
 
     [[nodiscard]] net::TcpStream& tcp() { return *tcp_; }
 
-    [[nodiscard]] bool is_xpc() const { return channel_ != nullptr; }
-
     [[nodiscard]] Channel* channel() { return channel_.get(); }
 
     /// 处理 HTTP/2 PING、WINDOW_UPDATE 等控制帧；读超时仍返回 true。
@@ -146,10 +144,6 @@ private:
 class Rsd
 {
 public:
-    /// 在隧道的 RSD 端口上建控制通道并读目录。
-    static std::optional<Rsd>
-        open(net::Stack& stack, transport::PacketTunnel& tunnel, const PeerIdentity& identity, std::string& err, bool verbose = false);
-
     /// 初始 TCP、HTTP/2 和目录读取共用调用方的绝对预算。取消或预算到期
     /// 只关闭这个控制端点；成功交付后解除监视，不影响会话后续的服务连接。
     static std::optional<Rsd> open_bounded(
@@ -174,10 +168,6 @@ public:
     /// 对包含 requires iOS 的设备错误补充已记录的版本限制和可选兜底功能提示。
     static std::string remote_control_version_hint(std::string_view device_detail);
 
-    /// 返回原始 Services 条目的借用指针，保留 ServiceInfo 未解析的字段。
-    /// 缺失时为 nullptr，返回值不能超过 Rsd 的生命周期。
-    [[nodiscard]] const xpc::Value* service_entry(std::string_view name) const;
-
     std::unique_ptr<ServiceConnection>
         connect_service(std::string_view name, std::string& err, bool verbose = false, std::stop_token cancel = { });
 
@@ -188,7 +178,7 @@ public:
 
     [[nodiscard]] const PeerIdentity& identity() const { return identity_; }
 
-    /// 公开构造供 optional::emplace 使用；尚未建立控制通道，可用目录应通过 open 获取。
+    /// 公开构造供 optional::emplace 使用；尚未建立控制通道，可用目录应通过 open_bounded 获取。
     Rsd(net::Stack& stack, PeerIdentity identity)
         : stack_(&stack)
         , identity_(std::move(identity))

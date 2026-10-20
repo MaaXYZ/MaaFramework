@@ -23,7 +23,6 @@ constexpr uint32_t kMsgPlist = 8;
 constexpr size_t kHeaderLen = 16;
 /// 一帧负载的上限。对方声明的长度必须先跟它比再去申请内存。
 constexpr uint32_t kMaxPayload = 16u << 20;
-constexpr uint16_t kLockdownPort = 62078;
 constexpr const char* kClientName = "MaaFramework/iOS";
 
 void put_u32_le(uint8_t* p, uint32_t v)
@@ -671,15 +670,6 @@ bool Usbmux::read_pair_record(std::string_view udid, std::vector<uint8_t>& out, 
     }
     out = data->data;
     return true;
-}
-
-std::optional<Socket> connect_lockdown(uint32_t device_id, std::string& err)
-{
-    auto mux = Usbmux::open(err);
-    if (!mux) {
-        return std::nullopt;
-    }
-    return mux->connect(device_id, kLockdownPort, err);
 }
 
 } // namespace maa::ios::transport

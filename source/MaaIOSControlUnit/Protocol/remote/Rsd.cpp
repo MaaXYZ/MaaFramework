@@ -520,13 +520,6 @@ CallResult ServiceConnection::stream(
 
 // RSD 目录。
 
-std::optional<Rsd>
-    Rsd::open(net::Stack& stack, transport::PacketTunnel& tunnel, const PeerIdentity& identity, std::string& err, bool verbose)
-{
-    const transport::IoBudget budget;
-    return open_bounded(stack, tunnel, identity, budget, err, verbose);
-}
-
 std::optional<Rsd> Rsd::open_bounded(
     net::Stack& stack,
     transport::PacketTunnel& tunnel,
@@ -597,13 +590,6 @@ std::optional<ServiceInfo> Rsd::service(std::string_view name) const
 bool Rsd::has_service(std::string_view name) const
 {
     return service(name).has_value();
-}
-
-const xpc::Value* Rsd::service_entry(std::string_view name) const
-{
-    const auto* info = control_ != nullptr ? control_->peer_info() : nullptr;
-    const auto* services = info != nullptr ? info->find("Services") : nullptr;
-    return services != nullptr ? services->find(name) : nullptr;
 }
 
 bool Rsd::supports(std::string_view service_name, std::string_view feature) const

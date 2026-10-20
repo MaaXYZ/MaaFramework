@@ -398,26 +398,6 @@ std::string Stack::icmp_last() const
     return icmp_last_;
 }
 
-bool Stack::send_echo_request(uint16_t ident, uint16_t seq, std::string& err)
-{
-    // ICMPv6 头包含 type、code 和 2 字节校验和；回显请求再附带 id、seq 和数据。
-    // 计算时将校验和字段置零，IPv6 伪头的 next header 使用 58。
-    std::vector<uint8_t> msg = { 128,
-                                 0,
-                                 0,
-                                 0,
-                                 static_cast<uint8_t>(ident >> 8),
-                                 static_cast<uint8_t>(ident),
-                                 static_cast<uint8_t>(seq >> 8),
-                                 static_cast<uint8_t>(seq) };
-    const std::string tag = "maa-ios-canary";
-    msg.insert(msg.end(), tag.begin(), tag.end());
-    const uint16_t sum = l4_checksum(local_addr_.data(), peer_addr_.data(), msg.data(), msg.size(), 58);
-    msg[2] = static_cast<uint8_t>(sum >> 8);
-    msg[3] = static_cast<uint8_t>(sum);
-    return send(wrap(msg, 58), err);
-}
-
 /// 记录 ICMPv6 头及错误消息引用的内层 IPv6 包，供诊断对端回复及触发报文。
 /// 此处不验证 ICMPv6 校验和；记录到回复只表示观察到报文，协议有效性由 lwIP 判断。
 void Stack::observe_icmpv6(const uint8_t* icmp, std::size_t len)

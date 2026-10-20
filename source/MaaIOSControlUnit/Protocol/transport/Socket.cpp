@@ -189,21 +189,6 @@ bool Socket::wait_readable(int ms, std::string& err, bool* timed_out)
     }
 }
 
-bool Socket::read_len_prefixed_be(std::vector<uint8_t>& out, std::string& err)
-{
-    uint8_t hdr[4];
-    if (!read_exact(hdr, 4, err)) {
-        return false;
-    }
-    const uint32_t len = uint32_t(hdr[0]) << 24 | uint32_t(hdr[1]) << 16 | uint32_t(hdr[2]) << 8 | hdr[3];
-    if (len < 4 || len > (32u << 20)) {
-        err = "Invalid lockdown frame length: " + std::to_string(len);
-        return false;
-    }
-    out.resize(len);
-    return read_exact(out.data(), len, err);
-}
-
 bool Socket::write_len_prefixed_be(std::string_view payload, std::string& err)
 {
     uint8_t hdr[4];

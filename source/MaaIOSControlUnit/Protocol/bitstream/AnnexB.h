@@ -109,9 +109,4 @@ private:
     Nal vps_, sps_, pps_;
 };
 
-/// 将完整的 00 00 03 xx（xx<=0x03）转换为 00 00 xx，保留截断或不符合该模式的字节。
-/// 返回的 RBSP 仅用于读取语法元素，例如 SPS 的 conformance window 和 profile/tier。
-/// 本项目的解码样本及 hvcC 参数集使用原始 NAL，保留 EPB；不要用 RBSP 替换这些输入。
-std::vector<uint8_t> unescape_nal(const uint8_t* data, std::size_t len);
-
 } // namespace maa::ios

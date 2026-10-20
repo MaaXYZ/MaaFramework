@@ -60,10 +60,4 @@ const Bytes* tlv_get(const std::map<uint8_t, Bytes>& fields, TlvType type)
     return it == fields.end() ? nullptr : &it->second;
 }
 
-uint8_t tlv_state(const std::map<uint8_t, Bytes>& fields)
-{
-    const Bytes* s = tlv_get(fields, TlvType::State);
-    return (s == nullptr || s->empty()) ? 0 : (*s)[0];
-}
-
 } // namespace maa::ios::wifi

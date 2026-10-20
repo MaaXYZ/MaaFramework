@@ -39,7 +39,4 @@ std::map<uint8_t, Bytes> tlv_parse(const Bytes& data, std::string& err, bool* tr
 /// 取某个字段的字节；不存在返回 nullptr。
 const Bytes* tlv_get(const std::map<uint8_t, Bytes>& fields, TlvType type);
 
-/// 状态字段按惯例是单字节。取不出来时返回 0（调用方拿它判"到没到预期的那一步"）。
-uint8_t tlv_state(const std::map<uint8_t, Bytes>& fields);
-
 } // namespace maa::ios::wifi

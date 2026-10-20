@@ -135,12 +135,7 @@ public:
     /// 一次加密往返：`request` 形如 `{"request":{…}}`，返回解出来的 `response._1`。
     std::optional<json::Value> encrypted_roundtrip(const json::Value& request, std::string& err);
 
-    /// 在 ms 毫秒内等待回信，避免 verify 探针在无回复时阻塞。
-    bool reply_pending(int ms, std::string& err) { return carrier_.wait_readable(ms, err); }
-
     [[nodiscard]] uint64_t sequence() const { return sequence_; }
-
-    [[nodiscard]] uint64_t encrypted_sequence() const { return encrypted_sequence_; }
 
 private:
     bool send_envelope(const json::Value& message, std::string& err);

@@ -122,29 +122,6 @@ bool PacketTunnel::read_all(void* data, size_t len, std::string& err)
     return sock_.read_exact(data, len, err);
 }
 
-std::optional<PacketTunnel>
-    PacketTunnel::establish(uint32_t device_id, uint16_t proxy_port, const PemIdentity& identity, bool use_tls, std::string& err)
-{
-    auto mux = Usbmux::open(err);
-    if (!mux) {
-        return std::nullopt;
-    }
-    auto sock = mux->connect(device_id, proxy_port, err);
-    if (!sock) {
-        return std::nullopt;
-    }
-
-    PacketTunnel t;
-    t.sock_ = std::move(*sock);
-    if (use_tls && !t.tls_.handshake(t.sock_, identity, err)) {
-        return std::nullopt;
-    }
-    if (!t.client_handshake(err)) {
-        return std::nullopt;
-    }
-    return t;
-}
-
 std::optional<PacketTunnel> PacketTunnel::establish_psk(Socket&& sock, const std::vector<uint8_t>& psk, std::string& err)
 {
     PacketTunnel t;

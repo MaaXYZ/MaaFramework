@@ -29,7 +29,6 @@ public:
     Lockdown& operator=(const Lockdown&) = delete;
 
     /// 完整建立：连 usbmuxd -> 读配对记录 -> Connect(62078) -> StartSession -> TLS。
-    static std::optional<Lockdown> establish(uint32_t device_id, std::string_view udid, std::string& err);
     static std::optional<Lockdown> establish_bounded(
         uint32_t device_id,
         std::string_view udid,
@@ -70,8 +69,6 @@ public:
     /// peer UUID——那个 UUID 一旦变了，设备会把整台机器重新 attach 一遍并关掉
     /// 已公布的服务端口，所以「每次运行都随机生成」是不能接受的写法。
     [[nodiscard]] const std::string& host_id() const { return host_id_; }
-
-    [[nodiscard]] bool secure() const { return tls_.valid(); }
 
     [[nodiscard]] const std::string& session_id() const { return session_id_; }
 

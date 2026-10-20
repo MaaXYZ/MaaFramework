@@ -749,11 +749,6 @@ std::optional<DownloadResult> download(
 }
 } // namespace detail
 
-std::optional<DownloadResult> download_cryptex(const DownloadOptions& options, std::string& error)
-{
-    return detail::download(options, detail::cryptex_catalog(), curl_transfer, error);
-}
-
 std::optional<DownloadResult> download_for_target(const DownloadOptions& options, const DownloadTarget& target, std::string& error)
 {
     const auto selection = select_for_version(target.system_version, error);
@@ -779,8 +774,4 @@ std::optional<DownloadResult> download_for_target(const DownloadOptions& options
     return detail::download(options, *catalog, curl_transfer, error, &target);
 }
 
-bool validate_cryptex_cache(const fs::path& directory, std::string& error)
-{
-    return detail::validate(directory, detail::cryptex_catalog(), error);
-}
 } // namespace maa::ios::ddi

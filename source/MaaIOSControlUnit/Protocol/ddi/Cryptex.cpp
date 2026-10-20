@@ -394,32 +394,6 @@ xpc::Value cryptex_install_request(const CryptexMetadata& metadata, const std::a
 }
 } // namespace detail
 
-bool query_installed_cryptex(
-    remote::Device& device,
-    std::optional<CryptexInstallResult>& result,
-    const CryptexInstallOptions& options,
-    std::string& error)
-{
-    error.clear();
-    result.reset();
-    try {
-        if (options.timeout.count() <= 0 || options.timeout > std::chrono::hours(1)) {
-            error = "Cryptex installation timeout is invalid";
-            return false;
-        }
-        Session session(device, options);
-        if (!session.installed(result, error)) {
-            error = std::string("Cryptex installed-state query failed: ") + error;
-            return false;
-        }
-        return true;
-    }
-    catch (const std::exception& e) {
-        error = e.what();
-        return false;
-    }
-}
-
 std::optional<CryptexInstallResult> install_cryptex(
     remote::Device& device,
     const DownloadResult& download,

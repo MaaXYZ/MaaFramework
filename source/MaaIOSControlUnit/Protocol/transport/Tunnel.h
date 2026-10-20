@@ -39,12 +39,6 @@ public:
     PacketTunnel(const PacketTunnel&) = delete;
     PacketTunnel& operator=(const PacketTunnel&) = delete;
 
-    /// proxy 来自 lockdown StartService(CoreDeviceProxy)。
-    ///
-    /// use_tls=true 时，先用配对证书建立 TLS，再发送 CDTunnel 控制帧。
-    static std::optional<PacketTunnel>
-        establish(uint32_t device_id, uint16_t proxy_port, const PemIdentity& identity, bool use_tls, std::string& err);
-
     /// Wi-Fi 那条路：连接是普通的局域网 TCP，加密是 TLS-PSK（密钥来自 pair-verify），
     /// 之后的 CDTunnel 控制帧与 USB 那条**一模一样**，所以复用同一个对象、同一套
     /// 隧道内用户态栈。

@@ -41,23 +41,6 @@ bool starts_new_picture(const Nal& nal)
 
 } // namespace
 
-std::vector<uint8_t> unescape_nal(const uint8_t* data, std::size_t len)
-{
-    std::vector<uint8_t> out;
-    out.reserve(len);
-    for (std::size_t i = 0; i < len; ++i) {
-        // 仅删除完整 00 00 03 xx（xx<=0x03）中的 EPB，截断模式保持原样。
-        if (i + 3 < len && data[i] == 0 && data[i + 1] == 0 && data[i + 2] == 3 && data[i + 3] <= 3) {
-            out.push_back(0);
-            out.push_back(0);
-            i += 2; // 跳过 0x03
-            continue;
-        }
-        out.push_back(data[i]);
-    }
-    return out;
-}
-
 bool AnnexBParser::feed(const uint8_t* data, std::size_t len)
 {
     if (len == 0) {

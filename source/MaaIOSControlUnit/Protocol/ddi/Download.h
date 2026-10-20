@@ -49,10 +49,4 @@ struct DownloadResult
 // installation. Downloading alone does not establish MaaFramework feature support.
 std::optional<DownloadResult> download_for_target(const DownloadOptions& options, const DownloadTarget& target, std::string& error);
 
-// Downloads the pinned Cryptex DDI only. Does not connect to or modify a device.
-// Returns nullopt and a diagnostic on failure, timeout or cancellation.
-std::optional<DownloadResult> download_cryptex(const DownloadOptions& options, std::string& error);
-// Validates every pinned file, its digest and the Cryptex manifest structure.
-bool validate_cryptex_cache(const std::filesystem::path& directory, std::string& error);
-
 } // namespace maa::ios::ddi

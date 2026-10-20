@@ -120,10 +120,6 @@ Json pair(const Options& options, const Callbacks& callbacks, std::optional<wifi
         request.should_cancel = callbacks.cancelled;
         request.progress = progress;
         request.display_pin = [&callbacks](std::string_view pin, std::string& error) {
-            if (!callbacks.event) {
-                error = "wireless pairing requires a PIN event callback";
-                return false;
-            }
             if (!callbacks.notify({ { "type", "pin" }, { "pin", pin } })) {
                 error = "wireless pairing PIN was rejected by the caller";
                 return false;

@@ -59,7 +59,6 @@ public:
     bool set_read_timeout(int ms, std::string& err);
 
     /// 读一个 lockdown 风格的帧：4 字节**大端**长度 + 该长度的负载。
-    bool read_len_prefixed_be(std::vector<uint8_t>& out, std::string& err);
     bool write_len_prefixed_be(std::string_view payload, std::string& err);
 
 private:

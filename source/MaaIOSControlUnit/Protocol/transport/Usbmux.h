@@ -105,10 +105,6 @@ private:
     uint32_t tag_ = 1;
 };
 
-/// 新建 usbmux 连接并转发到 lockdown 端口 (62078)。
-/// 注意不能在发过 Listen 的连接上 Connect，所以这里每次新开。
-std::optional<Socket> connect_lockdown(uint32_t device_id, std::string& err);
-
 namespace detail
 {
 /// 内部测试边界：生产入口始终使用系统 usbmux 服务，不提供 endpoint 配置。

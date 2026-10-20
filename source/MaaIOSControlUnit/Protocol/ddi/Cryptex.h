@@ -26,10 +26,6 @@ struct CryptexInstallResult
     std::string version;
 };
 
-// Read-only cryptexd copy-installed. Does not sign, install, remove, mount,
-// or change nonces. Empty result means the DDI identifier was not reported.
-bool query_installed_cryptex(remote::Device&, std::optional<CryptexInstallResult>&, const CryptexInstallOptions&, std::string& error);
-
 // Does not retry uncertain installs, or remove unrelated cryptexes. An explicit
 // replacement is performed only after assets and an Apple ticket are ready.
 std::optional<CryptexInstallResult>

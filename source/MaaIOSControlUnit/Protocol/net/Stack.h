@@ -26,10 +26,6 @@ public:
 
     bool addresses_ok() const { return addresses_valid_; }
 
-    const std::array<uint8_t, 16>& local_addr() const { return local_addr_; }
-
-    const std::array<uint8_t, 16>& peer_addr() const { return peer_addr_; }
-
     const std::string& local_text() const { return local_text_; }
 
     const std::string& peer_text() const { return peer_text_; }
@@ -38,13 +34,10 @@ public:
     bool start_pump(std::string& err);
     void stop_pump();
 
-    bool pumping() const { return pumping_; }
-
     std::string pump_error() const;
     // 成功仅表示数据进入出站队列，实际隧道写入结果由 pump_error() 报告。
     bool send(const std::vector<uint8_t>& packet, std::string& err);
     std::vector<uint8_t> wrap(const std::vector<uint8_t>& l4, uint8_t protocol) const;
-    bool send_echo_request(uint16_t ident, uint16_t seq, std::string& err);
 
     void set_flow_label(uint32_t label) { flow_label_ = label & 0xfffff; }
 
