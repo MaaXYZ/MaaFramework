@@ -1,5 +1,6 @@
 #include "PipelineParser.h"
 
+#include <limits>
 #include <sstream>
 
 #include "MaaUtils/Encoding.h"
@@ -1006,16 +1007,18 @@ bool PipelineParser::parse_multi_color_matcher_param(
     // pattern/ directory (similar to how TemplateMatch references images via "template").
     // Fields explicitly set in the node take precedence; the pattern only fills in
     // fields not specified in the node.
+    constexpr int kMaxPointOffset = 1'000'000; // far beyond any real screen
+
     json::value patched;
     const json::value* pin = &input_;
 
-    if (auto pname = input_.find<std::string>("pattern")) {
+    if (auto pname = input_.find<std::string>("pattern"); pname && !pname->empty()) {
         auto* mgr = PatternResMgr::current_for_parse();
         if (!mgr) {
             LogError << "pattern resource not loaded" << VAR(*pname);
             return false;
         }
-        auto* pat = mgr->find(*pname);
+        auto pat = mgr->find(*pname);
         if (!pat) {
             LogError << "pattern not found" << VAR(*pname);
             return false;
@@ -1031,7 +1034,13 @@ bool PipelineParser::parse_multi_color_matcher_param(
             patched["degree"] = pat->degree;
         }
         if (!patched.contains("roi")) {
-            patched["roi"] = json::array({ pat->x1, pat->y1, pat->x2 - pat->x1, pat->y2 - pat->y1 });
+            // The Lua search region uses inclusive corner coordinates
+            if (pat->x2 < pat->x1 || pat->y2 < pat->y1) {
+                LogError << "invalid pattern search region" << VAR(*pname) << VAR(pat->x1) << VAR(pat->y1) << VAR(pat->x2)
+                         << VAR(pat->y2);
+                return false;
+            }
+            patched["roi"] = json::array({ pat->x1, pat->y1, pat->x2 - pat->x1 + 1, pat->y2 - pat->y1 + 1 });
         }
         pin = &patched;
     }
@@ -1060,6 +1069,13 @@ bool PipelineParser::parse_multi_color_matcher_param(
         return false;
     }
 
+    // Zero is only a valid base color when explicitly provided; letting a
+    // missing base_color fall back to the zero default would silently match black
+    if (!input.contains("base_color") && default_value.base_color == 0) {
+        LogError << "base_color is required" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value(input, "base_color", output.base_color, default_value.base_color)) {
         LogError << "failed to get_and_check_value base_color" << VAR(input);
         return false;
@@ -1067,6 +1083,10 @@ bool PipelineParser::parse_multi_color_matcher_param(
 
     if (!get_and_check_value(input, "degree", output.degree, default_value.degree)) {
         LogError << "failed to get_and_check_value degree" << VAR(input);
+        return false;
+    }
+    if (output.degree < 1 || output.degree > 100) {
+        LogError << "degree out of range [1, 100]" << VAR(output.degree);
         return false;
     }
 
@@ -1089,9 +1109,18 @@ bool PipelineParser::parse_multi_color_matcher_param(
         LogError << "failed to get_and_check_value miss" << VAR(input);
         return false;
     }
+    // miss + 1 would overflow and grid cell division would break down
+    if (output.miss < 0 || output.miss == std::numeric_limits<int>::max()) {
+        LogError << "miss out of range [0, INT_MAX)" << VAR(output.miss);
+        return false;
+    }
 
     if (!get_and_check_value(input, "orient", output.orient, default_value.orient)) {
         LogError << "failed to get_and_check_value orient" << VAR(input);
+        return false;
+    }
+    if (output.orient < 0 || output.orient > 8) {
+        LogError << "orient out of range [0, 8]" << VAR(output.orient);
         return false;
     }
 
@@ -1117,8 +1146,18 @@ bool PipelineParser::parse_multi_color_matcher_param(
                 LogError << "failed to get dy" << VAR(item);
                 return false;
             }
+            // A missing color would fall back to black and match unintended
+            // pixels; require it explicitly
+            if (!item.contains("color")) {
+                LogError << "points item missing color" << VAR(item);
+                return false;
+            }
             if (!get_and_check_value(item, "color", color, 0)) {
                 LogError << "failed to get color" << VAR(item);
+                return false;
+            }
+            if (dx < -kMaxPointOffset || dx > kMaxPointOffset || dy < -kMaxPointOffset || dy > kMaxPointOffset) {
+                LogError << "point offset out of range" << VAR(dx) << VAR(dy);
                 return false;
             }
             output.points.push_back({ dx, dy, color });
@@ -1146,6 +1185,10 @@ bool PipelineParser::parse_multi_color_matcher_param(
                 int dx = std::stoi(parts[0]);
                 int dy = std::stoi(parts[1]);
                 int color = static_cast<int>(std::stoul(parts[2], nullptr, 0)); // auto-detect 0x prefix
+                if (dx < -kMaxPointOffset || dx > kMaxPointOffset || dy < -kMaxPointOffset || dy > kMaxPointOffset) {
+                    LogError << "point offset out of range" << VAR(dx) << VAR(dy);
+                    return false;
+                }
                 output.points.push_back({ dx, dy, color });
             }
             catch (...) {

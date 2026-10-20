@@ -17,17 +17,36 @@ bool PatternResMgr::lazy_load(const std::filesystem::path& path)
         return false;
     }
 
-    roots_.emplace_back(path);
+    // Stage into a temporary registry first: if any file fails to load,
+    // patterns_ is left untouched instead of keeping a partial set from this
+    // bundle that a later successful resource commit would validate
+    std::unordered_map<std::string, PatternData> staged;
+    bool ret = false;
     if (std::filesystem::is_directory(path)) {
-        return load_dir(path);
+        ret = load_dir(path, staged);
     }
-    return load_lua_file(path);
+    else {
+        ret = load_lua_file(path, staged);
+    }
+    if (!ret) {
+        return false;
+    }
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    roots_.emplace_back(path);
+    for (auto& [name, data] : staged) {
+        if (patterns_.contains(name)) {
+            LogWarn << "duplicate pattern name, overwriting" << VAR(name) << VAR(path);
+        }
+        patterns_[name] = std::move(data);
+    }
+    return true;
 }
 
-bool PatternResMgr::load_dir(const std::filesystem::path& path)
+bool PatternResMgr::load_dir(const std::filesystem::path& path, std::unordered_map<std::string, PatternData>& staged)
 {
-    // Non-throwing overload: permission or filesystem errors are reported as a
-    // load failure instead of escaping through AsyncRunner
+    // Non-throwing construction and increment: permission or filesystem errors
+    // are reported as a load failure instead of escaping through AsyncRunner
     std::error_code ec;
     std::filesystem::directory_iterator it(path, ec);
     if (ec) {
@@ -38,21 +57,29 @@ bool PatternResMgr::load_dir(const std::filesystem::path& path)
     // Deterministic order: files are loaded in lexicographical order; on
     // duplicate names the later file wins (with a warning)
     std::vector<std::filesystem::path> files;
-    for (const auto& entry : it) {
-        if (entry.path().extension() == ".lua") {
-            files.emplace_back(entry.path());
+    for (const auto end_it = std::filesystem::directory_iterator(); it != end_it; it.increment(ec)) {
+        if (ec) {
+            LogError << "failed to iterate" << VAR(path) << VAR(ec.message());
+            return false;
         }
+        if (it->path().extension() == ".lua") {
+            files.emplace_back(it->path());
+        }
+    }
+    if (ec) {
+        LogError << "failed to iterate" << VAR(path) << VAR(ec.message());
+        return false;
     }
     std::sort(files.begin(), files.end());
 
     bool ret = true;
     for (const auto& f : files) {
-        ret &= load_lua_file(f);
+        ret &= load_lua_file(f, staged);
     }
     return ret;
 }
 
-bool PatternResMgr::load_lua_file(const std::filesystem::path& path)
+bool PatternResMgr::load_lua_file(const std::filesystem::path& path, std::unordered_map<std::string, PatternData>& staged)
 {
     LogFunc << VAR(path);
 
@@ -116,10 +143,10 @@ bool PatternResMgr::load_lua_file(const std::filesystem::path& path)
             continue;
         }
 
-        if (patterns_.contains(name)) {
+        if (staged.contains(name)) {
             LogWarn << "duplicate pattern name, overwriting" << VAR(name) << VAR(path);
         }
-        patterns_[name] = std::move(data);
+        staged[name] = std::move(data);
         ++count;
     }
 
@@ -129,14 +156,19 @@ bool PatternResMgr::load_lua_file(const std::filesystem::path& path)
 
 void PatternResMgr::clear()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     roots_.clear();
     patterns_.clear();
 }
 
-const PatternData* PatternResMgr::find(const std::string& name) const
+std::optional<PatternData> PatternResMgr::find(const std::string& name) const
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     auto it = patterns_.find(name);
-    return it != patterns_.end() ? &it->second : nullptr;
+    if (it == patterns_.end()) {
+        return std::nullopt;
+    }
+    return it->second;
 }
 
 MAA_RES_NS_END

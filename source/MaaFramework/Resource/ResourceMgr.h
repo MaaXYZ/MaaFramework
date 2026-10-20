@@ -94,6 +94,10 @@ public:
 
     const auto& pipeline_res() const { return pipeline_res_; }
 
+    // The pattern registry used while parsing pipeline overrides outside of
+    // resource loading (see PatternResMgr::ParseGuard)
+    const PatternResMgr* pattern_res_for_parse() const { return &pattern_res_; }
+
     auto& pipeline_res() { return pipeline_res_; }
 
     const auto& ocr_res() const { return ocr_res_; }

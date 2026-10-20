@@ -2,6 +2,7 @@
 
 #include <format>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/NoWarningCV.hpp"
@@ -27,12 +28,20 @@ void MultiColorMatcher::analyze()
     }
     reset_roi();
 
-    // Apply orient ordering, clustering and the count limit once on the merged
-    // results, so hits across ROIs are deduplicated and the total count honored
-    sort_by_orient(raw_results, param_.orient);
+    // Overlapping ROIs produce identical coordinates; dedupe them before the
+    // clustering / count steps so duplicates don't consume the count limit
+    raw_results = dedupe_hits(std::move(raw_results));
 
     if (param_.miss > 0) {
-        raw_results = cluster_miss(raw_results, param_.miss);
+        // orient decides which hit survives clustering, so it only takes part
+        // in the selection when clustering is enabled
+        sort_by_orient(raw_results, param_.orient);
+        raw_results = cluster_miss(raw_results, param_.miss, param_.count);
+    }
+    else {
+        // Without clustering, sort into the documented result order before
+        // applying the count limit
+        sort_(raw_results);
     }
 
     if (param_.count > 0 && static_cast<int>(raw_results.size()) > param_.count) {
@@ -71,36 +80,64 @@ cv::Scalar MultiColorMatcher::tolerance(int dev, int degree)
     return cv::Scalar(t, t, t);
 }
 
-cv::Mat MultiColorMatcher::translate_mask(const cv::Mat& mask, int dx, int dy)
+cv::Mat MultiColorMatcher::translate_mask(const cv::Mat& mask, long long dx, long long dy)
 {
     // Goal: result(x, y) = mask(x + dx, y + dy)
     // i.e. translate the mask by (-dx, -dy)
+    // Offsets are computed in 64-bit so extreme pipeline values (e.g. INT_MIN)
+    // can neither overflow nor trigger UB
     cv::Mat result = cv::Mat::zeros(mask.size(), CV_8U);
 
-    const int w = mask.cols - std::abs(dx);
-    const int h = mask.rows - std::abs(dy);
+    const long long w = static_cast<long long>(mask.cols) - std::llabs(dx);
+    const long long h = static_cast<long long>(mask.rows) - std::llabs(dy);
     if (w <= 0 || h <= 0) {
         return result;
     }
 
-    const int sx = std::max(0, dx);       // source roi left-top x
-    const int sy = std::max(0, dy);       // source roi left-top y
-    const int dx_pos = std::max(0, -dx);  // dest roi left-top x
-    const int dy_pos = std::max(0, -dy);  // dest roi left-top y
+    const long long sx = std::max<long long>(0, dx);       // source roi left-top x
+    const long long sy = std::max<long long>(0, dy);       // source roi left-top y
+    const long long tx = std::max<long long>(0, -dx);      // dest roi left-top x
+    const long long ty = std::max<long long>(0, -dy);      // dest roi left-top y
 
-    mask(cv::Rect(sx, sy, w, h)).copyTo(result(cv::Rect(dx_pos, dy_pos, w, h)));
+    mask(cv::Rect(static_cast<int>(sx), static_cast<int>(sy), static_cast<int>(w), static_cast<int>(h)))
+        .copyTo(result(cv::Rect(static_cast<int>(tx), static_cast<int>(ty), static_cast<int>(w), static_cast<int>(h))));
     return result;
 }
 
 MultiColorMatcher::ResultsVec MultiColorMatcher::multi_color_match() const
 {
-    cv::Mat image = image_with_roi();
-    if (image.empty()) {
+    // Offset points may land outside the ROI, so sample an expanded region
+    // (clamped to the image) instead of the bare ROI crop; otherwise a valid
+    // base hit near the ROI edge would be dropped because its offset point
+    // falls into the zero-filled area outside the crop
+    long long min_dx = 0, max_dx = 0, min_dy = 0, max_dy = 0;
+    for (const auto& p : param_.points) {
+        min_dx = std::min(min_dx, static_cast<long long>(p.dx));
+        max_dx = std::max(max_dx, static_cast<long long>(p.dx));
+        min_dy = std::min(min_dy, static_cast<long long>(p.dy));
+        max_dy = std::max(max_dy, static_cast<long long>(p.dy));
+    }
+
+    const long long sample_x1 = std::clamp<long long>(roi_.x - std::max(0LL, -min_dx), 0, image_.cols);
+    const long long sample_y1 = std::clamp<long long>(roi_.y - std::max(0LL, -min_dy), 0, image_.rows);
+    const long long sample_x2 =
+        std::clamp<long long>(static_cast<long long>(roi_.x) + roi_.width + std::max(0LL, max_dx), 0, image_.cols);
+    const long long sample_y2 =
+        std::clamp<long long>(static_cast<long long>(roi_.y) + roi_.height + std::max(0LL, max_dy), 0, image_.rows);
+    const cv::Rect sample(
+        static_cast<int>(sample_x1),
+        static_cast<int>(sample_y1),
+        static_cast<int>(sample_x2 - sample_x1),
+        static_cast<int>(sample_y2 - sample_y1));
+    if (sample.empty()) {
         return {};
     }
 
+    // Base point candidates are restricted to the configured ROI
+    const cv::Rect roi_local(roi_.x - sample.x, roi_.y - sample.y, roi_.width, roi_.height);
+
     cv::Mat rgb;
-    cv::cvtColor(image, rgb, cv::COLOR_BGR2RGB);
+    cv::cvtColor(image_(sample), rgb, cv::COLOR_BGR2RGB);
 
     const auto base_tol = tolerance(param_.main, param_.degree);
     const auto base_c = unpack_color(param_.base_color);
@@ -121,26 +158,44 @@ MultiColorMatcher::ResultsVec MultiColorMatcher::multi_color_match() const
         cv::bitwise_and(combined, shifted, combined);
     }
 
-    ResultsVec results;
-    // Collect all non-zero points at once instead of per-pixel looping
+    // Collect all non-zero points at once instead of per-pixel looping; the
+    // vector is bounded by the sample area, and the orient / clustering / count
+    // selection below must see every candidate, so no truncation here
     std::vector<cv::Point> locations;
     cv::findNonZero(combined, locations);
 
-    // Bound intermediate hits so a pathological config (e.g. full-channel
-    // tolerance) cannot stall recognition
-    constexpr size_t kMaxRawHits = 1'000'000;
-    if (locations.size() > kMaxRawHits) {
-        LogWarn << "too many raw hits, truncated" << VAR(locations.size());
-        locations.resize(kMaxRawHits);
-    }
-
+    ResultsVec results;
     results.reserve(locations.size());
     for (const auto& pt : locations) {
-        cv::Rect box(roi_.x + pt.x, roi_.y + pt.y, 1, 1);
+        if (!roi_local.contains(pt)) {
+            continue;
+        }
+        cv::Rect box(sample.x + pt.x, sample.y + pt.y, 1, 1);
         results.emplace_back(MultiColorMatcherResult { .box = box, .count = 1 });
     }
 
     return results;
+}
+
+MultiColorMatcher::ResultsVec MultiColorMatcher::dedupe_hits(ResultsVec results)
+{
+    if (results.empty()) {
+        return results;
+    }
+
+    // Coordinates are image positions, so both fit in unsigned 32-bit halves
+    std::unordered_set<long long> seen;
+    seen.reserve(results.size());
+    ResultsVec kept;
+    kept.reserve(results.size());
+    for (const auto& r : results) {
+        const long long key = (static_cast<long long>(static_cast<unsigned int>(r.box.x)) << 32)
+                            | static_cast<unsigned int>(r.box.y);
+        if (seen.insert(key).second) {
+            kept.push_back(r);
+        }
+    }
+    return kept;
 }
 
 void MultiColorMatcher::sort_by_orient(ResultsVec& results, int orient)
@@ -181,29 +236,33 @@ void MultiColorMatcher::sort_by_orient(ResultsVec& results, int orient)
     std::ranges::sort(results, [&](const auto& a, const auto& b) { return key(a) < key(b); });
 }
 
-MultiColorMatcher::ResultsVec MultiColorMatcher::cluster_miss(const ResultsVec& results, int miss)
+MultiColorMatcher::ResultsVec MultiColorMatcher::cluster_miss(const ResultsVec& results, int miss, int max_keep)
 {
     // Grid-based clustering, ~O(n): iterate in order, keep a point only if no
     // previously kept point lies within Chebyshev distance `miss`
     ResultsVec kept;
     kept.reserve(results.size());
 
-    const int cell = miss + 1;
-    auto cell_key = [cell](int x, int y) {
-        return (static_cast<long long>(x / cell) << 32) | static_cast<unsigned int>(y / cell);
+    const long long cell = static_cast<long long>(miss) + 1;
+    // Encode the grid cell coordinates into a 64-bit key; going through the
+    // unsigned halves avoids the UB of left-shifting negative signed values
+    // when hits sit near the top / left edge
+    auto cell_key = [](long long cx, long long cy) {
+        return (static_cast<unsigned long long>(static_cast<unsigned int>(cx)) << 32)
+             | static_cast<unsigned long long>(static_cast<unsigned int>(cy));
     };
     std::unordered_map<long long, std::vector<cv::Point>> grid;
 
     for (const auto& r : results) {
-        const int gcx = r.box.x / cell;
-        const int gcy = r.box.y / cell;
+        const long long gcx = r.box.x / cell;
+        const long long gcy = r.box.y / cell;
 
         // Cell size is miss + 1, so any blocking point must lie in the 3x3
         // neighborhood of cells
         bool blocked = false;
-        for (int gx = gcx - 1; gx <= gcx + 1 && !blocked; ++gx) {
-            for (int gy = gcy - 1; gy <= gcy + 1 && !blocked; ++gy) {
-                auto it = grid.find(cell_key(gx * cell, gy * cell));
+        for (long long gx = gcx - 1; gx <= gcx + 1 && !blocked; ++gx) {
+            for (long long gy = gcy - 1; gy <= gcy + 1 && !blocked; ++gy) {
+                auto it = grid.find(cell_key(gx, gy));
                 if (it == grid.end()) {
                     continue;
                 }
@@ -220,7 +279,14 @@ MultiColorMatcher::ResultsVec MultiColorMatcher::cluster_miss(const ResultsVec& 
         }
 
         kept.push_back(r);
-        grid[cell_key(r.box.x, r.box.y)].emplace_back(r.box.x, r.box.y);
+        grid[cell_key(gcx, gcy)].emplace_back(r.box.x, r.box.y);
+
+        // Once the count limit is reached, every later candidate is either
+        // removed by clustering or truncated by count, so stop here; this
+        // bounds the work without dropping any would-be-selected hit
+        if (max_keep > 0 && static_cast<int>(kept.size()) >= max_keep) {
+            break;
+        }
     }
     return kept;
 }

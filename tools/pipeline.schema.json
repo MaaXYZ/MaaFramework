@@ -846,7 +846,7 @@
                     "title": "Index Property",
                     "description": "命中第几个结果。可选，默认 0 。",
                     "$ref": "#/$defs/jsonInt32",
-                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。"
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N + index 。若超出范围，则视为当前识别无结果。"
                 },
                 "method": {
                     "title": "Method Property",
@@ -968,7 +968,7 @@
                     "title": "Index Property",
                     "description": "命中第几个结果。可选，默认 0 。",
                     "$ref": "#/$defs/jsonInt32",
-                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。"
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N + index 。若超出范围，则视为当前识别无结果。"
                 },
                 "green_mask": {
                     "title": "Green Mask Property",
@@ -1111,7 +1111,7 @@
                     "title": "Index Property",
                     "description": "命中第几个结果。可选，默认 0 。",
                     "$ref": "#/$defs/jsonInt32",
-                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。"
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N + index 。若超出范围，则视为当前识别无结果。"
                 },
                 "connected": {
                     "title": "Connected Property",
@@ -1203,6 +1203,7 @@
                     "anyOf": [
                         {
                             "type": "array",
+                            "minItems": 1,
                             "items": {
                                 "type": "object",
                                 "properties": {
@@ -1284,7 +1285,7 @@
                     "title": "Index Property",
                     "description": "Index to hit. Optional, default 0.",
                     "$ref": "#/$defs/jsonInt32",
-                    "markdownDescription": "*int*\n\nIndex to hit. Optional, default 0.\n\nIf there are N results in total, the value range of `index` is [-N, N - 1], where negative numbers are converted to N - index using Python-like rules. If it exceeds the range, it is considered that there is no result in the current identification."
+                    "markdownDescription": "*int*\n\nIndex to hit. Optional, default 0.\n\nIf there are N results in total, the value range of `index` is [-N, N - 1], where negative numbers are converted to N + index using Python-like rules. If it exceeds the range, it is considered that there is no result in the current identification."
                 }
             },
             "anyOf": [
@@ -1377,7 +1378,7 @@
                     "title": "Index Property",
                     "description": "命中第几个结果。可选，默认 0 。",
                     "$ref": "#/$defs/jsonInt32",
-                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。"
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N + index 。若超出范围，则视为当前识别无结果。"
                 },
                 "only_rec": {
                     "title": "Only Recognize Property",
@@ -1478,7 +1479,7 @@
                     "title": "Index Property",
                     "description": "命中第几个结果。可选，默认 0 。",
                     "$ref": "#/$defs/jsonInt32",
-                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。"
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N + index 。若超出范围，则视为当前识别无结果。"
                 }
             },
             "anyOf": [
@@ -1581,7 +1582,7 @@
                     "title": "Index Property",
                     "description": "命中第几个结果。可选，默认 0 。",
                     "$ref": "#/$defs/jsonInt32",
-                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。\n"
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N + index 。若超出范围，则视为当前识别无结果。\n"
                 }
             },
             "anyOf": [

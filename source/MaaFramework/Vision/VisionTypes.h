@@ -166,7 +166,8 @@ struct MultiColorMatcherParam : public RoiTargetParamBase
     };
     std::vector<OffsetPoint> points;
 
-    // Accuracy 1~100, 100 means exact match; tolerance = 100 - degree
+    // Accuracy 1~100, 100 means exact match; per-channel tolerance = 100 - degree
+    // (clamped to 0~255)
     int degree = kDefaultDegree;
 
     // Color deviation for the base point (0xRRGGBB); 0 means using the tolerance from degree

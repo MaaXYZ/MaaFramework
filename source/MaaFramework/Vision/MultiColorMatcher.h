@@ -36,9 +36,13 @@ private:
     // Tolerance: if dev (0xRRGGBB) is non-zero, unpack per channel; otherwise use 100 - degree
     static cv::Scalar tolerance(int dev, int degree);
     // Translate mask: result(x, y) = mask(x + dx, y + dy)
-    static cv::Mat translate_mask(const cv::Mat& mask, int dx, int dy);
+    static cv::Mat translate_mask(const cv::Mat& mask, long long dx, long long dy);
+    // Drop hits with identical coordinates (overlapping ROIs can produce duplicates)
+    static ResultsVec dedupe_hits(ResultsVec results);
     // Cluster by miss distance: keep the first point of each cluster
-    static ResultsVec cluster_miss(const ResultsVec& results, int miss);
+    // (max_keep > 0 stops once that many survivors are kept, equivalent to a
+    // later count truncation but without holding all candidates)
+    static ResultsVec cluster_miss(const ResultsVec& results, int miss, int max_keep);
     // Sort by orient (affects which point is kept during clustering)
     static void sort_by_orient(ResultsVec& results, int orient);
 

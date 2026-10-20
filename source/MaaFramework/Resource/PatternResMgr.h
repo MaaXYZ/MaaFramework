@@ -1,6 +1,8 @@
 #pragma once
 
 #include <filesystem>
+#include <mutex>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -25,7 +27,9 @@ public:
     bool lazy_load(const std::filesystem::path& path);
     void clear();
 
-    const PatternData* find(const std::string& name) const;
+    // Returns a copy so the caller never holds a reference into the map while
+    // another thread loads or clears the resource
+    std::optional<PatternData> find(const std::string& name) const;
 
     // RAII guard that sets the active instance for the current thread while
     // parsing (restores the previous one on destruction)
@@ -49,9 +53,10 @@ private:
     inline static thread_local const PatternResMgr* current_for_parse_ = nullptr;
 
 private:
-    bool load_dir(const std::filesystem::path& path);
-    bool load_lua_file(const std::filesystem::path& path);
+    bool load_dir(const std::filesystem::path& path, std::unordered_map<std::string, PatternData>& staged);
+    bool load_lua_file(const std::filesystem::path& path, std::unordered_map<std::string, PatternData>& staged);
 
+    mutable std::mutex mutex_;
     std::vector<std::filesystem::path> roots_;
     std::unordered_map<std::string, PatternData> patterns_;
 };

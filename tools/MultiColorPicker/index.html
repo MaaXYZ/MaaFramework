@@ -1223,6 +1223,24 @@ function pvSaveItems(arr){
   }
 }
 
+// localStorage 的写入没有原子性：两个标签页并发保存时各自读到同一份快照，
+// 后写会整体覆盖先写，导致先保存的图案丢失。
+// 有 Web Locks API 时用跨标签页互斥锁保护「读-合并-写」；不支持的浏览器
+// 退化为尽力而为的直接合并。
+function pvMutateSaved(mutate, done){
+  const run = ()=>{
+    const items = pvSavedItems();
+    if(!mutate(items) || !pvSaveItems(items)){ if(done) done(false); return; }
+    if(done) done(true);
+  };
+  if(navigator.locks && navigator.locks.request){
+    navigator.locks.request(PV_KEY + '_lock', run).catch(()=>run());
+  }
+  else{
+    run();
+  }
+}
+
 // 单条保存记录 -> page.lua 文本（自动区分表格式 / screen.find_color 写法）
 function pvSerializeOne(it){
   const code = String(it.code||'').trim().replace(/;+\s*$/,'');
@@ -1463,10 +1481,11 @@ function pvOpenModal(e){
   $('pvModal').classList.add('show');
 }
 function pvDeleteItem(i){
-  const items = pvSavedItems();
-  items.splice(i,1);
-  if(!pvSaveItems(items)) return;   // 写入失败：不刷新，保持现状
-  pvRefresh();
+  pvMutateSaved(items=>{
+    if(i<0 || i>=items.length) return false;
+    items.splice(i,1);
+    return true;
+  }, ok=>{ if(ok) pvRefresh(); });   // 写入失败：错误已在状态栏提示，不刷新，保持现状
 }
 // 缓存里的每条记录单独解析，保证 savedIndex 与缓存数组一一对应
 function pvSavedEntries(items){
@@ -1536,16 +1555,20 @@ $('btnSave').onclick = ()=>{
 $('btnSaveOk').onclick = ()=>{
   const name = $('saveComment').value.trim() || ('未命名 ' + new Date().toLocaleString());
   const code = $('codes').value.trim();
-  // 先重新读取最新列表，按名称合并（同名覆盖、新名追加），避免并发保存互相覆盖
-  const items = pvSavedItems();
-  const idx = items.findIndex(it=>it.name===name);
-  if(idx>=0) items[idx] = {name:name, code:code, ts:Date.now()};
-  else items.push({name:name, code:code, ts:Date.now()});
-  if(!pvSaveItems(items)) return;   // 保存失败：错误已在状态栏提示，不刷新列表、不报成功
-  $('saveModal').classList.remove('show');
-  setMsg('已保存“' + name + '”到图案预览', '#2ecc71');
-  $('pvView').classList.add('show');   // 保存后直接切到图案预览页
-  pvRefresh();
+  // 在锁内重新读取最新列表并按名称合并（同名覆盖、新名追加），
+  // 避免与其他标签页的并发保存互相覆盖
+  pvMutateSaved(items=>{
+    const idx = items.findIndex(it=>it.name===name);
+    if(idx>=0) items[idx] = {name:name, code:code, ts:Date.now()};
+    else items.push({name:name, code:code, ts:Date.now()});
+    return true;
+  }, ok=>{
+    if(!ok) return;   // 保存失败：错误已在状态栏提示，不关弹窗、不报成功
+    $('saveModal').classList.remove('show');
+    setMsg('已保存“' + name + '”到图案预览', '#2ecc71');
+    $('pvView').classList.add('show');   // 保存后直接切到图案预览页
+    pvRefresh();
+  });
 };
 
 // ============ 初始化 ============
