@@ -1,4 +1,3 @@
-#include "Common/IOSPairing.h"
 #include "ControlUnit/IOSDeviceAPI.h"
 
 #include <algorithm>
@@ -9,6 +8,7 @@
 
 #include "MaaUtils/Buffer/BufferTypes.hpp"
 #include "Operations.h"
+#include "PairingConversion.h"
 #include "wifi/Credentials.h"
 
 namespace

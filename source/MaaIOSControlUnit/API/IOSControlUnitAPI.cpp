@@ -1,5 +1,5 @@
 #include "MaaControlUnit/IOSControlUnitAPI.h"
-#include "Common/IOSPairing.h"
+#include "Device/PairingConversion.h"
 
 #include <MaaUtils/Logger.h>
 
