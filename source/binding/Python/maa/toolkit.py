@@ -203,7 +203,7 @@ class Toolkit:
         """Discover USB/Wi-Fi devices without pairing or starting a media session."""
         if timeout_ms < 0 or timeout_ms > 60000:
             raise ValueError("timeout_ms must be between 0 and 60000")
-        Toolkit._set_api_properties()
+        Toolkit._set_ios_api_properties()
         api = Library.toolkit()
         handle = api.MaaToolkitIOSDeviceListCreate()
         if not handle:
@@ -273,7 +273,7 @@ class Toolkit:
         """Restore raw credentials from a MaaIOS1 string without device I/O."""
         if "\0" in record:
             raise ValueError("Pairing record must not contain NUL")
-        Toolkit._set_api_properties()
+        Toolkit._set_ios_api_properties()
         value = Library.toolkit().MaaToolkitIOSDeviceParsePairingRecord(record.encode())
         if not value:
             raise ValueError("Invalid iOS pairing record or iOS support is disabled")
@@ -286,7 +286,7 @@ class Toolkit:
     def format_ios_pairing_record(pairing: IOSWiFiPairing) -> str:
         """Serialize credentials for caller-owned persistence."""
         from .buffer import StringBuffer
-        Toolkit._set_api_properties()
+        Toolkit._set_ios_api_properties()
         value = pairing._native()
         output = StringBuffer()
         if not Library.toolkit().MaaToolkitIOSDeviceFormatPairingRecord(ctypes.byref(value), output._handle):
@@ -361,7 +361,7 @@ class Toolkit:
         if cancelled is not None and not callable(cancelled):
             raise TypeError("cancelled must be callable")
         encoded_options = json.dumps(options if options is not None else {}, ensure_ascii=False).encode("utf-8")
-        Toolkit._set_api_properties()
+        Toolkit._set_ios_api_properties()
         stopped = threading.Event()
         errors: list[BaseException] = []
         error_lock = threading.Lock()
@@ -560,48 +560,6 @@ class Toolkit:
             ctypes.c_char_p,
         ]
 
-        api = Library.toolkit()
-        pairing_pointer = ctypes.POINTER(MaaIOSWiFiPairing)
-        for name in ("Discover", "Pair", "CheckConnection", "Prepare"):
-            function = getattr(api, f"MaaToolkitIOSDevice{name}")
-            function.restype = MaaBool
-            argument_types = [ctypes.c_char_p, _IOSEventCallback, _IOSCancelCallback,
-                              ctypes.c_void_p, MaaStringBufferHandle]
-            if name == "Pair":
-                argument_types.append(ctypes.POINTER(ctypes.POINTER(MaaIOSWiFiPairing)))
-            if name == "Discover":
-                inputs = [MaaIOSConnectionMethod, ctypes.POINTER(pairing_pointer), MaaSize]
-            elif name == "Pair":
-                inputs = [ctypes.c_char_p, MaaIOSConnectionMethod]
-            else:
-                inputs = [ctypes.c_char_p, MaaIOSConnectionMethod, ctypes.c_char_p, pairing_pointer]
-            function.argtypes = inputs + argument_types
-        api.MaaToolkitIOSDeviceParsePairingRecord.restype = pairing_pointer
-        api.MaaToolkitIOSDeviceParsePairingRecord.argtypes = [ctypes.c_char_p]
-        api.MaaToolkitIOSDeviceFormatPairingRecord.restype = MaaBool
-        api.MaaToolkitIOSDeviceFormatPairingRecord.argtypes = [pairing_pointer, MaaStringBufferHandle]
-        api.MaaToolkitIOSDeviceDestroyPairing.restype = None
-        api.MaaToolkitIOSDeviceDestroyPairing.argtypes = [pairing_pointer]
-        api.MaaToolkitIOSDeviceListCreate.restype = ctypes.c_void_p
-        api.MaaToolkitIOSDeviceListCreate.argtypes = []
-        api.MaaToolkitIOSDeviceListDestroy.restype = None
-        api.MaaToolkitIOSDeviceListDestroy.argtypes = [ctypes.c_void_p]
-        api.MaaToolkitIOSDeviceFindWithTimeout.restype = MaaBool
-        api.MaaToolkitIOSDeviceFindWithTimeout.argtypes = [ctypes.c_int64, ctypes.c_void_p]
-        api.MaaToolkitIOSDeviceFindWithOptions.restype = MaaBool
-        api.MaaToolkitIOSDeviceFindWithOptions.argtypes = [MaaIOSConnectionMethod, ctypes.POINTER(pairing_pointer), MaaSize, ctypes.c_char_p, ctypes.c_void_p]
-        api.MaaToolkitIOSDeviceListSize.restype = MaaSize
-        api.MaaToolkitIOSDeviceListSize.argtypes = [ctypes.c_void_p]
-        api.MaaToolkitIOSDeviceListAt.restype = ctypes.c_void_p
-        api.MaaToolkitIOSDeviceListAt.argtypes = [ctypes.c_void_p, MaaSize]
-        for name in ("MaaToolkitIOSDeviceGetName", "MaaToolkitIOSDeviceGetUdid",
-                     "MaaToolkitIOSDeviceGetConnections", "MaaToolkitIOSDeviceListGetWarnings"):
-            function = getattr(api, name)
-            function.restype = ctypes.c_char_p
-            function.argtypes = [ctypes.c_void_p]
-        api.MaaToolkitIOSDeviceGetScreencapMethods.restype = MaaIOSScreencapMethod
-        api.MaaToolkitIOSDeviceGetScreencapMethods.argtypes = [ctypes.c_void_p]
-
         Library.toolkit().MaaToolkitAdbDeviceListCreate.restype = MaaToolkitAdbDeviceListHandle
         Library.toolkit().MaaToolkitAdbDeviceListCreate.argtypes = []
 
@@ -730,3 +688,66 @@ class Toolkit:
 
         Library.toolkit().MaaToolkitPortalHelperSetRestoreToken.restype = None
         Library.toolkit().MaaToolkitPortalHelperSetRestoreToken.argtypes = [MaaToolkitPortalHelperHandle, ctypes.c_char_p]
+
+    _ios_api_properties_initialized: bool = False
+
+    @staticmethod
+    def _set_ios_api_properties() -> None:
+        if Toolkit._ios_api_properties_initialized:
+            return
+
+        with Library._api_lock:
+            if Toolkit._ios_api_properties_initialized:
+                return
+
+            try:
+                Toolkit._assign_ios_api_properties()
+            except AttributeError as error:
+                raise RuntimeError(
+                    "iOS Toolkit APIs are not available in the current build."
+                ) from error
+            Toolkit._ios_api_properties_initialized = True
+
+    @staticmethod
+    def _assign_ios_api_properties() -> None:
+        api = Library.toolkit()
+        pairing_pointer = ctypes.POINTER(MaaIOSWiFiPairing)
+        for name in ("Discover", "Pair", "CheckConnection", "Prepare"):
+            function = getattr(api, f"MaaToolkitIOSDevice{name}")
+            function.restype = MaaBool
+            argument_types = [ctypes.c_char_p, _IOSEventCallback, _IOSCancelCallback,
+                              ctypes.c_void_p, MaaStringBufferHandle]
+            if name == "Pair":
+                argument_types.append(ctypes.POINTER(ctypes.POINTER(MaaIOSWiFiPairing)))
+            if name == "Discover":
+                inputs = [MaaIOSConnectionMethod, ctypes.POINTER(pairing_pointer), MaaSize]
+            elif name == "Pair":
+                inputs = [ctypes.c_char_p, MaaIOSConnectionMethod]
+            else:
+                inputs = [ctypes.c_char_p, MaaIOSConnectionMethod, ctypes.c_char_p, pairing_pointer]
+            function.argtypes = inputs + argument_types
+        api.MaaToolkitIOSDeviceParsePairingRecord.restype = pairing_pointer
+        api.MaaToolkitIOSDeviceParsePairingRecord.argtypes = [ctypes.c_char_p]
+        api.MaaToolkitIOSDeviceFormatPairingRecord.restype = MaaBool
+        api.MaaToolkitIOSDeviceFormatPairingRecord.argtypes = [pairing_pointer, MaaStringBufferHandle]
+        api.MaaToolkitIOSDeviceDestroyPairing.restype = None
+        api.MaaToolkitIOSDeviceDestroyPairing.argtypes = [pairing_pointer]
+        api.MaaToolkitIOSDeviceListCreate.restype = ctypes.c_void_p
+        api.MaaToolkitIOSDeviceListCreate.argtypes = []
+        api.MaaToolkitIOSDeviceListDestroy.restype = None
+        api.MaaToolkitIOSDeviceListDestroy.argtypes = [ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceFindWithTimeout.restype = MaaBool
+        api.MaaToolkitIOSDeviceFindWithTimeout.argtypes = [ctypes.c_int64, ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceFindWithOptions.restype = MaaBool
+        api.MaaToolkitIOSDeviceFindWithOptions.argtypes = [MaaIOSConnectionMethod, ctypes.POINTER(pairing_pointer), MaaSize, ctypes.c_char_p, ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceListSize.restype = MaaSize
+        api.MaaToolkitIOSDeviceListSize.argtypes = [ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceListAt.restype = ctypes.c_void_p
+        api.MaaToolkitIOSDeviceListAt.argtypes = [ctypes.c_void_p, MaaSize]
+        for name in ("MaaToolkitIOSDeviceGetName", "MaaToolkitIOSDeviceGetUdid",
+                     "MaaToolkitIOSDeviceGetConnections", "MaaToolkitIOSDeviceListGetWarnings"):
+            function = getattr(api, name)
+            function.restype = ctypes.c_char_p
+            function.argtypes = [ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceGetScreencapMethods.restype = MaaIOSScreencapMethod
+        api.MaaToolkitIOSDeviceGetScreencapMethods.argtypes = [ctypes.c_void_p]

@@ -82,7 +82,7 @@ class IOSManagementBindingTest(unittest.TestCase):
     def setUp(self):
         self.api = NativeAPI()
         self.toolkit_patch = patch.object(Library, "toolkit", return_value=self.api)
-        self.init_patch = patch.object(Toolkit, "_set_api_properties")
+        self.init_patch = patch.object(Toolkit, "_set_ios_api_properties")
         self.buffer_patch = patch("maa.buffer.StringBuffer", FakeBuffer)
         for item in (self.toolkit_patch, self.init_patch, self.buffer_patch):
             item.start()
@@ -170,7 +170,7 @@ class IOSManagementBindingTest(unittest.TestCase):
         self.assertEqual(self.api.calls, [])
 
     def test_native_signatures_match_callbacks_and_buffer_pointer(self):
-        Toolkit._assign_api_properties()
+        Toolkit._assign_ios_api_properties()
         for name in ("Discover", "Pair", "CheckConnection", "Prepare"):
             function = getattr(self.api, f"MaaToolkitIOSDevice{name}")
             self.assertIs(function.restype, MaaBool)
@@ -180,6 +180,58 @@ class IOSManagementBindingTest(unittest.TestCase):
             self.assertIs(function.argtypes[offset + 4], MaaStringBufferHandle)
             if name == "Pair":
                 self.assertIs(function.argtypes[offset + 5], ctypes.POINTER(ctypes.POINTER(MaaIOSWiFiPairing)))
+
+
+class ToolkitOptionalIOSBindingTest(unittest.TestCase):
+    def setUp(self):
+        self.api = MagicMock()
+        self.api.MaaToolkitAdbDeviceListSize.return_value = 0
+        self.api.MaaToolkitDesktopWindowListSize.return_value = 0
+        self.missing = "MaaToolkitIOSDevice"
+        self.ios_lookups = []
+
+        def symbol(name):
+            if name.startswith("MaaToolkitIOSDevice"):
+                self.ios_lookups.append(name)
+                if name.startswith(self.missing):
+                    raise AttributeError(name)
+            return getattr(self.api, name)
+
+        class OptionalAPI:
+            __getattr__ = staticmethod(symbol)
+
+        for item in (patch.object(Library, "toolkit", return_value=OptionalAPI()),
+                     patch.object(Toolkit, "_api_properties_initialized", False),
+                     patch.object(Toolkit, "_ios_api_properties_initialized", False)):
+            item.start()
+            self.addCleanup(item.stop)
+
+    def test_non_ios_methods_work_without_ios_symbols(self):
+        self.assertEqual(Toolkit.find_adb_devices(), [])
+        self.assertEqual(Toolkit.find_desktop_windows(), [])
+        self.assertEqual(self.ios_lookups, [])
+        self.assertTrue(Toolkit._api_properties_initialized)
+        self.assertFalse(Toolkit._ios_api_properties_initialized)
+
+    def test_only_ios_methods_report_unavailable_and_do_not_poison_initialization(self):
+        pairing = IOSWiFiPairing("device", "host", "peer", b"1" * 32, b"2" * 32, b"3" * 32)
+        calls = [Toolkit.find_ios_devices, Toolkit.ios_discover, Toolkit.ios_pair,
+                 lambda: Toolkit.ios_check_connection(udid="device"),
+                 lambda: Toolkit.ios_prepare(udid="device"),
+                 lambda: Toolkit.parse_ios_pairing_record("record"),
+                 lambda: Toolkit.format_ios_pairing_record(pairing)]
+        for call in calls:
+            with self.subTest(call=call), self.assertRaisesRegex(RuntimeError, "iOS Toolkit APIs are not available"):
+                call()
+        self.assertFalse(Toolkit._ios_api_properties_initialized)
+        self.assertEqual(Toolkit.find_adb_devices(), [])
+
+    def test_partial_ios_library_is_rejected_without_affecting_other_methods(self):
+        self.missing = "MaaToolkitIOSDevicePrepare"
+        with self.assertRaisesRegex(RuntimeError, "iOS Toolkit APIs are not available"):
+            Toolkit.ios_discover()
+        self.assertFalse(Toolkit._ios_api_properties_initialized)
+        self.assertEqual(Toolkit.find_adb_devices(), [])
 
 
 class IOSControllerCredentialTest(unittest.TestCase):
