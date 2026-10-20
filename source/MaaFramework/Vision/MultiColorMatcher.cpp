@@ -1,6 +1,7 @@
 #include "MultiColorMatcher.h"
 
 #include <format>
+#include <unordered_map>
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/NoWarningCV.hpp"
@@ -19,13 +20,32 @@ void MultiColorMatcher::analyze()
 {
     auto start_time = std::chrono::steady_clock::now();
 
+    ResultsVec raw_results;
     while (next_roi()) {
         auto results = multi_color_match();
-        add_results(std::move(results));
+        merge_vector_(raw_results, std::move(results));
     }
     reset_roi();
 
+    // Apply orient ordering, clustering and the count limit once on the merged
+    // results, so hits across ROIs are deduplicated and the total count honored
+    sort_by_orient(raw_results, param_.orient);
+
+    if (param_.miss > 0) {
+        raw_results = cluster_miss(raw_results, param_.miss);
+    }
+
+    if (param_.count > 0 && static_cast<int>(raw_results.size()) > param_.count) {
+        raw_results.resize(param_.count);
+    }
+
+    add_results(std::move(raw_results));
+
     cherry_pick();
+
+    if (debug_draw_) {
+        handle_draw(draw_result(filtered_results_));
+    }
 
     auto cost = duration_since(start_time);
     LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
@@ -105,25 +125,19 @@ MultiColorMatcher::ResultsVec MultiColorMatcher::multi_color_match() const
     // Collect all non-zero points at once instead of per-pixel looping
     std::vector<cv::Point> locations;
     cv::findNonZero(combined, locations);
+
+    // Bound intermediate hits so a pathological config (e.g. full-channel
+    // tolerance) cannot stall recognition
+    constexpr size_t kMaxRawHits = 1'000'000;
+    if (locations.size() > kMaxRawHits) {
+        LogWarn << "too many raw hits, truncated" << VAR(locations.size());
+        locations.resize(kMaxRawHits);
+    }
+
     results.reserve(locations.size());
     for (const auto& pt : locations) {
         cv::Rect box(roi_.x + pt.x, roi_.y + pt.y, 1, 1);
         results.emplace_back(MultiColorMatcherResult { .box = box, .count = 1 });
-    }
-
-    sort_by_orient(results, param_.orient);
-
-    if (param_.miss > 0) {
-        results = cluster_miss(std::move(results), param_.miss);
-    }
-
-    if (param_.count > 0 && static_cast<int>(results.size()) > param_.count) {
-        results.resize(param_.count);
-    }
-
-    if (debug_draw_) {
-        auto draw = draw_result(results);
-        handle_draw(draw);
     }
 
     return results;
@@ -135,10 +149,13 @@ void MultiColorMatcher::sort_by_orient(ResultsVec& results, int orient)
         return;
     }
 
-    auto cx = std::ranges::max(results, {}, [](const auto& r) { return r.box.x; }).box.x;
-    auto cy = std::ranges::max(results, {}, [](const auto& r) { return r.box.y; }).box.y;
-    cx /= 2;
-    cy /= 2;
+    // orient 8 sorts by distance to the center; derive the center from the hit
+    // bounds, not from half the max coordinates (which breaks when hits are
+    // offset from the origin)
+    const auto [min_x, max_x] = std::ranges::minmax(results, {}, [](const auto& r) { return r.box.x; });
+    const auto [min_y, max_y] = std::ranges::minmax(results, {}, [](const auto& r) { return r.box.y; });
+    const long long cx = (static_cast<long long>(min_x.box.x) + max_x.box.x) / 2;
+    const long long cy = (static_cast<long long>(min_y.box.y) + max_y.box.y) / 2;
 
     auto key = [&](const MultiColorMatcherResult& r) -> std::tuple<long long, long long> {
         int x = r.box.x;
@@ -164,19 +181,46 @@ void MultiColorMatcher::sort_by_orient(ResultsVec& results, int orient)
     std::ranges::sort(results, [&](const auto& a, const auto& b) { return key(a) < key(b); });
 }
 
-MultiColorMatcher::ResultsVec MultiColorMatcher::cluster_miss(ResultsVec results, int miss)
+MultiColorMatcher::ResultsVec MultiColorMatcher::cluster_miss(const ResultsVec& results, int miss)
 {
-    // Cluster by miss distance: take the first point, remove all points within miss range of it, repeat
+    // Grid-based clustering, ~O(n): iterate in order, keep a point only if no
+    // previously kept point lies within Chebyshev distance `miss`
     ResultsVec kept;
     kept.reserve(results.size());
-    while (!results.empty()) {
-        auto seed = results.front();
-        kept.push_back(seed);
-        std::erase_if(results, [&](const auto& r) {
-            int dx = r.box.x - seed.box.x;
-            int dy = r.box.y - seed.box.y;
-            return std::abs(dx) <= miss && std::abs(dy) <= miss;
-        });
+
+    const int cell = miss + 1;
+    auto cell_key = [cell](int x, int y) {
+        return (static_cast<long long>(x / cell) << 32) | static_cast<unsigned int>(y / cell);
+    };
+    std::unordered_map<long long, std::vector<cv::Point>> grid;
+
+    for (const auto& r : results) {
+        const int gcx = r.box.x / cell;
+        const int gcy = r.box.y / cell;
+
+        // Cell size is miss + 1, so any blocking point must lie in the 3x3
+        // neighborhood of cells
+        bool blocked = false;
+        for (int gx = gcx - 1; gx <= gcx + 1 && !blocked; ++gx) {
+            for (int gy = gcy - 1; gy <= gcy + 1 && !blocked; ++gy) {
+                auto it = grid.find(cell_key(gx * cell, gy * cell));
+                if (it == grid.end()) {
+                    continue;
+                }
+                for (const auto& p : it->second) {
+                    if (std::abs(p.x - r.box.x) <= miss && std::abs(p.y - r.box.y) <= miss) {
+                        blocked = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (blocked) {
+            continue;
+        }
+
+        kept.push_back(r);
+        grid[cell_key(r.box.x, r.box.y)].emplace_back(r.box.x, r.box.y);
     }
     return kept;
 }

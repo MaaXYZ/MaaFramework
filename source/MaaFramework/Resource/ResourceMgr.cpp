@@ -282,6 +282,8 @@ bool ResourceMgr::override_pipeline(const json::value& pipeline_override)
 {
     LogInfo << VAR(pipeline_override);
 
+    // Pattern references inside the override must resolve against this resource
+    PatternResMgr::ParseGuard pattern_guard(&pattern_res_);
     std::set<std::string> existing_keys;
     return pipeline_res_.parse_and_override(pipeline_override, existing_keys, default_pipeline_);
 }
@@ -807,6 +809,15 @@ bool ResourceMgr::load_bundle(const std::filesystem::path& path)
 
     bool to_load = false;
     bool ret = true;
+
+    // Pattern files must be loaded before the default pipeline and regular
+    // pipeline so that the parser can reference them via the "pattern" field
+    if (auto p = path / "pattern"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= pattern_res_.lazy_load(p);
+    }
+
+    PatternResMgr::ParseGuard pattern_guard(&pattern_res_);
     if (auto jc_path = path / "default_pipeline.jsonc"_path; std::filesystem::exists(jc_path)) {
         to_load = true;
         ret &= default_pipeline_.load(jc_path);
@@ -816,19 +827,10 @@ bool ResourceMgr::load_bundle(const std::filesystem::path& path)
         ret &= default_pipeline_.load(j_path);
     }
 
-    // Pattern files must be loaded before the pipeline so that the parser can
-    // reference them via the "pattern" field
-    if (auto p = path / "pattern"_path; std::filesystem::exists(p)) {
-        to_load = true;
-        ret &= pattern_res_.lazy_load(p);
-    }
-
-    PatternResMgr::current_for_parse = &pattern_res_;
     if (auto p = path / "pipeline"_path; std::filesystem::exists(p)) {
         to_load = true;
         ret &= pipeline_res_.load(p, default_pipeline_);
     }
-    PatternResMgr::current_for_parse = nullptr;
     if (auto p = path / "model"_path / "ocr"_path; std::filesystem::exists(p)) {
         to_load = true;
         ret &= ocr_res_.lazy_load(p);
@@ -876,6 +878,8 @@ bool ResourceMgr::load_pipeline(const std::filesystem::path& path)
 
     paths_.emplace_back(path);
 
+    // Pattern references inside the pipeline must resolve against this resource
+    PatternResMgr::ParseGuard pattern_guard(&pattern_res_);
     if (std::filesystem::is_directory(path)) {
         return pipeline_res_.load(path, default_pipeline_);
     }

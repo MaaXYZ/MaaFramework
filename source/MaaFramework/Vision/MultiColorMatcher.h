@@ -38,7 +38,7 @@ private:
     // Translate mask: result(x, y) = mask(x + dx, y + dy)
     static cv::Mat translate_mask(const cv::Mat& mask, int dx, int dy);
     // Cluster by miss distance: keep the first point of each cluster
-    static ResultsVec cluster_miss(ResultsVec results, int miss);
+    static ResultsVec cluster_miss(const ResultsVec& results, int miss);
     // Sort by orient (affects which point is kept during clustering)
     static void sort_by_orient(ResultsVec& results, int orient);
 

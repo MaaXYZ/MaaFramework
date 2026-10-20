@@ -309,7 +309,7 @@ const state = {
   r2: {x3:'',y3:'',x4:'',y4:''},
   jd: 100, skbj: 0,
   basecl: null,       // 基准颜色（槽1的颜色）
-  template: '[0],[1],[2]',
+  template: '[0],"[1]",[2],[3]',
   // 交互
   dragging: false,
   findMode: false,    // A 按下后等待 S
@@ -326,6 +326,8 @@ function setMsg(text, color='#2ecc71'){ $('msg').textContent=text; $('msg').styl
 function pad2(n){return n.toString(16).toUpperCase().padStart(2,'0');}
 function colorToHex(c){return '0x'+pad2(c.R)+pad2(c.G)+pad2(c.B);}
 function rgbToCss(c){return 'rgb('+c.R+','+c.G+','+c.B+')';}
+// HTML 转义：凡来自导入文件/用户输入的文本（名称、标签等）拼进 innerHTML 前必须转义
+function escapeHtml(s){return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 function isNumeric(s){return s!==''&&!isNaN(Number(s));}
 
@@ -887,7 +889,8 @@ function parseCodePattern(text){
     if(rp>-1) tail = (s.slice(lb+1, rp).match(/\d+/g)||[]).map(Number);
   } else {
     // ② 点串格式：首个裸 0xRRGGBB 视为原点(0|0)；x|y|0xRRGGBB 为相对原点的点
-    const tokens = s.split(/[,\s;]+/).filter(Boolean);
+    //    点串可能被双引号包裹（导出格式 "dx|dy|0xRRGGBB,..."），先去掉引号再切分
+    const tokens = s.replace(/"/g,'').split(/[,\s;]+/).filter(Boolean);
     let originAdded = false, lastPtIdx = -1;
     tokens.forEach((t,i)=>{
       let mm = t.match(/^(-?\d+)\|(-?\d+)\|0x([0-9a-fA-F]{6})$/);
@@ -1183,14 +1186,14 @@ $('btnCopy').onclick = ()=>{
 $('btnSetCode').onclick = ()=>{ $('tplInput').value = state.template; $('codeModal').classList.add('show'); };
 
 // 模板格式预设
-$('btnTplPipe').onclick = ()=>{ $('tplInput').value = '[0],[1],[2]'; };
+$('btnTplPipe').onclick = ()=>{ $('tplInput').value = '[0],"[1]",[2],[3]'; };
 $('btnTplLua').onclick = ()=>{ $('tplInput').value =
   'x, y = screen.find_color({ {0,0,[0]},[6] }, [2], [3])'; };
 $('btnTplLuaAll').onclick = ()=>{ $('tplInput').value =
   'results = screen.find_color({ {0,0,[0]},[6],find_all = true }, [2], [3])'; };
 
 $('btnSaveTpl').onclick = ()=>{
-  state.template = $('tplInput').value.trim() || '[0],[1],[2]';
+  state.template = $('tplInput').value.trim() || '[0],"[1]",[2],[3]';
   $('codeModal').classList.remove('show');
   setMsg('模板已保存');
   // 持久化到 localStorage
@@ -1210,7 +1213,15 @@ function pvSavedItems(){
   try{ const a = JSON.parse(localStorage.getItem(PV_KEY)||'[]'); return Array.isArray(a)?a:[]; }
   catch(e){ return []; }
 }
-function pvSaveItems(arr){ try{ localStorage.setItem(PV_KEY, JSON.stringify(arr)); }catch(e){} }
+function pvSaveItems(arr){
+  try{
+    localStorage.setItem(PV_KEY, JSON.stringify(arr));
+    return true;
+  }catch(e){
+    setMsg('保存失败：' + (e && e.message ? e.message : 'localStorage 写入异常'), '#e74c3c');
+    return false;
+  }
+}
 
 // 单条保存记录 -> page.lua 文本（自动区分表格式 / screen.find_color 写法）
 function pvSerializeOne(it){
@@ -1382,7 +1393,7 @@ function pvRangeText(r){
 function pvBuildCard(e){
   const card = document.createElement('div');
   card.className = 'pv-card';
-  let html = '<div class="pv-cname">' + e.name + '</div><div class="pv-badges">';
+  let html = '<div class="pv-cname">' + escapeHtml(e.name) + '</div><div class="pv-badges">';
   if(e.kind==='pattern'){
     const colors={}; for(const p of e.pts) colors[p.hex]=1;
     if(e.saved) html += '<span class="pv-b s">已保存</span>';
@@ -1393,15 +1404,15 @@ function pvBuildCard(e){
       + '<span class="pv-b">起始 0x' + e.base + '</span>';
     if(e.saved) html += '<button class="pv-del" data-del="' + e.savedIndex + '">删除</button>';
     html += '</div><div class="pv-cvs"></div><div class="pv-meta">范围 ' + pvRangeText(e.range);
-    if(e.extra!=null && e.extra!=='') html += '<br>附加参数: ' + e.extra;
+    if(e.extra!=null && e.extra!=='') html += '<br>附加参数: ' + escapeHtml(e.extra);
     html += '</div>';
   } else if(e.kind==='legacy'){
     html += '<span class="pv-b g">单点多色</span><span class="pv-b">相似度 ' + e.sim + '</span>'
       + '<span class="pv-b">颜色 ' + e.colors.length + '</span></div>'
       + '<div>' + e.colors.map(c=>'<span class="pv-sw" style="background:#'+c+'" title="0x'+c+'"></span>').join('') + '</div>'
-      + '<div class="pv-meta">文字: ' + e.label + '<br>范围 ' + pvRangeText(e.box) + '</div>';
+      + '<div class="pv-meta">文字: ' + escapeHtml(e.label) + '<br>范围 ' + pvRangeText(e.box) + '</div>';
   } else {
-    html += '<span class="pv-b">未识别</span></div><div class="pv-meta">' + (e.raw||'') + '</div>';
+    html += '<span class="pv-b">未识别</span></div><div class="pv-meta">' + escapeHtml(e.raw||'') + '</div>';
   }
   card.innerHTML = html;
   if(e.kind==='pattern'){
@@ -1433,7 +1444,7 @@ function pvRender(){
 function pvOpenModal(e){
   const m = $('pvMbox');
   const colors={}; for(const p of e.pts) colors[p.hex]=1;
-  m.innerHTML = '<h3>' + e.name + '</h3>'
+  m.innerHTML = '<h3>' + escapeHtml(e.name) + '</h3>'
     + '<div class="pv-badges"><span class="pv-b">精度 ' + (e.jd===null?'—':e.jd) + '</span><span class="pv-b">点数 '
     + e.pts.length + '</span><span class="pv-b">颜色 ' + Object.keys(colors).length + '</span><span class="pv-b">起始 0x'
     + e.base + '</span></div>'
@@ -1454,7 +1465,7 @@ function pvOpenModal(e){
 function pvDeleteItem(i){
   const items = pvSavedItems();
   items.splice(i,1);
-  pvSaveItems(items);
+  if(!pvSaveItems(items)) return;   // 写入失败：不刷新，保持现状
   pvRefresh();
 }
 // 缓存里的每条记录单独解析，保证 savedIndex 与缓存数组一一对应
@@ -1524,9 +1535,13 @@ $('btnSave').onclick = ()=>{
 };
 $('btnSaveOk').onclick = ()=>{
   const name = $('saveComment').value.trim() || ('未命名 ' + new Date().toLocaleString());
+  const code = $('codes').value.trim();
+  // 先重新读取最新列表，按名称合并（同名覆盖、新名追加），避免并发保存互相覆盖
   const items = pvSavedItems();
-  items.push({name:name, code:$('codes').value.trim(), ts:Date.now()});
-  pvSaveItems(items);
+  const idx = items.findIndex(it=>it.name===name);
+  if(idx>=0) items[idx] = {name:name, code:code, ts:Date.now()};
+  else items.push({name:name, code:code, ts:Date.now()});
+  if(!pvSaveItems(items)) return;   // 保存失败：错误已在状态栏提示，不刷新列表、不报成功
   $('saveModal').classList.remove('show');
   setMsg('已保存“' + name + '”到图案预览', '#2ecc71');
   $('pvView').classList.add('show');   // 保存后直接切到图案预览页

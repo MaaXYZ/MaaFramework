@@ -1,5 +1,6 @@
 #include "PatternResMgr.h"
 
+#include <algorithm>
 #include <fstream>
 #include <regex>
 #include <sstream>
@@ -25,11 +26,28 @@ bool PatternResMgr::lazy_load(const std::filesystem::path& path)
 
 bool PatternResMgr::load_dir(const std::filesystem::path& path)
 {
-    bool ret = true;
-    for (const auto& entry : std::filesystem::directory_iterator(path)) {
+    // Non-throwing overload: permission or filesystem errors are reported as a
+    // load failure instead of escaping through AsyncRunner
+    std::error_code ec;
+    std::filesystem::directory_iterator it(path, ec);
+    if (ec) {
+        LogError << "failed to enumerate" << VAR(path) << VAR(ec.message());
+        return false;
+    }
+
+    // Deterministic order: files are loaded in lexicographical order; on
+    // duplicate names the later file wins (with a warning)
+    std::vector<std::filesystem::path> files;
+    for (const auto& entry : it) {
         if (entry.path().extension() == ".lua") {
-            ret &= load_lua_file(entry.path());
+            files.emplace_back(entry.path());
         }
+    }
+    std::sort(files.begin(), files.end());
+
+    bool ret = true;
+    for (const auto& f : files) {
+        ret &= load_lua_file(f);
     }
     return ret;
 }
@@ -98,6 +116,9 @@ bool PatternResMgr::load_lua_file(const std::filesystem::path& path)
             continue;
         }
 
+        if (patterns_.contains(name)) {
+            LogWarn << "duplicate pattern name, overwriting" << VAR(name) << VAR(path);
+        }
         patterns_[name] = std::move(data);
         ++count;
     }

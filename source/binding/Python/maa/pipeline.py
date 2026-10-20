@@ -18,6 +18,7 @@ class JRecognitionType(StrEnum):
     OCR = "OCR"
     NeuralNetworkClassify = "NeuralNetworkClassify"
     NeuralNetworkDetect = "NeuralNetworkDetect"
+    MultiColorMatch = "MultiColorMatch"
     And = "And"
     Or = "Or"
     Custom = "Custom"
@@ -138,6 +139,23 @@ class JCustomRecognition:
 
 
 @dataclass
+class JMultiColorMatch:
+    base_color: int = 0  # 基准点颜色 0xRRGGBB（可用 pattern 提供）
+    points: Any = None  # [{"dx","dy","color"}] 数组或 "dx|dy|0xRRGGBB,..." 字符串（可用 pattern 提供）
+    pattern: str = ""  # 引用 pattern/*.lua 中的点阵名称
+    roi: JTarget = (0, 0, 0, 0)
+    roi_offset: JRect = (0, 0, 0, 0)
+    order_by: str = "Horizontal"
+    degree: int = 90
+    main: int = 0
+    list: int = 0
+    count: int = 0
+    miss: int = 0
+    orient: int = 0
+    index: int = 0
+
+
+@dataclass
 class JAnd:
     # all_of: List of sub-recognitions. Each element can be:
     #   - str: node name reference (uses that node's recognition params)
@@ -166,6 +184,7 @@ JRecognitionParam = Union[
     JAnd,
     JOr,
     JCustomRecognition,
+    JMultiColorMatch,
 ]
 
 
@@ -419,6 +438,7 @@ class JPipelineParser:
             JRecognitionType.OCR: JOCR,
             JRecognitionType.NeuralNetworkClassify: JNeuralNetworkClassify,
             JRecognitionType.NeuralNetworkDetect: JNeuralNetworkDetect,
+            JRecognitionType.MultiColorMatch: JMultiColorMatch,
             JRecognitionType.And: JAnd,
             JRecognitionType.Or: JOr,
             JRecognitionType.Custom: JCustomRecognition,

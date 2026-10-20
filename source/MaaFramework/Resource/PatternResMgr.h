@@ -27,9 +27,26 @@ public:
 
     const PatternData* find(const std::string& name) const;
 
+    // RAII guard that sets the active instance for the current thread while
+    // parsing (restores the previous one on destruction)
+    class ParseGuard
+    {
+    public:
+        ParseGuard(const PatternResMgr* mgr) : prev_(current_for_parse_) { current_for_parse_ = mgr; }
+        ~ParseGuard() { current_for_parse_ = prev_; }
+        ParseGuard(const ParseGuard&) = delete;
+        ParseGuard& operator=(const ParseGuard&) = delete;
+
+    private:
+        const PatternResMgr* prev_;
+    };
+
     // The active instance used by PipelineParser when parsing MultiColorMatch
-    // (set/cleared by ResourceMgr::load_bundle)
-    inline static const PatternResMgr* current_for_parse = nullptr;
+    // (thread-local so concurrent resource loads don't interfere)
+    static const PatternResMgr* current_for_parse() { return current_for_parse_; }
+
+private:
+    inline static thread_local const PatternResMgr* current_for_parse_ = nullptr;
 
 private:
     bool load_dir(const std::filesystem::path& path);

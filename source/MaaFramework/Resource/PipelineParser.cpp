@@ -1010,11 +1010,12 @@ bool PipelineParser::parse_multi_color_matcher_param(
     const json::value* pin = &input_;
 
     if (auto pname = input_.find<std::string>("pattern")) {
-        if (!PatternResMgr::current_for_parse) {
+        auto* mgr = PatternResMgr::current_for_parse();
+        if (!mgr) {
             LogError << "pattern resource not loaded" << VAR(*pname);
             return false;
         }
-        auto* pat = PatternResMgr::current_for_parse->find(*pname);
+        auto* pat = mgr->find(*pname);
         if (!pat) {
             LogError << "pattern not found" << VAR(*pname);
             return false;
@@ -1095,9 +1096,13 @@ bool PipelineParser::parse_multi_color_matcher_param(
     }
 
     // points: array of {"dx":..,"dy":..,"color":..} objects, or a TSLib-style
-    // string "dx|dy|0xRRGGBB,..."
-    output.points.clear();
-    if (auto points_arr = input.find<json::array>("points")) {
+    // string "dx|dy|0xRRGGBB,...". When the node omits "points", inherit from
+    // default_value (e.g. a same-type parent node) instead of dropping them.
+    if (!input.contains("points")) {
+        output.points = default_value.points;
+    }
+    else if (auto points_arr = input.find<json::array>("points")) {
+        output.points.clear();
         for (const auto& item : *points_arr) {
             if (!item.is_object()) {
                 LogError << "points item is not object" << VAR(item);
@@ -1120,6 +1125,7 @@ bool PipelineParser::parse_multi_color_matcher_param(
         }
     }
     else if (auto points_str = input.find<std::string>("points")) {
+        output.points.clear();
         // TSLib style: "dx|dy|0xRRGGBB,dx|dy|0xRRGGBB"
         std::stringstream ss(*points_str);
         std::string token;
@@ -1147,6 +1153,17 @@ bool PipelineParser::parse_multi_color_matcher_param(
                 return false;
             }
         }
+    }
+    else {
+        LogError << "points must be an array or a TSLib-style string" << VAR(input);
+        return false;
+    }
+
+    // A MultiColorMatch without offset points degenerates to matching the base
+    // color everywhere; treat it as a configuration error
+    if (output.points.empty()) {
+        LogError << "points is empty" << VAR(input);
+        return false;
     }
 
     return true;
