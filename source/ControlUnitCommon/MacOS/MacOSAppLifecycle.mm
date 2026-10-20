@@ -1,7 +1,6 @@
 #include "MacOSAppLifecycle.h"
 
 #import <AppKit/AppKit.h>
-#import <ApplicationServices/ApplicationServices.h>
 
 #include <chrono>
 #include <memory>
@@ -13,27 +12,6 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 namespace
 {
-class EventOwner
-{
-public:
-    explicit EventOwner(CGEventRef event = nullptr)
-        : event_(event)
-    {
-    }
-    ~EventOwner()
-    {
-        if (event_) {
-            CFRelease(event_);
-        }
-    }
-    EventOwner(const EventOwner&) = delete;
-    EventOwner& operator=(const EventOwner&) = delete;
-    CGEventRef get() const { return event_; }
-
-private:
-    CGEventRef event_ = nullptr;
-};
-
 NSURL* find_application(NSString* target, const std::string& search_path)
 {
     if ([target hasPrefix:@"/"]) {
@@ -130,38 +108,27 @@ bool stop_app(const std::string& intent)
             LogInfo << "Application is not running" << VAR(intent);
             return true;
         }
-        if (!AXIsProcessTrusted()) {
-            LogError << "Accessibility permission is required to stop application" << VAR(intent);
-            return false;
-        }
 
         bool stopped = true;
         for (NSRunningApplication* app in apps) {
             const pid_t pid = app.processIdentifier;
-            constexpr CGKeyCode QuitKey = 0x0C; // Q on the macOS virtual keyboard.
-            EventOwner key_down(CGEventCreateKeyboardEvent(nullptr, QuitKey, true));
-            EventOwner key_up(CGEventCreateKeyboardEvent(nullptr, QuitKey, false));
-            if (!key_down.get() || !key_up.get()) {
-                LogError << "Failed to create application quit shortcut" << VAR(pid);
+            if (![app terminate]) {
+                LogError << "Failed to send quit request" << VAR(pid);
                 stopped = false;
                 continue;
             }
-            CGEventSetFlags(key_down.get(), kCGEventFlagMaskCommand);
-            CGEventSetFlags(key_up.get(), kCGEventFlagMaskCommand);
-            CGEventPostToPid(pid, key_down.get());
-            CGEventPostToPid(pid, key_up.get());
 
             if ([NSThread isMainThread]) {
-                LogWarn << "Command-Q sent; skipping exit detection on the main thread. Success only indicates the quit request was sent."
+                LogWarn << "Quit request sent; skipping exit detection on the main thread. Success only indicates the quit request was sent."
                         << VAR(pid);
                 continue;
             }
 
-            for (int attempt = 0; attempt < 20 && !app.isTerminated; ++attempt) {
+            for (int attempt = 0; attempt < 40 && !app.isTerminated; ++attempt) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(250));
             }
             if (!app.isTerminated) {
-                LogError << "Application did not quit after Command-Q" << VAR(pid);
+                LogError << "Application did not quit after the quit request" << VAR(pid);
                 stopped = false;
             }
         }
