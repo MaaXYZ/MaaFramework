@@ -163,16 +163,11 @@
                                     "type": "string"
                                 }
                             },
-                            "required": [
-                                "name",
-                                "value"
-                            ]
+                            "required": ["name", "value"]
                         }
                     }
                 },
-                "required": [
-                    "name"
-                ]
+                "required": ["name"]
             }
         },
         "last_welcome": {
@@ -198,9 +193,5 @@
             ]
         }
     },
-    "required": [
-        "controller",
-        "resource",
-        "task"
-    ]
+    "required": ["controller", "resource", "task"]
 }

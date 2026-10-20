@@ -12,10 +12,10 @@ from typing import Any, Optional, Union
 
 import numpy
 
-from .ios import IOSWiFiPairing
 from .buffer import ImageBuffer, StringBuffer
 from .define import *
 from .event_sink import EventSink, NotificationType
+from .ios import IOSWiFiPairing
 from .job import Job, JobWithResult
 from .library import Library
 
