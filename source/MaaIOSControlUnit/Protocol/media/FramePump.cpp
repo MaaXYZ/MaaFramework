@@ -198,63 +198,222 @@ bool FramePump::restart(std::string& err)
     return true;
 }
 
+struct FramePump::DecodeState
+{
+    std::unique_ptr<Decoder> decoder;
+    bool software_only = false;
+    bool configured = false;
+};
+
+void FramePump::request_keyframe(std::optional<uint32_t> media_source)
+{
+    // 在所有提前返回之前记录本轮等待起点。
+    // 后备超时从首次请求计算，不能使用每秒重发都会更新的 last_pli_ms_。
+    if (first_pli_ms_ == 0) {
+        first_pli_ms_ = now_ms();
+    }
+    if (!media_source) {
+        return; // 尚无来源可作为 PLI 目标，不构造猜测的 0 SSRC。
+    }
+    if (now_ms() < next_pli_ms_) {
+        return; // 限制重复关键帧请求的频率。
+    }
+    next_pli_ms_ = now_ms() + kPliPeriodMs;
+    last_pli_ms_ = now_ms();
+    const auto pli = maa::ios::rt::build_pli(session_->started().remote_ssrc, *media_source);
+    std::string serr;
+    if (session_->send_rtp(pli, session_->started().sender_port, serr)) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        ++stats_.pli_sent;
+    }
+    else {
+        // 发送失败保留诊断；后续静默与关键帧等待策略负责恢复。
+        LogWarn << std::format("Failed to send PLI: {}", serr);
+    }
+}
+
+bool FramePump::configure_decoder(const AnnexBParser::AccessUnit& unit, size_t biggest, DecodeState& state)
+{
+    // NAL 超过平台后端的长度上限时尝试软件解码。
+    if (biggest > state.decoder->max_nal_size()) {
+        // 仅在关键帧切换后端，新解码器尚无旧参考帧。超大非关键帧只记录
+        // 后续使用软件解码，并通过重建会话取得用于初始化的 IDR。
+        state.software_only = true;
+        if (unit.keyframe) {
+            state.configured = false;
+        }
+    }
+    if (!state.configured) {
+        if (state.software_only && state.decoder->max_nal_size() != ~size_t { 0 }) {
+            auto soft = create_software_decoder();
+            if (soft != nullptr) {
+                state.decoder = std::move(soft);
+                LogInfo << std::format("Decoder switched to {}", state.decoder->backend_name());
+            }
+            else {
+                // 软件后端未编入时保留平台后端并提示构建条件。
+                warn_no_software();
+                state.software_only = false;
+            }
+        }
+        // 参数前缀可能随受损 AU 被丢弃，但完整参数 NAL 已缓存。
+        // 优先保留本 AU 原文；缺少的参数才使用当前会话缓存。
+        Nal vps = parser_->vps(), sps = parser_->sps(), pps = parser_->pps();
+        for (const auto& n : unit.nals) {
+            if (n.size() < 2) {
+                continue;
+            }
+            switch ((n[0] >> 1) & 0x3F) {
+            case 32:
+                vps = n;
+                break;
+            case 33:
+                sps = n;
+                break;
+            case 34:
+                pps = n;
+                break;
+            default:
+                break;
+            }
+        }
+        if (vps.empty() || sps.empty() || pps.empty() || !state.decoder->configure(vps, sps, pps)) {
+            return false;
+        }
+        state.configured = true;
+    }
+    return true;
+}
+
+void FramePump::on_access_unit(AnnexBParser::AccessUnit&& unit, DecodeState& state, std::optional<uint32_t> media_source)
+{
+    auto& au = unit.nals;
+    const bool keyframe = unit.keyframe;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        ++stats_.aus;
+    }
+    const size_t biggest = largest_nal(au);
+    if (!configure_decoder(unit, biggest, state)) {
+        return;
+    }
+    // 当前后端仍不支持此 NAL 尺寸时丢弃整个 AU。
+    if (biggest > state.decoder->max_nal_size()) {
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            ++stats_.dropped_oversized;
+            // 丢弃 AU 可能破坏参考链，暂停解码后续非关键帧，保留最近的有效画面。
+            need_keyframe_ = true;
+        }
+        // 首次 IDR 也可能超过上限，即使尚无成功解码记录仍需启动恢复。
+        if (oversized_restarts_ >= kMaxOversizedRestarts) {
+            if (!video_unusable_) {
+                video_unusable_ = true;
+                LogWarn << std::format(
+                    "After {} restarts, NALs still exceed the decoder limit. Video is unavailable; retrying every {} seconds. "
+                    "Callers can use screenshots.",
+                    oversized_restarts_,
+                    kOversizedRetryMs / 1000);
+            }
+            // 达到重建上限后交由主循环统一管理降级重试，避免重复调度。
+            return;
+        }
+        // 尚未达到上限时限制重建频率。
+        if (now_ms() - last_restart_ms_ > 1500) {
+            last_restart_ms_ = now_ms();
+            ++oversized_restarts_;
+            oversized_restart_ = true;
+        }
+        return;
+    }
+    // 受损 AU 已在 note_loss() 中丢弃；此后只能由新 first-slice 开启图像。
+    // 后续完整关键帧可直接恢复，不能再用旧的损失标记额外丢掉它。
+    // 保存进入回调时的等待状态，成功解码并取得像素后才解除。
+    const bool was_awaiting = need_keyframe_;
+    if (need_keyframe_) {
+        if (!keyframe) {
+            // 非关键帧不能修复参考链，继续请求关键帧。
+            request_keyframe(media_source);
+            std::lock_guard<std::mutex> lock(mutex_);
+            ++stats_.dropped_awaiting_keyframe;
+            return;
+        }
+    }
+
+    // 保留 publishing_.pixels 的容量和尺寸。同尺寸时由解码器直接覆写，
+    // 避免 clear() 后 resize() 对整个图像缓冲区重新填零。
+    Frame& f = publishing_;
+    const uint64_t t_decode0 = now_ms();
+    const bool ok = state.decoder->decode(au, f);
+    const uint64_t t_published0 = now_ms();
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        stats_.ms_decode += static_cast<double>(t_published0 - t_decode0);
+        ++stats_.decode_calls;
+    }
+    if (!ok || !f) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        ++stats_.no_output;
+        return;
+    }
+    // 仅在解码成功且输出有效像素后解除等待。解析出完整关键帧并不保证
+    // 解码器输出图像，过早清除会丢失 first_pli_ms_ 对应的后备恢复计时。
+    if (was_awaiting) {
+        need_keyframe_ = false;
+        awaiting_idr_from_loss_ = false;
+        first_pli_ms_ = 0;
+    }
+    if (keyframe) {
+        // 收到关键帧但未输出图像不能延后恢复期限。
+        last_decoded_keyframe_ms_ = now_ms();
+        ever_keyframe_ = true;
+        nokey_restarts_ = 0; // 成功输出关键帧后重置快速重试计数。
+        // 成功解码后退出降级并重置尺寸限制重试计数。
+        oversized_restarts_ = 0;
+        video_unusable_ = false;
+    }
+    f.geometry = options_.frame_geometry ? options_.frame_geometry() : std::nullopt;
+    std::lock_guard<std::mutex> lock(mutex_);
+    reviving_ = false; // 新会话已输出第一帧，结束恢复等待。
+    // 交换两个帧缓冲区，下一次解码复用上一帧的内存，避免 move 后
+    // 解码目标失去缓冲区并重新分配。尺寸变化仍由解码器处理。
+    std::swap(frame_, publishing_);
+    ++serial_;
+    ready_ = true;
+    ++stats_.decoded;
+    cv_.notify_all();
+    stats_.ms_publish += static_cast<double>(now_ms() - t_published0);
+}
+
 void FramePump::loop()
 {
     std::string err;
     std::vector<uint8_t> datagram;
 
     /// 软件解码选择跨会话保留，避免每次重建重复尝试能力不足的硬件后端。
-    bool software_only = false;
-    std::unique_ptr<Decoder> decoder;
+    DecodeState decode;
     if (!options_.use_hardware) {
-        decoder = create_software_decoder();
-        software_only = decoder != nullptr;
-        if (!software_only) {
+        decode.decoder = create_software_decoder();
+        decode.software_only = decode.decoder != nullptr;
+        if (!decode.software_only) {
             warn_no_software();
         }
     }
-    if (decoder == nullptr) {
-        decoder = create_platform_decoder();
+    if (decode.decoder == nullptr) {
+        decode.decoder = create_platform_decoder();
     }
     // 两种后端都不可用时退出，避免解引用空 decoder。start() 通常已通过
     // 编译期能力检查拦截，此处仍保留防御检查。
-    if (decoder == nullptr) {
+    if (decode.decoder == nullptr) {
         LogError << maa::ios::kNoDecoderMessage;
         return;
     }
-    bool configured = false;
     std::unique_ptr<maa::ios::rt::HevcRtpDepacketizer> depacketizer;
     maa::ios::rt::RtpTimestamp sampling_clock;
     // 0 是合法 SSRC，不能用其数值区分缺失。没有协商来源时只由合法的视频 RTP 绑定。
     std::optional<uint32_t> media_source;
 
     /// 丢包后优先用 12 字节 PLI 请求 IDR，再等待完整关键帧解码；重建作为后备。
-    auto request_keyframe = [&] {
-        // 在所有提前返回之前记录本轮等待起点。
-        // 后备超时从首次请求计算，不能使用每秒重发都会更新的 last_pli_ms_。
-        if (first_pli_ms_ == 0) {
-            first_pli_ms_ = now_ms();
-        }
-        if (!media_source) {
-            return; // 尚无来源可作为 PLI 目标，不构造猜测的 0 SSRC。
-        }
-        if (now_ms() < next_pli_ms_) {
-            return; // 限制重复关键帧请求的频率。
-        }
-        next_pli_ms_ = now_ms() + kPliPeriodMs;
-        last_pli_ms_ = now_ms();
-        const auto pli = maa::ios::rt::build_pli(session_->started().remote_ssrc, *media_source);
-        std::string serr;
-        if (session_->send_rtp(pli, session_->started().sender_port, serr)) {
-            std::lock_guard<std::mutex> lock(mutex_);
-            ++stats_.pli_sent;
-        }
-        else {
-            // 发送失败保留诊断；后续静默与关键帧等待策略负责恢复。
-            LogWarn << std::format("Failed to send PLI: {}", serr);
-        }
-    };
-
     auto discard_for_recovery = [&] {
         parser_->discard_pending();
         awaiting_idr_from_loss_ = true;
@@ -263,7 +422,7 @@ void FramePump::loop()
             std::lock_guard<std::mutex> lock(mutex_);
             ready_ = false;
         }
-        request_keyframe();
+        request_keyframe(media_source);
     };
 
     /// 每次拆包后立即检查序号缺口、作废分片和已匹配 RTP 内的载荷损坏，
@@ -289,161 +448,16 @@ void FramePump::loop()
         discard_for_recovery();
     };
 
-    // 每个会话重新创建解析器，避免将旧会话未完成的 NAL 或 AU 拼入新会话。
-    auto make_parser = [&]() {
-        return std::make_unique<AnnexBParser>([&](AnnexBParser::AccessUnit&& unit) {
-            auto& au = unit.nals;
-            const bool keyframe = unit.keyframe;
-            {
-                std::lock_guard<std::mutex> lock(mutex_);
-                ++stats_.aus;
-            }
-            // NAL 超过平台后端的长度上限时尝试软件解码。
-            const size_t biggest = largest_nal(au);
-            if (biggest > decoder->max_nal_size()) {
-                // 仅在关键帧切换后端，新解码器尚无旧参考帧。超大非关键帧只记录
-                // 后续使用软件解码，并通过重建会话取得用于初始化的 IDR。
-                software_only = true;
-                if (keyframe) {
-                    configured = false;
-                }
-            }
-            if (!configured) {
-                if (software_only && decoder->max_nal_size() != ~size_t { 0 }) {
-                    auto soft = create_software_decoder();
-                    if (soft != nullptr) {
-                        decoder = std::move(soft);
-                        LogInfo << std::format("Decoder switched to {}", decoder->backend_name());
-                    }
-                    else {
-                        // 软件后端未编入时保留平台后端并提示构建条件。
-                        warn_no_software();
-                        software_only = false;
-                    }
-                }
-                // 参数前缀可能随受损 AU 被丢弃，但完整参数 NAL 已缓存。
-                // 优先保留本 AU 原文；缺少的参数才使用当前会话缓存。
-                Nal vps = parser_->vps(), sps = parser_->sps(), pps = parser_->pps();
-                for (const auto& n : au) {
-                    if (n.size() < 2) {
-                        continue;
-                    }
-                    switch ((n[0] >> 1) & 0x3F) {
-                    case 32:
-                        vps = n;
-                        break;
-                    case 33:
-                        sps = n;
-                        break;
-                    case 34:
-                        pps = n;
-                        break;
-                    default:
-                        break;
-                    }
-                }
-                if (vps.empty() || sps.empty() || pps.empty() || !decoder->configure(vps, sps, pps)) {
-                    return;
-                }
-                configured = true;
-            }
-            // 当前后端仍不支持此 NAL 尺寸时丢弃整个 AU。
-            if (biggest > decoder->max_nal_size()) {
-                {
-                    std::lock_guard<std::mutex> lock(mutex_);
-                    ++stats_.dropped_oversized;
-                    // 丢弃 AU 可能破坏参考链，暂停解码后续非关键帧，保留最近的有效画面。
-                    need_keyframe_ = true;
-                }
-                // 首次 IDR 也可能超过上限，即使尚无成功解码记录仍需启动恢复。
-                if (oversized_restarts_ >= kMaxOversizedRestarts) {
-                    if (!video_unusable_) {
-                        video_unusable_ = true;
-                        LogWarn << std::format(
-                            "After {} restarts, NALs still exceed the decoder limit. Video is unavailable; retrying every {} seconds. "
-                            "Callers can use screenshots.",
-                            oversized_restarts_,
-                            kOversizedRetryMs / 1000);
-                    }
-                    // 达到重建上限后交由主循环统一管理降级重试，避免重复调度。
-                    return;
-                }
-                // 尚未达到上限时限制重建频率。
-                if (now_ms() - last_restart_ms_ > 1500) {
-                    last_restart_ms_ = now_ms();
-                    ++oversized_restarts_;
-                    oversized_restart_ = true;
-                }
-                return;
-            }
-            // 受损 AU 已在 note_loss() 中丢弃；此后只能由新 first-slice 开启图像。
-            // 后续完整关键帧可直接恢复，不能再用旧的损失标记额外丢掉它。
-            // 保存进入回调时的等待状态，成功解码并取得像素后才解除。
-            const bool was_awaiting = need_keyframe_;
-            if (need_keyframe_) {
-                if (!keyframe) {
-                    // 非关键帧不能修复参考链，继续请求关键帧。
-                    request_keyframe();
-                    std::lock_guard<std::mutex> lock(mutex_);
-                    ++stats_.dropped_awaiting_keyframe;
-                    return;
-                }
-            }
-
-            // 保留 publishing_.pixels 的容量和尺寸。同尺寸时由解码器直接覆写，
-            // 避免 clear() 后 resize() 对整个图像缓冲区重新填零。
-            Frame& f = publishing_;
-            const uint64_t t_decode0 = now_ms();
-            const bool ok = decoder->decode(au, f);
-            const uint64_t t_published0 = now_ms();
-            {
-                std::lock_guard<std::mutex> lock(mutex_);
-                stats_.ms_decode += static_cast<double>(t_published0 - t_decode0);
-                ++stats_.decode_calls;
-            }
-            if (!ok || !f) {
-                std::lock_guard<std::mutex> lock(mutex_);
-                ++stats_.no_output;
-                return;
-            }
-            // 仅在解码成功且输出有效像素后解除等待。解析出完整关键帧并不保证
-            // 解码器输出图像，过早清除会丢失 first_pli_ms_ 对应的后备恢复计时。
-            if (was_awaiting) {
-                need_keyframe_ = false;
-                awaiting_idr_from_loss_ = false;
-                first_pli_ms_ = 0;
-            }
-            if (keyframe) {
-                // 收到关键帧但未输出图像不能延后恢复期限。
-                last_decoded_keyframe_ms_ = now_ms();
-                ever_keyframe_ = true;
-                nokey_restarts_ = 0; // 成功输出关键帧后重置快速重试计数。
-                // 成功解码后退出降级并重置尺寸限制重试计数。
-                oversized_restarts_ = 0;
-                video_unusable_ = false;
-            }
-            f.geometry = options_.frame_geometry ? options_.frame_geometry() : std::nullopt;
-            std::lock_guard<std::mutex> lock(mutex_);
-            reviving_ = false; // 新会话已输出第一帧，结束恢复等待。
-            // 交换两个帧缓冲区，下一次解码复用上一帧的内存，避免 move 后
-            // 解码目标失去缓冲区并重新分配。尺寸变化仍由解码器处理。
-            std::swap(frame_, publishing_);
-            ++serial_;
-            ready_ = true;
-            ++stats_.decoded;
-            cv_.notify_all();
-            stats_.ms_publish += static_cast<double>(now_ms() - t_published0);
-        });
-    };
-
     /// 重建后重置解析器、计时器及丢包标记，避免旧状态导致新会话首个
     /// 关键帧被误判为不完整。跨会话的重试策略另行保留。
     auto new_session_state = [&] {
         depacketizer = std::make_unique<maa::ios::rt::HevcRtpDepacketizer>(session_->started().payload_type);
         sampling_clock.reset();
         media_source = session_->started().has_local_ssrc ? std::optional<uint32_t>(session_->started().local_ssrc) : std::nullopt;
-        configured = false;
-        parser_ = make_parser();
+        decode.configured = false;
+        // Each session owns a fresh parser; decode and media_source live for the worker loop.
+        parser_ = std::make_unique<AnnexBParser>(
+            [this, &decode, &media_source](AnnexBParser::AccessUnit&& unit) { on_access_unit(std::move(unit), decode, media_source); });
         session_start_ms_ = now_ms();
         last_packet_ms_ = session_start_ms_;
         // 新会话立即发送第一次 RR，此后按周期续期。
@@ -616,7 +630,7 @@ void FramePump::loop()
         // 等待计时。条件同时要求丢包后的等待未结束及关键帧等待达到期限。
         // PLI 重发按时间调度，不能依赖新的 AU。只剩 SR 时也需要继续请求。
         if (awaiting_idr_from_loss_) {
-            request_keyframe();
+            request_keyframe(media_source);
         }
         if (options_.stall_restart_ms > 0 && depacketizer != nullptr) {
             const auto& dst = depacketizer->stats();

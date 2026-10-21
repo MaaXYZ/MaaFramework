@@ -7,6 +7,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <span>
 #include <string>
 #include <thread>
@@ -154,7 +155,11 @@ public:
 
 private:
     FramePump(maa::ios::remote::Device& device, Options options, bool verbose);
+    struct DecodeState;
     void loop();
+    void request_keyframe(std::optional<uint32_t> media_source);
+    bool configure_decoder(const AnnexBParser::AccessUnit& unit, size_t biggest, DecodeState& state);
+    void on_access_unit(AnnexBParser::AccessUnit&& unit, DecodeState& state, std::optional<uint32_t> media_source);
     /// 停止旧会话并创建新会话。首次启动也使用此入口，但不创建线程；
     /// start() 完成恢复时钟等初始化后再启动 worker，避免无锁字段竞争。
     bool restart(std::string& err);
