@@ -24,6 +24,9 @@ struct IOSPairingView
     std::string peer_identifier;
     MaaIOSWiFiPairing value { };
 
+    IOSPairingView(const IOSPairingView&) = delete;
+    IOSPairingView& operator=(const IOSPairingView&) = delete;
+
     explicit IOSPairingView(maajs::ObjectType object)
     {
         udid = maajs::JSConvert<std::string>::from_value(object["udid"].AsValue());
