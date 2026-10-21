@@ -30,9 +30,9 @@ struct UdpSocket::Impl
     size_t bytes = 0, dropped = 0;
     std::string failure;
 
-    Impl(Stack& s, uint16_t p)
-        : stack(s)
-        , port(p)
+    Impl(Stack& owner_stack, uint16_t local_port)
+        : stack(owner_stack)
+        , port(local_port)
     {
     }
 
@@ -83,57 +83,57 @@ struct UdpSocket::Impl
     }
 };
 
-UdpSocket::UdpSocket(Stack& s, uint16_t port)
-    : impl_(std::make_shared<Impl>(s, port))
+UdpSocket::UdpSocket(Stack& stack, uint16_t port)
+    : impl_(std::make_shared<Impl>(stack, port))
 {
 }
 
 UdpSocket::~UdpSocket()
 {
-    auto s = impl_;
-    LwipRuntime::instance().call([s] {
+    auto state = impl_;
+    LwipRuntime::instance().call([state] {
         // 移除 PCB 并解除注册，在同一个核心操作中完成；之后不再有引用 Impl 的协议回调。
-        s->fail("UDP endpoint closed");
-        s->stack.detach_endpoint(s.get());
+        state->fail("UDP endpoint closed");
+        state->stack.detach_endpoint(state.get());
     });
 }
 
 bool UdpSocket::bind(std::string& err)
 {
-    auto s = impl_;
+    auto state = impl_;
     err.clear();
-    const auto result = LwipRuntime::instance().call([s]() -> err_t {
-        auto* nic = s->stack.network_interface();
-        if (!nic || !s->port || s->pcb) {
+    const auto status = LwipRuntime::instance().call([state]() -> err_t {
+        auto* nic = state->stack.network_interface();
+        if (!nic || !state->port || state->pcb) {
             return ERR_ARG;
         }
-        s->pcb = udp_new_ip_type(IPADDR_TYPE_V6);
-        if (!s->pcb) {
+        state->pcb = udp_new_ip_type(IPADDR_TYPE_V6);
+        if (!state->pcb) {
             return ERR_MEM;
         }
         ip_addr_t address { };
-        ipaddr_aton(s->stack.local_text().c_str(), &address);
-        udp_bind_netif(s->pcb, nic);
-        const auto result = udp_bind(s->pcb, &address, s->port);
-        if (result != ERR_OK) {
-            udp_remove(s->pcb);
-            s->pcb = nullptr;
-            return result;
+        ipaddr_aton(state->stack.local_text().c_str(), &address);
+        udp_bind_netif(state->pcb, nic);
+        const auto bind_result = udp_bind(state->pcb, &address, state->port);
+        if (bind_result != ERR_OK) {
+            udp_remove(state->pcb);
+            state->pcb = nullptr;
+            return bind_result;
         }
-        udp_recv(s->pcb, Impl::received, s.get());
-        s->stack.attach_endpoint(s.get(), [s](const std::string& why) { s->fail(why); });
+        udp_recv(state->pcb, Impl::received, state.get());
+        state->stack.attach_endpoint(state.get(), [state](const std::string& why) { state->fail(why); });
         return ERR_OK;
     });
-    return result == ERR_OK ? true : (err = "UDP bind failed (lwIP " + std::to_string(result) + ")", false);
+    return status == ERR_OK ? true : (err = "UDP bind failed (lwIP " + std::to_string(status) + ")", false);
 }
 
 bool UdpSocket::send(const std::vector<uint8_t>& payload, uint16_t port, std::string& err)
 {
-    auto s = impl_;
+    auto state = impl_;
     err.clear();
-    const auto result = LwipRuntime::instance().call([&]() -> err_t {
-        auto* nic = s->stack.network_interface();
-        if (!nic || !s->pcb || !port) {
+    const auto status = LwipRuntime::instance().call([&]() -> err_t {
+        auto* nic = state->stack.network_interface();
+        if (!nic || !state->pcb || !port) {
             return ERR_CONN;
         }
         // 为 IPv6 头和 UDP 头预留 40+8 字节，拒绝超过隧道 MTU 的数据报。
@@ -146,31 +146,31 @@ bool UdpSocket::send(const std::vector<uint8_t>& payload, uint16_t port, std::st
         }
         pbuf_take(p, payload.data(), static_cast<u16_t>(payload.size()));
         ip_addr_t peer { };
-        ipaddr_aton(s->stack.peer_text().c_str(), &peer);
-        const auto result = udp_sendto(s->pcb, p, &peer, port);
+        ipaddr_aton(state->stack.peer_text().c_str(), &peer);
+        const auto send_result = udp_sendto(state->pcb, p, &peer, port);
         pbuf_free(p);
-        return result;
+        return send_result;
     });
-    return result == ERR_OK ? true : (err = "UDP send failed (lwIP " + std::to_string(result) + ")", false);
+    return status == ERR_OK ? true : (err = "UDP send failed (lwIP " + std::to_string(status) + ")", false);
 }
 
 bool UdpSocket::recv(std::vector<uint8_t>& payload, uint16_t& port, int timeout_ms, std::string& err)
 {
-    auto s = impl_;
+    auto state = impl_;
     payload.clear();
     err.clear();
-    std::unique_lock lock(s->mutex);
-    if (!s->cv.wait_for(lock, std::chrono::milliseconds(std::max(timeout_ms, 0)), [&] {
-            return !s->queue.empty() || !s->failure.empty();
+    std::unique_lock lock(state->mutex);
+    if (!state->cv.wait_for(lock, std::chrono::milliseconds(std::max(timeout_ms, 0)), [&] {
+            return !state->queue.empty() || !state->failure.empty();
         })) {
         return err = "UDP receive timed out", false;
     }
-    if (s->queue.empty()) {
-        return err = s->failure, false;
+    if (state->queue.empty()) {
+        return err = state->failure, false;
     }
-    auto packet = std::move(s->queue.front());
-    s->queue.pop_front();
-    s->bytes -= packet.bytes.size();
+    auto packet = std::move(state->queue.front());
+    state->queue.pop_front();
+    state->bytes -= packet.bytes.size();
     payload = std::move(packet.bytes);
     port = packet.port;
     return true;
