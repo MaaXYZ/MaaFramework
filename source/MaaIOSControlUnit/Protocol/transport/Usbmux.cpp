@@ -295,7 +295,7 @@ UsbmuxDiscoveryStatus Usbmux::list_devices_for_discovery(
 std::string Usbmux::socket_path()
 {
 #ifdef _WIN32
-    return "127.0.0.1:27015";
+    return "127.0.0.1:" + std::to_string(kUsbmuxPort);
 #else
     return "/var/run/usbmuxd";
 #endif
@@ -321,7 +321,7 @@ std::optional<Usbmux> Usbmux::open_for_service(std::chrono::milliseconds timeout
     sockaddr_in address { };
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    address.sin_port = htons(27015);
+    address.sin_port = htons(kUsbmuxPort);
     Socket socket(::socket(AF_INET, SOCK_STREAM, 0));
     u_long mode = 1;
     if (!socket.valid() || ::ioctlsocket(socket.fd(), FIONBIO, &mode) != 0) {

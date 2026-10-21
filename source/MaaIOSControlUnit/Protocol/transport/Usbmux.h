@@ -13,6 +13,8 @@
 namespace maa::ios::transport
 {
 
+inline constexpr uint16_t kUsbmuxPort = 27015;
+
 struct DeviceRecord
 {
     uint32_t device_id = 0;
@@ -103,7 +105,7 @@ namespace detail
 struct UsbmuxDiscoveryEndpoint
 {
 #ifdef _WIN32
-    uint16_t port = 27015; // 仅 loopback TCP，不解析任意主机名。
+    uint16_t port = kUsbmuxPort; // 仅 loopback TCP，不解析任意主机名。
 #else
     std::string path = "/var/run/usbmuxd";
 #endif

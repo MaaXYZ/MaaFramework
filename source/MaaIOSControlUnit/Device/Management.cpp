@@ -15,6 +15,14 @@ namespace
 {
 using namespace maa::ios::management;
 
+constexpr const char* kMissingPinCallback = "wireless pairing requires a PIN event callback";
+constexpr const char* kMissingWiFiPairing = "Wi-Fi connection requires pairing credentials";
+
+Json failure(std::string_view error)
+{
+    return { { "success", false }, { "error", std::string(error) }, { "cancelled", false } };
+}
+
 struct OwnedPairing : MaaIOSWiFiPairing
 {
     explicit OwnedPairing(maa::ios::wifi::PairRecord record)
@@ -202,7 +210,7 @@ bool copy_inputs(
         }
         if (method == MaaIOSConnectionMethod_WiFi && operation != Operation::Discover && operation != Operation::Pair
             && options.pairing_records.empty()) {
-            error = "Wi-Fi connection requires pairing credentials";
+            error = kMissingWiFiPairing;
             return false;
         }
     }
@@ -237,14 +245,11 @@ MaaBool manage(
         std::string error;
         if (!copy_inputs(operation, udid, method, address, pairings, count, options, error)
             || !parse_options(operation, options_json, options, error)) {
-            output->set(::json::object({ { "success", false }, { "error", error }, { "cancelled", false } }).to_string());
+            output->set(failure(error).to_string());
             return false;
         }
         if (operation == Operation::Pair && method == MaaIOSConnectionMethod_WiFi && !event_callback) {
-            output->set(
-                ::json::object(
-                    { { "success", false }, { "error", "wireless pairing requires a PIN event callback" }, { "cancelled", false } })
-                    .to_string());
+            output->set(failure(kMissingPinCallback).to_string());
             return false;
         }
         std::atomic<bool> rejected { false }, callback_failed { false };
@@ -291,18 +296,18 @@ MaaBool manage(
         Json result;
         std::optional<maa::ios::wifi::PairRecord> credential;
         if (callbacks.stopped()) {
-            result = { { "success", false }, { "error", "iOS management cancelled" } };
+            result = failure("iOS management cancelled");
         }
         else if (operation != Operation::Discover && !resolve_connection(options, callbacks, error)) {
-            result = { { "success", false }, { "error", error } };
+            result = failure(error);
         }
         else if (operation == Operation::Pair && options.connection_method == MaaIOSConnectionMethod_WiFi && !event_callback) {
-            result = { { "success", false }, { "error", "wireless pairing requires a PIN event callback" } };
+            result = failure(kMissingPinCallback);
         }
         else if (
             operation != Operation::Discover && operation != Operation::Pair && options.connection_method == MaaIOSConnectionMethod_WiFi
             && options.pairing_records.empty()) {
-            result = { { "success", false }, { "error", "Wi-Fi connection requires pairing credentials" } };
+            result = failure(kMissingWiFiPairing);
         }
         else {
             switch (operation) {
