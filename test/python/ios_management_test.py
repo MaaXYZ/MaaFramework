@@ -169,6 +169,17 @@ class IOSManagementBindingTest(unittest.TestCase):
             Toolkit.ios_discover([])
         self.assertEqual(self.api.calls, [])
 
+    def test_invalid_connection_arguments_do_not_initialize_native_api(self):
+        for method in (Toolkit.ios_check_connection, Toolkit.ios_prepare):
+            with self.assertRaises(ValueError):
+                method(udid="")
+            with self.assertRaises(ValueError):
+                method(udid="device", wifi_address="bad\0address")
+        with self.assertRaises(ValueError):
+            Toolkit.ios_pair(udid="bad\0device")
+        Toolkit._set_ios_api_properties.assert_not_called()
+        self.assertEqual(self.api.calls, [])
+
     def test_native_signatures_match_callbacks_and_buffer_pointer(self):
         Toolkit._assign_ios_api_properties()
         for name in ("Discover", "Pair", "CheckConnection", "Prepare"):

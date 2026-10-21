@@ -243,8 +243,13 @@ class Toolkit:
         cancelled may be called on native worker threads and must be thread-safe.
         Callback exceptions cancel native work and are re-raised after cleanup.
         """
-        return Toolkit._ios_manage("Discover", options, on_event, cancelled,
-                                   connection_method=connection_method, wifi_pairings=wifi_pairings)
+        values, pointers = Toolkit._ios_pairing_list(wifi_pairings if connection_method != MaaIOSConnectionMethodEnum.USB else None)
+
+        def invoke(encoded_options, event, cancel, result):
+            return Library.toolkit().MaaToolkitIOSDeviceDiscover(
+                connection_method, pointers, len(values), encoded_options, event, cancel, None, result)
+
+        return Toolkit._ios_manage(invoke, options, on_event, cancelled)
 
     @staticmethod
     def ios_pair(
@@ -259,10 +264,16 @@ class Toolkit:
 
         Wi-Fi requires on_event to display the PIN. Callback rules match ios_discover.
         """
+        if "\0" in udid:
+            raise ValueError("iOS connection arguments must not contain NUL")
         pairing = ctypes.POINTER(MaaIOSWiFiPairing)()
+
+        def invoke(encoded_options, event, cancel, result):
+            return Library.toolkit().MaaToolkitIOSDevicePair(
+                udid.encode(), connection_method, encoded_options, event, cancel, None, result, ctypes.byref(pairing))
+
         try:
-            result = Toolkit._ios_manage("Pair", options, on_event, cancelled, pairing,
-                                         connection_method=connection_method, udid=udid)
+            result = Toolkit._ios_manage(invoke, options, on_event, cancelled)
             return result, IOSWiFiPairing._from_native(pairing.contents) if pairing else None
         finally:
             if pairing:
@@ -308,9 +319,18 @@ class Toolkit:
 
         Callback threading and error handling are the same as ios_discover.
         """
-        return Toolkit._ios_manage("CheckConnection", options, on_event, cancelled,
-                                   connection_method=connection_method, udid=udid,
-                                   wifi_address=wifi_address, wifi_pairing=wifi_pairing)
+        if not udid:
+            raise ValueError("A nonempty iOS device UDID is required")
+        if "\0" in udid or (wifi_address is not None and "\0" in wifi_address):
+            raise ValueError("iOS connection arguments must not contain NUL")
+        value = wifi_pairing._native() if wifi_pairing and connection_method != MaaIOSConnectionMethodEnum.USB else None
+
+        def invoke(encoded_options, event, cancel, result):
+            return Library.toolkit().MaaToolkitIOSDeviceCheckConnection(
+                udid.encode(), connection_method, wifi_address.encode() if wifi_address is not None else None,
+                ctypes.byref(value) if value is not None else None, encoded_options, event, cancel, None, result)
+
+        return Toolkit._ios_manage(invoke, options, on_event, cancelled)
 
     @staticmethod
     def ios_prepare(
@@ -327,9 +347,18 @@ class Toolkit:
 
         Callback threading and error handling are the same as ios_discover.
         """
-        return Toolkit._ios_manage("Prepare", options, on_event, cancelled,
-                                   connection_method=connection_method, udid=udid,
-                                   wifi_address=wifi_address, wifi_pairing=wifi_pairing)
+        if not udid:
+            raise ValueError("A nonempty iOS device UDID is required")
+        if "\0" in udid or (wifi_address is not None and "\0" in wifi_address):
+            raise ValueError("iOS connection arguments must not contain NUL")
+        value = wifi_pairing._native() if wifi_pairing and connection_method != MaaIOSConnectionMethodEnum.USB else None
+
+        def invoke(encoded_options, event, cancel, result):
+            return Library.toolkit().MaaToolkitIOSDevicePrepare(
+                udid.encode(), connection_method, wifi_address.encode() if wifi_address is not None else None,
+                ctypes.byref(value) if value is not None else None, encoded_options, event, cancel, None, result)
+
+        return Toolkit._ios_manage(invoke, options, on_event, cancelled)
 
     @staticmethod
     def _ios_pairing_list(pairings: Optional[list[IOSWiFiPairing]]):
@@ -340,17 +369,10 @@ class Toolkit:
 
     @staticmethod
     def _ios_manage(
-        operation: str,
+        invoke: Callable[[bytes, Any, Any, MaaStringBufferHandle], Any],
         options: Optional[dict[str, Any]],
         on_event: Optional[Callable[[dict[str, Any]], bool]],
         cancelled: Optional[Callable[[], bool]],
-        credential_buffer: Optional[Any] = None,
-        *,
-        connection_method: MaaIOSConnectionMethodEnum = MaaIOSConnectionMethodEnum.Auto,
-        wifi_pairings: Optional[list[IOSWiFiPairing]] = None,
-        udid: str = "",
-        wifi_address: Optional[str] = None,
-        wifi_pairing: Optional[IOSWiFiPairing] = None,
     ) -> dict[str, Any]:
         from .buffer import StringBuffer
 
@@ -396,24 +418,7 @@ class Toolkit:
         event_callback = _IOSEventCallback(event) if on_event is not None else _IOSEventCallback()
         cancel_callback = _IOSCancelCallback(cancel)
         result_buffer = StringBuffer()
-        function = getattr(Library.toolkit(), f"MaaToolkitIOSDevice{operation}")
-        if operation in ("CheckConnection", "Prepare") and not udid:
-            raise ValueError("A nonempty iOS device UDID is required")
-        if "\0" in udid or (wifi_address is not None and "\0" in wifi_address):
-            raise ValueError("iOS connection arguments must not contain NUL")
-        if operation == "Discover":
-            values, pointers = Toolkit._ios_pairing_list(wifi_pairings if connection_method != MaaIOSConnectionMethodEnum.USB else None)
-            inputs = [connection_method, pointers, len(values)]
-        else:
-            inputs = [udid.encode(), connection_method]
-            if operation != "Pair":
-                value = wifi_pairing._native() if wifi_pairing and connection_method != MaaIOSConnectionMethodEnum.USB else None
-                pointer = ctypes.byref(value) if value is not None else None
-                inputs += [wifi_address.encode() if wifi_address is not None else None, pointer]
-        arguments = inputs + [encoded_options, event_callback, cancel_callback, None, result_buffer._handle]
-        if operation == "Pair":
-            arguments.append(ctypes.byref(credential_buffer))
-        function(*arguments)
+        invoke(encoded_options, event_callback, cancel_callback, result_buffer._handle)
         if errors:
             raise errors[0]
         result: dict[str, Any] = json.loads(result_buffer.get())
