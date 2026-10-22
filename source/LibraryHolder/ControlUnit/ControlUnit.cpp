@@ -78,6 +78,29 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> AdbControlUnitLibraryHolder
     return std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
+bool IOSControlUnitLibraryHolder::load_backend_library()
+{
+#ifdef _WIN32
+    // LoadLibrary does not search an absolute plugin's directory for imports.
+    // Python/GUI hosts may keep the framework outside their executable directory.
+    static std::mutex mutex;
+    static boost::dll::shared_library client;
+    std::lock_guard lock(mutex);
+    if (!client.is_loaded()) {
+        boost::dll::fs::error_code ec;
+        client.load(
+            library_dir() / MAA_NS::path("xdb_client"),
+            ec,
+            boost::dll::load_mode::append_decorations | boost::dll::load_mode::load_with_altered_search_path);
+        if (ec) {
+            LogError << "Failed to load xdb client" << VAR(library_dir()) << VAR(ec.message());
+            return false;
+        }
+    }
+#endif
+    return load_library(library_dir() / libname_);
+}
+
 MAA_CTRL_UNIT_NS::IOSDeviceAPI* IOSControlUnitLibraryHolder::device_api()
 {
     static std::mutex mutex;
@@ -86,7 +109,7 @@ MAA_CTRL_UNIT_NS::IOSDeviceAPI* IOSControlUnitLibraryHolder::device_api()
     if (instance) {
         return instance;
     }
-    if (!load_library(library_dir() / libname_)) {
+    if (!load_backend_library()) {
         return nullptr;
     }
     bool retained = false;
@@ -120,7 +143,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI> IOSControlUnitLibraryHolder
     const char* wifi_address,
     const char* config_json)
 {
-    if (!load_library(library_dir() / libname_)) {
+    if (!load_backend_library()) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
         return nullptr;
     }

@@ -57,6 +57,8 @@ public:
         const char* config_json);
 
 private:
+    static bool load_backend_library();
+
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaIOSControlUnit");
     inline static const std::string version_func_name_ = "MaaIOSControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaIOSControlUnitCreate";
