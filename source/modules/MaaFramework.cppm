@@ -78,7 +78,6 @@ export constexpr auto _MaaAdbInputMethod_None = MaaAdbInputMethod_None;
 export constexpr auto _MaaAdbInputMethod_All = MaaAdbInputMethod_All;
 export constexpr auto _MaaAdbInputMethod_Default = MaaAdbInputMethod_Default;
 
-export using ::MaaIOSWiFiPairing;
 export using ::MaaIOSConnectionMethod;
 export using ::MaaIOSConnectionMethodEnum;
 export constexpr auto _MaaIOSConnectionMethod_Auto = MaaIOSConnectionMethod_Auto;

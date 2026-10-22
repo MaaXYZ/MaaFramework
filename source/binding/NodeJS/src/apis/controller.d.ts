@@ -246,32 +246,11 @@ declare global {
 
         type IOSDevice = [name: string, udid: string, screencap_methods: ScreencapOrInputMethods, connections_json: string]
 
-        interface IOSWiFiPairing {
-            udid: string
-            host_identifier: string
-            peer_identifier: string
-            host_private_key: ArrayBuffer
-            host_public_key: ArrayBuffer
-            peer_public_key: ArrayBuffer
-            peer_alt_irk?: ArrayBuffer
-        }
-
-        /** Native iOS controller. A nonempty udid is required and must match the credential.
-         * Credentials are copied during construction.
-         * Auto prefers physical USB; WiFi uses RemotePairing and requires credentials.
-         * An empty Wi-Fi address enables mDNS discovery. USB ignores Wi-Fi parameters.
-         */
+        /** Uses a running xdb Server. Pairing credentials remain in xdb. */
         class IOSController extends Controller {
-            static find(timeout_ms?: number, wifi_pairings?: IOSWiFiPairing[], connection_method?: number): Promise<IOSDevice[] | null>
-            static parse_pairing_record(record: string): IOSWiFiPairing
-            static format_pairing_record(pairing: IOSWiFiPairing): string
-            constructor(
-                udid: string,
-                screencap_method?: ScreencapOrInputMethods,
-                connection_method?: number,
-                wifi_address?: string,
-                wifi_pairing?: IOSWiFiPairing,
-            )
+            static find(timeout_ms?: number, config?: string, connection_method?: number): Promise<IOSDevice[] | null>
+            constructor(udid: string, screencap_method?: ScreencapOrInputMethods,
+                connection_method?: number, wifi_address?: string, config?: string)
         }
 
         type DesktopDevice = [handle: DesktopHandle, class_name: string, window_name: string]

@@ -17,7 +17,7 @@ public:
         std::string wifi_address,
         MaaIOSScreencapMethod screencap_methods,
         MaaIOSConnectionMethod connection_method,
-        std::optional<maa::ios::wifi::PairRecord> pairing);
+        std::string config);
     ~IOSControlUnitMgr() override;
 
 public: // from ControlUnitAPI
@@ -59,7 +59,7 @@ private:
     /// Auto/WiFi 模式的无线地址，空值或 auto 使用自动发现。
     std::string wifi_address_;
     MaaIOSConnectionMethod connection_method_;
-    std::optional<maa::ios::wifi::PairRecord> pairing_;
+    std::string config_;
     MaaIOSScreencapMethod screencap_methods_ = MaaIOSScreencapMethod_Default;
     maa::ios_unit::IOSSession session_;
 

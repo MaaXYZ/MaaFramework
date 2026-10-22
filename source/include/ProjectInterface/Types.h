@@ -29,7 +29,9 @@ struct InterfaceData
             // 可以叠：用 '|' 或 ',' 分隔，例如 "Stream|ScreenshotService"。
             std::string screencap;
 
-            MEO_JSONIZATION(MEO_OPT udid, MEO_OPT wifi, MEO_OPT screencap);
+            json::object config;
+
+            MEO_JSONIZATION(MEO_OPT udid, MEO_OPT wifi, MEO_OPT screencap, MEO_OPT config);
         };
 
         struct Win32Config
@@ -388,19 +390,13 @@ struct Configuration
         std::string udid;
         std::string wifi;
         std::string screencap;
-        std::vector<std::string> pairing_records;
-        bool prepare_ddi = true;
-        std::string ddi_cache_directory;
-        int ddi_download_timeout_seconds = 300;
+        json::object config;
 
         MEO_JSONIZATION(
             MEO_OPT udid,
             MEO_OPT wifi,
             MEO_OPT screencap,
-            MEO_OPT pairing_records,
-            MEO_OPT prepare_ddi,
-            MEO_OPT ddi_cache_directory,
-            MEO_OPT ddi_download_timeout_seconds);
+            MEO_OPT config);
     };
 
     struct PlayCoverConfig
@@ -510,10 +506,7 @@ struct RuntimeParam
         /// 非空走局域网；空值对指定 UDID 优先 USB，再尝试 Wi-Fi。
         std::string wifi;
         MaaIOSScreencapMethod screencap = MaaIOSScreencapMethod_Default;
-        std::shared_ptr<MaaIOSWiFiPairing> wifi_pairing;
-        bool prepare_ddi = true;
-        std::string ddi_cache_directory;
-        int ddi_download_timeout_seconds = 300;
+        std::string config;
     };
 
     struct Win32Param

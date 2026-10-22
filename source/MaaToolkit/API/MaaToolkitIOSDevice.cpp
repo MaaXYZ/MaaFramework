@@ -53,13 +53,11 @@ MaaBool MaaToolkitIOSDeviceFindWithTimeout(int64_t timeout_ms, MaaToolkitIOSDevi
         return false;
     }
     const auto options = json::value(json::object { { "timeout_ms", timeout_ms } }).to_string();
-    return MaaToolkitIOSDeviceFindWithOptions(MaaIOSConnectionMethod_Auto, nullptr, 0, options.c_str(), list);
+    return MaaToolkitIOSDeviceFindWithOptions(MaaIOSConnectionMethod_Auto, options.c_str(), list);
 }
 
 MaaBool MaaToolkitIOSDeviceFindWithOptions(
     MaaIOSConnectionMethod connection_method,
-    const MaaIOSWiFiPairing* const* wifi_pairings,
-    MaaSize wifi_pairing_count,
     const char* options_json,
     MaaToolkitIOSDeviceList* list)
 {
@@ -75,8 +73,6 @@ MaaBool MaaToolkitIOSDeviceFindWithOptions(
         }
         const bool success = MaaToolkitIOSDeviceDiscover(
             connection_method,
-            wifi_pairings,
-            wifi_pairing_count,
             options_json,
             nullptr,
             nullptr,

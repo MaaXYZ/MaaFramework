@@ -30,41 +30,20 @@ extern "C"
         const char* agent_path);
 
     /**
-     * @brief Create a native MaaFramework iOS controller using CoreDevice/DDI services.
-     * @param udid Required nonempty device UDID; must match the wireless credential.
-     * @param screencap_methods Bitmask of Stream and/or ScreenshotService.
-     * @param connection_method Auto prefers physical USB, then RemotePairing;
-     *                          USB is physical USB only; WiFi is RemotePairing only.
-     * @param wifi_address Optional IPv4/IPv6 address; empty or "auto" enables discovery.
-     * @param wifi_pairing Optional raw credentials, required for WiFi. USB ignores
-     *                     both wireless parameters. All fields are copied before return.
-     * @return Controller handle, or nullptr on failure.
-     *
-     * @note MaaToolkit provides discovery, pairing and DDI preparation. The caller
-     *       holds/persists credentials and passes them explicitly. This controller
-     *       copies credentials and owns its session; no implicit credential files are used.
-     * @note Available when the native iOS module is included in the build. Requires
-     *       device Developer Mode, trust/pairing and a compatible mounted DDI.
-     * @note ScreenshotService requests lossless PNGs without starting video. Stream
-     *       decodes live HEVC; enabling both permits screenshot-service fallback.
-     *       Device replies determine availability; older devices may require the service.
-     * @note Coordinates use the last delivered image's pixel space and geometry, before
-     *       framework screenshot scaling. Unknown/mismatched geometry rejects touches.
-     * @note Single touch (contact 0), mapped Android keycodes including ordinary keys,
-     *       modifiers and hardware buttons support press/release. Unsupported contacts,
-     *       keys, scroll, relative movement and Shell fail rather than being simulated.
-     * @note input_text accepts US-layout ASCII, tab and newline. Unsupported text is
-     *       rejected in full and is never pasted automatically. The device input method
-     *       determines the interpretation of keyboard events.
-     * @note start_app/stop_app take an application bundle identifier. Starting preserves
-     *       running instances; stopping an already stopped app succeeds.
+     * Create an iOS controller using a running XDeviceBridge server.
+     * udid is required; transport and capture selections use their iOS enums.
+     * config_json: optional server_port/server_token; omitted values use
+     * XDB_PORT (or 17423) / XDB_TOKEN. xdb owns phone credentials and DDI setup.
+     * Stream obtains decoded BGRA; ScreenshotService obtains lossless PNG.
+     * Single-touch coordinates use the last delivered image geometry.
+     * Text accepts US-layout ASCII, tab and newline; unsupported text is rejected.
      */
     MAA_FRAMEWORK_API MaaController* MaaIOSControllerCreate(
         const char* udid,
         MaaIOSScreencapMethod screencap_methods,
         MaaIOSConnectionMethod connection_method,
         const char* wifi_address,
-        const MaaIOSWiFiPairing* wifi_pairing);
+        const char* config_json);
 
     MAA_FRAMEWORK_API MaaController* MaaWin32ControllerCreate(
         void* hWnd,

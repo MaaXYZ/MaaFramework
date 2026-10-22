@@ -24,7 +24,6 @@ private:
     void select_adb_manual_input();
 
     void select_ios_auto_detect();
-    bool pair_ios(bool wireless);
     void select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::IOSConfig& ios_config);
     bool select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config);
     void select_macos(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::MacOSConfig& macos_config);

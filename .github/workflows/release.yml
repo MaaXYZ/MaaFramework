@@ -179,18 +179,6 @@ jobs:
                   check_artifacts: true
                   if_no_artifact_found: fail
 
-            - name: Download iOS source materials
-              if: ${{ hashFiles('assets/**/MaaIOSControlUnit.dll', 'assets/**/libMaaIOSControlUnit.so', 'assets/**/libMaaIOSControlUnit.dylib') != '' }}
-              uses: dawidd6/action-download-artifact@v21
-              with:
-                  workflow: build.yml
-                  run_id: ${{ inputs.run-id }}
-                  name_is_regexp: true
-                  name: ^ios-source-.*$
-                  path: assets
-                  check_artifacts: true
-                  if_no_artifact_found: fail
-
             - name: Package artifacts
               run: |
                   cd assets

@@ -836,20 +836,9 @@ void Interactor::select_ios_auto_detect()
         return;
     }
     std::unique_ptr<MaaToolkitIOSDeviceList, decltype(&MaaToolkitIOSDeviceListDestroy)> owned(list, MaaToolkitIOSDeviceListDestroy);
-    using Pairing = std::unique_ptr<MaaIOSWiFiPairing, decltype(&MaaToolkitIOSDeviceDestroyPairing)>;
-    std::vector<Pairing> owned_pairings;
-    std::vector<const MaaIOSWiFiPairing*> pairings;
-    for (const auto& record : config_.configuration().ios.pairing_records) {
-        auto* pairing = MaaToolkitIOSDeviceParsePairingRecord(record.c_str());
-        if (!pairing) {
-            std::cout << "Invalid saved iOS pairing credential.\n";
-            return;
-        }
-        owned_pairings.emplace_back(pairing, MaaToolkitIOSDeviceDestroyPairing);
-        pairings.push_back(pairing);
-    }
-    if (!MaaToolkitIOSDeviceFindWithOptions(MaaIOSConnectionMethod_Auto, pairings.data(), pairings.size(), nullptr, list)) {
-        std::cout << "Device discovery unavailable; enter a UDID/address manually.\n";
+    const auto options = json::value(config_.configuration().ios.config).to_string();
+    if (!MaaToolkitIOSDeviceFindWithOptions(MaaIOSConnectionMethod_Auto, options.c_str(), list)) {
+        std::cout << MaaToolkitIOSDeviceListGetWarnings(list) << "\n";
         return;
     }
     std::vector<const MaaToolkitIOSDevice*> devices;
@@ -874,89 +863,6 @@ void Interactor::select_ios_auto_detect()
     config_.configuration().ios.udid = MaaToolkitIOSDeviceGetUdid(devices[choice - 1]);
 }
 
-static std::string ios_pairing_host_name()
-{
-    std::string device_name;
-#if defined(__ANDROID__)
-    for (const char* key : { "ro.product.marketname", "ro.product.model" }) {
-        char value[PROP_VALUE_MAX] = { };
-        if (__system_property_get(key, value) > 0 && std::string_view(value) != "localhost"
-            && !std::string_view(value).starts_with("android")) {
-            device_name = value;
-            break;
-        }
-    }
-#else
-    boost::system::error_code error;
-    const auto hostname = boost::asio::ip::host_name(error);
-    if (!error) {
-        device_name = hostname;
-    }
-#endif
-    return device_name.empty() ? "PiCli" : std::format("PiCli - {}", device_name);
-}
-
-static MaaBool MAA_CALL print_ios_pairing_event(const char* text, void*)
-{
-    const auto value = json::parse(text);
-    if (!value) {
-        return false;
-    }
-    if (value->get("type", std::string()) == "pin") {
-        std::cout << "Pairing code: " << value->get("pin", std::string()) << std::endl;
-    }
-    else {
-        std::cout << MAA_NS::utf8_to_crt(value->get("message", std::string())) << std::endl;
-    }
-    return true;
-}
-
-bool Interactor::pair_ios(bool wireless)
-{
-    auto& ios = config_.configuration().ios;
-    using Pairing = std::unique_ptr<MaaIOSWiFiPairing, decltype(&MaaToolkitIOSDeviceDestroyPairing)>;
-    using Buffer = std::unique_ptr<MaaStringBuffer, decltype(&MaaStringBufferDestroy)>;
-    Buffer result(MaaStringBufferCreate(), MaaStringBufferDestroy);
-    Buffer credential(MaaStringBufferCreate(), MaaStringBufferDestroy);
-    if (!result || !credential) {
-        std::cout << "Cannot allocate pairing buffers.\n";
-        return false;
-    }
-    std::cout
-        << (wireless ? "Open Settings > Privacy & Security > Developer Mode, select this computer and enter the displayed code.\n"
-                     : "Keep the device unlocked and accept any trust or pairing prompts.\n");
-    const auto options = wireless ? json::value(json::object { { "host_name", ios_pairing_host_name() } }).to_string() : "{}";
-    MaaIOSWiFiPairing* pairing = nullptr;
-    const bool ok = MaaToolkitIOSDevicePair(
-        ios.udid.c_str(),
-        wireless ? MaaIOSConnectionMethod_WiFi : MaaIOSConnectionMethod_USB,
-        options.c_str(),
-        print_ios_pairing_event,
-        nullptr,
-        nullptr,
-        result.get(),
-        &pairing);
-    std::unique_ptr<MaaIOSWiFiPairing, decltype(&MaaToolkitIOSDeviceDestroyPairing)> owned(pairing, MaaToolkitIOSDeviceDestroyPairing);
-    const bool exported_ok = pairing && MaaToolkitIOSDeviceFormatPairingRecord(pairing, credential.get());
-    const auto status = json::parse(MaaStringBufferGet(result.get()));
-    if (!ok || !status || !exported_ok) {
-        std::cout << "Pairing failed: " << (status ? MAA_NS::utf8_to_crt(status->get("error", std::string())) : "Invalid pairing result")
-                  << "\n";
-        return false;
-    }
-    const std::string exported = MaaStringBufferGet(credential.get());
-    std::erase_if(ios.pairing_records, [pairing](const std::string& record) {
-        Pairing saved(MaaToolkitIOSDeviceParsePairingRecord(record.c_str()), MaaToolkitIOSDeviceDestroyPairing);
-        return saved && std::string_view(saved->udid) == pairing->udid;
-    });
-    ios.pairing_records.push_back(exported);
-    ios.udid = status->get("udid", ios.udid);
-    ios.wifi = wireless ? "auto" : "";
-    config_.save(user_path_);
-    std::cout << "Pairing saved to PiCli configuration.\n";
-    return true;
-}
-
 void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::IOSConfig& ios_config)
 {
     std::cout << "### Configure iOS device ###\n\n";
@@ -966,33 +872,8 @@ void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Contr
     if (ios.udid.empty()) {
         ios.udid = ios_config.udid;
     }
-    int pairing_choice = 0;
-    while (true) {
-        std::cout << "\t1. Use existing pairing\n\t2. Pair over USB\n\t3. Pair over Wi-Fi\n"
-                     "\t4. Clear all local pairing credentials\n";
-        pairing_choice = input(4, "Choose pairing action");
-        if (s_eof) {
-            return;
-        }
-        if (pairing_choice != 4) {
-            break;
-        }
-        std::cout << "This removes all pairing credentials from PiCli configuration only.\n"
-                     "To revoke access on the phone, also remove this computer in device settings.\n"
-                     "\t1. Cancel\n\t2. Clear local credentials\n";
-        const auto confirmation = input(2, "Confirm clearing credentials");
-        if (s_eof) {
-            return;
-        }
-        if (confirmation == 2) {
-            ios.pairing_records.clear();
-            config_.save(user_path_);
-            std::cout << "Local pairing credentials cleared. You can pair again now.\n";
-        }
-    }
-    if (pairing_choice != 1 && !pair_ios(pairing_choice == 3)) {
-        return;
-    }
+    std::cout << "Pair and prepare the device with xdb before running tasks.\n";
+    if (ios.config.empty()) ios.config = ios_config.config;
     if (ios.udid.empty()) {
         select_ios_auto_detect();
         if (s_eof) {
@@ -1024,7 +905,7 @@ void Interactor::select_ios(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Contr
     }
 
     std::cout << "Device LAN address or auto for Wi-Fi. Empty prefers USB, then paired Wi-Fi discovery.\n"
-                 "Wi-Fi uses pairing credentials saved in PiCli configuration;\n"
+                 "Wi-Fi uses pairing credentials managed by xdb Server;\n"
                  "The selected UDID must match the Wi-Fi pairing credential.\n";
     std::cout << "Wi-Fi address [" << (ios.wifi.empty() ? "auto transport" : ios.wifi) << "]: ";
     std::cin.sync();

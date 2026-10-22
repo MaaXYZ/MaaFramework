@@ -113,7 +113,7 @@ using IOSControllerCtorParam = std::tuple<
     maajs::OptionalParam<MaaIOSScreencapMethod>,
     maajs::OptionalParam<MaaIOSConnectionMethod>,
     maajs::OptionalParam<std::string>,
-    maajs::OptionalParam<maajs::ObjectType>>;
+    maajs::OptionalParam<std::string>>;
 
 using IOSDevice = std::tuple<std::string, std::string, MaaIOSScreencapMethod, std::string>;
 
@@ -123,11 +123,9 @@ struct IOSControllerImpl : public ControllerImpl
     static maajs::PromiseType find(
         maajs::EnvType env,
         maajs::OptionalParam<int32_t> timeout_ms,
-        maajs::OptionalParam<std::vector<maajs::ObjectType>> wifi_pairings,
+        maajs::OptionalParam<std::string> config,
         maajs::OptionalParam<MaaIOSConnectionMethod> connection_method);
 
-    static maajs::ValueType parse_pairing_record(maajs::EnvType env, std::string record);
-    static std::string format_pairing_record(maajs::ObjectType pairing);
 
     constexpr static char name[] = "IOSController";
 

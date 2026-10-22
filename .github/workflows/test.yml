@@ -6,8 +6,6 @@ on:
             - 'main'
         paths:
             - '.github/workflows/test.yml'
-            - '.github/actions/ios-dependencies/**'
-            - 'tools/ios/**'
             - '3rdparty/**'
             - 'cmake/**'
             - 'include/**'
@@ -20,8 +18,6 @@ on:
             - '**'
         paths:
             - '.github/workflows/test.yml'
-            - '.github/actions/ios-dependencies/**'
-            - 'tools/ios/**'
             - '3rdparty/**'
             - 'cmake/**'
             - 'include/**'
@@ -103,15 +99,9 @@ jobs:
                   cp src/apis/*.d.ts release/maa-node/dist
                   cp release/maa-node/src/*.js release/maa-node/dist
 
-            - name: Prepare iOS host dependencies
-              uses: ./.github/actions/ios-dependencies
-              with:
-                  platform: windows
-                  architecture: ${{ matrix.arch }}
-
             - name: Build MAA
               run: |
-                  cmake -C "$env:MAA_IOS_CMAKE" -DBUILD_IOS_TEST=ON --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON -DBUILD_PICLI=OFF -DWITH_REPLAY_CONTROLLER=ON -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+                  cmake -DWITH_IOS_CONTROLLER=ON -DBUILD_IOS_TEST=ON --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON -DBUILD_PICLI=OFF -DWITH_REPLAY_CONTROLLER=ON -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Debug" -j 16
 
@@ -123,14 +113,6 @@ jobs:
               shell: bash
               run: |
                   cmake --install build --prefix install --config Debug
-
-            - name: Collect iOS runtime dependencies
-              shell: bash
-              run: |
-                  python3 tools/ios/ci/package.py --repository "$PWD" --build "build" \
-                    --output "$PWD/install" --platform "windows-${{ matrix.arch }}" \
-                    --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
-                    --configuration "Debug" --dependency-config "$MAA_IOS_CMAKE"
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -323,15 +305,9 @@ jobs:
                   cp src/apis/*.d.ts release/maa-node/dist
                   cp release/maa-node/src/*.js release/maa-node/dist
 
-            - name: Prepare iOS host dependencies
-              uses: ./.github/actions/ios-dependencies
-              with:
-                  platform: linux
-                  architecture: ${{ matrix.arch }}
-
             - name: Build MAA
               run: |
-                  cmake -C "$MAA_IOS_CMAKE" -DBUILD_IOS_TEST=ON --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
+                  cmake -DWITH_IOS_CONTROLLER=ON -DBUILD_IOS_TEST=ON --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
@@ -349,14 +325,6 @@ jobs:
               shell: bash
               run: |
                   cmake --install build --prefix install --config Debug
-
-            - name: Collect iOS runtime dependencies
-              shell: bash
-              run: |
-                  python3 tools/ios/ci/package.py --repository "$PWD" --build "build" \
-                    --output "$PWD/install" --platform "linux-${{ matrix.arch }}" \
-                    --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
-                    --configuration "Debug" --dependency-config "$MAA_IOS_CMAKE"
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
@@ -483,15 +451,9 @@ jobs:
                   cp src/apis/*.d.ts release/maa-node/dist
                   cp release/maa-node/src/*.js release/maa-node/dist
 
-            - name: Prepare iOS host dependencies
-              uses: ./.github/actions/ios-dependencies
-              with:
-                  platform: macos
-                  architecture: ${{ matrix.arch }}
-
             - name: Build MAA
               run: |
-                  cmake -C "$MAA_IOS_CMAKE" -DBUILD_IOS_TEST=ON --preset 'NinjaMulti' \
+                  cmake -DWITH_IOS_CONTROLLER=ON -DBUILD_IOS_TEST=ON --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DCMAKE_OSX_SYSROOT=macosx \
@@ -511,14 +473,6 @@ jobs:
               shell: bash
               run: |
                   cmake --install build --prefix install --config Debug
-
-            - name: Collect iOS runtime dependencies
-              shell: bash
-              run: |
-                  python3 tools/ios/ci/package.py --repository "$PWD" --build "build" \
-                    --output "$PWD/install" --platform "macos-${{ matrix.arch }}" \
-                    --vcpkg "$MAA_IOS_VCPKG" --triplet "$MAA_IOS_TRIPLET" \
-                    --configuration "Debug" --dependency-config "$MAA_IOS_CMAKE"
 
             - name: Download Plugin
               uses: robinraju/release-downloader@v1

@@ -24,11 +24,11 @@ IOSControlUnitMgr::IOSControlUnitMgr(
     std::string wifi_address,
     MaaIOSScreencapMethod screencap_methods,
     MaaIOSConnectionMethod connection_method,
-    std::optional<maa::ios::wifi::PairRecord> pairing)
+    std::string config)
     : udid_(std::move(udid))
     , wifi_address_(std::move(wifi_address))
     , connection_method_(connection_method)
-    , pairing_(std::move(pairing))
+    , config_(std::move(config))
     , screencap_methods_(screencap_methods)
 {
 }
@@ -41,7 +41,7 @@ IOSControlUnitMgr::~IOSControlUnitMgr()
 bool IOSControlUnitMgr::connect()
 {
     std::string err;
-    if (!session_.create(udid_, wifi_address_, screencap_methods_, connection_method_, pairing_, err)) {
+    if (!session_.create(udid_, wifi_address_, screencap_methods_, connection_method_, config_, err)) {
         LogError << "Failed to create iOS session" << VAR(err);
         return false;
     }

@@ -14,35 +14,6 @@ MAA_PROJECT_INTERFACE_NS_BEGIN
 
 namespace
 {
-bool select_ios_pairing_record(const Configuration::IOSConfig& config, RuntimeParam::IOSParam& ios)
-{
-    if (ios.udid.empty()) {
-        LogError << "iOS device UDID is required; select a discovered device or enter its UDID";
-        return false;
-    }
-    for (const auto& record : config.pairing_records) {
-        std::shared_ptr<MaaIOSWiFiPairing> pairing(
-            MaaToolkitIOSDeviceParsePairingRecord(record.c_str()),
-            MaaToolkitIOSDeviceDestroyPairing);
-        if (!pairing) {
-            LogError << "Invalid saved iOS pairing credential";
-            return false;
-        }
-        if (ios.udid != pairing->udid) {
-            continue;
-        }
-        if (ios.wifi_pairing) {
-            LogError << "Multiple iOS pairing credentials match; select a device UDID and remove duplicate credentials";
-            return false;
-        }
-        ios.wifi_pairing = std::move(pairing);
-    }
-    if (!ios.wifi.empty() && !ios.wifi_pairing) {
-        LogError << "No saved pairing credential matches the selected iOS device";
-        return false;
-    }
-    return true;
-}
 
 MaaWin32ScreencapMethod parse_win32_screencap_method(const std::string& method)
 {
@@ -313,12 +284,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
 
         ios.udid = config_.ios.udid;
         ios.wifi = config_.ios.wifi;
-        if (!select_ios_pairing_record(config_.ios, ios)) {
-            return std::nullopt;
-        }
-        ios.prepare_ddi = config_.ios.prepare_ddi;
-        ios.ddi_cache_directory = config_.ios.ddi_cache_directory;
-        ios.ddi_download_timeout_seconds = config_.ios.ddi_download_timeout_seconds;
+        ios.config = json::value(config_.ios.config.empty() ? controller.ios.config : config_.ios.config).to_string();
 
         if (!controller.ios.screencap.empty()) {
             ios.screencap = parse_ios_screencap_method(controller.ios.screencap);

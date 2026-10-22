@@ -84,7 +84,6 @@ __all__ = [
     "MaaIOSScreencapMethodEnum",
     "MaaIOSConnectionMethod",
     "MaaIOSConnectionMethodEnum",
-    "MaaIOSWiFiPairing",
     "MaaLinuxScreencapMethodEnum",
     "MaaLinuxInputMethodEnum",
     "MaaGamepadTypeEnum",
@@ -433,19 +432,6 @@ class MaaIOSConnectionMethodEnum(IntEnum):
     Auto = 0
     USB = 1
     WiFi = 2
-
-
-class MaaIOSWiFiPairing(ctypes.Structure):
-    _fields_ = [
-        ("udid", ctypes.c_char_p),
-        ("host_identifier", ctypes.c_char_p),
-        ("peer_identifier", ctypes.c_char_p),
-        ("host_private_key", ctypes.c_uint8 * 32),
-        ("host_public_key", ctypes.c_uint8 * 32),
-        ("peer_public_key", ctypes.c_uint8 * 32),
-        ("peer_alt_irk", ctypes.c_uint8 * 16),
-        ("has_peer_alt_irk", MaaBool),
-    ]
 
 
 MaaIOSScreencapMethod = ctypes.c_uint64

@@ -11,29 +11,7 @@
 #include "HeldInputs.h"
 #include "InputMapping.h"
 #include "MaaFramework/MaaDef.h"
-#include "wifi/PairRecord.h"
-
-namespace maa::ios
-{
-struct Frame;
-
-namespace media
-{
-class FramePump;
-}
-
-namespace remote
-{
-class Device;
-class DisplayWatcher;
-}
-
-namespace hid
-{
-class Service;
-class Buttons;
-}
-}
+#include "XdbClient.h"
 
 namespace maa::ios_unit
 {
@@ -52,11 +30,11 @@ public:
         const std::string& wifi_address,
         MaaIOSScreencapMethod screencap_methods,
         MaaIOSConnectionMethod connection_method,
-        const std::optional<maa::ios::wifi::PairRecord>& pairing,
+        const std::string& config,
         std::string& err);
     void close();
 
-    [[nodiscard]] bool connected() const { return device_ != nullptr; }
+    [[nodiscard]] bool connected() const { return client_.connected(); }
 
     bool screencap(cv::Mat& image, std::string& err);
     bool logical_to_panel(int x, int y, int width, int height, double& fx, double& fy, std::string& err) const;
@@ -80,17 +58,14 @@ public:
     bool stop_app(const std::string& bundle_id, std::string& err);
 
 private:
-    bool prepare_services(std::string& err);
-    bool convert(const maa::ios::Frame& frame, cv::Mat& image, std::string& err);
+    bool convert(const json::value& frame, const std::vector<uint8_t>& pixels, cv::Mat& image, std::string& err);
     bool screencap_via_service(cv::Mat& image, std::string& err);
     bool send_keyboard(const std::set<uint16_t>& usages, std::string& err);
-    bool ensure_buttons(std::string& err);
 
-    std::unique_ptr<maa::ios::remote::Device> device_;
-    std::unique_ptr<maa::ios::remote::DisplayWatcher> watcher_;
-    std::unique_ptr<maa::ios::media::FramePump> pump_;
-    std::unique_ptr<maa::ios::hid::Service> hid_;
-    std::unique_ptr<maa::ios::hid::Buttons> buttons_;
+    XdbClient client_;
+    json::value properties_;
+    bool video_ = false;
+    uint64_t serial_ = 0;
     std::string udid_;
     MaaIOSScreencapMethod screencap_methods_ = MaaIOSScreencapMethod_Default;
     ImageMapping mapping_;

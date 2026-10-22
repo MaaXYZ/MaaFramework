@@ -50,7 +50,7 @@ MaaController* MaaIOSControllerCreate(
     MaaIOSScreencapMethod screencap_methods,
     MaaIOSConnectionMethod connection_method,
     const char* wifi_address,
-    const MaaIOSWiFiPairing* wifi_pairing)
+    const char* config_json)
 {
     const char* selected_udid = udid ? udid : "";
     const char* selected_wifi = wifi_address ? wifi_address : "";
@@ -66,7 +66,7 @@ MaaController* MaaIOSControllerCreate(
         screencap_methods,
         connection_method,
         selected_wifi,
-        wifi_pairing);
+        config_json);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";

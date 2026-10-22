@@ -54,7 +54,7 @@ public:
         MaaIOSScreencapMethod screencap_methods,
         MaaIOSConnectionMethod connection_method,
         const char* wifi_address,
-        const MaaIOSWiFiPairing* wifi_pairing);
+        const char* config_json);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaIOSControlUnit");

@@ -340,18 +340,7 @@ _Please note that you only need to read this chapter if you are ready to develop
      Gzip header-only C++ library
 - [ViGEmClient](https://github.com/nefarius/ViGEmClient)  
      ViGEm Client SDK for feeder development.
-- [OpenSSL](https://github.com/openssl/openssl)  
-     TLS and cryptographic primitives for the iOS controller (Apache-2.0).
-- [curl](https://github.com/curl/curl)  
-     HTTP/HTTPS transfers for iOS DDI preparation (curl license).
-- [FFmpeg](https://ffmpeg.org/)  
-     iOS video decoding and pixel conversion.
-- [pugixml](https://github.com/zeux/pugixml)  
-     XML parsing for iOS property lists (MIT).
-- [lwIP](https://github.com/lwip-tcpip/lwip)  
-     Userspace TCP/IP for iOS transport (BSD-3-Clause).
-- [mdns](https://github.com/mjansson/mdns)  
-     iOS Wi-Fi discovery and pairing advertisement (Unlicense).
+- [XDeviceBridge](https://github.com/YJBeetle/XDeviceBridge): iOS client and device bridge (LGPL-3.0-only).
 - ~~[protobuf](https://github.com/protocolbuffers/protobuf)~~  
      ~~Protocol Buffers - Google's data interchange format~~
 - ~~[grpc](https://github.com/grpc/grpc)~~  

@@ -1,38 +1,17 @@
 #include "IOSSession.h"
-
+#include <MaaUtils/Logger.h>
 #include <algorithm>
 #include <chrono>
 #include <limits>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 #include <thread>
 #include <utility>
-
-#include <MaaUtils/Logger.h>
-#include <MaaUtils/NoWarningCV.hpp>
-#include <opencv2/imgproc.hpp>
-
-#include "hid/Hid.h"
-#include "media/FramePump.h"
-#include "remote/App.h"
-#include "remote/Device.h"
-#include "remote/DeviceConnection.h"
-#include "remote/DisplayInfo.h"
-#include "transport/IoBudget.h"
-#include "xpc/XpcValue.h"
 
 namespace maa::ios_unit
 {
 namespace
 {
-constexpr int kFrameWaitMs = 3000;
-constexpr int kFirstFrameWaitMs = 300;
-constexpr uint64_t kDisplayId = 1;
-
-uint64_t pipeline_progress(const maa::ios::media::FramePump::Stats& stats)
-{
-    return stats.aus + stats.decoded + stats.no_output + stats.dropped + stats.dropped_oversized + stats.dropped_awaiting_keyframe
-           + stats.dropped_fragments + stats.gaps + stats.restarts;
-}
-
 void rotate_image(cv::Mat& image, int degrees)
 {
     switch (degrees) {
@@ -49,7 +28,7 @@ void rotate_image(cv::Mat& image, int degrees)
         break;
     }
 }
-} // namespace
+}
 
 IOSSession::IOSSession() = default;
 
@@ -60,151 +39,132 @@ IOSSession::~IOSSession()
 
 bool IOSSession::create(
     const std::string& udid,
-    const std::string& wifi_address,
+    const std::string& wifi,
     MaaIOSScreencapMethod methods,
-    MaaIOSConnectionMethod connection_method,
-    const std::optional<maa::ios::wifi::PairRecord>& pairing,
+    MaaIOSConnectionMethod connection,
+    const std::string& config,
     std::string& err)
 {
     close();
-    constexpr auto known = MaaIOSScreencapMethod_Stream | MaaIOSScreencapMethod_ScreenshotService;
-    if ((methods & known) == 0) {
-        err = "no supported iOS screencap method selected";
+    screencap_methods_ = methods & MaaIOSScreencapMethod_All;
+    if (!screencap_methods_) {
+        err = "No iOS screencap method selected";
         return false;
     }
-    std::vector<maa::ios::wifi::PairRecord> records;
-    if (pairing) {
-        records.push_back(*pairing);
-    }
-    screencap_methods_ = methods & known;
-    maa::ios::transport::IoBudget budget;
-    std::optional<maa::ios::remote::Device> device;
-    if (connection_method == MaaIOSConnectionMethod_USB) {
-        device = maa::ios::remote::Device::establish_bounded(udid, budget, err, false, true);
-    }
-    else {
-        const auto address = connection_method == MaaIOSConnectionMethod_WiFi && wifi_address.empty() ? "auto" : wifi_address;
-        // Auto first checks physical USB candidates; Network usbmux entries do not
-        // bypass the caller's choice of RemotePairing credentials.
-        device = maa::ios::remote::open_device(
-            udid,
-            address,
-            err,
-            maa::ios::wifi::kAdvertisedPortFallback,
-            [&budget] { return budget.stopped(); },
-            records,
-            connection_method == MaaIOSConnectionMethod_Auto);
-    }
-    if (!device) {
+    if (!client_.connect(config, err)) {
         return false;
     }
-    device_ = std::make_unique<maa::ios::remote::Device>(std::move(*device));
-    udid_ = device_->udid();
-    bool ready = false;
-    {
-        maa::ios::transport::BudgetWatchdog watchdog(budget, [this] { device_->interrupt_startup(); });
-        ready = prepare_services(err);
-        if (!watchdog.finish(err)) {
-            ready = false;
-        }
-    }
-    if (!ready) {
+    const char* transport = connection == MaaIOSConnectionMethod_USB ? "usb" : connection == MaaIOSConnectionMethod_WiFi ? "wifi" : "auto";
+    if (!client_.call("connection.open", json::object { { "udid", udid }, { "wifi", wifi }, { "transport", transport } }, err)) {
         close();
         return false;
     }
-    return true;
-}
-
-bool IOSSession::prepare_services(std::string& err)
-{
-    std::string watcher_err;
-    watcher_ = maa::ios::remote::DisplayWatcher::start(*device_, kDisplayId, watcher_err);
-    if (!watcher_) {
-        LogWarn << "iOS display subscription unavailable" << VAR(watcher_err);
+    udid_ = udid;
+    std::vector<uint8_t> data;
+    if (!client_.call("device.info", json::object { }, properties_, data, err)) {
+        close();
+        return false;
     }
-
-    if ((screencap_methods_ & MaaIOSScreencapMethod_Stream) != 0) {
-        maa::ios::media::FramePump::Options options;
-        options.silence_restart_ms = 0;
-        options.frame_geometry = [this]() -> std::optional<maa::ios::FrameGeometry> {
-            if (!watcher_) {
-                return std::nullopt;
-            }
-            const auto state = watcher_->latest();
-            return maa::ios::FrameGeometry { state.width, state.height, state.orientation };
-        };
-        pump_ = maa::ios::media::FramePump::start(*device_, options, err);
-        if (!pump_ && (screencap_methods_ & MaaIOSScreencapMethod_ScreenshotService) == 0) {
+    client_.call("display.info", json::object { }, err);
+    if (methods & MaaIOSScreencapMethod_Stream) {
+        video_ = client_.call("video.start", json::object { { "restart_on_silence", false } }, err);
+        if (!video_ && !(methods & MaaIOSScreencapMethod_ScreenshotService)) {
+            close();
             return false;
         }
-        if (!pump_) {
-            LogWarn << "iOS video unavailable, using screenshot service" << VAR(err);
-            err.clear();
-        }
     }
-    hid_ = maa::ios::hid::Service::open(*device_, err);
-    return hid_ != nullptr;
+    err.clear();
+    return true;
 }
 
 void IOSSession::close()
 {
-    std::string err;
-    if (!release_inputs(err)) {
-        LogWarn << "iOS input cleanup failed" << VAR(err);
+    if (client_.connected()) {
+        std::string ignored;
+        release_inputs(ignored);
+        client_.call("connection.close", json::object { }, ignored);
+        client_.close();
     }
-    hid_.reset();
-    buttons_.reset();
-    pump_.reset();
-    watcher_.reset();
-    device_.reset();
     udid_.clear();
+    properties_ = json::object { };
     mapping_ = { };
-    inputs_.keyboard.clear();
-    inputs_.keyboard_release_pending = false;
-    inputs_.buttons.clear();
-    inputs_.touch_active = false;
+    inputs_ = { };
+    serial_ = 0;
+    video_ = false;
 }
 
-bool IOSSession::convert(const maa::ios::Frame& frame, cv::Mat& image, std::string& err)
+bool IOSSession::convert(const json::value& frame, const std::vector<uint8_t>& pixels, cv::Mat& image, std::string& err)
 {
-    if (!frame || std::cmp_greater(frame.width, std::numeric_limits<int>::max())
-        || std::cmp_greater(frame.height, std::numeric_limits<int>::max()) || frame.bytes_per_pixel != 4
-        || frame.row_pitch < uint64_t(frame.width) * 4 || frame.pixels.size() < uint64_t(frame.row_pitch) * frame.height) {
-        err = "invalid decoded iOS video frame";
+    const int width = frame.get("width", 0), height = frame.get("height", 0), pitch = frame.get("row_pitch", 0);
+    if (width <= 0 || height <= 0 || int64_t(pitch) < int64_t(width) * 4 || pixels.size() != uint64_t(pitch) * height) {
+        err = "Invalid xdb video frame";
         return false;
     }
-    const int coded_w = static_cast<int>(frame.width);
-    const int coded_h = static_cast<int>(frame.height);
-    auto crop = maa::ios::media::display_crop(coded_w, coded_h);
-    ImageMapping mapping { crop.w, crop.h, 0, true };
-    if (frame.geometry) {
-        const auto& geometry = *frame.geometry;
-        if (geometry.display_width > 0 && geometry.display_height > 0) {
-            crop = { 0, 0, geometry.display_width, geometry.display_height };
-            mapping.width = crop.w;
-            mapping.height = crop.h;
+    auto display = frame.get("display", json::value(json::object { }));
+    const int crop_w = display.get("width", 0), crop_h = display.get("height", 0);
+    if (crop_w <= 0 || crop_h <= 0 || crop_w > width || crop_h > height) {
+        err = "Missing or invalid xdb frame geometry";
+        return false;
+    }
+    const auto angle = orientation_degrees(display.get("orientation", std::string()));
+    cv::Mat bgra(height, width, CV_8UC4, const_cast<uint8_t*>(pixels.data()), pitch);
+    cv::cvtColor(bgra(cv::Rect(0, 0, crop_w, crop_h)), image, cv::COLOR_BGRA2BGR);
+    rotate_image(image, angle.value_or(0));
+    mapping_ = { crop_w, crop_h, angle.value_or(0), angle.has_value() };
+    return true;
+}
+
+bool IOSSession::screencap(cv::Mat& image, std::string& err)
+{
+    json::value frame;
+    std::vector<uint8_t> pixels;
+    if (video_
+        && client_.call(
+            "video.frame",
+            json::object { { "since", serial_ }, { "timeout_ms", 300 }, { "allow_cached", true } },
+            frame,
+            pixels,
+            err)) {
+        serial_ = frame.get("serial", uint64_t(0));
+        if (convert(frame, pixels, image, err)) {
+            return true;
         }
-        mapping.degrees = orientation_degrees(geometry.orientation).value_or(0);
     }
-    if (crop.x < 0 || crop.y < 0 || crop.w <= 0 || crop.h <= 0 || int64_t(crop.x) + crop.w > coded_w
-        || int64_t(crop.y) + crop.h > coded_h) {
-        err = "iOS frame dimensions do not match its display geometry";
+    if (!(screencap_methods_ & MaaIOSScreencapMethod_ScreenshotService)) {
         return false;
     }
-    cv::Mat bgra(coded_h, coded_w, CV_8UC4, const_cast<uint8_t*>(frame.pixels.data()), frame.row_pitch);
-    cv::cvtColor(bgra(cv::Rect(crop.x, crop.y, crop.w, crop.h)), image, cv::COLOR_BGRA2BGR);
-    rotate_image(image, mapping.degrees);
-    if (image.empty()) {
-        err = "empty iOS video image";
+    return screencap_via_service(image, err);
+}
+
+bool IOSSession::screencap_via_service(cv::Mat& image, std::string& err)
+{
+    json::value frame;
+    std::vector<uint8_t> png;
+    if (!client_.call("screenshot", json::object { }, frame, png, err) || png.empty() || png.size() > INT_MAX) {
         return false;
     }
+    auto decoded = cv::imdecode(png, cv::IMREAD_COLOR);
+    if (decoded.empty()) {
+        err = "Invalid xdb screenshot PNG";
+        return false;
+    }
+    auto display = frame.get("display", json::value(json::object { }));
+    const auto angle = orientation_degrees(display.get("orientation", std::string()));
+    const bool swapped = angle && (*angle == 90 || *angle == 270);
+    ImageMapping mapping { display.get("width", swapped ? decoded.rows : decoded.cols),
+                           display.get("height", swapped ? decoded.cols : decoded.rows),
+                           angle.value_or(0),
+                           angle.has_value() };
+    mapping.valid = mapping.valid && decoded.cols == (swapped ? mapping.height : mapping.width)
+                    && decoded.rows == (swapped ? mapping.width : mapping.height);
     mapping_ = mapping;
+    image = std::move(decoded);
     return true;
 }
 
 bool IOSSession::logical_to_panel(int x, int y, int width, int height, double& fx, double& fy, std::string& err) const
 {
-    if (!device_) {
+    if (!client_.connected()) {
         err = "not connected";
         return false;
     }
@@ -215,91 +175,9 @@ bool IOSSession::logical_to_panel(int x, int y, int width, int height, double& f
     return true;
 }
 
-bool IOSSession::screencap(cv::Mat& image, std::string& err)
-{
-    if (!device_) {
-        err = "not connected";
-        return false;
-    }
-    const bool allow_service = (screencap_methods_ & MaaIOSScreencapMethod_ScreenshotService) != 0;
-    if (pump_ && !pump_->video_unusable()) {
-        const auto floor = pump_->serial();
-        const auto before = pump_->stats();
-        pump_->wake();
-        maa::ios::Frame frame;
-        auto serial = pump_->newer(frame, floor, kFirstFrameWaitMs);
-        if (serial == 0 && pump_->reviving()) {
-            serial = pump_->newer(frame, floor, kFrameWaitMs);
-        }
-        if (serial != 0 && convert(frame, image, err)) {
-            return true;
-        }
-        const bool progressing = pipeline_progress(pump_->stats()) > pipeline_progress(before);
-        // A quiet, healthy stream may legitimately reuse its last frame. Its geometry travels with it.
-        if (!progressing && !pump_->reviving() && pump_->serial() != 0 && pump_->latest(frame, 0) && convert(frame, image, err)) {
-            return true;
-        }
-    }
-    if (!allow_service) {
-        if (err.empty()) {
-            err = "iOS video produced no usable frame; screenshot service was not selected";
-        }
-        return false;
-    }
-    return screencap_via_service(image, err);
-}
-
-bool IOSSession::screencap_via_service(cv::Mat& image, std::string& err)
-{
-    const auto before = watcher_ ? watcher_->latest() : maa::ios::remote::DisplayWatcher::State { };
-    auto input = maa::ios::xpc::make_dict();
-    maa::ios::xpc::dict_set(input, "displayUniqueID", maa::ios::xpc::make_null());
-    maa::ios::xpc::dict_set(input, "requestedFormat", maa::ios::xpc::make_string("png"));
-    maa::ios::xpc::Value output;
-    if (!device_->feature(
-            "com.apple.coredevice.screencaptureservice",
-            "com.apple.coredevice.feature.capturescreenshot",
-            "com.apple.coredevice.action.capturescreenshot",
-            input,
-            output,
-            err,
-            false,
-            10000)) {
-        return false;
-    }
-    const auto after = watcher_ ? watcher_->latest() : maa::ios::remote::DisplayWatcher::State { };
-    if (before.seq != after.seq) {
-        err = "iOS geometry changed during screenshot; retry capture";
-        return false;
-    }
-    const auto* png = output.find("image");
-    if (!png || png->data.empty() || png->data.size() > std::numeric_limits<int>::max()) {
-        err = "iOS screenshot reply has no usable PNG";
-        return false;
-    }
-    auto decoded = cv::imdecode({ png->data.data(), static_cast<int>(png->data.size()) }, cv::IMREAD_COLOR);
-    if (decoded.empty()) {
-        err = "cannot decode iOS screenshot PNG";
-        return false;
-    }
-    const auto degrees = orientation_degrees(after.orientation);
-    const bool swapped = degrees && (*degrees == 90 || *degrees == 270);
-    ImageMapping mapping { after.width, after.height, degrees.value_or(0), degrees.has_value() };
-    if (mapping.width <= 0 || mapping.height <= 0) {
-        mapping.width = swapped ? decoded.rows : decoded.cols;
-        mapping.height = swapped ? decoded.cols : decoded.rows;
-    }
-    mapping.valid = mapping.valid && decoded.cols == (swapped ? mapping.height : mapping.width)
-                    && decoded.rows == (swapped ? mapping.width : mapping.height);
-    mapping_ = mapping;
-    image = std::move(decoded);
-    err.clear();
-    return true;
-}
-
 bool IOSSession::touch(double x, double y, bool down, std::string& err)
 {
-    if (!hid_) {
+    if (!client_.connected()) {
         err = "not connected";
         return false;
     }
@@ -307,13 +185,13 @@ bool IOSSession::touch(double x, double y, bool down, std::string& err)
     if (down) {
         inputs_.touch_active = true; // Failed sends may already have reached the device.
     }
-    const bool result = hid_->touch(maa::ios::hid::kSurfaceMainTouchscreen, x, y, down, err);
+    const bool result = client_.call("input.touch", json::object { { "x", x }, { "y", y }, { "down", down } }, err);
     if (result && !down) {
         inputs_.touch_active = false;
     }
     if (!result && down) {
         std::string release_err;
-        if (hid_->touch(maa::ios::hid::kSurfaceMainTouchscreen, x, y, false, release_err)) {
+        if (client_.call("input.touch", json::object { { "x", x }, { "y", y }, { "down", false } }, release_err)) {
             inputs_.touch_active = false;
         }
     }
@@ -355,28 +233,20 @@ bool IOSSession::stroke(const std::vector<std::pair<double, double>>& points, in
 
 bool IOSSession::send_keyboard(const std::set<uint16_t>& usages, std::string& err)
 {
-    if (!hid_) {
+    if (!client_.connected()) {
         err = "not connected";
         return false;
     }
-    return hid_->send_report(maa::ios::hid::kSurfaceKeyboard, maa::ios::hid::keyboard_report({ usages.begin(), usages.end() }), err);
-}
-
-bool IOSSession::ensure_buttons(std::string& err)
-{
-    if (!device_) {
-        err = "not connected";
-        return false;
+    json::array keys;
+    for (auto usage : usages) {
+        keys.emplace_back(usage);
     }
-    if (!buttons_) {
-        buttons_ = maa::ios::hid::Buttons::open(*device_, err);
-    }
-    return buttons_ != nullptr;
+    return client_.call("input.keyboard", json::object { { "usages", keys } }, err);
 }
 
 bool IOSSession::key_down(int key, std::string& err)
 {
-    if (!hid_) {
+    if (!client_.connected()) {
         err = "not connected";
         return false;
     }
@@ -392,15 +262,12 @@ bool IOSSession::key_down(int key, std::string& err)
         return false;
     }
     if (const auto usage = consumer_usage(key)) {
-        if (!ensure_buttons(err)) {
-            return false;
-        }
         inputs_.buttons.insert(usage);
-        if (buttons_->down(maa::ios::hid::button::kUsagePageConsumer, usage, err)) {
+        if (client_.call("input.button", json::object { { "page", 12 }, { "usage", usage }, { "down", true } }, err)) {
             return true;
         }
         std::string release_err;
-        if (buttons_->release(maa::ios::hid::button::kUsagePageConsumer, usage, release_err)) {
+        if (client_.call("input.button", json::object { { "page", 12 }, { "usage", usage }, { "down", false } }, release_err)) {
             inputs_.buttons.erase(usage);
         }
         return false;
@@ -411,7 +278,7 @@ bool IOSSession::key_down(int key, std::string& err)
 
 bool IOSSession::key_up(int key, std::string& err)
 {
-    if (!hid_) {
+    if (!client_.connected()) {
         err = "not connected";
         return false;
     }
@@ -428,7 +295,7 @@ bool IOSSession::key_up(int key, std::string& err)
         if (!inputs_.buttons.contains(usage)) {
             return true;
         }
-        if (!ensure_buttons(err) || !buttons_->release(maa::ios::hid::button::kUsagePageConsumer, usage, err)) {
+        if (!client_.call("input.button", json::object { { "page", 12 }, { "usage", usage }, { "down", false } }, err)) {
             return false;
         }
         inputs_.buttons.erase(usage);
@@ -455,7 +322,7 @@ bool IOSSession::click_key(int key, std::string& err)
 
 bool IOSSession::type_text(const std::string& text, std::string& err)
 {
-    if (!hid_) {
+    if (!client_.connected()) {
         err = "not connected";
         return false;
     }
@@ -468,7 +335,7 @@ bool IOSSession::type_text(const std::string& text, std::string& err)
         return false;
     }
     inputs_.keyboard_release_pending = true;
-    if (hid_->type_text(text, 40, err)) {
+    if (client_.call("input.text", json::object { { "text", text }, { "hold_ms", 40 } }, err)) {
         inputs_.keyboard_release_pending = false;
         return true;
     }
@@ -483,44 +350,41 @@ bool IOSSession::release_inputs(std::string& err)
 {
     return inputs_.release(
         [this](double x, double y, std::string& error) {
-            if (!hid_) {
+            if (!client_.connected()) {
                 error = "iOS touch service is unavailable during cleanup";
                 return false;
             }
-            return hid_->touch(maa::ios::hid::kSurfaceMainTouchscreen, x, y, false, error);
+            return client_.call("input.touch", json::object { { "x", x }, { "y", y }, { "down", false } }, error);
         },
         [this](std::string& error) { return send_keyboard({ }, error); },
         [this](uint16_t usage, std::string& error) {
-            if (!buttons_) {
+            if (!client_.connected()) {
                 error = "iOS hardware button service is unavailable during cleanup";
                 return false;
             }
-            return buttons_->release(maa::ios::hid::button::kUsagePageConsumer, usage, error);
+            return client_.call("input.button", json::object { { "page", 12 }, { "usage", usage }, { "down", false } }, error);
         },
         err);
 }
 
 std::string IOSSession::device_property(const char* key) const
 {
-    return device_ ? device_->property(key) : std::string { };
-}
-
-bool IOSSession::launch_app(const std::string& bundle_id, std::string& err)
-{
-    if (!device_) {
-        err = "not connected";
-        return false;
+    if (std::string_view(key) == "OSVersion") {
+        return properties_.get("os_version", std::string());
     }
-    return maa::ios::remote::App::launch(*device_, bundle_id, err, false);
-}
-
-bool IOSSession::stop_app(const std::string& bundle_id, std::string& err)
-{
-    if (!device_) {
-        err = "not connected";
-        return false;
+    if (std::string_view(key) == "ProductType") {
+        return properties_.get("product_type", std::string());
     }
-    return maa::ios::remote::App::stop(*device_, bundle_id, err);
+    return { };
 }
 
+bool IOSSession::launch_app(const std::string& bundle, std::string& err)
+{
+    return client_.call("app.launch", json::object { { "bundle_id", bundle } }, err);
+}
+
+bool IOSSession::stop_app(const std::string& bundle, std::string& err)
+{
+    return client_.call("app.stop", json::object { { "bundle_id", bundle } }, err);
+}
 } // namespace maa::ios_unit

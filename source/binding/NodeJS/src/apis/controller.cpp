@@ -504,87 +504,31 @@ maajs::ValueType load_adb_controller(maajs::EnvType env)
     return ctor;
 }
 
-maajs::PromiseType IOSControllerImpl::find(
-    maajs::EnvType env,
-    maajs::OptionalParam<int32_t> timeout_ms,
-    maajs::OptionalParam<std::vector<maajs::ObjectType>> wifi_pairings,
-    maajs::OptionalParam<MaaIOSConnectionMethod> connection_method)
+maajs::PromiseType IOSControllerImpl::find(maajs::EnvType env, maajs::OptionalParam<int32_t> timeout_ms,
+    maajs::OptionalParam<std::string> config, maajs::OptionalParam<MaaIOSConnectionMethod> connection_method)
 {
 #ifdef MAA_JS_WITH_TOOLKIT
     const auto timeout = timeout_ms.value_or(3000);
-    if (timeout < 0 || timeout > 60000) {
-        throw maajs::MaaError { "timeout_ms must be between 0 and 60000" };
-    }
+    if (timeout < 0 || timeout > 60000) throw maajs::MaaError{"timeout_ms must be between 0 and 60000"};
     const auto method = connection_method.value_or(MaaIOSConnectionMethod_Auto);
-    std::vector<std::shared_ptr<IOSPairingView>> pairings;
-    if (method != MaaIOSConnectionMethod_USB && wifi_pairings) {
-        for (const auto& object : *wifi_pairings) {
-            pairings.push_back(std::make_shared<IOSPairingView>(object));
-        }
-    }
     using Result = std::optional<std::vector<IOSDevice>>;
-    auto worker = new maajs::AsyncWork<Result>(env, [timeout, method, pairings = std::move(pairings)] {
-        return find_ios_devices(timeout, method, pairings);
+    auto worker = new maajs::AsyncWork<Result>(env, [timeout, method, settings = config.value_or("{}")]{
+        return find_ios_devices(timeout, method, settings);
     });
-    worker->Queue();
-    return worker->Promise();
+    worker->Queue(); return worker->Promise();
 #else
-    std::ignore = env;
-    std::ignore = timeout_ms;
-    std::ignore = wifi_pairings;
-    std::ignore = connection_method;
+    std::ignore = env; std::ignore = timeout_ms; std::ignore = config; std::ignore = connection_method;
     throw_toolkit_unavailable("IOSController.find");
 #endif
 }
-
-IOSControllerImpl* IOSControllerImpl::ctor(const maajs::CallbackInfo& info)
-{
-    auto [udid, screencap_methods, connection_method, wifi_address, wifi_pairing] = maajs::UnWrapArgs<IOSControllerCtorParam, void>(info);
-    if (udid.empty() || udid.find('\0') != std::string::npos) {
-        throw maajs::MaaError { "A nonempty iOS device UDID without NUL is required" };
-    }
-    const auto connection = connection_method.value_or(MaaIOSConnectionMethod_Auto);
-    const auto wifi = wifi_address.value_or("");
-    std::optional<IOSPairingView> pairing;
-    if (wifi_pairing && connection != MaaIOSConnectionMethod_USB) {
-        pairing.emplace(*wifi_pairing);
-    }
-    auto ctrl = MaaIOSControllerCreate(
-        udid.c_str(),
-        screencap_methods.value_or(MaaIOSScreencapMethod_Default),
-        connection,
-        wifi.c_str(),
-        pairing ? &pairing->value : nullptr);
+IOSControllerImpl* IOSControllerImpl::ctor(const maajs::CallbackInfo& info) {
+    auto [udid, methods, connection, wifi, config] = maajs::UnWrapArgs<IOSControllerCtorParam, void>(info);
+    if (udid.empty() || udid.find('\0') != std::string::npos) throw maajs::MaaError{"A nonempty iOS UDID without NUL is required"};
+    auto ctrl = MaaIOSControllerCreate(udid.c_str(), methods.value_or(MaaIOSScreencapMethod_Default),
+        connection.value_or(MaaIOSConnectionMethod_Auto), wifi.value_or("").c_str(), config.value_or("{}").c_str());
     return ctrl ? new IOSControllerImpl(ctrl, true) : nullptr;
 }
-
-maajs::ValueType IOSControllerImpl::parse_pairing_record(maajs::EnvType env, std::string record)
-{
-#ifdef MAA_JS_WITH_TOOLKIT
-    return parse_ios_pairing_record(env, record);
-#else
-    std::ignore = env;
-    std::ignore = record;
-    throw_toolkit_unavailable("IOSController.parse_pairing_record");
-#endif
-}
-
-std::string IOSControllerImpl::format_pairing_record(maajs::ObjectType value)
-{
-#ifdef MAA_JS_WITH_TOOLKIT
-    return format_ios_pairing_record(value);
-#else
-    std::ignore = value;
-    throw_toolkit_unavailable("IOSController.format_pairing_record");
-#endif
-}
-
-void IOSControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
-{
-    MAA_BIND_FUNC(ctor, "find", find);
-    MAA_BIND_FUNC(ctor, "parse_pairing_record", parse_pairing_record);
-    MAA_BIND_FUNC(ctor, "format_pairing_record", format_pairing_record);
-}
+void IOSControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor) { MAA_BIND_FUNC(ctor, "find", find); }
 
 maajs::ValueType load_ios_controller(maajs::EnvType env)
 {

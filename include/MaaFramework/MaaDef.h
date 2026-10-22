@@ -379,23 +379,6 @@ enum MaaIOSConnectionMethodEnum
     MaaIOSConnectionMethod_WiFi = 2,
 };
 
-// Raw RemotePairing credentials. Pointer fields are borrowed; the controller copies
-// the structure and referenced data during creation.
-// host_private_key is an Ed25519 seed; public keys are raw Ed25519 keys, not PEM.
-// Identity strings, including peer_identifier, are NUL-terminated UTF-8 text.
-// has_peer_alt_irk indicates whether peer_alt_irk is provided; discovery requires it.
-typedef struct MaaIOSWiFiPairing
-{
-    const char* udid;
-    const char* host_identifier;
-    const char* peer_identifier;
-    uint8_t host_private_key[32];
-    uint8_t host_public_key[32];
-    uint8_t peer_public_key[32];
-    uint8_t peer_alt_irk[16];
-    MaaBool has_peer_alt_irk;
-} MaaIOSWiFiPairing;
-
 // MaaWin32ScreencapMethod:
 /**
  * @brief Win32 screencap method flags

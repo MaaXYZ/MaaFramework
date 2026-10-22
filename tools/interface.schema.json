@@ -604,6 +604,14 @@
                         "screencap": {
                             "type": "string",
                             "description": "Stream、ScreenshotService 或按 | 组合"
+                        },
+                        "config": {
+                            "type": "object",
+                            "properties": {
+                                "server_port": { "type": "integer", "minimum": 0, "maximum": 65535 },
+                                "server_token": { "type": "string" }
+                            },
+                            "additionalProperties": false
                         }
                     },
                     "additionalProperties": false

@@ -134,86 +134,8 @@ std::string reconfig_linux(const RuntimeParam::LinuxParam& raw)
     return obj.dumps();
 }
 
-namespace
-{
-std::atomic<bool> ios_prepare_cancelled = false;
-static_assert(std::atomic<bool>::is_always_lock_free);
-
-extern "C" void cancel_ios_prepare(int)
-{
-    ios_prepare_cancelled.store(true, std::memory_order_relaxed);
-}
-
-MaaBool MAA_CALL is_ios_prepare_cancelled(void*)
-{
-    return ios_prepare_cancelled.load(std::memory_order_relaxed);
-}
-
-MaaBool MAA_CALL print_ios_prepare_progress(const char* text, void*)
-{
-    const auto event = json::parse(text);
-    if (event) {
-        std::cout << MAA_NS::utf8_to_crt(event->get("message", std::string())) << std::endl;
-    }
-    return true;
-}
-
-bool prepare_ios(const RuntimeParam::IOSParam& ios)
-{
-    ios_prepare_cancelled.store(false, std::memory_order_relaxed);
-    if (!ios.prepare_ddi) {
-        return true;
-    }
-    if (ios.ddi_download_timeout_seconds < 1 || ios.ddi_download_timeout_seconds > 3600) {
-        LogError << "iOS DDI download timeout must be between 1 and 3600 seconds";
-        return false;
-    }
-    if (!ios.ddi_cache_directory.empty() && !MAA_NS::path(ios.ddi_cache_directory).is_absolute()) {
-        LogError << "Cannot resolve an absolute iOS DDI cache directory; set ios.ddi_cache_directory";
-        return false;
-    }
-    const auto cache = ios.ddi_cache_directory.empty() ? std::string("auto") : ios.ddi_cache_directory;
-    const auto options = json::value(
-                             json::object { { "cache_directory", cache },
-                                            { "download_timeout_seconds", ios.ddi_download_timeout_seconds } })
-                             .to_string();
-    auto* result = MaaStringBufferCreate();
-    if (!result) {
-        LogError << "Cannot allocate iOS preparation result";
-        return false;
-    }
-    OnScopeLeave([&]() { MaaStringBufferDestroy(result); });
-    const auto previous = std::signal(SIGINT, cancel_ios_prepare);
-    if (previous == SIG_ERR) {
-        LogError << "Cannot install iOS preparation interrupt handler";
-        return false;
-    }
-    OnScopeLeave([&]() { std::signal(SIGINT, previous); });
-    std::cout << "Preparing iOS developer image..." << std::endl;
-    if (!MaaToolkitIOSDevicePrepare(
-            ios.udid.c_str(),
-            ios.wifi.empty() ? MaaIOSConnectionMethod_Auto : MaaIOSConnectionMethod_WiFi,
-            ios.wifi.c_str(),
-            ios.wifi_pairing.get(),
-            options.c_str(),
-            print_ios_prepare_progress,
-            is_ios_prepare_cancelled,
-            nullptr,
-            result)) {
-        const auto status = json::parse(MaaStringBufferGet(result));
-        LogError << "iOS developer image preparation failed"
-                 << (status ? status->get("error", std::string()) : "Invalid preparation result");
-        return false;
-    }
-    return !is_ios_prepare_cancelled(nullptr);
-}
-} // namespace
-
 bool Runner::run(const RuntimeParam& param)
 {
-    if (const auto* ios = std::get_if<RuntimeParam::IOSParam>(&param.controller_param); ios && !prepare_ios(*ios)) {
-        return false;
-    }
     MaaTasker* tasker_handle = MaaTaskerCreate();
 
     MaaController* controller_handle = nullptr;
@@ -231,7 +153,7 @@ bool Runner::run(const RuntimeParam& param)
         const auto connection = p_ios_param->wifi.empty() ? MaaIOSConnectionMethod_Auto : MaaIOSConnectionMethod_WiFi;
         const auto* address = p_ios_param->wifi == "auto" ? nullptr : p_ios_param->wifi.c_str();
         controller_handle =
-            MaaIOSControllerCreate(p_ios_param->udid.c_str(), p_ios_param->screencap, connection, address, p_ios_param->wifi_pairing.get());
+            MaaIOSControllerCreate(p_ios_param->udid.c_str(), p_ios_param->screencap, connection, address, p_ios_param->config.c_str());
     }
     else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
         controller_handle =
