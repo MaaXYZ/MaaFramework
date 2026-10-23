@@ -74,8 +74,7 @@
                     "type": "object",
                     "title": "xdb Server配置",
                     "properties": {
-                        "server_port": { "type": "integer", "minimum": 0, "maximum": 65535 },
-                        "server_token": { "type": "string" }
+                        "server_port": { "type": "integer", "minimum": 0, "maximum": 65535 }
                     },
                     "additionalProperties": false
                 }

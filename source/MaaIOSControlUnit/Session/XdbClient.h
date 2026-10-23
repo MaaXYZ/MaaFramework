@@ -24,13 +24,12 @@ public:
             return false;
         }
         auto port = value->get("server_port", 0);
-        auto token = value->get("server_token", std::string());
         if (port < 0 || port > 65535) {
             error = "Invalid xdb server port";
             return false;
         }
         close();
-        client_ = xdb_client_connect(static_cast<uint16_t>(port), token.c_str(), nullptr, nullptr);
+        client_ = xdb_client_connect(static_cast<uint16_t>(port), nullptr, nullptr);
         if (!client_) {
             error = xdb_last_error();
         }

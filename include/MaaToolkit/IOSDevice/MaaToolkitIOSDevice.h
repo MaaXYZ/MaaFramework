@@ -16,8 +16,8 @@ extern "C"
     typedef MaaBool(MAA_CALL* MaaToolkitIOSDeviceEventCallback)(const char* event_json, void* userdata);
     typedef MaaBool(MAA_CALL* MaaToolkitIOSDeviceCancelCallback)(void* userdata);
 
-    // Discover through xdb Server. Options: timeout_ms, server_port, server_token.
-    // Empty server settings use XDB_PORT / XDB_TOKEN.
+    // Discover through xdb Server. Options: timeout_ms, server_port.
+    // Omitted server_port uses XDB_PORT or 17423.
     MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceDiscover(
         MaaIOSConnectionMethod connection_method,
         const char* options_json,

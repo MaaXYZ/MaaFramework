@@ -906,8 +906,8 @@ class IOSController(Controller):
     """iOS controller backed by a running xdb Server.
 
     Pair and prepare DDI using the xdb CLI or SDK first. The framework never owns
-    device credentials. config accepts server_port/server_token; omitted values
-    use XDB_PORT/XDB_TOKEN.
+    device credentials. config accepts server_port; omitted values
+    use XDB_PORT or 17423.
     """
     def __init__(self, udid: str, screencap_methods: int = MaaIOSScreencapMethodEnum.Default,
                  connection_method: int = MaaIOSConnectionMethodEnum.Auto,

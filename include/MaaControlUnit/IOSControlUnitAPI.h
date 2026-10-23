@@ -13,8 +13,8 @@ extern "C"
     /**
      * Create an iOS controller using a running XDeviceBridge server.
      * udid is required; transport and capture selections use their iOS enums.
-     * config_json: optional server_port/server_token; omitted values use
-     * XDB_PORT (or 17423) / XDB_TOKEN. xdb owns phone credentials and DDI setup.
+     * config_json: optional server_port; omitted values use
+     * XDB_PORT (or 17423). xdb owns phone credentials and DDI setup.
      * Stream obtains decoded BGRA; ScreenshotService obtains lossless PNG.
      * Single-touch coordinates use the last delivered image geometry.
      * Text accepts US-layout ASCII, tab and newline; unsupported text is rejected.
