@@ -124,7 +124,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake -DWITH_IOS_CONTROLLER=ON --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
+                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - ${{ needs.meta.outputs.build-config }}" -j 16
 
@@ -287,7 +287,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake -DWITH_IOS_CONTROLLER=ON --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
+                  cmake --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
@@ -386,7 +386,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake -DWITH_IOS_CONTROLLER=ON --preset 'NinjaMulti' \
+                  cmake --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DCMAKE_OSX_SYSROOT=macosx \
@@ -485,7 +485,7 @@ jobs:
                       preset='NinjaMulti Android arm64'
                   fi
 
-                  cmake -DWITH_IOS_CONTROLLER=ON --preset "$preset" \
+                  cmake --preset "$preset" \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
                   cmake --build --preset "$preset - ${{ needs.meta.outputs.build-config }}" -j 16
