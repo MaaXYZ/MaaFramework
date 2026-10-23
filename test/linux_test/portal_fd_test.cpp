@@ -7,6 +7,7 @@
 #include <thread>
 
 #include <dbus/dbus.h>
+#include <gio/gio.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -104,12 +105,9 @@ void open_and_release()
     MaaToolkitPortalHelperDestroy(helper);
     require(close(fd) == 0, "caller could not release remote fd");
 }
-} // namespace
 
-// Run under dbus-run-session: this service must never replace a desktop Portal.
-int main()
+void test_fd_ownership()
 {
-    require(std::getenv("MAA_TEST_PRIVATE_DBUS") != nullptr, "Use MAA_TEST_PRIVATE_DBUS=1 dbus-run-session -- portal_fd_test");
     require(dbus_threads_init_default(), "D-Bus threading initialization failed");
     DBusConnection* server = dbus_bus_get_private(DBUS_BUS_SESSION, nullptr);
     require(server != nullptr, "private bus connection failed");
@@ -143,4 +141,18 @@ int main()
     dbus_connection_unref(server);
     std::printf("FDs before=%zu after=%zu\n", before, after);
     require(before == after, "OpenPipeWireRemote leaked file descriptors");
+}
+} // namespace
+
+int main(int argc, char** argv)
+{
+    g_test_init(&argc, &argv, nullptr);
+    GTestDBus* bus = g_test_dbus_new(G_TEST_DBUS_NONE);
+    // Start our own daemon before any libdbus connection or service thread.
+    g_test_dbus_up(bus);
+    g_test_add_func("/portal/fd-ownership", test_fd_ownership);
+    const int result = g_test_run();
+    g_test_dbus_down(bus);
+    g_object_unref(bus);
+    return result;
 }
