@@ -84,7 +84,7 @@
                 "input_type": {
                     "type": "string",
                     "title": "输入控件类型",
-                    "description": "💡 v2.10.4 可选，默认 text。text 为普通文本框；file 为文件选择器，选中后值为文件路径；directory 为文件夹选择器，选中后值为文件夹路径。仅影响 UI，字段值始终为 string",
+                    "description": "💡 v2.10.5 可选，默认 text。text 为普通文本框；file 为文件选择器，选中后值为文件路径；directory 为文件夹选择器，选中后值为文件夹路径。仅影响 UI，字段值始终为 string",
                     "enum": [
                         "text",
                         "file",
