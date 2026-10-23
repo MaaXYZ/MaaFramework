@@ -7,7 +7,7 @@ set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 include(source/MaaUtils/MaaUtils.cmake)
 
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
-option(WITH_IOS_CONTROLLER "build with iOS controller via XDeviceBridge" OFF)
+option(WITH_IOS_CONTROLLER "build with iOS controller via XDeviceBridge" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_MACOS_CONTROLLER "build with macOS controller" ON)
 option(WITH_ANDROID_NATIVE_CONTROLLER "build with Android native controller" ON)
