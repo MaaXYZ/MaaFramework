@@ -1,6 +1,7 @@
 import ctypes
 import json
 import pathlib
+import warnings
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 
@@ -311,8 +312,23 @@ class Resource:
         """
         return self.set_inference(MaaInferenceExecutionProviderEnum.DirectML, device_id)
 
+    def use_webgpu(self, device_id: int = MaaInferenceDeviceEnum.Auto) -> bool:
+        """使用 WebGPU 进行推理 / Use WebGPU for inference
+
+        Args:
+            device_id: 设备 id，默认为自动选择 / Device id, default is Auto
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        return self.set_inference(MaaInferenceExecutionProviderEnum.WebGPU, device_id)
+
     def use_coreml(self, coreml_flag: int = MaaInferenceDeviceEnum.Auto) -> bool:
         """使用 CoreML 进行推理 / Use CoreML for inference
+
+        .. deprecated::
+            MaaDeps 不再提供 CoreML，请改用 `use_webgpu`。
+            MaaDeps no longer ships CoreML. Use `use_webgpu` instead.
 
         Args:
             coreml_flag: CoreML 标志，默认为自动选择 / CoreML flag, default is Auto
@@ -320,7 +336,25 @@ class Resource:
         Returns:
             bool: 是否成功 / Whether successful
         """
+        warnings.warn(
+            "use_coreml is deprecated, MaaDeps no longer ships CoreML; use use_webgpu instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.set_inference(MaaInferenceExecutionProviderEnum.CoreML, coreml_flag)
+
+    def use_ncnn(self) -> bool:
+        """使用 NCNN (CPU) 进行推理 / Use NCNN (CPU) for inference
+
+        仅 Android 可用，其他平台返回 False。需在加载资源前调用。
+        Only available on Android, returns False on other platforms. Must be called before loading resources.
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        return self.set_inference(
+            MaaInferenceExecutionProviderEnum.NCNN, MaaInferenceDeviceEnum.CPU
+        )
 
     def use_auto_ep(self) -> bool:
         """自动选择推理执行提供者 / Auto select inference execution provider
@@ -336,7 +370,7 @@ class Resource:
 
     def set_gpu(self, gpu_id: int) -> bool:
         """
-        Deprecated, please use `use_directml`, `use_coreml` or `use_cuda` instead.
+        Deprecated, please use `use_directml`, `use_webgpu` or `use_cuda` instead.
         """
         if gpu_id < 0:
             return False

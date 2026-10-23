@@ -308,17 +308,26 @@ class MaaInferenceExecutionProviderEnum(IntEnum):
     # It's from Win32 API `EnumAdapters1`.
     DirectML = 2
 
-    # MaaResOption_InferenceDevice will be used to set coreml_flag,
-    # Reference to
-    # https://github.com/microsoft/onnxruntime/blob/main/include/onnxruntime/core/providers/coreml/coreml_provider_facto
-    # ry.h
-    # But you need to pay attention to the onnxruntime version we use, the latest flag may not be
-    # supported.
+    # Deprecated. MaaDeps no longer ships the CoreML execution provider. Use WebGPU.
+    # The value is kept so existing callers still work. MaaResOption_InferenceDevice used to be a
+    # coreml_flag from
+    # https://github.com/microsoft/onnxruntime/blob/main/include/onnxruntime/core/providers/coreml/coreml_provider_factory.h
     CoreML = 3
 
     # MaaResOption_InferenceDevice will be used to set NVIDIA GPU ID
     # TODO!
     CUDA = 4
+
+    # MaaResOption_InferenceDevice is the WebGPU device id. Auto uses device 0.
+    # Shipped on Windows, Linux and macOS.
+    WebGPU = 5
+
+    # NCNN, only available when MaaFW is built with NCNN (Android only).
+    # Setting it on other builds fails.
+    # MaaResOption_InferenceDevice: CPU / Auto -> NCNN CPU; GPU is not supported yet, other values fail the loading.
+    # Loads `<model stem>.ncnn.param/.ncnn.bin/.ncnn.json`, no fallback to onnxruntime.
+    # Runs in fp32 by default, fp16 can be enabled per model in the "options" of the .ncnn.json.
+    NCNN = 6
 
 
 class MaaResOptionEnum(IntEnum):

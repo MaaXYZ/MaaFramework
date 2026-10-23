@@ -146,6 +146,7 @@ enum MaaInferenceExecutionProviderEnum
 {
     // I don't recommend setting up MaaResOption_InferenceDevice in this case,
     // because you don't know which EP will be used on different user devices.
+    // Auto tries CUDA, then DirectML, then WebGPU, then CoreML, and falls back to CPU.
     MaaInferenceExecutionProvider_Auto = 0,
 
     // MaaResOption_InferenceDevice will not work.
@@ -155,15 +156,37 @@ enum MaaInferenceExecutionProviderEnum
     // It's from Win32 API `EnumAdapters1`.
     MaaInferenceExecutionProvider_DirectML = 2,
 
-    // MaaResOption_InferenceDevice will be used to set coreml_flag,
-    // Reference to
+    // Deprecated. MaaDeps no longer ships the CoreML execution provider. Use WebGPU.
+    // The value is kept so existing callers still compile. MaaResOption_InferenceDevice
+    // used to be a coreml_flag from
     // https://github.com/microsoft/onnxruntime/blob/main/include/onnxruntime/core/providers/coreml/coreml_provider_factory.h
-    // But you need to pay attention to the onnxruntime version we use, the latest flag may not be supported.
+    // [[deprecated]] is C++ only. __declspec(deprecated) cannot follow an enumerator name on MSVC.
+#if defined(__cplusplus)
+    MaaInferenceExecutionProvider_CoreML [[deprecated]] = 3,
+#else
     MaaInferenceExecutionProvider_CoreML = 3,
+#endif
 
     // MaaResOption_InferenceDevice will be used to set NVIDIA GPU ID
     // TODO!
     MaaInferenceExecutionProvider_CUDA = 4,
+
+    // MaaResOption_InferenceDevice is the WebGPU device id
+    // (ep.webgpuexecutionprovider.deviceId). Auto uses device 0.
+    // Shipped on Windows, Linux and macOS.
+    MaaInferenceExecutionProvider_WebGPU = 5,
+
+    // NCNN, only available when MaaFW is built with NCNN (Android only).
+    // Setting it on other builds fails (MaaResourceSetOption returns false).
+    // MaaResOption_InferenceDevice: CPU / Auto -> NCNN CPU; GPU is not supported yet, other values fail the loading.
+    // Not tried by Auto.
+    // Models are loaded from `<model stem>.ncnn.param/.ncnn.bin/.ncnn.json` (the "model" field with .onnx replaced),
+    // the .onnx file itself is not needed. There is no fallback to onnxruntime: a missing or broken ncnn model fails
+    // the recognition, so ship ncnn models together with this provider.
+    // OCR also runs on NCNN: `det.ncnn.param/.bin`, `rec.ncnn.param/.bin` and `keys.txt` in the OCR model dir, no fallback either.
+    // Runs in fp32 by default. fp16 (use_fp16_packed / use_fp16_storage / use_fp16_arithmetic) can be enabled per model in the "options" of
+    // the .ncnn.json (optional `det.ncnn.json` / `rec.ncnn.json` for OCR), see docs.
+    MaaInferenceExecutionProvider_NCNN = 6,
 };
 
 enum MaaResOptionEnum
@@ -179,6 +202,7 @@ enum MaaResOptionEnum
 
     /// Use the specified inference execution provider
     /// Please set this option before loading the model.
+    /// Once resource loading starts (any MaaResourcePost*), switching to or from NCNN fails until MaaResourceClear().
     ///
     /// value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider)
     /// default value is MaaInferenceExecutionProvider_Auto

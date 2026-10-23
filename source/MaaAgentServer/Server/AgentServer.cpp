@@ -390,7 +390,7 @@ void AgentServer::request_msg_loop()
             return;
         }
         const json::value& j = *msg_opt;
-        handle_inserted_request(j);
+        dispatch_inserted_request(j);
     }
 }
 

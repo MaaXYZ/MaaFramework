@@ -1,5 +1,7 @@
 #include "CustomRecognition.h"
 
+#include <format>
+
 #include "MaaUtils/NoWarningCV.hpp"
 
 #include "MaaUtils/Buffer/ImageBuffer.hpp"
@@ -71,8 +73,30 @@ void CustomRecognition::analyze()
         best_result_ = res;
     }
 
+    if (debug_draw_ && !image_.empty()) {
+        handle_draw(draw_result(res, ret));
+    }
+
     auto cost = duration_since(start_time);
     LogDebug << VAR(name_) << VAR(param_.name) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(ret);
+}
+
+cv::Mat CustomRecognition::draw_result(const Result& res, bool hit) const
+{
+    cv::Mat image_draw = draw_roi();
+    const auto color = hit ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0);
+    const bool has_box = res.box.width > 0 && res.box.height > 0;
+
+    std::string flag = std::format("{}: {}", hit ? "hit" : "miss", param_.name);
+    cv::Point origin(5, 25);
+    if (has_box) {
+        flag += std::format(", [{}, {}, {}, {}]", res.box.x, res.box.y, res.box.width, res.box.height);
+        cv::rectangle(image_draw, res.box, color, 1);
+        origin = cv::Point(res.box.x, res.box.y - 5);
+    }
+
+    cv::putText(image_draw, flag, origin, cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+    return image_draw;
 }
 
 MAA_TASK_NS_END

@@ -39,6 +39,7 @@ from agent_test_utils import (
     CONNECT_TIMEOUT_MS,
     create_marker_path,
     run_connected_agent_test,
+    run_custom_recognition,
     start_agent_server,
     stop_agent_server,
 )
@@ -49,12 +50,7 @@ class ConflictingAction(CustomAction):
         return True
 
 
-def run_startup_failure_test(
-    agent: AgentClient,
-    socket_id: str,
-    mode: str,
-    timeout_ms: int,
-):
+def start_fault_server(mode: str, socket_id: str) -> subprocess.Popen:
     executable_name = "AgentFaultServer.exe" if sys.platform == "win32" else "AgentFaultServer"
     executable = install_dir / "bin" / executable_name
     child_process = subprocess.Popen(
@@ -62,11 +58,21 @@ def run_startup_failure_test(
         stdout=subprocess.PIPE,
         text=True,
     )
+    assert child_process.stdout is not None
+    ready_message = child_process.stdout.readline().strip()
+    assert ready_message == "ready", f"{mode} server failed before readiness: {ready_message}"
+    return child_process
+
+
+def run_startup_failure_test(
+    agent: AgentClient,
+    socket_id: str,
+    mode: str,
+    timeout_ms: int,
+):
+    child_process = start_fault_server(mode, socket_id)
 
     try:
-        assert child_process.stdout is not None
-        ready_message = child_process.stdout.readline().strip()
-        assert ready_message == "ready", f"{mode} server failed before readiness: {ready_message}"
         assert agent.set_timeout(timeout_ms)
         started_at = time.monotonic()
         assert not agent.connect(), f"connect should fail in {mode} mode"
@@ -80,6 +86,32 @@ def run_startup_failure_test(
             child_process.wait(timeout=10)
 
     assert agent.set_timeout(-1)
+
+
+# 与 fault_server.cpp 中的 kFaultRecBox 保持一致
+FAULT_REC_BOX = (11, 12, 13, 14)
+
+
+def run_inactive_response_id_test(agent: AgentClient, socket_id: str, tasker: Tasker):
+    # fault server 连接时就为之后的请求编号预发了带毒回包；这些编号当时没人在等，
+    # 必须丢弃，否则之后拿到该编号的 FaultRec 请求会直接认领毒包
+    child_process = start_fault_server("inactive-response-id", socket_id)
+
+    try:
+        assert agent.set_timeout(5000)
+        assert agent.connect(), "connect should succeed in inactive-response-id mode"
+        box = run_custom_recognition(tasker, "FaultRec")
+        assert box == FAULT_REC_BOX, f"claimed a response for an inactive request id: {box}"
+        assert agent.disconnect()
+        child_process.wait(timeout=10)
+        assert child_process.returncode == 0, (
+            f"inactive-response-id server exited with {child_process.returncode}"
+        )
+    finally:
+        if child_process.poll() is None:
+            child_process.terminate()
+            child_process.wait(timeout=10)
+        assert agent.set_timeout(-1)
 
 
 NUMERIC_IDENTIFIER_FLAG = "--numeric-identifier-flow"
@@ -158,6 +190,9 @@ def run_tcp_flow(
             assert "FaultConflict" in resource.custom_action_list
         finally:
             assert resource.unregister_custom_action("FaultConflict")
+        run_inactive_response_id_test(agent, socket_id, tasker)
+        # disconnect 会清掉 sink，后续流程还要校验事件转发
+        assert agent.register_sink(resource, dbg_controller, tasker)
 
     # ============================================================
     # 超时测试

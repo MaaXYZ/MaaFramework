@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import sys
 import io
+import time
 import numpy
 
 # Fix encoding issues on Windows (cp1252 cannot encode some Unicode characters)
@@ -46,7 +47,13 @@ from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.library import Library
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
-from agent_test_utils import record_sink_event, signal_server_ready
+from agent_test_utils import (
+    FAST_REC_BOX,
+    NESTED_REC_BOX,
+    SLOW_REC_SECONDS,
+    record_sink_event,
+    signal_server_ready,
+)
 
 
 analyzed: bool = False
@@ -384,6 +391,50 @@ class MyAction(CustomAction):
         return CustomAction.RunResult(success=True)
 
 
+@AgentServer.custom_recognition("SlowRec")
+class SlowRecognition(CustomRecognition):
+    def analyze(
+        self,
+        context: Context,
+        argv: CustomRecognition.AnalyzeArg,
+    ) -> CustomRecognition.AnalyzeResult:
+        time.sleep(SLOW_REC_SECONDS)
+        node_data = context.get_node_data("Entry")
+        record_sink_event(f"slow_rec_node_data:{'none' if node_data is None else 'value'}")
+        return CustomRecognition.AnalyzeResult(box=(9, 9, 9, 9), detail="slow")
+
+
+@AgentServer.custom_recognition("FastRec")
+class FastRecognition(CustomRecognition):
+    def analyze(
+        self,
+        context: Context,
+        argv: CustomRecognition.AnalyzeArg,
+    ) -> CustomRecognition.AnalyzeResult:
+        return CustomRecognition.AnalyzeResult(box=FAST_REC_BOX, detail="fast")
+
+
+# 置位期间，controller 事件回调会在 NestedRec 等 wait 回包时再发起一次反调
+nested_probe_armed: bool = False
+
+
+@AgentServer.custom_recognition("NestedRec")
+class NestedRecognition(CustomRecognition):
+    def analyze(
+        self,
+        context: Context,
+        argv: CustomRecognition.AnalyzeArg,
+    ) -> CustomRecognition.AnalyzeResult:
+        global nested_probe_armed
+        controller = context.tasker.controller
+        nested_probe_armed = True
+        try:
+            controller.post_click(1, 1).wait()
+        finally:
+            nested_probe_armed = False
+        return CustomRecognition.AnalyzeResult(box=NESTED_REC_BOX, detail="nested")
+
+
 original_reco = AgentServer._custom_recognition_holder["MyRec"]
 original_action = AgentServer._custom_action_holder["MyAct"]
 assert not AgentServer.register_custom_recognition("MyRec", MyRecognition())
@@ -432,8 +483,12 @@ class MyResSink(ResourceEventSink):
 @AgentServer.controller_sink()
 class MyCtrlSink(ControllerEventSink):
     def on_raw_notification(self, controller, msg: str, details: dict):
+        global nested_probe_armed
         record_sink_event("controller")
         print(f"[ControllerSink] msg: {msg}")
+        if nested_probe_armed:
+            nested_probe_armed = False
+            record_sink_event(f"nested_sink_connected:{controller.connected}")
 
 
 @AgentServer.tasker_sink()

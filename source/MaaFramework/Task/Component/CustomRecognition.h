@@ -35,6 +35,7 @@ public:
 
 private:
     void analyze();
+    cv::Mat draw_result(const Result& res, bool hit) const;
 
 private:
     const MAA_VISION_NS::CustomRecognitionParam& param_;
