@@ -1,4 +1,5 @@
 #include "NeuralNetworkClassifier.h"
+#include "NeuralNetworkClassifierLabel.h"
 
 #include "MaaUtils/NoWarningCV.hpp"
 #include "VisionUtils.hpp"
@@ -80,7 +81,7 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
     res.probs = softmax(res.raw);
     res.cls_index = std::max_element(res.probs.begin(), res.probs.end()) - res.probs.begin();
     res.score = res.probs[res.cls_index];
-    res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
+    res.label = nn_classifier_label(param_.labels, res.cls_index);
     res.box = roi_;
 
     if (debug_draw_) {
@@ -123,7 +124,8 @@ cv::Mat NeuralNetworkClassifier::draw_result(const Result& res) const
 
     for (size_t i = 0; i != res.raw.size(); ++i) {
         const auto color = i == res.cls_index ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0);
-        std::string text = std::format("{} {}: prob {:.3f}, raw {:.3f}", i, param_.labels[i], res.probs[i], res.raw[i]);
+        std::string text =
+            std::format("{} {}: prob {:.3f}, raw {:.3f}", i, nn_classifier_label(param_.labels, i), res.probs[i], res.raw[i]);
         cv::putText(image_draw, text, pt, cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
         pt.y += 20;
     }
