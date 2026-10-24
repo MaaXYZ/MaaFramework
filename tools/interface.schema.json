@@ -81,6 +81,17 @@
                     "title": "默认值",
                     "description": "输入字段的默认值。💡 v2.10.0 password 为 true 时禁止设置此字段"
                 },
+                "input_type": {
+                    "type": "string",
+                    "title": "输入控件类型",
+                    "description": "💡 v2.10.5 可选，默认 text。text 为普通文本框；file 为文件选择器，选中后值为文件路径；directory 为文件夹选择器，选中后值为文件夹路径。仅影响 UI，字段值始终为 string",
+                    "enum": [
+                        "text",
+                        "file",
+                        "directory"
+                    ],
+                    "default": "text"
+                },
                 "pipeline_type": {
                     "type": "string",
                     "title": "Pipeline 数据类型",
