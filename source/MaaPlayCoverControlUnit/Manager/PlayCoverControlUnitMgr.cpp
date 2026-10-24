@@ -5,6 +5,8 @@
 
 #include "Client/PlayToolsClient.h"
 
+#include "MacOS/MacOSAppLifecycle.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 PlayCoverControlUnitMgr::PlayCoverControlUnitMgr(std::string address, std::string uuid)
@@ -53,9 +55,7 @@ MaaControllerFeature PlayCoverControlUnitMgr::get_features() const
 
 bool PlayCoverControlUnitMgr::start_app(const std::string& intent)
 {
-    LogWarn << "start_app is not supported on PlayCover" << VAR(intent);
-    std::ignore = intent;
-    return false;
+    return MacOSAppLifecycle::start_app(intent, "~/Library/Containers/io.playcover.PlayCover/Applications");
 }
 
 bool PlayCoverControlUnitMgr::stop_app(const std::string& intent)
