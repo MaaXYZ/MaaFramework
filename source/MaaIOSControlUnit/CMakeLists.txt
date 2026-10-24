@@ -32,6 +32,10 @@ endif()
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_ios_control_unit_src})
 
-install(FILES $<TARGET_FILE:xdb_client> DESTINATION bin)
+if(WIN32)
+    install(FILES $<TARGET_FILE:xdb_client> DESTINATION bin)
+else()
+    install(FILES $<TARGET_FILE:xdb_client> DESTINATION bin RENAME $<TARGET_SONAME_FILE_NAME:xdb_client>)
+endif()
 
 install(FILES ${CMAKE_SOURCE_DIR}/3rdparty/XDeviceBridge/LICENSE ${CMAKE_SOURCE_DIR}/3rdparty/XDeviceBridge/COPYING.GPLv3 DESTINATION share/licenses/XDeviceBridge)
