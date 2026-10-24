@@ -45,6 +45,37 @@ MaaController* MaaAdbControllerCreate(
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
+MaaController* MaaIOSControllerCreate(
+    const char* udid,
+    MaaIOSScreencapMethod screencap_methods,
+    MaaIOSConnectionMethod connection_method,
+    const char* wifi_address,
+    const char* config_json)
+{
+    const char* selected_udid = udid ? udid : "";
+    const char* selected_wifi = wifi_address ? wifi_address : "";
+    LogFunc << VAR(selected_udid) << VAR(selected_wifi) << VAR(screencap_methods);
+
+    if (!udid || !*udid) {
+        LogError << "iOS device UDID is required";
+        return nullptr;
+    }
+
+    auto control_unit = MAA_NS::IOSControlUnitLibraryHolder::create_control_unit(
+        selected_udid,
+        screencap_methods,
+        connection_method,
+        selected_wifi,
+        config_json);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+}
+
 MaaController* MaaWin32ControllerCreate(
     void* hWnd,
     MaaWin32ScreencapMethod screencap_method,

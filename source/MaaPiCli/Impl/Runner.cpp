@@ -1,5 +1,8 @@
 #include "ProjectInterface/Runner.h"
 
+#include <atomic>
+#include <csignal>
+#include <cstdlib>
 #include <format>
 #include <iostream>
 
@@ -145,6 +148,12 @@ bool Runner::run(const RuntimeParam& param)
             adb_param.input,
             adb_param.config.c_str(),
             adb_param.agent_path.c_str());
+    }
+    else if (const auto* p_ios_param = std::get_if<RuntimeParam::IOSParam>(&param.controller_param)) {
+        const auto connection = p_ios_param->wifi.empty() ? MaaIOSConnectionMethod_Auto : MaaIOSConnectionMethod_WiFi;
+        const auto* address = p_ios_param->wifi == "auto" ? nullptr : p_ios_param->wifi.c_str();
+        controller_handle =
+            MaaIOSControllerCreate(p_ios_param->udid.c_str(), p_ios_param->screencap, connection, address, p_ios_param->config.c_str());
     }
     else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
         controller_handle =

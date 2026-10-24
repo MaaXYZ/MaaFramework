@@ -15,6 +15,10 @@ if(WITH_ADB_CONTROLLER)
     add_dependencies(LibraryHolder MaaAdbControlUnit)
 endif()
 
+if(WITH_IOS_CONTROLLER)
+    add_dependencies(LibraryHolder MaaIOSControlUnit)
+endif()
+
 if(WITH_WIN32_CONTROLLER)
     add_dependencies(LibraryHolder MaaWin32ControlUnit)
 endif()

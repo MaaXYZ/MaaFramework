@@ -31,6 +31,7 @@
                     "type": "string",
                     "enum": [
                         "Adb",
+                        "IOS",
                         "Win32",
                         "PlayCover",
                         "Linux"
@@ -55,6 +56,30 @@
                     "type": "object"
                 }
             }
+        },
+        "ios": {
+            "type": "object",
+            "title": "iOS配置",
+            "properties": {
+                "udid": {
+                    "type": "string"
+                },
+                "wifi": {
+                    "type": "string"
+                },
+                "screencap": {
+                    "type": "string"
+                },
+                "config": {
+                    "type": "object",
+                    "title": "xdb Server配置",
+                    "properties": {
+                        "server_port": { "type": "integer", "minimum": 0, "maximum": 65535 }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
         },
         "win32": {
             "title": "Win32配置",

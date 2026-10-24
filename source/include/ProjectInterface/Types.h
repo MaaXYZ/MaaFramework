@@ -2,6 +2,7 @@
 
 #include <array>
 #include <filesystem>
+#include <memory>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -19,6 +20,20 @@ struct InterfaceData
 {
     struct Controller
     {
+        struct IOSConfig
+        {
+            std::string udid;
+            /// 设备的局域网地址；留空按默认连接策略优先尝试 USB，也可设为 "auto" 自动发现无线设备。
+            std::string wifi;
+            // 取图方式，见 MaaIOSScreencapMethod：留空 = 两条都给（快路径优先，解不了自动降级）。
+            // 可以叠：用 '|' 或 ',' 分隔，例如 "Stream|ScreenshotService"。
+            std::string screencap;
+
+            json::object config;
+
+            MEO_JSONIZATION(MEO_OPT udid, MEO_OPT wifi, MEO_OPT screencap, MEO_OPT config);
+        };
+
         struct Win32Config
         {
             std::string class_regex;
@@ -71,6 +86,7 @@ struct InterfaceData
         {
             Invalid,
             Adb,
+            IOS,
             Win32,
             MacOS,
             PlayCover,
@@ -98,6 +114,7 @@ struct InterfaceData
         // v2.3.0: 控制器级选项
         std::vector<std::string> option;
 
+        IOSConfig ios;
         Win32Config win32;
         MacOSConfig macos;
         PlayCoverConfig playcover;
@@ -116,6 +133,7 @@ struct InterfaceData
             MEO_OPT display_raw,
             MEO_OPT attach_resource_path,
             MEO_OPT option,
+            MEO_OPT ios,
             MEO_OPT win32,
             MEO_OPT macos,
             MEO_OPT playcover,
@@ -367,6 +385,20 @@ struct Configuration
         MEO_JSONIZATION(name, adb_path, address);
     };
 
+    struct IOSConfig
+    {
+        std::string udid;
+        std::string wifi;
+        std::string screencap;
+        json::object config;
+
+        MEO_JSONIZATION(
+            MEO_OPT udid,
+            MEO_OPT wifi,
+            MEO_OPT screencap,
+            MEO_OPT config);
+    };
+
     struct PlayCoverConfig
     {
         std::string address;
@@ -417,6 +449,7 @@ struct Configuration
 
     Controller controller;
     AdbConfig adb;
+    IOSConfig ios;
     Win32Config win32;
     MacOSConfig macos;
     PlayCoverConfig playcover;
@@ -432,6 +465,7 @@ struct Configuration
     MEO_JSONIZATION(
         controller,
         MEO_OPT adb,
+        MEO_OPT ios,
         MEO_OPT win32,
         MEO_OPT macos,
         MEO_OPT playcover,
@@ -464,6 +498,15 @@ struct RuntimeParam
         MaaAdbInputMethod input = MaaAdbInputMethod_None;
         std::string config;
         std::string agent_path;
+    };
+
+    struct IOSParam
+    {
+        std::string udid;
+        /// 非空走局域网；空值对指定 UDID 优先 USB，再尝试 Wi-Fi。
+        std::string wifi;
+        MaaIOSScreencapMethod screencap = MaaIOSScreencapMethod_Default;
+        std::string config;
     };
 
     struct Win32Param
@@ -522,7 +565,7 @@ struct RuntimeParam
         std::unordered_map<std::string, std::string> env_vars; // v2.5.0: PI_* env vars
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param, MacOSParam, PlayCoverParam, GamepadParam, LinuxParam> controller_param;
+    std::variant<std::monostate, AdbParam, IOSParam, Win32Param, MacOSParam, PlayCoverParam, GamepadParam, LinuxParam> controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;

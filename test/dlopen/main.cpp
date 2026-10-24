@@ -21,6 +21,18 @@ int main()
 
 #endif
 
+#ifdef WITH_IOS_CONTROLLER
+
+    std::cout << "********** IOSControlUnitLibraryHolder::create_control_unit **********" << std::endl;
+    auto ios_handle = MAA_NS::IOSControlUnitLibraryHolder::create_control_unit(
+        "offline-test-device", MaaIOSScreencapMethod_ScreenshotService, MaaIOSConnectionMethod_USB, nullptr, nullptr);
+    if (!ios_handle) {
+        std::cerr << "Failed to create iOS control unit" << std::endl;
+        return -1;
+    }
+
+#endif
+
 #ifdef WITH_WIN32_CONTROLLER
 
     std::cout << "********** Win32ControlUnitLibraryHolder::create_control_unit **********" << std::endl;

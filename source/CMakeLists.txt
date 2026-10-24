@@ -2,6 +2,10 @@ if(WITH_ADB_CONTROLLER)
     add_subdirectory(MaaAdbControlUnit)
 endif()
 
+if(WITH_IOS_CONTROLLER)
+    add_subdirectory(MaaIOSControlUnit)
+endif()
+
 if(WITH_WIN32_CONTROLLER)
     add_subdirectory(MaaWin32ControlUnit)
 endif()

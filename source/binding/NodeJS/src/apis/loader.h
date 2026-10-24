@@ -14,6 +14,7 @@ maajs::ValueType load_resource(maajs::EnvType env);
 maajs::ValueType load_image_job(maajs::EnvType env);
 maajs::ValueType load_controller(maajs::EnvType env);
 maajs::ValueType load_adb_controller(maajs::EnvType env);
+maajs::ValueType load_ios_controller(maajs::EnvType env);
 maajs::ValueType load_win32_controller(maajs::EnvType env);
 maajs::ValueType load_macos_controller(maajs::EnvType env);
 maajs::ValueType load_playcover_controller(maajs::EnvType env);

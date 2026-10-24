@@ -244,6 +244,15 @@ declare global {
             static find(adb?: string): Promise<AdbDevice[] | null>
         }
 
+        type IOSDevice = [name: string, udid: string, screencap_methods: ScreencapOrInputMethods, connections_json: string]
+
+        /** Uses a running xdb Server. Pairing credentials remain in xdb. */
+        class IOSController extends Controller {
+            static find(timeout_ms?: number, config?: string, connection_method?: number): Promise<IOSDevice[] | null>
+            constructor(udid: string, screencap_method?: ScreencapOrInputMethods,
+                connection_method?: number, wifi_address?: string, config?: string)
+        }
+
         type DesktopDevice = [handle: DesktopHandle, class_name: string, window_name: string]
 
         class Win32Controller extends Controller {

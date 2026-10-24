@@ -1,0 +1,12 @@
+{
+    "IOSSample": "MaaFramework iOS 示例",
+    "IOSSampleDescription": "演示 iOS 设备连接、截图检查和无边记绘图。",
+    "IOSController": "iOS 设备",
+    "IOSControllerDescription": "通过 USB 或 Wi-Fi 连接已配对的 iOS 设备。",
+    "IOSResource": "iOS 示例资源",
+    "IOSResourceDescription": "包含截图检查和无边记绘图流水线。",
+    "IOSScreenshotCheck": "iOS 截图检查",
+    "IOSScreenshotCheckDescription": "获取设备画面，检查是否能成功截图。",
+    "FreeformAppleDrawing": "无边记绘制苹果",
+    "FreeformAppleDrawingDescription": "启动无边记，通过折线滑动绘制苹果。"
+}
