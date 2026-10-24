@@ -137,6 +137,11 @@ OCRer::ResultsVec OCRer::handle_cached() const
             results.emplace_back(c);
         }
         else if (cv::Rect ints = roi_ & c.box; ints.area() > 0) {
+            // 交集不到框高的一半时（框只擦到 ROI 上下边缘，或 ROI 比文字行还矮），剩下的只是一条细缝（可能仅 1px 高）。
+            // rec 会把它按高度缩放到 48px，宽度随之放大数百倍，耗费数 GB 内存，且识别不出有意义的文字。
+            if (ints.height * 2 < c.box.height) {
+                continue;
+            }
             intersections.emplace_back(ints);
         }
     }
