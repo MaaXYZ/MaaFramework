@@ -170,10 +170,10 @@ declare global {
          * |-------------|---------------|--------------------|--------------------|----------------------------------|
          * | GlobalEvent | High          | Accessibility      | No                 |                                  |
          * | PostToPid   | Medium        | Accessibility      | Yes                |                                  |
+         * | Gesture     | Experimental  | Accessibility      | Yes                | Native iOS apps; contact 0 only   |
          */
         const MacOSInputMethod: Record<
-            | 'GlobalEvent'
-            | 'PostToPid',
+            'GlobalEvent' | 'PostToPid' | 'Gesture',
             ScreencapOrInputMethods
         >
 
