@@ -10,6 +10,7 @@
 #include "Task/PipelineTask.h"
 #include "Tasker/Tasker.h"
 #include "Vision/OCRer.h"
+#include "Vision/MultiColorMatcher.h"
 
 MAA_TASK_NS_BEGIN
 
@@ -34,6 +35,7 @@ private:
     RecoResult template_match(const MAA_VISION_NS::TemplateMatcherParam& param, const std::string& name);
     RecoResult feature_match(const MAA_VISION_NS::FeatureMatcherParam& param, const std::string& name);
     RecoResult color_match(const MAA_VISION_NS::ColorMatcherParam& param, const std::string& name);
+    RecoResult multi_color_match(const MAA_VISION_NS::MultiColorMatcherParam& param, const std::string& name);
     RecoResult ocr(const MAA_VISION_NS::OCRerParam& param, const std::string& name);
     RecoResult nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierParam& param, const std::string& name);
     RecoResult nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam& param, const std::string& name);

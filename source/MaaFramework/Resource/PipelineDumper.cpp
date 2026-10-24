@@ -155,6 +155,28 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
         };
     } break;
 
+    case Recognition::Type::MultiColorMatch: {
+        const auto& p = std::get<MAA_VISION_NS::MultiColorMatcherParam>(param);
+        std::vector<PipelineV2::JOffsetPoint> points;
+        for (const auto& pt : p.points) {
+            points.push_back({ pt.dx, pt.dy, pt.color });
+        }
+        reco.param = PipelineV2::JMultiColorMatch {
+            .roi = dump_target(p.roi_target),
+            .roi_offset = dump_rect(p.roi_target.offset),
+            .base_color = p.base_color,
+            .points = std::move(points),
+            .degree = p.degree,
+            .main = p.main,
+            .list = p.list,
+            .count = p.count,
+            .miss = p.miss,
+            .orient = p.orient,
+            .order_by = dump_order_by(p.order_by),
+            .index = p.result_index,
+        };
+    } break;
+
     case Recognition::Type::OCR: {
         const auto& p = std::get<MAA_VISION_NS::OCRerParam>(param);
         std::vector<std::string> expected;

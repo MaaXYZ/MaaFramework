@@ -14,6 +14,7 @@
 #include "Vision/NeuralNetworkDetector.h"
 #include "Vision/OCRer.h"
 #include "Vision/TemplateMatcher.h"
+#include "Vision/MultiColorMatcher.h"
 #include "Vision/VisionUtils.hpp"
 
 MAA_TASK_NS_BEGIN
@@ -72,6 +73,10 @@ RecoResult Recognizer::recognize(MAA_RES_NS::Recognition::Type type, const MAA_R
 
     case Type::ColorMatch:
         result = color_match(std::get<ColorMatcherParam>(param), name);
+        break;
+
+    case Type::MultiColorMatch:
+        result = multi_color_match(std::get<MultiColorMatcherParam>(param), name);
         break;
 
     case Type::OCR:
@@ -234,6 +239,24 @@ RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param
     }
 
     return build_result(name, "ColorMatch", ColorMatcher(image_, rois, param, name));
+}
+
+RecoResult Recognizer::multi_color_match(const MAA_VISION_NS::MultiColorMatcherParam& param, const std::string& name)
+{
+    using namespace MAA_VISION_NS;
+
+    if (image_.empty()) {
+        LogError << "Image is empty";
+        return { };
+    }
+
+    auto rois = get_rois(param.roi_target);
+    if (rois.empty()) {
+        LogWarn << "failed to get rois" << VAR(name);
+        return { };
+    }
+
+    return build_result(name, "MultiColorMatch", MultiColorMatcher(image_, rois, param, name));
 }
 
 RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::string& name)

@@ -68,6 +68,33 @@ struct JColorMatch
     MEO_TOJSON(roi, roi_offset, method, lower, upper, count, order_by, index, connected);
 };
 
+struct JOffsetPoint
+{
+    int dx = 0;
+    int dy = 0;
+    int color = 0;
+
+    MEO_TOJSON(dx, dy, color);
+};
+
+struct JMultiColorMatch
+{
+    JTarget roi;
+    JRect roi_offset;
+    int base_color = 0;
+    std::vector<JOffsetPoint> points;
+    int degree = 0;
+    int main = 0;
+    int list = 0;
+    int count = 0;
+    int miss = 0;
+    int orient = 0;
+    std::string order_by;
+    int index = 0;
+
+    MEO_TOJSON(roi, roi_offset, base_color, points, degree, main, list, count, miss, orient, order_by, index);
+};
+
 struct JOCR
 {
     JTarget roi;
@@ -146,6 +173,7 @@ using JRecognitionParam = std::variant<
     JTemplateMatch,
     JFeatureMatch,
     JColorMatch,
+    JMultiColorMatch,
     JOCR,
     JNeuralNetworkClassify,
     JNeuralNetworkDetect,
