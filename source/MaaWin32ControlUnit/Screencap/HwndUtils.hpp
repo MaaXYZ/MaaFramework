@@ -94,17 +94,23 @@ inline bool ensure_window_on_screen(HWND hwnd)
         return false;
     }
 
-    // A window that already covers the whole monitor (typically a borderless
-    // fullscreen game window) is expected to overlap the taskbar. Moving or
-    // resizing it would deform the game view and keep the taskbar visible,
-    // so leave it untouched. (Slack tolerates DWM invisible borders.)
+    // A window that covers the whole monitor without extending beyond it
+    // (typically a borderless fullscreen game window) is expected to overlap
+    // the taskbar. Moving or resizing it would deform the game view and keep
+    // the taskbar visible, so leave it untouched. Popups larger than the
+    // monitor are NOT skipped - they still need the cap/reposition below.
+    // (Slack tolerates DWM invisible borders.)
     const LONG kMonitorSlack = 8;
     bool covers_monitor = window_rect.left <= mi.rcMonitor.left + kMonitorSlack
                           && window_rect.top <= mi.rcMonitor.top + kMonitorSlack
                           && window_rect.right >= mi.rcMonitor.right - kMonitorSlack
                           && window_rect.bottom >= mi.rcMonitor.bottom - kMonitorSlack;
-    if (is_fullscreen(hwnd) && covers_monitor) {
-        LogDebug << "Skip ensure_window_on_screen: fullscreen-coverage window";
+    bool fits_monitor = window_rect.left >= mi.rcMonitor.left - kMonitorSlack
+                        && window_rect.top >= mi.rcMonitor.top - kMonitorSlack
+                        && window_rect.right <= mi.rcMonitor.right + kMonitorSlack
+                        && window_rect.bottom <= mi.rcMonitor.bottom + kMonitorSlack;
+    if (is_fullscreen(hwnd) && covers_monitor && fits_monitor) {
+        LogDebug << "Skip ensure_window_on_screen: fullscreen window matches monitor";
         return true;
     }
 
