@@ -29,6 +29,22 @@ extern "C"
         const char* config,
         const char* agent_path);
 
+    /**
+     * Create an iOS controller using a running XDeviceBridge server.
+     * udid is required; transport and capture selections use their iOS enums.
+     * config_json: optional server_port; omitted values use
+     * XDB_PORT (or 17423). xdb owns phone credentials and DDI setup.
+     * Stream obtains decoded BGRA; ScreenshotService obtains lossless PNG.
+     * Single-touch coordinates use the last delivered image geometry.
+     * Text accepts US-layout ASCII, tab and newline; unsupported text is rejected.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaIOSControllerCreate(
+        const char* udid,
+        MaaIOSScreencapMethod screencap_methods,
+        MaaIOSConnectionMethod connection_method,
+        const char* wifi_address,
+        const char* config_json);
+
     MAA_FRAMEWORK_API MaaController* MaaWin32ControllerCreate(
         void* hWnd,
         MaaWin32ScreencapMethod screencap_method,
@@ -206,6 +222,16 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostConnection(MaaController* ctrl);
 
+    /**
+     * @brief Post a tap at (x, y).
+     *
+     * @note x/y are in the coordinate space of the **scaled** screenshot returned by
+     *       MaaControllerCachedImage, not raw device pixels. The framework rescales them
+     *       back to the raw space before handing them to the control unit
+     *       (MaaControllerGetResolution reports that raw size; setting
+     *       MaaCtrlOption_ScreenshotUseRawSize makes the two spaces identical).
+     * @see MaaControllerPostScreencap, MaaControllerGetResolution, MaaCtrlOption_ScreenshotUseRawSize
+     */
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClick(MaaController* ctrl, int32_t x, int32_t y);
 
     // for adb controller, contact means finger id (0 for first finger, 1 for second finger, etc)

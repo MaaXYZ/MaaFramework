@@ -6,5 +6,6 @@
 #include "Config/MaaToolkitConfig.h"
 #include "DesktopWindow/MaaToolkitDesktopWindow.h"
 #include "Gamescope/MaaToolkitGamescope.h"
+#include "IOSDevice/MaaToolkitIOSDevice.h"
 #include "MacOS/MaaToolkitMacOS.h"
 #include "Portal/MaaToolkitPortal.h"
