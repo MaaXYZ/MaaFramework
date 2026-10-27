@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "MaaFramework/Utility/MaaUtility.h"
+#include "MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/StringMisc.hpp"
@@ -13,6 +14,7 @@ MAA_PROJECT_INTERFACE_NS_BEGIN
 
 namespace
 {
+
 MaaWin32ScreencapMethod parse_win32_screencap_method(const std::string& method)
 {
     static const std::unordered_map<std::string, MaaWin32ScreencapMethod> mapping = {
@@ -89,6 +91,42 @@ MaaMacOSInputMethod parse_macos_input_method(const std::string& method)
         return it->second;
     }
     return MaaMacOSInputMethod_None;
+}
+
+MaaIOSScreencapMethod parse_ios_screencap_method(const std::string& method)
+{
+    static const std::unordered_map<std::string, MaaIOSScreencapMethod> mapping = {
+        { "Stream", MaaIOSScreencapMethod_Stream },
+        { "ScreenshotService", MaaIOSScreencapMethod_ScreenshotService },
+        { "Service", MaaIOSScreencapMethod_ScreenshotService },
+    };
+
+    // 它是个位掩码，所以允许叠写："Stream|ScreenshotService"、"Stream, ScreenshotService" 都收。
+    MaaIOSScreencapMethod result = MaaIOSScreencapMethod_None;
+    std::vector<std::string> tokens;
+    for (auto&& pipe : string_split(method, '|')) {
+        for (auto&& comma : string_split(pipe, ',')) {
+            tokens.push_back(comma);
+        }
+    }
+
+    for (auto& token : tokens) {
+        string_trim_(token);
+        if (token.empty()) {
+            continue;
+        }
+        if (token == "All" || token == "Default") {
+            result |= MaaIOSScreencapMethod_All;
+            continue;
+        }
+        auto it = mapping.find(token);
+        if (it == mapping.end()) {
+            LogError << "Unknown iOS screencap method" << VAR(token);
+            return MaaIOSScreencapMethod_None;
+        }
+        result |= it->second;
+    }
+    return result;
 }
 
 MaaLinuxScreencapMethod parse_linux_screencap_method(const std::string& method)
@@ -239,6 +277,23 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         adb.agent_path = MaaNS::path_to_utf8_string(resource_dir_ / "MaaAgentBinary");
 
         runtime.controller_param = std::move(adb);
+    } break;
+
+    case InterfaceData::Controller::Type::IOS: {
+        RuntimeParam::IOSParam ios;
+
+        ios.udid = config_.ios.udid;
+        ios.wifi = config_.ios.wifi;
+        ios.config = json::value(config_.ios.config.empty() ? controller.ios.config : config_.ios.config).to_string();
+
+        if (!controller.ios.screencap.empty()) {
+            ios.screencap = parse_ios_screencap_method(controller.ios.screencap);
+        }
+        if (ios.screencap == MaaIOSScreencapMethod_None) {
+            ios.screencap = MaaIOSScreencapMethod_Default;
+        }
+
+        runtime.controller_param = std::move(ios);
     } break;
 
     case InterfaceData::Controller::Type::Win32: {

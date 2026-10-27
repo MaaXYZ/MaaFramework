@@ -539,6 +539,7 @@
                     "title": "控制器类型",
                     "enum": [
                         "Adb",
+                        "IOS",
                         "Win32",
                         "MacOS",
                         "PlayCover",
@@ -600,6 +601,30 @@
                     "title": "Adb 控制器配置",
                     "description": "Adb 控制器的具体配置。V2 协议中 input/screencap 由 MaaFramework 自动检测，无需手动配置",
                     "additionalProperties": true
+                },
+                "ios": {
+                    "type": "object",
+                    "title": "iOS 控制器配置",
+                    "properties": {
+                        "udid": {
+                            "type": "string"
+                        },
+                        "wifi": {
+                            "type": "string"
+                        },
+                        "screencap": {
+                            "type": "string",
+                            "description": "Stream、ScreenshotService 或按 | 组合"
+                        },
+                        "config": {
+                            "type": "object",
+                            "properties": {
+                                "server_port": { "type": "integer", "minimum": 0, "maximum": 65535 }
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "additionalProperties": false
                 },
                 "win32": {
                     "type": "object",
