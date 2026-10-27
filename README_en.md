@@ -343,6 +343,8 @@ _Please note that you only need to read this chapter if you are ready to develop
      Gzip header-only C++ library
 - [ViGEmClient](https://github.com/nefarius/ViGEmClient)  
      ViGEm Client SDK for feeder development.
+- [XDeviceBridge](https://github.com/scrctl/XDeviceBridge)  
+     Cross-platform iOS device bridge: reusable client, standalone or embedded server, and xdb CLI
 - ~~[protobuf](https://github.com/protocolbuffers/protobuf)~~  
      ~~Protocol Buffers - Google's data interchange format~~
 - ~~[grpc](https://github.com/grpc/grpc)~~  

@@ -32,6 +32,7 @@ option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 option(BUILD_NODE_TEST "build node test" OFF)
 option(BUILD_MACOS_TEST "build macOS test" OFF)
 option(BUILD_LINUX_TEST "build Linux test" OFF)
+option(BUILD_IOS_TEST "build iOS test" OFF)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)
 option(ENABLE_HASH_VERSION "enable hash version from git" OFF)
@@ -44,6 +45,11 @@ set(MAA_PRIVATE_INC ${CMAKE_SOURCE_DIR}/source/include)
 if(NOT WITH_REPLAY_CONTROLLER)
     message(STATUS "Replay controller is disabled, disable BUILD_PIPELINE_TESTING")
     set(BUILD_PIPELINE_TESTING OFF)
+endif()
+
+if(NOT WITH_IOS_CONTROLLER)
+    message(STATUS "iOS controller is disabled, disable BUILD_IOS_TEST")
+    set(BUILD_IOS_TEST OFF)
 endif()
 
 # check options
@@ -118,6 +124,11 @@ endif()
 if (BUILD_LINUX_TEST)
     add_subdirectory(test/linux_test)
 endif ()
+
+if(BUILD_IOS_TEST)
+    enable_testing()
+    add_subdirectory(test/ios_test)
+endif()
 
 maadeps_install(bin)
 

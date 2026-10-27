@@ -20,6 +20,10 @@ if(WITH_ADB_CONTROLLER)
     target_compile_definitions(DlopenTesting PRIVATE WITH_ADB_CONTROLLER)
 endif()
 
+if(WITH_IOS_CONTROLLER)
+    target_compile_definitions(DlopenTesting PRIVATE WITH_IOS_CONTROLLER)
+endif()
+
 if(WITH_WIN32_CONTROLLER)
     target_compile_definitions(DlopenTesting PRIVATE WITH_WIN32_CONTROLLER)
 endif()
