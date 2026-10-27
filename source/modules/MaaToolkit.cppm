@@ -31,6 +31,26 @@ export using ::MaaToolkitAdbDeviceGetScreencapMethods;
 export using ::MaaToolkitAdbDeviceGetInputMethods;
 export using ::MaaToolkitAdbDeviceGetConfig;
 
+// IOSDevice/MaaToolkitIOSDevice.h
+
+export using ::MaaToolkitIOSDevice;
+export using ::MaaToolkitIOSDeviceList;
+export using ::MaaToolkitIOSDeviceEventCallback;
+export using ::MaaToolkitIOSDeviceCancelCallback;
+export using ::MaaToolkitIOSDeviceDiscover;
+export using ::MaaToolkitIOSDeviceListCreate;
+export using ::MaaToolkitIOSDeviceListDestroy;
+export using ::MaaToolkitIOSDeviceFind;
+export using ::MaaToolkitIOSDeviceFindWithTimeout;
+export using ::MaaToolkitIOSDeviceFindWithOptions;
+export using ::MaaToolkitIOSDeviceListSize;
+export using ::MaaToolkitIOSDeviceListAt;
+export using ::MaaToolkitIOSDeviceGetName;
+export using ::MaaToolkitIOSDeviceGetUdid;
+export using ::MaaToolkitIOSDeviceGetConnections;
+export using ::MaaToolkitIOSDeviceGetScreencapMethods;
+export using ::MaaToolkitIOSDeviceListGetWarnings;
+
 // Config/MaaToolkitConfig.h
 
 export using ::MaaToolkitConfigInitOption;

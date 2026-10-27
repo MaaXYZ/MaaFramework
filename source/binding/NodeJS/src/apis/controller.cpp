@@ -11,6 +11,7 @@
 #include "buffer.h"
 #include "callback.h"
 #include "ext.h"
+#include "ios.h"
 #include "portal.h"
 
 namespace
@@ -500,6 +501,40 @@ maajs::ValueType load_adb_controller(maajs::EnvType env)
     maajs::FunctionType ctor;
     maajs::NativeClass<AdbControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
     ExtContext::get(env)->adbControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
+maajs::PromiseType IOSControllerImpl::find(maajs::EnvType env, maajs::OptionalParam<int32_t> timeout_ms,
+    maajs::OptionalParam<std::string> config, maajs::OptionalParam<MaaIOSConnectionMethod> connection_method)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    const auto timeout = timeout_ms.value_or(3000);
+    if (timeout < 0 || timeout > 60000) throw maajs::MaaError{"timeout_ms must be between 0 and 60000"};
+    const auto method = connection_method.value_or(MaaIOSConnectionMethod_Auto);
+    using Result = std::optional<std::vector<IOSDevice>>;
+    auto worker = new maajs::AsyncWork<Result>(env, [timeout, method, settings = config.value_or("{}")]{
+        return find_ios_devices(timeout, method, settings);
+    });
+    worker->Queue(); return worker->Promise();
+#else
+    std::ignore = env; std::ignore = timeout_ms; std::ignore = config; std::ignore = connection_method;
+    throw_toolkit_unavailable("IOSController.find");
+#endif
+}
+IOSControllerImpl* IOSControllerImpl::ctor(const maajs::CallbackInfo& info) {
+    auto [udid, methods, connection, wifi, config] = maajs::UnWrapArgs<IOSControllerCtorParam, void>(info);
+    if (udid.empty() || udid.find('\0') != std::string::npos) throw maajs::MaaError{"A nonempty iOS UDID without NUL is required"};
+    auto ctrl = MaaIOSControllerCreate(udid.c_str(), methods.value_or(MaaIOSScreencapMethod_Default),
+        connection.value_or(MaaIOSConnectionMethod_Auto), wifi.value_or("").c_str(), config.value_or("{}").c_str());
+    return ctrl ? new IOSControllerImpl(ctrl, true) : nullptr;
+}
+void IOSControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor) { MAA_BIND_FUNC(ctor, "find", find); }
+
+maajs::ValueType load_ios_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<IOSControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->iosControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
 
