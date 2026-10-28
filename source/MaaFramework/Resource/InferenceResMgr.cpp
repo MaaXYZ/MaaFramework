@@ -78,10 +78,10 @@ void InferenceResMgr::use_cuda(int device_id)
     LogInfo << "Using CUDA execution provider with device_id" << device_id;
 }
 
-void InferenceResMgr::use_directml(int device_id)
+bool InferenceResMgr::use_directml(int device_id)
 {
     if (!can_switch_to(MAA_VISION_NS::InferenceEngine::ONNXRuntime)) {
-        return;
+        return false;
     }
     engine_ = MAA_VISION_NS::InferenceEngine::ONNXRuntime;
 
@@ -90,19 +90,24 @@ void InferenceResMgr::use_directml(int device_id)
 #ifdef MAA_WITH_DML
 
     options_ = { };
-    auto status = OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id);
-    if (!Ort::Status(status).IsOK()) {
-        LogError << "Failed to append DML execution provider with device_id" << device_id;
-        return;
+    Ort::Status status(OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id));
+    if (!status.IsOK()) {
+        const auto error_code = static_cast<int>(status.GetErrorCode());
+        const auto error_message = status.GetErrorMessage();
+        LogError << "Failed to append DML execution provider" << VAR(device_id) << VAR(error_code) << VAR(error_message);
+        options_ = { };
+        return false;
     }
 
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using DML execution provider with device_id" << device_id;
+    return true;
 
 #else
 
     LogError << "MaaFW built without DML";
+    return false;
 
 #endif
 }

@@ -27,7 +27,7 @@ public:
 public:
     void use_cpu();
     void use_cuda(int device_id);
-    void use_directml(int device_id);
+    bool use_directml(int device_id);
     void use_coreml(uint32_t coreml_flag);
     bool use_webgpu(int device_id);
     // returns false if MaaFW is built without NCNN
