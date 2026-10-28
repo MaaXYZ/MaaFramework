@@ -81,6 +81,17 @@
                     "title": "默认值",
                     "description": "输入字段的默认值。💡 v2.10.0 password 为 true 时禁止设置此字段"
                 },
+                "input_type": {
+                    "type": "string",
+                    "title": "输入控件类型",
+                    "description": "💡 v2.10.5 可选，默认 text。text 为普通文本框；file 为文件选择器，选中后值为文件路径；directory 为文件夹选择器，选中后值为文件夹路径。仅影响 UI，字段值始终为 string",
+                    "enum": [
+                        "text",
+                        "file",
+                        "directory"
+                    ],
+                    "default": "text"
+                },
                 "pipeline_type": {
                     "type": "string",
                     "title": "Pipeline 数据类型",
@@ -1408,6 +1419,14 @@
                         "$ref": "#/definitions/i18nString",
                         "title": "图标路径",
                         "description": "预设图标文件路径，相对于项目根目录"
+                    },
+                    "controller": {
+                        "type": "array",
+                        "title": "支持的控制器列表",
+                        "description": "💡 v2.10.4 可选。指定该预设支持的控制器名称列表，与 task.controller 语义一致。数组元素应与顶层 controller[].name 对应。未设置时不限制控制器。不满足当前控制器限制时，Client 可隐藏该预设或以不可用状态显示",
+                        "items": {
+                            "type": "string"
+                        }
                     },
                     "task": {
                         "type": "array",
