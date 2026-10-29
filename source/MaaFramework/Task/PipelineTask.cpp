@@ -12,8 +12,8 @@
 #include "Resource/PipelineDumper.h"
 #include "Resource/PipelineParser.h"
 #include "Resource/ResourceMgr.h"
+#include "Task/InterruptibleSleep.hpp"
 #include "Tasker/Tasker.h"
-#include "Utils/InterruptibleSleep.hpp"
 
 MAA_TASK_NS_BEGIN
 
@@ -159,7 +159,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 
         LogDebug << "sleep_until" << VAR(pretask.rate_limit);
         // rate_limit 由用户配置（默认 1s），睡眠期间收到 post_stop 不应等到满额才退出
-        sleep_until_interruptible(current_clock + pretask.rate_limit, [this]() { return context_->need_to_stop(); });
+        interruptible_sleep::sleep_until(current_clock + pretask.rate_limit, context_.get());
         return !context_->need_to_stop();
     };
 

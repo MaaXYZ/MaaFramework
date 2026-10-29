@@ -5,8 +5,8 @@
 #include "MaaUtils/Logger.h"
 #include "Recognizer.h"
 #include "Task/Context.h"
+#include "Task/InterruptibleSleep.hpp"
 #include "Tasker/Tasker.h"
-#include "Utils/InterruptibleSleep.hpp"
 #include "Vision/TemplateComparator.h"
 #include "Vision/VisionUtils.hpp"
 
@@ -23,11 +23,7 @@ bool ActionHelper::wait_freezes(
     const WaitFreezesNotifyContext& noti_ctx)
 {
     // post_stop 是立即停止语义，本函数最长可阻塞 param.timeout（默认 20s），必须响应停止标志
-    auto need_to_stop = [this]() {
-        return context_ && context_->need_to_stop();
-    };
-
-    if (need_to_stop()) {
+    if (context_ && context_->need_to_stop()) {
         LogWarn << "need_to_stop before wait_freezes" << VAR(noti_ctx.name) << VAR(noti_ctx.phase);
         return false;
     }
@@ -120,9 +116,9 @@ bool ActionHelper::wait_freezes(
 
     while (true) {
         LogDebug << "sleep_until" << VAR(rate_limit);
-        sleep_until_interruptible(screencap_clock + rate_limit, need_to_stop);
+        interruptible_sleep::sleep_until(screencap_clock + rate_limit, context_);
 
-        if (need_to_stop()) {
+        if (context_ && context_->need_to_stop()) {
             LogWarn << "need_to_stop, abort wait freezes" << VAR(noti_ctx.name) << VAR(noti_ctx.phase)
                     << VAR(duration_since(start_clock));
             return finish(false);
@@ -198,7 +194,7 @@ bool ActionHelper::wait_freezes(
     }
 
     // 跳出循环到返回成功之间仍可能收到 post_stop，此时不应把结果报成成功
-    if (need_to_stop()) {
+    if (context_ && context_->need_to_stop()) {
         LogWarn << "need_to_stop, abort wait freezes" << VAR(noti_ctx.name) << VAR(noti_ctx.phase) << VAR(duration_since(start_clock));
         return finish(false);
     }
