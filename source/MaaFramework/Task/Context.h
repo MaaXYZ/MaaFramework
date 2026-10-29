@@ -69,7 +69,7 @@ public:
     std::optional<PipelineData> get_pipeline_data(const MAA_RES_NS::NodeAttr& node_attr) const;
     std::vector<cv::Mat> get_images(const std::vector<std::string>& names);
 
-    // 宿主线程通过 post_stop 写入，worker 线程的轮询循环读取，必须原子
+    // post_stop（宿主线程）与 StopTask 动作（worker 线程）都会写，其余线程一直在读，必须原子
     std::atomic_bool& need_to_stop();
     bool check_hit_count(const PipelineData& data);
     void increment_hit_count(const std::string& node_name);

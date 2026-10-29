@@ -4,6 +4,7 @@
 #include <chrono>
 #include <thread>
 
+#include "Common/Conf.h"
 #include "Task/Context.h"
 
 MAA_TASK_NS_BEGIN

@@ -213,6 +213,12 @@ void TaskBase::sleep(std::chrono::milliseconds ms) const
 {
     LogDebug << ms;
 
+    // helper 内部只能静默提前返回，这里补一条可追溯的日志
+    if (context_ && context_->need_to_stop()) {
+        LogWarn << "need_to_stop, skip sleep" << VAR(ms);
+        return;
+    }
+
     interruptible_sleep::sleep_for(ms, context_.get());
 }
 

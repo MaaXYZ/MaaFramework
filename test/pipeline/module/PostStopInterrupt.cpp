@@ -19,7 +19,7 @@
 // TaskBase::sleep 是纯 sleep_for。表现为 CustomAction 里的 MaaContextRunTask 永不返回，
 // 宿主超时强杀后 0xC0000005。
 // 本用例用自定义控制器伪造"永不稳定的画面"，在子任务进入 wait_freezes 后由宿主线程 post_stop，
-// 断言 MaaContextRunTask 在 2.5s 内返回（预期 20ms rate_limit + 50ms 轮询）。
+// 断言 MaaContextRunTask 在 2.5s 内返回（预期上限为一次 rate_limit，20ms）。
 
 namespace
 {
@@ -27,8 +27,9 @@ namespace
 constexpr int32_t kScreenWidth = 32;
 constexpr int32_t kScreenHeight = 32;
 constexpr int32_t kScreenType = 16; // CV_8UC3
-// 停止延迟预算：预期开销只有一次 rate_limit(20ms) 加一次 sleep 轮询间隔(50ms)，
-// 2.5s 仍能识别 6~60 倍级回归，同时容忍负载 / TSan / 消毒器机器上的线程停顿
+// 停止延迟预算：中断发生在一次 rate_limit(20ms) 的等待里，轮询只会把一次 sleep 切短、
+// 不会加长，因此正常路径的延迟上限就是一次 rate_limit。2.5s 仍能识别数十倍级回归，
+// 同时容忍负载 / TSan / 消毒器机器上的线程停顿
 constexpr long long kStopLatencySlackMs = 2500;
 
 std::mutex g_screencap_mutex;
@@ -101,8 +102,6 @@ struct SubTaskProbe
     std::atomic_bool returned { false };
     std::atomic<long long> total_ms { -1 };           // 进入 run_task 到返回
     std::atomic<long long> stop_to_return_ms { -1 };  // post_stop 发出到返回，这才是停止延迟
-    std::atomic<MaaTaskId> sub_task_id { MaaInvalidId };
-    std::chrono::steady_clock::time_point enter_clock;
 
     // 宿主线程写入、worker 线程读取
     std::atomic<long long> stop_clock_ns { 0 };
@@ -134,11 +133,11 @@ MaaBool main_custom_action(
     // 子任务节点已在资源里定义，这里只做一次空 override
     constexpr std::string_view kChildOverride = R"({"PostStopInterruptChild": {"enabled": true}})";
 
-    probe->enter_clock = std::chrono::steady_clock::now();
+    const auto enter_clock = std::chrono::steady_clock::now();
     MaaTaskId sub_task_id = MaaContextRunTask(context, "PostStopInterruptChild", std::string(kChildOverride).c_str());
 
     const auto return_clock = std::chrono::steady_clock::now();
-    const auto total = std::chrono::duration_cast<std::chrono::milliseconds>(return_clock - probe->enter_clock);
+    const auto total = std::chrono::duration_cast<std::chrono::milliseconds>(return_clock - enter_clock);
 
     probe->total_ms = total.count();
 
@@ -148,7 +147,6 @@ MaaBool main_custom_action(
         probe->stop_to_return_ms = std::chrono::duration_cast<std::chrono::milliseconds>(return_clock - stop_clock).count();
     }
 
-    probe->sub_task_id = sub_task_id;
     probe->returned = true;
 
     return sub_task_id != MaaInvalidId;
@@ -231,7 +229,7 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
     }
 
     auto sink_id = MaaTaskerAddContextSink(tasker, &on_context_message, &probe);
-    if (sink_id == 0) {
+    if (sink_id == MaaInvalidId) {
         std::cout << "PostStopInterrupt: failed to add context sink" << std::endl;
         MaaTaskerDestroy(tasker);
         MaaResourceDestroy(resource);
@@ -252,7 +250,6 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
     // 与 #1564 的真实调用方一致
     MaaTaskId stop_task_id = MaaInvalidId;
     bool sent_stop = false;
-    long long stop_clock_ns = 0;
 
     {
         // 子节点自身的 timeout 已在 pipeline 里降到 5s，宿主侧截止时间需与之同量级：
@@ -264,8 +261,8 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
         }
 
         if (probe.reached_wait_freezes) {
-            stop_clock_ns = std::chrono::steady_clock::now().time_since_epoch().count();
-            probe.stop_clock_ns = stop_clock_ns;
+            // 先落时间戳再发停止：worker 侧只在这个时间戳非零时才计算停止延迟
+            probe.stop_clock_ns = std::chrono::steady_clock::now().time_since_epoch().count();
             stop_task_id = MaaTaskerPostStop(tasker);
             sent_stop = true;
         }
@@ -312,10 +309,18 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
         passed = true;
     }
 
-    // 等所有任务退出后再动 sink 表：dispatch 在 worker 线程上无锁遍历 sink 表，
+    // 子任务没有返回说明框架侧真的卡住了。此时不能等、也不能销毁：post_stop 的停止任务排在
+    // 同一个 runner 队列里，worker 卡在子任务上就永远取不到它，MaaTaskerWait 会一直等下去，
+    // MaaTaskerDestroy 还会 join 卡住的 worker，两者都会挂死 CI。直接放弃清理，交给进程退出回收。
+    if (!sub_returned) {
+        std::cout << "PostStopInterrupt: sub task did not return, skip cleanup to avoid hanging on join" << std::endl;
+        return false;
+    }
+
+    // 动 sink 表之前必须确认 worker 已经走完：dispatch 在 worker 线程上无锁遍历 sink 表，
     // 并发调用 MaaTaskerRemoveContextSink 会踩坏 std::map。
-    // 只需等 post_stop 的 task id：AsyncRunner::clear() 已把 compl_id_ 推过此前所有 id，
-    // 等原来的 task_id 会立即返回，不提供任何顺序保证。
+    // 顺序保证只来自 stop_task_id：AsyncRunner::clear() 已把 compl_id_ 推过此前所有 id，
+    // 等原来的 task_id 会立即返回；而停止任务排在同一个 runner 队列里，必须等主任务跑完才被执行。
     if (stop_task_id != MaaInvalidId) {
         MaaTaskerWait(tasker, stop_task_id);
     }
