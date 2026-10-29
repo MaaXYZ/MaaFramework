@@ -12,6 +12,7 @@
 #include "Resource/PipelineDumper.h"
 #include "Resource/PipelineParser.h"
 #include "Resource/ResourceMgr.h"
+#include "Task/InterruptibleSleep.hpp"
 #include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
@@ -157,8 +158,9 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         }
 
         LogDebug << "sleep_until" << VAR(pretask.rate_limit);
-        std::this_thread::sleep_until(current_clock + pretask.rate_limit);
-        return true;
+        // rate_limit 由用户配置（默认 1s），睡眠期间收到 post_stop 不应等到满额才退出
+        interruptible_sleep::sleep_until(current_clock + pretask.rate_limit, context_.get());
+        return !context_->need_to_stop();
     };
 
     const bool need_screencap = !std::ranges::all_of(next, [&](const MAA_RES_NS::NodeAttr& node) {
@@ -213,6 +215,13 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 
         auto act = run_action(reco, *hit_opt);
 
+        // 动作被停止打断时 run_action 返回空结果，completed=false 会被下面上报成失败节点；
+        // 与尾部的一致：停止不产生终态
+        if (context_->need_to_stop()) {
+            LogWarn << "need_to_stop" << VAR(hit_name) << VAR(task_id_);
+            return { };
+        }
+
         for (const auto& [anchor, target] : hit_opt->anchor) {
             context_->set_anchor(anchor, target);
         }
@@ -236,6 +245,12 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         notify(act.success ? MaaMsg_Node_PipelineNode_Succeeded : MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
 
         return result;
+    }
+
+    // 停止导致的跳出不是失败：上报 PipelineNode_Failed 与 completed=false 会让宿主把被停止的节点记成红节点
+    if (context_->need_to_stop()) {
+        LogWarn << "need_to_stop" << VAR(pretask.name) << VAR(task_id_);
+        return { };
     }
 
     NodeDetail result {

@@ -1,7 +1,5 @@
 #include "TaskBase.h"
 
-#include <thread>
-
 #include "Component/ActionHelper.h"
 #include "Component/Actuator.h"
 #include "Component/Recognizer.h"
@@ -11,6 +9,7 @@
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
 #include "Resource/ResourceMgr.h"
+#include "Task/InterruptibleSleep.hpp"
 
 MAA_TASK_NS_BEGIN
 
@@ -214,7 +213,13 @@ void TaskBase::sleep(std::chrono::milliseconds ms) const
 {
     LogDebug << ms;
 
-    std::this_thread::sleep_for(ms);
+    // helper 内部只能静默提前返回，这里补一条可追溯的日志
+    if (context_ && context_->need_to_stop()) {
+        LogWarn << "need_to_stop, skip sleep" << VAR(ms);
+        return;
+    }
+
+    interruptible_sleep::sleep_for(ms, context_.get());
 }
 
 bool TaskBase::debug_mode() const
