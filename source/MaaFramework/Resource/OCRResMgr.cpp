@@ -21,7 +21,7 @@ OCRResMgr::OCRResMgr()
     rec_option_.UseOrtBackend();
 }
 
-void OCRResMgr::use_cpu()
+bool OCRResMgr::use_cpu()
 {
     LogInfo;
 
@@ -32,9 +32,10 @@ void OCRResMgr::use_cpu()
 
     det_option_.SetCpuThreadNum(4);
     rec_option_.SetCpuThreadNum(4);
+    return true;
 }
 
-void OCRResMgr::use_cuda(int device_id)
+bool OCRResMgr::use_cuda(int device_id)
 {
     LogInfo << VAR(device_id);
 
@@ -42,9 +43,10 @@ void OCRResMgr::use_cuda(int device_id)
 
     det_option_.UseCuda(device_id);
     rec_option_.UseCuda(device_id);
+    return true;
 }
 
-void OCRResMgr::use_directml(int device_id)
+bool OCRResMgr::use_directml(int device_id)
 {
     LogInfo << VAR(device_id);
 
@@ -52,9 +54,10 @@ void OCRResMgr::use_directml(int device_id)
 
     det_option_.UseDirectML(device_id);
     rec_option_.UseDirectML(device_id);
+    return true;
 }
 
-void OCRResMgr::use_webgpu(int device_id)
+bool OCRResMgr::use_webgpu(int device_id)
 {
     LogInfo << VAR(device_id);
 
@@ -62,6 +65,7 @@ void OCRResMgr::use_webgpu(int device_id)
 
     det_option_.UseWebGPU(device_id);
     rec_option_.UseWebGPU(device_id);
+    return true;
 }
 
 bool OCRResMgr::use_ncnn()
@@ -79,11 +83,11 @@ bool OCRResMgr::use_ncnn()
 #endif
 }
 
-void OCRResMgr::use_coreml(uint32_t coreml_flag)
+bool OCRResMgr::use_coreml(uint32_t coreml_flag)
 {
     LogWarn << "CoreML is deprecated and no longer shipped. OCR falls back to CPU; use WebGPU instead" << VAR(coreml_flag);
 
-    use_cpu();
+    return use_cpu();
 }
 
 bool OCRResMgr::lazy_load(const std::filesystem::path& path)

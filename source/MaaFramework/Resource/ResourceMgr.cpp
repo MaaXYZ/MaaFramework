@@ -594,9 +594,9 @@ bool ResourceMgr::use_auto_ep()
 
 bool ResourceMgr::use_cpu()
 {
-    inference_res_.use_cpu();
-    ocr_res_.use_cpu();
-    return true;
+    const bool inference_success = inference_res_.use_cpu();
+    const bool ocr_success = ocr_res_.use_cpu();
+    return inference_success && ocr_success;
 }
 
 bool ResourceMgr::use_directml()
@@ -631,8 +631,7 @@ bool ResourceMgr::use_directml()
     if (!inference_res_.use_directml(device_id)) {
         return false;
     }
-    ocr_res_.use_directml(device_id);
-    return true;
+    return ocr_res_.use_directml(device_id);
 }
 
 bool ResourceMgr::use_coreml()
@@ -663,9 +662,9 @@ bool ResourceMgr::use_coreml()
         return false;
     }
 
-    inference_res_.use_coreml(coreml_flag);
-    ocr_res_.use_coreml(coreml_flag);
-    return true;
+    const bool inference_success = inference_res_.use_coreml(coreml_flag);
+    const bool ocr_success = ocr_res_.use_coreml(coreml_flag);
+    return inference_success && ocr_success;
 }
 
 bool ResourceMgr::use_cuda()
@@ -693,9 +692,9 @@ bool ResourceMgr::use_cuda()
         return false;
     }
 
-    inference_res_.use_cuda(device_id);
-    ocr_res_.use_cuda(device_id);
-    return true;
+    const bool inference_success = inference_res_.use_cuda(device_id);
+    const bool ocr_success = ocr_res_.use_cuda(device_id);
+    return inference_success && ocr_success;
 }
 
 bool ResourceMgr::use_webgpu()
@@ -725,8 +724,7 @@ bool ResourceMgr::use_webgpu()
     if (!inference_res_.use_webgpu(device_id)) {
         return false;
     }
-    ocr_res_.use_webgpu(device_id);
-    return true;
+    return ocr_res_.use_webgpu(device_id);
 }
 
 bool ResourceMgr::use_ncnn()
