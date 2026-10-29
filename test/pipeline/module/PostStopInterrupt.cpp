@@ -7,6 +7,7 @@
 #include <iostream>
 #include <mutex>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <vector>
 
@@ -18,7 +19,7 @@
 // TaskBase::sleep 是纯 sleep_for。表现为 CustomAction 里的 MaaContextRunTask 永不返回，
 // 宿主超时强杀后 0xC0000005。
 // 本用例用自定义控制器伪造"永不稳定的画面"，在子任务进入 wait_freezes 后由宿主线程 post_stop，
-// 断言 MaaContextRunTask 在 1s 内返回。
+// 断言 MaaContextRunTask 在 2.5s 内返回（预期 20ms rate_limit + 50ms 轮询）。
 
 namespace
 {
@@ -26,7 +27,9 @@ namespace
 constexpr int32_t kScreenWidth = 32;
 constexpr int32_t kScreenHeight = 32;
 constexpr int32_t kScreenType = 16; // CV_8UC3
-constexpr long long kStopLatencySlackMs = 1000;
+// 停止延迟预算：预期开销只有一次 rate_limit(20ms) 加一次 sleep 轮询间隔(50ms)，
+// 2.5s 仍能识别 6~60 倍级回归，同时容忍负载 / TSan / 消毒器机器上的线程停顿
+constexpr long long kStopLatencySlackMs = 2500;
 
 std::mutex g_screencap_mutex;
 uint8_t g_frame_counter = 0;
@@ -156,16 +159,29 @@ MaaBool main_custom_action(
 void on_context_message(void* handle, const char* message, const char* details_json, void* trans_arg)
 {
     std::ignore = handle;
-    std::ignore = details_json;
 
     auto* probe = static_cast<SubTaskProbe*>(trans_arg);
-    if (!probe || !message) {
+    if (!probe || !message || !details_json) {
         return;
     }
 
-    if (std::strcmp(message, MaaMsg_Node_WaitFreezes_Starting) == 0) {
-        probe->reached_wait_freezes = true;
+    if (std::strcmp(message, MaaMsg_Node_WaitFreezes_Starting) != 0) {
+        return;
     }
+
+    // 同一条消息对任意节点的 pre / repeat 阶段同样会发出，只看消息名就让宿主的 post_stop
+    // 提前发在子任务真正卡住之前，用例会以错误的理由通过，所以必须再核对节点名与阶段
+    std::string_view details { details_json };
+    if (details.find("\"PostStopInterruptChild\"") == std::string_view::npos) {
+        return;
+    }
+
+    // 连引号和字段名一起匹配，避免被其它字段里的裸 post 误命中
+    if (details.find("\"phase\":\"post\"") == std::string_view::npos) {
+        return;
+    }
+
+    probe->reached_wait_freezes = true;
 }
 
 } // namespace
@@ -206,11 +222,31 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
     }
 
     SubTaskProbe probe;
-    MaaResourceRegisterCustomAction(resource, "PostStopInterruptMainAction", &main_custom_action, &probe);
+    if (!MaaResourceRegisterCustomAction(resource, "PostStopInterruptMainAction", &main_custom_action, &probe)) {
+        std::cout << "PostStopInterrupt: failed to register custom action" << std::endl;
+        MaaTaskerDestroy(tasker);
+        MaaResourceDestroy(resource);
+        MaaControllerDestroy(controller);
+        return false;
+    }
 
     auto sink_id = MaaTaskerAddContextSink(tasker, &on_context_message, &probe);
+    if (sink_id == 0) {
+        std::cout << "PostStopInterrupt: failed to add context sink" << std::endl;
+        MaaTaskerDestroy(tasker);
+        MaaResourceDestroy(resource);
+        MaaControllerDestroy(controller);
+        return false;
+    }
 
     auto task_id = MaaTaskerPostTask(tasker, "PostStopInterruptMain", "{}");
+    if (task_id == MaaInvalidId) {
+        std::cout << "PostStopInterrupt: failed to post task" << std::endl;
+        MaaTaskerDestroy(tasker);
+        MaaResourceDestroy(resource);
+        MaaControllerDestroy(controller);
+        return false;
+    }
 
     // 宿主侧等待子任务进入 wait_freezes 后，由本线程（而非 worker 的回调里）发 post_stop，
     // 与 #1564 的真实调用方一致
@@ -219,7 +255,9 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
     long long stop_clock_ns = 0;
 
     {
-        constexpr auto kWaitEnter = std::chrono::seconds(10);
+        // 子节点自身的 timeout 已在 pipeline 里降到 5s，宿主侧截止时间需与之同量级：
+        // 出现回归时约 5~10s 内失败，而不是空转约 20s
+        constexpr auto kWaitEnter = std::chrono::seconds(5);
         auto deadline = std::chrono::steady_clock::now() + kWaitEnter;
         while (std::chrono::steady_clock::now() < deadline && !probe.reached_wait_freezes) {
             std::this_thread::sleep_for(std::chrono::milliseconds(2));
@@ -233,9 +271,9 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
         }
     }
 
-    // 兜底 10s：修复前这里必然等满（或永不返回）
+    // 兜底 5s：与子节点 timeout 同量级，修复前这里必然等满（或永不返回）
     {
-        constexpr auto kOuterTimeout = std::chrono::seconds(10);
+        constexpr auto kOuterTimeout = std::chrono::seconds(5);
         auto deadline = std::chrono::steady_clock::now() + kOuterTimeout;
         while (std::chrono::steady_clock::now() < deadline && !probe.returned) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -274,12 +312,10 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
         passed = true;
     }
 
-    // 断言结论先落盘再清理句柄，避免清理阶段的环境问题掩盖用例结果
-    std::cout.flush();
-
     // 等所有任务退出后再动 sink 表：dispatch 在 worker 线程上无锁遍历 sink 表，
     // 并发调用 MaaTaskerRemoveContextSink 会踩坏 std::map。
-    MaaTaskerWait(tasker, task_id);
+    // 只需等 post_stop 的 task id：AsyncRunner::clear() 已把 compl_id_ 推过此前所有 id，
+    // 等原来的 task_id 会立即返回，不提供任何顺序保证。
     if (stop_task_id != MaaInvalidId) {
         MaaTaskerWait(tasker, stop_task_id);
     }
