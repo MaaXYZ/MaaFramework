@@ -44,10 +44,10 @@ InferenceResMgr::InferenceResMgr()
 //     }
 // }
 
-void InferenceResMgr::use_cpu()
+bool InferenceResMgr::use_cpu()
 {
     if (!can_switch_to(MAA_VISION_NS::InferenceEngine::ONNXRuntime)) {
-        return;
+        return false;
     }
     engine_ = MAA_VISION_NS::InferenceEngine::ONNXRuntime;
 
@@ -55,33 +55,43 @@ void InferenceResMgr::use_cpu()
 
     options_ = { };
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+    return true;
 }
 
-void InferenceResMgr::use_cuda(int device_id)
+bool InferenceResMgr::use_cuda(int device_id)
 {
     if (!can_switch_to(MAA_VISION_NS::InferenceEngine::ONNXRuntime)) {
-        return;
+        return false;
     }
     engine_ = MAA_VISION_NS::InferenceEngine::ONNXRuntime;
 
     LogInfo << VAR(device_id);
 
-    options_ = { };
-    OrtCUDAProviderOptions cuda_options { };
-    cuda_options.device_id = device_id;
-    options_.AppendExecutionProvider_CUDA(cuda_options);
+    try {
+        options_ = { };
+        OrtCUDAProviderOptions cuda_options { };
+        cuda_options.device_id = device_id;
+        options_.AppendExecutionProvider_CUDA(cuda_options);
+    }
+    catch (const Ort::Exception& e) {
+        LogError << "Failed to append CUDA execution provider" << e.what();
+        options_ = { };
+        memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+        return false;
+    }
 
     // Input tensors are created from std::vector<float> (host memory).
     // Keep CPU memory info here and let ORT move data to CUDA EP internally.
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using CUDA execution provider with device_id" << device_id;
+    return true;
 }
 
-void InferenceResMgr::use_directml(int device_id)
+bool InferenceResMgr::use_directml(int device_id)
 {
     if (!can_switch_to(MAA_VISION_NS::InferenceEngine::ONNXRuntime)) {
-        return;
+        return false;
     }
     engine_ = MAA_VISION_NS::InferenceEngine::ONNXRuntime;
 
@@ -90,19 +100,25 @@ void InferenceResMgr::use_directml(int device_id)
 #ifdef MAA_WITH_DML
 
     options_ = { };
-    auto status = OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id);
-    if (!Ort::Status(status).IsOK()) {
-        LogError << "Failed to append DML execution provider with device_id" << device_id;
-        return;
+    Ort::Status status(OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id));
+    if (!status.IsOK()) {
+        const auto error_code = static_cast<int>(status.GetErrorCode());
+        const auto error_message = status.GetErrorMessage();
+        LogError << "Failed to append DML execution provider" << VAR(device_id) << VAR(error_code) << VAR(error_message);
+        options_ = { };
+        memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+        return false;
     }
 
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using DML execution provider with device_id" << device_id;
+    return true;
 
 #else
 
     LogError << "MaaFW built without DML";
+    return false;
 
 #endif
 }
@@ -140,10 +156,10 @@ bool InferenceResMgr::use_webgpu(int device_id)
     return true;
 }
 
-void InferenceResMgr::use_coreml(uint32_t coreml_flag)
+bool InferenceResMgr::use_coreml(uint32_t coreml_flag)
 {
     if (!can_switch_to(MAA_VISION_NS::InferenceEngine::ONNXRuntime)) {
-        return;
+        return false;
     }
     engine_ = MAA_VISION_NS::InferenceEngine::ONNXRuntime;
 
@@ -152,18 +168,25 @@ void InferenceResMgr::use_coreml(uint32_t coreml_flag)
 #ifdef MAA_WITH_COREML
 
     options_ = { };
-    auto status = OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options_, coreml_flag);
-    if (!Ort::Status(status).IsOK()) {
-        LogError << "Failed to append CoreML execution provider";
+    Ort::Status status(OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options_, coreml_flag));
+    if (!status.IsOK()) {
+        const auto error_code = static_cast<int>(status.GetErrorCode());
+        const auto error_message = status.GetErrorMessage();
+        LogError << "Failed to append CoreML execution provider" << VAR(error_code) << VAR(error_message);
+        options_ = { };
+        memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+        return false;
     }
 
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using CoreML execution provider";
+    return true;
 
 #else
 
     LogError << "MaaFW built without CoreML";
+    return false;
 
 #endif
 }
