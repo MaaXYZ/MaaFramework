@@ -65,8 +65,7 @@ bool IOSControlUnitMgr::request_uuid(std::string& uuid)
 
 MaaControllerFeature IOSControlUnitMgr::get_features() const
 {
-    // Framework long presses require down/up preferences; these flags do not
-    // imply support for additional contacts. Framework pixel scaling stays enabled.
+    // Framework long presses use down/up; pixel scaling stays enabled.
     return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 }
 
@@ -182,8 +181,8 @@ bool IOSControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 bool IOSControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     std::ignore = pressure;
-    if (contact != 0 || session_.touch_active()) {
-        LogError << "iOS controller requires one inactive contact numbered 0" << VAR(contact);
+    if (contact < 0 || contact >= maa::ios_unit::kMaxTouchContacts || session_.touch_active(contact)) {
+        LogError << "iOS touch_down requires an inactive contact in [0,4]" << VAR(contact);
         return false;
     }
 
@@ -192,14 +191,14 @@ bool IOSControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
     if (!normalize(x, y, fx, fy, err)) {
         return false;
     }
-    return session_.touch(fx, fy, true, err);
+    return session_.touch(contact, fx, fy, true, err);
 }
 
 bool IOSControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 {
     std::ignore = pressure;
-    if (contact != 0 || !session_.touch_active()) {
-        LogError << "iOS touch_move needs the active contact numbered 0" << VAR(contact);
+    if (contact < 0 || contact >= maa::ios_unit::kMaxTouchContacts || !session_.touch_active(contact)) {
+        LogError << "iOS touch_move requires an active contact in [0,4]" << VAR(contact);
         return false;
     }
 
@@ -210,18 +209,18 @@ bool IOSControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
     }
     // 每个 CONTACT 报告都是"此刻在此处接触着"，没有 begin/end 操作码，
     // 所以 move 与 down 在线上一模一样。
-    return session_.touch(fx, fy, true, err);
+    return session_.touch(contact, fx, fy, true, err);
 }
 
 bool IOSControlUnitMgr::touch_up(int contact)
 {
-    if (contact != 0) {
-        LogError << "iOS controller supports single touch only" << VAR(contact);
+    if (contact < 0 || contact >= maa::ios_unit::kMaxTouchContacts) {
+        LogError << "iOS touch_up requires a contact in [0,4]" << VAR(contact);
         return false;
     }
 
     std::string err;
-    return session_.release_touch(err);
+    return session_.release_touch(contact, err);
 }
 
 bool IOSControlUnitMgr::click_key(int key)

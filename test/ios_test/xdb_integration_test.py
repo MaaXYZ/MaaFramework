@@ -3,6 +3,7 @@ import ctypes as C
 import json
 from pathlib import Path
 import sys
+import tempfile
 
 root = Path(sys.argv[1])
 sys.path.insert(0, str(root / '3rdparty/XDeviceBridge/tests/support'))
@@ -37,7 +38,7 @@ destroy = function(fw, 'MaaControllerDestroy', None, [P])
 wait = function(fw, 'MaaControllerWait', I, [P, Q])
 set_option = function(fw, 'MaaControllerSetOption', B, [P, I, P, C.c_uint64])
 posts = {}
-for suffix, args in [('Connection', []), ('Screencap', []), ('Click', [I,I]), ('InputText', [C.c_char_p]), ('KeyDown',[I]), ('KeyUp',[I]), ('StartApp',[C.c_char_p]), ('StopApp',[C.c_char_p])]:
+for suffix, args in [('Connection', []), ('Screencap', []), ('Click', [I,I]), ('InputText', [C.c_char_p]), ('KeyDown',[I]), ('KeyUp',[I]), ('TouchDown',[I,I,I,I]), ('TouchMove',[I,I,I,I]), ('TouchUp',[I]), ('StartApp',[C.c_char_p]), ('StopApp',[C.c_char_p])]:
     posts[suffix] = function(fw, 'MaaControllerPost' + suffix, Q, [P] + args)
 image_create = function(fw, 'MaaImageBufferCreate', P, [])
 image_destroy = function(fw, 'MaaImageBufferDestroy', None, [P])
@@ -49,6 +50,44 @@ list_create = function(tk, 'MaaToolkitIOSDeviceListCreate', P, [])
 list_destroy = function(tk, 'MaaToolkitIOSDeviceListDestroy', None, [P])
 find = function(tk, 'MaaToolkitIOSDeviceFindWithOptions', B, [I,C.c_char_p,P])
 size = function(tk, 'MaaToolkitIOSDeviceListSize', C.c_uint64, [P])
+resource_create = function(fw, 'MaaResourceCreate', P, [])
+resource_destroy = function(fw, 'MaaResourceDestroy', None, [P])
+resource_bundle = function(fw, 'MaaResourcePostBundle', Q, [P, C.c_char_p])
+resource_wait = function(fw, 'MaaResourceWait', I, [P, Q])
+tasker_create = function(fw, 'MaaTaskerCreate', P, [])
+tasker_destroy = function(fw, 'MaaTaskerDestroy', None, [P])
+bind_resource = function(fw, 'MaaTaskerBindResource', B, [P, P])
+bind_controller = function(fw, 'MaaTaskerBindController', B, [P, P])
+post_task = function(fw, 'MaaTaskerPostTask', Q, [P, C.c_char_p, C.c_char_p])
+tasker_wait = function(fw, 'MaaTaskerWait', I, [P, Q])
+
+
+def multiswipe_pipeline(ctrl, server):
+    with tempfile.TemporaryDirectory(prefix='maa-ios-multiswipe-') as directory:
+        pipeline = Path(directory) / 'pipeline'
+        pipeline.mkdir()
+        node = dict(recognition='DirectHit', action='MultiSwipe', pre_delay=0, post_delay=0,
+                    swipes=[dict(begin=[1, 1, 1, 1], end=[2, 1, 1, 1], duration=40, contact=i) for i in range(5)])
+        (pipeline / 'multitouch.json').write_text(json.dumps(dict(MultiTouchRegression=node)))
+        resource, tasker = resource_create(), tasker_create()
+        try:
+            assert resource_wait(resource, resource_bundle(resource, directory.encode())) == 3000
+            assert bind_resource(tasker, resource) and bind_controller(tasker, ctrl)
+            before = len(server.calls)
+            assert tasker_wait(tasker, post_task(tasker, b'MultiTouchRegression', b'{}')) == 3000
+            active, maximum = set(), 0
+            for method, params in server.calls[before:]:
+                if method != 'input.touch':
+                    continue
+                if params['down']:
+                    active.add(params['contact'])
+                else:
+                    active.discard(params['contact'])
+                maximum = max(maximum, len(active))
+            assert maximum == 5 and not active, 'existing MultiSwipe must overlap five contacts and lift them all'
+        finally:
+            tasker_destroy(tasker)
+            resource_destroy(resource)
 
 with FakeServer() as server:
     config = json.dumps(server.config).encode()
@@ -79,6 +118,19 @@ with FakeServer() as server:
             finally:
                 image_destroy(image)
             assert action('Click', 2, 1) == 3000
+            for contact in range(5):
+                assert action('TouchDown', contact, 1, 1, 0) == 3000
+            assert action('TouchDown', 0, 1, 1, 0) == 4000
+            assert action('TouchMove', 4, 2, 1, 0) == 3000
+            assert action('TouchUp', 2) == 3000
+            assert action('TouchMove', 2, 2, 1, 0) == 4000
+            assert action('TouchMove', 3, 2, 1, 0) == 3000
+            assert action('TouchDown', 5, 1, 1, 0) == 4000
+            assert action('TouchDown', -1, 1, 1, 0) == 4000
+            for contact in (0, 1, 3, 4):
+                assert action('TouchUp', contact) == 3000
+            touch_events = [p for name, p in server.calls if name == 'input.touch']
+            assert {p['contact'] for p in touch_events if p['down']} == set(range(5))
             touches = [p for name,p in server.calls if name == 'input.touch' and p['down']]
             assert abs(touches[-1]['x'] - 1/3) < 1e-6 and abs(touches[-1]['y'] - .6) < 1e-6
             assert action('KeyDown', 113) == 3000
@@ -93,6 +145,7 @@ with FakeServer() as server:
                 server.bad_frame = True
                 assert action('Screencap') == 4000, 'truncated BGRA frame accepted'
                 server.bad_frame = False
+                multiswipe_pipeline(ctrl, server)
         finally:
             destroy(ctrl)
     assert not {'pair', 'pairing.import', 'ddi.prepare'} & set(server.methods())
@@ -122,3 +175,4 @@ with InterruptedVideoServer() as server:
             server.frame_unavailable = False
             destroy(ctrl)
 print('PASS: native xdb discovery, Stream/PNG/fallback, geometry, input, app control and ownership')
+

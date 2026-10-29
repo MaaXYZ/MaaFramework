@@ -38,10 +38,10 @@ public:
 
     bool screencap(cv::Mat& image, std::string& err);
     bool logical_to_panel(int x, int y, int width, int height, double& fx, double& fy, std::string& err) const;
-    bool touch(double x, double y, bool down, std::string& err);
-    bool release_touch(std::string& err);
+    bool touch(int contact, double x, double y, bool down, std::string& err);
+    bool release_touch(int contact, std::string& err);
 
-    [[nodiscard]] bool touch_active() const noexcept { return inputs_.touch_active; }
+    [[nodiscard]] bool touch_active(int contact) const noexcept { return inputs_.touches.contains(contact); }
 
     bool tap(double x, double y, int hold_ms, std::string& err);
     bool stroke(const std::vector<std::pair<double, double>>& points, int step_ms, std::string& err);

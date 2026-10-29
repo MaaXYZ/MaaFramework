@@ -177,43 +177,52 @@ bool IOSSession::logical_to_panel(int x, int y, int width, int height, double& f
     return true;
 }
 
-bool IOSSession::touch(double x, double y, bool down, std::string& err)
+bool IOSSession::touch(int contact, double x, double y, bool down, std::string& err)
 {
     if (!client_.connected()) {
         err = "not connected";
         return false;
     }
-    inputs_.last_touch = { x, y };
-    if (down) {
-        inputs_.touch_active = true; // Failed sends may already have reached the device.
+    if (contact < 0 || contact >= kMaxTouchContacts) {
+        err = "iOS touch contact must be in [0,4]";
+        return false;
     }
-    const bool result = client_.call("input.touch", json::object { { "x", x }, { "y", y }, { "down", down } }, err);
+    if (down) {
+        inputs_.touches[contact] = { x, y }; // Failed sends may already have reached the device.
+    }
+    const bool result = client_.call(
+        "input.touch", json::object { { "contact", contact }, { "x", x }, { "y", y }, { "down", down } }, err);
     if (result && !down) {
-        inputs_.touch_active = false;
+        inputs_.touches.erase(contact);
     }
     if (!result && down) {
         std::string release_err;
-        if (client_.call("input.touch", json::object { { "x", x }, { "y", y }, { "down", false } }, release_err)) {
-            inputs_.touch_active = false;
+        if (client_.call(
+                "input.touch", json::object { { "contact", contact }, { "x", x }, { "y", y }, { "down", false } }, release_err)) {
+            inputs_.touches.erase(contact);
         }
     }
     return result;
 }
 
-bool IOSSession::release_touch(std::string& err)
+bool IOSSession::release_touch(int contact, std::string& err)
 {
-    return touch(inputs_.last_touch.first, inputs_.last_touch.second, false, err);
+    const auto found = inputs_.touches.find(contact);
+    if (found == inputs_.touches.end()) {
+        return true;
+    }
+    return touch(contact, found->second.first, found->second.second, false, err);
 }
 
 bool IOSSession::tap(double x, double y, int hold_ms, std::string& err)
 {
-    if (!touch(x, y, true, err)) {
+    if (!touch(0, x, y, true, err)) {
         return false;
     }
     if (hold_ms > 0) {
         std::this_thread::sleep_for(std::chrono::milliseconds(hold_ms));
     }
-    return touch(x, y, false, err);
+    return touch(0, x, y, false, err);
 }
 
 bool IOSSession::stroke(const std::vector<std::pair<double, double>>& points, int step_ms, std::string& err)
@@ -223,7 +232,7 @@ bool IOSSession::stroke(const std::vector<std::pair<double, double>>& points, in
         return false;
     }
     for (size_t i = 0; i < points.size(); ++i) {
-        if (!touch(points[i].first, points[i].second, i + 1 != points.size(), err)) {
+        if (!touch(0, points[i].first, points[i].second, i + 1 != points.size(), err)) {
             return false;
         }
         if (step_ms > 0 && i + 1 != points.size()) {
@@ -351,12 +360,12 @@ bool IOSSession::type_text(const std::string& text, std::string& err)
 bool IOSSession::release_inputs(std::string& err)
 {
     return inputs_.release(
-        [this](double x, double y, std::string& error) {
+        [this](int contact, double x, double y, std::string& error) {
             if (!client_.connected()) {
                 error = "iOS touch service is unavailable during cleanup";
                 return false;
             }
-            return client_.call("input.touch", json::object { { "x", x }, { "y", y }, { "down", false } }, error);
+            return client_.call("input.touch", json::object { { "contact", contact }, { "x", x }, { "y", y }, { "down", false } }, error);
         },
         [this](std::string& error) { return send_keyboard({ }, error); },
         [this](uint16_t usage, std::string& error) {
