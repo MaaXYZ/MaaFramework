@@ -240,6 +240,12 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         return result;
     }
 
+    // 停止导致的跳出不是失败：上报 PipelineNode_Failed 与 completed=false 会让宿主把被停止的节点记成红节点
+    if (context_->need_to_stop()) {
+        LogWarn << "need_to_stop" << VAR(pretask.name) << VAR(task_id_);
+        return { };
+    }
+
     NodeDetail result {
         .node_id = node_id,
         .completed = false,
