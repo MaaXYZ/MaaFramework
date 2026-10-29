@@ -4,8 +4,8 @@
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/IOStream/BoostIO.hpp"
 #include "MaaUtils/Platform.h"
-#include <meojson/json.hpp>
 #include <iostream>
+#include <meojson/json.hpp>
 
 int main()
 {
