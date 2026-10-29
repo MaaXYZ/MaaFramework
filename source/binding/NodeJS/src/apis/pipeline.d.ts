@@ -140,6 +140,7 @@ declare global {
                 roi_offset?: Rect
                 custom_recognition?: string
                 custom_recognition_param?: unknown
+                index?: number
             },
             'custom_recognition',
             Mode

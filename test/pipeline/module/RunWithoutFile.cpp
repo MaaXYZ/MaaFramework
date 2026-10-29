@@ -2,6 +2,7 @@
 
 #include <meojson/json.hpp>
 
+#include <cstdint>
 #include <cstring>
 #include <iostream>
 
@@ -28,6 +29,45 @@ MaaBool my_action(
     MaaRecoId reco_id,
     const MaaRect* box,
     void* trans_arg);
+
+MaaBool my_recognition(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_recognition_name,
+    const char* custom_recognition_param,
+    const MaaImageBuffer* image,
+    const MaaRect* roi,
+    void* trans_arg,
+    MaaRect* out_box,
+    MaaStringBuffer* out_detail);
+
+MaaBool legacy_recognition(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_recognition_name,
+    const char* custom_recognition_param,
+    const MaaImageBuffer* image,
+    const MaaRect* roi,
+    void* trans_arg,
+    MaaRect* out_box,
+    MaaStringBuffer* out_detail);
+
+MaaBool consumer_recognition(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_recognition_name,
+    const char* custom_recognition_param,
+    const MaaImageBuffer* image,
+    const MaaRect* roi,
+    void* trans_arg,
+    MaaRect* out_box,
+    MaaStringBuffer* out_detail);
+
+// 消费者回调被调用的次数，用于验证没有选中结果时不会继续识别
+static int32_t g_consumer_reco_calls = 0;
 
 struct ActionFailedCapture
 {
@@ -76,6 +116,210 @@ void capture_action_failed(void* handle, const char* message, const char* detail
         capture->box_h = static_cast<int32_t>(box[3].as_integer());
     }
     capture->success = action_details.at("success").as_boolean();
+}
+
+struct RecognitionOutcome
+{
+    bool hit = false;
+    bool completed = false;
+    bool best_null = true;
+    int32_t best_x = 0;
+    size_t all_size = 0;
+    size_t filtered_size = 0;
+    json::value detail;
+};
+
+bool query_recognition(MaaTasker* tasker, MaaController* controller, const char* reco_type, const char* reco_param, RecognitionOutcome& out)
+{
+    auto image_buffer = MaaImageBufferCreate();
+    MaaControllerCachedImage(controller, image_buffer);
+
+    auto task_id = MaaTaskerPostRecognition(tasker, reco_type, reco_param, image_buffer);
+    MaaTaskerWait(tasker, task_id);
+    MaaImageBufferDestroy(image_buffer);
+
+    MaaSize node_size = 0;
+    if (task_id == MaaInvalidId || !MaaTaskerGetTaskDetail(tasker, task_id, nullptr, nullptr, &node_size, nullptr) || node_size != 1) {
+        std::cout << "Failed to run recognition " << reco_type << " " << reco_param << std::endl;
+        return false;
+    }
+
+    MaaNodeId node_id = MaaInvalidId;
+    if (!MaaTaskerGetTaskDetail(tasker, task_id, nullptr, &node_id, &node_size, nullptr)) {
+        std::cout << "Failed to get node id" << std::endl;
+        return false;
+    }
+
+    MaaRecoId reco_id = MaaInvalidId;
+    MaaBool completed = false;
+    if (!MaaTaskerGetNodeDetail(tasker, node_id, nullptr, &reco_id, nullptr, &completed) || reco_id == MaaInvalidId) {
+        std::cout << "Failed to get node detail" << std::endl;
+        return false;
+    }
+
+    auto out_box = MaaRectCreate();
+    auto out_detail = MaaStringBufferCreate();
+    MaaBool hit = false;
+    MaaBool got = MaaTaskerGetRecognitionDetail(tasker, reco_id, nullptr, nullptr, &hit, out_box, out_detail, nullptr, nullptr);
+    MaaRectDestroy(out_box);
+    auto parsed = json::parse(MaaStringBufferGet(out_detail));
+    MaaStringBufferDestroy(out_detail);
+
+    if (!got || !parsed) {
+        std::cout << "Failed to get recognition detail" << std::endl;
+        return false;
+    }
+
+    out.hit = hit != 0;
+    out.completed = completed != 0;
+    out.best_null = !out.hit;
+    out.detail = std::move(*parsed);
+
+    // 只有单算法识别的 detail 是 {all, filtered, best} 对象，组合识别（And/Or）是子结果数组
+    if (out.detail.is_object() && out.detail.contains("best")) {
+        out.best_null = out.detail.at("best").is_null();
+        if (!out.best_null) {
+            out.best_x = static_cast<int32_t>(out.detail.at("best").at("box").as_array()[0].as_integer());
+        }
+        out.all_size = out.detail.at("all").as_array().size();
+        out.filtered_size = out.detail.at("filtered").as_array().size();
+    }
+
+    return true;
+}
+
+bool check_custom_recognition(
+    MaaTasker* tasker,
+    MaaController* controller,
+    const char* custom_name,
+    int32_t index,
+    bool expect_hit,
+    int32_t expect_x,
+    size_t expect_size)
+{
+    json::value param {
+        { "custom_recognition", custom_name },
+        { "index", index },
+    };
+    std::string param_str = param.to_string();
+
+    RecognitionOutcome outcome;
+    if (!query_recognition(tasker, controller, "Custom", param_str.c_str(), outcome)) {
+        return false;
+    }
+
+    if (outcome.all_size != expect_size || outcome.filtered_size != expect_size) {
+        std::cout << "Unexpected result count for " << custom_name << " with index " << index << std::endl;
+        return false;
+    }
+
+    bool hit_matched = outcome.hit == expect_hit && outcome.completed == expect_hit;
+    bool best_matched = expect_hit ? (!outcome.best_null && outcome.best_x == expect_x) : outcome.best_null;
+    if (!hit_matched || !best_matched) {
+        std::cout << "Index selection mismatch for " << custom_name << " with index " << index << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool check_multi_recognition(MaaTasker* tasker, MaaController* controller, int32_t index, bool expect_hit, int32_t expect_x)
+{
+    if (!check_custom_recognition(tasker, controller, "MultiRec", index, expect_hit, expect_x, 2)) {
+        return false;
+    }
+
+    json::value param {
+        { "custom_recognition", "MultiRec" },
+        { "index", index },
+    };
+    std::string param_str = param.to_string();
+
+    RecognitionOutcome outcome;
+    if (!query_recognition(tasker, controller, "Custom", param_str.c_str(), outcome)) {
+        return false;
+    }
+
+    // 元素缺省 detail 时使用多结果对象顶层的 detail
+    if (outcome.detail.at("all").as_array()[0].at("detail").as_string() != "shared"
+        || outcome.detail.at("all").as_array()[1].at("detail").as_string() != "second") {
+        std::cout << "Unexpected multi result detail with index " << index << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+// 引用没有选中结果的前置子识别时应视为无 ROI，消费者回调不会被调用
+bool check_empty_best_roi(MaaTasker* tasker, MaaController* controller)
+{
+    json::value param {
+        { "any_of",
+          json::array {
+              json::object {
+                  { "recognition", "Custom" },
+                  { "custom_recognition", "MultiRec" },
+                  { "index", 5 },
+                  { "sub_name", "empty_best" },
+              },
+              json::object {
+                  { "recognition", "Custom" },
+                  { "custom_recognition", "ConsumerRec" },
+                  { "roi", "empty_best" },
+              },
+          } },
+    };
+    std::string param_str = param.to_string();
+
+    RecognitionOutcome outcome;
+    if (!query_recognition(tasker, controller, "Or", param_str.c_str(), outcome)) {
+        return false;
+    }
+
+    if (outcome.hit || !outcome.best_null) {
+        std::cout << "Or with empty best roi should not hit" << std::endl;
+        return false;
+    }
+
+    if (g_consumer_reco_calls != 0) {
+        std::cout << "Consumer recognition should not run without roi, called " << g_consumer_reco_calls << " times" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+// 前置子识别没有选中结果时，其 filtered 也不应再作为下游内置识别的 ROI
+bool check_filtered_roi_without_best(MaaTasker* tasker, MaaController* controller)
+{
+    json::value param {
+        { "any_of",
+          json::array {
+              json::object {
+                  { "recognition", "Custom" },
+                  { "custom_recognition", "MultiRec" },
+                  { "index", 5 },
+                  { "sub_name", "empty_best" },
+              },
+              json::object {
+                  { "recognition", "DirectHit" },
+                  { "roi", "empty_best" },
+              },
+          } },
+    };
+    std::string param_str = param.to_string();
+
+    RecognitionOutcome outcome;
+    if (!query_recognition(tasker, controller, "Or", param_str.c_str(), outcome)) {
+        return false;
+    }
+
+    if (outcome.hit || !outcome.best_null) {
+        std::cout << "Or with filtered roi without best should not hit" << std::endl;
+        return false;
+    }
+
+    return true;
 }
 
 bool run_without_file(const std::filesystem::path& testset_dir)
@@ -137,6 +381,38 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     auto task_id = MaaTaskerPostTask(tasker_handle, "MyTask", task_param_str.c_str());
     auto status = MaaTaskerWait(tasker_handle, task_id);
 
+    MaaResourceRegisterCustomRecognition(resource_handle, "MultiRec", &my_recognition, nullptr);
+    MaaResourceRegisterCustomRecognition(resource_handle, "LegacyRec", &legacy_recognition, nullptr);
+    MaaResourceRegisterCustomRecognition(resource_handle, "ConsumerRec", &consumer_recognition, nullptr);
+
+    MaaControllerWait(controller_handle, MaaControllerPostScreencap(controller_handle));
+
+    // index 在回调给出的顺序上选取，越界视为无结果
+    if (!check_multi_recognition(tasker_handle, controller_handle, -1, true, 21)
+        || !check_multi_recognition(tasker_handle, controller_handle, 0, true, 11)
+        || !check_multi_recognition(tasker_handle, controller_handle, 5, false, 0)
+        || !check_multi_recognition(tasker_handle, controller_handle, INT32_MIN, false, 0)) {
+        return false;
+    }
+
+    // 单结果回调同样按 index 选取，越界视为无结果
+    if (!check_custom_recognition(tasker_handle, controller_handle, "LegacyRec", 0, true, 11, 1)
+        || !check_custom_recognition(tasker_handle, controller_handle, "LegacyRec", -1, true, 11, 1)
+        || !check_custom_recognition(tasker_handle, controller_handle, "LegacyRec", 1, false, 0, 1)
+        || !check_custom_recognition(tasker_handle, controller_handle, "LegacyRec", INT32_MIN, false, 0, 1)) {
+        return false;
+    }
+
+    // 引用没有选中结果的前置子识别时视为无 ROI
+    if (!check_empty_best_roi(tasker_handle, controller_handle)) {
+        return false;
+    }
+
+    // filtered 同样不应绕过没有选中结果的情况
+    if (!check_filtered_roi_without_best(tasker_handle, controller_handle)) {
+        return false;
+    }
+
     MaaTaskerDestroy(tasker_handle);
     MaaResourceDestroy(resource_handle);
     MaaControllerDestroy(controller_handle);
@@ -179,6 +455,90 @@ MaaBool my_action(
     MaaImageBufferDestroy(image_buffer);
     MaaRectDestroy(out_box);
     MaaStringBufferDestroy(out_detail);
+
+    return true;
+}
+
+MaaBool my_recognition(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_recognition_name,
+    const char* custom_recognition_param,
+    const MaaImageBuffer* image,
+    const MaaRect* roi,
+    void* trans_arg,
+    MaaRect* out_box,
+    MaaStringBuffer* out_detail)
+{
+    std::ignore = context;
+    std::ignore = task_id;
+    std::ignore = node_name;
+    std::ignore = custom_recognition_name;
+    std::ignore = custom_recognition_param;
+    std::ignore = image;
+    std::ignore = roi;
+    std::ignore = trans_arg;
+
+    MaaRectSet(out_box, 11, 12, 13, 14);
+    MaaStringBufferSet(out_detail, R"({"detail":"shared","$all":[{"box":[11,12,13,14]},{"box":[21,22,23,24],"detail":"second"}]})");
+
+    return true;
+}
+
+// 旧版单结果回调，detail 是普通字符串而非多结果对象
+MaaBool legacy_recognition(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_recognition_name,
+    const char* custom_recognition_param,
+    const MaaImageBuffer* image,
+    const MaaRect* roi,
+    void* trans_arg,
+    MaaRect* out_box,
+    MaaStringBuffer* out_detail)
+{
+    std::ignore = context;
+    std::ignore = task_id;
+    std::ignore = node_name;
+    std::ignore = custom_recognition_name;
+    std::ignore = custom_recognition_param;
+    std::ignore = image;
+    std::ignore = roi;
+    std::ignore = trans_arg;
+
+    MaaRectSet(out_box, 11, 12, 13, 14);
+    MaaStringBufferSet(out_detail, "legacy");
+
+    return true;
+}
+
+MaaBool consumer_recognition(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_recognition_name,
+    const char* custom_recognition_param,
+    const MaaImageBuffer* image,
+    const MaaRect* roi,
+    void* trans_arg,
+    MaaRect* out_box,
+    MaaStringBuffer* out_detail)
+{
+    std::ignore = context;
+    std::ignore = task_id;
+    std::ignore = node_name;
+    std::ignore = custom_recognition_name;
+    std::ignore = custom_recognition_param;
+    std::ignore = image;
+    std::ignore = roi;
+    std::ignore = trans_arg;
+
+    ++g_consumer_reco_calls;
+
+    MaaRectSet(out_box, 1, 1, 1, 1);
+    MaaStringBufferSet(out_detail, "");
 
     return true;
 }
