@@ -41,7 +41,7 @@ Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
     : task_id_(id)
     , tasker_(tasker)
     , task_state_(std::make_shared<TaskState>())
-    , need_to_stop_(std::make_shared<bool>())
+    , need_to_stop_(std::make_shared<std::atomic_bool>(false))
 {
     LogDebug << VAR(id) << VAR_VOIDP(tasker);
 }
@@ -392,7 +392,7 @@ std::vector<cv::Mat> Context::get_images(const std::vector<std::string>& names)
     return results;
 }
 
-bool& Context::need_to_stop()
+std::atomic_bool& Context::need_to_stop()
 {
     return *need_to_stop_;
 }

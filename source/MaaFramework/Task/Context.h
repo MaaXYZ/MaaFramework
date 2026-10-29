@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 #include <meojson/json.hpp>
 
@@ -68,7 +69,8 @@ public:
     std::optional<PipelineData> get_pipeline_data(const MAA_RES_NS::NodeAttr& node_attr) const;
     std::vector<cv::Mat> get_images(const std::vector<std::string>& names);
 
-    bool& need_to_stop();
+    // 宿主线程通过 post_stop 写入，worker 线程的轮询循环读取，必须原子
+    std::atomic_bool& need_to_stop();
     bool check_hit_count(const PipelineData& data);
     void increment_hit_count(const std::string& node_name);
 
@@ -85,7 +87,7 @@ private:
 
     // task level
     std::shared_ptr<TaskState> task_state_ = nullptr;
-    std::shared_ptr<bool> need_to_stop_ = nullptr;
+    std::shared_ptr<std::atomic_bool> need_to_stop_ = nullptr;
 
 private:
     mutable std::vector<std::shared_ptr<Context>> clone_holder_;
