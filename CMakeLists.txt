@@ -30,6 +30,7 @@ option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 option(BUILD_NODE_TEST "build node test" OFF)
 option(BUILD_MACOS_TEST "build macOS test" OFF)
 option(BUILD_LINUX_TEST "build Linux test" OFF)
+option(BUILD_ADB_PIPE_TESTING "build POSIX ADB child-pipe regression tests" OFF)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)
 option(ENABLE_HASH_VERSION "enable hash version from git" OFF)
@@ -115,6 +116,14 @@ endif()
 
 if(BUILD_DLOPEN_TESTING)
     add_subdirectory(test/dlopen)
+endif()
+
+if(BUILD_ADB_PIPE_TESTING)
+    if(NOT UNIX OR ANDROID OR NOT WITH_ADB_CONTROLLER)
+        message(FATAL_ERROR "BUILD_ADB_PIPE_TESTING requires a POSIX host and WITH_ADB_CONTROLLER")
+    endif()
+    enable_testing()
+    add_subdirectory(test/adb_pipe)
 endif()
 
 if(BUILD_NODE_TEST)

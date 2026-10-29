@@ -316,7 +316,7 @@ jobs:
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
                     -DWITH_REPLAY_CONTROLLER=ON -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON \
-                    -DBUILD_DLOPEN_TESTING=ON
+                    -DBUILD_DLOPEN_TESTING=ON -DBUILD_ADB_PIPE_TESTING=ON
 
                   cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - Debug' -j 16
 
@@ -350,6 +350,12 @@ jobs:
               shell: bash
               run: |
                   cp -r build/download_plugins/bin install/bin/plugins
+
+            - name: Run ADB pipe regression tests
+              if: ${{matrix.arch == 'x86_64'}}
+              shell: bash
+              run: |
+                  ctest --test-dir build -C Debug -R '^adb_pipe_' --output-on-failure
 
             - name: Run DlopenTesting
               # TODO: qemu for aarch64
@@ -460,7 +466,7 @@ jobs:
                     -DCMAKE_OSX_SYSROOT=macosx \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
                     -DWITH_REPLAY_CONTROLLER=ON -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON \
-                    -DBUILD_DLOPEN_TESTING=ON \
+                    -DBUILD_DLOPEN_TESTING=ON -DBUILD_ADB_PIPE_TESTING=ON \
                     -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}'
 
                   cmake --build build --preset 'NinjaMulti - Debug' -j 16
@@ -496,6 +502,11 @@ jobs:
               shell: bash
               run: |
                   cp -r build/download_plugins/bin install/bin/plugins
+
+            - name: Run ADB pipe regression tests
+              shell: bash
+              run: |
+                  ctest --test-dir build -C Debug -R '^adb_pipe_' --output-on-failure
 
             - name: Run DlopenTesting
               shell: bash
