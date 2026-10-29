@@ -25,6 +25,7 @@ set_target_properties(PipelineTesting PROPERTIES FOLDER Testing)
 
 install(TARGETS PipelineTesting RUNTIME DESTINATION bin)
 install(DIRECTORY resources/BatchOcrRepro DESTINATION test)
+install(DIRECTORY resources/PostStopInterrupt DESTINATION test)
 
 if(WIN32)
     install(FILES $<TARGET_PDB_FILE:PipelineTesting> DESTINATION symbol OPTIONAL)

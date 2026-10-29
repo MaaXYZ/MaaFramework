@@ -2,6 +2,7 @@
 
 #include "module/BatchOcrRepro.h"
 #include "module/PipelineSmoking.h"
+#include "module/PostStopInterrupt.h"
 #include "module/RunWithoutFile.h"
 
 #include "MaaFramework/MaaAPI.h"
@@ -28,6 +29,9 @@ int main([[maybe_unused]] int argc, char** argv)
         return -1;
     }
     if (!batch_ocr_repro(testset_dir)) {
+        return -1;
+    }
+    if (!post_stop_interrupt(testset_dir)) {
         return -1;
     }
 
