@@ -32,7 +32,7 @@ class IOSClientTest(unittest.TestCase):
                 server.state = state
                 self.assertEqual(Toolkit.find_ios_devices(timeout_ms=0, config=server.config)[0].state, state)
             self.assertEqual(devices[0].connections[0]['address'], '127.0.0.2')
-            controller = IOSController('mock-iphone', config=server.config, wifi_address='auto')
+            controller = IOSController('mock-iphone', config={**server.config, 'wifi_address': 'auto'})
             self.assertTrue(controller.post_connection().wait().succeeded)
             self.assertTrue(controller.post_screencap().wait().succeeded)
             del controller

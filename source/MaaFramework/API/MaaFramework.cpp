@@ -49,12 +49,10 @@ MaaController* MaaIOSControllerCreate(
     const char* udid,
     MaaIOSScreencapMethod screencap_methods,
     MaaIOSConnectionMethod connection_method,
-    const char* wifi_address,
     const char* config_json)
 {
     const char* selected_udid = udid ? udid : "";
-    const char* selected_wifi = wifi_address ? wifi_address : "";
-    LogFunc << VAR(selected_udid) << VAR(selected_wifi) << VAR(screencap_methods);
+    LogFunc << VAR(selected_udid) << VAR(screencap_methods) << VAR(connection_method);
 
     if (!udid || !*udid) {
         LogError << "iOS device UDID is required";
@@ -65,7 +63,6 @@ MaaController* MaaIOSControllerCreate(
         selected_udid,
         screencap_methods,
         connection_method,
-        selected_wifi,
         config_json);
 
     if (!control_unit) {

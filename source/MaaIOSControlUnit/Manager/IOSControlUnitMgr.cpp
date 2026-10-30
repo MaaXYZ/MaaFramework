@@ -9,12 +9,10 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 IOSControlUnitMgr::IOSControlUnitMgr(
     std::string udid,
-    std::string wifi_address,
     MaaIOSScreencapMethod screencap_methods,
     MaaIOSConnectionMethod connection_method,
     std::string config)
     : udid_(std::move(udid))
-    , wifi_address_(std::move(wifi_address))
     , connection_method_(connection_method)
     , config_(std::move(config))
     , screencap_methods_(screencap_methods)
@@ -29,7 +27,7 @@ IOSControlUnitMgr::~IOSControlUnitMgr()
 bool IOSControlUnitMgr::connect()
 {
     std::string err;
-    if (!session_.create(udid_, wifi_address_, screencap_methods_, connection_method_, config_, err)) {
+    if (!session_.create(udid_, screencap_methods_, connection_method_, config_, err)) {
         LogError << "Failed to create iOS session" << VAR(err);
         return false;
     }

@@ -37,7 +37,6 @@ IOSSession::~IOSSession()
 
 bool IOSSession::create(
     const std::string& udid,
-    const std::string& wifi,
     MaaIOSScreencapMethod methods,
     MaaIOSConnectionMethod connection,
     const std::string& config,
@@ -49,16 +48,39 @@ bool IOSSession::create(
         err = "No iOS screencap method selected";
         return false;
     }
+    const auto options = json::parse(config.empty() ? "{}" : config);
+    if (!options || !options->is_object()) {
+        err = "Invalid iOS controller configuration";
+        return false;
+    }
+    std::string wifi;
+    if (const auto* value = options->find_value("wifi_address")) {
+        if (!value->is_string() || value->as_string().find('\0') != std::string::npos) {
+            err = "iOS wifi_address must be a string without NUL";
+            return false;
+        }
+        wifi = value->as_string();
+    }
+    int wifi_port = 49152;
+    if (const auto* value = options->find_value("wifi_port")) {
+        if (!value->is<int>() || value->as_integer() < 1 || value->as_integer() > 65535) {
+            err = "iOS wifi_port must be an integer in [1,65535]";
+            return false;
+        }
+        wifi_port = value->as_integer();
+    }
     if (!client_.connect(config, err)) {
         return false;
     }
+    json::value result;
+    std::vector<uint8_t> data;
     const char* transport = connection == MaaIOSConnectionMethod_USB ? "usb" : connection == MaaIOSConnectionMethod_WiFi ? "wifi" : "auto";
-    if (!client_.call("connection.open", json::object { { "udid", udid }, { "wifi", wifi }, { "transport", transport } }, err)) {
+    json::object params { { "udid", udid }, { "wifi", wifi }, { "transport", transport }, { "port", wifi_port } };
+    if (!client_.call("connection.open", params, result, data, err)) {
         close();
         return false;
     }
     udid_ = udid;
-    std::vector<uint8_t> data;
     if (!client_.call("device.info", json::object { }, properties_, data, err)) {
         close();
         return false;

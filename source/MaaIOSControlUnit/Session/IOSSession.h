@@ -27,7 +27,6 @@ public:
 
     bool create(
         const std::string& udid,
-        const std::string& wifi_address,
         MaaIOSScreencapMethod screencap_methods,
         MaaIOSConnectionMethod connection_method,
         const std::string& config,

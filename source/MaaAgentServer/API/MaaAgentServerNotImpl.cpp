@@ -8,7 +8,7 @@ MaaController* MaaAdbControllerCreate(const char*, const char*, MaaAdbScreencapM
     return nullptr;
 }
 
-MaaController* MaaIOSControllerCreate(const char*, MaaIOSScreencapMethod, MaaIOSConnectionMethod, const char*, const char*)
+MaaController* MaaIOSControllerCreate(const char*, MaaIOSScreencapMethod, MaaIOSConnectionMethod, const char*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return nullptr;

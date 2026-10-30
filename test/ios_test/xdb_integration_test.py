@@ -33,7 +33,7 @@ def function(lib, name, result, args):
     value.restype, value.argtypes = result, args
     return value
 
-create = function(fw, 'MaaIOSControllerCreate', P, [C.c_char_p, C.c_uint64, I, C.c_char_p, C.c_char_p])
+create = function(fw, 'MaaIOSControllerCreate', P, [C.c_char_p, C.c_uint64, I, C.c_char_p])
 destroy = function(fw, 'MaaControllerDestroy', None, [P])
 wait = function(fw, 'MaaControllerWait', I, [P, Q])
 set_option = function(fw, 'MaaControllerSetOption', B, [P, I, P, C.c_uint64])
@@ -96,10 +96,11 @@ with FakeServer() as server:
         assert find(0, config, None, None, devices) and size(devices) == 1
     finally:
         list_destroy(devices)
-    assert not create(b'', 3, 0, None, config)
+    assert not create(b'', 3, 0, config)
+    assert not create(None, 3, 0, config)
     for method in (1, 2, 3):
         server.no_video = method == 3  # Both must fall back after video-start failure.
-        ctrl = create(b'mock-iphone', method, 2, b'auto', config)
+        ctrl = create(b'mock-iphone', method, 2, config)
         assert ctrl
         try:
             raw = B(1)
@@ -155,7 +156,7 @@ with InterruptedVideoServer() as server:
     config = json.dumps(server.config).encode()
     for method in (1, 3):
         before = len(server.calls)
-        ctrl = create(b'mock-iphone', method, 2, b'auto', config)
+        ctrl = create(b'mock-iphone', method, 2, config)
         assert ctrl
         try:
             assert wait(ctrl, posts['Connection'](ctrl)) == 3000
@@ -174,5 +175,27 @@ with InterruptedVideoServer() as server:
         finally:
             server.frame_unavailable = False
             destroy(ctrl)
+with FakeServer() as server:
+    for options in ({'wifi_port': 0}, {'wifi_port': 65536}, {'wifi_port': 49152.5},
+                    {'wifi_port': True}, {'wifi_address': 123}, {'wifi_address': 'a\0b'}):
+        config = json.dumps({**server.config, **options}).encode()
+        ctrl = create(b'mock-iphone', 1, 2, config)
+        assert ctrl
+        try:
+            assert wait(ctrl, posts['Connection'](ctrl)) == 4000
+        finally:
+            destroy(ctrl)
+    assert 'connection.open' not in server.methods(), 'invalid options must fail before opening a session'
+
+    config = json.dumps({**server.config, 'wifi_address': '127.0.0.2', 'wifi_port': 49153}).encode()
+    ctrl = create(b'mock-iphone', 1, 2, config)
+    try:
+        assert wait(ctrl, posts['Connection'](ctrl)) == 3000
+        assert wait(ctrl, posts['Screencap'](ctrl)) == 3000
+        opened = [p for name, p in server.calls if name == 'connection.open'][-1]
+        assert opened['wifi'] == '127.0.0.2' and opened['port'] == 49153
+    finally:
+        destroy(ctrl)
+
 print('PASS: native xdb discovery, Stream/PNG/fallback, geometry, input, app control and ownership')
 

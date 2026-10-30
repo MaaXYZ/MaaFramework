@@ -112,7 +112,6 @@ using IOSControllerCtorParam = std::tuple<
     std::string,
     maajs::OptionalParam<MaaIOSScreencapMethod>,
     maajs::OptionalParam<MaaIOSConnectionMethod>,
-    maajs::OptionalParam<std::string>,
     maajs::OptionalParam<std::string>>;
 
 using IOSDevice = std::tuple<std::string, std::string, MaaIOSScreencapMethod, std::string, std::string>;

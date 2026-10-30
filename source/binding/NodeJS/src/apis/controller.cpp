@@ -522,10 +522,10 @@ maajs::PromiseType IOSControllerImpl::find(maajs::EnvType env, maajs::OptionalPa
 #endif
 }
 IOSControllerImpl* IOSControllerImpl::ctor(const maajs::CallbackInfo& info) {
-    auto [udid, methods, connection, wifi, config] = maajs::UnWrapArgs<IOSControllerCtorParam, void>(info);
+    auto [udid, methods, connection, config] = maajs::UnWrapArgs<IOSControllerCtorParam, void>(info);
     if (udid.empty() || udid.find('\0') != std::string::npos) throw maajs::MaaError{"A nonempty iOS UDID without NUL is required"};
     auto ctrl = MaaIOSControllerCreate(udid.c_str(), methods.value_or(MaaIOSScreencapMethod_Default),
-        connection.value_or(MaaIOSConnectionMethod_Auto), wifi.value_or("").c_str(), config.value_or("{}").c_str());
+        connection.value_or(MaaIOSConnectionMethod_Auto), config.value_or("{}").c_str());
     return ctrl ? new IOSControllerImpl(ctrl, true) : nullptr;
 }
 void IOSControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor) { MAA_BIND_FUNC(ctor, "find", find); }

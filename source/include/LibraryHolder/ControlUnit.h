@@ -53,7 +53,6 @@ public:
         const char* udid,
         MaaIOSScreencapMethod screencap_methods,
         MaaIOSConnectionMethod connection_method,
-        const char* wifi_address,
         const char* config_json);
 
 private:

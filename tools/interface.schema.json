@@ -609,8 +609,9 @@
                         "udid": {
                             "type": "string"
                         },
-                        "wifi": {
-                            "type": "string"
+                        "connection": {
+                            "type": "string",
+                            "enum": ["Auto", "USB", "WiFi"]
                         },
                         "screencap": {
                             "type": "string",
@@ -619,7 +620,9 @@
                         "config": {
                             "type": "object",
                             "properties": {
-                                "server_port": { "type": "integer", "minimum": 0, "maximum": 65535 }
+                                "server_port": { "type": "integer", "minimum": 0, "maximum": 65535 },
+                                "wifi_address": { "type": "string" },
+                                "wifi_port": { "type": "integer", "minimum": 1, "maximum": 65535 }
                             },
                             "additionalProperties": false
                         }

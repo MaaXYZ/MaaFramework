@@ -14,7 +14,6 @@ class IOSControlUnitMgr : public IOSControlUnitAPI
 public:
     IOSControlUnitMgr(
         std::string udid,
-        std::string wifi_address,
         MaaIOSScreencapMethod screencap_methods,
         MaaIOSConnectionMethod connection_method,
         std::string config);
@@ -56,8 +55,6 @@ private:
     bool refresh_display_size(std::string& err);
 
     std::string udid_;
-    /// Auto 模式留空优先 USB；auto 指定 Wi-Fi 自动发现。
-    std::string wifi_address_;
     MaaIOSConnectionMethod connection_method_;
     std::string config_;
     MaaIOSScreencapMethod screencap_methods_ = MaaIOSScreencapMethod_Default;

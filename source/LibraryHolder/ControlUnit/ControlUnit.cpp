@@ -140,7 +140,6 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI> IOSControlUnitLibraryHolder
     const char* udid,
     MaaIOSScreencapMethod screencap_methods,
     MaaIOSConnectionMethod connection_method,
-    const char* wifi_address,
     const char* config_json)
 {
     if (!load_backend_library()) {
@@ -162,7 +161,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI> IOSControlUnitLibraryHolder
         return nullptr;
     }
 
-    auto control_unit_handle = create_control_unit_func(udid, screencap_methods, connection_method, wifi_address, config_json);
+    auto control_unit_handle = create_control_unit_func(udid, screencap_methods, connection_method, config_json);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";
