@@ -114,6 +114,29 @@ class Tasker:
         """
         return bool(Library.framework().MaaTaskerInited(self._handle))
 
+    def set_auto_inactive(self, enable: bool) -> bool:
+        """设置任务结束且队列为空时是否自动 inactive / Set automatic inactive when a task ends and the queue is empty
+
+        客户端逐个投递同一批次的任务时可关闭此选项，并在批次结束时调用 controller.post_inactive()。
+        Disable this when posting tasks one at a time as a single batch, then call controller.post_inactive() at the end.
+        post_stop() 投递的停止任务不受影响 / The stop task posted by post_stop() is not affected.
+
+        Args:
+            enable: 是否启用，默认启用 / Whether to enable, enabled by default
+
+        Returns:
+            bool: 是否成功，旧内核不支持时返回 False / Whether successful, False if unsupported by an older core
+        """
+        cbool = ctypes.c_bool(enable)
+        return bool(
+            Library.framework().MaaTaskerSetOption(
+                self._handle,
+                MaaOption(MaaTaskerOptionEnum.AutoInactive),
+                ctypes.pointer(cbool),
+                ctypes.sizeof(ctypes.c_bool),
+            )
+        )
+
     def post_task(self, entry: str, pipeline_override: Optional[dict[str, Any]] = None) -> TaskJob:
         """异步执行任务 / Asynchronously execute task
 
@@ -909,6 +932,14 @@ class Tasker:
 
         Library.framework().MaaTaskerInited.restype = MaaBool
         Library.framework().MaaTaskerInited.argtypes = [MaaTaskerHandle]
+
+        Library.framework().MaaTaskerSetOption.restype = MaaBool
+        Library.framework().MaaTaskerSetOption.argtypes = [
+            MaaTaskerHandle,
+            MaaTaskerOption,
+            MaaOptionValue,
+            MaaOptionValueSize,
+        ]
 
         Library.framework().MaaTaskerPostTask.restype = MaaId
         Library.framework().MaaTaskerPostTask.argtypes = [

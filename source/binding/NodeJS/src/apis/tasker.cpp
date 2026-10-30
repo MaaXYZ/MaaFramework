@@ -74,6 +74,13 @@ void TaskerImpl::destroy()
     own = false;
 }
 
+void TaskerImpl::set_auto_inactive(bool value)
+{
+    if (!MaaTaskerSetOption(tasker, MaaTaskerOption_AutoInactive, &value, sizeof(value))) {
+        throw maajs::MaaError { "Tasker set auto_inactive failed" };
+    }
+}
+
 MaaSinkId TaskerImpl::add_sink(maajs::FunctionType sink)
 {
     auto ctx = new maajs::CallbackContext(sink, "TaskerSink");
@@ -442,6 +449,7 @@ void TaskerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "add_context_sink", TaskerImpl::add_context_sink);
     MAA_BIND_FUNC(proto, "remove_context_sink", TaskerImpl::remove_context_sink);
     MAA_BIND_FUNC(proto, "clear_context_sinks", TaskerImpl::clear_context_sinks);
+    MAA_BIND_SETTER(proto, "auto_inactive", TaskerImpl::set_auto_inactive);
     MAA_BIND_FUNC(proto, "post_task", TaskerImpl::post_task);
     MAA_BIND_FUNC(proto, "post_recognition", TaskerImpl::post_recognition);
     MAA_BIND_FUNC(proto, "post_action", TaskerImpl::post_action);

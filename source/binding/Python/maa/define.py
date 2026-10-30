@@ -31,6 +31,7 @@ __all__ = [
     "MaaGlobalOption",
     "MaaCtrlOption",
     "MaaResOption",
+    "MaaTaskerOption",
     # Handle aliases
     "MaaStringBufferHandle",
     "MaaImageBufferHandle",
@@ -74,6 +75,7 @@ __all__ = [
     "MaaInferenceDeviceEnum",
     "MaaInferenceExecutionProviderEnum",
     "MaaResOptionEnum",
+    "MaaTaskerOptionEnum",
     "MaaAdbScreencapMethodEnum",
     "MaaAdbInputMethodEnum",
     "MaaWin32ScreencapMethodEnum",
@@ -179,6 +181,7 @@ MaaOption = ctypes.c_int32
 MaaGlobalOption = MaaOption
 MaaCtrlOption = MaaOption
 MaaResOption = MaaOption
+MaaTaskerOption = MaaOption
 
 
 class MaaGlobalOptionEnum(IntEnum):
@@ -346,6 +349,19 @@ class MaaResOptionEnum(IntEnum):
     # value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider)
     # default value is MaaInferenceExecutionProvider_Auto
     InferenceExecutionProvider = 2
+
+
+class MaaTaskerOptionEnum(IntEnum):
+    Invalid = 0
+
+    # Automatically post inactive when a task ends and the queue is empty.
+    # Disable this when the client posts tasks one at a time as a single batch.
+    # When disabled, the caller must call MaaControllerPostInactive at the end of the batch.
+    # The stop task posted by MaaTaskerPostStop is not affected by this option.
+    #
+    # value: bool, eg: true; val_size: sizeof(bool)
+    # default value is true
+    AutoInactive = 1
 
 
 MaaAdbScreencapMethod = ctypes.c_uint64

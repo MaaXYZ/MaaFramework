@@ -18,6 +18,8 @@ import subprocess
 import sys
 import textwrap
 import ctypes
+import tempfile
+import threading
 import numpy
 import io
 from typing import Optional
@@ -57,9 +59,10 @@ from maa.define import (
     MaaControllerHandle,
     MaaCtrlId,
     MaaStringBufferHandle,
+    MaaTaskerOptionEnum,
 )
 from maa.context import Context, ContextEventSink
-from maa.event_sink import EventSink
+from maa.event_sink import EventSink, NotificationType
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick, JTemplateMatch
 
 analyzed: bool = False
@@ -882,6 +885,110 @@ def test_custom_controller():
     print("  PASS: custom controller")
 
 
+class InactiveController(MyController):
+    def __init__(self):
+        super().__init__()
+        self.inactive_count = 0
+
+    def inactive(self) -> bool:
+        self.inactive_count += 1
+        return True
+
+
+class TaskStartingGate(TaskerEventSink):
+    def __init__(self):
+        self.entered = threading.Event()
+        self.release = threading.Event()
+        self.timed_out = False
+
+    def on_tasker_task(self, tasker, noti_type, detail):
+        if noti_type == NotificationType.Starting and detail.entry == "InactiveTest":
+            self.entered.set()
+            self.timed_out = not self.release.wait(10)
+
+
+def test_tasker_auto_inactive():
+    print("\n=== test_tasker_auto_inactive ===")
+
+    with tempfile.TemporaryDirectory() as bundle:
+        pipeline_dir = Path(bundle) / "pipeline"
+        pipeline_dir.mkdir()
+        (pipeline_dir / "test.json").write_text("{}", encoding="utf-8")
+        resource = Resource()
+        assert resource.post_bundle(bundle).wait().succeeded
+        controller = InactiveController()
+        assert controller.post_connection().wait().succeeded
+        tasker = Tasker()
+        assert tasker.bind(resource, controller)
+        assert tasker.inited
+
+        node = {"recognition": "DirectHit", "action": "DoNothing", "post_delay": 0}
+
+        # 默认逐个投递，每次等待都包含自动 inactive。
+        for count in range(1, 4):
+            assert tasker.post_task("InactiveTest", {"InactiveTest": node}).wait().succeeded
+            assert controller.inactive_count == count
+
+        assert tasker.set_auto_inactive(False)
+        for _ in range(3):
+            assert tasker.post_task("InactiveTest", {"InactiveTest": node}).wait().succeeded
+            assert controller.inactive_count == 3
+        assert controller.post_inactive().wait().succeeded
+        assert controller.inactive_count == 4
+
+        # 同名普通入口必须遵守选项，不能被当成内部停止任务。
+        assert tasker.post_task("MaaTaskerPostStop", {"MaaTaskerPostStop": node}).wait().succeeded
+        assert controller.inactive_count == 4
+
+        gate = TaskStartingGate()
+        sink_id = tasker.add_sink(gate)
+        running_job = tasker.post_task("InactiveTest", {"InactiveTest": node})
+        try:
+            assert gate.entered.wait(10), "task did not reach Starting"
+            assert tasker.running
+            stop_job = tasker.post_stop()
+        finally:
+            gate.release.set()
+        assert stop_job.wait().succeeded
+        running_job.wait()
+        tasker.remove_sink(sink_id)
+        assert not gate.timed_out
+        assert controller.inactive_count == 5
+
+        # 空闲时 post_stop 同样应完成清理。
+        assert tasker.post_stop().wait().succeeded
+        assert controller.inactive_count == 6
+
+        set_option = Library.framework().MaaTaskerSetOption
+        value = ctypes.c_bool(True)
+        for size in (0, ctypes.sizeof(value) + 1):
+            assert not set_option(tasker._handle, MaaTaskerOptionEnum.AutoInactive, ctypes.byref(value), size)
+        assert not set_option(tasker._handle, MaaTaskerOptionEnum.AutoInactive, None, ctypes.sizeof(value))
+        assert not set_option(tasker._handle, 9999, ctypes.byref(value), ctypes.sizeof(value))
+        assert tasker.post_task("InactiveTest", {"InactiveTest": node}).wait().succeeded
+        assert controller.inactive_count == 6, "invalid options must not change the setting"
+
+        assert tasker.set_auto_inactive(True)
+        assert tasker.post_task("InactiveTest", {"InactiveTest": node}).wait().succeeded
+        assert controller.inactive_count == 7
+
+        # 默认行为对已入队的一批任务保持不变，只在队列末尾 inactive。
+        gate = TaskStartingGate()
+        sink_id = tasker.add_sink(gate)
+        try:
+            jobs = [tasker.post_task("InactiveTest", {"InactiveTest": node}) for _ in range(3)]
+            assert gate.entered.wait(10), "batch did not reach Starting"
+        finally:
+            gate.release.set()
+        assert jobs[-1].wait().succeeded
+        assert all(job.succeeded for job in jobs)
+        tasker.remove_sink(sink_id)
+        assert not gate.timed_out
+        assert controller.inactive_count == 8
+
+    print("  PASS: tasker auto inactive")
+
+
 def _new_command_image_tasker() -> Tasker:
     resource = Resource()
     resource.post_bundle(install_dir / "test" / "PipelineSmoking" / "resource").wait()
@@ -1333,6 +1440,8 @@ if __name__ == "__main__":
 
     # 测试 CustomController
     test_custom_controller()
+
+    test_tasker_auto_inactive()
 
     # 回归：Command 动作 {IMAGE} 占位符
     test_command_image_placeholder()
