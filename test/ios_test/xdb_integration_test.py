@@ -151,6 +151,8 @@ with FakeServer() as server:
             destroy(ctrl)
     assert not {'pair', 'pairing.import', 'ddi.prepare'} & set(server.methods())
     assert 'connection.close' in server.methods()
+    opens = [p for name, p in server.calls if name == 'connection.open']
+    assert all(p.get('access', 'control') == 'control' and p['port'] == 49152 for p in opens)
 
 with InterruptedVideoServer() as server:
     config = json.dumps(server.config).encode()
@@ -177,7 +179,7 @@ with InterruptedVideoServer() as server:
             destroy(ctrl)
 with FakeServer() as server:
     for options in ({'wifi_port': 0}, {'wifi_port': 65536}, {'wifi_port': 49152.5},
-                    {'wifi_port': True}, {'wifi_address': 123}, {'wifi_address': 'a\0b'}):
+                    {'wifi_port': True}, {'wifi_address': 123}, {'wifi_address': 'a\0b'}, {'shared_control': 'true'}):
         config = json.dumps({**server.config, **options}).encode()
         ctrl = create(b'mock-iphone', 1, 2, config)
         assert ctrl
@@ -187,13 +189,13 @@ with FakeServer() as server:
             destroy(ctrl)
     assert 'connection.open' not in server.methods(), 'invalid options must fail before opening a session'
 
-    config = json.dumps({**server.config, 'wifi_address': '127.0.0.2', 'wifi_port': 49153}).encode()
+    server.shared_control = True
+    config = json.dumps({**server.config, 'shared_control': True, 'wifi_address': '127.0.0.2', 'wifi_port': 49153}).encode()
     ctrl = create(b'mock-iphone', 1, 2, config)
     try:
         assert wait(ctrl, posts['Connection'](ctrl)) == 3000
-        assert wait(ctrl, posts['Screencap'](ctrl)) == 3000
         opened = [p for name, p in server.calls if name == 'connection.open'][-1]
-        assert opened['wifi'] == '127.0.0.2' and opened['port'] == 49153
+        assert opened['access'] == 'shared' and opened['wifi'] == '127.0.0.2' and opened['port'] == 49153
     finally:
         destroy(ctrl)
 

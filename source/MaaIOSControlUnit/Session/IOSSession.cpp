@@ -69,14 +69,24 @@ bool IOSSession::create(
         }
         wifi_port = value->as_integer();
     }
+    bool shared = false;
+    if (const auto* value = options->find_value("shared_control")) {
+        if (!value->is_boolean()) {
+            err = "iOS shared_control must be a boolean";
+            return false;
+        }
+        shared = value->as_boolean();
+    }
     if (!client_.connect(config, err)) {
         return false;
     }
-    json::value result;
     std::vector<uint8_t> data;
     const char* transport = connection == MaaIOSConnectionMethod_USB ? "usb" : connection == MaaIOSConnectionMethod_WiFi ? "wifi" : "auto";
     json::object params { { "udid", udid }, { "wifi", wifi }, { "transport", transport }, { "port", wifi_port } };
-    if (!client_.call("connection.open", params, result, data, err)) {
+    if (shared) {
+        params["access"] = "shared";
+    }
+    if (!client_.call("connection.open", params, err)) {
         close();
         return false;
     }

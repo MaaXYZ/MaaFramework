@@ -622,7 +622,8 @@
                             "properties": {
                                 "server_port": { "type": "integer", "minimum": 0, "maximum": 65535 },
                                 "wifi_address": { "type": "string" },
-                                "wifi_port": { "type": "integer", "minimum": 1, "maximum": 65535 }
+                                "wifi_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+                                "shared_control": { "type": "boolean" }
                             },
                             "additionalProperties": false
                         }
