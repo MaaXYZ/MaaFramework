@@ -15,8 +15,10 @@ find_package(OpenCV REQUIRED COMPONENTS core imgproc)
 add_executable(window_geometry_test window_geometry_test.cpp)
 target_compile_features(window_geometry_test PRIVATE cxx_std_20)
 target_compile_definitions(window_geometry_test PRIVATE UNICODE _UNICODE NOMINMAX)
+# Root builds inherit MaaUtils' include directory. Keep the explicit logging
+# boundary ahead of it, just as in standalone builds.
+target_include_directories(window_geometry_test BEFORE PRIVATE "${CMAKE_CURRENT_LIST_DIR}/logging")
 target_include_directories(window_geometry_test PRIVATE
-    "${CMAKE_CURRENT_LIST_DIR}/logging"
     "${MAA_SOURCE_ROOT}/include"
     "${MAA_SOURCE_ROOT}/source/include"
     "${MAA_SOURCE_ROOT}/source/MaaWin32ControlUnit"
