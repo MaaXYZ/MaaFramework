@@ -119,8 +119,7 @@ bool ActionHelper::wait_freezes(
         interruptible_sleep::sleep_until(screencap_clock + rate_limit, context_);
 
         if (context_ && context_->need_to_stop()) {
-            LogWarn << "need_to_stop, abort wait freezes" << VAR(noti_ctx.name) << VAR(noti_ctx.phase)
-                    << VAR(duration_since(start_clock));
+            LogWarn << "need_to_stop, abort wait freezes" << VAR(noti_ctx.name) << VAR(noti_ctx.phase) << VAR(duration_since(start_clock));
             return finish(false);
         }
 
