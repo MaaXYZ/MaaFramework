@@ -29,5 +29,11 @@ endif()
 
 enable_testing()
 add_test(NAME window_geometry COMMAND window_geometry_test)
+set_tests_properties(window_geometry PROPERTIES TIMEOUT 30)
+option(MAA_WINDOW_GEOMETRY_DESKTOP_TESTS "Run desktop geometry and visible-screen pixel checks" OFF)
+if(MAA_WINDOW_GEOMETRY_DESKTOP_TESTS)
+    add_test(NAME window_geometry_desktop COMMAND window_geometry_test --desktop)
+    set_tests_properties(window_geometry_desktop PROPERTIES LABELS desktop RUN_SERIAL TRUE TIMEOUT 30)
+endif()
 # Desktop checks are explicit: --desktop-geometry checks native rectangles;
 # --desktop additionally requires the visible fixture's screen pixel to match.

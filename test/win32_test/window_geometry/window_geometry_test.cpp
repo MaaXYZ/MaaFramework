@@ -280,6 +280,17 @@ void desktop_cases(bool verify_pixels)
             wc.hInstance,
             nullptr);
         check(window != nullptr, "create owned fixture window");
+        if (verify_pixels) {
+            // Client painting can finish while DWM is still animating the window.
+            // Disable transitions only for this owned fixture, before showing it.
+            const BOOL disable_transitions = TRUE;
+            const HRESULT transition_result =
+                DwmSetWindowAttribute(window, DWMWA_TRANSITIONS_FORCEDISABLED, &disable_transitions, sizeof(disable_transitions));
+            if (FAILED(transition_result)) {
+                std::cerr << "scenario=" << scenario << " disable transitions HRESULT=" << transition_result << '\n';
+            }
+            check(SUCCEEDED(transition_result), "disable fixture window transitions");
+        }
         ShowWindow(window, SW_SHOWNOACTIVATE);
         UpdateWindow(window);
         check(MaaNS::CtrlUnitNs::ensure_window_on_screen(window), "actual Win32 correction succeeds");
@@ -307,6 +318,9 @@ void desktop_cases(bool verify_pixels)
             check(dc != nullptr, "obtain screen DC");
             const COLORREF pixel = GetPixel(dc, point.x + actual.right / 2, point.y + actual.bottom / 2);
             check(ReleaseDC(nullptr, dc) != 0, "release screen DC");
+            std::cout << "scenario=" << scenario << " screen_rgb=" << int(GetRValue(pixel)) << ',' << int(GetGValue(pixel)) << ','
+                      << int(GetBValue(pixel)) << " client_rect=" << screen.left << ',' << screen.top << ',' << screen.right << ','
+                      << screen.bottom << '\n';
             if (pixel != RGB(40, 180, 90)) {
                 std::cerr << "scenario=" << scenario << " actual pixel=" << pixel << " expected=" << RGB(40, 180, 90) << '\n';
             }
