@@ -623,7 +623,10 @@
                                 "server_port": { "type": "integer", "minimum": 0, "maximum": 65535 },
                                 "wifi_address": { "type": "string" },
                                 "wifi_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
-                                "shared_control": { "type": "boolean" }
+                                "shared_control": { "type": "boolean" },
+                                "max_bitrate": { "type": "integer", "minimum": 0, "maximum": 18446744073709551615 },
+                                "max_fps": { "type": "integer", "minimum": 0, "maximum": 240 },
+                                "hardware_decode": { "type": "boolean" }
                             },
                             "additionalProperties": false
                         }
