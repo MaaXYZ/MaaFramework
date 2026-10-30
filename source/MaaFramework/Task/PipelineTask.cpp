@@ -480,26 +480,23 @@ void PipelineTask::collect_ocr_from_sub_recognitions(
 void PipelineTask::save_on_error(const std::string& node_name)
 {
     const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
-
-    if (!option.save_on_error()) {
+    if ((!option.save_on_error() && !option.save_on_error_frames()) || option.log_dir().empty()) {
         return;
     }
 
-    if (!controller()) {
-        LogError << "controller is null";
-        return;
+    const auto stamp = format_now_for_filename();
+    const auto directory = option.log_dir() / "on_error";
+    cv::Mat image = controller() ? controller()->cached_image() : cv::Mat { };
+    if (option.save_on_error() && !image.empty()) {
+        const auto filepath = directory / path(std::format("{}_{}.png", stamp, node_name));
+        imwrite(filepath, image);
+        LogInfo << "save on error to" << filepath;
     }
-
-    auto image = controller()->cached_image();
-    if (image.empty()) {
-        LogError << "cached_image is empty";
-        return;
+    if (option.save_on_error_frames() && tasker()) {
+        auto& frames = tasker()->failure_frames();
+        frames.observe(image, MaaInvalidId, node_name, true);
+        frames.save(directory / path(std::format("{}_{}", stamp, task_id_)), node_name);
     }
-
-    std::string filename = std::format("{}_{}.png", format_now_for_filename(), node_name);
-    auto filepath = option.log_dir() / "on_error" / path(filename);
-    imwrite(filepath, image);
-    LogInfo << "save on error to" << filepath;
 }
 
 MAA_TASK_NS_END

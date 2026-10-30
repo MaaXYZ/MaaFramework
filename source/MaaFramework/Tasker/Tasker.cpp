@@ -6,6 +6,7 @@
 #include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/ScopeLeave.hpp"
 #include "MaaUtils/Uuid.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/ActionTask.h"
@@ -349,6 +350,9 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
         runtime_cache_.set_task_detail(task_id, std::move(task_detail));
     }
     notifier_.notify(this, MaaMsg_Tasker_Task_Starting, cb_detail);
+
+    failure_frames_.begin();
+    ScopeLeaveHelper clear_failure_frames([this]() { failure_frames_.end(); });
 
     bool ret = task_ptr->run();
 

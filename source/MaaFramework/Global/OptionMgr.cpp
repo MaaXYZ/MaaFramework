@@ -20,6 +20,8 @@ bool OptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaOptionV
         return set_debug_mode(value, val_size);
     case MaaGlobalOption_SaveOnError:
         return set_save_on_error(value, val_size);
+    case MaaGlobalOption_SaveOnErrorFrames:
+        return set_save_on_error_frames(value, val_size);
     case MaaGlobalOption_DrawQuality:
         return set_draw_quality(value, val_size);
     case MaaGlobalOption_RecoImageCacheLimit:
@@ -106,6 +108,22 @@ bool OptionMgr::set_save_on_error(MaaOptionValue value, MaaOptionValueSize val_s
     save_on_error_ = *reinterpret_cast<const bool*>(value);
 
     LogInfo << "Set save on error" << VAR(save_on_error_);
+
+    return true;
+}
+
+bool OptionMgr::set_save_on_error_frames(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogFunc;
+
+    if (val_size != sizeof(bool)) {
+        LogError << "Invalid value size" << VAR(val_size);
+        return false;
+    }
+
+    save_on_error_frames_ = *reinterpret_cast<const bool*>(value);
+
+    LogInfo << "Set save on error frames" << VAR(save_on_error_frames_);
 
     return true;
 }

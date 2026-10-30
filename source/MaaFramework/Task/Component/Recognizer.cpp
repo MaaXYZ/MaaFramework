@@ -115,6 +115,10 @@ RecoResult Recognizer::recognize(MAA_RES_NS::Recognition::Type type, const MAA_R
 
     save_draws(name, result);
 
+    if (MAA_GLOBAL_NS::OptionMgr::get_instance().save_on_error_frames()) {
+        tasker_->failure_frames().observe(image_, result.reco_id, name);
+    }
+
     return result;
 }
 
