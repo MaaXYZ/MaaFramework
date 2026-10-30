@@ -56,7 +56,7 @@ private:
     bool refresh_display_size(std::string& err);
 
     std::string udid_;
-    /// Auto/WiFi 模式的无线地址，空值或 auto 使用自动发现。
+    /// Auto 模式留空优先 USB；auto 指定 Wi-Fi 自动发现。
     std::string wifi_address_;
     MaaIOSConnectionMethod connection_method_;
     std::string config_;

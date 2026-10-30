@@ -1,18 +1,15 @@
 #include "IOSSession.h"
-#include <algorithm>
-#include <chrono>
 #include <limits>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
-#include <thread>
 #include <utility>
+
+#include <MaaUtils/Logger.h>
 
 namespace maa::ios_unit
 {
 namespace
 {
-constexpr std::chrono::milliseconds kKeyHoldDuration { 90 };
-
 void rotate_image(cv::Mat& image, int degrees)
 {
     switch (degrees) {
@@ -66,7 +63,10 @@ bool IOSSession::create(
         close();
         return false;
     }
-    client_.call("display.info", json::object { }, err);
+    // Prewarm geometry for the first capture; capture requests can retry initialization.
+    if (!client_.call("display.info", json::object { }, err)) {
+        LogWarn << "iOS display geometry prewarm failed" << VAR(err);
+    }
     if (methods & MaaIOSScreencapMethod_Stream) {
         // Let the server own stream recovery, including complete receive silence.
         video_ = client_.call("video.start", json::object { }, err);
@@ -214,34 +214,6 @@ bool IOSSession::release_touch(int contact, std::string& err)
     return touch(contact, found->second.first, found->second.second, false, err);
 }
 
-bool IOSSession::tap(double x, double y, int hold_ms, std::string& err)
-{
-    if (!touch(0, x, y, true, err)) {
-        return false;
-    }
-    if (hold_ms > 0) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(hold_ms));
-    }
-    return touch(0, x, y, false, err);
-}
-
-bool IOSSession::stroke(const std::vector<std::pair<double, double>>& points, int step_ms, std::string& err)
-{
-    if (points.size() < 2) {
-        err = "iOS swipe needs at least two points";
-        return false;
-    }
-    for (size_t i = 0; i < points.size(); ++i) {
-        if (!touch(0, points[i].first, points[i].second, i + 1 != points.size(), err)) {
-            return false;
-        }
-        if (step_ms > 0 && i + 1 != points.size()) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(step_ms));
-        }
-    }
-    return true;
-}
-
 bool IOSSession::send_keyboard(const std::set<uint16_t>& usages, std::string& err)
 {
     if (!client_.connected()) {
@@ -314,21 +286,6 @@ bool IOSSession::key_up(int key, std::string& err)
     }
     err = "unsupported iOS Android keycode " + std::to_string(key);
     return false;
-}
-
-bool IOSSession::click_key(int key, std::string& err)
-{
-    const auto usage = keyboard_usage(key);
-    const auto consumer = consumer_usage(key);
-    if ((usage && inputs_.keyboard.contains(usage)) || (consumer && inputs_.buttons.contains(consumer))) {
-        err = "iOS key is already held; release it before click_key";
-        return false;
-    }
-    if (!key_down(key, err)) {
-        return false;
-    }
-    std::this_thread::sleep_for(kKeyHoldDuration);
-    return key_up(key, err);
 }
 
 bool IOSSession::type_text(const std::string& text, std::string& err)

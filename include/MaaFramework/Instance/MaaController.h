@@ -35,7 +35,7 @@ extern "C"
      * config_json: optional server_port; omitted values use
      * XDB_PORT (or 17423). xdb owns phone credentials and DDI setup.
      * Stream obtains decoded BGRA; ScreenshotService obtains lossless PNG.
-     * Single-touch coordinates use the last delivered image geometry.
+     * Touch coordinates use the last delivered image geometry; contacts 0..4 are supported.
      * Text accepts US-layout ASCII, tab and newline; unsupported text is rejected.
      */
     MAA_FRAMEWORK_API MaaController* MaaIOSControllerCreate(

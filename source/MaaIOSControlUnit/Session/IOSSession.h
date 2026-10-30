@@ -43,11 +43,8 @@ public:
 
     [[nodiscard]] bool touch_active(int contact) const noexcept { return inputs_.touches.contains(contact); }
 
-    bool tap(double x, double y, int hold_ms, std::string& err);
-    bool stroke(const std::vector<std::pair<double, double>>& points, int step_ms, std::string& err);
     bool key_down(int key, std::string& err);
     bool key_up(int key, std::string& err);
-    bool click_key(int key, std::string& err);
     bool type_text(const std::string& text, std::string& err);
     bool release_inputs(std::string& err);
 

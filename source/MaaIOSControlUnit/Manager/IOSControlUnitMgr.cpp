@@ -1,23 +1,11 @@
 #include "IOSControlUnitMgr.h"
 
-#include <algorithm>
 #include <tuple>
-#include <vector>
 
 #include <MaaUtils/Logger.h>
 #include <MaaUtils/NoWarningCV.hpp>
 
 MAA_CTRL_UNIT_NS_BEGIN
-
-namespace
-{
-
-constexpr int kDefaultHoldMs = 90;
-/// 一次触摸事件之间至少留出的间隔。设备侧靠帧间差值算速度，瞬移式的拖动会被
-/// 当成抖动丢掉，所以 duration 再短也要按这个间隔铺开若干步。
-constexpr int kMinStepMs = 12;
-
-} // namespace
 
 IOSControlUnitMgr::IOSControlUnitMgr(
     std::string udid,
@@ -134,48 +122,17 @@ bool IOSControlUnitMgr::screencap(cv::Mat& image)
     return true;
 }
 
+// ControllerAgent uses touch_down/touch_move/touch_up when the feature flag is set.
 bool IOSControlUnitMgr::click(int x, int y)
 {
-    std::string err;
-    double fx = 0, fy = 0;
-    if (!normalize(x, y, fx, fy, err)) {
-        LogError << "click failed to normalize" << VAR(x) << VAR(y) << VAR(err);
-        return false;
-    }
-    if (!session_.tap(fx, fy, kDefaultHoldMs, err)) {
-        LogError << "tap failed" << VAR(fx) << VAR(fy) << VAR(err);
-        return false;
-    }
-    return true;
+    LogError << "deprecated: use touch_down/touch_up instead" << VAR(x) << VAR(y);
+    return false;
 }
 
 bool IOSControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    std::string err;
-    double fx1 = 0, fy1 = 0, fx2 = 0, fy2 = 0;
-    if (!normalize(x1, y1, fx1, fy1, err) || !normalize(x2, y2, fx2, fy2, err)) {
-        LogError << "swipe failed to normalize" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(err);
-        return false;
-    }
-
-    if (duration < 0 || duration > 600000) {
-        LogError << "iOS swipe duration must be between 0 and 600000 ms" << VAR(duration);
-        return false;
-    }
-    const int steps = std::max(2, duration / kMinStepMs);
-    std::vector<std::pair<double, double>> points;
-    points.reserve(static_cast<size_t>(steps) + 1);
-    for (int i = 0; i <= steps; ++i) {
-        const double t = static_cast<double>(i) / steps;
-        points.emplace_back(fx1 + (fx2 - fx1) * t, fy1 + (fy2 - fy1) * t);
-    }
-
-    const int step_ms = steps > 0 ? std::max(1, duration / steps) : kMinStepMs;
-    if (!session_.stroke(points, step_ms, err)) {
-        LogError << "stroke failed" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration) << VAR(err);
-        return false;
-    }
-    return true;
+    LogError << "deprecated: use touch_down/touch_move/touch_up instead" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    return false;
 }
 
 bool IOSControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
@@ -189,9 +146,14 @@ bool IOSControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
     std::string err;
     double fx = 0, fy = 0;
     if (!normalize(x, y, fx, fy, err)) {
+        LogError << "iOS touch_down failed to normalize" << VAR(contact) << VAR(x) << VAR(y) << VAR(err);
         return false;
     }
-    return session_.touch(contact, fx, fy, true, err);
+    if (!session_.touch(contact, fx, fy, true, err)) {
+        LogError << "iOS touch_down failed" << VAR(contact) << VAR(err);
+        return false;
+    }
+    return true;
 }
 
 bool IOSControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
@@ -205,11 +167,16 @@ bool IOSControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
     std::string err;
     double fx = 0, fy = 0;
     if (!normalize(x, y, fx, fy, err)) {
+        LogError << "iOS touch_move failed to normalize" << VAR(contact) << VAR(x) << VAR(y) << VAR(err);
         return false;
     }
     // 每个 CONTACT 报告都是"此刻在此处接触着"，没有 begin/end 操作码，
     // 所以 move 与 down 在线上一模一样。
-    return session_.touch(contact, fx, fy, true, err);
+    if (!session_.touch(contact, fx, fy, true, err)) {
+        LogError << "iOS touch_move failed" << VAR(contact) << VAR(err);
+        return false;
+    }
+    return true;
 }
 
 bool IOSControlUnitMgr::touch_up(int contact)
@@ -220,17 +187,18 @@ bool IOSControlUnitMgr::touch_up(int contact)
     }
 
     std::string err;
-    return session_.release_touch(contact, err);
-}
-
-bool IOSControlUnitMgr::click_key(int key)
-{
-    std::string err;
-    if (!session_.click_key(key, err)) {
-        LogError << "iOS click_key failed" << VAR(key) << VAR(err);
+    if (!session_.release_touch(contact, err)) {
+        LogError << "iOS touch_up failed" << VAR(contact) << VAR(err);
         return false;
     }
     return true;
+}
+
+// ControllerAgent uses key_down/key_up when the feature flag is set.
+bool IOSControlUnitMgr::click_key(int key)
+{
+    LogError << "deprecated: use key_down/key_up instead" << VAR(key);
+    return false;
 }
 
 bool IOSControlUnitMgr::input_text(const std::string& text)

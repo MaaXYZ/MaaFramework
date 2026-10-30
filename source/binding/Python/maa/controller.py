@@ -916,17 +916,20 @@ class IOSController(Controller):
         self._handle = None
         if not udid or "\0" in udid:
             raise ValueError("A nonempty iOS device UDID without NUL is required")
+        self._set_ios_api_properties()
+        self._handle = Library.framework().MaaIOSControllerCreate(udid.encode(), screencap_methods, connection_method,
+            wifi_address.encode() if wifi_address is not None else None,
+            json.dumps(config or {}).encode())
+        if not self._handle:
+            raise RuntimeError("Failed to create iOS controller")
+
+    def _set_ios_api_properties(self):
         api = Library.framework()
         if not hasattr(api, "MaaIOSControllerCreate"):
             raise RuntimeError("iOS controller is not available in the current build")
         api.MaaIOSControllerCreate.restype = MaaControllerHandle
         api.MaaIOSControllerCreate.argtypes = [ctypes.c_char_p, MaaIOSScreencapMethod,
             MaaIOSConnectionMethod, ctypes.c_char_p, ctypes.c_char_p]
-        self._handle = api.MaaIOSControllerCreate(udid.encode(), screencap_methods, connection_method,
-            wifi_address.encode() if wifi_address is not None else None,
-            json.dumps(config or {}).encode())
-        if not self._handle:
-            raise RuntimeError("Failed to create iOS controller")
 
 
 class Win32Controller(Controller):
