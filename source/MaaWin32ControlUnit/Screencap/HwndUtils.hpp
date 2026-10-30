@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <utility>
 
 #include "Common/Conf.h"
@@ -54,14 +55,8 @@ inline bool is_fullscreen(HWND hwnd)
     return GetWindowLongPtr(hwnd, GWL_STYLE) & WS_POPUP;
 }
 
-// Ensure the window's client area is fully visible on the monitor.
-// If the window extends beyond the monitor bounds, move it back.
-// If the client area is larger than the monitor, resize the window.
-//
-// Note: the reference rect is the full monitor (rcMonitor), NOT the work
-// area (rcWork). Windows are allowed to overlap the taskbar - typically a
-// borderless fullscreen game window. Anchoring to rcWork would shrink or
-// move such windows above the taskbar, deforming the game view.
+// Keep ordinary client areas in the work area. Exact fullscreen popups may
+// cover the taskbar; compare their client pixels instead of invisible borders.
 inline bool ensure_window_on_screen(HWND hwnd)
 {
     if (!hwnd || !IsWindow(hwnd)) {
@@ -84,7 +79,7 @@ inline bool ensure_window_on_screen(HWND hwnd)
         return false;
     }
 
-    RECT monitor_rect = mi.rcMonitor;
+    RECT monitor_rect = mi.rcWork;
     int monitor_w = monitor_rect.right - monitor_rect.left;
     int monitor_h = monitor_rect.bottom - monitor_rect.top;
 
@@ -92,26 +87,6 @@ inline bool ensure_window_on_screen(HWND hwnd)
     RECT window_rect = { };
     if (!GetWindowRect(hwnd, &window_rect)) {
         return false;
-    }
-
-    // A window that covers the whole monitor without extending beyond it
-    // (typically a borderless fullscreen game window) is expected to overlap
-    // the taskbar. Moving or resizing it would deform the game view and keep
-    // the taskbar visible, so leave it untouched. Popups larger than the
-    // monitor are NOT skipped - they still need the cap/reposition below.
-    // (Slack tolerates DWM invisible borders.)
-    const LONG kMonitorSlack = 8;
-    bool covers_monitor = window_rect.left <= mi.rcMonitor.left + kMonitorSlack
-                          && window_rect.top <= mi.rcMonitor.top + kMonitorSlack
-                          && window_rect.right >= mi.rcMonitor.right - kMonitorSlack
-                          && window_rect.bottom >= mi.rcMonitor.bottom - kMonitorSlack;
-    bool fits_monitor = window_rect.left >= mi.rcMonitor.left - kMonitorSlack
-                        && window_rect.top >= mi.rcMonitor.top - kMonitorSlack
-                        && window_rect.right <= mi.rcMonitor.right + kMonitorSlack
-                        && window_rect.bottom <= mi.rcMonitor.bottom + kMonitorSlack;
-    if (is_fullscreen(hwnd) && covers_monitor && fits_monitor) {
-        LogDebug << "Skip ensure_window_on_screen: fullscreen window matches monitor";
-        return true;
     }
 
     RECT client_rect = { };
@@ -122,6 +97,15 @@ inline bool ensure_window_on_screen(HWND hwnd)
     POINT client_origin = { 0, 0 };
     if (!ClientToScreen(hwnd, &client_origin)) {
         return false;
+    }
+
+    // Widen the coordinate sums before comparing RECT's exclusive edges.
+    if (is_fullscreen(hwnd) && static_cast<int64_t>(client_origin.x) + client_rect.left == mi.rcMonitor.left
+        && static_cast<int64_t>(client_origin.y) + client_rect.top == mi.rcMonitor.top
+        && static_cast<int64_t>(client_origin.x) + client_rect.right == mi.rcMonitor.right
+        && static_cast<int64_t>(client_origin.y) + client_rect.bottom == mi.rcMonitor.bottom) {
+        LogDebug << "Skip ensure_window_on_screen: fullscreen client matches monitor";
+        return true;
     }
 
     int frame_left = client_origin.x - window_rect.left;
