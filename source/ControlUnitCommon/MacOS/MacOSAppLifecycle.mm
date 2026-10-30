@@ -2,9 +2,14 @@
 
 #import <AppKit/AppKit.h>
 
+#include <libproc.h>
+
+#include <algorithm>
 #include <chrono>
 #include <memory>
+#include <string>
 #include <thread>
+#include <vector>
 
 #include "MaaUtils/Logger.h"
 
@@ -12,6 +17,12 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 namespace
 {
+bool process_exists(pid_t pid)
+{
+    proc_bsdinfo info { };
+    return proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &info, sizeof(info)) == static_cast<int>(sizeof(info));
+}
+
 NSURL* find_application(NSString* target, const std::string& search_path)
 {
     if ([target hasPrefix:@"/"]) {
@@ -110,6 +121,8 @@ bool stop_app(const std::string& intent)
         }
 
         bool stopped = true;
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(10);
+        std::vector<pid_t> pending;
         for (NSRunningApplication* app in apps) {
             const pid_t pid = app.processIdentifier;
             if (![app terminate]) {
@@ -118,19 +131,22 @@ bool stop_app(const std::string& intent)
                 continue;
             }
 
-            if ([NSThread isMainThread]) {
-                LogWarn << "Quit request sent; skipping exit detection on the main thread. Success only indicates the quit request was sent."
-                        << VAR(pid);
-                continue;
-            }
+            pending.push_back(pid);
+        }
 
-            for (int attempt = 0; attempt < 40 && !app.isTerminated; ++attempt) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        while (!pending.empty()) {
+            std::erase_if(pending, [](pid_t pid) { return !process_exists(pid); });
+            if (pending.empty()) {
+                break;
             }
-            if (!app.isTerminated) {
-                LogError << "Application did not quit after the quit request" << VAR(pid);
+            if (std::chrono::steady_clock::now() >= deadline) {
+                for (const pid_t pid : pending) {
+                    LogError << "Application did not quit after the quit request" << VAR(pid);
+                }
                 stopped = false;
+                break;
             }
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         return stopped;
     }
