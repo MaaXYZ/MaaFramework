@@ -18,7 +18,7 @@ inline std::optional<std::vector<IOSDevice>> find_ios_devices(int64_t timeout, M
     }
     (*options)["timeout_ms"] = timeout;
     const auto text = options->to_string();
-    if (!MaaToolkitIOSDeviceFindWithOptions(method, text.c_str(), list)) {
+    if (!MaaToolkitIOSDeviceFindWithOptions(method, text.c_str(), nullptr, nullptr, list)) {
         return std::nullopt;
     }
     std::vector<IOSDevice> result;
@@ -28,7 +28,8 @@ inline std::optional<std::vector<IOSDevice>> find_ios_devices(int64_t timeout, M
             MaaToolkitIOSDeviceGetName(device),
             MaaToolkitIOSDeviceGetUdid(device),
             MaaToolkitIOSDeviceGetScreencapMethods(device),
-            MaaToolkitIOSDeviceGetConnections(device));
+            MaaToolkitIOSDeviceGetConnections(device),
+            MaaToolkitIOSDeviceGetState(device));
     }
     return result;
 }

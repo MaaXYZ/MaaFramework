@@ -1,6 +1,8 @@
 #include "MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"
 
 #include "MaaFramework/Utility/MaaBuffer.h"
+#include "ControlUnit/IOSDeviceAPI.h"
+#include "LibraryHolder/ControlUnit.h"
 #include <memory>
 #include <meojson/json.hpp>
 #include <string>
@@ -10,6 +12,7 @@ struct MaaToolkitIOSDevice
 {
     std::string name;
     std::string udid;
+    std::string state;
     std::string connections;
     MaaIOSScreencapMethod screencap_methods = MaaIOSScreencapMethod_ScreenshotService;
 };
@@ -38,27 +41,14 @@ void MaaToolkitIOSDeviceListDestroy(MaaToolkitIOSDeviceList* list)
 
 MaaBool MaaToolkitIOSDeviceFind(MaaToolkitIOSDeviceList* list)
 {
-    return MaaToolkitIOSDeviceFindWithTimeout(3000, list);
-}
-
-MaaBool MaaToolkitIOSDeviceFindWithTimeout(int64_t timeout_ms, MaaToolkitIOSDeviceList* list)
-{
-    if (!list) {
-        return false;
-    }
-    list->devices.clear();
-    list->warnings = "[]";
-    if (timeout_ms < 0 || timeout_ms > 60000) {
-        list->warnings = "[\"timeout_ms must be between 0 and 60000\"]";
-        return false;
-    }
-    const auto options = json::value(json::object { { "timeout_ms", timeout_ms } }).to_string();
-    return MaaToolkitIOSDeviceFindWithOptions(MaaIOSConnectionMethod_Auto, options.c_str(), list);
+    return MaaToolkitIOSDeviceFindWithOptions(MaaIOSConnectionMethod_Auto, nullptr, nullptr, nullptr, list);
 }
 
 MaaBool MaaToolkitIOSDeviceFindWithOptions(
     MaaIOSConnectionMethod connection_method,
     const char* options_json,
+    MaaToolkitIOSDeviceCancelCallback cancel_callback,
+    void* userdata,
     MaaToolkitIOSDeviceList* list)
 {
     if (!list) {
@@ -71,13 +61,12 @@ MaaBool MaaToolkitIOSDeviceFindWithOptions(
         if (!result) {
             return false;
         }
-        const bool success = MaaToolkitIOSDeviceDiscover(
-            connection_method,
-            options_json,
-            nullptr,
-            nullptr,
-            nullptr,
-            result.get());
+        auto api = MAA_NS::IOSControlUnitLibraryHolder::device_api();
+        if (!api) {
+            list->warnings = "[\"Failed to load iOS device management\"]";
+            return false;
+        }
+        const bool success = api->discover(connection_method, options_json, cancel_callback, userdata, result.get());
         const auto parsed = json::parse(MaaStringBufferGet(result.get()));
         if (!parsed || !parsed->is_object()) {
             list->warnings = "[\"invalid iOS discovery result\"]";
@@ -95,6 +84,7 @@ MaaBool MaaToolkitIOSDeviceFindWithOptions(
             list->devices.push_back(
                 { device.get("name", std::string { }),
                   device.get("udid", std::string { }),
+                  device.get("state", std::string("discovered")),
                   device.get("candidates", json::array { }).to_string(),
                   device.get("screencap_methods", MaaIOSScreencapMethod_ScreenshotService) });
         }
@@ -125,6 +115,11 @@ const char* MaaToolkitIOSDeviceGetName(const MaaToolkitIOSDevice* device)
 const char* MaaToolkitIOSDeviceGetUdid(const MaaToolkitIOSDevice* device)
 {
     return device ? device->udid.c_str() : "";
+}
+
+const char* MaaToolkitIOSDeviceGetState(const MaaToolkitIOSDevice* device)
+{
+    return device ? device->state.c_str() : "";
 }
 
 const char* MaaToolkitIOSDeviceGetConnections(const MaaToolkitIOSDevice* device)

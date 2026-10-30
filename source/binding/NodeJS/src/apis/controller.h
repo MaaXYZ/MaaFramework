@@ -115,7 +115,7 @@ using IOSControllerCtorParam = std::tuple<
     maajs::OptionalParam<std::string>,
     maajs::OptionalParam<std::string>>;
 
-using IOSDevice = std::tuple<std::string, std::string, MaaIOSScreencapMethod, std::string>;
+using IOSDevice = std::tuple<std::string, std::string, MaaIOSScreencapMethod, std::string, std::string>;
 
 struct IOSControllerImpl : public ControllerImpl
 {

@@ -13,7 +13,6 @@ public:
     virtual MaaBool discover(
         MaaIOSConnectionMethod connection_method,
         const char* options_json,
-        MaaToolkitIOSDeviceEventCallback event_callback,
         MaaToolkitIOSDeviceCancelCallback cancel_callback,
         void* userdata,
         MaaStringBuffer* result) = 0;

@@ -1,6 +1,5 @@
 import ctypes
 import json
-import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Optional, Union
@@ -9,7 +8,6 @@ from .define import *
 from .library import Library
 
 
-_IOSEventCallback = FUNCTYPE(MaaBool, ctypes.c_char_p, ctypes.c_void_p)
 _IOSCancelCallback = FUNCTYPE(MaaBool, ctypes.c_void_p)
 
 
@@ -45,6 +43,7 @@ class IOSDevice:
     udid: str
     screencap_methods: int
     connections: list[dict[str, Any]]
+    state: str
 
 
 @dataclass
@@ -198,10 +197,33 @@ class Toolkit:
         timeout_ms: int = 3000,
         config: Optional[dict[str, Any]] = None,
         connection_method: MaaIOSConnectionMethodEnum = MaaIOSConnectionMethodEnum.Auto,
+        cancelled: Optional[Callable[[], bool]] = None,
     ) -> list[IOSDevice]:
-        """Discover USB/Wi-Fi devices without pairing or starting a media session."""
+        """Discover USB/Wi-Fi devices without pairing or starting media.
+
+        cancelled may run on a native worker thread; it must be thread-safe.
+        Callback exceptions are re-raised after native work has stopped.
+        Device state is discovered/paired/connected, not a service health check.
+        """
         if timeout_ms < 0 or timeout_ms > 60000:
             raise ValueError("timeout_ms must be between 0 and 60000")
+        if config is not None and not isinstance(config, dict):
+            raise TypeError("xdb server config must be a dict")
+        if cancelled is not None and not callable(cancelled):
+            raise TypeError("cancelled must be callable")
+        errors: list[BaseException] = []
+
+        def cancel(_userdata: Any) -> bool:
+            if errors:
+                return True
+            try:
+                return bool(cancelled())
+            except BaseException as error:
+                errors.append(error)
+                return True
+
+        # The native call joins its worker before these borrowed objects are released.
+        cancel_callback = _IOSCancelCallback(cancel) if cancelled is not None else _IOSCancelCallback()
         Toolkit._set_ios_api_properties()
         api = Library.toolkit()
         handle = api.MaaToolkitIOSDeviceListCreate()
@@ -209,7 +231,10 @@ class Toolkit:
             raise MemoryError("could not allocate iOS device list")
         try:
             options = json.dumps({**(config or {}), "timeout_ms": timeout_ms}).encode()
-            if not api.MaaToolkitIOSDeviceFindWithOptions(connection_method, options, handle):
+            success = api.MaaToolkitIOSDeviceFindWithOptions(connection_method, options, cancel_callback, None, handle)
+            if errors:
+                raise errors[0]
+            if not success:
                 warnings = api.MaaToolkitIOSDeviceListGetWarnings(handle).decode("utf-8")
                 raise RuntimeError(f"iOS discovery failed: {warnings}")
             devices = []
@@ -220,96 +245,11 @@ class Toolkit:
                     api.MaaToolkitIOSDeviceGetUdid(device).decode("utf-8"),
                     int(api.MaaToolkitIOSDeviceGetScreencapMethods(device)),
                     json.loads(api.MaaToolkitIOSDeviceGetConnections(device).decode("utf-8")),
+                    api.MaaToolkitIOSDeviceGetState(device).decode("utf-8"),
                 ))
             return devices
         finally:
             api.MaaToolkitIOSDeviceListDestroy(handle)
-
-    @staticmethod
-    def ios_discover(
-        options: Optional[dict[str, Any]] = None,
-        on_event: Optional[Callable[[dict[str, Any]], bool]] = None,
-        cancelled: Optional[Callable[[], bool]] = None,
-        *,
-        connection_method: MaaIOSConnectionMethodEnum = MaaIOSConnectionMethodEnum.Auto,
-        config: Optional[dict[str, Any]] = None,
-    ) -> dict[str, Any]:
-        """同步发现设备，返回含 success/cancelled/error 的完整结果。
-
-        Blocking discovery with the complete JSON result, including warnings.
-        on_event receives decoded progress/PIN events; return True to continue.
-        cancelled may be called on native worker threads and must be thread-safe.
-        Callback exceptions cancel native work and are re-raised after cleanup.
-        """
-
-        if options is not None and not isinstance(options, dict):
-            raise TypeError("iOS discovery options must be a dict")
-        if config is not None and not isinstance(config, dict):
-            raise TypeError("xdb server config must be a dict")
-        def invoke(encoded_options, event, cancel, result):
-            return Library.toolkit().MaaToolkitIOSDeviceDiscover(
-                connection_method, encoded_options, event, cancel, None, result)
-
-        return Toolkit._ios_manage(invoke, {**(config or {}), **(options or {})}, on_event, cancelled)
-
-    @staticmethod
-    def _ios_manage(
-        invoke: Callable[[bytes, Any, Any, MaaStringBufferHandle], Any],
-        options: Optional[dict[str, Any]],
-        on_event: Optional[Callable[[dict[str, Any]], bool]],
-        cancelled: Optional[Callable[[], bool]],
-    ) -> dict[str, Any]:
-        from .buffer import StringBuffer
-
-        if options is not None and not isinstance(options, dict):
-            raise TypeError("iOS management options must be a dict")
-        if on_event is not None and not callable(on_event):
-            raise TypeError("on_event must be callable")
-        if cancelled is not None and not callable(cancelled):
-            raise TypeError("cancelled must be callable")
-        encoded_options = json.dumps(options if options is not None else {}, ensure_ascii=False).encode("utf-8")
-        Toolkit._set_ios_api_properties()
-        stopped = threading.Event()
-        errors: list[BaseException] = []
-        error_lock = threading.Lock()
-
-        def callback_failed(error: BaseException) -> None:
-            with error_lock:
-                if not errors:
-                    errors.append(error)
-            stopped.set()
-
-        def event(event_json: bytes, _userdata: Any) -> bool:
-            try:
-                if stopped.is_set():
-                    return False
-                if on_event is not None and not on_event(json.loads(event_json.decode("utf-8"))):
-                    stopped.set()
-                return not stopped.is_set()
-            except BaseException as error:
-                callback_failed(error)
-                return False
-
-        def cancel(_userdata: Any) -> bool:
-            try:
-                if stopped.is_set() or (cancelled is not None and cancelled()):
-                    stopped.set()
-                return stopped.is_set()
-            except BaseException as error:
-                callback_failed(error)
-                return True
-
-        # Keep callbacks and the result buffer alive until native workers have joined.
-        event_callback = _IOSEventCallback(event) if on_event is not None else _IOSEventCallback()
-        cancel_callback = _IOSCancelCallback(cancel)
-        result_buffer = StringBuffer()
-        invoke(encoded_options, event_callback, cancel_callback, result_buffer._handle)
-        if errors:
-            raise errors[0]
-        result: dict[str, Any] = json.loads(result_buffer.get())
-        if not isinstance(result, dict):
-            raise RuntimeError("iOS management returned a non-object result")
-        return result
 
     @staticmethod
     def find_desktop_windows() -> list[DesktopWindow]:
@@ -601,23 +541,19 @@ class Toolkit:
     @staticmethod
     def _assign_ios_api_properties() -> None:
         api = Library.toolkit()
-        api.MaaToolkitIOSDeviceDiscover.restype = MaaBool
-        api.MaaToolkitIOSDeviceDiscover.argtypes = [MaaIOSConnectionMethod, ctypes.c_char_p,
-            _IOSEventCallback, _IOSCancelCallback, ctypes.c_void_p, MaaStringBufferHandle]
         api.MaaToolkitIOSDeviceListCreate.restype = ctypes.c_void_p
         api.MaaToolkitIOSDeviceListCreate.argtypes = []
         api.MaaToolkitIOSDeviceListDestroy.restype = None
         api.MaaToolkitIOSDeviceListDestroy.argtypes = [ctypes.c_void_p]
-        api.MaaToolkitIOSDeviceFindWithTimeout.restype = MaaBool
-        api.MaaToolkitIOSDeviceFindWithTimeout.argtypes = [ctypes.c_int64, ctypes.c_void_p]
         api.MaaToolkitIOSDeviceFindWithOptions.restype = MaaBool
-        api.MaaToolkitIOSDeviceFindWithOptions.argtypes = [MaaIOSConnectionMethod, ctypes.c_char_p, ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceFindWithOptions.argtypes = [MaaIOSConnectionMethod, ctypes.c_char_p,
+            _IOSCancelCallback, ctypes.c_void_p, ctypes.c_void_p]
         api.MaaToolkitIOSDeviceListSize.restype = MaaSize
         api.MaaToolkitIOSDeviceListSize.argtypes = [ctypes.c_void_p]
         api.MaaToolkitIOSDeviceListAt.restype = ctypes.c_void_p
         api.MaaToolkitIOSDeviceListAt.argtypes = [ctypes.c_void_p, MaaSize]
         for name in ("MaaToolkitIOSDeviceGetName", "MaaToolkitIOSDeviceGetUdid",
-                     "MaaToolkitIOSDeviceGetConnections", "MaaToolkitIOSDeviceListGetWarnings"):
+                     "MaaToolkitIOSDeviceGetConnections", "MaaToolkitIOSDeviceGetState", "MaaToolkitIOSDeviceListGetWarnings"):
             function = getattr(api, name)
             function.restype = ctypes.c_char_p
             function.argtypes = [ctypes.c_void_p]

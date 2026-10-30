@@ -12,13 +12,26 @@ from maa.library import Library
 from maa.toolkit import Toolkit
 
 
+class DiscoveryServer(FakeServer):
+    state = 'paired'
+
+    def handle_call(self, name, params):
+        result, data = super().handle_call(name, params)
+        if name == 'devices':
+            result['devices'][0]['state'] = self.state
+        return result, data
+
+
 class IOSClientTest(unittest.TestCase):
     def test_discovery_and_controller_use_server_settings(self):
-        with FakeServer() as server:
+        with DiscoveryServer() as server:
             devices = Toolkit.find_ios_devices(timeout_ms=0, config=server.config)
             self.assertEqual([d.udid for d in devices], ['mock-iphone'])
-            status = Toolkit.ios_discover(options={'timeout_ms': 0}, config=server.config)
-            self.assertTrue(status['success'])
+            self.assertEqual(devices[0].state, 'paired')
+            for state in ('discovered', 'connected'):
+                server.state = state
+                self.assertEqual(Toolkit.find_ios_devices(timeout_ms=0, config=server.config)[0].state, state)
+            self.assertEqual(devices[0].connections[0]['address'], '127.0.0.2')
             controller = IOSController('mock-iphone', config=server.config, wifi_address='auto')
             self.assertTrue(controller.post_connection().wait().succeeded)
             self.assertTrue(controller.post_screencap().wait().succeeded)
@@ -32,13 +45,21 @@ class IOSClientTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             IOSController('')
         with self.assertRaises(TypeError):
-            Toolkit.ios_discover(options=[])
+            Toolkit.find_ios_devices(config=[])
 
     def test_already_cancelled_discovery(self):
         with FakeServer() as server:
-            status = Toolkit.ios_discover(config=server.config, cancelled=lambda: True)
-            self.assertFalse(status['success'])
-            self.assertTrue(status['cancelled'])
+            with self.assertRaisesRegex(RuntimeError, 'cancelled'):
+                Toolkit.find_ios_devices(config=server.config, cancelled=lambda: True)
+            self.assertNotIn('devices', server.methods())
+
+    def test_cancellation_exception_is_rethrown_after_cleanup(self):
+        def cancelled():
+            raise ValueError('cancel callback failed')
+
+        with FakeServer() as server:
+            with self.assertRaisesRegex(ValueError, 'cancel callback failed'):
+                Toolkit.find_ios_devices(config=server.config, cancelled=cancelled)
             self.assertNotIn('devices', server.methods())
 
     def test_older_toolkit_reports_missing_ios_lazily(self):

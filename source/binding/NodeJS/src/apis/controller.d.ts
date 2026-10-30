@@ -244,7 +244,7 @@ declare global {
             static find(adb?: string): Promise<AdbDevice[] | null>
         }
 
-        type IOSDevice = [name: string, udid: string, screencap_methods: ScreencapOrInputMethods, connections_json: string]
+        type IOSDevice = [name: string, udid: string, screencap_methods: ScreencapOrInputMethods, connections_json: string, state: string]
 
         /** Uses a running xdb Server. Pairing credentials remain in xdb. */
         class IOSController extends Controller {

@@ -48,7 +48,7 @@ height = function(fw, 'MaaImageBufferHeight', I, [P])
 pixels = function(fw, 'MaaImageBufferGetRawData', P, [P])
 list_create = function(tk, 'MaaToolkitIOSDeviceListCreate', P, [])
 list_destroy = function(tk, 'MaaToolkitIOSDeviceListDestroy', None, [P])
-find = function(tk, 'MaaToolkitIOSDeviceFindWithOptions', B, [I,C.c_char_p,P])
+find = function(tk, 'MaaToolkitIOSDeviceFindWithOptions', B, [I,C.c_char_p,P,P,P])
 size = function(tk, 'MaaToolkitIOSDeviceListSize', C.c_uint64, [P])
 resource_create = function(fw, 'MaaResourceCreate', P, [])
 resource_destroy = function(fw, 'MaaResourceDestroy', None, [P])
@@ -93,7 +93,7 @@ with FakeServer() as server:
     config = json.dumps(server.config).encode()
     devices = list_create()
     try:
-        assert find(0, config, devices) and size(devices) == 1
+        assert find(0, config, None, None, devices) and size(devices) == 1
     finally:
         list_destroy(devices)
     assert not create(b'', 3, 0, None, config)

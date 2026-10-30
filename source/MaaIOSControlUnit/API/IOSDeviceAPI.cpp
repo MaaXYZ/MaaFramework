@@ -10,16 +10,19 @@ class CancellationMonitor
 {
 public:
     CancellationMonitor(maa::ios_unit::XdbClient& client, MaaToolkitIOSDeviceCancelCallback cancel, void* userdata)
-        : worker_([this, &client, cancel, userdata] {
+    {
+        if (!cancel) {
+            return;
+        }
+        worker_ = std::thread([this, &client, cancel, userdata] {
             while (!stopped_.load()) {
-                if (cancel && cancel(userdata)) {
+                if (cancel(userdata)) {
                     client.interrupt();
                     return;
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
             }
-        })
-    {
+        });
     }
 
     ~CancellationMonitor() { stop(); }
@@ -43,7 +46,6 @@ public:
     MaaBool discover(
         MaaIOSConnectionMethod mode,
         const char* options,
-        MaaToolkitIOSDeviceEventCallback,
         MaaToolkitIOSDeviceCancelCallback cancel,
         void* userdata,
         MaaStringBuffer* result) override
