@@ -101,12 +101,16 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON -DBUILD_PICLI=OFF -DWITH_REPLAY_CONTROLLER=ON -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON -DBUILD_WIN32_GEOMETRY_TESTING=ON -DMAA_WINDOW_GEOMETRY_DESKTOP_TESTS=ON
+                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON -DBUILD_PICLI=OFF -DWITH_REPLAY_CONTROLLER=ON -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Debug" -j 16
 
             - name: Run Windows geometry regression
               run: |
+                  cmake -S . -B build -DBUILD_WIN32_GEOMETRY_TESTING=ON -DMAA_WINDOW_GEOMETRY_DESKTOP_TESTS=ON
+                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+                  cmake --build build --config Debug --target window_geometry_test -j 16
+                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
                   ctest --test-dir build -C Debug --verbose --output-on-failure --no-tests=error -R '^window_geometry(_desktop)?$'
 
             - name: Install
