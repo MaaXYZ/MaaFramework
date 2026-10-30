@@ -110,6 +110,9 @@ with FakeServer() as server:
                 assert result
                 return wait(ctrl, result)
             assert action('Connection') == 3000
+            if method != 2:
+                started = [p for name, p in server.calls if name == 'video.start'][-1]
+                assert started['hardware_decode'] is False
             assert action('Screencap') == 3000
             image = image_create()
             try:

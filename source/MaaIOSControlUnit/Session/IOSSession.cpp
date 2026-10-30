@@ -77,7 +77,7 @@ bool IOSSession::create(
         }
         shared = value->as_boolean();
     }
-    json::object video_options;
+    json::object video_options { { "hardware_decode", false } };
     if (const auto* value = options->find_value("max_bitrate")) {
         if (!value->is<uint64_t>()) {
             err = "iOS max_bitrate must be a nonnegative integer in bit/s";
