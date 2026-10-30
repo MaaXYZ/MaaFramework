@@ -31,6 +31,7 @@ option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 option(BUILD_NODE_TEST "build node test" OFF)
 option(BUILD_MACOS_TEST "build macOS test" OFF)
 option(BUILD_LINUX_TEST "build Linux test" OFF)
+option(BUILD_WIN32_GEOMETRY_TESTING "build Windows window geometry regression tests" OFF)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)
 option(ENABLE_HASH_VERSION "enable hash version from git" OFF)
@@ -117,6 +118,11 @@ endif()
 if (BUILD_LINUX_TEST)
     add_subdirectory(test/linux_test)
 endif ()
+
+if(WIN32 AND BUILD_WIN32_GEOMETRY_TESTING)
+    enable_testing()
+    add_subdirectory(test/win32_test/window_geometry)
+endif()
 
 maadeps_install(bin)
 

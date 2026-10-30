@@ -17,6 +17,14 @@ struct Placement
     HWND after;
 };
 
+struct GeometryState
+{
+    RECT outer;
+    RECT client;
+    POINT origin;
+    LONG_PTR style;
+};
+
 struct Script
 {
     RECT monitor { 0, 0, 1920, 1080 };
@@ -30,6 +38,13 @@ struct Script
     bool iconic = false;
     // 1: monitor, 2: info, 3: outer, 4: client, 5: origin, 6: position.
     int failure = 0;
+    int failure_occurrence = 1;
+    int outer_queries = 0;
+    int client_queries = 0;
+    int origin_queries = 0;
+    int style_queries = 0;
+    std::optional<GeometryState> after_first_client;
+    std::optional<GeometryState> after_first_style;
     int queries = 0;
     int positions = 0;
     std::optional<Placement> placement;
@@ -37,6 +52,14 @@ struct Script
 
 Script* active = nullptr;
 int cases = 0;
+
+void change_geometry(const GeometryState& state)
+{
+    active->outer = state.outer;
+    active->client = state.client;
+    active->origin = state.origin;
+    active->style = state.style;
+}
 
 void check(bool condition, std::string_view scenario)
 {
@@ -88,7 +111,8 @@ BOOL outer(HWND window, RECT* output)
         return ::GetWindowRect(window, output);
     }
     *output = active->outer;
-    return active->failure != 3;
+    ++active->outer_queries;
+    return active->failure != 3 || active->outer_queries < active->failure_occurrence;
 }
 
 BOOL client(HWND window, RECT* output)
@@ -97,7 +121,11 @@ BOOL client(HWND window, RECT* output)
         return ::GetClientRect(window, output);
     }
     *output = active->client;
-    return active->failure != 4;
+    ++active->client_queries;
+    if (active->client_queries == 1 && active->after_first_client) {
+        change_geometry(*active->after_first_client);
+    }
+    return active->failure != 4 || active->client_queries < active->failure_occurrence;
 }
 
 BOOL origin(HWND window, POINT* output)
@@ -107,7 +135,8 @@ BOOL origin(HWND window, POINT* output)
     }
     check(output->x == 0 && output->y == 0, "client origin query");
     *output = active->origin;
-    return active->failure != 5;
+    ++active->origin_queries;
+    return active->failure != 5 || active->origin_queries < active->failure_occurrence;
 }
 
 LONG_PTR style(HWND window, int index)
@@ -116,7 +145,12 @@ LONG_PTR style(HWND window, int index)
         return ::GetWindowLongPtrW(window, index);
     }
     check(index == GWL_STYLE, "window style index");
-    return active->style;
+    const auto result = active->style;
+    ++active->style_queries;
+    if (active->style_queries == 1 && active->after_first_style) {
+        change_geometry(*active->after_first_style);
+    }
+    return result;
 }
 
 BOOL position(HWND window, HWND after, int x, int y, int width, int height, UINT flags)
@@ -174,6 +208,9 @@ void scripted_cases()
 {
     Script exact;
     check(run(exact) && !exact.placement, "exact fullscreen client is untouched");
+    check(
+        exact.outer_queries == 2 && exact.client_queries == 2 && exact.origin_queries == 2 && exact.style_queries == 2,
+        "fullscreen exemption performs exactly one confirmation");
     Script border;
     border.outer = { -8, -8, 1928, 1088 };
     check(run(border) && !border.placement, "invisible outer border does not change client equality");
@@ -187,8 +224,28 @@ void scripted_cases()
     taskbar.client = { 0, 0, 400, 100 };
     check(run(taskbar) && taskbar.placement && taskbar.placement->y == 940, "ordinary client below work area is moved above taskbar");
 
+    struct EdgeCase
+    {
+        LONG delta;
+        int left_x;
+        int left_width;
+        int right_width;
+    };
+
+    // Explicit oracle values: a contained 1x1 result must not pass these cases.
+    constexpr std::array<EdgeCase, 8> edges { {
+        { -9, 0, 1920, 1911 },
+        { -8, 0, 1920, 1912 },
+        { -7, 0, 1920, 1913 },
+        { -1, 0, 1920, 1919 },
+        { 1, 1, 1919, 1920 },
+        { 7, 7, 1913, 1920 },
+        { 8, 8, 1912, 1920 },
+        { 9, 9, 1911, 1920 },
+    } };
     for (int edge = 0; edge < 4; ++edge) {
-        for (const LONG delta : { -9L, -8L, -7L, -1L, 1L, 7L, 8L, 9L }) {
+        for (const auto& expected : edges) {
+            const LONG delta = expected.delta;
             Script shifted;
             if (edge == 0) {
                 shifted.outer.left += delta;
@@ -206,6 +263,14 @@ void scripted_cases()
             shifted.client = { 0, 0, shifted.outer.right - shifted.outer.left, shifted.outer.bottom - shifted.outer.top };
             check(run(shifted) && shifted.positions == 1, "every client-edge offset must reach work-area correction");
             const auto& p = *shifted.placement;
+            check(
+                p.x == (edge == 0 ? expected.left_x : 0) && p.y == 0
+                    && p.width
+                           == (edge == 0   ? expected.left_width
+                               : edge == 2 ? expected.right_width
+                                           : 1920)
+                    && p.height == 1040,
+                "shifted client has the exact expected position and dimensions");
             check(
                 p.x >= shifted.work.left && p.y >= shifted.work.top && p.x + p.width <= shifted.work.right
                     && p.y + p.height <= shifted.work.bottom,
@@ -244,6 +309,31 @@ void scripted_cases()
         failed.style = WS_OVERLAPPEDWINDOW;
         check(!run(failed), "native query/position failure is propagated");
         check(failed.positions == (failure == 6 ? 1 : 0), "failed queries cannot reposition the window");
+    }
+
+    Script resized;
+    resized.after_first_client = GeometryState { { 0, 0, 2400, 1200 }, { 0, 0, 2400, 1200 }, { 0, 0 }, WS_POPUP };
+    check(
+        run(resized) && resized.placement && resized.placement->x == 0 && resized.placement->y == 0 && resized.placement->width == 1920
+            && resized.placement->height == 1040,
+        "resize between client/origin queries is corrected using refreshed geometry");
+    Script moved;
+    moved.after_first_style = GeometryState { { -1, 0, 1919, 1080 }, { 0, 0, 1920, 1080 }, { -1, 0 }, WS_POPUP };
+    check(
+        run(moved) && moved.placement && moved.placement->x == 0 && moved.placement->y == 0 && moved.placement->width == 1920
+            && moved.placement->height == 1040,
+        "move after candidate comparison cannot receive the exemption");
+    Script restyled;
+    restyled.after_first_style = GeometryState { { 0, 0, 1920, 1080 }, { 0, 0, 1920, 1080 }, { 0, 0 }, WS_OVERLAPPEDWINDOW };
+    check(
+        run(restyled) && restyled.placement && restyled.placement->x == 0 && restyled.placement->y == 0 && restyled.placement->width == 1920
+            && restyled.placement->height == 1040,
+        "style change before confirmation uses work-area correction");
+    for (int failure : { 3, 4, 5 }) {
+        Script failed_confirmation;
+        failed_confirmation.failure = failure;
+        failed_confirmation.failure_occurrence = 2;
+        check(!run(failed_confirmation) && !failed_confirmation.placement, "confirmation query failure is propagated without positioning");
     }
     std::cout << cases << " actual-header scripted geometry cases passed\n";
 }

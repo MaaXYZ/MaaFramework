@@ -104,8 +104,24 @@ inline bool ensure_window_on_screen(HWND hwnd)
         && static_cast<int64_t>(client_origin.y) + client_rect.top == mi.rcMonitor.top
         && static_cast<int64_t>(client_origin.x) + client_rect.right == mi.rcMonitor.right
         && static_cast<int64_t>(client_origin.y) + client_rect.bottom == mi.rcMonitor.bottom) {
-        LogDebug << "Skip ensure_window_on_screen: fullscreen client matches monitor";
-        return true;
+        RECT current_window = { };
+        RECT current_client = { };
+        POINT current_origin = { 0, 0 };
+        if (!GetWindowRect(hwnd, &current_window) || !GetClientRect(hwnd, &current_client) || !ClientToScreen(hwnd, &current_origin)) {
+            return false;
+        }
+        const bool still_popup = is_fullscreen(hwnd);
+        const bool same_client =
+            EqualRect(&client_rect, &current_client) && client_origin.x == current_origin.x && client_origin.y == current_origin.y;
+        // Confirm once before exempting. A changed window uses the refreshed
+        // geometry below; this does not lock a foreign window against later moves.
+        window_rect = current_window;
+        client_rect = current_client;
+        client_origin = current_origin;
+        if (still_popup && same_client) {
+            LogDebug << "Skip ensure_window_on_screen: confirmed fullscreen client matches monitor";
+            return true;
+        }
     }
 
     int frame_left = client_origin.x - window_rect.left;
