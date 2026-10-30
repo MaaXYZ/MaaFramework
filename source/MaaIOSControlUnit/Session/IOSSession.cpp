@@ -77,6 +77,28 @@ bool IOSSession::create(
         }
         shared = value->as_boolean();
     }
+    json::object video_options;
+    if (const auto* value = options->find_value("max_bitrate")) {
+        if (!value->is<uint64_t>()) {
+            err = "iOS max_bitrate must be a nonnegative integer in bit/s";
+            return false;
+        }
+        video_options["max_bitrate"] = *value;
+    }
+    if (const auto* value = options->find_value("max_fps")) {
+        if (!value->is<unsigned>() || value->as_unsigned() > 240) {
+            err = "iOS max_fps must be an integer in [0,240]";
+            return false;
+        }
+        video_options["max_fps"] = *value;
+    }
+    if (const auto* value = options->find_value("hardware_decode")) {
+        if (!value->is_boolean()) {
+            err = "iOS hardware_decode must be a boolean";
+            return false;
+        }
+        video_options["hardware_decode"] = *value;
+    }
     if (!client_.connect(config, err)) {
         return false;
     }
@@ -101,7 +123,15 @@ bool IOSSession::create(
     }
     if (methods & MaaIOSScreencapMethod_Stream) {
         // Let the server own stream recovery, including complete receive silence.
-        video_ = client_.call("video.start", json::object { }, err);
+        json::value started;
+        video_ = client_.call("video.start", video_options, started, data, err);
+        if (video_) {
+            if (const auto* warnings = started.find_value("warnings"); warnings && warnings->is_array()) {
+                for (const auto& warning : warnings->as_array()) {
+                    LogWarn << "iOS video start warning" << VAR(warning);
+                }
+            }
+        }
         if (!video_ && !(methods & MaaIOSScreencapMethod_ScreenshotService)) {
             close();
             return false;

@@ -247,7 +247,8 @@ declare global {
         type IOSDevice = [name: string, udid: string, screencap_methods: ScreencapOrInputMethods, connections_json: string, state: string]
 
         /** Uses xdb Server. Credentials remain in xdb. Controller config accepts
-         * server_port, wifi_address, wifi_port (49152), shared_control (false).
+         * server_port, wifi_address, wifi_port (49152), shared_control (false),
+         * max_bitrate (omitted, bit/s), max_fps (0/unlimited receiver output), hardware_decode (false).
          */
         class IOSController extends Controller {
             static find(timeout_ms?: number, config?: string, connection_method?: number): Promise<IOSDevice[] | null>

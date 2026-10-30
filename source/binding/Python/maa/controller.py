@@ -907,7 +907,8 @@ class IOSController(Controller):
 
     Pair and prepare DDI using the xdb CLI or SDK first. The framework never owns
     device credentials. config accepts server_port (XDB_PORT or 17423),
-    wifi_address (empty), wifi_port (49152) and shared_control (False).
+    wifi_address (empty), wifi_port (49152), shared_control (False),
+    max_bitrate (omitted, bit/s), max_fps (0/unlimited receiver output), hardware_decode (False).
     """
     def __init__(self, udid: str, screencap_methods: int = MaaIOSScreencapMethodEnum.Default,
                  connection_method: int = MaaIOSConnectionMethodEnum.Auto,

@@ -179,7 +179,10 @@ with InterruptedVideoServer() as server:
             destroy(ctrl)
 with FakeServer() as server:
     for options in ({'wifi_port': 0}, {'wifi_port': 65536}, {'wifi_port': 49152.5},
-                    {'wifi_port': True}, {'wifi_address': 123}, {'wifi_address': 'a\0b'}, {'shared_control': 'true'}):
+                    {'wifi_port': True}, {'wifi_address': 123}, {'wifi_address': 'a\0b'}, {'shared_control': 'true'},
+                    {'max_bitrate': -1}, {'max_bitrate': 1.5}, {'max_bitrate': True},
+                    {'max_bitrate': 2**64}, {'max_fps': 241}, {'max_fps': 1.5},
+                    {'hardware_decode': 1}):
         config = json.dumps({**server.config, **options}).encode()
         ctrl = create(b'mock-iphone', 1, 2, config)
         assert ctrl
@@ -190,12 +193,15 @@ with FakeServer() as server:
     assert 'connection.open' not in server.methods(), 'invalid options must fail before opening a session'
 
     server.shared_control = True
-    config = json.dumps({**server.config, 'shared_control': True, 'wifi_address': '127.0.0.2', 'wifi_port': 49153}).encode()
+    config = json.dumps({**server.config, 'shared_control': True, 'wifi_address': '127.0.0.2', 'wifi_port': 49153,
+                         'max_bitrate': 2**64 - 1, 'max_fps': 15, 'hardware_decode': True}).encode()
     ctrl = create(b'mock-iphone', 1, 2, config)
     try:
         assert wait(ctrl, posts['Connection'](ctrl)) == 3000
         opened = [p for name, p in server.calls if name == 'connection.open'][-1]
         assert opened['access'] == 'shared' and opened['wifi'] == '127.0.0.2' and opened['port'] == 49153
+        started = [p for name, p in server.calls if name == 'video.start'][-1]
+        assert started['max_bitrate'] == 2**64 - 1 and started['max_fps'] == 15 and started['hardware_decode'] is True
     finally:
         destroy(ctrl)
 
