@@ -1,0 +1,32 @@
+{
+    "PostStopInterruptMain": {
+        "recognition": {
+            "type": "DirectHit",
+            "param": {
+                "roi": [0, 0, 1, 1]
+            }
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "PostStopInterruptMainAction"
+            }
+        }
+    },
+    "PostStopInterruptChild": {
+        "recognition": {
+            "type": "DirectHit",
+            "param": {
+                "roi": [0, 0, 1, 1]
+            }
+        },
+        "action": {
+            "type": "DoNothing"
+        },
+        "post_wait_freezes": {
+            "time": 100000,
+            "rate_limit": 20,
+            "timeout": 5000
+        }
+    }
+}

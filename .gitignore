@@ -455,3 +455,6 @@ recording/*
 3rdparty/MaaDeps
 tmp/*
 temp/*
+
+# BatchOcrRepro 用例的 OCR 模型，构建时从 TestingDataSet 子模块复制
+test/pipeline/resources/BatchOcrRepro/resource/model/

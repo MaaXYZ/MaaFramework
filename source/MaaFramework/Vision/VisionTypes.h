@@ -99,6 +99,9 @@ struct CustomRecognitionParam : public RoiTargetParamBase
 {
     std::string name;
     json::value custom_param;
+
+    // 多结果顺序由回调决定，不支持 order_by
+    int result_index = 0;
 };
 
 struct NeuralNetworkClassifierParam : public RoiTargetParamBase

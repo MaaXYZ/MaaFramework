@@ -1,6 +1,8 @@
 #pragma once
 
 #include <filesystem>
+#include <mutex>
+#include <set>
 
 #include <meojson/json.hpp>
 
@@ -152,6 +154,8 @@ public:
 
     std::string context_id(MaaContext* context);
     MaaContext* query_context(const std::string& context_id);
+    // 超时的 custom 调用里 agent 可能稍后仍拿旧 id 反调，注销后同一 context 再登记换新 id
+    void abandon_context(const std::string& context_id);
 
     std::string tasker_id(MaaTasker* tasker);
     MaaTasker* query_tasker(const std::string& tasker_id);
@@ -202,7 +206,13 @@ private:
     bool socket_needs_reset_ = false;
     std::string identifier_;
 
+    // 多个 tasker 共用 resource 时，custom 回调会在各自的任务线程上并发登记 context
+    std::mutex context_mutex_;
     std::map<std::string, MaaContext*> context_map_;
+    std::map<MaaContext*, std::string> context_current_ids_;
+    // clone 由父 context 持有、随父销毁，注销父 id 时要连带注销
+    std::map<std::string, std::set<std::string>> context_clone_ids_;
+    int64_t context_id_seq_ = 0;
     std::map<std::string, MaaTasker*> tasker_map_;
     std::map<std::string, MaaController*> controller_map_;
     std::map<std::string, MaaResource*> resource_map_;

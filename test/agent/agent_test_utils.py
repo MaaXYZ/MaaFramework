@@ -6,11 +6,17 @@ import time
 from typing import Optional
 import uuid
 
+from maa.pipeline import JCustomRecognition, JRecognitionType
+
 
 SERVER_READY_FILE_ENV = "MAAFW_AGENT_SERVER_READY_FILE"
 SINK_REPORT_FILE_ENV = "MAAFW_AGENT_SINK_REPORT_FILE"
 CONNECT_TIMEOUT_MS = 5000
 PROCESS_TIMEOUT_SECONDS = 10
+SLOW_REC_SECONDS = 1.5
+FAST_REC_BOX = (1, 2, 3, 4)
+NESTED_REC_BOX = (5, 6, 7, 8)
+NESTED_REC_TIMEOUT_MS = 5000
 
 
 def create_marker_path(name: str) -> Path:
@@ -113,6 +119,118 @@ def assert_sink_events(report_file: Path) -> None:
     )
 
 
+def run_custom_recognition(tasker, reco_name: str):
+    pipeline_override = {
+        "Entry": {"next": "StaleProbe", "timeout": 0},
+        "StaleProbe": {"recognition": "Custom", "custom_recognition": reco_name},
+    }
+    detail = tasker.post_task("Entry", pipeline_override).wait().get()
+    if not detail:
+        return None
+    node = next((n for n in detail.nodes if n.name == "StaleProbe"), None)
+    if not node or not node.recognition or not node.recognition.box:
+        return None
+    box = node.recognition.box
+    return (box.x, box.y, box.w, box.h)
+
+
+MULTI_REC_BOXES = ((11, 4, 5, 14), (21, 22, 23, 24))
+
+
+def assert_multi_recognition(tasker) -> None:
+    # 回调通过 "$all" 返回多个结果，框架保持回调顺序，并按节点 index 选取最终 box
+    for index, expected_box in ((-1, MULTI_REC_BOXES[1]), (1, MULTI_REC_BOXES[1]), (0, MULTI_REC_BOXES[0])):
+        pipeline_override = {
+            "Entry": {"next": "StaleProbe", "timeout": 0},
+            "StaleProbe": {
+                "recognition": "Custom",
+                "custom_recognition": "MultiRec",
+                "index": index,
+            },
+        }
+        detail = tasker.post_task("Entry", pipeline_override).wait().get()
+        assert detail, f"pipeline failed for index {index}"
+        node = next((n for n in detail.nodes if n.name == "StaleProbe"), None)
+        assert node and node.recognition, f"missing recognition detail for index {index}"
+        reco = node.recognition
+        assert reco.hit, f"should hit for index {index}"
+        assert [int(v) for v in reco.box] == list(expected_box), (
+            f"wrong best box for index {index}: {reco.box}"
+        )
+        assert len(reco.all_results) == 2, f"all results for index {index}"
+        assert len(reco.filtered_results) == 2, f"filtered results for index {index}"
+        assert [
+            [int(v) for v in res.box] for res in reco.all_results
+        ] == [list(box) for box in MULTI_REC_BOXES], f"wrong order for index {index}"
+
+    # 越界 index 视为无结果
+    pipeline_override = {
+        "Entry": {"next": "StaleProbe", "timeout": 0},
+        "StaleProbe": {
+            "recognition": "Custom",
+            "custom_recognition": "MultiRec",
+            "index": 2,
+        },
+    }
+    detail = tasker.post_task("Entry", pipeline_override).wait().get()
+    assert detail, "pipeline failed for out-of-range index"
+    assert not any(n.name == "StaleProbe" for n in detail.nodes), (
+        "out-of-range index should not hit"
+    )
+
+    # post_task 未命中时会一直重试到超时，识别详情不会落库；用 post_recognition
+    # 验证框架确实记录了这次未命中，且全部结果仍在，只是没有选中的结果
+    reco_detail = tasker.post_recognition(
+        JRecognitionType.Custom,
+        JCustomRecognition(custom_recognition="MultiRec", index=2),
+        tasker.controller.cached_image,
+    ).wait().get()
+    assert reco_detail and reco_detail.nodes, (
+        "out-of-range index should still record the recognition"
+    )
+    reco = reco_detail.nodes[0].recognition
+    assert reco, "out-of-range index should still record the recognition"
+    assert not reco.hit, "out-of-range index should not hit"
+    assert len(reco.all_results) == 2, f"all results should be kept: {reco.all_results}"
+    assert len(reco.filtered_results) == 2, (
+        f"filtered results should be kept: {reco.filtered_results}"
+    )
+    assert reco.best_result is None, f"no result should be selected: {reco.best_result}"
+
+
+def assert_stale_response_dropped(agent, tasker, report_file: Path) -> None:
+    # SlowRec 超时被放弃后，agent 仍会带着旧 context 反调并迟到回包；后续调用必须拿到自己的结果
+    assert agent.set_timeout(int(SLOW_REC_SECONDS * 1000 / 3))
+    try:
+        assert run_custom_recognition(tasker, "SlowRec") is None
+    finally:
+        assert agent.set_timeout(-1)
+    time.sleep(SLOW_REC_SECONDS + 0.5)
+
+    for _ in range(2):
+        box = run_custom_recognition(tasker, "FastRec")
+        assert box == FAST_REC_BOX, f"got a stale response: {box}"
+
+    records = report_file.read_text(encoding="utf-8").splitlines()
+    assert "slow_rec_node_data:none" in records, f"abandoned context should not resolve: {records}"
+
+
+def assert_nested_response_kept(agent, tasker, report_file: Path) -> None:
+    # NestedRec 等 controller wait 回包时，controller 事件回调又发起反调；
+    # wait 的回包会先落到内层等待里，必须留给外层而不是丢掉。限时是为了回归时失败而不是卡死
+    assert agent.set_timeout(NESTED_REC_TIMEOUT_MS)
+    try:
+        box = run_custom_recognition(tasker, "NestedRec")
+    finally:
+        assert agent.set_timeout(-1)
+    assert box == NESTED_REC_BOX, f"outer reverse call lost its response: {box}"
+
+    records = report_file.read_text(encoding="utf-8").splitlines()
+    assert "nested_sink_connected:True" in records, (
+        f"inner reverse call in sink should succeed: {records}"
+    )
+
+
 def run_connected_agent_test(
     agent,
     command: list[str],
@@ -174,6 +292,12 @@ def run_connected_agent_test(
                         f"  action_detail: name={action_detail.name}, success={action_detail.success}"
                     )
                     assert action_detail.success, "custom action should succeed"
+
+        # MyRec 通过 "$all" 返回多个结果，index 为 -1 时最终 box 是第二个结果
+        assert "MultiRec" in reco_list
+        assert_multi_recognition(tasker)
+        assert_stale_response_dropped(agent, tasker, sink_report_file)
+        assert_nested_response_kept(agent, tasker, sink_report_file)
 
         assert agent.disconnect()
         child_process.wait(timeout=PROCESS_TIMEOUT_SECONDS)

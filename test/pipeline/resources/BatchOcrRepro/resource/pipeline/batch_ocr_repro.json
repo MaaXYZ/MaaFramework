@@ -1,0 +1,42 @@
+{
+    "SelectArtsBattleMode": {
+        "recognition": "DirectHit",
+        "action": "DoNothing",
+        "next": [
+            "SelectArtsBattleNormal",
+            "ClickScreen"
+        ]
+    },
+    "SelectArtsBattleNormal": {
+        "recognition": "OCR",
+        "expected": [
+            "战斗"
+        ],
+        "roi": [
+            1102,
+            186,
+            178,
+            150
+        ],
+        "threshold": 0.9,
+        "action": "DoNothing"
+    },
+    "ClickScreen": {
+        "recognition": "OCR",
+        "action": "DoNothing"
+    },
+    "SelectArtsSolo": {
+        "recognition": "OCR",
+        "expected": [
+            "战斗"
+        ],
+        "roi": [
+            1102,
+            186,
+            178,
+            150
+        ],
+        "threshold": 0.9,
+        "action": "DoNothing"
+    }
+}

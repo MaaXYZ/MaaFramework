@@ -11,6 +11,28 @@
 #include "PipelineDumper.h"
 #include "PipelineParser.h"
 
+namespace
+{
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif
+constexpr MaaInferenceExecutionProvider kCoreMLProvider = MaaInferenceExecutionProvider_CoreML;
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(_MSC_VER)
+#pragma warning(pop)
+#endif
+} // namespace
+
 MAA_RES_NS_BEGIN
 
 ResourceMgr::ResourceMgr()
@@ -77,6 +99,11 @@ MaaResId ResourceMgr::post_path(PostPathType type, const std::filesystem::path& 
     if (!check_stop()) {
         return MaaInvalidId;
     }
+
+    // lock the inference engine (NCNN or not) before enqueue, so the loader thread never switches it.
+    // hold the mutex until enqueued, so clear() cannot unlock it in between
+    std::unique_lock lock(inference_mutex_);
+    inference_locked_ = true;
 
     valid_ = false;
     hash_cache_.clear();
@@ -227,6 +254,9 @@ bool ResourceMgr::clear()
 {
     LogFunc;
 
+    // check running and unlock the inference backend atomically against post_path
+    std::unique_lock lock(inference_mutex_);
+
     if (running()) {
         LogError << "running, ignore clear";
         return false;
@@ -234,10 +264,13 @@ bool ResourceMgr::clear()
 
     pipeline_res_.clear();
     ocr_res_.clear();
-    onnx_res_.clear();
+    inference_res_.clear();
     template_res_.clear();
     paths_.clear();
     hash_cache_.clear();
+
+    inference_locked_ = false;
+    inference_device_setted_ = false;
 
     valid_ = true;
 
@@ -397,7 +430,7 @@ const std::unordered_set<MaaInferenceExecutionProvider>& ResourceMgr::available_
         }
         else if (name == "CoreMLExecutionProvider") {
 #ifdef MAA_WITH_COREML
-            s_provider_cache.emplace(MaaInferenceExecutionProvider_CoreML);
+            s_provider_cache.emplace(kCoreMLProvider);
 #else
             LogDebug << "MaaFW built without CoreML";
 #endif
@@ -405,10 +438,17 @@ const std::unordered_set<MaaInferenceExecutionProvider>& ResourceMgr::available_
         else if (name == "CUDAExecutionProvider") {
             s_provider_cache.emplace(MaaInferenceExecutionProvider_CUDA);
         }
+        else if (name == "WebGpuExecutionProvider") {
+            s_provider_cache.emplace(MaaInferenceExecutionProvider_WebGPU);
+        }
         else {
             LogDebug << "unsupported provider" << VAR(name);
         }
     }
+
+#ifdef MAA_WITH_NCNN
+    s_provider_cache.emplace(MaaInferenceExecutionProvider_NCNN);
+#endif
 
     LogInfo << VAR(s_provider_cache);
     return s_provider_cache;
@@ -423,8 +463,13 @@ bool ResourceMgr::set_inference_device(MaaOptionValue value, MaaOptionValueSize 
         return false;
     }
 
+    auto new_value = *reinterpret_cast<const MaaInferenceDevice*>(value);
+
+    // never locked: it does not switch the engine (NCNN ignores it), applied on the next post as before
+    std::unique_lock lock(inference_mutex_);
+
     inference_device_setted_ = false;
-    inference_device_ = *reinterpret_cast<const MaaInferenceDevice*>(value);
+    inference_device_ = new_value;
     LogInfo << VAR(inference_device_);
 
     return true;
@@ -439,8 +484,28 @@ bool ResourceMgr::set_inference_execution_provider(MaaOptionValue value, MaaOpti
         return false;
     }
 
+    auto new_value = *reinterpret_cast<const MaaInferenceExecutionProvider*>(value);
+
+#ifndef MAA_WITH_NCNN
+    if (new_value == MaaInferenceExecutionProvider_NCNN) {
+        LogError << "MaaFW built without NCNN, NCNN is only available on Android" << VAR(new_value);
+        return false;
+    }
+#endif
+
+    std::unique_lock lock(inference_mutex_);
+
+    // switching to / from NCNN changes the engine and the model files, refused once loading starts.
+    // switching between onnxruntime providers keeps the old behavior: applied on the next post, to models not loaded yet
+    const bool involves_ncnn = inference_ep_ == MaaInferenceExecutionProvider_NCNN || new_value == MaaInferenceExecutionProvider_NCNN;
+    if (inference_locked_ && involves_ncnn && new_value != inference_ep_) {
+        LogError << "switching to or from NCNN is not allowed once resource loading starts, call clear() or recreate the resource"
+                 << VAR(inference_ep_) << VAR(new_value);
+        return false;
+    }
+
     inference_device_setted_ = false;
-    inference_ep_ = *reinterpret_cast<const MaaInferenceExecutionProvider*>(value);
+    inference_ep_ = new_value;
     LogInfo << VAR(inference_ep_);
 
     return true;
@@ -448,39 +513,62 @@ bool ResourceMgr::set_inference_execution_provider(MaaOptionValue value, MaaOpti
 
 bool ResourceMgr::check_and_set_inference_device()
 {
+    std::unique_lock lock(inference_mutex_);
+
     if (inference_device_setted_) {
         return true;
     }
 
-    if (inference_device_ == MaaInferenceDevice_CPU) {
-        return use_cpu();
-    }
-
     bool ret = false;
-    switch (inference_ep_) {
-    case MaaInferenceExecutionProvider_Auto:
-        ret = use_auto_ep();
-        break;
-    case MaaInferenceExecutionProvider_CPU:
-        ret = use_cpu();
-        break;
-    case MaaInferenceExecutionProvider_DirectML:
-        ret = use_directml();
-        break;
-    case MaaInferenceExecutionProvider_CoreML:
-        ret = use_coreml();
-        break;
-    default:
-        LogError << "invalid inference execution provider" << VAR(inference_ep_);
-        ret = false;
-        break;
+    if (inference_ep_ == MaaInferenceExecutionProvider_NCNN) {
+        // MaaInferenceDevice_CPU / Auto -> NCNN CPU
+        ret = use_ncnn();
     }
-
-    inference_device_setted_ = ret;
+    else if (inference_device_ == MaaInferenceDevice_CPU) {
+        ret = use_cpu();
+    }
+    else {
+        switch (inference_ep_) {
+        case MaaInferenceExecutionProvider_Auto:
+            ret = use_auto_ep();
+            break;
+        case MaaInferenceExecutionProvider_CPU:
+            ret = use_cpu();
+            break;
+        case MaaInferenceExecutionProvider_DirectML:
+            ret = use_directml();
+            break;
+        case kCoreMLProvider:
+            ret = use_coreml();
+            break;
+        case MaaInferenceExecutionProvider_CUDA:
+            ret = use_cuda();
+            break;
+        case MaaInferenceExecutionProvider_WebGPU:
+            ret = use_webgpu();
+            break;
+        default:
+            LogError << "invalid inference execution provider" << VAR(inference_ep_);
+            ret = false;
+            break;
+        }
+    }
 
     if (!ret) {
-        use_cpu();
+        if (inference_ep_ == MaaInferenceExecutionProvider_NCNN) {
+            // NCNN is bound to the packaged models, never fall back to onnxruntime
+            LogError << "failed to use NCNN, the loading fails" << VAR(inference_device_);
+        }
+        else {
+            LogWarn << "failed to use inference execution provider, fallback to CPU" << VAR(inference_ep_) << VAR(inference_device_);
+            ret = use_cpu();
+        }
     }
+
+    // Keep a successful CPU fallback for this resource instead of retrying the failed provider on every post.
+    inference_device_setted_ = ret;
+    LogInfo << "inference backend resolved" << VAR(inference_ep_) << VAR(inference_device_) << VAR(ret);
+
     return ret;
 }
 
@@ -493,7 +581,10 @@ bool ResourceMgr::use_auto_ep()
     else if (providers.contains(MaaInferenceExecutionProvider_DirectML)) {
         return use_directml();
     }
-    else if (providers.contains(MaaInferenceExecutionProvider_CoreML)) {
+    else if (providers.contains(MaaInferenceExecutionProvider_WebGPU)) {
+        return use_webgpu();
+    }
+    else if (providers.contains(kCoreMLProvider)) {
         return use_coreml();
     }
     else {
@@ -503,9 +594,9 @@ bool ResourceMgr::use_auto_ep()
 
 bool ResourceMgr::use_cpu()
 {
-    onnx_res_.use_cpu();
-    ocr_res_.use_cpu();
-    return true;
+    const bool inference_success = inference_res_.use_cpu();
+    const bool ocr_success = ocr_res_.use_cpu();
+    return inference_success && ocr_success;
 }
 
 bool ResourceMgr::use_directml()
@@ -537,15 +628,18 @@ bool ResourceMgr::use_directml()
         return false;
     }
 
-    onnx_res_.use_directml(device_id);
-    ocr_res_.use_directml(device_id);
-    return true;
+    if (!inference_res_.use_directml(device_id)) {
+        return false;
+    }
+    return ocr_res_.use_directml(device_id);
 }
 
 bool ResourceMgr::use_coreml()
 {
+    LogWarn << "CoreML execution provider is deprecated and is no longer shipped. Use WebGPU instead";
+
     const auto& providers = available_providers();
-    if (!providers.contains(MaaInferenceExecutionProvider_CoreML)) {
+    if (!providers.contains(kCoreMLProvider)) {
         LogError << "CoreML is not available";
         return false;
     }
@@ -568,9 +662,9 @@ bool ResourceMgr::use_coreml()
         return false;
     }
 
-    onnx_res_.use_coreml(coreml_flag);
-    ocr_res_.use_coreml(coreml_flag);
-    return true;
+    const bool inference_success = inference_res_.use_coreml(coreml_flag);
+    const bool ocr_success = ocr_res_.use_coreml(coreml_flag);
+    return inference_success && ocr_success;
 }
 
 bool ResourceMgr::use_cuda()
@@ -598,9 +692,51 @@ bool ResourceMgr::use_cuda()
         return false;
     }
 
-    onnx_res_.use_cuda(device_id);
-    ocr_res_.use_cuda(device_id);
-    return true;
+    const bool inference_success = inference_res_.use_cuda(device_id);
+    const bool ocr_success = ocr_res_.use_cuda(device_id);
+    return inference_success && ocr_success;
+}
+
+bool ResourceMgr::use_webgpu()
+{
+    const auto& providers = available_providers();
+    if (!providers.contains(MaaInferenceExecutionProvider_WebGPU)) {
+        LogError << "WebGPU is not available";
+        return false;
+    }
+
+    int device_id = 0;
+    if (inference_device_ == MaaInferenceDevice_CPU) {
+        LogError << "Invalid device: MaaInferenceDevice_CPU for WebGPU";
+        return false;
+    }
+    else if (inference_device_ == MaaInferenceDevice_Auto) {
+        device_id = 0;
+    }
+    else if (inference_device_ >= MaaInferenceDevice_0) {
+        device_id = inference_device_;
+    }
+    else {
+        LogError << "invalid inference device" << VAR(inference_device_);
+        return false;
+    }
+
+    if (!inference_res_.use_webgpu(device_id)) {
+        return false;
+    }
+    return ocr_res_.use_webgpu(device_id);
+}
+
+bool ResourceMgr::use_ncnn()
+{
+    // CPU only for now. other devices are refused rather than ignored, GPU ids are kept for a future vulkan backend
+    if (inference_device_ != MaaInferenceDevice_CPU && inference_device_ != MaaInferenceDevice_Auto) {
+        LogError << "NCNN only supports MaaInferenceDevice_CPU / MaaInferenceDevice_Auto for now" << VAR(inference_device_);
+        return false;
+    }
+
+    // NN and OCR both run on ncnn, bound to the packaged ncnn models
+    return inference_res_.use_ncnn() && ocr_res_.use_ncnn();
 }
 
 bool ResourceMgr::run_load(typename AsyncRunner<PostPathItem>::Id id, PostPathItem item)
@@ -616,25 +752,30 @@ bool ResourceMgr::run_load(typename AsyncRunner<PostPathItem>::Id id, PostPathIt
 
     notifier_.notify(this, MaaMsg_Resource_Loading_Starting, cb_detail);
 
-    check_and_set_inference_device();
-
-    switch (item.type) {
-    case PostPathType::Bundle:
-        valid_ = load_bundle(item.path);
-        break;
-    case PostPathType::OcrModel:
-        valid_ = load_ocr_model(item.path);
-        break;
-    case PostPathType::Pipeline:
-        valid_ = load_pipeline(item.path);
-        break;
-    case PostPathType::Image:
-        valid_ = load_image(item.path);
-        break;
-    default:
-        LogError << "Unknown PostPathType" << VAR(static_cast<int>(item.type));
+    if (!check_and_set_inference_device()) {
+        // loading on would leave the models to a stale backend, i.e. a silent fallback from NCNN
+        LogError << "no usable inference backend, skip loading" << VAR(item.path);
         valid_ = false;
-        break;
+    }
+    else {
+        switch (item.type) {
+        case PostPathType::Bundle:
+            valid_ = load_bundle(item.path);
+            break;
+        case PostPathType::OcrModel:
+            valid_ = load_ocr_model(item.path);
+            break;
+        case PostPathType::Pipeline:
+            valid_ = load_pipeline(item.path);
+            break;
+        case PostPathType::Image:
+            valid_ = load_image(item.path);
+            break;
+        default:
+            LogError << "Unknown PostPathType" << VAR(static_cast<int>(item.type));
+            valid_ = false;
+            break;
+        }
     }
 
     cb_detail["hash"] = calc_hash();
@@ -653,7 +794,10 @@ bool ResourceMgr::load_bundle(const std::filesystem::path& path)
         return false;
     }
 
-    check_and_set_inference_device();
+    if (!check_and_set_inference_device()) {
+        LogError << "no usable inference backend" << VAR(path);
+        return false;
+    }
 
     paths_.emplace_back(path);
 
@@ -680,11 +824,11 @@ bool ResourceMgr::load_bundle(const std::filesystem::path& path)
     }
     if (auto p = path / "model"_path / "classify"_path; std::filesystem::exists(p)) {
         to_load = true;
-        ret &= onnx_res_.lazy_load_classifier(p);
+        ret &= inference_res_.lazy_load_classifier(p);
     }
     if (auto p = path / "model"_path / "detect"_path; std::filesystem::exists(p)) {
         to_load = true;
-        ret &= onnx_res_.lazy_load_detector(p);
+        ret &= inference_res_.lazy_load_detector(p);
     }
     if (auto p = path / "image"_path; std::filesystem::exists(p)) {
         to_load = true;

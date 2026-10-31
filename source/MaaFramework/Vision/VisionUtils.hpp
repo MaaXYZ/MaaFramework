@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <numeric>
 #include <optional>
 #include <random>
@@ -171,10 +172,11 @@ inline static void sort_by_expected_regex_(ResultsVec& results, const std::vecto
 
 inline static std::optional<size_t> pythonic_index(size_t total, int index)
 {
-    if (index >= 0 && static_cast<uint32_t>(index) < total) {
+    if (index >= 0 && static_cast<size_t>(index) < total) {
         return index;
     }
-    if (index < 0 && static_cast<uint32_t>(-index) <= total) {
+    // 负数按 Python 语义取倒数第 |index| 个，用 int64_t 取绝对值，避免 INT_MIN 取反溢出
+    if (index < 0 && static_cast<uint64_t>(-static_cast<int64_t>(index)) <= total) {
         return total + index;
     }
     return std::nullopt;

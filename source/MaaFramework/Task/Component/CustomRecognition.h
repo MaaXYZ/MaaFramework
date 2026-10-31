@@ -35,6 +35,8 @@ public:
 
 private:
     void analyze();
+    void cherry_pick();
+    cv::Mat draw_result(const Result& res, bool hit) const;
 
 private:
     const MAA_VISION_NS::CustomRecognitionParam& param_;

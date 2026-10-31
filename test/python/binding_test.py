@@ -17,8 +17,10 @@ from pathlib import Path
 import subprocess
 import sys
 import textwrap
+import ctypes
 import numpy
 import io
+from typing import Optional
 
 # Fix encoding issues on Windows
 if sys.stdout.encoding != "utf-8":
@@ -48,10 +50,17 @@ from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.buffer import ImageBuffer
-from maa.define import LoggingLevelEnum, MaaWin32InputMethodEnum
+from maa.define import (
+    LoggingLevelEnum,
+    MaaWin32InputMethodEnum,
+    MaaBool,
+    MaaControllerHandle,
+    MaaCtrlId,
+    MaaStringBufferHandle,
+)
 from maa.context import Context, ContextEventSink
 from maa.event_sink import EventSink
-from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
+from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick, JTemplateMatch
 
 analyzed: bool = False
 runned: bool = False
@@ -205,8 +214,16 @@ class MyRecognition(CustomRecognition):
         global analyzed
         analyzed = True
 
+        # 多结果：$all 为回调给出的有序结果，框架不排序
         return CustomRecognition.AnalyzeResult(
-            box=(11, 4, 5, 14), detail={"message": "Hello World!"}
+            box=(11, 4, 5, 14),
+            detail={
+                "message": "Hello World!",
+                "$all": [
+                    {"box": [11, 4, 5, 14], "detail": {"message": "first"}},
+                    {"box": [21, 24, 25, 34], "detail": {"message": "second"}},
+                ],
+            },
         )
 
 
@@ -259,16 +276,24 @@ def test_resource_api():
     # 测试推理设置 API
     r1 = Resource()
     r1.use_directml()
+    r1.use_webgpu()
     r1.use_coreml()
     r1.use_auto_ep()
     r1.use_cpu()
+    # NCNN 仅在 Android 构建中可用，这里运行的桌面端构建应设置失败
+    assert not r1.use_ncnn()
 
     r2 = Resource()
     r2.use_directml(0)
+    r2.use_webgpu(0)
     r2.use_cpu()
 
     # 测试无效路径加载（应该失败但不崩溃）
     r2.post_bundle("C:/_maafw_testing_/aaabbbccc").wait()
+
+    # 资源开始加载后，onnxruntime 系 EP 之间的切换与之前一致，仍可设置
+    assert r2.use_cpu()
+    assert r2.use_auto_ep()
 
     # 测试 loaded 属性
     print(f"  r2.loaded (after invalid path): {r2.loaded}")
@@ -504,6 +529,55 @@ def test_buffer_api():
     assert resized.shape[1] == 50, "width should be 50"
     assert resized.shape[0] == 25, "height should keep aspect ratio"
 
+    # 四通道 BGRA 按 BGR 存储，alpha 丢弃
+    bgra = numpy.zeros((8, 6, 4), dtype=numpy.uint8)
+    bgra[:, :, 0] = 11  # B
+    bgra[:, :, 1] = 22  # G
+    bgra[:, :, 2] = 33  # R
+    bgra[:, :, 3] = 255  # A
+    assert buf.set(bgra), "set BGRA should succeed"
+    bgr = buf.get()
+    print(f"  BGRA stored as: {bgr.shape}")
+    assert bgr.shape == (8, 6, 3), f"BGRA should be stored as BGR, got {bgr.shape}"
+    assert (bgr[:, :, 0] == 11).all(), "B channel should be preserved"
+    assert (bgr[:, :, 1] == 22).all(), "G channel should be preserved"
+    assert (bgr[:, :, 2] == 33).all(), "R channel should be preserved"
+
+    # 单通道输入：二维与 (h, w, 1) 都按灰度复制到三通道
+    for gray in (numpy.full((4, 6), 77, dtype=numpy.uint8), numpy.full((4, 6, 1), 77, dtype=numpy.uint8)):
+        assert buf.set(gray), "set gray should succeed"
+        gray_out = buf.get()
+        print(f"  gray stored as: {gray_out.shape}")
+        assert gray_out.shape == (4, 6, 3), f"gray should be replicated to BGR, got {gray_out.shape}"
+        assert (gray_out == 77).all(), "gray value should be preserved in all channels"
+
+    # 非连续切片
+    padded = numpy.zeros((10, 10, 3), dtype=numpy.uint8)
+    padded[:, :, 0] = 9
+    view = padded[2:8, 3:9]
+    assert not view.flags["C_CONTIGUOUS"], "view should be non-contiguous"
+    assert buf.set(view), "set non-contiguous should succeed"
+    view_out = buf.get()
+    print(f"  non-contiguous stored as: {view_out.shape}")
+    assert view_out.shape == (6, 6, 3), f"non-contiguous shape should be kept, got {view_out.shape}"
+    assert (view_out[:, :, 0] == 9).all(), "non-contiguous content should be kept"
+
+    # 非 uint8 数据无法按 uint8 解析，显式失败
+    try:
+        buf.set(numpy.zeros((4, 4, 3), dtype=numpy.float32))
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("set with float32 should raise TypeError")
+
+    # 通道数不受支持
+    try:
+        buf.set(numpy.zeros((4, 4, 2), dtype=numpy.uint8))
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("set with 2 channels should raise ValueError")
+
     print("  PASS: buffer API")
 
 
@@ -559,6 +633,7 @@ def test_tasker_api(resource: Resource, controller: DbgController):
             "action": "Custom",
             "custom_action": "MyAct",
             "custom_action_param": "Test111222333",
+            "index": -1,
         },
     }
 
@@ -593,6 +668,27 @@ def test_tasker_api(resource: Resource, controller: DbgController):
     else:
         print("Pipeline task failed")
         raise RuntimeError("Pipeline task failed")
+
+    # 测试自定义识别返回多个结果，index 在回调给出的顺序上选取
+    rec_node = next((node for node in detail.nodes if node.name == "Rec"), None)
+    assert rec_node is not None and rec_node.recognition is not None, (
+        "Rec node should be executed"
+    )
+    multi_detail = tasker.get_recognition_detail(rec_node.recognition.reco_id)
+    assert multi_detail is not None, "get_recognition_detail should return value"
+    assert multi_detail.hit, "multi result recognition should hit"
+    assert len(multi_detail.all_results) == 2, "all_results should have 2 results"
+    assert len(multi_detail.filtered_results) == 2, (
+        "filtered_results should have 2 results"
+    )
+    assert multi_detail.best_result is not None, "best_result should exist"
+    assert [int(value) for value in multi_detail.best_result.box] == [21, 24, 25, 34], (
+        "index -1 should select the last result"
+    )
+    assert multi_detail.best_result.detail == {"message": "second"}, (
+        "per result detail should be kept"
+    )
+    print(f"  multi results: {[result.box for result in multi_detail.filtered_results]}")
 
     # 测试 running 和 stopping
     print(f"  running: {tasker.running}")
@@ -639,9 +735,10 @@ def test_tasker_api(resource: Resource, controller: DbgController):
 
 class MyController(CustomController):
 
-    def __init__(self):
+    def __init__(self, image: Optional[numpy.ndarray] = None):
         super().__init__()
         self.count = 0
+        self.image = image if image is not None else numpy.zeros((1080, 1920, 3), dtype=numpy.uint8)
 
     def connect(self) -> bool:
         print("  on MyController.connect")
@@ -669,7 +766,7 @@ class MyController(CustomController):
     def screencap(self) -> numpy.ndarray:
         print("  on MyController.screencap")
         self.count += 1
-        return numpy.zeros((1080, 1920, 3), dtype=numpy.uint8)
+        return self.image
 
     def click(self, x: int, y: int) -> bool:
         print(f"  on MyController.click: {x}, {y}")
@@ -721,6 +818,11 @@ class MyController(CustomController):
         self.count += 1
         return True
 
+    def shell(self, cmd: str, timeout: int) -> Optional[str]:
+        print(f"  on MyController.shell: {cmd}, {timeout}")
+        self.count += 1
+        return f"shell_output:{cmd}"
+
     def get_custom_info(self) -> dict:
         return {
             "custom_key": "custom_value",
@@ -765,8 +867,222 @@ def test_custom_controller():
     ret &= controller.post_scroll(0, 120).wait().succeeded
     ret &= controller.post_inactive().wait().succeeded
 
+    shell_job = controller.post_shell("echo hello", 5000).wait()
+    assert shell_job.done, "post_shell job must complete"
+    print(f"  post_shell status: {shell_job.status}, output: {controller.shell_output!r}")
+
     print(f"  controller.count: {controller.count}, ret: {ret}")
+
+    # 非法的截图数据（此处为非 uint8）必须是受控的截图失败，而不是被静默误读成错图
+    bad_controller = MyController(numpy.zeros((8, 6, 3), dtype=numpy.float32))
+    assert bad_controller.post_connection().wait().succeeded, "bad controller connect should succeed"
+    print("  以下 traceback 是预期的：非法截图数据被拒绝")
+    assert not bad_controller.post_screencap().wait().succeeded, "invalid screencap data should fail the job"
+
     print("  PASS: custom controller")
+
+
+def _new_command_image_tasker() -> Tasker:
+    resource = Resource()
+    resource.post_bundle(install_dir / "test" / "PipelineSmoking" / "resource").wait()
+    controller = MyController()
+    assert controller.post_connection().wait().succeeded
+    tasker = Tasker()
+    tasker.bind(resource, controller)
+    assert tasker.inited
+    return tasker
+
+
+def _run_command_image(tasker: Tasker, marker: Path):
+    marker.unlink(missing_ok=True)
+    script = "import os,sys; open(sys.argv[2],'w').write(str(os.path.isfile(sys.argv[1])))"
+    detail = (
+        tasker.post_task(
+            "CommandImage",
+            {
+                "CommandImage": {
+                    "action": "Command",
+                    "exec": sys.executable,
+                    "args": ["-c", script, "{IMAGE}", str(marker)],
+                }
+            },
+        )
+        .wait()
+        .get()
+    )
+    assert detail and detail.nodes, "CommandImage task should have node detail"
+    return detail.nodes[0].action.success
+
+
+def test_command_image_placeholder():
+    """回归：{IMAGE} 在第二个 Tasker 上崩溃（static 表绑定悬空 this）；无缓存截图时 OpenCV 断言终止进程"""
+    print("\n=== test_command_image_placeholder ===")
+
+    import tempfile
+
+    marker = Path(tempfile.gettempdir()) / "maafw_command_image_marker.txt"
+
+    # 无缓存截图：应按需补截图，而不是让 imwrite 断言终止进程
+    no_shot = _new_command_image_tasker()
+    assert _run_command_image(no_shot, marker), "no cached image should screencap on demand"
+    assert marker.read_text() == "True", "image file should exist after on-demand screencap"
+
+    # 同一进程内多个 Tasker（旧的保持存活）都应能使用 {IMAGE}
+    alive = []
+    for i in range(3):
+        tasker = _new_command_image_tasker()
+        alive.append(tasker)
+        assert tasker.controller.post_screencap().wait().succeeded
+        assert _run_command_image(tasker, marker), f"tasker #{i} Command {{IMAGE}} failed"
+        assert marker.read_text() == "True", f"tasker #{i} image file should exist"
+
+    marker.unlink(missing_ok=True)
+    print("  PASS: Command {IMAGE} placeholder")
+
+
+def _noise_pattern(seed: int, size: int) -> numpy.ndarray:
+    blocks = numpy.random.default_rng(seed).integers(0, 256, size=(size // 4, size // 4, 3), dtype=numpy.uint8)
+    return blocks.repeat(4, axis=0).repeat(4, axis=1)
+
+
+def _write_png(path: Path, image: numpy.ndarray):
+    """测试环境没有 OpenCV/PIL，手写一个最简 PNG 编码"""
+    import struct
+    import zlib
+
+    def chunk(tag: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data))
+
+    height, width, _ = image.shape
+    rgb = image[:, :, ::-1]
+    raw = b"".join(b"\x00" + rgb[y].tobytes() for y in range(height))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(raw))
+        + chunk(b"IEND", b"")
+    )
+
+
+def _template_sizes(bundles: list[Path], template: str, screen: numpy.ndarray) -> set:
+    resource = Resource()
+    for bundle in bundles:
+        assert resource.post_bundle(bundle).wait().succeeded, f"load bundle failed: {bundle}"
+    controller = MyController(screen)
+    assert controller.post_connection().wait().succeeded
+    tasker = Tasker()
+    tasker.bind(resource, controller)
+    assert tasker.inited
+
+    param = JTemplateMatch(template=[template], threshold=[0.9])
+    detail = tasker.post_recognition(JRecognitionType.TemplateMatch, param, screen).wait().get()
+    assert detail and detail.nodes, "recognition should have node detail"
+    reco = detail.nodes[0].recognition
+    # 框的宽高即模板宽高，用来区分参与匹配的是哪张图
+    return {(r.box[2], r.box[3]) for r in reco.all_results}
+
+
+def test_template_override_across_bundles():
+    """回归 #1541：多个 Bundle 中同路径的模板图片应以后加载的为准，文件夹按相对路径合并"""
+    print("\n=== test_template_override_across_bundles ===")
+
+    import shutil
+    import tempfile
+
+    pattern_a = _noise_pattern(1, 40)
+    pattern_b = _noise_pattern(2, 60)
+    pattern_c = _noise_pattern(3, 48)
+    screen = numpy.full((720, 1280, 3), 128, dtype=numpy.uint8)
+    screen[100:140, 100:140] = pattern_a
+
+    work = Path(tempfile.mkdtemp(prefix="maafw_template_override_"))
+    try:
+        base = work / "base"
+        override = work / "override"
+        _write_png(base / "image" / "T.png", pattern_a)
+        _write_png(base / "image" / "D" / "1.png", pattern_a)
+        _write_png(base / "image" / "D" / "2.png", pattern_c)
+        _write_png(override / "image" / "T.png", pattern_b)
+        _write_png(override / "image" / "D" / "1.png", pattern_b)
+
+        sizes = _template_sizes([base], "T.png", screen)
+        assert sizes == {(40, 40)}, f"base only: {sizes}"
+
+        sizes = _template_sizes([base, override], "T.png", screen)
+        assert sizes == {(60, 60)}, f"file should be replaced by the later bundle: {sizes}"
+
+        sizes = _template_sizes([base, override], "D", screen)
+        assert sizes == {(60, 60), (48, 48)}, f"directory should merge by relative path: {sizes}"
+
+        # 后加载包中损坏的图片也算覆盖，不能回退到先加载包里的同名图片
+        broken = work / "broken"
+        (broken / "image" / "D").mkdir(parents=True)
+        (broken / "image" / "T.png").write_bytes(b"not a png")
+        (broken / "image" / "D" / "2.png").write_bytes(b"not a png")
+
+        sizes = _template_sizes([base, broken], "T.png", screen)
+        assert sizes == set(), f"broken file should not fall back to earlier bundle: {sizes}"
+
+        sizes = _template_sizes([base, override, broken], "D", screen)
+        assert sizes == {(60, 60)}, f"broken file in directory should not fall back to earlier bundle: {sizes}"
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+    print("  PASS: template override across bundles")
+
+
+def _ctypes_type_name(ctypes_type):
+    """取 ctypes 类型名；restype 可能为 None（void），此时回退到 repr。"""
+    return getattr(ctypes_type, "__name__", repr(ctypes_type))
+
+
+def _assert_ctypes_signature(name, func, argtypes, restype):
+    """断言 ctypes 函数签名逐项匹配，失败时给出具体位置。"""
+    assert func.argtypes is not None, f"{name}.argtypes must be declared"
+    assert len(func.argtypes) == len(argtypes), (
+        f"{name}.argtypes: expected {len(argtypes)} args, got {len(func.argtypes)}"
+    )
+    for index, (got, want) in enumerate(zip(func.argtypes, argtypes)):
+        assert got is want, (
+            f"{name}.argtypes[{index}]: expected"
+            f" {_ctypes_type_name(want)}, got {_ctypes_type_name(got)}"
+        )
+    assert func.restype is restype, (
+        f"{name}.restype: expected"
+        f" {_ctypes_type_name(restype)}, got {_ctypes_type_name(func.restype)}"
+    )
+
+
+def test_shell_api_declarations():
+    """回归守卫：shell API 的 ctypes 签名必须与 C 头文件一致。
+
+    仅断言「已声明」不足以拦截错误的宽度——把 64 位句柄或 timeout 误声明为
+    c_int 同样会溢出，而 ctypes 在 argtypes 缺失时也正是按 32 位 int 编组。
+    因此逐项断言完整签名。声明缺失导致的溢出/返回值截断取决于句柄/ID 数值，
+    调用式测试无法确定性复现。
+    """
+    print("\n=== test_shell_api_declarations ===")
+
+    framework = Library.framework()
+
+    # MaaCtrlId MaaControllerPostShell(MaaController*, const char*, int64_t)
+    _assert_ctypes_signature(
+        "MaaControllerPostShell",
+        framework.MaaControllerPostShell,
+        [MaaControllerHandle, ctypes.c_char_p, ctypes.c_int64],
+        MaaCtrlId,
+    )
+
+    # MaaBool MaaControllerGetShellOutput(const MaaController*, MaaStringBuffer*)
+    _assert_ctypes_signature(
+        "MaaControllerGetShellOutput",
+        framework.MaaControllerGetShellOutput,
+        [MaaControllerHandle, MaaStringBufferHandle],
+        MaaBool,
+    )
+
+    print("  PASS: shell API ctypes signatures match the C header")
 
 
 # ============================================================================
@@ -1017,6 +1333,15 @@ if __name__ == "__main__":
 
     # 测试 CustomController
     test_custom_controller()
+
+    # 回归：Command 动作 {IMAGE} 占位符
+    test_command_image_placeholder()
+
+    # 回归：多 Bundle 同名模板覆盖 (#1541)
+    test_template_override_across_bundles()
+
+    # shell API 的 ctypes 声明
+    test_shell_api_declarations()
 
     # 测试 Toolkit
     test_toolkit()

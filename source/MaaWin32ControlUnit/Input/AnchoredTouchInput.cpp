@@ -69,6 +69,21 @@ bool point_on_desktop(POINT screen)
     return MonitorFromPoint(screen, MONITOR_DEFAULTTONULL) != nullptr;
 }
 
+BOOL CALLBACK collect_anchor_candidates(HMONITOR, HDC, LPRECT monitor_rect, LPARAM data)
+{
+    auto& candidates = *reinterpret_cast<std::vector<POINT>*>(data);
+    if (monitor_rect->right - monitor_rect->left < kAnchorSize + kAnchorMargin
+        || monitor_rect->bottom - monitor_rect->top < kAnchorSize + kAnchorMargin) {
+        return TRUE;
+    }
+
+    candidates.emplace_back(monitor_rect->left + kAnchorMargin, monitor_rect->top + kAnchorMargin);
+    candidates.emplace_back(monitor_rect->right - kAnchorSize - kAnchorMargin, monitor_rect->top + kAnchorMargin);
+    candidates.emplace_back(monitor_rect->left + kAnchorMargin, monitor_rect->bottom - kAnchorSize - kAnchorMargin);
+    candidates.emplace_back(monitor_rect->right - kAnchorSize - kAnchorMargin, monitor_rect->bottom - kAnchorSize - kAnchorMargin);
+    return TRUE;
+}
+
 POINTER_TYPE_INFO make_touch_info(uint32_t id, POINT point, UINT32 flags)
 {
     POINTER_TYPE_INFO info = { };
@@ -441,15 +456,18 @@ bool AnchoredTouchInput::worker_setup()
         return false;
     }
 
-    POINT origin = compute_anchor_origin();
+    auto origin = compute_anchor_origin();
+    if (!origin) {
+        return false;
+    }
 
     HWND anchor = CreateWindowExW(
         WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_LAYERED,
         class_name_.c_str(),
         L"",
         WS_POPUP,
-        origin.x,
-        origin.y,
+        origin->x,
+        origin->y,
         kAnchorSize,
         kAnchorSize,
         nullptr,
@@ -526,9 +544,12 @@ void AnchoredTouchInput::follow_target_window()
         return;
     }
 
-    last_target_rect_ = rect;
+    auto origin = compute_anchor_origin();
+    if (!origin) {
+        return;
+    }
 
-    POINT origin = compute_anchor_origin();
+    last_target_rect_ = rect;
 
     // 锚点没挪成还照着新位置注入的话，主指针会落在锚点窗口之外，
     // 保护前提失效，可能打到别的窗口上并重新引发鼠标提升。
@@ -536,16 +557,16 @@ void AnchoredTouchInput::follow_target_window()
     if (!SetWindowPos(
             anchor_hwnd_.load(),
             HWND_TOPMOST,
-            origin.x,
-            origin.y,
+            origin->x,
+            origin->y,
             kAnchorSize,
             kAnchorSize,
             SWP_NOACTIVATE | SWP_NOOWNERZORDER)) {
-        LogError << "failed to move the anchor window" << VAR(origin.x) << VAR(origin.y) << VAR(GetLastError());
+        LogError << "failed to move the anchor window" << VAR(origin->x) << VAR(origin->y) << VAR(GetLastError());
         return;
     }
 
-    anchor_pos_ = { origin.x + kAnchorSize / 2, origin.y + kAnchorSize / 2 };
+    anchor_pos_ = { origin->x + kAnchorSize / 2, origin->y + kAnchorSize / 2 };
 }
 
 void AnchoredTouchInput::worker_tick()
@@ -716,27 +737,27 @@ bool AnchoredTouchInput::to_screen(int x, int y, POINT& out) const
     return true;
 }
 
-POINT AnchoredTouchInput::compute_anchor_origin() const
+std::optional<POINT> AnchoredTouchInput::compute_anchor_origin() const
 {
-    int screen_left = GetSystemMetrics(SM_XVIRTUALSCREEN);
-    int screen_top = GetSystemMetrics(SM_YVIRTUALSCREEN);
-    int screen_right = screen_left + GetSystemMetrics(SM_CXVIRTUALSCREEN);
-    int screen_bottom = screen_top + GetSystemMetrics(SM_CYVIRTUALSCREEN);
+    std::vector<POINT> candidates;
+    if (!EnumDisplayMonitors(nullptr, nullptr, collect_anchor_candidates, reinterpret_cast<LPARAM>(&candidates))) {
+        LogError << "EnumDisplayMonitors failed" << VAR(GetLastError());
+        return std::nullopt;
+    }
 
-    const POINT candidates[] = {
-        { screen_left + kAnchorMargin, screen_top + kAnchorMargin },
-        { screen_right - kAnchorSize - kAnchorMargin, screen_top + kAnchorMargin },
-        { screen_left + kAnchorMargin, screen_bottom - kAnchorSize - kAnchorMargin },
-        { screen_right - kAnchorSize - kAnchorMargin, screen_bottom - kAnchorSize - kAnchorMargin },
-    };
+    if (candidates.empty()) {
+        LogError << "no monitor can contain the anchored touch window";
+        return std::nullopt;
+    }
 
     RECT window_rect = { };
     if (!GetWindowRect(hwnd_, &window_rect)) {
-        return candidates[0];
+        return candidates.front();
     }
 
     // 锚点必须避开目标窗口。曾把它放在目标窗口的标题栏上，锚点的 Z 序因此和目标窗口绑在一起，
-    // 提升目标窗口时会盖住锚点，主指针身份随之转移到操作点，表现为偶发抢鼠标
+    // 提升目标窗口时会盖住锚点，主指针身份随之转移到操作点，表现为偶发抢鼠标。
+    // 不能直接使用虚拟桌面四角：显示器错位排列时，虚拟桌面的角可能没有实际显示器。
     for (const auto& candidate : candidates) {
         RECT rect = { candidate.x, candidate.y, candidate.x + kAnchorSize, candidate.y + kAnchorSize };
         bool intersects = rect.left < window_rect.right && rect.right > window_rect.left && rect.top < window_rect.bottom
@@ -747,8 +768,8 @@ POINT AnchoredTouchInput::compute_anchor_origin() const
         }
     }
 
-    // 目标窗口铺满整个虚拟屏幕时四角都躲不开，此时靠锚点自身的 topmost 属性压在目标窗口之上
-    return candidates[0];
+    // 目标窗口铺满所有显示器时没有可避让的位置，此时靠锚点自身的 topmost 属性压在目标窗口之上
+    return candidates.front();
 }
 
 bool AnchoredTouchInput::is_occluded(POINT screen) const

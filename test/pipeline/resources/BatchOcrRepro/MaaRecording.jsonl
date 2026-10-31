@@ -1,0 +1,3 @@
+{"cost": 0, "success": true, "type": "connect", "uuid": "batch-ocr-repro", "version": "test", "timestamp": 1000000000000000, "width": 1280, "height": 720}
+{"cost": 0, "path": "Screenshot/hbr_battle.png", "success": true, "type": "screencap", "timestamp": 1000000000000001}
+{"cost": 0, "path": "Screenshot/hbr_battle.png", "success": true, "type": "screencap", "timestamp": 1000000000000002}

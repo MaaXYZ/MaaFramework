@@ -194,6 +194,34 @@ jobs:
                   prerelease: ${{ needs.meta.outputs.is-prerelease == 'true' }}
                   body: ${{ needs.changelog.outputs.release_body }}
 
+    github_packages:
+        if: ${{ inputs.only-publish-to == 'GitHub' || inputs.only-publish-to == 'All' }}
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
+        runs-on: ubuntu-latest
+        outputs:
+            result: ${{ steps.publish.outcome }}
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: dawidd6/action-download-artifact@v21
+              with:
+                  workflow: build.yml
+                  run_id: ${{ inputs.run-id }}
+                  name: pkgs-nodejs
+                  path: assets/pkgs-nodejs
+                  check_artifacts: true
+                  if_no_artifact_found: fail
+
+            - uses: ./.github/actions/publish_github_packages
+              id: publish
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  path: assets/pkgs-nodejs
+                  dry-run: ${{ inputs.dry-run }}
+
     mirrorchyan:
         needs: [meta, github]
         if: always() && needs.meta.result == 'success' && (
@@ -221,13 +249,14 @@ jobs:
                   gh workflow run --repo ${{ github.repository }} mirrorchyan_release_note.yml -f tag=${{ needs.meta.outputs.tag }}
 
     create_issue:
-        needs: [meta, changelog, nuget, nodejs, pip, github, mirrorchyan]
+        needs: [meta, changelog, nuget, nodejs, pip, github, github_packages, mirrorchyan]
         runs-on: ubuntu-latest
         if: success() && (
-                needs.nuget.outputs.result != 'success'  ||
-                needs.nodejs.outputs.result != 'success' ||
-                needs.pip.outputs.result != 'success'    ||
-                needs.github.outputs.result != 'success' ||
+                needs.nuget.outputs.result != 'success'           ||
+                needs.nodejs.outputs.result != 'success'          ||
+                needs.pip.outputs.result != 'success'             ||
+                needs.github.outputs.result != 'success'          ||
+                needs.github_packages.outputs.result != 'success' ||
                 needs.mirrorchyan.outputs.result != 'success'
             )
         permissions:
@@ -239,11 +268,12 @@ jobs:
             ISSUE_BODY: |
                 A new release attempt for tag ${{ needs.meta.outputs.tag }} failed.
 
-                ${{ needs.nuget.outputs.result != 'success'         && '- nuget         @moomiji'   || '' }}
-                ${{ needs.nodejs.outputs.result != 'success'        && '- nodejs        @neko-para' || '' }}
-                ${{ needs.pip.outputs.result != 'success'           && '- pip           @MistEO'    || '' }}
-                ${{ needs.github.outputs.result != 'success'        && '- github        @MistEO'    || '' }}
-                ${{ needs.mirrorchyan.outputs.result != 'success'   && '- mirrorchyan   @MistEO'    || '' }}
+                ${{ needs.nuget.outputs.result != 'success'           && '- nuget           @moomiji'   || '' }}
+                ${{ needs.nodejs.outputs.result != 'success'          && '- nodejs          @neko-para' || '' }}
+                ${{ needs.pip.outputs.result != 'success'             && '- pip             @MistEO'    || '' }}
+                ${{ needs.github.outputs.result != 'success'          && '- github          @MistEO'    || '' }}
+                ${{ needs.github_packages.outputs.result != 'success' && '- github_packages @MistEO'    || '' }}
+                ${{ needs.mirrorchyan.outputs.result != 'success'     && '- mirrorchyan     @MistEO'    || '' }}
 
                 Release run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
@@ -256,6 +286,7 @@ jobs:
                 | pip | ${{ needs.pip.outputs.result }} |
                 | mirrorchyan | ${{ needs.mirrorchyan.outputs.result }} |
                 | github | ${{ needs.github.outputs.result }} |
+                | github_packages | ${{ needs.github_packages.outputs.result }} |
 
                 cc @MistEO
         steps:

@@ -34,7 +34,11 @@ std::optional<ProcessArgvGenerator::ProcessArgv> ProcessArgvGenerator::gen(const
         string_replace_all_(s, replacement);
     }
 
+#if MAAUTILS_HAS_BOOST_PROCESS
     std::filesystem::path exec = boost::process::search_path(path(res.front()));
+#else
+    std::filesystem::path exec = path(res.front());
+#endif
     if (!std::filesystem::exists(exec)) {
         LogError << "exec path not exists" << VAR(res.front()) << VAR(exec);
         return std::nullopt;
