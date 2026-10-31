@@ -250,6 +250,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaPVZ](https://github.com/Maa-Assistant-PVZ-The-best/MAAPVZ) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Maa-Assistant-PVZ-The-best/MAAPVZ) ![activity](https://img.shields.io/github/commit-activity/m/Maa-Assistant-PVZ-The-best/MAAPVZ?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Maa-Assistant-PVZ-The-best/MAAPVZ?style=social)  
     PVZ2 (Plants vs. Zombies 2) assistant. Image recognition + simulation control, powered by MaaFramework, bringing you a delightful gaming experience!
 
+- [MaaBanG](https://github.com/hiaatcnd/MaaBanG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![C#](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/hiaatcnd/MaaBanG) ![activity](https://img.shields.io/github/commit-activity/m/hiaatcnd/MaaBanG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/hiaatcnd/MaaBanG?style=social)  
+    An automation assistant for the Chinese server of BanG Dream! Girls Band Party!, supporting daily tasks, automated live performances, and Bestdori profile synchronization. Powered by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
