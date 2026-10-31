@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
 #include <cstdint>
 #include <deque>
@@ -62,7 +63,8 @@ private:
     };
 
     void write(const Export& job);
-    void work(std::stop_token stop);
+    void work();
+    bool wait_idle(std::chrono::milliseconds timeout);
     static constexpr size_t kMaxBytes = 32 * 1024 * 1024;
     static constexpr size_t kMaxFrames = 64;
 
@@ -70,13 +72,16 @@ private:
     std::shared_ptr<std::atomic_size_t> bytes_ = std::make_shared<std::atomic_size_t>(0);
     bool active_ = false;
     bool after_action_pending_ = false;
+    bool stopping_ = false;
+    bool writing_ = false;
     size_t dropped_ = 0;
     std::deque<Frame> frames_;
     std::optional<Frame> before_action_;
     std::optional<Frame> after_action_;
     std::optional<Export> pending_;
-    std::condition_variable_any wake_;
-    std::jthread writer_;
+    std::condition_variable wake_;
+    // Drains pending exports before exiting; joined in the destructor.
+    std::thread writer_;
 };
 
 MAA_NS_END

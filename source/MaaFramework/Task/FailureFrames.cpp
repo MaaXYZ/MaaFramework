@@ -17,7 +17,7 @@ namespace
 uint32_t png_crc32(const std::vector<uchar>& data)
 {
     static constexpr auto table = [] {
-        std::array<uint32_t, 256> result { };
+        std::array<uint32_t, 256> result {};
         for (uint32_t i = 0; i < result.size(); ++i) {
             uint32_t value = i;
             for (int bit = 0; bit < 8; ++bit) {
@@ -45,8 +45,14 @@ FailureFrames::Pixels::~Pixels()
 
 FailureFrames::~FailureFrames()
 {
-    writer_.request_stop();
+    {
+        std::scoped_lock lock(mutex_);
+        stopping_ = true;
+    }
     wake_.notify_all();
+    if (writer_.joinable()) {
+        writer_.join();
+    }
 }
 
 void FailureFrames::begin()
@@ -62,11 +68,18 @@ void FailureFrames::begin()
 
 void FailureFrames::end()
 {
-    std::scoped_lock lock(mutex_);
-    active_ = false;
-    frames_.clear();
-    before_action_.reset();
-    after_action_.reset();
+    {
+        std::scoped_lock lock(mutex_);
+        active_ = false;
+        frames_.clear();
+        before_action_.reset();
+        after_action_.reset();
+    }
+    // The failure notification reaches the client right after the task
+    // returns, so block here until the export is observable on disk.
+    if (!wait_idle(std::chrono::seconds(15))) {
+        LogWarn << "failure frame export still busy after timeout";
+    }
 }
 
 void FailureFrames::observe(const cv::Mat& image, MaaRecoId reco_id, const std::string& node, bool failure)
@@ -154,7 +167,7 @@ void FailureFrames::save(const std::filesystem::path& directory, const std::stri
             LogWarn << "failure frame export unavailable or busy" << directory;
             return;
         }
-        Export job { directory, node, { }, dropped_ };
+        Export job { directory, node, {}, dropped_ };
         std::set<const Pixels*> seen;
         for (const auto& frame : frames_) {
             seen.insert(frame.pixels.get());
@@ -165,10 +178,10 @@ void FailureFrames::save(const std::filesystem::path& directory, const std::stri
                 job.frames.push_back(**pinned);
             }
         }
-        std::ranges::sort(job.frames, { }, &Frame::first_ms);
+        std::ranges::sort(job.frames, {}, &Frame::first_ms);
         pending_ = std::move(job);
         if (!writer_.joinable()) {
-            writer_ = std::jthread([this](std::stop_token stop) { work(stop); });
+            writer_ = std::thread([this] { work(); });
         }
         wake_.notify_one();
     }
@@ -177,21 +190,33 @@ void FailureFrames::save(const std::filesystem::path& directory, const std::stri
     }
 }
 
-void FailureFrames::work(std::stop_token stop)
+void FailureFrames::work()
 {
     for (;;) {
         std::optional<Export> job;
         {
             std::unique_lock lock(mutex_);
-            wake_.wait(lock, stop, [this] { return pending_.has_value(); });
+            wake_.wait(lock, [this] { return pending_.has_value() || stopping_; });
             if (!pending_) {
                 return;
             }
+            writing_ = true;
             job = std::move(pending_);
             pending_.reset();
         }
         write(*job);
+        {
+            std::scoped_lock lock(mutex_);
+            writing_ = false;
+        }
+        wake_.notify_all();
     }
+}
+
+bool FailureFrames::wait_idle(std::chrono::milliseconds timeout)
+{
+    std::unique_lock lock(mutex_);
+    return wake_.wait_for(lock, timeout, [this] { return !pending_.has_value() && !writing_; });
 }
 
 void FailureFrames::write(const Export& job)
@@ -226,21 +251,20 @@ void FailureFrames::write(const Export& job)
                 }
                 box = cv::boundingRect(mask);
             }
-            manifest.emplace_back(
-                json::object { { "file", filename },
-                               { "first_time_ms", frame.first_ms },
-                               { "last_time_ms", frame.last_ms },
-                               { "reco_id", frame.reco_id },
-                               { "last_reco_id", frame.last_reco_id },
-                               { "node", frame.node },
-                               { "last_node", frame.last_node },
-                               { "failure", frame.failure },
-                               { "source", frame.recognition ? "recognition" : "failure_cached" },
-                               { "width", image.cols },
-                               { "height", image.rows },
-                               { "png_bytes", png.size() },
-                               { "crc32", std::format("{:08x}", png_crc32(png)) },
-                               { "change_bbox", box } });
+            manifest.emplace_back(json::object { { "file", filename },
+                                                 { "first_time_ms", frame.first_ms },
+                                                 { "last_time_ms", frame.last_ms },
+                                                 { "reco_id", frame.reco_id },
+                                                 { "last_reco_id", frame.last_reco_id },
+                                                 { "node", frame.node },
+                                                 { "last_node", frame.last_node },
+                                                 { "failure", frame.failure },
+                                                 { "source", frame.recognition ? "recognition" : "failure_cached" },
+                                                 { "width", image.cols },
+                                                 { "height", image.rows },
+                                                 { "png_bytes", png.size() },
+                                                 { "crc32", std::format("{:08x}", png_crc32(png)) },
+                                                 { "change_bbox", box } });
             previous = image;
         }
         const json::value document = json::object { { "version", 1 },

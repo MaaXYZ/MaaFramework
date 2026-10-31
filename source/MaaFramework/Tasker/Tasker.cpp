@@ -182,7 +182,7 @@ MaaTaskId Tasker::post_stop()
 
     static const std::string kStopEntry = "MaaTaskerPostStop";
     auto task_ptr = std::make_shared<MAA_TASK_NS::EmptyTask>(kStopEntry, this);
-    return post_task(std::move(task_ptr), json::object { });
+    return post_task(std::move(task_ptr), json::object {});
 }
 
 bool Tasker::stopping() const
@@ -359,6 +359,10 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     if (controller_) {
         controller_->auto_release_pressed();
     }
+
+    // Flush the failure frame export before reporting the result, so the
+    // exported directory is observable when the client receives the callback.
+    failure_frames_.end();
 
     LogInfo << "task end:" << VAR(cb_detail) << VAR(ret);
     {
