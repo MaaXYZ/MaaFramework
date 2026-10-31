@@ -124,27 +124,23 @@ OCRer::ResultsVec OCRer::handle_cached() const
         return { };
     }
 
-    auto contains = [](const cv::Rect& outer, const cv::Rect& inner) {
-        return outer.x <= inner.x && outer.y <= inner.y && (outer.x + outer.width) >= (inner.x + inner.width)
-               && (outer.y + outer.height) >= (inner.y + inner.height);
-    };
-
     ResultsVec results;
-    std::vector<cv::Rect> intersections;
 
     for (const Result& c : *cache_) {
-        if (contains(roi_, c.box)) {
-            results.emplace_back(c);
+        cv::Rect ints = roi_ & c.box;
+        if (ints.area() == 0) {
+            continue;
         }
-        else if (cv::Rect ints = roi_ & c.box; ints.area() > 0) {
-            intersections.emplace_back(ints);
-        }
-    }
 
-    // ROI 和 缓存结果相交的部分，拿相交的部分重新做一下识别
-    if (!intersections.empty()) {
-        ResultsVec res = predict_batch_rec(intersections);
-        results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
+        // 缓存框被 ROI 边缘切断时，缓存结果代表不了这个 ROI 单独识别的结果；
+        // 把交集截出来直接送 rec 又会绕过 det 的过滤，得到 472x3 这种极扁的图，按高度缩放后宽度失控。
+        // 因此这个 ROI 不用缓存，和不开 batch 时一样，裁剪后自己做 det + rec。
+        if (ints != c.box) {
+            LogDebug << "cached box crosses roi, predict roi itself" << VAR(name_) << VAR(roi_) << VAR(c.box);
+            return predict();
+        }
+
+        results.emplace_back(c);
     }
 
     return results;
@@ -223,53 +219,6 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
     Result result { .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = reco_score };
 
     return result;
-}
-
-OCRer::ResultsVec OCRer::predict_batch_rec(const std::vector<cv::Rect>& rois) const
-{
-    LogFunc << VAR(rois);
-
-    if (!session_) {
-        LogError << "OCRSession not loaded";
-        return { };
-    }
-    if (rois.empty()) {
-        LogError << "rois is empty";
-        return { };
-    }
-
-    std::vector<cv::Mat> imgs;
-    for (const cv::Rect& r : rois) {
-        imgs.emplace_back(image_(r));
-    }
-
-    std::optional<std::vector<OCRRecResult>> batch_opt;
-    {
-        std::unique_lock lock(s_predict_mutex_);
-        batch_opt = session_->batch_rec(imgs);
-    }
-    if (!batch_opt) {
-        LogWarn << "batch_rec failed" << VAR(rois);
-        return { };
-    }
-    if (batch_opt->size() != rois.size()) {
-        LogError << "Bad ocr result size" << VAR(rois) << VAR(batch_opt->size());
-        return { };
-    }
-
-    ResultsVec results;
-
-    for (size_t i = 0; i != batch_opt->size(); ++i) {
-        auto text = to_u16(batch_opt->at(i).first);
-        cv::Rect my_box = rois.at(i);
-        auto score = batch_opt->at(i).second;
-
-        results.emplace_back(Result { .text = std::move(text), .box = my_box, .score = score });
-    }
-
-    LogInfo << VAR(results);
-
-    return results;
 }
 
 cv::Mat OCRer::draw_result(const ResultsVec& results) const
