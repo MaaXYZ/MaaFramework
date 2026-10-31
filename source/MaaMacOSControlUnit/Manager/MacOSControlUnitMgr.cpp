@@ -5,6 +5,7 @@
 
 #include "Input/GlobalEventInput.h"
 #include "Input/PostToPidInput.h"
+#include "MacOS/MacOSAppLifecycle.h"
 #include "Screencap/ScreenCaptureKitScreencap.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -81,16 +82,12 @@ MaaControllerFeature MacOSControlUnitMgr::get_features() const
 
 bool MacOSControlUnitMgr::start_app(const std::string& intent)
 {
-    (void)intent;
-    LogWarn << "start_app not supported on macOS controller";
-    return false;
+    return MacOSAppLifecycle::start_app(intent);
 }
 
 bool MacOSControlUnitMgr::stop_app(const std::string& intent)
 {
-    (void)intent;
-    LogWarn << "stop_app not supported on macOS controller";
-    return false;
+    return MacOSAppLifecycle::stop_app(intent);
 }
 
 bool MacOSControlUnitMgr::screencap(cv::Mat& image)
