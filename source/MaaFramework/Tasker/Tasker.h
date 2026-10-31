@@ -90,7 +90,6 @@ private:
     bool need_to_stop_ = false;
 
     FailureFrames failure_frames_;
-    std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
     EventDispatcher notifier_;
     EventDispatcher context_notifier_;
 
@@ -98,6 +97,10 @@ private:
     mutable std::shared_mutex task_id_mapping_mutex_;
 
     RuntimeCache runtime_cache_;
+
+    // Declared last so destruction joins the runner thread before any member
+    // it touches (notifiers, caches, failure frame history) is torn down.
+    std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
 };
 
 MAA_NS_END
