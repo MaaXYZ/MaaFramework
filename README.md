@@ -246,6 +246,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaPVZ](https://github.com/Maa-Assistant-PVZ-The-best/MAAPVZ) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Maa-Assistant-PVZ-The-best/MAAPVZ) ![activity](https://img.shields.io/github/commit-activity/m/Maa-Assistant-PVZ-The-best/MAAPVZ?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Maa-Assistant-PVZ-The-best/MAAPVZ?style=social)  
     植物大战僵尸2 小助手。图像技术 + 模拟控制，由 MaaFramework 强力驱动，带给你妙趣横生的游戏体验！
 
+- [MaaBanG](https://github.com/hiaatcnd/MaaBanG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![C#](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/hiaatcnd/MaaBanG) ![activity](https://img.shields.io/github/commit-activity/m/hiaatcnd/MaaBanG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/hiaatcnd/MaaBanG?style=social)  
+    BanG Dream! 少女乐团派对！中国服自动化助手，支持日常任务、自动演出与 Bestdori 档案同步。由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。
