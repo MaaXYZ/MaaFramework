@@ -67,7 +67,6 @@ private:
     cv::Mat apply_color_filter(const cv::Mat& image_roi) const;
     ResultsVec predict_det_and_rec(const cv::Mat& image_roi) const;
     Result predict_only_rec(const cv::Mat& image_roi) const;
-    ResultsVec predict_batch_rec(const std::vector<cv::Rect>& rois) const;
 
     cv::Mat draw_result(const ResultsVec& results) const;
 
