@@ -36,6 +36,7 @@ struct TaskerImpl : public maajs::NativeClassBase
     MaaSinkId add_context_sink(maajs::FunctionType sink);
     void remove_context_sink(MaaSinkId id);
     void clear_context_sinks();
+    void set_auto_inactive(bool value);
     maajs::ValueType post_task(maajs::ValueType self, maajs::EnvType env, std::string entry, maajs::OptionalParam<maajs::ValueType> param);
     maajs::ValueType post_recognition(
         maajs::ValueType self,

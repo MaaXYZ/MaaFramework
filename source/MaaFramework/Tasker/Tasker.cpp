@@ -75,11 +75,22 @@ bool Tasker::inited() const
 
 bool Tasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
-    std::ignore = key;
-    std::ignore = value;
-    std::ignore = val_size;
+    switch (key) {
+    case MaaTaskerOption_AutoInactive: {
+        if (!value || val_size != sizeof(bool)) {
+            LogError << "Invalid value or size" << VAR(val_size);
+            return false;
+        }
 
-    return false;
+        const bool auto_inactive = *reinterpret_cast<const bool*>(value);
+        auto_inactive_ = auto_inactive;
+        LogInfo << "Set auto inactive" << VAR(auto_inactive);
+        return true;
+    }
+    default:
+        LogError << "Unknown option" << VAR(key);
+        return false;
+    }
 }
 
 MaaTaskId Tasker::post_task(const std::string& entry, const json::value& pipeline_override)
@@ -365,7 +376,9 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     }
     notifier_.notify(this, ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 
-    if (controller_ && !task_runner_->pending()) {
+    // EmptyTask is the internal stop marker; a user pipeline may have the same entry name.
+    const bool is_stop_task = dynamic_cast<MAA_TASK_NS::EmptyTask*>(task_ptr.get()) != nullptr;
+    if (controller_ && !task_runner_->pending() && (auto_inactive_.load() || is_stop_task)) {
         controller_->wait(controller_->post_inactive());
     }
 

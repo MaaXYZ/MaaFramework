@@ -283,6 +283,15 @@ typedef MaaOption MaaTaskerOption;
 enum MaaTaskerOptionEnum
 {
     MaaTaskerOption_Invalid = 0,
+
+    /// Automatically post inactive when a task ends and the queue is empty.
+    /// Disable this when the client posts tasks one at a time as a single batch.
+    /// When disabled, the caller must call MaaControllerPostInactive at the end of the batch.
+    /// The stop task posted by MaaTaskerPostStop is not affected by this option.
+    ///
+    /// value: bool, eg: true; val_size: sizeof(bool)
+    /// default value is true
+    MaaTaskerOption_AutoInactive = 1,
 };
 
 // MaaAdbScreencapMethod:
