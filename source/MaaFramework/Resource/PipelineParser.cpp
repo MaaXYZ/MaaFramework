@@ -1,9 +1,13 @@
 #include "PipelineParser.h"
 
+#include <limits>
+#include <sstream>
+
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/StringMisc.hpp"
+#include "PatternResMgr.h"
 #include "PipelineTypesV2.h"
 #include "Vision/VisionTypes.h"
 
@@ -486,6 +490,15 @@ bool PipelineParser::parse_recognition(
             param_input,
             std::get<ColorMatcherParam>(out_param),
             same_type ? std::get<ColorMatcherParam>(parent_param) : default_param);
+    } break;
+
+    case Type::MultiColorMatch: {
+        auto default_param = default_mgr.get_recognition_param<MultiColorMatcherParam>(Type::MultiColorMatch);
+        out_param = default_param;
+        return parse_multi_color_matcher_param(
+            param_input,
+            std::get<MultiColorMatcherParam>(out_param),
+            same_type ? std::get<MultiColorMatcherParam>(parent_param) : default_param);
     } break;
 
     case Type::And: {
@@ -990,6 +1003,220 @@ bool PipelineParser::parse_color_matcher_param(
 
     if (!get_and_check_value(input, "connected", output.connected, default_value.connected)) {
         LogError << "failed to get_and_check_value connected" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_multi_color_matcher_param(
+    const json::value& input_,
+    MAA_VISION_NS::MultiColorMatcherParam& output,
+    const MAA_VISION_NS::MultiColorMatcherParam& default_value)
+{
+    // Supports "pattern": "name" to reference pattern data from .lua files under the
+    // pattern/ directory (similar to how TemplateMatch references images via "template").
+    // Fields explicitly set in the node take precedence; the pattern only fills in
+    // fields not specified in the node.
+    constexpr int kMaxPointOffset = 1'000'000; // far beyond any real screen
+
+    json::value patched;
+    const json::value* pin = &input_;
+
+    if (auto pname = input_.find<std::string>("pattern"); pname && !pname->empty()) {
+        auto* mgr = PatternResMgr::current_for_parse();
+        if (!mgr) {
+            LogError << "pattern resource not loaded" << VAR(*pname);
+            return false;
+        }
+        auto pat = mgr->find(*pname);
+        if (!pat) {
+            LogError << "pattern not found" << VAR(*pname);
+            return false;
+        }
+        patched = input_;
+        if (!patched.contains("base_color")) {
+            patched["base_color"] = pat->base_color;
+        }
+        if (!patched.contains("points")) {
+            patched["points"] = pat->points_str;
+        }
+        if (!patched.contains("degree")) {
+            patched["degree"] = pat->degree;
+        }
+        if (!patched.contains("roi")) {
+            // The Lua search region uses inclusive corner coordinates
+            if (pat->x2 < pat->x1 || pat->y2 < pat->y1) {
+                LogError << "invalid pattern search region" << VAR(*pname) << VAR(pat->x1) << VAR(pat->y1) << VAR(pat->x2)
+                         << VAR(pat->y2);
+                return false;
+            }
+            patched["roi"] = json::array({ pat->x1, pat->y1, pat->x2 - pat->x1 + 1, pat->y2 - pat->y1 + 1 });
+        }
+        pin = &patched;
+    }
+
+    const json::value& input = *pin;
+
+    if (!parse_roi_target(input, output.roi_target, default_value.roi_target)) {
+        LogError << "failed to parse_roi_target" << VAR(input);
+        return false;
+    }
+
+    if (!parse_order_of_result(
+            input,
+            output.order_by,
+            output.result_index,
+            default_value.order_by,
+            default_value.result_index,
+            {
+                MAA_VISION_NS::ResultOrderBy::Horizontal,
+                MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Score,
+                MAA_VISION_NS::ResultOrderBy::Area,
+                MAA_VISION_NS::ResultOrderBy::Random,
+            })) {
+        LogError << "failed to parse_order_of_result" << VAR(input);
+        return false;
+    }
+
+    // Zero is only a valid base color when explicitly provided; letting a
+    // missing base_color fall back to the zero default would silently match black
+    if (!input.contains("base_color") && default_value.base_color == 0) {
+        LogError << "base_color is required" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "base_color", output.base_color, default_value.base_color)) {
+        LogError << "failed to get_and_check_value base_color" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "degree", output.degree, default_value.degree)) {
+        LogError << "failed to get_and_check_value degree" << VAR(input);
+        return false;
+    }
+    if (output.degree < 1 || output.degree > 100) {
+        LogError << "degree out of range [1, 100]" << VAR(output.degree);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "main", output.main, default_value.main)) {
+        LogError << "failed to get_and_check_value main" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "list", output.list, default_value.list)) {
+        LogError << "failed to get_and_check_value list" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "count", output.count, default_value.count)) {
+        LogError << "failed to get_and_check_value count" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "miss", output.miss, default_value.miss)) {
+        LogError << "failed to get_and_check_value miss" << VAR(input);
+        return false;
+    }
+    // miss + 1 would overflow and grid cell division would break down
+    if (output.miss < 0 || output.miss == std::numeric_limits<int>::max()) {
+        LogError << "miss out of range [0, INT_MAX)" << VAR(output.miss);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "orient", output.orient, default_value.orient)) {
+        LogError << "failed to get_and_check_value orient" << VAR(input);
+        return false;
+    }
+    if (output.orient < 0 || output.orient > 8) {
+        LogError << "orient out of range [0, 8]" << VAR(output.orient);
+        return false;
+    }
+
+    // points: array of {"dx":..,"dy":..,"color":..} objects, or a TSLib-style
+    // string "dx|dy|0xRRGGBB,...". When the node omits "points", inherit from
+    // default_value (e.g. a same-type parent node) instead of dropping them.
+    if (!input.contains("points")) {
+        output.points = default_value.points;
+    }
+    else if (auto points_arr = input.find<json::array>("points")) {
+        output.points.clear();
+        for (const auto& item : *points_arr) {
+            if (!item.is_object()) {
+                LogError << "points item is not object" << VAR(item);
+                return false;
+            }
+            int dx = 0, dy = 0, color = 0;
+            if (!get_and_check_value(item, "dx", dx, 0)) {
+                LogError << "failed to get dx" << VAR(item);
+                return false;
+            }
+            if (!get_and_check_value(item, "dy", dy, 0)) {
+                LogError << "failed to get dy" << VAR(item);
+                return false;
+            }
+            // A missing color would fall back to black and match unintended
+            // pixels; require it explicitly
+            if (!item.contains("color")) {
+                LogError << "points item missing color" << VAR(item);
+                return false;
+            }
+            if (!get_and_check_value(item, "color", color, 0)) {
+                LogError << "failed to get color" << VAR(item);
+                return false;
+            }
+            if (dx < -kMaxPointOffset || dx > kMaxPointOffset || dy < -kMaxPointOffset || dy > kMaxPointOffset) {
+                LogError << "point offset out of range" << VAR(dx) << VAR(dy);
+                return false;
+            }
+            output.points.push_back({ dx, dy, color });
+        }
+    }
+    else if (auto points_str = input.find<std::string>("points")) {
+        output.points.clear();
+        // TSLib style: "dx|dy|0xRRGGBB,dx|dy|0xRRGGBB"
+        std::stringstream ss(*points_str);
+        std::string token;
+        while (std::getline(ss, token, ',')) {
+            if (token.empty()) continue;
+            // Split into three parts by '|': dx / dy / color
+            std::vector<std::string> parts;
+            std::stringstream part_ss(token);
+            std::string part;
+            while (std::getline(part_ss, part, '|')) {
+                parts.push_back(part);
+            }
+            if (parts.size() != 3) {
+                LogError << "bad points token" << VAR(token);
+                return false;
+            }
+            try {
+                int dx = std::stoi(parts[0]);
+                int dy = std::stoi(parts[1]);
+                int color = static_cast<int>(std::stoul(parts[2], nullptr, 0)); // auto-detect 0x prefix
+                if (dx < -kMaxPointOffset || dx > kMaxPointOffset || dy < -kMaxPointOffset || dy > kMaxPointOffset) {
+                    LogError << "point offset out of range" << VAR(dx) << VAR(dy);
+                    return false;
+                }
+                output.points.push_back({ dx, dy, color });
+            }
+            catch (...) {
+                LogError << "bad points token" << VAR(token);
+                return false;
+            }
+        }
+    }
+    else {
+        LogError << "points must be an array or a TSLib-style string" << VAR(input);
+        return false;
+    }
+
+    // A MultiColorMatch without offset points degenerates to matching the base
+    // color everywhere; treat it as a configuration error
+    if (output.points.empty()) {
+        LogError << "points is empty" << VAR(input);
         return false;
     }
 
