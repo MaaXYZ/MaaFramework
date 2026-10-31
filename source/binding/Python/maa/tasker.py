@@ -734,6 +734,25 @@ class Tasker:
         )
 
     @staticmethod
+    def set_save_on_error_frames(save_on_error_frames: bool) -> bool:
+        """设置是否保存任务失败关键帧，默认启用 / Set whether to save task failure keyframes, enabled by default
+
+        Args:
+            save_on_error_frames: 是否保存 / Whether to save
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        cbool = ctypes.c_bool(save_on_error_frames)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.SaveOnErrorFrames),
+                ctypes.pointer(cbool),
+                ctypes.sizeof(ctypes.c_bool),
+            )
+        )
+
+    @staticmethod
     def set_draw_quality(quality: int) -> bool:
         """设置识别可视化图像的 JPEG 质量 / Set the JPEG quality for recognition visualization images
 

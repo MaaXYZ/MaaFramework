@@ -9,6 +9,7 @@ declare global {
             set log_dir(value: string)
             set save_draw(value: boolean)
             set save_on_error(value: boolean)
+            set save_on_error_frames(value: boolean)
             set stdout_level(value: StdoutLevel)
             set debug_mode(value: boolean)
             set draw_quality(value: number)

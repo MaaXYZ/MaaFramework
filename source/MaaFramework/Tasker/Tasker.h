@@ -10,6 +10,7 @@
 #include "Controller/ControllerAgent.h"
 #include "Resource/ResourceMgr.h"
 #include "RuntimeCache.h"
+#include "Task/FailureFrames.h"
 #include "Utils/EventDispatcher.hpp"
 
 MAA_TASK_NS_BEGIN
@@ -70,6 +71,8 @@ public:
 
     void context_notify(MaaContext* context, std::string_view msg, const json::value& details);
 
+    FailureFrames& failure_frames() { return failure_frames_; }
+
 private:
     using TaskPtr = std::shared_ptr<MAA_TASK_NS::TaskBase>;
     using RunnerId = AsyncRunner<TaskPtr>::Id;
@@ -86,6 +89,7 @@ private:
 
     bool need_to_stop_ = false;
 
+    FailureFrames failure_frames_;
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
     EventDispatcher notifier_;
     EventDispatcher context_notifier_;

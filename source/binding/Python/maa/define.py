@@ -234,6 +234,12 @@ class MaaGlobalOptionEnum(IntEnum):
     # default value is 4096
     RecoImageCacheLimit = 9
 
+    # Whether to save task failure keyframes
+    #
+    # value: bool, eg: true; val_size: sizeof(bool)
+    # default value is true, independent of SaveOnError and DebugMode
+    SaveOnErrorFrames = 10
+
 
 class MaaCtrlOptionEnum(IntEnum):
     Invalid = 0
