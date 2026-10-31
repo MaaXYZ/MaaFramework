@@ -137,6 +137,11 @@ OCRer::ResultsVec OCRer::handle_cached() const
             results.emplace_back(c);
         }
         else if (cv::Rect ints = roi_ & c.box; ints.area() > 0) {
+            // 交集不到框高的一半时（框只擦到 ROI 上下边缘，或 ROI 比框还矮），交集可能只是 1px 高的细缝，
+            // rec 按高度缩放到 48px 后宽度放大数百倍，耗费数 GB 内存。这种 ROI 不用缓存，自己做一次 det+rec，结果和不开 batch 时一致。
+            if (ints.height * 2 < c.box.height) {
+                return predict();
+            }
             intersections.emplace_back(ints);
         }
     }
