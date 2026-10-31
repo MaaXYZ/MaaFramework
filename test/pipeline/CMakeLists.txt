@@ -8,6 +8,7 @@ file(
 add_executable(PipelineTesting ${pipeline_testing_src})
 
 target_link_libraries(PipelineTesting MaaFramework)
+target_include_directories(PipelineTesting PRIVATE ${CMAKE_SOURCE_DIR}/source/MaaFramework)
 
 # BatchOcrRepro 用例的 OCR 模型构建时从 TestingDataSet 子模块复制（不入库，见 .gitignore）
 set(batch_ocr_repro_model_dir ${CMAKE_CURRENT_SOURCE_DIR}/resources/BatchOcrRepro/resource/model/ocr)
