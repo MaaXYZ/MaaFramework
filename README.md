@@ -333,6 +333,8 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
     Gzip header-only C++ library
 - [ViGEmClient](https://github.com/nefarius/ViGEmClient)  
     ViGEm Client SDK for feeder development.
+- [XDeviceBridge](https://github.com/scrctl/XDeviceBridge)  
+    Cross-platform iOS device bridge: reusable client, standalone or embedded server, and xdb CLI
 - ~~[protobuf](https://github.com/protocolbuffers/protobuf)~~  
     ~~Protocol Buffers - Google's data interchange format~~
 - ~~[grpc](https://github.com/grpc/grpc)~~  

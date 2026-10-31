@@ -11,6 +11,8 @@
 MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitAPI;
 class AdbControlUnitAPI;
+class IOSControlUnitAPI;
+class IOSDeviceAPI;
 class Win32ControlUnitAPI;
 class MacOSControlUnitAPI;
 class GamepadControlUnitAPI;
@@ -40,6 +42,26 @@ private:
     inline static const std::string version_func_name_ = "MaaAdbControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaAdbControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaAdbControlUnitDestroy";
+};
+
+class IOSControlUnitLibraryHolder : public LibraryHolder<IOSControlUnitLibraryHolder>
+{
+public:
+    static MAA_CTRL_UNIT_NS::IOSDeviceAPI* device_api();
+
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::IOSControlUnitAPI> create_control_unit(
+        const char* udid,
+        MaaIOSScreencapMethod screencap_methods,
+        MaaIOSConnectionMethod connection_method,
+        const char* config_json);
+
+private:
+    static bool load_backend_library();
+
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaIOSControlUnit");
+    inline static const std::string version_func_name_ = "MaaIOSControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaIOSControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaIOSControlUnitDestroy";
 };
 
 class Win32ControlUnitLibraryHolder : public LibraryHolder<Win32ControlUnitLibraryHolder>

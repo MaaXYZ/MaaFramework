@@ -31,6 +31,7 @@
                     "type": "string",
                     "enum": [
                         "Adb",
+                        "IOS",
                         "Win32",
                         "PlayCover",
                         "Linux"
@@ -55,6 +56,37 @@
                     "type": "object"
                 }
             }
+        },
+        "ios": {
+            "type": "object",
+            "title": "iOS配置",
+            "properties": {
+                "udid": {
+                    "type": "string"
+                },
+                "connection": {
+                    "type": "string",
+                    "enum": ["Auto", "USB", "WiFi"]
+                },
+                "screencap": {
+                    "type": "string"
+                },
+                "config": {
+                    "type": "object",
+                    "title": "iOS额外配置",
+                    "properties": {
+                        "server_port": { "type": "integer", "minimum": 0, "maximum": 65535 },
+                        "wifi_address": { "type": "string" },
+                        "wifi_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+                        "shared_control": { "type": "boolean" },
+                        "max_bitrate": { "type": "integer", "minimum": 0, "maximum": 18446744073709551615 },
+                        "max_fps": { "type": "integer", "minimum": 0, "maximum": 240 },
+                        "hardware_decode": { "type": "boolean" }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
         },
         "win32": {
             "title": "Win32配置",

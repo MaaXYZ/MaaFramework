@@ -101,9 +101,13 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON -DWITH_REPLAY_CONTROLLER=ON -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON -DWITH_REPLAY_CONTROLLER=ON -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON -DBUILD_IOS_TEST=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Debug" -j 16
+
+            - name: Run iOS offline tests
+              shell: bash
+              run: ctest --test-dir build -C Debug -R '^MaaIOS' --output-on-failure --no-tests=error --timeout 60
 
             - name: Install
               shell: bash
@@ -162,6 +166,13 @@ jobs:
                   python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_tcp_main_test.py ./source/binding/Python ./install
+
+            - name: Run iOS management testing
+              shell: bash
+              env:
+                  MAAFW_BINARY_PATH: ${{ github.workspace }}/install/bin
+                  PYTHONPATH: ${{ github.workspace }}/source/binding/Python
+              run: python3 test/python/ios_management_test.py
 
             - name: Run NodeJS testing
               shell: bash
@@ -316,9 +327,13 @@ jobs:
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
                     -DWITH_REPLAY_CONTROLLER=ON -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON \
-                    -DBUILD_DLOPEN_TESTING=ON -DBUILD_ADB_PIPE_TESTING=ON
+                    -DBUILD_DLOPEN_TESTING=ON -DBUILD_IOS_TEST=ON -DBUILD_ADB_PIPE_TESTING=ON
 
                   cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - Debug' -j 16
+
+            - name: Run iOS offline tests
+              shell: bash
+              run: ctest --test-dir build -C Debug -R '^MaaIOS' --output-on-failure --no-tests=error --timeout 60
 
             - name: Install
               shell: bash
@@ -381,6 +396,15 @@ jobs:
                   python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_tcp_main_test.py ./source/binding/Python ./install
+
+            - name: Run iOS management testing
+              shell: bash
+              env:
+                  MAAFW_BINARY_PATH: ${{ github.workspace }}/install/bin
+                  PYTHONPATH: ${{ github.workspace }}/source/binding/Python
+              run: |
+                  source .venv/bin/activate
+                  python3 test/python/ios_management_test.py
 
             - name: Run NodeJS testing
               shell: bash
@@ -466,10 +490,14 @@ jobs:
                     -DCMAKE_OSX_SYSROOT=macosx \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
                     -DWITH_REPLAY_CONTROLLER=ON -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON \
-                    -DBUILD_DLOPEN_TESTING=ON -DBUILD_ADB_PIPE_TESTING=ON \
+                    -DBUILD_DLOPEN_TESTING=ON -DBUILD_IOS_TEST=ON -DBUILD_ADB_PIPE_TESTING=ON \
                     -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}'
 
                   cmake --build build --preset 'NinjaMulti - Debug' -j 16
+
+            - name: Run iOS offline tests
+              shell: bash
+              run: ctest --test-dir build -C Debug -R '^MaaIOS' --output-on-failure --no-tests=error --timeout 60
 
             - name: Install
               shell: bash
@@ -528,6 +556,15 @@ jobs:
                   python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_tcp_main_test.py ./source/binding/Python ./install
+
+            - name: Run iOS management testing
+              shell: bash
+              env:
+                  MAAFW_BINARY_PATH: ${{ github.workspace }}/install/bin
+                  PYTHONPATH: ${{ github.workspace }}/source/binding/Python
+              run: |
+                  source .venv/bin/activate
+                  python3 test/python/ios_management_test.py
 
             - name: Run NodeJS testing
               shell: bash

@@ -539,6 +539,7 @@
                     "title": "控制器类型",
                     "enum": [
                         "Adb",
+                        "IOS",
                         "Win32",
                         "MacOS",
                         "PlayCover",
@@ -600,6 +601,37 @@
                     "title": "Adb 控制器配置",
                     "description": "Adb 控制器的具体配置。V2 协议中 input/screencap 由 MaaFramework 自动检测，无需手动配置",
                     "additionalProperties": true
+                },
+                "ios": {
+                    "type": "object",
+                    "title": "iOS 控制器配置",
+                    "properties": {
+                        "udid": {
+                            "type": "string"
+                        },
+                        "connection": {
+                            "type": "string",
+                            "enum": ["Auto", "USB", "WiFi"]
+                        },
+                        "screencap": {
+                            "type": "string",
+                            "description": "Stream、ScreenshotService 或按 | 组合"
+                        },
+                        "config": {
+                            "type": "object",
+                            "properties": {
+                                "server_port": { "type": "integer", "minimum": 0, "maximum": 65535 },
+                                "wifi_address": { "type": "string" },
+                                "wifi_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+                                "shared_control": { "type": "boolean" },
+                                "max_bitrate": { "type": "integer", "minimum": 0, "maximum": 18446744073709551615 },
+                                "max_fps": { "type": "integer", "minimum": 0, "maximum": 240 },
+                                "hardware_decode": { "type": "boolean" }
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "additionalProperties": false
                 },
                 "win32": {
                     "type": "object",
