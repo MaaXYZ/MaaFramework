@@ -108,6 +108,10 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         return { };
     }
 
+    if (MAA_GLOBAL_NS::OptionMgr::get_instance().save_on_error_frames()) {
+        tasker_->failure_frames().mark_action();
+    }
+
     wait_freezes(data.pre_wait_freezes, *reco.box, data.name, "pre", data.focus);
     sleep(data.pre_delay);
 

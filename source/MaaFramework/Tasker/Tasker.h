@@ -10,6 +10,7 @@
 #include "Controller/ControllerAgent.h"
 #include "Resource/ResourceMgr.h"
 #include "RuntimeCache.h"
+#include "Task/FailureFrames.h"
 #include "Utils/EventDispatcher.hpp"
 
 MAA_TASK_NS_BEGIN
@@ -70,6 +71,8 @@ public:
 
     void context_notify(MaaContext* context, std::string_view msg, const json::value& details);
 
+    FailureFrames& failure_frames() { return failure_frames_; }
+
 private:
     using TaskPtr = std::shared_ptr<MAA_TASK_NS::TaskBase>;
     using RunnerId = AsyncRunner<TaskPtr>::Id;
@@ -86,7 +89,7 @@ private:
 
     bool need_to_stop_ = false;
 
-    std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
+    FailureFrames failure_frames_;
     EventDispatcher notifier_;
     EventDispatcher context_notifier_;
 
@@ -94,6 +97,10 @@ private:
     mutable std::shared_mutex task_id_mapping_mutex_;
 
     RuntimeCache runtime_cache_;
+
+    // Declared last so destruction joins the runner thread before any member
+    // it touches (notifiers, caches, failure frame history) is torn down.
+    std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
 };
 
 MAA_NS_END
