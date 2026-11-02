@@ -2908,10 +2908,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>out_box is the final (single) result; out_detail carries arbitrary callback data. To return multiple results, write a JSON object into out_detail with the reserved keys &quot;$all&quot; / &quot;$filtered&quot;, each an array of {&quot;box&quot;: [x, y, w, h], &quot;detail&quot;: any}; the framework keeps the callback&apos;s own order and selects the final box with the node&apos;s &quot;index&quot;. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="691" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="691" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="695" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="695" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a5d8d307550fff35a2df364eeac7f5191" prot="public" static="no">
         <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
@@ -2924,7 +2925,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="703" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="703" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="707" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="707" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
