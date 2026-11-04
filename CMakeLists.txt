@@ -138,6 +138,12 @@ if (BUILD_LINUX_TEST)
     add_subdirectory(test/linux_test)
 endif ()
 
+option(BUILD_WIN32_GEOMETRY_TESTING "build Windows window geometry regression tests" OFF)
+if(WIN32 AND BUILD_WIN32_GEOMETRY_TESTING)
+    enable_testing()
+    add_subdirectory(test/win32_test/window_geometry)
+endif()
+
 maadeps_install(bin)
 
 install(

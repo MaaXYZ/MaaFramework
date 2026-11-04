@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <utility>
 
 #include "Common/Conf.h"
@@ -54,9 +55,8 @@ inline bool is_fullscreen(HWND hwnd)
     return GetWindowLongPtr(hwnd, GWL_STYLE) & WS_POPUP;
 }
 
-// Ensure the window's client area is fully visible on the monitor.
-// If the window extends beyond the monitor bounds, move it back.
-// If the client area is larger than the monitor, resize the window.
+// Keep ordinary client areas in the work area. Exact fullscreen popups may
+// cover the taskbar; compare their client pixels instead of invisible borders.
 inline bool ensure_window_on_screen(HWND hwnd)
 {
     if (!hwnd || !IsWindow(hwnd)) {
@@ -97,6 +97,31 @@ inline bool ensure_window_on_screen(HWND hwnd)
     POINT client_origin = { 0, 0 };
     if (!ClientToScreen(hwnd, &client_origin)) {
         return false;
+    }
+
+    // Widen the coordinate sums before comparing RECT's exclusive edges.
+    if (is_fullscreen(hwnd) && static_cast<int64_t>(client_origin.x) + client_rect.left == mi.rcMonitor.left
+        && static_cast<int64_t>(client_origin.y) + client_rect.top == mi.rcMonitor.top
+        && static_cast<int64_t>(client_origin.x) + client_rect.right == mi.rcMonitor.right
+        && static_cast<int64_t>(client_origin.y) + client_rect.bottom == mi.rcMonitor.bottom) {
+        RECT current_window = { };
+        RECT current_client = { };
+        POINT current_origin = { 0, 0 };
+        if (!GetWindowRect(hwnd, &current_window) || !GetClientRect(hwnd, &current_client) || !ClientToScreen(hwnd, &current_origin)) {
+            return false;
+        }
+        const bool still_popup = is_fullscreen(hwnd);
+        const bool same_client =
+            EqualRect(&client_rect, &current_client) && client_origin.x == current_origin.x && client_origin.y == current_origin.y;
+        // Confirm once before exempting. A changed window uses the refreshed
+        // geometry below; this does not lock a foreign window against later moves.
+        window_rect = current_window;
+        client_rect = current_client;
+        client_origin = current_origin;
+        if (still_popup && same_client) {
+            LogDebug << "Skip ensure_window_on_screen: confirmed fullscreen client matches monitor";
+            return true;
+        }
     }
 
     int frame_left = client_origin.x - window_rect.left;
