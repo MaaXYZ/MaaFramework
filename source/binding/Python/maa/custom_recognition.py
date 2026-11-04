@@ -60,7 +60,9 @@ class CustomRecognition(ABC):
 
         Attributes:
             box: 识别到的位置，None 表示未识别到 / Recognized position, None means not recognized
-            detail: 识别详情，会被记录到识别结果中 / Recognition details, will be recorded in recognition result
+            detail: 识别详情，会被记录到识别结果中。写入 `$all` / `$filtered` 多结果 JSON 对象可返回多个结果 /
+                Recognition details, will be recorded in recognition result. Write a `$all` / `$filtered`
+                multi-result JSON object to return multiple results
         """
 
         box: Optional[RectType]

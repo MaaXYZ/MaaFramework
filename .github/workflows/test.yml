@@ -109,6 +109,14 @@ jobs:
               shell: bash
               run: ctest --test-dir build -C Debug -R '^MaaIOS' --output-on-failure --no-tests=error --timeout 60
 
+            - name: Run Windows geometry regression
+              run: |
+                  cmake -S . -B build -DBUILD_WIN32_GEOMETRY_TESTING=ON -DMAA_WINDOW_GEOMETRY_DESKTOP_TESTS=ON
+                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+                  cmake --build build --config Debug --target window_geometry_test -j 16
+                  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+                  ctest --test-dir build -C Debug --verbose --output-on-failure --no-tests=error -R '^window_geometry(_desktop)?$'
+
             - name: Install
               shell: bash
               run: |
@@ -186,7 +194,9 @@ jobs:
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-text_log
-                  path: 'install/bin/debug/*.log'
+                  path: |
+                      install/bin/debug/*.log
+                      build/Testing/Temporary/LastTest.log
 
             - uses: actions/upload-artifact@v7
               if: always()

@@ -92,6 +92,11 @@ def assert_true(condition, msg=""):
         raise AssertionError(f"{msg}: expected True")
 
 
+def assert_false(condition, msg=""):
+    if condition:
+        raise AssertionError(f"{msg}: expected False")
+
+
 def assert_not_none(value, msg=""):
     if value is None:
         raise AssertionError(f"{msg}: expected not None")
@@ -738,6 +743,7 @@ class PipelineTestRecognition(CustomRecognition):
                     "custom_recognition": "MyCustomReco",
                     "custom_recognition_param": {"key": "value"},
                     "roi": [0, 0, 100, 100],
+                    "index": -1,
                 }
             }
         )
@@ -748,6 +754,21 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(param.custom_recognition, "MyCustomReco", "custom_recognition")
         assert_eq(
             param.custom_recognition_param, {"key": "value"}, "custom_recognition_param"
+        )
+        assert_eq(param.index, -1, "index")
+
+        # Custom 的结果顺序由回调决定，order_by 不受支持
+        assert_false(
+            new_ctx.override_pipeline(
+                {
+                    "RecoCustomOrderBy": {
+                        "recognition": "Custom",
+                        "custom_recognition": "MyCustomReco",
+                        "order_by": "Horizontal",
+                    }
+                }
+            ),
+            "custom order_by should be rejected",
         )
 
         print("    PASS: recognition types parsing")

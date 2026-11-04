@@ -620,7 +620,7 @@ bool MaaToolkitPortalHelper::dbus_open_pipewire_remote(DBusConnection* conn)
         return false;
     }
 
-    // Extract Unix FD — must dup() before unref as libdbus closes the FD on free
+    // dbus_message_get_args duplicates Unix FDs; the caller owns this descriptor.
     DBusError err;
     dbus_error_init(&err);
 
@@ -633,12 +633,7 @@ bool MaaToolkitPortalHelper::dbus_open_pipewire_remote(DBusConnection* conn)
     }
     dbus_error_free(&err);
 
-    if (raw_fd >= 0) {
-        pipewire_fd_ = dup(raw_fd);
-        if (pipewire_fd_ < 0) {
-            LogError << "Failed to dup PipeWire FD:" << strerror(errno);
-        }
-    }
+    pipewire_fd_ = raw_fd;
 
     dbus_message_unref(reply);
 

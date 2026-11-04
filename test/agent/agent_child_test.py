@@ -235,7 +235,14 @@ class MyRecognition(CustomRecognition):
         analyzed = True
 
         return CustomRecognition.AnalyzeResult(
-            box=(11, 4, 5, 14), detail="Hello World!"
+            box=(11, 4, 5, 14),
+            detail={
+                "message": "Hello World!",
+                "$all": [
+                    {"box": [11, 4, 5, 14], "detail": {"message": "first"}},
+                    {"box": [21, 24, 25, 34], "detail": {"message": "second"}},
+                ],
+            },
         )
 
 
@@ -402,6 +409,24 @@ class SlowRecognition(CustomRecognition):
         node_data = context.get_node_data("Entry")
         record_sink_event(f"slow_rec_node_data:{'none' if node_data is None else 'value'}")
         return CustomRecognition.AnalyzeResult(box=(9, 9, 9, 9), detail="slow")
+
+
+@AgentServer.custom_recognition("MultiRec")
+class MultiRecognition(CustomRecognition):
+    def analyze(
+        self,
+        context: Context,
+        argv: CustomRecognition.AnalyzeArg,
+    ) -> CustomRecognition.AnalyzeResult:
+        return CustomRecognition.AnalyzeResult(
+            box=(11, 4, 5, 14),
+            detail={
+                "$all": [
+                    {"box": [11, 4, 5, 14], "detail": "first"},
+                    {"box": [21, 22, 23, 24], "detail": "second"},
+                ]
+            },
+        )
 
 
 @AgentServer.custom_recognition("FastRec")

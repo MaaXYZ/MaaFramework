@@ -85,7 +85,7 @@ MaaBool custom_inactive(void* trans_arg)
 
 MaaController* create_changing_controller()
 {
-    static MaaCustomControllerCallbacks callbacks {};
+    static MaaCustomControllerCallbacks callbacks { };
     callbacks.connect = &custom_connect;
     callbacks.request_uuid = &custom_request_uuid;
     callbacks.get_features = &custom_get_features;
@@ -100,8 +100,8 @@ struct SubTaskProbe
 {
     std::atomic_bool reached_wait_freezes { false };
     std::atomic_bool returned { false };
-    std::atomic<long long> total_ms { -1 };           // 进入 run_task 到返回
-    std::atomic<long long> stop_to_return_ms { -1 };  // post_stop 发出到返回，这才是停止延迟
+    std::atomic<long long> total_ms { -1 };          // 进入 run_task 到返回
+    std::atomic<long long> stop_to_return_ms { -1 }; // post_stop 发出到返回，这才是停止延迟
 
     // 宿主线程写入、worker 线程读取
     std::atomic<long long> stop_clock_ns { 0 };
@@ -294,18 +294,16 @@ bool post_stop_interrupt(const std::filesystem::path& testset_dir)
     else if (stop_to_return_ms > kStopLatencySlackMs) {
         // 只计 post_stop 发出到 run_task 返回，不含子任务启动耗时
         std::cout << std::format(
-                         "PostStopInterrupt: MaaContextRunTask returned {}ms after post_stop (total {}ms), expected <= {}ms",
-                         stop_to_return_ms,
-                         total_ms,
-                         kStopLatencySlackMs)
+            "PostStopInterrupt: MaaContextRunTask returned {}ms after post_stop (total {}ms), expected <= {}ms",
+            stop_to_return_ms,
+            total_ms,
+            kStopLatencySlackMs)
                   << std::endl;
     }
     else {
-        std::cout << std::format(
-                         "PostStopInterrupt: MaaContextRunTask returned {}ms after post_stop (total {}ms)",
-                         stop_to_return_ms,
-                         total_ms)
-                  << std::endl;
+        std::cout
+            << std::format("PostStopInterrupt: MaaContextRunTask returned {}ms after post_stop (total {}ms)", stop_to_return_ms, total_ms)
+            << std::endl;
         passed = true;
     }
 
