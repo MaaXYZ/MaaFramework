@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="92" column="5"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="98" column="5"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -48,7 +48,7 @@
         <link refid="classControlUnitAPI"/>
       </node>
     </collaborationgraph>
-    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="89" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="90" bodyend="93"/>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="95" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="96" bodyend="99"/>
     <listofallmembers>
       <member refid="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>click</name></member>
       <member refid="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>click_key</name></member>

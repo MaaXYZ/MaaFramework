@@ -159,6 +159,16 @@ Macros</h2></td></tr>
 <tr class="separator:a409e67845229acd9d8332a482f9a7cb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad89de988d2c725fd34d1596843551870" id="r_ad89de988d2c725fd34d1596843551870"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad89de988d2c725fd34d1596843551870">MaaAdbInputMethod_Default</a>&#160;&#160;&#160;(<a class="el" href="#a409e67845229acd9d8332a482f9a7cb8">MaaAdbInputMethod_All</a> &amp; (~<a class="el" href="#ad45ca7f8c290dfe4c4c5652e0bdfa39f">MaaAdbInputMethod_EmulatorExtras</a>))</td></tr>
 <tr class="separator:ad89de988d2c725fd34d1596843551870"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89235cfc73c8ff0c1dd0219cd0229640" id="r_a89235cfc73c8ff0c1dd0219cd0229640"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a89235cfc73c8ff0c1dd0219cd0229640">MaaIOSScreencapMethod_None</a>&#160;&#160;&#160;0ULL</td></tr>
+<tr class="separator:a89235cfc73c8ff0c1dd0219cd0229640"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7520cc201b6b3f6b04b42aab944646cb" id="r_a7520cc201b6b3f6b04b42aab944646cb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7520cc201b6b3f6b04b42aab944646cb">MaaIOSScreencapMethod_Stream</a>&#160;&#160;&#160;1ULL</td></tr>
+<tr class="separator:a7520cc201b6b3f6b04b42aab944646cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20db7c7b0f99442c887d2891e2425c8d" id="r_a20db7c7b0f99442c887d2891e2425c8d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a20db7c7b0f99442c887d2891e2425c8d">MaaIOSScreencapMethod_ScreenshotService</a>&#160;&#160;&#160;(1ULL &lt;&lt; 1)</td></tr>
+<tr class="separator:a20db7c7b0f99442c887d2891e2425c8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae117ac63bdf67b282862e9dcaec14ea" id="r_aae117ac63bdf67b282862e9dcaec14ea"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aae117ac63bdf67b282862e9dcaec14ea">MaaIOSScreencapMethod_All</a>&#160;&#160;&#160;(~<a class="el" href="#a89235cfc73c8ff0c1dd0219cd0229640">MaaIOSScreencapMethod_None</a>)</td></tr>
+<tr class="separator:aae117ac63bdf67b282862e9dcaec14ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad09bde33185e039a8dfa8c272071d827" id="r_ad09bde33185e039a8dfa8c272071d827"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad09bde33185e039a8dfa8c272071d827">MaaIOSScreencapMethod_Default</a>&#160;&#160;&#160;<a class="el" href="#aae117ac63bdf67b282862e9dcaec14ea">MaaIOSScreencapMethod_All</a></td></tr>
+<tr class="separator:ad09bde33185e039a8dfa8c272071d827"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a614ef2e0ce06147b8077158da914292f" id="r_a614ef2e0ce06147b8077158da914292f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a614ef2e0ce06147b8077158da914292f">MaaWin32ScreencapMethod_None</a>&#160;&#160;&#160;0ULL</td></tr>
 <tr class="separator:a614ef2e0ce06147b8077158da914292f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ac9b0f247ee9b853034b35969adc050" id="r_a8ac9b0f247ee9b853034b35969adc050"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8ac9b0f247ee9b853034b35969adc050">MaaWin32ScreencapMethod_GDI</a>&#160;&#160;&#160;1ULL</td></tr>
@@ -373,6 +383,11 @@ Typedefs</h2></td></tr>
 <tr class="memitem:aa02386b09246fa0704ec371f80bb661f" id="r_aa02386b09246fa0704ec371f80bb661f"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa02386b09246fa0704ec371f80bb661f">MaaAdbInputMethod</a></td></tr>
 <tr class="memdesc:aa02386b09246fa0704ec371f80bb661f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adb input method flags.  <br /></td></tr>
 <tr class="separator:aa02386b09246fa0704ec371f80bb661f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73193efd9ae17f5ba22a0d67f4a94f1a" id="r_a73193efd9ae17f5ba22a0d67f4a94f1a"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73193efd9ae17f5ba22a0d67f4a94f1a">MaaIOSScreencapMethod</a></td></tr>
+<tr class="memdesc:a73193efd9ae17f5ba22a0d67f4a94f1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">iOS screencap method flags.  <br /></td></tr>
+<tr class="separator:a73193efd9ae17f5ba22a0d67f4a94f1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77dd92b19ca71371f9a043b63fbbe966" id="r_a77dd92b19ca71371f9a043b63fbbe966"><td class="memItemLeft" align="right" valign="top">typedef int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a77dd92b19ca71371f9a043b63fbbe966">MaaIOSConnectionMethod</a></td></tr>
+<tr class="separator:a77dd92b19ca71371f9a043b63fbbe966"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23833339ba6406d680688350d27d37b3" id="r_a23833339ba6406d680688350d27d37b3"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23833339ba6406d680688350d27d37b3">MaaWin32ScreencapMethod</a></td></tr>
 <tr class="memdesc:a23833339ba6406d680688350d27d37b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Win32 screencap method flags.  <br /></td></tr>
 <tr class="separator:a23833339ba6406d680688350d27d37b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -526,6 +541,15 @@ Enumerations</h2></td></tr>
 <tr class="memitem:a7ce6a82a2484734da58c3c422d19a9b1" id="r_a7ce6a82a2484734da58c3c422d19a9b1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ce6a82a2484734da58c3c422d19a9b1">MaaTaskerOptionEnum</a> { <a class="el" href="#a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa">MaaTaskerOption_Invalid</a> = 0
  }</td></tr>
 <tr class="separator:a7ce6a82a2484734da58c3c422d19a9b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af73b2d15b59ebd6673fda0f03e8d2bd1" id="r_af73b2d15b59ebd6673fda0f03e8d2bd1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af73b2d15b59ebd6673fda0f03e8d2bd1">MaaIOSConnectionMethodEnum</a> { <br />
+&#160;&#160;<a class="el" href="#af73b2d15b59ebd6673fda0f03e8d2bd1ac9df3edb459a0cd149d493089d7b0eef">MaaIOSConnectionMethod_Auto</a> = 0
+, <br />
+&#160;&#160;<a class="el" href="#af73b2d15b59ebd6673fda0f03e8d2bd1ad5df2ce00cda2c1d95851b56877370b9">MaaIOSConnectionMethod_USB</a> = 1
+, <br />
+&#160;&#160;<a class="el" href="#af73b2d15b59ebd6673fda0f03e8d2bd1a5f1cc7cbde010048e23fc04eeac1685d">MaaIOSConnectionMethod_WiFi</a> = 2
+<br />
+ }</td></tr>
+<tr class="separator:af73b2d15b59ebd6673fda0f03e8d2bd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The type definitions. </p>
@@ -795,6 +819,76 @@ Enumerations</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">#define MaaAdbInputMethod_Default&#160;&#160;&#160;(<a class="el" href="#a409e67845229acd9d8332a482f9a7cb8">MaaAdbInputMethod_All</a> &amp; (~<a class="el" href="#ad45ca7f8c290dfe4c4c5652e0bdfa39f">MaaAdbInputMethod_EmulatorExtras</a>))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a89235cfc73c8ff0c1dd0219cd0229640" name="a89235cfc73c8ff0c1dd0219cd0229640"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89235cfc73c8ff0c1dd0219cd0229640">&#9670;&#160;</a></span>MaaIOSScreencapMethod_None</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaIOSScreencapMethod_None&#160;&#160;&#160;0ULL</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7520cc201b6b3f6b04b42aab944646cb" name="a7520cc201b6b3f6b04b42aab944646cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7520cc201b6b3f6b04b42aab944646cb">&#9670;&#160;</a></span>MaaIOSScreencapMethod_Stream</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaIOSScreencapMethod_Stream&#160;&#160;&#160;1ULL</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a20db7c7b0f99442c887d2891e2425c8d" name="a20db7c7b0f99442c887d2891e2425c8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20db7c7b0f99442c887d2891e2425c8d">&#9670;&#160;</a></span>MaaIOSScreencapMethod_ScreenshotService</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaIOSScreencapMethod_ScreenshotService&#160;&#160;&#160;(1ULL &lt;&lt; 1)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aae117ac63bdf67b282862e9dcaec14ea" name="aae117ac63bdf67b282862e9dcaec14ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae117ac63bdf67b282862e9dcaec14ea">&#9670;&#160;</a></span>MaaIOSScreencapMethod_All</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaIOSScreencapMethod_All&#160;&#160;&#160;(~<a class="el" href="#a89235cfc73c8ff0c1dd0219cd0229640">MaaIOSScreencapMethod_None</a>)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad09bde33185e039a8dfa8c272071d827" name="ad09bde33185e039a8dfa8c272071d827"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad09bde33185e039a8dfa8c272071d827">&#9670;&#160;</a></span>MaaIOSScreencapMethod_Default</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaIOSScreencapMethod_Default&#160;&#160;&#160;<a class="el" href="#aae117ac63bdf67b282862e9dcaec14ea">MaaIOSScreencapMethod_All</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -2303,6 +2397,38 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
+<a id="a73193efd9ae17f5ba22a0d67f4a94f1a" name="a73193efd9ae17f5ba22a0d67f4a94f1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73193efd9ae17f5ba22a0d67f4a94f1a">&#9670;&#160;</a></span>MaaIOSScreencapMethod</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef uint64_t <a class="el" href="#a73193efd9ae17f5ba22a0d67f4a94f1a">MaaIOSScreencapMethod</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>iOS screencap method flags. </p>
+<p>Use bitwise OR to select the permitted backends. Video frames are preferred when Stream is enabled; ScreenshotService provides a lossless RPC fallback. Stream alone has no screenshot fallback. ScreenshotService alone starts no video session or background video decoder.</p>
+<p>Default: All methods. Reported availability describes supported backends, not a guarantee that every connected device/DDI exposes both services. </p>
+
+</div>
+</div>
+<a id="a77dd92b19ca71371f9a043b63fbbe966" name="a77dd92b19ca71371f9a043b63fbbe966"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77dd92b19ca71371f9a043b63fbbe966">&#9670;&#160;</a></span>MaaIOSConnectionMethod</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef int32_t <a class="el" href="#a77dd92b19ca71371f9a043b63fbbe966">MaaIOSConnectionMethod</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a23833339ba6406d680688350d27d37b3" name="a23833339ba6406d680688350d27d37b3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a23833339ba6406d680688350d27d37b3">&#9670;&#160;</a></span>MaaWin32ScreencapMethod</h2>
 
@@ -2912,13 +3038,32 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
+<a id="af73b2d15b59ebd6673fda0f03e8d2bd1" name="af73b2d15b59ebd6673fda0f03e8d2bd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af73b2d15b59ebd6673fda0f03e8d2bd1">&#9670;&#160;</a></span>MaaIOSConnectionMethodEnum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#af73b2d15b59ebd6673fda0f03e8d2bd1">MaaIOSConnectionMethodEnum</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af73b2d15b59ebd6673fda0f03e8d2bd1ac9df3edb459a0cd149d493089d7b0eef" name="af73b2d15b59ebd6673fda0f03e8d2bd1ac9df3edb459a0cd149d493089d7b0eef"></a>MaaIOSConnectionMethod_Auto&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af73b2d15b59ebd6673fda0f03e8d2bd1ad5df2ce00cda2c1d95851b56877370b9" name="af73b2d15b59ebd6673fda0f03e8d2bd1ad5df2ce00cda2c1d95851b56877370b9"></a>MaaIOSConnectionMethod_USB&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af73b2d15b59ebd6673fda0f03e8d2bd1a5f1cc7cbde010048e23fc04eeac1685d" name="af73b2d15b59ebd6673fda0f03e8d2bd1a5f1cc7cbde010048e23fc04eeac1685d"></a>MaaIOSConnectionMethod_WiFi&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Mon Nov 2 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
+    <li class="footer">Generated on Wed Nov 4 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
 </body>

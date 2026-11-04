@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['kwincontrolunitapi_0',['KWinControlUnitAPI',['../classKWinControlUnitAPI.html',1,'']]]
+  ['ioscontrolunitapi_0',['IOSControlUnitAPI',['../classIOSControlUnitAPI.html',1,'']]]
 ];

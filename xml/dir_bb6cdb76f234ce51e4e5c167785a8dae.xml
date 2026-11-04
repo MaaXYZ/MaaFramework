@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.12.0" xml:lang="en-US">
+  <compounddef id="dir_bb6cdb76f234ce51e4e5c167785a8dae" kind="dir">
+    <compoundname>include/MaaToolkit/IOSDevice</compoundname>
+    <innerfile refid="MaaToolkitIOSDevice_8h">MaaToolkitIOSDevice.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaToolkit/IOSDevice/"/>
+  </compounddef>
+</doxygen>

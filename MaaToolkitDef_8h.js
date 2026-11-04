@@ -1,5 +1,7 @@
 var MaaToolkitDef_8h =
 [
+    [ "MaaToolkitIOSDevice", "MaaToolkitDef_8h.html#af4d8ca0174c49c25359bb079ac66316d", null ],
+    [ "MaaToolkitIOSDeviceList", "MaaToolkitDef_8h.html#a7c3c0034b326be0b0ab822670803c9f1", null ],
     [ "MaaToolkitAdbDevice", "MaaToolkitDef_8h.html#a4ed920f548223ae34817b720532407cf", null ],
     [ "MaaToolkitAdbDeviceList", "MaaToolkitDef_8h.html#a61bc7b4be1b04be75314fe7d088b0bc6", null ],
     [ "MaaToolkitDesktopWindow", "MaaToolkitDef_8h.html#a5d8743988770806277c247ba9e84040a", null ],

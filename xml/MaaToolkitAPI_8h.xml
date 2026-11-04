@@ -7,6 +7,7 @@
     <includes refid="MaaToolkitConfig_8h" local="yes">Config/MaaToolkitConfig.h</includes>
     <includes refid="MaaToolkitDesktopWindow_8h" local="yes">DesktopWindow/MaaToolkitDesktopWindow.h</includes>
     <includes refid="MaaToolkitGamescope_8h" local="yes">Gamescope/MaaToolkitGamescope.h</includes>
+    <includes refid="MaaToolkitIOSDevice_8h" local="yes">IOSDevice/MaaToolkitIOSDevice.h</includes>
     <includes refid="MaaToolkitMacOS_8h" local="yes">MacOS/MaaToolkitMacOS.h</includes>
     <includes refid="MaaToolkitPortal_8h" local="yes">Portal/MaaToolkitPortal.h</includes>
     <incdepgraph>
@@ -46,6 +47,12 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
+      <node id="10">
+        <label>IOSDevice/MaaToolkitIOSDevice.h</label>
+        <link refid="MaaToolkitIOSDevice_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
       <node id="1">
         <label>include/MaaToolkit/MaaToolkitAPI.h</label>
         <link refid="MaaToolkitAPI_8h"/>
@@ -63,6 +70,8 @@
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>MaaToolkitDef.h</label>
@@ -70,13 +79,13 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>MacOS/MaaToolkitMacOS.h</label>
         <link refid="MaaToolkitMacOS_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>Portal/MaaToolkitPortal.h</label>
         <link refid="MaaToolkitPortal_8h"/>
         <childnode refid="2" relation="include">

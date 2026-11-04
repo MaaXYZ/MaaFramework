@@ -20,6 +20,11 @@ var MaaDef_8h =
     [ "MaaAdbInputMethod_None", "MaaDef_8h.html#a5d201ca1f58e33b38be2fd7b9f977975", null ],
     [ "MaaAdbInputMethod_All", "MaaDef_8h.html#a409e67845229acd9d8332a482f9a7cb8", null ],
     [ "MaaAdbInputMethod_Default", "MaaDef_8h.html#ad89de988d2c725fd34d1596843551870", null ],
+    [ "MaaIOSScreencapMethod_None", "MaaDef_8h.html#a89235cfc73c8ff0c1dd0219cd0229640", null ],
+    [ "MaaIOSScreencapMethod_Stream", "MaaDef_8h.html#a7520cc201b6b3f6b04b42aab944646cb", null ],
+    [ "MaaIOSScreencapMethod_ScreenshotService", "MaaDef_8h.html#a20db7c7b0f99442c887d2891e2425c8d", null ],
+    [ "MaaIOSScreencapMethod_All", "MaaDef_8h.html#aae117ac63bdf67b282862e9dcaec14ea", null ],
+    [ "MaaIOSScreencapMethod_Default", "MaaDef_8h.html#ad09bde33185e039a8dfa8c272071d827", null ],
     [ "MaaWin32ScreencapMethod_None", "MaaDef_8h.html#a614ef2e0ce06147b8077158da914292f", null ],
     [ "MaaWin32ScreencapMethod_GDI", "MaaDef_8h.html#a8ac9b0f247ee9b853034b35969adc050", null ],
     [ "MaaWin32ScreencapMethod_FramePool", "MaaDef_8h.html#ac28f7c7af8541a08033bd77772ebd082", null ],
@@ -124,6 +129,8 @@ var MaaDef_8h =
     [ "MaaTaskerOption", "MaaDef_8h.html#ade3bcba89b5092219c2af3b0faffa934", null ],
     [ "MaaAdbScreencapMethod", "MaaDef_8h.html#a337e4b247a734f5c1c058689f75c1369", null ],
     [ "MaaAdbInputMethod", "MaaDef_8h.html#aa02386b09246fa0704ec371f80bb661f", null ],
+    [ "MaaIOSScreencapMethod", "MaaDef_8h.html#a73193efd9ae17f5ba22a0d67f4a94f1a", null ],
+    [ "MaaIOSConnectionMethod", "MaaDef_8h.html#a77dd92b19ca71371f9a043b63fbbe966", null ],
     [ "MaaWin32ScreencapMethod", "MaaDef_8h.html#a23833339ba6406d680688350d27d37b3", null ],
     [ "MaaWin32InputMethod", "MaaDef_8h.html#a29af4457ff72b57b157a1d58d6d28878", null ],
     [ "MaaMacOSScreencapMethod", "MaaDef_8h.html#ac2226415cbf081d3ce6fde4b3a5fe205", null ],
@@ -198,5 +205,10 @@ var MaaDef_8h =
     ] ],
     [ "MaaTaskerOptionEnum", "MaaDef_8h.html#a7ce6a82a2484734da58c3c422d19a9b1", [
       [ "MaaTaskerOption_Invalid", "MaaDef_8h.html#a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa", null ]
+    ] ],
+    [ "MaaIOSConnectionMethodEnum", "MaaDef_8h.html#af73b2d15b59ebd6673fda0f03e8d2bd1", [
+      [ "MaaIOSConnectionMethod_Auto", "MaaDef_8h.html#af73b2d15b59ebd6673fda0f03e8d2bd1ac9df3edb459a0cd149d493089d7b0eef", null ],
+      [ "MaaIOSConnectionMethod_USB", "MaaDef_8h.html#af73b2d15b59ebd6673fda0f03e8d2bd1ad5df2ce00cda2c1d95851b56877370b9", null ],
+      [ "MaaIOSConnectionMethod_WiFi", "MaaDef_8h.html#af73b2d15b59ebd6673fda0f03e8d2bd1a5f1cc7cbde010048e23fc04eeac1685d", null ]
     ] ]
 ];

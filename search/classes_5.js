@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['linuxcontrolunitapi_0',['LinuxControlUnitAPI',['../classLinuxControlUnitAPI.html',1,'']]]
+  ['kwincontrolunitapi_0',['KWinControlUnitAPI',['../classKWinControlUnitAPI.html',1,'']]]
 ];

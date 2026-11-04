@@ -37,6 +37,9 @@
   <compound refid="classGamepadControlUnitAPI" kind="class"><name>GamepadControlUnitAPI</name>
     <member refid="classGamepadControlUnitAPI_1ac3b2653203c9ca157a70b11aac8db99b" kind="function"><name>~GamepadControlUnitAPI</name></member>
   </compound>
+  <compound refid="classIOSControlUnitAPI" kind="class"><name>IOSControlUnitAPI</name>
+    <member refid="classIOSControlUnitAPI_1a9802f89e1afa382c680fa06681eac11b" kind="function"><name>~IOSControlUnitAPI</name></member>
+  </compound>
   <compound refid="classKWinControlUnitAPI" kind="class"><name>KWinControlUnitAPI</name>
     <member refid="classKWinControlUnitAPI_1a389ab6c486a3e34f238a2a84c190733c" kind="function"><name>~KWinControlUnitAPI</name></member>
   </compound>
@@ -217,6 +220,7 @@
   <compound refid="ControlUnitAPI_8h" kind="file"><name>ControlUnitAPI.h</name>
     <member refid="ControlUnitAPI_8h_1afdd4ccae8b5f8fca2fd8f23c9fee6844" kind="typedef"><name>MaaControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1ad717257089675a8dc0e80e574cfe5243" kind="typedef"><name>MaaAdbControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1a9f95bfc3dda6d9c3093f9fe4fa129f23" kind="typedef"><name>MaaIOSControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1a65786017771209552b0f1836a58deef0" kind="typedef"><name>MaaWin32ControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1a8adab01abd6e9dcc167b4540f771c73a" kind="typedef"><name>MaaMacOSControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1a3d719af41ee9b22c5f9ac6010d5d9711" kind="typedef"><name>MaaLinuxControlUnitHandle</name></member>
@@ -243,6 +247,11 @@
     <member refid="GamepadControlUnitAPI_8h_1ab9bcf7b6bf623919015fadac32b9cc8d" kind="function"><name>MaaGamepadControlUnitGetVersion</name></member>
     <member refid="GamepadControlUnitAPI_8h_1ad3e9a885b37a409655923b92ca9be65f" kind="function"><name>MaaGamepadControlUnitCreate</name></member>
     <member refid="GamepadControlUnitAPI_8h_1a657109c85fb7ec8d750a244d125ab9d3" kind="function"><name>MaaGamepadControlUnitDestroy</name></member>
+  </compound>
+  <compound refid="IOSControlUnitAPI_8h" kind="file"><name>IOSControlUnitAPI.h</name>
+    <member refid="IOSControlUnitAPI_8h_1af75ee8c6a800e7c43c27aabba9b42725" kind="function"><name>MaaIOSControlUnitGetVersion</name></member>
+    <member refid="IOSControlUnitAPI_8h_1aae6cbc2f4c755f3436e9db863996dc19" kind="function"><name>MaaIOSControlUnitCreate</name></member>
+    <member refid="IOSControlUnitAPI_8h_1aae9ddaeb3b12e85ec5591d0cd7a03684" kind="function"><name>MaaIOSControlUnitDestroy</name></member>
   </compound>
   <compound refid="KWinControlUnitAPI_8h" kind="file"><name>KWinControlUnitAPI.h</name>
     <member refid="KWinControlUnitAPI_8h_1a34ef84a47540c42f3f1c602f197e0dc5" kind="function"><name>MaaKWinControlUnitGetVersion</name></member>
@@ -341,6 +350,7 @@
   <compound refid="MaaController_8h" kind="file"><name>MaaController.h</name>
     <member refid="MaaController_8h_1a22203468df2e11d45892a524d48404a4" kind="typedef"><name>MaaCustomControllerCallbacks</name></member>
     <member refid="MaaController_8h_1a7b3f6215fdc0ae3e8beeb51a3dd75e16" kind="function"><name>MaaAdbControllerCreate</name></member>
+    <member refid="MaaController_8h_1a984490007757d257ce08156b19270765" kind="function"><name>MaaIOSControllerCreate</name></member>
     <member refid="MaaController_8h_1a0a0532a08e57b6b8b23282b51f6431a0" kind="function"><name>MaaWin32ControllerCreate</name></member>
     <member refid="MaaController_8h_1af8ff627f00593364f9654343461af20c" kind="function"><name>MaaMacOSControllerCreate</name></member>
     <member refid="MaaController_8h_1a5c2f51f37d79fd393442956884a7ba3c" kind="function"><name>MaaAndroidNativeControllerCreate</name></member>
@@ -475,6 +485,11 @@
     <member refid="MaaDef_8h_1a5d201ca1f58e33b38be2fd7b9f977975" kind="define"><name>MaaAdbInputMethod_None</name></member>
     <member refid="MaaDef_8h_1a409e67845229acd9d8332a482f9a7cb8" kind="define"><name>MaaAdbInputMethod_All</name></member>
     <member refid="MaaDef_8h_1ad89de988d2c725fd34d1596843551870" kind="define"><name>MaaAdbInputMethod_Default</name></member>
+    <member refid="MaaDef_8h_1a89235cfc73c8ff0c1dd0219cd0229640" kind="define"><name>MaaIOSScreencapMethod_None</name></member>
+    <member refid="MaaDef_8h_1a7520cc201b6b3f6b04b42aab944646cb" kind="define"><name>MaaIOSScreencapMethod_Stream</name></member>
+    <member refid="MaaDef_8h_1a20db7c7b0f99442c887d2891e2425c8d" kind="define"><name>MaaIOSScreencapMethod_ScreenshotService</name></member>
+    <member refid="MaaDef_8h_1aae117ac63bdf67b282862e9dcaec14ea" kind="define"><name>MaaIOSScreencapMethod_All</name></member>
+    <member refid="MaaDef_8h_1ad09bde33185e039a8dfa8c272071d827" kind="define"><name>MaaIOSScreencapMethod_Default</name></member>
     <member refid="MaaDef_8h_1a614ef2e0ce06147b8077158da914292f" kind="define"><name>MaaWin32ScreencapMethod_None</name></member>
     <member refid="MaaDef_8h_1a8ac9b0f247ee9b853034b35969adc050" kind="define"><name>MaaWin32ScreencapMethod_GDI</name></member>
     <member refid="MaaDef_8h_1ac28f7c7af8541a08033bd77772ebd082" kind="define"><name>MaaWin32ScreencapMethod_FramePool</name></member>
@@ -599,6 +614,10 @@
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a4604a6ffd857e28a942e01c11a2ba949" kind="enumvalue"><name>MaaCtrlOption_ScreenshotTargetExpand</name></member>
     <member refid="MaaDef_8h_1a7ce6a82a2484734da58c3c422d19a9b1" kind="enum"><name>MaaTaskerOptionEnum</name></member>
     <member refid="MaaDef_8h_1a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa" kind="enumvalue"><name>MaaTaskerOption_Invalid</name></member>
+    <member refid="MaaDef_8h_1af73b2d15b59ebd6673fda0f03e8d2bd1" kind="enum"><name>MaaIOSConnectionMethodEnum</name></member>
+    <member refid="MaaDef_8h_1af73b2d15b59ebd6673fda0f03e8d2bd1ac9df3edb459a0cd149d493089d7b0eef" kind="enumvalue"><name>MaaIOSConnectionMethod_Auto</name></member>
+    <member refid="MaaDef_8h_1af73b2d15b59ebd6673fda0f03e8d2bd1ad5df2ce00cda2c1d95851b56877370b9" kind="enumvalue"><name>MaaIOSConnectionMethod_USB</name></member>
+    <member refid="MaaDef_8h_1af73b2d15b59ebd6673fda0f03e8d2bd1a5f1cc7cbde010048e23fc04eeac1685d" kind="enumvalue"><name>MaaIOSConnectionMethod_WiFi</name></member>
     <member refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kind="typedef"><name>MaaBool</name></member>
     <member refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kind="typedef"><name>MaaSize</name></member>
     <member refid="MaaDef_8h_1a9a764a8b46c0c97cbfe2d8e295d90e03" kind="typedef"><name>MaaId</name></member>
@@ -631,6 +650,8 @@
     <member refid="MaaDef_8h_1ade3bcba89b5092219c2af3b0faffa934" kind="typedef"><name>MaaTaskerOption</name></member>
     <member refid="MaaDef_8h_1a337e4b247a734f5c1c058689f75c1369" kind="typedef"><name>MaaAdbScreencapMethod</name></member>
     <member refid="MaaDef_8h_1aa02386b09246fa0704ec371f80bb661f" kind="typedef"><name>MaaAdbInputMethod</name></member>
+    <member refid="MaaDef_8h_1a73193efd9ae17f5ba22a0d67f4a94f1a" kind="typedef"><name>MaaIOSScreencapMethod</name></member>
+    <member refid="MaaDef_8h_1a77dd92b19ca71371f9a043b63fbbe966" kind="typedef"><name>MaaIOSConnectionMethod</name></member>
     <member refid="MaaDef_8h_1a23833339ba6406d680688350d27d37b3" kind="typedef"><name>MaaWin32ScreencapMethod</name></member>
     <member refid="MaaDef_8h_1a29af4457ff72b57b157a1d58d6d28878" kind="typedef"><name>MaaWin32InputMethod</name></member>
     <member refid="MaaDef_8h_1ac2226415cbf081d3ce6fde4b3a5fe205" kind="typedef"><name>MaaMacOSScreencapMethod</name></member>
@@ -780,12 +801,29 @@
     <member refid="MaaToolkitGamescope_8h_1a8f411f8f5c58fe5e7a029b897605f0f4" kind="function"><name>MaaToolkitGamescopeInstanceGetPipeWireNodeId</name></member>
     <member refid="MaaToolkitGamescope_8h_1aee7d23847390ceba497b63417ef6e085" kind="function"><name>MaaToolkitGamescopeInstanceGetEisSocketPath</name></member>
   </compound>
+  <compound refid="MaaToolkitIOSDevice_8h" kind="file"><name>MaaToolkitIOSDevice.h</name>
+    <member refid="MaaToolkitIOSDevice_8h_1ad0bd754d668f93ef10e8b9a86f553aca" kind="typedef"><name>MaaToolkitIOSDeviceCancelCallback</name></member>
+    <member refid="MaaToolkitIOSDevice_8h_1a445ba2b538cf5a9531a0e35a8544a974" kind="function"><name>MaaToolkitIOSDeviceListCreate</name></member>
+    <member refid="MaaToolkitIOSDevice_8h_1aeed173a913e621889683d49085f03bd3" kind="function"><name>MaaToolkitIOSDeviceListDestroy</name></member>
+    <member refid="MaaToolkitIOSDevice_8h_1aa448a3c07a27dadaa29cad48b953777b" kind="function"><name>MaaToolkitIOSDeviceFind</name></member>
+    <member refid="MaaToolkitIOSDevice_8h_1a7192c448ab7639214aebf738fd20ad43" kind="function"><name>MaaToolkitIOSDeviceFindWithOptions</name></member>
+    <member refid="MaaToolkitIOSDevice_8h_1a0b5bbafd0c0452600b84e042f2d5caf9" kind="function"><name>MaaToolkitIOSDeviceListSize</name></member>
+    <member refid="MaaToolkitIOSDevice_8h_1a343c1afb1b07018d2a00e7f51eddf6ac" kind="function"><name>MaaToolkitIOSDeviceListAt</name></member>
+    <member refid="MaaToolkitIOSDevice_8h_1a0cbeed2335ddcb89fa531290b611e280" kind="function"><name>MaaToolkitIOSDeviceGetName</name></member>
+    <member refid="MaaToolkitIOSDevice_8h_1ae3198051e37338c0188acc39381256ac" kind="function"><name>MaaToolkitIOSDeviceGetUdid</name></member>
+    <member refid="MaaToolkitIOSDevice_8h_1a41df96f1f5fe7796f6e7d91612cc7fdb" kind="function"><name>MaaToolkitIOSDeviceGetState</name></member>
+    <member refid="MaaToolkitIOSDevice_8h_1a6f05fa5dea8b65d3aeffa994a80b048a" kind="function"><name>MaaToolkitIOSDeviceGetConnections</name></member>
+    <member refid="MaaToolkitIOSDevice_8h_1aefa1a07954d9e222d1989cd126918bfb" kind="function"><name>MaaToolkitIOSDeviceGetScreencapMethods</name></member>
+    <member refid="MaaToolkitIOSDevice_8h_1a0d23b5ae6f1c06780901e813d98cfc20" kind="function"><name>MaaToolkitIOSDeviceListGetWarnings</name></member>
+  </compound>
   <compound refid="MaaToolkitAPI_8h" kind="file"><name>MaaToolkitAPI.h</name>
   </compound>
   <compound refid="MaaToolkitDef_8h" kind="file"><name>MaaToolkitDef.h</name>
     <member refid="MaaToolkitDef_8h_1a2906320994f3cc516770fdaeb456e72f" kind="enum"><name>MaaMacOSPermissionEnum</name></member>
     <member refid="MaaToolkitDef_8h_1a2906320994f3cc516770fdaeb456e72fac5e10e2877bb53fe1a2af951c6e4129f" kind="enumvalue"><name>MaaMacOSPermissionScreenCapture</name></member>
     <member refid="MaaToolkitDef_8h_1a2906320994f3cc516770fdaeb456e72fa5520a37ee0a329600feaa1a09accd3e4" kind="enumvalue"><name>MaaMacOSPermissionAccessibility</name></member>
+    <member refid="MaaToolkitDef_8h_1af4d8ca0174c49c25359bb079ac66316d" kind="typedef"><name>MaaToolkitIOSDevice</name></member>
+    <member refid="MaaToolkitDef_8h_1a7c3c0034b326be0b0ab822670803c9f1" kind="typedef"><name>MaaToolkitIOSDeviceList</name></member>
     <member refid="MaaToolkitDef_8h_1a4ed920f548223ae34817b720532407cf" kind="typedef"><name>MaaToolkitAdbDevice</name></member>
     <member refid="MaaToolkitDef_8h_1a61bc7b4be1b04be75314fe7d088b0bc6" kind="typedef"><name>MaaToolkitAdbDeviceList</name></member>
     <member refid="MaaToolkitDef_8h_1a5d8743988770806277c247ba9e84040a" kind="typedef"><name>MaaToolkitDesktopWindow</name></member>
@@ -858,6 +896,8 @@
   <compound refid="dir_d44c64559bbebec7f509842c48db8b23" kind="dir"><name>include</name>
   </compound>
   <compound refid="dir_0debf1eee29073ebb629a4e1dfd2a5f6" kind="dir"><name>include/MaaFramework/Instance</name>
+  </compound>
+  <compound refid="dir_bb6cdb76f234ce51e4e5c167785a8dae" kind="dir"><name>include/MaaToolkit/IOSDevice</name>
   </compound>
   <compound refid="dir_a5fd325a74c1f9193b470b47e297ce9b" kind="dir"><name>include/MaaAgentClient</name>
   </compound>

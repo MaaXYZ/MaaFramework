@@ -6,6 +6,7 @@ var hierarchy =
       [ "CustomControlUnitAPI", "classCustomControlUnitAPI.html", null ],
       [ "FullControlUnitAPI", "classFullControlUnitAPI.html", null ],
       [ "GamepadControlUnitAPI", "classGamepadControlUnitAPI.html", null ],
+      [ "IOSControlUnitAPI", "classIOSControlUnitAPI.html", null ],
       [ "KWinControlUnitAPI", "classKWinControlUnitAPI.html", null ],
       [ "LinuxControlUnitAPI", "classLinuxControlUnitAPI.html", null ],
       [ "MacOSControlUnitAPI", "classMacOSControlUnitAPI.html", null ],

@@ -1,0 +1,291 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.12.0" xml:lang="en-US">
+  <compounddef id="MaaToolkitIOSDevice_8h" kind="file" language="C++">
+    <compoundname>MaaToolkitIOSDevice.h</compoundname>
+    <includes refid="MaaToolkitDef_8h" local="yes">../MaaToolkitDef.h</includes>
+    <includedby refid="MaaToolkitAPI_8h" local="yes">include/MaaToolkit/MaaToolkitAPI.h</includedby>
+    <incdepgraph>
+      <node id="3">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="1">
+        <label>include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h</label>
+        <link refid="MaaToolkitIOSDevice_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>../MaaToolkitDef.h</label>
+        <link refid="MaaToolkitDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h</label>
+        <link refid="MaaToolkitIOSDevice_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>include/MaaToolkit/MaaToolkitAPI.h</label>
+        <link refid="MaaToolkitAPI_8h"/>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="MaaToolkitIOSDevice_8h_1ad0bd754d668f93ef10e8b9a86f553aca" prot="public" static="no">
+        <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
+        <definition>typedef MaaBool(MAA_CALL * MaaToolkitIOSDeviceCancelCallback) (void *userdata)</definition>
+        <argsstring>)(void *userdata)</argsstring>
+        <name>MaaToolkitIOSDeviceCancelCallback</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="12" column="13" bodyfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" bodystart="12" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="MaaToolkitIOSDevice_8h_1a445ba2b538cf5a9531a0e35a8544a974" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaToolkitDef_8h_1a7c3c0034b326be0b0ab822670803c9f1" kindref="member">MaaToolkitIOSDeviceList</ref> *</type>
+        <definition>MAA_TOOLKIT_API MaaToolkitIOSDeviceList * MaaToolkitIOSDeviceListCreate</definition>
+        <argsstring>()</argsstring>
+        <name>MaaToolkitIOSDeviceListCreate</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="14" column="45" declfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" declline="14" declcolumn="45"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitIOSDevice_8h_1aeed173a913e621889683d49085f03bd3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> void</type>
+        <definition>MAA_TOOLKIT_API void MaaToolkitIOSDeviceListDestroy</definition>
+        <argsstring>(MaaToolkitIOSDeviceList *list)</argsstring>
+        <name>MaaToolkitIOSDeviceListDestroy</name>
+        <param>
+          <type><ref refid="MaaToolkitDef_8h_1a7c3c0034b326be0b0ab822670803c9f1" kindref="member">MaaToolkitIOSDeviceList</ref> *</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="15" column="26" declfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" declline="15" declcolumn="26"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitIOSDevice_8h_1aa448a3c07a27dadaa29cad48b953777b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceFind</definition>
+        <argsstring>(MaaToolkitIOSDeviceList *list)</argsstring>
+        <name>MaaToolkitIOSDeviceFind</name>
+        <param>
+          <type><ref refid="MaaToolkitDef_8h_1a7c3c0034b326be0b0ab822670803c9f1" kindref="member">MaaToolkitIOSDeviceList</ref> *</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="17" column="29" declfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" declline="17" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitIOSDevice_8h_1a7192c448ab7639214aebf738fd20ad43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_TOOLKIT_API MaaBool MaaToolkitIOSDeviceFindWithOptions</definition>
+        <argsstring>(MaaIOSConnectionMethod connection_method, const char *options_json, MaaToolkitIOSDeviceCancelCallback cancel_callback, void *userdata, MaaToolkitIOSDeviceList *list)</argsstring>
+        <name>MaaToolkitIOSDeviceFindWithOptions</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a77dd92b19ca71371f9a043b63fbbe966" kindref="member">MaaIOSConnectionMethod</ref></type>
+          <declname>connection_method</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>options_json</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaToolkitIOSDevice_8h_1ad0bd754d668f93ef10e8b9a86f553aca" kindref="member">MaaToolkitIOSDeviceCancelCallback</ref></type>
+          <declname>cancel_callback</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>userdata</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaToolkitDef_8h_1a7c3c0034b326be0b0ab822670803c9f1" kindref="member">MaaToolkitIOSDeviceList</ref> *</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="21" column="29" declfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" declline="21" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitIOSDevice_8h_1a0b5bbafd0c0452600b84e042f2d5caf9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+        <definition>MAA_TOOLKIT_API MaaSize MaaToolkitIOSDeviceListSize</definition>
+        <argsstring>(const MaaToolkitIOSDeviceList *list)</argsstring>
+        <name>MaaToolkitIOSDeviceListSize</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a7c3c0034b326be0b0ab822670803c9f1" kindref="member">MaaToolkitIOSDeviceList</ref> *</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="27" column="29" declfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" declline="27" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitIOSDevice_8h_1a343c1afb1b07018d2a00e7f51eddf6ac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const <ref refid="MaaToolkitDef_8h_1af4d8ca0174c49c25359bb079ac66316d" kindref="member">MaaToolkitIOSDevice</ref> *</type>
+        <definition>MAA_TOOLKIT_API const MaaToolkitIOSDevice * MaaToolkitIOSDeviceListAt</definition>
+        <argsstring>(const MaaToolkitIOSDeviceList *list, MaaSize index)</argsstring>
+        <name>MaaToolkitIOSDeviceListAt</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a7c3c0034b326be0b0ab822670803c9f1" kindref="member">MaaToolkitIOSDeviceList</ref> *</type>
+          <declname>list</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="29" column="47" declfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" declline="29" declcolumn="47"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitIOSDevice_8h_1a0cbeed2335ddcb89fa531290b611e280" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
+        <definition>MAA_TOOLKIT_API const char * MaaToolkitIOSDeviceGetName</definition>
+        <argsstring>(const MaaToolkitIOSDevice *device)</argsstring>
+        <name>MaaToolkitIOSDeviceGetName</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1af4d8ca0174c49c25359bb079ac66316d" kindref="member">MaaToolkitIOSDevice</ref> *</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="30" column="32" declfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" declline="30" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitIOSDevice_8h_1ae3198051e37338c0188acc39381256ac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
+        <definition>MAA_TOOLKIT_API const char * MaaToolkitIOSDeviceGetUdid</definition>
+        <argsstring>(const MaaToolkitIOSDevice *device)</argsstring>
+        <name>MaaToolkitIOSDeviceGetUdid</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1af4d8ca0174c49c25359bb079ac66316d" kindref="member">MaaToolkitIOSDevice</ref> *</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="31" column="32" declfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" declline="31" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitIOSDevice_8h_1a41df96f1f5fe7796f6e7d91612cc7fdb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
+        <definition>MAA_TOOLKIT_API const char * MaaToolkitIOSDeviceGetState</definition>
+        <argsstring>(const MaaToolkitIOSDevice *device)</argsstring>
+        <name>MaaToolkitIOSDeviceGetState</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1af4d8ca0174c49c25359bb079ac66316d" kindref="member">MaaToolkitIOSDevice</ref> *</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="34" column="32" declfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" declline="34" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitIOSDevice_8h_1a6f05fa5dea8b65d3aeffa994a80b048a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
+        <definition>MAA_TOOLKIT_API const char * MaaToolkitIOSDeviceGetConnections</definition>
+        <argsstring>(const MaaToolkitIOSDevice *device)</argsstring>
+        <name>MaaToolkitIOSDeviceGetConnections</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1af4d8ca0174c49c25359bb079ac66316d" kindref="member">MaaToolkitIOSDevice</ref> *</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="36" column="32" declfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" declline="36" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitIOSDevice_8h_1aefa1a07954d9e222d1989cd126918bfb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a73193efd9ae17f5ba22a0d67f4a94f1a" kindref="member">MaaIOSScreencapMethod</ref></type>
+        <definition>MAA_TOOLKIT_API MaaIOSScreencapMethod MaaToolkitIOSDeviceGetScreencapMethods</definition>
+        <argsstring>(const MaaToolkitIOSDevice *device)</argsstring>
+        <name>MaaToolkitIOSDeviceGetScreencapMethods</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1af4d8ca0174c49c25359bb079ac66316d" kindref="member">MaaToolkitIOSDevice</ref> *</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="37" column="43" declfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" declline="37" declcolumn="43"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitIOSDevice_8h_1a0d23b5ae6f1c06780901e813d98cfc20" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
+        <definition>MAA_TOOLKIT_API const char * MaaToolkitIOSDeviceListGetWarnings</definition>
+        <argsstring>(const MaaToolkitIOSDeviceList *list)</argsstring>
+        <name>MaaToolkitIOSDeviceListGetWarnings</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a7c3c0034b326be0b0ab822670803c9f1" kindref="member">MaaToolkitIOSDeviceList</ref> *</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" line="38" column="32" declfile="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h" declline="38" declcolumn="32"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"/>
+  </compounddef>
+</doxygen>

@@ -35,6 +35,9 @@
     <loc>https://maafw.com/GamepadControlUnitAPI_8h_source.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/IOSControlUnitAPI_8h_source.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/KWinControlUnitAPI_8h_source.html</loc>
   </url>
   <url>
@@ -116,6 +119,9 @@
     <loc>https://maafw.com/MaaToolkitGamescope_8h_source.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/MaaToolkitIOSDevice_8h_source.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/MaaToolkitAPI_8h_source.html</loc>
   </url>
   <url>
@@ -156,6 +162,9 @@
   </url>
   <url>
     <loc>https://maafw.com/GamepadControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/IOSControlUnitAPI_8h.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/KWinControlUnitAPI_8h.html</loc>
@@ -239,6 +248,9 @@
     <loc>https://maafw.com/MaaToolkitGamescope_8h.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/MaaToolkitIOSDevice_8h.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/MaaToolkitAPI_8h.html</loc>
   </url>
   <url>
@@ -291,6 +303,12 @@
   </url>
   <url>
     <loc>https://maafw.com/classGamepadControlUnitAPI-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classIOSControlUnitAPI.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classIOSControlUnitAPI-members.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/classKWinControlUnitAPI.html</loc>
@@ -450,6 +468,9 @@
   </url>
   <url>
     <loc>https://maafw.com/dir_0debf1eee29073ebb629a4e1dfd2a5f6.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/dir_bb6cdb76f234ce51e4e5c167785a8dae.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/dir_a5fd325a74c1f9193b470b47e297ce9b.html</loc>
