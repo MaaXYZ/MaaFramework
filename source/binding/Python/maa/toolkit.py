@@ -2,10 +2,13 @@ import ctypes
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 from .define import *
 from .library import Library
+
+
+_IOSCancelCallback = FUNCTYPE(MaaBool, ctypes.c_void_p)
 
 
 @dataclass
@@ -30,6 +33,17 @@ class AdbDevice:
     screencap_methods: int
     input_methods: int
     config: dict[str, Any]
+
+
+@dataclass
+class IOSDevice:
+    """iOS discovery result; connections retain every USB/Wi-Fi candidate."""
+
+    name: str
+    udid: str
+    screencap_methods: int
+    connections: list[dict[str, Any]]
+    state: str
 
 
 @dataclass
@@ -177,6 +191,65 @@ class Toolkit:
         Library.toolkit().MaaToolkitAdbDeviceListDestroy(list_handle)
 
         return devices
+
+    @staticmethod
+    def find_ios_devices(
+        timeout_ms: int = 3000,
+        config: Optional[dict[str, Any]] = None,
+        connection_method: MaaIOSConnectionMethodEnum = MaaIOSConnectionMethodEnum.Auto,
+        cancelled: Optional[Callable[[], bool]] = None,
+    ) -> list[IOSDevice]:
+        """Discover USB/Wi-Fi devices without pairing or starting media.
+
+        cancelled may run on a native worker thread; it must be thread-safe.
+        Callback exceptions are re-raised after native work has stopped.
+        Device state is discovered/paired/connected, not a service health check.
+        """
+        if timeout_ms < 0 or timeout_ms > 60000:
+            raise ValueError("timeout_ms must be between 0 and 60000")
+        if config is not None and not isinstance(config, dict):
+            raise TypeError("xdb server config must be a dict")
+        if cancelled is not None and not callable(cancelled):
+            raise TypeError("cancelled must be callable")
+        errors: list[BaseException] = []
+
+        def cancel(_userdata: Any) -> bool:
+            if errors:
+                return True
+            try:
+                return bool(cancelled())
+            except BaseException as error:
+                errors.append(error)
+                return True
+
+        # The native call joins its worker before these borrowed objects are released.
+        cancel_callback = _IOSCancelCallback(cancel) if cancelled is not None else _IOSCancelCallback()
+        Toolkit._set_ios_api_properties()
+        api = Library.toolkit()
+        handle = api.MaaToolkitIOSDeviceListCreate()
+        if not handle:
+            raise MemoryError("could not allocate iOS device list")
+        try:
+            options = json.dumps({**(config or {}), "timeout_ms": timeout_ms}).encode()
+            success = api.MaaToolkitIOSDeviceFindWithOptions(connection_method, options, cancel_callback, None, handle)
+            if errors:
+                raise errors[0]
+            if not success:
+                warnings = api.MaaToolkitIOSDeviceListGetWarnings(handle).decode("utf-8")
+                raise RuntimeError(f"iOS discovery failed: {warnings}")
+            devices = []
+            for index in range(api.MaaToolkitIOSDeviceListSize(handle)):
+                device = api.MaaToolkitIOSDeviceListAt(handle, index)
+                devices.append(IOSDevice(
+                    api.MaaToolkitIOSDeviceGetName(device).decode("utf-8"),
+                    api.MaaToolkitIOSDeviceGetUdid(device).decode("utf-8"),
+                    int(api.MaaToolkitIOSDeviceGetScreencapMethods(device)),
+                    json.loads(api.MaaToolkitIOSDeviceGetConnections(device).decode("utf-8")),
+                    api.MaaToolkitIOSDeviceGetState(device).decode("utf-8"),
+                ))
+            return devices
+        finally:
+            api.MaaToolkitIOSDeviceListDestroy(handle)
 
     @staticmethod
     def find_desktop_windows() -> list[DesktopWindow]:
@@ -445,3 +518,44 @@ class Toolkit:
 
         Library.toolkit().MaaToolkitPortalHelperSetRestoreToken.restype = None
         Library.toolkit().MaaToolkitPortalHelperSetRestoreToken.argtypes = [MaaToolkitPortalHelperHandle, ctypes.c_char_p]
+
+    _ios_api_properties_initialized: bool = False
+
+    @staticmethod
+    def _set_ios_api_properties() -> None:
+        if Toolkit._ios_api_properties_initialized:
+            return
+
+        with Library._api_lock:
+            if Toolkit._ios_api_properties_initialized:
+                return
+
+            try:
+                Toolkit._assign_ios_api_properties()
+            except AttributeError as error:
+                raise RuntimeError(
+                    "iOS Toolkit APIs are not available in the current build."
+                ) from error
+            Toolkit._ios_api_properties_initialized = True
+
+    @staticmethod
+    def _assign_ios_api_properties() -> None:
+        api = Library.toolkit()
+        api.MaaToolkitIOSDeviceListCreate.restype = ctypes.c_void_p
+        api.MaaToolkitIOSDeviceListCreate.argtypes = []
+        api.MaaToolkitIOSDeviceListDestroy.restype = None
+        api.MaaToolkitIOSDeviceListDestroy.argtypes = [ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceFindWithOptions.restype = MaaBool
+        api.MaaToolkitIOSDeviceFindWithOptions.argtypes = [MaaIOSConnectionMethod, ctypes.c_char_p,
+            _IOSCancelCallback, ctypes.c_void_p, ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceListSize.restype = MaaSize
+        api.MaaToolkitIOSDeviceListSize.argtypes = [ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceListAt.restype = ctypes.c_void_p
+        api.MaaToolkitIOSDeviceListAt.argtypes = [ctypes.c_void_p, MaaSize]
+        for name in ("MaaToolkitIOSDeviceGetName", "MaaToolkitIOSDeviceGetUdid",
+                     "MaaToolkitIOSDeviceGetConnections", "MaaToolkitIOSDeviceGetState", "MaaToolkitIOSDeviceListGetWarnings"):
+            function = getattr(api, name)
+            function.restype = ctypes.c_char_p
+            function.argtypes = [ctypes.c_void_p]
+        api.MaaToolkitIOSDeviceGetScreencapMethods.restype = MaaIOSScreencapMethod
+        api.MaaToolkitIOSDeviceGetScreencapMethods.argtypes = [ctypes.c_void_p]

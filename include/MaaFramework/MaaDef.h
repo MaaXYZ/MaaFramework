@@ -350,6 +350,35 @@ typedef uint64_t MaaAdbInputMethod;
 #define MaaAdbInputMethod_All (~MaaAdbInputMethod_None)
 #define MaaAdbInputMethod_Default (MaaAdbInputMethod_All & (~MaaAdbInputMethod_EmulatorExtras))
 
+// MaaIOSScreencapMethod:
+/**
+ * @brief iOS screencap method flags.
+ *
+ * Use bitwise OR to select the permitted backends. Video frames are preferred
+ * when Stream is enabled; ScreenshotService provides a lossless RPC fallback.
+ * Stream alone has no screenshot fallback. ScreenshotService alone starts no
+ * video session or background video decoder.
+ *
+ * Default: All methods. Reported availability describes supported backends,
+ * not a guarantee that every connected device/DDI exposes both services.
+ */
+typedef uint64_t MaaIOSScreencapMethod;
+#define MaaIOSScreencapMethod_None 0ULL
+#define MaaIOSScreencapMethod_Stream 1ULL
+#define MaaIOSScreencapMethod_ScreenshotService (1ULL << 1)
+#define MaaIOSScreencapMethod_All (~MaaIOSScreencapMethod_None)
+#define MaaIOSScreencapMethod_Default MaaIOSScreencapMethod_All
+
+// Connection selection is independent of the wireless credentials.
+typedef int32_t MaaIOSConnectionMethod;
+
+enum MaaIOSConnectionMethodEnum
+{
+    MaaIOSConnectionMethod_Auto = 0,
+    MaaIOSConnectionMethod_USB = 1,
+    MaaIOSConnectionMethod_WiFi = 2,
+};
+
 // MaaWin32ScreencapMethod:
 /**
  * @brief Win32 screencap method flags
