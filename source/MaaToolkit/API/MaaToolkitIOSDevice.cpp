@@ -1,8 +1,8 @@
 #include "MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h"
 
-#include "MaaFramework/Utility/MaaBuffer.h"
 #include "ControlUnit/IOSDeviceAPI.h"
 #include "LibraryHolder/ControlUnit.h"
+#include "MaaFramework/Utility/MaaBuffer.h"
 #include <memory>
 #include <meojson/json.hpp>
 #include <string>
@@ -22,7 +22,6 @@ struct MaaToolkitIOSDeviceList
     std::vector<MaaToolkitIOSDevice> devices;
     std::string warnings = "[]";
 };
-
 
 MaaToolkitIOSDeviceList* MaaToolkitIOSDeviceListCreate()
 {

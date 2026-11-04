@@ -88,8 +88,9 @@ int main()
         },
         error);
     if (!require(
-            !released && keys_released == 1 && touch_released == 2 && buttons_released == 1 && held.keyboard.empty() && held.touches.size() == 1 && held.touches.contains(3)
-                && held.buttons == std::set<uint16_t> { 0xe9 } && error == "touch release failed",
+            !released && keys_released == 1 && touch_released == 2 && buttons_released == 1 && held.keyboard.empty()
+                && held.touches.size() == 1 && held.touches.contains(3) && held.buttons == std::set<uint16_t> { 0xe9 }
+                && error == "touch release failed",
             "cleanup releases all inputs and retains only failures")) {
         return 1;
     }

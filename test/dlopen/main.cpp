@@ -25,7 +25,10 @@ int main()
 
     std::cout << "********** IOSControlUnitLibraryHolder::create_control_unit **********" << std::endl;
     auto ios_handle = MAA_NS::IOSControlUnitLibraryHolder::create_control_unit(
-        "offline-test-device", MaaIOSScreencapMethod_ScreenshotService, MaaIOSConnectionMethod_USB, nullptr);
+        "offline-test-device",
+        MaaIOSScreencapMethod_ScreenshotService,
+        MaaIOSConnectionMethod_USB,
+        nullptr);
     if (!ios_handle) {
         std::cerr << "Failed to create iOS control unit" << std::endl;
         return -1;

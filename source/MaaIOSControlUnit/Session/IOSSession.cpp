@@ -252,15 +252,13 @@ bool IOSSession::touch(int contact, double x, double y, bool down, std::string& 
     if (down) {
         inputs_.touches[contact] = { x, y }; // Failed sends may already have reached the device.
     }
-    const bool result = client_.call(
-        "input.touch", json::object { { "contact", contact }, { "x", x }, { "y", y }, { "down", down } }, err);
+    const bool result = client_.call("input.touch", json::object { { "contact", contact }, { "x", x }, { "y", y }, { "down", down } }, err);
     if (result && !down) {
         inputs_.touches.erase(contact);
     }
     if (!result && down) {
         std::string release_err;
-        if (client_.call(
-                "input.touch", json::object { { "contact", contact }, { "x", x }, { "y", y }, { "down", false } }, release_err)) {
+        if (client_.call("input.touch", json::object { { "contact", contact }, { "x", x }, { "y", y }, { "down", false } }, release_err)) {
             inputs_.touches.erase(contact);
         }
     }

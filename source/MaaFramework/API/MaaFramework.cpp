@@ -59,11 +59,8 @@ MaaController* MaaIOSControllerCreate(
         return nullptr;
     }
 
-    auto control_unit = MAA_NS::IOSControlUnitLibraryHolder::create_control_unit(
-        selected_udid,
-        screencap_methods,
-        connection_method,
-        config_json);
+    auto control_unit =
+        MAA_NS::IOSControlUnitLibraryHolder::create_control_unit(selected_udid, screencap_methods, connection_method, config_json);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";

@@ -125,7 +125,6 @@ struct IOSControllerImpl : public ControllerImpl
         maajs::OptionalParam<std::string> config,
         maajs::OptionalParam<MaaIOSConnectionMethod> connection_method);
 
-
     constexpr static char name[] = "IOSController";
 
     static IOSControllerImpl* ctor(const maajs::CallbackInfo&);

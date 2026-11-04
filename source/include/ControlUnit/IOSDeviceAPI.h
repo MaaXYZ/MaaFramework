@@ -16,8 +16,6 @@ public:
         MaaToolkitIOSDeviceCancelCallback cancel_callback,
         void* userdata,
         MaaStringBuffer* result) = 0;
-
-
 };
 
 MAA_CTRL_UNIT_NS_END
