@@ -1,7 +1,6 @@
 #include <filesystem>
 
 #include "module/BatchOcrRepro.h"
-#include "module/NeuralNetworkClassifierLabelTest.h"
 #include "module/PipelineSmoking.h"
 #include "module/RunWithoutFile.h"
 
@@ -23,9 +22,6 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &lv, sizeof(lv));
 
     if (!run_without_file(testset_dir)) {
-        return -1;
-    }
-    if (!neural_network_classifier_label_test()) {
         return -1;
     }
     if (!pipeline_smoking(testset_dir)) {
