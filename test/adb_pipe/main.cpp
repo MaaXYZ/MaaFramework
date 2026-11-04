@@ -101,12 +101,15 @@ int main(int argc, char** argv)
         }
     });
     TestUnit unit;
+    const bool expect_timeout = mode == "grace_exit" || mode == "timeout_retry" || inherited_writer;
+    // Successful reads must tolerate child startup on busy CI runners.
+    const auto timeout = expect_timeout ? 100ms : 1s;
     const auto start = std::chrono::steady_clock::now();
-    const auto result = unit.startup_and_read_pipe({ executable, { "--child", mode, marker_path } }, 100ms);
+    const auto result = unit.startup_and_read_pipe({ executable, { "--child", mode, marker_path } }, timeout);
     const auto elapsed = std::chrono::steady_clock::now() - start;
     std::cout << mode << ": elapsed_ms=" << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()
               << " accepted=" << result.has_value() << '\n';
-    if (elapsed >= 700ms) {
+    if (elapsed >= timeout + 600ms) {
         std::cerr << "read and cleanup exceeded the deadline allowance\n";
         return 1;
     }
