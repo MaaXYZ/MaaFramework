@@ -2,6 +2,10 @@ if(WITH_ADB_CONTROLLER)
     add_subdirectory(MaaAdbControlUnit)
 endif()
 
+if(WITH_IOS_CONTROLLER)
+    add_subdirectory(MaaIOSControlUnit)
+endif()
+
 if(WITH_WIN32_CONTROLLER)
     add_subdirectory(MaaWin32ControlUnit)
 endif()
@@ -47,10 +51,6 @@ add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)
 
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaControlUnit" DESTINATION "include")
-
-if(BUILD_PICLI)
-    add_subdirectory(MaaPiCli)
-endif()
 
 if(WITH_MAA_AGENT)
     add_subdirectory(MaaAgentClient)

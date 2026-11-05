@@ -135,6 +135,7 @@ class JCustomRecognition:
     roi: JTarget = (0, 0, 0, 0)
     roi_offset: JRect = (0, 0, 0, 0)
     custom_recognition_param: Any = None
+    index: int = 0
 
 
 @dataclass

@@ -46,7 +46,15 @@ const myReco: maa.CustomRecognitionCallback = async self => {
 
     analyzed = true
 
-    return [[11, 4, 5, 14], 'Hello World!']
+    return [
+        [11, 4, 5, 14],
+        JSON.stringify({
+            $all: [
+                { box: [11, 4, 5, 14], detail: { message: 'first' } },
+                { box: [21, 24, 25, 34], detail: { message: 'second' } }
+            ]
+        })
+    ]
 }
 
 const myAct: maa.CustomActionCallback = async self => {
@@ -165,7 +173,8 @@ async function api_test() {
             custom_recognition: 'MyRec',
             action: 'Custom',
             custom_action: 'MyAct',
-            custom_action_param: '哈哈哈(*´▽｀)ノノ'
+            custom_action_param: '哈哈哈(*´▽｀)ノノ',
+            index: -1
         }
     }
 
@@ -175,6 +184,24 @@ async function api_test() {
         process.exit(1)
     }
     console.log('pipeline detail:', detail)
+
+    const rec_node_id = detail.nodes.find(id => tasker.node_detail(id)?.name === 'Rec')
+    const rec_node = rec_node_id === undefined ? null : tasker.node_detail(rec_node_id)
+    const reco_detail = rec_node?.reco ?? null
+    console.log('reco detail:', reco_detail)
+    if (!reco_detail || !reco_detail.hit) {
+        console.log('custom recognition should hit')
+        process.exit(1)
+    }
+    const multi_detail = Array.isArray(reco_detail.detail) ? null : reco_detail.detail
+    if (!multi_detail || multi_detail.all.length !== 2 || multi_detail.filtered.length !== 2) {
+        console.log('custom recognition should return 2 results')
+        process.exit(1)
+    }
+    if (JSON.stringify(multi_detail.best?.box) !== JSON.stringify([21, 24, 25, 34])) {
+        console.log('index -1 should select the second result')
+        process.exit(1)
+    }
 
     tasker.resource?.post_bundle('/path/to/resource')
     tasker.clear_cache()

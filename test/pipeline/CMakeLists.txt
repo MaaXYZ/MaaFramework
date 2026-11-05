@@ -9,9 +9,10 @@ add_executable(PipelineTesting ${pipeline_testing_src})
 
 target_link_libraries(PipelineTesting MaaFramework)
 
-# Exercise the private vision classes with ORT profiling, without exporting
+# Exercise the private vision classes and real inference sessions without exporting
 # internal APIs from MaaFramework just for tests.
 target_sources(PipelineTesting PRIVATE
+    ../../source/MaaFramework/Resource/OrtSession.cpp
     ../../source/MaaFramework/Vision/NeuralNetworkClassifier.cpp
     ../../source/MaaFramework/Vision/NeuralNetworkDetector.cpp
     ../../source/MaaFramework/Vision/VisionBase.cpp
@@ -36,6 +37,7 @@ set_target_properties(PipelineTesting PROPERTIES FOLDER Testing)
 install(TARGETS PipelineTesting RUNTIME DESTINATION bin)
 install(DIRECTORY resource/NeuralNetworkCache DESTINATION test)
 install(DIRECTORY resources/BatchOcrRepro DESTINATION test)
+install(DIRECTORY resources/PostStopInterrupt DESTINATION test)
 
 if(WIN32)
     install(FILES $<TARGET_PDB_FILE:PipelineTesting> DESTINATION symbol OPTIONAL)

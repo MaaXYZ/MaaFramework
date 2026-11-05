@@ -36,9 +36,6 @@ async function main() {
         const sepPackPath = path.join(releasePath, `maa-node-${nplat}`)
 
         for (const file of await fs.readdir(maaBinPath)) {
-            if (/MaaPiCli/.test(file)) {
-                continue
-            }
             await fs.cp(path.join(maaBinPath, file), path.join(sepPackPath, file), {
                 recursive: true,
             })

@@ -7,6 +7,7 @@ set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 include(source/MaaUtils/MaaUtils.cmake)
 
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
+option(WITH_IOS_CONTROLLER "build with iOS controller via XDeviceBridge" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_MACOS_CONTROLLER "build with macOS controller" ON)
 option(WITH_ANDROID_NATIVE_CONTROLLER "build with Android native controller" ON)
@@ -22,14 +23,16 @@ option(WITH_NODEJS_BINDING "build with nodejs binding" OFF)
 option(WITH_QUICKJS_BINDING "build with quickjs binding" OFF)
 
 option(WITH_MAA_AGENT "build with MaaAgent" ON)
+option(WITH_NCNN "build with ncnn inference backend (Android only)" ${ANDROID})
 
-option(BUILD_PICLI "build maa picli" ON)
 option(BUILD_SAMPLE "build a demo" OFF)
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 option(BUILD_NODE_TEST "build node test" OFF)
 option(BUILD_MACOS_TEST "build macOS test" OFF)
 option(BUILD_LINUX_TEST "build Linux test" OFF)
+option(BUILD_IOS_TEST "build iOS test" OFF)
+option(BUILD_ADB_PIPE_TESTING "build POSIX ADB child-pipe regression tests" OFF)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)
 option(ENABLE_HASH_VERSION "enable hash version from git" OFF)
@@ -42,6 +45,11 @@ set(MAA_PRIVATE_INC ${CMAKE_SOURCE_DIR}/source/include)
 if(NOT WITH_REPLAY_CONTROLLER)
     message(STATUS "Replay controller is disabled, disable BUILD_PIPELINE_TESTING")
     set(BUILD_PIPELINE_TESTING OFF)
+endif()
+
+if(NOT WITH_IOS_CONTROLLER)
+    message(STATUS "iOS controller is disabled, disable BUILD_IOS_TEST")
+    set(BUILD_IOS_TEST OFF)
 endif()
 
 # check options
@@ -89,6 +97,18 @@ add_subdirectory(3rdparty)
 add_subdirectory(source)
 add_subdirectory(tools)
 
+target_include_directories(
+    MaaUtils
+    PUBLIC $<BUILD_INTERFACE:${MAAUTILS_DIR}/include> $<INSTALL_INTERFACE:include>)
+# MaaUtils public headers expose Boost and OpenCV types.
+target_link_libraries(
+    MaaUtils PUBLIC Boost::headers Boost::system ${OpenCV_LIBS})
+
+if(LINUX)
+    find_package(Threads REQUIRED)
+    target_link_libraries(MaaUtils PUBLIC Threads::Threads)
+endif()
+
 if(BUILD_SAMPLE)
     add_subdirectory(sample/cpp)
 endif()
@@ -105,6 +125,14 @@ if(BUILD_DLOPEN_TESTING)
     add_subdirectory(test/dlopen)
 endif()
 
+if(BUILD_ADB_PIPE_TESTING)
+    if(NOT UNIX OR ANDROID OR NOT WITH_ADB_CONTROLLER)
+        message(FATAL_ERROR "BUILD_ADB_PIPE_TESTING requires a POSIX host and WITH_ADB_CONTROLLER")
+    endif()
+    enable_testing()
+    add_subdirectory(test/adb_pipe)
+endif()
+
 if(BUILD_NODE_TEST)
     add_subdirectory(tools/NodeTest)
 endif()
@@ -117,14 +145,29 @@ if (BUILD_LINUX_TEST)
     add_subdirectory(test/linux_test)
 endif ()
 
+if(BUILD_IOS_TEST)
+    enable_testing()
+    add_subdirectory(test/ios_test)
+endif()
+
+option(BUILD_WIN32_GEOMETRY_TESTING "build Windows window geometry regression tests" OFF)
+if(WIN32 AND BUILD_WIN32_GEOMETRY_TESTING)
+    enable_testing()
+    add_subdirectory(test/win32_test/window_geometry)
+endif()
+
 maadeps_install(bin)
 
 install(
     TARGETS MaaUtils
     EXPORT MaaFrameworkTargets
     RUNTIME DESTINATION bin
-    LIBRARY DESTINATION bin # ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION bin
+    ARCHIVE DESTINATION lib
 )
+
+install(DIRECTORY "${MAAUTILS_DIR}/include/MaaUtils" DESTINATION "include")
+install(DIRECTORY "${MAAUTILS_DIR}/include/meojson" DESTINATION "include")
 
 if(WIN32)
     install(FILES $<TARGET_PDB_FILE:MaaUtils> DESTINATION symbol OPTIONAL)

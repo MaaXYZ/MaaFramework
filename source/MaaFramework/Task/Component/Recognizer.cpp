@@ -3,10 +3,6 @@
 #include <algorithm>
 #include <ranges>
 
-MAA_SUPPRESS_CV_WARNINGS_BEGIN
-#include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
-MAA_SUPPRESS_CV_WARNINGS_END
-
 #include "CustomRecognition.h"
 #include "Global/OptionMgr.h"
 #include "MaaUtils/ImageIo.h"
@@ -25,7 +21,7 @@ MAA_TASK_NS_BEGIN
 
 namespace
 {
-// fastdeploy DBDetectorPreprocessor 默认 max_side_len，仅在拿不到 det 模型实例时兜底
+// 默认 det 缩放上限，仅在拿不到 OCR 会话时兜底
 constexpr int kDetFallbackMaxSideLen = 960;
 }
 
@@ -289,21 +285,10 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
     if (can_use_batch_cache && ocr_batch_cache_->results.contains(name)) {
         const auto& cached = ocr_batch_cache_->results.at(name);
         LogDebug << "OCR using batch cache" << VAR(name) << VAR(cached);
-        return build_result(name, "OCR", OCRer(image_, rois, param, cached, resource()->ocr_res().recer(param.model), name));
+        return build_result(name, "OCR", OCRer(image_, rois, param, cached, resource()->ocr_res().session(param.model), name));
     }
 
-    return build_result(
-        name,
-        "OCR",
-        OCRer(
-            image_,
-            rois,
-            param,
-            resource()->ocr_res().deter(param.model),
-            resource()->ocr_res().recer(param.model),
-            resource()->ocr_res().ocrer(param.model),
-            name,
-            std::move(color_filter)));
+    return build_result(name, "OCR", OCRer(image_, rois, param, resource()->ocr_res().session(param.model), name, std::move(color_filter)));
 }
 
 RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierParam& param, const std::string& name)
@@ -326,19 +311,12 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
         return { };
     }
 
-    auto& onnx_res = resource()->onnx_res();
+    auto& inference_res = resource()->inference_res();
 
     return build_result(
         name,
         "NeuralNetworkClassify",
-        NeuralNetworkClassifier(
-            image_,
-            rois,
-            param,
-            onnx_res.classifier(param.model),
-            onnx_res.memory_info(),
-            name,
-            &nn_cache_->classifiers));
+        NeuralNetworkClassifier(image_, rois, param, inference_res.classifier(param.model), name, &nn_cache_->classifiers));
 }
 
 RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam& param, const std::string& name)
@@ -361,12 +339,12 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
         return { };
     }
 
-    auto& onnx_res = resource()->onnx_res();
+    auto& inference_res = resource()->inference_res();
 
     return build_result(
         name,
         "NeuralNetworkDetect",
-        NeuralNetworkDetector(image_, rois, param, onnx_res.detector(param.model), onnx_res.memory_info(), name, &nn_cache_->detectors));
+        NeuralNetworkDetector(image_, rois, param, inference_res.detector(param.model), name, &nn_cache_->detectors));
 }
 
 RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionParam& param, const std::string& name)
@@ -613,11 +591,21 @@ std::vector<cv::Rect> Recognizer::get_rois_from_pretask(const std::string& name,
     if (use_best) {
         if (auto it = sub_best_box_->find(name); it != sub_best_box_->end()) {
             LogDebug << "pre task from sub_best_box_" << VAR(name) << VAR(it->second);
+            // 子识别没有选中结果时用空矩形占位，此时应视为无 ROI，而不是让 correct_roi 扩成整张图
+            if (it->second.empty()) {
+                LogDebug << "pre task has no best box" << VAR(name);
+                return { };
+            }
             return { it->second };
         }
     }
     else {
         if (auto it = sub_filtered_boxes_->find(name); it != sub_filtered_boxes_->end()) {
+            // 没有选中结果时 filtered 同样不应作为下游的 ROI，否则下游会拿着这些框继续识别并命中
+            if (auto best_it = sub_best_box_->find(name); best_it != sub_best_box_->end() && best_it->second.empty()) {
+                LogDebug << "pre task has no best box" << VAR(name);
+                return { };
+            }
             LogDebug << "pre task from sub_filtered_boxes_" << VAR(name) << VAR(it->second.size());
             return it->second;
         }
@@ -690,10 +678,8 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
     // det 预处理按整张输入图的最大边计算缩放，超过 max_side_len 便整体降采样。
     // union 混合多个节点的 ROI 时，小 ROI 的文字会被连带缩小而漏检，
     // 因此按 max_side_len 预算分簇，保证每簇的 det 输入不越过降采样拐点，与单独识别同尺度
-    int max_side_len = kDetFallbackMaxSideLen;
-    if (auto deter = resource()->ocr_res().deter(batch_param.model)) {
-        max_side_len = deter->GetPreprocessor().GetMaxSideLen();
-    }
+    auto ocr_session = resource()->ocr_res().session(batch_param.model);
+    int max_side_len = ocr_session ? ocr_session->det_max_side_len() : kDetFallbackMaxSideLen;
 
     const auto clusters = cluster_batch_ocr(entries, max_side_len);
     if (clusters.empty()) {
@@ -716,14 +702,7 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
             }
         }
 
-        OCRer ocrer(
-            masked_image,
-            { cluster.union_roi },
-            batch_param,
-            resource()->ocr_res().deter(batch_param.model),
-            resource()->ocr_res().recer(batch_param.model),
-            resource()->ocr_res().ocrer(batch_param.model),
-            cluster.batch_name);
+        OCRer ocrer(masked_image, { cluster.union_roi }, batch_param, ocr_session, cluster.batch_name);
 
         for (const auto& [node, rois] : cluster.node_rois) {
             auto& cache = ocr_batch_cache_->results[node];

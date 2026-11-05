@@ -1,5 +1,12 @@
 @PACKAGE_INIT@
 
+include(CMakeFindDependencyMacro)
+find_dependency(Boost REQUIRED CONFIG COMPONENTS headers regex system)
+find_dependency(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs)
+if(LINUX)
+    find_dependency(Threads REQUIRED)
+endif()
+
 include("${CMAKE_CURRENT_LIST_DIR}/MaaFramework.cmake")
 
 check_required_components(MaaFramework)

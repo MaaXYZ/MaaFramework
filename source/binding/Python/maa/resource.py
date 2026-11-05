@@ -343,6 +343,19 @@ class Resource:
         )
         return self.set_inference(MaaInferenceExecutionProviderEnum.CoreML, coreml_flag)
 
+    def use_ncnn(self) -> bool:
+        """使用 NCNN (CPU) 进行推理 / Use NCNN (CPU) for inference
+
+        仅 Android 可用，其他平台返回 False。需在加载资源前调用。
+        Only available on Android, returns False on other platforms. Must be called before loading resources.
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        return self.set_inference(
+            MaaInferenceExecutionProviderEnum.NCNN, MaaInferenceDeviceEnum.CPU
+        )
+
     def use_auto_ep(self) -> bool:
         """自动选择推理执行提供者 / Auto select inference execution provider
 

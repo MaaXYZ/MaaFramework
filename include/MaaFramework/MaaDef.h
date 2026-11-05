@@ -175,6 +175,18 @@ enum MaaInferenceExecutionProviderEnum
     // (ep.webgpuexecutionprovider.deviceId). Auto uses device 0.
     // Shipped on Windows, Linux and macOS.
     MaaInferenceExecutionProvider_WebGPU = 5,
+
+    // NCNN, only available when MaaFW is built with NCNN (Android only).
+    // Setting it on other builds fails (MaaResourceSetOption returns false).
+    // MaaResOption_InferenceDevice: CPU / Auto -> NCNN CPU; GPU is not supported yet, other values fail the loading.
+    // Not tried by Auto.
+    // Models are loaded from `<model stem>.ncnn.param/.ncnn.bin/.ncnn.json` (the "model" field with .onnx replaced),
+    // the .onnx file itself is not needed. There is no fallback to onnxruntime: a missing or broken ncnn model fails
+    // the recognition, so ship ncnn models together with this provider.
+    // OCR also runs on NCNN: `det.ncnn.param/.bin`, `rec.ncnn.param/.bin` and `keys.txt` in the OCR model dir, no fallback either.
+    // Runs in fp32 by default. fp16 (use_fp16_packed / use_fp16_storage / use_fp16_arithmetic) can be enabled per model in the "options" of
+    // the .ncnn.json (optional `det.ncnn.json` / `rec.ncnn.json` for OCR), see docs.
+    MaaInferenceExecutionProvider_NCNN = 6,
 };
 
 enum MaaResOptionEnum
@@ -190,6 +202,7 @@ enum MaaResOptionEnum
 
     /// Use the specified inference execution provider
     /// Please set this option before loading the model.
+    /// Once resource loading starts (any MaaResourcePost*), switching to or from NCNN fails until MaaResourceClear().
     ///
     /// value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider)
     /// default value is MaaInferenceExecutionProvider_Auto
@@ -336,6 +349,35 @@ typedef uint64_t MaaAdbInputMethod;
 #define MaaAdbInputMethod_None 0ULL
 #define MaaAdbInputMethod_All (~MaaAdbInputMethod_None)
 #define MaaAdbInputMethod_Default (MaaAdbInputMethod_All & (~MaaAdbInputMethod_EmulatorExtras))
+
+// MaaIOSScreencapMethod:
+/**
+ * @brief iOS screencap method flags.
+ *
+ * Use bitwise OR to select the permitted backends. Video frames are preferred
+ * when Stream is enabled; ScreenshotService provides a lossless RPC fallback.
+ * Stream alone has no screenshot fallback. ScreenshotService alone starts no
+ * video session or background video decoder.
+ *
+ * Default: All methods. Reported availability describes supported backends,
+ * not a guarantee that every connected device/DDI exposes both services.
+ */
+typedef uint64_t MaaIOSScreencapMethod;
+#define MaaIOSScreencapMethod_None 0ULL
+#define MaaIOSScreencapMethod_Stream 1ULL
+#define MaaIOSScreencapMethod_ScreenshotService (1ULL << 1)
+#define MaaIOSScreencapMethod_All (~MaaIOSScreencapMethod_None)
+#define MaaIOSScreencapMethod_Default MaaIOSScreencapMethod_All
+
+// Connection selection is independent of the wireless credentials.
+typedef int32_t MaaIOSConnectionMethod;
+
+enum MaaIOSConnectionMethodEnum
+{
+    MaaIOSConnectionMethod_Auto = 0,
+    MaaIOSConnectionMethod_USB = 1,
+    MaaIOSConnectionMethod_WiFi = 2,
+};
 
 // MaaWin32ScreencapMethod:
 /**
@@ -675,6 +717,10 @@ typedef void(MAA_CALL* MaaNotificationCallback)(const char* message, const char*
 /// - MaaContext* for MaaContext event
 typedef void(MAA_CALL* MaaEventCallback)(void* handle, const char* message, const char* details_json, void* trans_arg);
 
+/// out_box is the final (single) result; out_detail carries arbitrary callback data.
+/// To return multiple results, write a JSON object into out_detail with the reserved keys
+/// "$all" / "$filtered", each an array of {"box": [x, y, w, h], "detail": any}; the framework
+/// keeps the callback's own order and selects the final box with the node's "index".
 typedef MaaBool(MAA_CALL* MaaCustomRecognitionCallback)(
     MaaContext* context,
     MaaTaskId task_id,

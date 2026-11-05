@@ -14,10 +14,25 @@ target_compile_definitions(MaaFramework PRIVATE MAA_FRAMEWORK_EXPORTS)
 target_link_libraries(MaaFramework PRIVATE MaaUtils LibraryHolder ${OpenCV_LIBS} fastdeploy_ppocr
     ONNXRuntime::ONNXRuntime HeaderOnlyLibraries)
 
+if(WITH_NCNN)
+    if(NOT ANDROID)
+        message(WARNING "WITH_NCNN is intended for Android only, non-Android builds are for testing")
+    endif()
+    find_package(ncnn REQUIRED)
+    # DB unclip of the ncnn OCR, same clipper as fastdeploy
+    find_package(polyclipping CONFIG REQUIRED)
+    target_link_libraries(MaaFramework PRIVATE ncnn polyclipping::polyclipping)
+    target_compile_definitions(MaaFramework PRIVATE MAA_WITH_NCNN)
+endif()
+
 add_dependencies(MaaFramework MaaUtils LibraryHolder)
 
 if(WITH_ADB_CONTROLLER)
     add_dependencies(MaaFramework MaaAdbControlUnit)
+endif()
+
+if(WITH_IOS_CONTROLLER)
+    add_dependencies(MaaFramework MaaIOSControlUnit)
 endif()
 
 if(WITH_WIN32_CONTROLLER)

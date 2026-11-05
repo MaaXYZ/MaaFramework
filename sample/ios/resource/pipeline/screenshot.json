@@ -1,0 +1,30 @@
+{
+    "IOSCapture": {
+        "action": "DoNothing",
+        "next": [
+            "IOSCaptureFrame"
+        ],
+        "timeout": 10000
+    },
+    "IOSCaptureFrame": {
+        "recognition": "ColorMatch",
+        "roi": [
+            0,
+            0,
+            1,
+            1
+        ],
+        "lower": [
+            0,
+            0,
+            0
+        ],
+        "upper": [
+            255,
+            255,
+            255
+        ],
+        "count": 1,
+        "action": "DoNothing"
+    }
+}

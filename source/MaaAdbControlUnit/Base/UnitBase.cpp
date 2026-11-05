@@ -51,17 +51,25 @@ std::optional<std::string> UnitBase::startup_and_read_pipe(const ProcessArgv& ar
 
     ChildPipeIOStream ios(argv.exec, argv.args);
     std::string output = ios.read(timeout);
+    // Cleanup may observe exit 0 after the read deadline, without reading the tail.
+    const bool output_complete = ios.eof();
     bool ret = ios.release();
 
     auto duration = duration_since(start_time);
 
     LogDebug << VAR(output.size()) << VAR(duration);
-    if (!output.empty() && output.size() < 4096) {
+    if (!output_complete) {
+        LogError << "child stdout incomplete (timeout or read error)" << VAR(timeout) << VAR(output.size()) << VAR(argv.exec)
+                 << VAR(argv.args);
+    }
+    if (output_complete && !output.empty() && output.size() < 4096) {
         LogDebug << MAA_LOG_NS::separator::newline << "output:" << output;
     }
 
     if (!ret) {
         LogError << "child return error" << VAR(argv.exec) << VAR(argv.args);
+    }
+    if (!output_complete || !ret) {
         return std::nullopt;
     }
 

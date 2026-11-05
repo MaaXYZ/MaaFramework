@@ -214,8 +214,16 @@ class MyRecognition(CustomRecognition):
         global analyzed
         analyzed = True
 
+        # 多结果：$all 为回调给出的有序结果，框架不排序
         return CustomRecognition.AnalyzeResult(
-            box=(11, 4, 5, 14), detail={"message": "Hello World!"}
+            box=(11, 4, 5, 14),
+            detail={
+                "message": "Hello World!",
+                "$all": [
+                    {"box": [11, 4, 5, 14], "detail": {"message": "first"}},
+                    {"box": [21, 24, 25, 34], "detail": {"message": "second"}},
+                ],
+            },
         )
 
 
@@ -272,6 +280,8 @@ def test_resource_api():
     r1.use_coreml()
     r1.use_auto_ep()
     r1.use_cpu()
+    # NCNN 仅在 Android 构建中可用，这里运行的桌面端构建应设置失败
+    assert not r1.use_ncnn()
 
     r2 = Resource()
     r2.use_directml(0)
@@ -280,6 +290,10 @@ def test_resource_api():
 
     # 测试无效路径加载（应该失败但不崩溃）
     r2.post_bundle("C:/_maafw_testing_/aaabbbccc").wait()
+
+    # 资源开始加载后，onnxruntime 系 EP 之间的切换与之前一致，仍可设置
+    assert r2.use_cpu()
+    assert r2.use_auto_ep()
 
     # 测试 loaded 属性
     print(f"  r2.loaded (after invalid path): {r2.loaded}")
@@ -619,6 +633,7 @@ def test_tasker_api(resource: Resource, controller: DbgController):
             "action": "Custom",
             "custom_action": "MyAct",
             "custom_action_param": "Test111222333",
+            "index": -1,
         },
     }
 
@@ -653,6 +668,27 @@ def test_tasker_api(resource: Resource, controller: DbgController):
     else:
         print("Pipeline task failed")
         raise RuntimeError("Pipeline task failed")
+
+    # 测试自定义识别返回多个结果，index 在回调给出的顺序上选取
+    rec_node = next((node for node in detail.nodes if node.name == "Rec"), None)
+    assert rec_node is not None and rec_node.recognition is not None, (
+        "Rec node should be executed"
+    )
+    multi_detail = tasker.get_recognition_detail(rec_node.recognition.reco_id)
+    assert multi_detail is not None, "get_recognition_detail should return value"
+    assert multi_detail.hit, "multi result recognition should hit"
+    assert len(multi_detail.all_results) == 2, "all_results should have 2 results"
+    assert len(multi_detail.filtered_results) == 2, (
+        "filtered_results should have 2 results"
+    )
+    assert multi_detail.best_result is not None, "best_result should exist"
+    assert [int(value) for value in multi_detail.best_result.box] == [21, 24, 25, 34], (
+        "index -1 should select the last result"
+    )
+    assert multi_detail.best_result.detail == {"message": "second"}, (
+        "per result detail should be kept"
+    )
+    print(f"  multi results: {[result.box for result in multi_detail.filtered_results]}")
 
     # 测试 running 和 stopping
     print(f"  running: {tasker.running}")

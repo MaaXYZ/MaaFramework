@@ -120,6 +120,10 @@ std::optional<cv::Mat> ScreencapHelper::decode_raw(const std::string& buffer)
 
 std::optional<cv::Mat> ScreencapHelper::decode_gzip(const std::string& buffer)
 {
+    if (buffer.empty()) {
+        return std::nullopt;
+    }
+
     auto buf = gzip::decompress(buffer.c_str(), buffer.size());
     return decode_raw(buf);
 }

@@ -8,8 +8,6 @@
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
-#include <onnxruntime/onnxruntime_cxx_api.h>
-
 #include "Common/Conf.h"
 
 MAA_VISION_NS_BEGIN
@@ -33,8 +31,7 @@ public:
         cv::Mat image,
         std::vector<cv::Rect> rois,
         NeuralNetworkDetectorParam param,
-        std::shared_ptr<Ort::Session> session,
-        const Ort::MemoryInfo& memory_info,
+        InferenceSessionPtr session,
         std::string name = "",
         InferenceCache<Result>* cache = nullptr);
 
@@ -58,8 +55,7 @@ private:
 
 private:
     const NeuralNetworkDetectorParam param_;
-    std::shared_ptr<Ort::Session> session_ = nullptr;
-    const Ort::MemoryInfo& memory_info_;
+    InferenceSessionPtr session_ = nullptr;
     InferenceCache<Result>* cache_ = nullptr;
 
     std::vector<int> expected_indices_;

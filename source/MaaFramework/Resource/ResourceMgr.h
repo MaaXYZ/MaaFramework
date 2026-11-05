@@ -1,13 +1,14 @@
 #pragma once
 
 #include <atomic>
+#include <mutex>
 
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
 #include "DefaultPipelineMgr.h"
+#include "InferenceResMgr.h"
 #include "MaaFramework/Instance/MaaResource.h"
 #include "OCRResMgr.h"
-#include "ONNXResMgr.h"
 #include "PipelineResMgr.h"
 #include "TemplateResMgr.h"
 #include "Utils/EventDispatcher.hpp"
@@ -98,9 +99,9 @@ public:
 
     auto& ocr_res() { return ocr_res_; }
 
-    const auto& onnx_res() const { return onnx_res_; }
+    const auto& inference_res() const { return inference_res_; }
 
-    auto& onnx_res() { return onnx_res_; }
+    auto& inference_res() { return inference_res_; }
 
     const auto& template_res() const { return template_res_; }
 
@@ -119,6 +120,7 @@ private:
     bool set_inference_device(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_inference_execution_provider(MaaOptionValue value, MaaOptionValueSize val_size);
 
+    // false if no usable backend: onnxruntime providers fall back to CPU, NCNN has no fallback
     bool check_and_set_inference_device();
     bool use_auto_ep();
     bool use_cpu();
@@ -126,6 +128,7 @@ private:
     bool use_coreml();
     bool use_cuda();
     bool use_webgpu();
+    bool use_ncnn();
 
     MaaResId post_path(PostPathType type, const std::filesystem::path& path);
 
@@ -143,7 +146,7 @@ private:
     DefaultPipelineMgr default_pipeline_;
     PipelineResMgr pipeline_res_;
     OCRResMgr ocr_res_;
-    ONNXResMgr onnx_res_;
+    InferenceResMgr inference_res_;
     TemplateResMgr template_res_;
 
     std::unordered_map<std::string, CustomRecognitionSession> custom_recognition_sessions_;
@@ -157,9 +160,13 @@ private:
     std::unique_ptr<AsyncRunner<PostPathItem>> res_loader_ = nullptr;
     EventDispatcher notifier_;
 
+    // guards the inference options below: setters, post_path (lock + enqueue), clear and the loader
+    std::mutex inference_mutex_;
     MaaInferenceDevice inference_device_ = MaaInferenceDevice_Auto;
     MaaInferenceExecutionProvider inference_ep_ = MaaInferenceExecutionProvider_Auto;
     bool inference_device_setted_ = false;
+    // set once resource loading starts (any post_*), reset by clear(). while set, switching to / from NCNN is refused
+    bool inference_locked_ = false;
 };
 
 MAA_RES_NS_END

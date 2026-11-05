@@ -781,6 +781,12 @@ bool PipelineParser::parse_custom_recognition_param(
     MAA_VISION_NS::CustomRecognitionParam& output,
     const MAA_VISION_NS::CustomRecognitionParam& default_value)
 {
+    // 多结果由回调自行排序，order_by 对 Custom 无意义
+    if (input.contains("order_by") || input.contains("order")) {
+        LogError << "Custom recognition does not support order_by, sort the results inside the callback" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value(input, "custom_recognition", output.name, default_value.name)) {
         LogError << "failed to get_and_check_value custom_recognition" << VAR(input);
         return false;
@@ -792,6 +798,11 @@ bool PipelineParser::parse_custom_recognition_param(
     }
 
     output.custom_param = input.get("custom_recognition_param", default_value.custom_param);
+
+    if (!get_and_check_value(input, "index", output.result_index, default_value.result_index)) {
+        LogError << "failed to get_and_check_value index" << VAR(input);
+        return false;
+    }
 
     return true;
 }

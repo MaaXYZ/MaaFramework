@@ -57,6 +57,7 @@ __all__ = [
     "MaaWin32InputMethod",
     "MaaMacOSScreencapMethod",
     "MaaMacOSInputMethod",
+    "MaaIOSScreencapMethod",
     "MaaLinuxScreencapMethod",
     "MaaLinuxInputMethod",
     "MaaGamepadType",
@@ -80,6 +81,9 @@ __all__ = [
     "MaaWin32InputMethodEnum",
     "MaaMacOSScreencapMethodEnum",
     "MaaMacOSInputMethodEnum",
+    "MaaIOSScreencapMethodEnum",
+    "MaaIOSConnectionMethod",
+    "MaaIOSConnectionMethodEnum",
     "MaaLinuxScreencapMethodEnum",
     "MaaLinuxInputMethodEnum",
     "MaaGamepadTypeEnum",
@@ -322,6 +326,13 @@ class MaaInferenceExecutionProviderEnum(IntEnum):
     # Shipped on Windows, Linux and macOS.
     WebGPU = 5
 
+    # NCNN, only available when MaaFW is built with NCNN (Android only).
+    # Setting it on other builds fails.
+    # MaaResOption_InferenceDevice: CPU / Auto -> NCNN CPU; GPU is not supported yet, other values fail the loading.
+    # Loads `<model stem>.ncnn.param/.ncnn.bin/.ncnn.json`, no fallback to onnxruntime.
+    # Runs in fp32 by default, fp16 can be enabled per model in the "options" of the .ncnn.json.
+    NCNN = 6
+
 
 class MaaResOptionEnum(IntEnum):
     Invalid = 0
@@ -412,6 +423,40 @@ class MaaAdbInputMethodEnum(IntEnum):
 
     All = ~Null
     Default = All & (~EmulatorExtras)
+
+
+MaaIOSConnectionMethod = ctypes.c_int32
+
+
+class MaaIOSConnectionMethodEnum(IntEnum):
+    Auto = 0
+    USB = 1
+    WiFi = 2
+
+
+MaaIOSScreencapMethod = ctypes.c_uint64
+
+
+class MaaIOSScreencapMethodEnum(IntEnum):
+    """
+    iOS screencap method flags.
+
+    Use bitwise OR to select the permitted backends. Video frames are preferred
+    when Stream is enabled; ScreenshotService provides a lossless RPC fallback.
+    Stream alone has no screenshot fallback. ScreenshotService alone starts no
+    video session or background video decoder. Stream carries lossy HEVC video.
+
+    Default: All methods. Reported availability describes supported backends,
+    not a guarantee that every connected device/DDI exposes both services.
+    """
+
+    Null = 0
+
+    Stream = 1
+    ScreenshotService = 1 << 1
+
+    All = ~Null
+    Default = All
 
 
 MaaWin32ScreencapMethod = ctypes.c_uint64
