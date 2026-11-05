@@ -229,3 +229,24 @@ for version in ('1.3.0', '1.5.99', '', 'bad', '1.6', '1.6.0garbage'):
             assert 'connection.open' not in server.methods()
         finally:
             destroy(ctrl)
+
+connected = function(fw, 'MaaControllerConnected', B, [P])
+class DisconnectedServer(FakeServer):
+    disconnected = False
+    def handle_call(self, name, params):
+        if self.disconnected:
+            raise ConnectionError('Disconnected by test')
+        return super().handle_call(name, params)
+
+with DisconnectedServer() as server:
+    ctrl = create(b'mock-iphone', 2, 2, json.dumps(server.config).encode())
+    try:
+        assert wait(ctrl, posts['Connection'](ctrl)) == 3000 and connected(ctrl)
+        assert wait(ctrl, posts['Screencap'](ctrl)) == 3000
+        server.disconnected = True
+        assert wait(ctrl, posts['Screencap'](ctrl)) == 4000
+        assert not connected(ctrl), 'failed transport must invalidate controller status'
+        server.disconnected = False
+        assert wait(ctrl, posts['Connection'](ctrl)) == 3000 and connected(ctrl)
+    finally:
+        destroy(ctrl)

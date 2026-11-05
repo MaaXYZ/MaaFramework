@@ -147,8 +147,8 @@ void IOSSession::close()
         std::string ignored;
         release_inputs(ignored);
         client_.call("connection.close", json::object { }, ignored);
-        client_.close();
     }
+    client_.close();
     udid_.clear();
     properties_ = json::object { };
     mapping_ = { };

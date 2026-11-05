@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <atomic>
 #include <charconv>
 #include <array>
 #include <string_view>
@@ -44,6 +45,7 @@ public:
             close();
             return false;
         }
+        alive_ = true;
         return true;
     }
 
@@ -52,11 +54,15 @@ public:
         xdb_response* raw = nullptr;
         if (!xdb_client_request(client_, method, params.to_string().c_str(), &raw)) {
             error = xdb_last_error();
+            alive_ = false;
             return false;
         }
         std::unique_ptr<xdb_response, decltype(&xdb_response_destroy)> response(raw, xdb_response_destroy);
         auto envelope = json::parse(xdb_response_json(raw));
         if (!envelope || !envelope->get("ok", false)) {
+            if (!envelope || envelope->get("error", "code", std::string()) == "not_connected") {
+                alive_ = false;
+            }
             error = envelope ? envelope->get("error", "message", std::string("xdb request failed")) : "Invalid xdb response";
             return false;
         }
@@ -82,9 +88,10 @@ public:
     {
         xdb_client_destroy(client_);
         client_ = nullptr;
+        alive_ = false;
     }
 
-    bool connected() const { return client_ != nullptr; }
+    bool connected() const { return alive_; }
 
 private:
     static bool supported_version(std::string_view version)
@@ -110,5 +117,6 @@ private:
     }
 
     xdb_client* client_ = nullptr;
+    std::atomic<bool> alive_ { false };
 };
 }
