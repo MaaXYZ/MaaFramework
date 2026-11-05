@@ -351,18 +351,17 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     }
     notifier_.notify(this, MaaMsg_Tasker_Task_Starting, cb_detail);
 
-    failure_frames_.begin();
-    ScopeLeaveHelper clear_failure_frames([this]() { failure_frames_.end(); });
+    bool ret = false;
+    {
+        failure_frames_.begin();
+        // Drain once before reporting the task result, including exceptional exits.
+        ScopeLeaveHelper clear_failure_frames([this]() { failure_frames_.end(); });
+        ret = task_ptr->run();
 
-    bool ret = task_ptr->run();
-
-    if (controller_) {
-        controller_->auto_release_pressed();
+        if (controller_) {
+            controller_->auto_release_pressed();
+        }
     }
-
-    // Flush the failure frame export before reporting the result, so the
-    // exported directory is observable when the client receives the callback.
-    failure_frames_.end();
 
     LogInfo << "task end:" << VAR(cb_detail) << VAR(ret);
     {

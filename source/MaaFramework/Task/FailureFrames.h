@@ -1,7 +1,6 @@
 #pragma once
 
 #include <atomic>
-#include <chrono>
 #include <condition_variable>
 #include <cstdint>
 #include <deque>
@@ -29,8 +28,6 @@ public:
     void observe(const cv::Mat& image, MaaRecoId reco_id, const std::string& node, bool failure = false);
     void mark_action();
     void save(const std::filesystem::path& directory, const std::string& node);
-    size_t frame_count() const;
-    size_t retained_bytes() const;
 
 private:
     struct Pixels
@@ -64,11 +61,10 @@ private:
 
     void write(const Export& job);
     void work();
-    bool wait_idle(std::chrono::milliseconds timeout);
     static constexpr size_t kMaxBytes = 32 * 1024 * 1024;
     static constexpr size_t kMaxFrames = 64;
 
-    mutable std::mutex mutex_;
+    std::mutex mutex_;
     std::shared_ptr<std::atomic_size_t> bytes_ = std::make_shared<std::atomic_size_t>(0);
     bool active_ = false;
     bool after_action_pending_ = false;

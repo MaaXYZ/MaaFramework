@@ -4,7 +4,6 @@
 #include <array>
 #include <chrono>
 #include <fstream>
-#include <set>
 
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
@@ -68,16 +67,14 @@ void FailureFrames::begin()
 
 void FailureFrames::end()
 {
-    {
-        std::scoped_lock lock(mutex_);
-        active_ = false;
-        frames_.clear();
-        before_action_.reset();
-        after_action_.reset();
-    }
-    // The failure notification reaches the client right after the task
-    // returns, so block here until the export is observable on disk.
-    if (!wait_idle(std::chrono::seconds(15))) {
+    std::unique_lock lock(mutex_);
+    active_ = false;
+    frames_.clear();
+    before_action_.reset();
+    after_action_.reset();
+    const bool idle = wake_.wait_for(lock, std::chrono::seconds(15), [this] { return !pending_ && !writing_; });
+    lock.unlock();
+    if (!idle) {
         LogWarn << "failure frame export still busy after timeout";
     }
 }
@@ -167,14 +164,9 @@ void FailureFrames::save(const std::filesystem::path& directory, const std::stri
             LogWarn << "failure frame export unavailable or busy" << directory;
             return;
         }
-        Export job { directory, node, {}, dropped_ };
-        std::set<const Pixels*> seen;
-        for (const auto& frame : frames_) {
-            seen.insert(frame.pixels.get());
-            job.frames.push_back(frame);
-        }
+        Export job { directory, node, { frames_.begin(), frames_.end() }, dropped_ };
         for (const auto* pinned : { &before_action_, &after_action_ }) {
-            if (*pinned && seen.insert((*pinned)->pixels.get()).second) {
+            if (*pinned && std::ranges::find(job.frames, (*pinned)->pixels, &Frame::pixels) == job.frames.end()) {
                 job.frames.push_back(**pinned);
             }
         }
@@ -211,12 +203,6 @@ void FailureFrames::work()
         }
         wake_.notify_all();
     }
-}
-
-bool FailureFrames::wait_idle(std::chrono::milliseconds timeout)
-{
-    std::unique_lock lock(mutex_);
-    return wake_.wait_for(lock, timeout, [this] { return !pending_.has_value() && !writing_; });
 }
 
 void FailureFrames::write(const Export& job)
@@ -283,17 +269,6 @@ void FailureFrames::write(const Export& job)
     catch (const std::exception& error) {
         LogWarn << "failure frame export failed" << job.directory << error.what();
     }
-}
-
-size_t FailureFrames::frame_count() const
-{
-    std::scoped_lock lock(mutex_);
-    return frames_.size();
-}
-
-size_t FailureFrames::retained_bytes() const
-{
-    return bytes_->load();
 }
 
 MAA_NS_END
