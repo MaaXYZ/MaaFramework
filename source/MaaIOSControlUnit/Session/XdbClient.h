@@ -1,5 +1,8 @@
 #pragma once
 #include <memory>
+#include <charconv>
+#include <array>
+#include <string_view>
 #include <meojson/json.hpp>
 #include <string>
 #include <vector>
@@ -32,8 +35,16 @@ public:
         client_ = xdb_client_connect(static_cast<uint16_t>(port), nullptr, nullptr);
         if (!client_) {
             error = xdb_last_error();
+            return false;
         }
-        return client_ != nullptr;
+        const char* version = xdb_client_server_version(client_);
+        if (!supported_version(version ? version : "")) {
+            error = "iOS requires xdb Server 1.6.0 or later; upgrade the running server (reported version: "
+                    + std::string(version ? version : "") + ")";
+            close();
+            return false;
+        }
+        return true;
     }
 
     bool call(const char* method, const json::value& params, json::value& result, std::vector<uint8_t>& data, std::string& error)
@@ -76,6 +87,28 @@ public:
     bool connected() const { return client_ != nullptr; }
 
 private:
+    static bool supported_version(std::string_view version)
+    {
+        std::array<unsigned, 3> parts {};
+        for (size_t i = 0; i < parts.size(); ++i) {
+            const auto parsed = std::from_chars(version.data(), version.data() + version.size(), parts[i]);
+            if (parsed.ec != std::errc {} || parsed.ptr == version.data()) {
+                return false;
+            }
+            version.remove_prefix(parsed.ptr - version.data());
+            if (i + 1 < parts.size()) {
+                if (version.empty() || version.front() != '.') {
+                    return false;
+                }
+                version.remove_prefix(1);
+            }
+        }
+        if (!version.empty() && version.front() != '-' && version.front() != '+') {
+            return false;
+        }
+        return parts >= std::array<unsigned, 3> { 1, 6, 0 };
+    }
+
     xdb_client* client_ = nullptr;
 };
 }

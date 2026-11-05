@@ -8,6 +8,7 @@ import tempfile
 root = Path(sys.argv[1])
 sys.path.insert(0, str(root / '3rdparty/XDeviceBridge/tests/support'))
 from fake_server import FakeServer
+FakeServer.server_version = "1.6.0"
 
 
 class InterruptedVideoServer(FakeServer):
@@ -218,3 +219,13 @@ with FakeServer() as server:
 
 print('PASS: native xdb discovery, Stream/PNG/fallback, geometry, input, app control and ownership')
 
+
+for version in ('1.3.0', '1.5.99', '', 'bad', '1.6', '1.6.0garbage'):
+    with FakeServer() as server:
+        server.server_version = version
+        ctrl = create(b'mock-iphone', 2, 2, json.dumps(server.config).encode())
+        try:
+            assert wait(ctrl, posts['Connection'](ctrl)) == 4000
+            assert 'connection.open' not in server.methods()
+        finally:
+            destroy(ctrl)
