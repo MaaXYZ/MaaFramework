@@ -362,9 +362,20 @@ bool IOSSession::type_text(const std::string& text, std::string& err)
         err = "release held keys before iOS input_text";
         return false;
     }
-    inputs_.keyboard_release_pending = true;
-    if (client_.call("input.text", json::object { { "text", text }, { "hold_ms", 40 } }, err)) {
+    // Keep each request within the server's 300-second limit, including Shift reports.
+    constexpr size_t chunk_size = 512;
+    for (size_t offset = 0; offset < text.size(); offset += chunk_size) {
+        const auto chunk = text.substr(offset, chunk_size);
+        const auto reports = chunk.size() * 3;
+        const auto timeout = 10000 + reports * 40;
+        inputs_.keyboard_release_pending = true;
+        if (!client_.call(
+                "input.text", json::object { { "text", chunk }, { "hold_ms", 40 }, { "timeout_ms", timeout } }, err)) {
+            break;
+        }
         inputs_.keyboard_release_pending = false;
+    }
+    if (!inputs_.keyboard_release_pending) {
         return true;
     }
     std::string release_err;

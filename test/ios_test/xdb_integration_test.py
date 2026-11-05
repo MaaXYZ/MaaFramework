@@ -143,6 +143,14 @@ with FakeServer() as server:
             assert action('InputText', '中文'.encode()) == 4000
             assert server.methods().count('input.text') == before
             assert action('InputText', b'abc123') == 3000
+            for text in (b'a' * 400, b'A!' * 2049):
+                before = len(server.calls)
+                assert action('InputText', text) == 3000
+                chunks = [p for n, p in server.calls[before:] if n == 'input.text']
+                assert ''.join(p['text'] for p in chunks).encode() == text
+                assert all(len(p['text']) <= 512 and
+                           p['timeout_ms'] >= len(p['text']) * 3 * p['hold_ms'] + 10000
+                           for p in chunks)
             assert action('StartApp', b'test.bundle') == 3000
             assert action('StopApp', b'test.bundle') == 3000
             if method == 1:
