@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <functional>
 #include <atomic>
 #include <charconv>
 #include <array>
@@ -20,7 +21,7 @@ public:
     XdbClient(const XdbClient&) = delete;
     XdbClient& operator=(const XdbClient&) = delete;
 
-    bool connect(const std::string& config, std::string& error)
+    bool connect(const std::string& config, std::string& error, std::function<bool()> cancelled = {})
     {
         auto value = json::parse(config.empty() ? "{}" : config);
         if (!value || !value->is_object()) {
@@ -33,7 +34,11 @@ public:
             return false;
         }
         close();
-        client_ = xdb_client_connect(static_cast<uint16_t>(port), nullptr, nullptr);
+        const auto cancel = [](void* context) -> int {
+            return (*static_cast<std::function<bool()>*>(context))();
+        };
+        client_ = xdb_client_connect_cancellable(
+            static_cast<uint16_t>(port), nullptr, nullptr, cancelled ? +cancel : nullptr, &cancelled);
         if (!client_) {
             error = xdb_last_error();
             return false;
