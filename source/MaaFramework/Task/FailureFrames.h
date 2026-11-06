@@ -49,6 +49,7 @@ private:
         std::string last_node;
         bool failure = false;
         bool recognition = true;
+        uint64_t order = 0;
     };
 
     struct Export
@@ -61,6 +62,7 @@ private:
 
     void write(const Export& job);
     void work();
+    void count_dropped(const std::shared_ptr<Pixels>& pixels);
     static constexpr size_t kMaxBytes = 32 * 1024 * 1024;
     static constexpr size_t kMaxFrames = 64;
 
@@ -71,6 +73,7 @@ private:
     bool stopping_ = false;
     bool writing_ = false;
     size_t dropped_ = 0;
+    uint64_t next_frame_order_ = 0;
     std::deque<Frame> frames_;
     std::optional<Frame> before_action_;
     std::optional<Frame> after_action_;

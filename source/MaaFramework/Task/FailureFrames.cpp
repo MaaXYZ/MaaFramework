@@ -100,7 +100,9 @@ void FailureFrames::observe(const cv::Mat& image, MaaRecoId reco_id, const std::
                 return;
             }
             while (frames_.size() > 1 && (bytes_->load() + length > kMaxBytes || frames_.size() >= kMaxFrames)) {
+                const auto pixels = frames_.front().pixels;
                 frames_.pop_front();
+                count_dropped(pixels);
             }
             // Pins must not freeze capture when the remaining pool cannot fit
             // a new frame. Keep the pre-action cause for as long as possible.
@@ -109,11 +111,14 @@ void FailureFrames::observe(const cv::Mat& image, MaaRecoId reco_id, const std::
                     break;
                 }
                 if (*pin) {
+                    const auto pixels = (*pin)->pixels;
                     pin->reset();
-                    ++dropped_;
+                    count_dropped(pixels);
                 }
                 if (frames_.size() == 1 && frames_.back().pixels.use_count() == 1) {
+                    const auto pixels = frames_.back().pixels;
                     frames_.pop_back();
+                    count_dropped(pixels);
                 }
             }
             if (bytes_->load() + length > kMaxBytes) {
@@ -125,7 +130,7 @@ void FailureFrames::observe(const cv::Mat& image, MaaRecoId reco_id, const std::
             bytes_->fetch_add(length);
             pixels->bytes = length;
             pixels->image = image.clone();
-            frames_.push_back({ pixels, now, now, reco_id, reco_id, node, node, failure, !failure });
+            frames_.push_back({ pixels, now, now, reco_id, reco_id, node, node, failure, !failure, ++next_frame_order_ });
         }
         auto& current = frames_.back();
         current.last_ms = now;
@@ -148,12 +153,20 @@ void FailureFrames::observe(const cv::Mat& image, MaaRecoId reco_id, const std::
 void FailureFrames::mark_action()
 {
     std::scoped_lock lock(mutex_);
-    if (!active_ || frames_.empty()) {
+    if (!active_) {
         return;
     }
-    before_action_ = frames_.back();
+    const auto previous_before = before_action_;
+    const auto previous_after = after_action_;
+    before_action_ = frames_.empty() ? std::nullopt : std::make_optional(frames_.back());
     after_action_.reset();
     after_action_pending_ = true;
+    if (previous_before) {
+        count_dropped(previous_before->pixels);
+    }
+    if (previous_after && (!previous_before || previous_after->pixels != previous_before->pixels)) {
+        count_dropped(previous_after->pixels);
+    }
 }
 
 void FailureFrames::save(const std::filesystem::path& directory, const std::string& node)
@@ -170,7 +183,7 @@ void FailureFrames::save(const std::filesystem::path& directory, const std::stri
                 job.frames.push_back(**pinned);
             }
         }
-        std::ranges::sort(job.frames, {}, &Frame::first_ms);
+        std::ranges::sort(job.frames, {}, &Frame::order);
         pending_ = std::move(job);
         if (!writer_.joinable()) {
             writer_ = std::thread([this] { work(); });
@@ -180,6 +193,16 @@ void FailureFrames::save(const std::filesystem::path& directory, const std::stri
     catch (const std::exception& error) {
         LogWarn << "failure frame export scheduling failed" << error.what();
     }
+}
+
+void FailureFrames::count_dropped(const std::shared_ptr<Pixels>& pixels)
+{
+    // Writer-owned references do not retain a frame for subsequent exports.
+    if (std::ranges::find(frames_, pixels, &Frame::pixels) != frames_.end() || (before_action_ && before_action_->pixels == pixels)
+        || (after_action_ && after_action_->pixels == pixels)) {
+        return;
+    }
+    ++dropped_;
 }
 
 void FailureFrames::work()

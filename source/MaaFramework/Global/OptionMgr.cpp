@@ -121,9 +121,10 @@ bool OptionMgr::set_save_on_error_frames(MaaOptionValue value, MaaOptionValueSiz
         return false;
     }
 
-    save_on_error_frames_ = *reinterpret_cast<const bool*>(value);
+    const bool enabled = *reinterpret_cast<const bool*>(value);
+    save_on_error_frames_.store(enabled, std::memory_order_relaxed);
 
-    LogInfo << "Set save on error frames" << VAR(save_on_error_frames_);
+    LogInfo << "Set save on error frames" << VAR(enabled);
 
     return true;
 }
