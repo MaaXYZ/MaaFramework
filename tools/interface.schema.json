@@ -92,6 +92,42 @@
                     ],
                     "default": "text"
                 },
+                "file_dialog_dir": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\:\\u0000-\\u001f\\u007f]+$",
+                    "title": "文件对话框起始目录",
+                    "description": "💡 v2.11.1 仅 file / directory 输入生效，相对于 interface.json 所在目录，使用 / 分隔，不接受绝对路径或 .. 路径段；目录不可用时回退到 interface.json 所在目录，不创建目录，不改变输入值"
+                },
+                "file_dialog_filters": {
+                    "type": "array",
+                    "minItems": 1,
+                    "title": "文件对话框类型筛选",
+                    "description": "💡 v2.11.1 仅 file 输入生效，按声明顺序显示，首项为默认筛选；扩展名不带点，* 表示所有文件，不代替 verify 校验",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "description": "筛选器显示名称，支持国际化字符串（以 $ 开头）"
+                            },
+                            "extensions": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string",
+                                    "pattern": "^(\\*|[A-Za-z0-9][A-Za-z0-9_-]*)$"
+                                }
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "extensions"
+                        ],
+                        "additionalProperties": false
+                    }
+                },
                 "pipeline_type": {
                     "type": "string",
                     "title": "Pipeline 数据类型",
