@@ -148,7 +148,9 @@ def assert_multi_recognition(tasker) -> None:
                 "index": index,
             },
         }
-        detail = tasker.post_task("Entry", pipeline_override).wait().get()
+        job = tasker.post_task("Entry", pipeline_override).wait()
+        assert job.succeeded, "clearing history in an Agent action must preserve the job's status"
+        detail = job.get()
         assert detail, f"pipeline failed for index {index}"
         node = next((n for n in detail.nodes if n.name == "StaleProbe"), None)
         assert node and node.recognition, f"missing recognition detail for index {index}"

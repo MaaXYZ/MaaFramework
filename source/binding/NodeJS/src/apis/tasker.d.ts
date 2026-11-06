@@ -159,6 +159,10 @@ declare global {
             get resource(): Resource | null
             set controller(res: Controller | null)
             get controller(): Controller | null
+            /**
+             * Clear historical details and latest-node references. Pending and running
+             * tasks retain their IDs, entry and status, but their node ID lists are reset.
+             */
             clear_cache(): void
             override_pipeline(
                 task_id: TaskId,
