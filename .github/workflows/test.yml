@@ -206,7 +206,9 @@ jobs:
 
     ubuntu:
         needs: meta
-        runs-on: ubuntu-latest
+        # ubuntu-latest 已滚动到 26.04（resolute），actions/setup-python 没有 3.9 的 26.04 构建；
+        # 本 job 需要用 3.9 验证 Python binding 的最低支持版本，因此固定到 24.04（noble）
+        runs-on: ubuntu-24.04
         strategy:
             matrix:
                 arch: [x86_64]

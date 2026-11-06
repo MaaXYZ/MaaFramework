@@ -24,7 +24,8 @@ concurrency:
 
 jobs:
     interface-import:
-        runs-on: ubuntu-latest
+        # 原因同 test.yml 的 ubuntu job：26.04 上 setup-python 没有 3.9 构建
+        runs-on: ubuntu-24.04
         steps:
             - name: Checkout repository
               uses: actions/checkout@v7
