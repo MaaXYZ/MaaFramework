@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <map>
 #include <memory>
 #include <shared_mutex>
@@ -84,7 +85,7 @@ private:
     MAA_RES_NS::ResourceMgr* resource_ = nullptr;
     MAA_CTRL_NS::ControllerAgent* controller_ = nullptr;
 
-    bool need_to_stop_ = false;
+    std::atomic_bool need_to_stop_ = false;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
     EventDispatcher notifier_;
