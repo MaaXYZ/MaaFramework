@@ -10,6 +10,7 @@
 #include "MaaUtils/StringMisc.hpp"
 #include "NcnnOCRSession.h"
 #include "NcnnSession.h"
+#include "WebGpuLock.h"
 
 MAA_RES_NS_BEGIN
 
@@ -263,11 +264,15 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const
         }
         LogDebug << VAR(model_path);
 
-        auto det = std::make_shared<fastdeploy::vision::ocr::DBDetector>(
-            path_to_utf8_string(model_path),
-            std::string(),
-            det_option_,
-            fastdeploy::ModelFormat::ONNX);
+        const bool use_webgpu = det_option_.device == fastdeploy::Device::WEBGPU;
+        auto lock = lock_webgpu(use_webgpu);
+        auto det = std::shared_ptr<fastdeploy::vision::ocr::DBDetector>(
+            new fastdeploy::vision::ocr::DBDetector(
+                path_to_utf8_string(model_path),
+                std::string(),
+                det_option_,
+                fastdeploy::ModelFormat::ONNX),
+            WebGpuDeleter { use_webgpu });
         if (!det || !det->Initialized()) {
             LogError << "Failed to load DBDetector:" << VAR(name) << VAR(det) << VAR(det->Initialized());
             return nullptr;
@@ -293,12 +298,16 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const
         }
         LogDebug << VAR(model_path);
 
-        auto rec = std::make_shared<fastdeploy::vision::ocr::Recognizer>(
-            path_to_utf8_string(model_path),
-            std::string(),
-            path_to_utf8_string(label_path),
-            rec_option_,
-            fastdeploy::ModelFormat::ONNX);
+        const bool use_webgpu = rec_option_.device == fastdeploy::Device::WEBGPU;
+        auto lock = lock_webgpu(use_webgpu);
+        auto rec = std::shared_ptr<fastdeploy::vision::ocr::Recognizer>(
+            new fastdeploy::vision::ocr::Recognizer(
+                path_to_utf8_string(model_path),
+                std::string(),
+                path_to_utf8_string(label_path),
+                rec_option_,
+                fastdeploy::ModelFormat::ONNX),
+            WebGpuDeleter { use_webgpu });
         if (!rec || !rec->Initialized()) {
             LogError << "Failed to load Recognizer:" << VAR(name) << VAR(rec) << VAR(rec->Initialized());
             return nullptr;

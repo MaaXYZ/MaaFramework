@@ -11,6 +11,7 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 MAA_SUPPRESS_CV_WARNINGS_END
 
 #include "MaaUtils/Logger.h"
+#include "WebGpuLock.h"
 
 MAA_RES_NS_BEGIN
 
@@ -18,7 +19,10 @@ FastDeployOCRSession::FastDeployOCRSession(
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
     std::shared_ptr<fastdeploy::pipeline::PPOCRv4> ocrer)
-    : deter_(std::move(deter))
+    : use_webgpu_(
+          (deter && deter->runtime_option.device == fastdeploy::Device::WEBGPU)
+          || (recer && recer->runtime_option.device == fastdeploy::Device::WEBGPU))
+    , deter_(std::move(deter))
     , recer_(std::move(recer))
     , ocrer_(std::move(ocrer))
 {
@@ -31,6 +35,8 @@ int FastDeployOCRSession::det_max_side_len() const
 
 std::optional<MAA_VISION_NS::OCRDetRecResult> FastDeployOCRSession::det_and_rec(const cv::Mat& image)
 {
+    auto lock = lock_webgpu(use_webgpu_);
+
     if (!ocrer_) {
         LogError << "ocrer_ is null";
         return std::nullopt;
@@ -51,6 +57,8 @@ std::optional<MAA_VISION_NS::OCRDetRecResult> FastDeployOCRSession::det_and_rec(
 
 std::optional<MAA_VISION_NS::OCRRecResult> FastDeployOCRSession::rec(const cv::Mat& image)
 {
+    auto lock = lock_webgpu(use_webgpu_);
+
     if (!recer_) {
         LogError << "recer_ is null";
         return std::nullopt;
@@ -67,6 +75,8 @@ std::optional<MAA_VISION_NS::OCRRecResult> FastDeployOCRSession::rec(const cv::M
 
 std::optional<std::vector<MAA_VISION_NS::OCRRecResult>> FastDeployOCRSession::batch_rec(const std::vector<cv::Mat>& images)
 {
+    auto lock = lock_webgpu(use_webgpu_);
+
     if (!recer_) {
         LogError << "recer_ is null";
         return std::nullopt;

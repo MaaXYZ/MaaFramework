@@ -15,6 +15,7 @@
 #include "MaaUtils/Platform.h"
 #include "NcnnSession.h"
 #include "OrtSession.h"
+#include "WebGpuLock.h"
 
 MAA_RES_NS_BEGIN
 
@@ -23,26 +24,13 @@ InferenceResMgr::InferenceResMgr()
 {
 }
 
-// InferenceResMgr::~InferenceResMgr()
-//{
-//      if (gpu_device_id_) {
-//          LogWarn << "GPU is enabled, leaking resources";
-//
-//         // FIXME: intentionally leak ort objects to avoid crash (double free?)
-//         // https://github.com/microsoft/onnxruntime/issues/15174
-//         for (auto& session : classifiers_ | std::views::values) {
-//             auto leak_session = new Ort::Session(nullptr);
-//             *leak_session = std::move(*session);
-//         }
-//         for (auto& session : detectors_ | std::views::values) {
-//             auto leak_session = new Ort::Session(nullptr);
-//             *leak_session = std::move(*session);
-//         }
-//
-//         auto leak_options = new Ort::SessionOptions(nullptr);
-//         *leak_options = std::move(options_);
-//     }
-// }
+InferenceResMgr::~InferenceResMgr()
+{
+    auto lock = lock_webgpu(use_webgpu_);
+    classifiers_.clear();
+    detectors_.clear();
+    options_ = Ort::SessionOptions(nullptr);
+}
 
 bool InferenceResMgr::use_cpu()
 {
@@ -53,7 +41,9 @@ bool InferenceResMgr::use_cpu()
 
     LogInfo;
 
-    options_ = { };
+    auto lock = lock_webgpu(use_webgpu_);
+    use_webgpu_ = false;
+    options_ = {};
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
     return true;
 }
@@ -67,15 +57,17 @@ bool InferenceResMgr::use_cuda(int device_id)
 
     LogInfo << VAR(device_id);
 
+    auto lock = lock_webgpu(use_webgpu_);
+    use_webgpu_ = false;
     try {
-        options_ = { };
-        OrtCUDAProviderOptions cuda_options { };
+        options_ = {};
+        OrtCUDAProviderOptions cuda_options {};
         cuda_options.device_id = device_id;
         options_.AppendExecutionProvider_CUDA(cuda_options);
     }
     catch (const Ort::Exception& e) {
         LogError << "Failed to append CUDA execution provider" << e.what();
-        options_ = { };
+        options_ = {};
         memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
         return false;
     }
@@ -99,13 +91,15 @@ bool InferenceResMgr::use_directml(int device_id)
 
 #ifdef MAA_WITH_DML
 
-    options_ = { };
+    auto lock = lock_webgpu(use_webgpu_);
+    use_webgpu_ = false;
+    options_ = {};
     Ort::Status status(OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id));
     if (!status.IsOK()) {
         const auto error_code = static_cast<int>(status.GetErrorCode());
         const auto error_message = status.GetErrorMessage();
         LogError << "Failed to append DML execution provider" << VAR(device_id) << VAR(error_code) << VAR(error_message);
-        options_ = { };
+        options_ = {};
         memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
         return false;
     }
@@ -132,8 +126,10 @@ bool InferenceResMgr::use_webgpu(int device_id)
 
     LogInfo << VAR(device_id);
 
+    auto lock = lock_webgpu(true);
+    use_webgpu_ = false;
     try {
-        options_ = { };
+        options_ = {};
         // OrtSessionOptionsAppendExecutionProvider prefixes each key with
         // "ep.webgpuexecutionprovider.". The EP reads "deviceId"; device 0 is the default.
         std::unordered_map<std::string, std::string> webgpu_options;
@@ -141,11 +137,12 @@ bool InferenceResMgr::use_webgpu(int device_id)
             webgpu_options.emplace("deviceId", std::to_string(device_id));
         }
         options_.AppendExecutionProvider("WebGPU", webgpu_options);
+        use_webgpu_ = true;
     }
     catch (const Ort::Exception& e) {
         // A CPU-only machine still reports the EP, then throws when no adapter exists.
         LogError << "Failed to append WebGPU execution provider" << e.what();
-        options_ = { };
+        options_ = {};
         memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
         return false;
     }
@@ -167,13 +164,15 @@ bool InferenceResMgr::use_coreml(uint32_t coreml_flag)
 
 #ifdef MAA_WITH_COREML
 
-    options_ = { };
+    auto lock = lock_webgpu(use_webgpu_);
+    use_webgpu_ = false;
+    options_ = {};
     Ort::Status status(OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options_, coreml_flag));
     if (!status.IsOK()) {
         const auto error_code = static_cast<int>(status.GetErrorCode());
         const auto error_message = status.GetErrorMessage();
         LogError << "Failed to append CoreML execution provider" << VAR(error_code) << VAR(error_message);
-        options_ = { };
+        options_ = {};
         memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
         return false;
     }
@@ -330,7 +329,7 @@ MAA_VISION_NS::InferenceSessionPtr InferenceResMgr::load(const std::string& name
 
 MAA_VISION_NS::InferenceSessionPtr InferenceResMgr::load_ort(const std::filesystem::path& path)
 {
-    return OrtSession::create(env_, path, options_, memory_info_);
+    return OrtSession::create(env_, path, options_, memory_info_, use_webgpu_);
 }
 
 MAA_RES_NS_END
