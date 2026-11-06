@@ -1,4 +1,5 @@
 import json
+import dataclasses
 from dataclasses import dataclass, field
 from typing import Any, Optional, Union, cast
 
@@ -7,6 +8,17 @@ from strenum import StrEnum
 # Type aliases to match C++ std::variant types
 JRect = tuple[int, int, int, int]  # std::array<int, 4>
 JTarget = Union[bool, str, JRect]  # std::variant<bool, std::string, JRect>
+
+
+def reco_param_to_dict(reco_param: Any) -> dict:
+    """将识别参数数据类序列化为 dict。
+
+    数据类可通过定义 to_dict() 自定义序列化（如 JMultiColorMatch 需要省略
+    未设置的字段），其余沿用 asdict 的默认行为。
+    """
+    if hasattr(reco_param, "to_dict"):
+        return reco_param.to_dict()
+    return dataclasses.asdict(reco_param)
 
 
 # strenum
@@ -18,6 +30,7 @@ class JRecognitionType(StrEnum):
     OCR = "OCR"
     NeuralNetworkClassify = "NeuralNetworkClassify"
     NeuralNetworkDetect = "NeuralNetworkDetect"
+    MultiColorMatch = "MultiColorMatch"
     And = "And"
     Or = "Or"
     Custom = "Custom"
@@ -139,6 +152,43 @@ class JCustomRecognition:
 
 
 @dataclass
+class JMultiColorMatch:
+    # base_color 默认 None 表示未设置：序列化时省略该字段，C++ 解析器会给出
+    # 明确的 "base_color is required" 错误（显式设置为 0 = 黑色基准点仍会正常传递）
+    base_color: Optional[int] = None  # 基准点颜色 0xRRGGBB（可用 pattern 提供）
+    points: Any = None  # [{"dx","dy","color"}] 数组或 "dx|dy|0xRRGGBB,..." 字符串（可用 pattern 提供）
+    pattern: str = ""  # 引用 pattern/*.lua 中的点阵名称
+    roi: JTarget = (0, 0, 0, 0)
+    roi_offset: JRect = (0, 0, 0, 0)
+    order_by: str = "Horizontal"
+    degree: int = 90
+    main: int = 0
+    list: int = 0
+    count: int = 0
+    miss: int = 0
+    orient: int = 0
+    index: int = 0
+
+    def to_dict(self) -> dict:
+        """序列化为 pipeline 参数 dict，与 C++ 解析器的缺省语义对齐。
+
+        未设置的字段（None / 空 pattern）不输出：C++ 侧会把显式值当作用户
+        配置，从而阻止 pattern 填充（如 points: null 会覆盖 pattern 提供的
+        值，pattern: "" 会被当作 pattern 引用而报错）。
+        """
+        use_pattern = bool(self.pattern)
+        d = {}
+        for key, v in dataclasses.asdict(self).items():
+            if v is None or (key == "pattern" and not v):
+                continue
+            # 提供 pattern 时，pattern 可填充的字段保持缺省即交给 pattern
+            if use_pattern and key in ("base_color", "points", "degree", "roi") and v == self.__dataclass_fields__[key].default:
+                continue
+            d[key] = v
+        return d
+
+
+@dataclass
 class JAnd:
     # all_of: List of sub-recognitions. Each element can be:
     #   - str: node name reference (uses that node's recognition params)
@@ -167,6 +217,7 @@ JRecognitionParam = Union[
     JAnd,
     JOr,
     JCustomRecognition,
+    JMultiColorMatch,
 ]
 
 
@@ -420,6 +471,7 @@ class JPipelineParser:
             JRecognitionType.OCR: JOCR,
             JRecognitionType.NeuralNetworkClassify: JNeuralNetworkClassify,
             JRecognitionType.NeuralNetworkDetect: JNeuralNetworkDetect,
+            JRecognitionType.MultiColorMatch: JMultiColorMatch,
             JRecognitionType.And: JAnd,
             JRecognitionType.Or: JOr,
             JRecognitionType.Custom: JCustomRecognition,

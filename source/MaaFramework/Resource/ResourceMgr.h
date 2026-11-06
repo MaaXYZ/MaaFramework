@@ -9,6 +9,7 @@
 #include "InferenceResMgr.h"
 #include "MaaFramework/Instance/MaaResource.h"
 #include "OCRResMgr.h"
+#include "PatternResMgr.h"
 #include "PipelineResMgr.h"
 #include "TemplateResMgr.h"
 #include "Utils/EventDispatcher.hpp"
@@ -93,6 +94,10 @@ public:
 
     const auto& pipeline_res() const { return pipeline_res_; }
 
+    // The pattern registry used while parsing pipeline overrides outside of
+    // resource loading (see PatternResMgr::ParseGuard)
+    const PatternResMgr* pattern_res_for_parse() const { return &pattern_res_; }
+
     auto& pipeline_res() { return pipeline_res_; }
 
     const auto& ocr_res() const { return ocr_res_; }
@@ -106,6 +111,10 @@ public:
     const auto& template_res() const { return template_res_; }
 
     auto& template_res() { return template_res_; }
+
+    const auto& pattern_res() const { return pattern_res_; }
+
+    auto& pattern_res() { return pattern_res_; }
 
     const auto& default_pipeline() const { return default_pipeline_; }
 
@@ -148,6 +157,7 @@ private:
     OCRResMgr ocr_res_;
     InferenceResMgr inference_res_;
     TemplateResMgr template_res_;
+    PatternResMgr pattern_res_;
 
     std::unordered_map<std::string, CustomRecognitionSession> custom_recognition_sessions_;
     std::unordered_map<std::string, CustomActionSession> custom_action_sessions_;

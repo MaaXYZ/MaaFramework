@@ -8,6 +8,7 @@
 #include "MaaUtils/Uuid.h"
 #include "PipelineTask.h"
 #include "RecognitionTask.h"
+#include "Resource/PatternResMgr.h"
 #include "Resource/PipelineChecker.h"
 #include "Resource/PipelineDumper.h"
 #include "Resource/PipelineParser.h"
@@ -208,6 +209,11 @@ bool Context::override_pipeline(const json::value& pipeline_override)
         return false;
     }
     auto& default_mgr = resource->default_pipeline();
+
+    // Pipeline overrides may reference pattern resources (MultiColorMatch
+    // "pattern" field); make the resource's pattern registry resolvable while
+    // parsing, as the loading paths do
+    MAA_RES_NS::PatternResMgr::ParseGuard pattern_guard(resource->pattern_res_for_parse());
 
     bool ret = false;
     if (pipeline_override.is_object()) {
