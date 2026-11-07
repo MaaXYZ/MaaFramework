@@ -126,6 +126,12 @@ enum MaaGlobalOptionEnum
     /// value: size_t, eg: 4096; val_size: sizeof(size_t)
     /// default value is 4096
     MaaGlobalOption_RecoImageCacheLimit = 9,
+
+    /// Whether to save task failure keyframes
+    ///
+    /// value: bool, eg: true; val_size: sizeof(bool)
+    /// default value is true, independent of SaveOnError and DebugMode
+    MaaGlobalOption_SaveOnErrorFrames = 10,
 };
 
 typedef MaaOption MaaResOption;

@@ -56,6 +56,8 @@ from maa.define import (
     MaaBool,
     MaaControllerHandle,
     MaaCtrlId,
+    MaaImageBufferHandle,
+    MaaSize,
     MaaStringBufferHandle,
 )
 from maa.context import Context, ContextEventSink
@@ -1315,6 +1317,133 @@ def test_binding_init_thread_safety():
     print("  PASS: 8 threads initialised the binding concurrently")
 
 
+def test_failure_frame_history():
+    """验证失败帧开关、像素完整性、容量上限以及停止时的清理。"""
+    import json
+    import tempfile
+    import threading
+    import zlib
+
+    print("\n=== test_failure_frame_history ===")
+
+    def make_frame(value):
+        image = numpy.zeros((720, 1280, 3), dtype=numpy.uint8)
+        image[-1, -1, -1] = value
+        return image
+
+    capture_values = list(range(15)) + [14]
+    node_names = [f"HistoryFrame{index}" for index in range(len(capture_values))]
+    controller = MyController(make_frame(0))
+    visited = []
+    stop_entered = threading.Event()
+    release_stop = threading.Event()
+
+    class AdvanceHistoryFrame(CustomAction):
+        def run(self, context, argv):
+            step = json.loads(argv.custom_action_param)
+            if step == "stop":
+                stop_entered.set()
+                return release_stop.wait(timeout=10)
+            visited.append(step)
+            if step + 1 == len(capture_values):
+                return False
+            controller.image = make_frame(capture_values[step + 1])
+            return True
+
+    frame_node = {
+        "recognition": "ColorMatch",
+        "roi": [0, 0, 8, 8],
+        "lower": [0, 0, 0],
+        "upper": [0, 0, 0],
+        "action": "Custom",
+        "custom_action": "AdvanceHistoryFrame",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 1000,
+    }
+    pipeline = {
+        name: {
+            **frame_node,
+            "custom_action_param": index,
+            "next": node_names[index + 1 : index + 2],
+        }
+        for index, name in enumerate(node_names)
+    }
+    pipeline["HistoryStop"] = {**frame_node, "custom_action_param": "stop"}
+
+    with tempfile.TemporaryDirectory(prefix="maafw_failure_frames_") as directory:
+        work = Path(directory)
+        bundle = work / "bundle"
+        (bundle / "pipeline").mkdir(parents=True)
+        (bundle / "pipeline" / "history.json").write_text(json.dumps(pipeline), encoding="utf-8")
+        resource = Resource()
+        assert resource.post_bundle(bundle).wait().succeeded
+        assert resource.register_custom_action("AdvanceHistoryFrame", AdvanceHistoryFrame())
+        assert controller.post_connection().wait().succeeded
+        assert controller.set_screenshot_use_raw_size(True)
+
+        tasker = Tasker()
+        job = stop_job = None
+        try:
+            assert tasker.bind(resource, controller) and tasker.inited
+            assert Tasker.set_debug_mode(False)
+            assert Tasker.set_save_draw(False)
+
+            for enabled, label in ((False, "disabled"), (True, "enabled")):
+                log_dir = work / label
+                assert Tasker.set_log_dir(log_dir)
+                assert Tasker.set_save_on_error(not enabled)
+                assert Tasker.set_save_on_error_frames(enabled)
+                controller.image = make_frame(0)
+                visited.clear()
+                job = tasker.post_task(node_names[0])
+                assert job.wait().failed
+                assert visited == list(range(len(capture_values)))
+                assert len(list((log_dir / "on_error").glob("*.png"))) == int(not enabled)
+
+            assert not any(path.is_dir() for path in (work / "disabled" / "on_error").iterdir())
+            history_dir = work / "enabled" / "on_error"
+            assert not any(history_dir.glob("*.partial"))
+            manifests = list(history_dir.glob("*/frames.json"))
+            assert len(manifests) == 1
+            manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
+            entries = manifest["frames"]
+            assert manifest["failure_node"] == node_names[-1]
+            assert manifest["memory_limit_bytes"] == 32 * 1024 * 1024
+            assert len(entries) == 12 and manifest["dropped_for_memory"] == 3
+            assert entries[-1]["node"] == node_names[-2] and entries[-1]["last_node"] == node_names[-1]
+            assert entries[-1]["failure"]
+
+            decode = Library.framework().MaaImageBufferSetEncoded
+            decode.argtypes = [MaaImageBufferHandle, ctypes.c_void_p, MaaSize]
+            decode.restype = MaaBool
+            image_buffer = ImageBuffer()
+            for value, entry in zip(range(3, 15), entries):
+                png = (manifests[0].parent / entry["file"]).read_bytes()
+                assert png.startswith(b"\x89PNG\r\n\x1a\n")
+                assert len(png) == entry["png_bytes"] and f"{zlib.crc32(png):08x}" == entry["crc32"]
+                assert decode(image_buffer._handle, png, len(png))
+                numpy.testing.assert_array_equal(image_buffer.get(), make_frame(value))
+
+            assert Tasker.set_log_dir(work / "stopped")
+            controller.image = make_frame(0)
+            job = tasker.post_task("HistoryStop")
+            assert stop_entered.wait(timeout=10), "HistoryStop action must start"
+            stop_job = tasker.post_stop()
+            release_stop.set()
+            assert stop_job.wait().succeeded
+        finally:
+            # A CustomAction holds the gate after its screenshot has completed.
+            release_stop.set()
+            del stop_job, job, tasker
+            # Switching to a nonempty log path closes the temporary file on Windows.
+            Tasker.set_log_dir(install_dir / "bin" / "debug")
+
+        assert not (work / "stopped" / "on_error").exists()
+
+    print("  PASS: failure frame history")
+
+
 def test_neural_network_cache():
     """Exercise cache sharing and lifetime through real pipeline execution (#1504)."""
     import shutil
@@ -1473,6 +1602,8 @@ if __name__ == "__main__":
     # 回归：并发初始化线程安全 (#629)
     test_binding_init_thread_safety()
     test_neural_network_cache()
+
+    test_failure_frame_history()
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")

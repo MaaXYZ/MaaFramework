@@ -6,6 +6,7 @@
 #include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/ScopeLeave.hpp"
 #include "MaaUtils/Uuid.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/ActionTask.h"
@@ -181,7 +182,7 @@ MaaTaskId Tasker::post_stop()
 
     static const std::string kStopEntry = "MaaTaskerPostStop";
     auto task_ptr = std::make_shared<MAA_TASK_NS::EmptyTask>(kStopEntry, this);
-    return post_task(std::move(task_ptr), json::object { });
+    return post_task(std::move(task_ptr), json::object {});
 }
 
 bool Tasker::stopping() const
@@ -350,10 +351,16 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     }
     notifier_.notify(this, MaaMsg_Tasker_Task_Starting, cb_detail);
 
-    bool ret = task_ptr->run();
+    bool ret = false;
+    {
+        failure_frames_.begin();
+        // Drain once before reporting the task result, including exceptional exits.
+        ScopeLeaveHelper clear_failure_frames([this]() { failure_frames_.end(); });
+        ret = task_ptr->run();
 
-    if (controller_) {
-        controller_->auto_release_pressed();
+        if (controller_) {
+            controller_->auto_release_pressed();
+        }
     }
 
     LogInfo << "task end:" << VAR(cb_detail) << VAR(ret);
