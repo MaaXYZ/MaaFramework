@@ -97,6 +97,7 @@ public:
     }
 
     bool connected() const { return alive_; }
+    bool has_client() const { return client_ != nullptr; }
 
 private:
     static bool supported_version(std::string_view version)

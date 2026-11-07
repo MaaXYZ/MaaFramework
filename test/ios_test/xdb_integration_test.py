@@ -259,3 +259,59 @@ for version in ('1.6.0', '1.6.0+build.1', '1.6.1', '1.7.0-rc1', '1.10.0', '2.0.0
             assert wait(ctrl, posts['Connection'](ctrl)) == 3000, version
         finally:
             destroy(ctrl)
+
+class StartupDisconnectServer(FakeServer):
+    fail_method = ''
+    def handle_call(self, name, params):
+        if name == self.fail_method:
+            raise ConnectionError('Lost during startup')
+        return super().handle_call(name, params)
+
+for name, method in (('display.info', 2), ('video.start', 3)):
+    with StartupDisconnectServer() as server:
+        server.fail_method = name
+        ctrl = create(b'mock-iphone', method, 2, json.dumps(server.config).encode())
+        try:
+            assert wait(ctrl, posts['Connection'](ctrl)) == 4000
+            assert not connected(ctrl)
+        finally:
+            destroy(ctrl)
+
+# A malformed reply fails the SDK request while leaving this test peer able to clean up.
+from fake_server import Handler
+class CorruptReply:
+    def __init__(self, peer):
+        self.peer = peer
+    def recv(self, size):
+        return self.peer.recv(size)
+    def sendall(self, data):
+        envelope = json.loads(data[16:16 + int.from_bytes(data[8:12], 'big')])
+        if envelope.get('result', {}).pop('corrupt_reply', False):
+            envelope['ok'] = 'invalid'
+            text = json.dumps(envelope).encode()
+            data = data[:8] + len(text).to_bytes(4, 'big') + bytes(4) + text
+        self.peer.sendall(data)
+
+class CorruptHandler(Handler):
+    def handle(self):
+        self.request = CorruptReply(self.request)
+        super().handle()
+
+class AppliedInputServer(FakeServer):
+    def handle_call(self, name, params):
+        result, data = super().handle_call(name, params)
+        if name == 'input.text':
+            result['corrupt_reply'] = True
+        return result, data
+
+with AppliedInputServer() as server:
+    server.RequestHandlerClass = CorruptHandler
+    ctrl = create(b'mock-iphone', 2, 2, json.dumps(server.config).encode())
+    try:
+        assert wait(ctrl, posts['Connection'](ctrl)) == 3000
+        assert wait(ctrl, posts['InputText'](ctrl, b'abc')) == 4000
+        assert not connected(ctrl)
+        assert ('input.keyboard', {'usages': []}) in server.calls
+    finally:
+        destroy(ctrl)
+    assert 'connection.close' in server.methods()

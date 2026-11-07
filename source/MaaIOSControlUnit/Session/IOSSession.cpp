@@ -137,13 +137,20 @@ bool IOSSession::create(
             return false;
         }
     }
+    if (!client_.connected()) {
+        if (err.empty()) {
+            err = "iOS connection was lost during startup";
+        }
+        close();
+        return false;
+    }
     err.clear();
     return true;
 }
 
 void IOSSession::close()
 {
-    if (client_.connected()) {
+    if (client_.has_client()) {
         std::string ignored;
         release_inputs(ignored);
         client_.call("connection.close", json::object { }, ignored);
@@ -276,7 +283,7 @@ bool IOSSession::release_touch(int contact, std::string& err)
 
 bool IOSSession::send_keyboard(const std::set<uint16_t>& usages, std::string& err)
 {
-    if (!client_.connected()) {
+    if (!client_.has_client() || (!usages.empty() && !client_.connected())) {
         err = "not connected";
         return false;
     }
@@ -389,7 +396,7 @@ bool IOSSession::release_inputs(std::string& err)
 {
     return inputs_.release(
         [this](int contact, double x, double y, std::string& error) {
-            if (!client_.connected()) {
+            if (!client_.has_client()) {
                 error = "iOS touch service is unavailable during cleanup";
                 return false;
             }
@@ -397,7 +404,7 @@ bool IOSSession::release_inputs(std::string& err)
         },
         [this](std::string& error) { return send_keyboard({ }, error); },
         [this](uint16_t usage, std::string& error) {
-            if (!client_.connected()) {
+            if (!client_.has_client()) {
                 error = "iOS hardware button service is unavailable during cleanup";
                 return false;
             }
