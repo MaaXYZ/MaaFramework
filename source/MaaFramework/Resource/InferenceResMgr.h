@@ -23,6 +23,7 @@ class InferenceResMgr : public NonCopyable
 {
 public:
     InferenceResMgr();
+    ~InferenceResMgr();
 
 public:
     bool use_cpu();
@@ -60,6 +61,7 @@ private:
 #endif
 
     Ort::Env env_ = Ort::Env(ORT_LOGGING_LEVEL_FATAL, "MaaFW");
+    bool use_webgpu_ = false;
     Ort::SessionOptions options_;
     Ort::MemoryInfo memory_info_;
 

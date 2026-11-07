@@ -5,6 +5,7 @@
 #include "module/PipelineSmoking.h"
 #include "module/PostStopInterrupt.h"
 #include "module/RunWithoutFile.h"
+#include "module/WebGpuLock.h"
 
 #include "MaaFramework/MaaAPI.h"
 
@@ -22,6 +23,10 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaGlobalSetOption(MaaGlobalOption_SaveDraw, &on, sizeof(on));
     MaaLoggingLevel lv = MaaLoggingLevel_Info;
     MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &lv, sizeof(lv));
+
+    if (!test_webgpu_lock(testset_dir)) {
+        return -1;
+    }
 
     if (!test_neural_network_cache(testset_dir, cur_dir / "debug")) {
         return -1;

@@ -14,8 +14,12 @@ class OrtSession : public MAA_VISION_NS::InferenceSession
 {
 public:
     // returns nullptr on failure
-    static std::shared_ptr<OrtSession>
-        create(Ort::Env& env, const std::filesystem::path& path, const Ort::SessionOptions& options, const Ort::MemoryInfo& memory_info);
+    static std::shared_ptr<OrtSession> create(
+        Ort::Env& env,
+        const std::filesystem::path& path,
+        const Ort::SessionOptions& options,
+        const Ort::MemoryInfo& memory_info,
+        bool use_webgpu = false);
 
     virtual ~OrtSession() override = default;
 
@@ -29,8 +33,9 @@ public:
     virtual const std::unordered_map<std::string, std::string>& metadata() const override { return metadata_; }
 
 private:
-    OrtSession(Ort::Session session, Ort::MemoryInfo memory_info);
+    OrtSession(Ort::Session session, Ort::MemoryInfo memory_info, bool use_webgpu);
 
+    const bool use_webgpu_;
     mutable Ort::Session session_;
     Ort::MemoryInfo memory_info_;
 

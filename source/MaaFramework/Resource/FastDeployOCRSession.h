@@ -40,6 +40,7 @@ public:
     virtual std::optional<std::vector<MAA_VISION_NS::OCRRecResult>> batch_rec(const std::vector<cv::Mat>& images) override;
 
 private:
+    const bool use_webgpu_;
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_;
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_;
     std::shared_ptr<fastdeploy::pipeline::PPOCRv4> ocrer_;
