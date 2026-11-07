@@ -9,6 +9,11 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/NoWarningCV.hpp"
 
+MAA_SUPPRESS_BOOST_WARNINGS_BEGIN
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+MAA_SUPPRESS_BOOST_WARNINGS_END
+
 MAA_NS_BEGIN
 
 namespace
@@ -230,10 +235,23 @@ void FailureFrames::work()
 
 void FailureFrames::write(const Export& job)
 {
-    auto temporary = job.directory;
-    temporary += ".partial";
+    auto directory = job.directory;
     try {
-        std::filesystem::create_directories(temporary / "frames");
+        auto temporary = directory;
+        temporary += ".partial";
+        if (std::filesystem::exists(std::filesystem::symlink_status(directory))
+            || std::filesystem::exists(std::filesystem::symlink_status(temporary))) {
+            // Each writer needs its own generator state.
+            thread_local boost::uuids::random_generator uuid_generator;
+            directory += "_" + boost::uuids::to_string(uuid_generator());
+            temporary = directory;
+            temporary += ".partial";
+        }
+        std::filesystem::create_directories(directory.parent_path());
+        if (!std::filesystem::create_directory(temporary) || !std::filesystem::create_directory(temporary / "frames")) {
+            LogWarn << "failure frame export staging directory already exists" << temporary;
+            return;
+        }
         json::array manifest;
         cv::Mat previous;
         for (size_t i = 0; i < job.frames.size(); ++i) {
@@ -286,11 +304,11 @@ void FailureFrames::write(const Export& job)
         output.exceptions(std::ios::failbit | std::ios::badbit);
         output << document;
         output.close();
-        std::filesystem::rename(temporary, job.directory);
-        LogInfo << "saved failure frames" << job.directory << VAR(job.frames.size());
+        std::filesystem::rename(temporary, directory);
+        LogInfo << "saved failure frames" << directory << VAR(job.frames.size());
     }
     catch (const std::exception& error) {
-        LogWarn << "failure frame export failed" << job.directory << error.what();
+        LogWarn << "failure frame export failed" << directory << error.what();
     }
 }
 
