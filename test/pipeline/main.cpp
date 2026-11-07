@@ -1,6 +1,7 @@
 #include <filesystem>
 
 #include "module/BatchOcrRepro.h"
+#include "module/ControllerActionEvents.h"
 #include "module/NeuralNetworkCache.h"
 #include "module/PipelineSmoking.h"
 #include "module/PostStopInterrupt.h"
@@ -37,6 +38,9 @@ int main([[maybe_unused]] int argc, char** argv)
         return -1;
     }
     if (!post_stop_interrupt(testset_dir)) {
+        return -1;
+    }
+    if (!controller_action_events()) {
         return -1;
     }
 
