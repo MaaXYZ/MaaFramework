@@ -252,7 +252,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
     An automation assistant for the Chinese server of BanG Dream! Girls Band Party!, supporting daily tasks, automated live performances, and Bestdori profile synchronization. Powered by MaaFramework!
 
 - [MaaRacingMaster](https://github.com/d542Bb/MaaRacingMaster) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![C#](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/d542Bb/MaaRacingMaster) ![activity](https://img.shields.io/github/commit-activity/m/d542Bb/MaaRacingMaster?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/d542Bb/MaaRacingMaster?style=social)  
-    A Racing Master (巅峰极速) assistant. Image recognition + simulated input, automating the full event loop, freeing your hands! Powered by MaaFramework.
+    A Racing Master assistant. Image recognition + simulated input, automating the full event loop, freeing your hands! Powered by MaaFramework.
 
 ## Eco-Building
 
