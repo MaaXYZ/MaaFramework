@@ -3,7 +3,7 @@
 #include <ostream>
 #include <vector>
 
-#include "InferenceSession.h"
+#include "InferenceCache.hpp"
 #include "MaaUtils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
@@ -34,7 +34,8 @@ public:
         std::vector<cv::Rect> rois,
         NeuralNetworkClassifierParam param,
         InferenceSessionPtr session,
-        std::string name = "");
+        std::string name = "",
+        InferenceCache<Result>* cache = nullptr);
 
 private:
     void analyze();
@@ -53,6 +54,7 @@ private:
 private:
     const NeuralNetworkClassifierParam param_;
     InferenceSessionPtr session_ = nullptr;
+    InferenceCache<Result>* cache_ = nullptr;
 
     std::vector<int> expected_indices_;
 };

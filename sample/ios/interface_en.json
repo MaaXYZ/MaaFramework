@@ -1,0 +1,12 @@
+{
+    "IOSSample": "MaaFramework iOS sample",
+    "IOSSampleDescription": "Demonstrates iOS device connections, screenshot checks, and Freeform drawing.",
+    "IOSController": "iOS device",
+    "IOSControllerDescription": "Connect to a paired iOS device over USB or Wi-Fi.",
+    "IOSResource": "iOS sample resources",
+    "IOSResourceDescription": "Includes screenshot check and Freeform drawing pipelines.",
+    "IOSScreenshotCheck": "iOS screenshot check",
+    "IOSScreenshotCheckDescription": "Capture the device screen to verify that screenshots work.",
+    "FreeformAppleDrawing": "Draw an apple in Freeform",
+    "FreeformAppleDrawingDescription": "Launch Freeform and draw an apple using polyline swipes."
+}

@@ -35,8 +35,9 @@ public:
         std::string name;
         std::filesystem::path process_path;
         std::filesystem::path adb_path;
+        std::vector<std::string> common_serials;
 
-        MEO_TOJSON(name, process_path, adb_path);
+        MEO_TOJSON(name, process_path, adb_path, common_serials);
     };
 
 public:
@@ -63,6 +64,11 @@ protected:
 protected:
     std::vector<std::string> find_serials_by_adb_command(const std::filesystem::path& adb_path) const;
     std::optional<AdbDevice> try_device(const std::filesystem::path& adb_path, const std::string& serial, const Emulator& emulator) const;
+
+    std::vector<AdbDevice> find_by_common_serials(
+        const std::filesystem::path& adb_path,
+        const std::unordered_set<std::string>& exclude_serials,
+        const Emulator& emulator) const;
 
     std::vector<Emulator> find_emulators() const;
     std::filesystem::path get_emulator_adb_path(const EmulatorConstantData& emulator, os_pid pid) const;

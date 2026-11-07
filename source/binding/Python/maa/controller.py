@@ -30,6 +30,7 @@ __all__ = [
     "WlRootsController",
     "LinuxController",
     "AndroidNativeController",
+    "IOSController",
     "CustomController",
 ]
 
@@ -899,6 +900,36 @@ class AdbController(Controller):
             ctypes.c_char_p,
             ctypes.c_char_p,
         ]
+
+
+class IOSController(Controller):
+    """iOS controller backed by a running xdb Server.
+
+    Pair and prepare DDI using the xdb CLI or SDK first. The framework never owns
+    device credentials. config accepts server_port (XDB_PORT or 17423),
+    wifi_address (empty), wifi_port (49152), shared_control (False),
+    max_bitrate (omitted, bit/s), max_fps (0/unlimited receiver output), hardware_decode (False).
+    """
+    def __init__(self, udid: str, screencap_methods: int = MaaIOSScreencapMethodEnum.Default,
+                 connection_method: int = MaaIOSConnectionMethodEnum.Auto,
+                 config: Optional[dict] = None):
+        super().__init__()
+        self._handle = None
+        if not udid or "\0" in udid:
+            raise ValueError("A nonempty iOS device UDID without NUL is required")
+        self._set_ios_api_properties()
+        self._handle = Library.framework().MaaIOSControllerCreate(udid.encode(), screencap_methods, connection_method,
+            json.dumps(config or {}).encode())
+        if not self._handle:
+            raise RuntimeError("Failed to create iOS controller")
+
+    def _set_ios_api_properties(self):
+        api = Library.framework()
+        if not hasattr(api, "MaaIOSControllerCreate"):
+            raise RuntimeError("iOS controller is not available in the current build")
+        api.MaaIOSControllerCreate.restype = MaaControllerHandle
+        api.MaaIOSControllerCreate.argtypes = [ctypes.c_char_p, MaaIOSScreencapMethod,
+            MaaIOSConnectionMethod, ctypes.c_char_p]
 
 
 class Win32Controller(Controller):

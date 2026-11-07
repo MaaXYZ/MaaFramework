@@ -13,3 +13,6 @@
 [submodule "source/MaaUtils"]
 	path = source/MaaUtils
 	url = https://github.com/MaaXYZ/MaaUtils.git
+[submodule "3rdparty/XDeviceBridge"]
+	path = 3rdparty/XDeviceBridge
+	url = https://github.com/scrctl/XDeviceBridge.git

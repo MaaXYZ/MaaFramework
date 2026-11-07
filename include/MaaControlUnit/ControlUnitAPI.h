@@ -86,6 +86,12 @@ public:
     virtual bool find_device(/*out*/ std::vector<std::string>& devices) = 0;
 };
 
+class IOSControlUnitAPI : public ControlUnitAPI
+{
+public:
+    virtual ~IOSControlUnitAPI() = default;
+};
+
 class AndroidNativeControlUnitAPI : public ControlUnitAPI
 {
 public:
@@ -171,6 +177,7 @@ MAA_CTRL_UNIT_NS_END
 
 using MaaControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;
 using MaaAdbControlUnitHandle = MAA_CTRL_UNIT_NS::AdbControlUnitAPI*;
+using MaaIOSControlUnitHandle = MAA_CTRL_UNIT_NS::IOSControlUnitAPI*;
 using MaaWin32ControlUnitHandle = MAA_CTRL_UNIT_NS::Win32ControlUnitAPI*;
 using MaaMacOSControlUnitHandle = MAA_CTRL_UNIT_NS::MacOSControlUnitAPI*;
 using MaaLinuxControlUnitHandle = MAA_CTRL_UNIT_NS::LinuxControlUnitAPI*;
