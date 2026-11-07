@@ -194,7 +194,7 @@ std::optional<MAA_TASK_NS::TaskDetail> RuntimeCache::get_task_detail(MaaTaskId u
     return it->second;
 }
 
-void RuntimeCache::set_task_detail(MaaTaskId uid, MAA_TASK_NS::TaskDetail detail)
+void RuntimeCache::set_task_status(MaaTaskId uid, const std::string& entry, MaaStatus status)
 {
     if (uid == MaaInvalidId) {
         LogError << "uid is invalid";
@@ -203,10 +203,31 @@ void RuntimeCache::set_task_detail(MaaTaskId uid, MAA_TASK_NS::TaskDetail detail
 
     std::unique_lock lock(task_details_mutex_);
 
-    task_details_.insert_or_assign(uid, std::move(detail));
+    auto [it, inserted] = task_details_.try_emplace(uid, MAA_TASK_NS::TaskDetail { .task_id = uid, .entry = entry });
+    it->second.status = status;
+    if (status == MaaStatus_Running) {
+        running_task_ids_.insert(uid);
+    }
+    else {
+        running_task_ids_.erase(uid);
+    }
 }
 
-void RuntimeCache::clear()
+void RuntimeCache::append_task_node(MaaTaskId uid, const std::string& entry, MaaNodeId node_id)
+{
+    if (uid == MaaInvalidId || node_id == MaaInvalidId) {
+        LogError << "uid or node_id is invalid" << VAR(uid) << VAR(node_id);
+        return;
+    }
+
+    std::unique_lock lock(task_details_mutex_);
+
+    auto [it, inserted] =
+        task_details_.try_emplace(uid, MAA_TASK_NS::TaskDetail { .task_id = uid, .entry = entry, .status = MaaStatus_Running });
+    it->second.node_ids.emplace_back(node_id);
+}
+
+void RuntimeCache::clear(const std::set<MaaTaskId>& retained_task_ids)
 {
     LogInfo;
 
@@ -234,7 +255,14 @@ void RuntimeCache::clear()
     }
     {
         std::unique_lock lock(task_details_mutex_);
-        task_details_.clear();
+        // Context recognition/action histories have no runner lifecycle of their own.
+        std::erase_if(task_details_, [this, &retained_task_ids](const auto& item) {
+            return !retained_task_ids.contains(item.first) && !running_task_ids_.contains(item.first);
+        });
+        for (auto& [id, detail] : task_details_) {
+            // Release the history storage, while keeping callbacks' task metadata available.
+            std::vector<MaaNodeId>().swap(detail.node_ids);
+        }
     }
 }
 
