@@ -60,15 +60,13 @@ bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOpt
 
 MaaCtrlId ControllerAgent::post_connection()
 {
-    auto id = post({ .type = Action::Type::connect });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::connect });
 }
 
 MaaCtrlId ControllerAgent::post_click(int x, int y, int contact, int pressure)
 {
     ClickParam p { .point = { x, y }, .contact = contact, .pressure = pressure };
-    auto id = post({ .type = Action::Type::click, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::click, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure)
@@ -78,104 +76,89 @@ MaaCtrlId ControllerAgent::post_swipe(int x1, int y1, int x2, int y2, int durati
                    .duration = { static_cast<uint>(duration) },
                    .contact = contact,
                    .pressure = pressure };
-    auto id = post({ .type = Action::Type::swipe, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::swipe, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_click_key(int keycode)
 {
     ClickKeyParam p { .keycode = { keycode } };
-    auto id = post({ .type = Action::Type::click_key, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::click_key, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_input_text(const std::string& text)
 {
     InputTextParam p { .text = text };
-    auto id = post({ .type = Action::Type::input_text, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::input_text, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_start_app(const std::string& intent)
 {
     AppParam p { .package = intent };
-    auto id = post({ .type = Action::Type::start_app, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::start_app, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_stop_app(const std::string& intent)
 {
     AppParam p { .package = intent };
-    auto id = post({ .type = Action::Type::stop_app, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::stop_app, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_screencap()
 {
-    auto id = post({ .type = Action::Type::screencap });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::screencap });
 }
 
 MaaCtrlId ControllerAgent::post_touch_down(int contact, int x, int y, int pressure)
 {
     TouchParam p { .contact = contact, .point = { x, y }, .pressure = pressure };
-    auto id = post({ .type = Action::Type::touch_down, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::touch_down, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_touch_move(int contact, int x, int y, int pressure)
 {
     TouchParam p { .contact = contact, .point = { x, y }, .pressure = pressure };
-    auto id = post({ .type = Action::Type::touch_move, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::touch_move, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_touch_up(int contact)
 {
     TouchParam p { .contact = contact };
-    auto id = post({ .type = Action::Type::touch_up, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::touch_up, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_relative_move(int dx, int dy)
 {
     RelativeMoveParam p { .dx = dx, .dy = dy };
-    auto id = post({ .type = Action::Type::relative_move, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::relative_move, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_key_down(int keycode)
 {
     ClickKeyParam p { .keycode = { keycode } };
-    auto id = post({ .type = Action::Type::key_down, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::key_down, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_key_up(int keycode)
 {
     ClickKeyParam p { .keycode = { keycode } };
-    auto id = post({ .type = Action::Type::key_up, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::key_up, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_scroll(int dx, int dy)
 {
     ScrollParam p { .dx = dx, .dy = dy };
-    auto id = post({ .type = Action::Type::scroll, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::scroll, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_shell(const std::string& cmd, int64_t timeout)
 {
     ShellParam p { .cmd = cmd, .shell_timeout = timeout };
-    auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::shell, .param = std::move(p) });
 }
 
 MaaCtrlId ControllerAgent::post_inactive()
 {
-    auto id = post({ .type = Action::Type::inactive });
-    return focus_id(id);
+    return post_notified({ .type = Action::Type::inactive });
 }
 
 MaaStatus ControllerAgent::status(MaaCtrlId ctrl_id) const
@@ -420,14 +403,10 @@ MaaCtrlId ControllerAgent::post(Action action)
     return action_runner_->post(std::move(action));
 }
 
-MaaCtrlId ControllerAgent::focus_id(MaaCtrlId id)
+MaaCtrlId ControllerAgent::post_notified(Action action)
 {
-    if (id == MaaInvalidId) {
-        return id;
-    }
-
-    std::unique_lock lock { focus_ids_mutex_ };
-    return *focus_ids_.emplace(id).first;
+    action.notify = true;
+    return post(std::move(action));
 }
 
 bool ControllerAgent::handle_connect()
@@ -1108,12 +1087,7 @@ void ControllerAgent::auto_release_pressed()
 bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action action)
 {
     bool ret = false;
-
-    bool notify = false;
-    {
-        std::unique_lock lock { focus_ids_mutex_ };
-        notify = focus_ids_.erase(id) > 0;
-    }
+    const bool notify = action.notify;
 
     const json::value cb_detail = {
         { "ctrl_id", id },
