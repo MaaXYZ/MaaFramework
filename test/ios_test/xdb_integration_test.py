@@ -149,7 +149,7 @@ with FakeServer() as server:
                 assert action('InputText', text) == 3000
                 chunks = [p for n, p in server.calls[before:] if n == 'input.text']
                 assert ''.join(p['text'] for p in chunks).encode() == text
-                assert all(len(p['text']) <= 512 and
+                assert all(p['hold_ms'] == 40 and len(p['text']) <= 512 and
                            p['timeout_ms'] >= len(p['text']) * 3 * p['hold_ms'] + 10000
                            for p in chunks)
             assert action('StartApp', b'test.bundle') == 3000
@@ -220,7 +220,7 @@ with FakeServer() as server:
 print('PASS: native xdb discovery, Stream/PNG/fallback, geometry, input, app control and ownership')
 
 
-for version in ('1.3.0', '1.5.99', '', 'bad', '1.6', '1.6.0garbage'):
+for version in ('1.3.0', '1.5.99', '', 'bad', '1.6', '1.6.0garbage', '1.6.0-rc1'):
     with FakeServer() as server:
         server.server_version = version
         ctrl = create(b'mock-iphone', 2, 2, json.dumps(server.config).encode())
@@ -250,3 +250,12 @@ with DisconnectedServer() as server:
         assert wait(ctrl, posts['Connection'](ctrl)) == 3000 and connected(ctrl)
     finally:
         destroy(ctrl)
+
+for version in ('1.6.0', '1.6.0+build.1', '1.6.1', '1.7.0-rc1', '1.10.0', '2.0.0'):
+    with FakeServer() as server:
+        server.server_version = version
+        ctrl = create(b'mock-iphone', 2, 2, json.dumps(server.config).encode())
+        try:
+            assert wait(ctrl, posts['Connection'](ctrl)) == 3000, version
+        finally:
+            destroy(ctrl)

@@ -118,7 +118,8 @@ private:
         if (!version.empty() && version.front() != '-' && version.front() != '+') {
             return false;
         }
-        return parts >= std::array<unsigned, 3> { 1, 6, 0 };
+        constexpr std::array<unsigned, 3> minimum { 1, 6, 0 };
+        return parts > minimum || (parts == minimum && !version.starts_with('-'));
     }
 
     xdb_client* client_ = nullptr;
