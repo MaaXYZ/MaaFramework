@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <cstring>
 #include <fstream>
 
 #include "MaaUtils/JsonExt.hpp"
@@ -18,6 +19,17 @@ MAA_NS_BEGIN
 
 namespace
 {
+bool same_pixels(const cv::Mat& first, const cv::Mat& second)
+{
+    if (first.size != second.size || first.type() != second.type()) {
+        return false;
+    }
+    if (first.depth() == CV_8U && first.isContinuous() && second.isContinuous()) {
+        return std::memcmp(first.data, second.data, first.total() * first.elemSize()) == 0;
+    }
+    return cv::norm(first, second, cv::NORM_INF) == 0;
+}
+
 uint32_t png_crc32(const std::vector<uchar>& data)
 {
     static constexpr auto table = [] {
@@ -95,9 +107,7 @@ void FailureFrames::observe(const cv::Mat& image, MaaRecoId reco_id, const std::
             return;
         }
         const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        const bool equal = !frames_.empty() && image.size() == frames_.back().pixels->image.size()
-                           && image.type() == frames_.back().pixels->image.type()
-                           && cv::norm(image, frames_.back().pixels->image, cv::NORM_INF) == 0;
+        const bool equal = !frames_.empty() && same_pixels(image, frames_.back().pixels->image);
         if (!equal) {
             const size_t length = image.total() * image.elemSize();
             if (length > kMaxBytes) {
