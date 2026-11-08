@@ -1369,6 +1369,7 @@ def test_failure_frame_history():
         }
         for index, name in enumerate(node_names)
     }
+    pipeline["HistoryFail"] = {**frame_node, "custom_action_param": len(capture_values) - 1}
     pipeline["HistoryStop"] = {**frame_node, "custom_action_param": "stop"}
 
     with tempfile.TemporaryDirectory(prefix="maafw_failure_frames_") as directory:
@@ -1388,6 +1389,39 @@ def test_failure_frame_history():
             assert tasker.bind(resource, controller) and tasker.inited
             assert Tasker.set_debug_mode(False)
             assert Tasker.set_save_draw(False)
+
+            def assert_legacy_only(log_dir):
+                assert tasker.post_task("HistoryFail").wait().failed
+                outputs = list((log_dir / "on_error").iterdir())
+                assert len(outputs) == 1 and outputs[0].suffix == ".png" and outputs[0].is_file(), outputs
+
+            native_log_dir = work / "native-default"
+            assert Tasker.set_log_dir(native_log_dir)
+            assert Tasker.set_save_on_error(True)
+            assert_legacy_only(native_log_dir)
+
+            toolkit_default = work / "toolkit-default"
+            assert Tasker.set_save_on_error_frames(True)
+            assert Toolkit.init_option(toolkit_default)
+            config = json.loads((toolkit_default / "config" / "maa_option.json").read_text(encoding="utf-8"))
+            assert config["save_on_error_frames"] is False
+            assert_legacy_only(toolkit_default / "debug")
+
+            legacy_user = work / "legacy-user"
+            legacy_config = legacy_user / "config" / "maa_option.json"
+            legacy_config.parent.mkdir(parents=True)
+            legacy_config.write_text("{}", encoding="utf-8")
+            assert Tasker.set_save_on_error_frames(True)
+            assert Toolkit.init_option(legacy_user, {"save_on_error_frames": True})
+            assert_legacy_only(legacy_user / "debug")
+
+            enabled_user = work / "enabled-user"
+            enabled_config = enabled_user / "config" / "maa_option.json"
+            enabled_config.parent.mkdir(parents=True)
+            enabled_config.write_text('{"save_on_error_frames": true, "save_on_error": false}', encoding="utf-8")
+            assert Toolkit.init_option(enabled_user)
+            assert tasker.post_task("HistoryFail").wait().failed
+            assert len(list((enabled_user / "debug" / "on_error").glob("*/frames.json"))) == 1
 
             for enabled, label in ((False, "disabled"), (True, "enabled")):
                 log_dir = work / label
@@ -1556,6 +1590,9 @@ def test_neural_network_cache():
 if __name__ == "__main__":
     print(f"MaaFw Version: {Library.version()}")
 
+    # Verify the native default before Toolkit loads a configuration.
+    test_failure_frame_history()
+
     Toolkit.init_option(install_dir / "bin")
 
     # 测试各模块 API
@@ -1602,8 +1639,6 @@ if __name__ == "__main__":
     # 回归：并发初始化线程安全 (#629)
     test_binding_init_thread_safety()
     test_neural_network_cache()
-
-    test_failure_frame_history()
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")

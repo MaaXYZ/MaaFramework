@@ -735,7 +735,7 @@ class Tasker:
 
     @staticmethod
     def set_save_on_error_frames(save_on_error_frames: bool) -> bool:
-        """设置是否保存任务失败关键帧，默认启用 / Set whether to save task failure keyframes, enabled by default
+        """设置是否保存未经脱敏的任务失败关键帧，默认关闭 / Save unredacted task failure keyframes, disabled by default
 
         Args:
             save_on_error_frames: 是否保存 / Whether to save

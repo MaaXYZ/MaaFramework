@@ -28,7 +28,7 @@ public:
         bool logging = true;
         bool save_draw = false;
         bool save_on_error = true;
-        bool save_on_error_frames = true;
+        bool save_on_error_frames = false;
         int32_t stdout_level = MaaLoggingLevel_Error;
         int draw_quality = 85;
 

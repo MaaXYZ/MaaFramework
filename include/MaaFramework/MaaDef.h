@@ -127,10 +127,10 @@ enum MaaGlobalOptionEnum
     /// default value is 4096
     MaaGlobalOption_RecoImageCacheLimit = 9,
 
-    /// Whether to save task failure keyframes
+    /// Whether to save unredacted task failure keyframes in the log directory
     ///
     /// value: bool, eg: true; val_size: sizeof(bool)
-    /// default value is true, independent of SaveOnError and DebugMode
+    /// default value is false, independent of SaveOnError and DebugMode
     MaaGlobalOption_SaveOnErrorFrames = 10,
 };
 
