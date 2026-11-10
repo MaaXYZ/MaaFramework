@@ -99,7 +99,12 @@ add_subdirectory(tools)
 
 target_include_directories(
     MaaUtils
-    PUBLIC $<BUILD_INTERFACE:${MAAUTILS_DIR}/include> $<INSTALL_INTERFACE:include>)
+    PUBLIC $<BUILD_INTERFACE:${MAAUTILS_DIR}/include> $<INSTALL_INTERFACE:include>
+    PRIVATE ${MAA_PUBLIC_INC})
+# Core and dynamically loaded control units must resolve capability RTTI from one
+# shared dependency, including hosts that load MaaFramework with RTLD_LOCAL.
+target_sources(MaaUtils PRIVATE source/ControlUnitCommon/ControlUnitAPI.cpp)
+target_compile_definitions(MaaUtils PRIVATE MAA_CONTROL_UNIT_TYPES_EXPORTS)
 # MaaUtils public headers expose Boost and OpenCV types.
 target_link_libraries(
     MaaUtils PUBLIC Boost::headers Boost::system ${OpenCV_LIBS})

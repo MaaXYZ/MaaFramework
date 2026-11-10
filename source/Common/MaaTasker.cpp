@@ -125,8 +125,6 @@ MaaBool MaaTaskerInited(const MaaTasker* tasker)
 
 MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pipeline_override)
 {
-    LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(pipeline_override);
-
     if (!tasker) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -142,6 +140,8 @@ MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pi
         return MaaInvalidId;
     }
 
+    LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(pipeline_override);
+
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
         LogError << "failed to parse" << VAR(pipeline_override);
@@ -153,8 +153,6 @@ MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pi
 
 MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* reco_type, const char* reco_param, const MaaImageBuffer* image)
 {
-    LogFunc << VAR_VOIDP(tasker) << VAR(reco_type) << VAR(reco_param);
-
     if (!tasker) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -175,6 +173,8 @@ MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* reco_type, con
         return MaaInvalidId;
     }
 
+    LogFunc << VAR_VOIDP(tasker) << VAR(reco_type) << VAR(reco_param);
+
     auto param_opt = json::parse(reco_param);
     if (!param_opt) {
         LogError << "failed to parse" << VAR(reco_param);
@@ -187,8 +187,6 @@ MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* reco_type, con
 MaaTaskId
     MaaTaskerPostAction(MaaTasker* tasker, const char* action_type, const char* action_param, const MaaRect* box, const char* reco_detail)
 {
-    LogFunc << VAR_VOIDP(tasker) << VAR(action_type) << VAR(action_param) << VAR(reco_detail);
-
     if (!tasker) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -213,6 +211,8 @@ MaaTaskId
         LogError << "reco_detail is null";
         return MaaInvalidId;
     }
+
+    LogFunc << VAR_VOIDP(tasker) << VAR(action_type) << VAR(action_param) << VAR(reco_detail);
 
     auto param_opt = json::parse(action_param);
     if (!param_opt) {
@@ -311,8 +311,6 @@ MaaBool MaaTaskerClearCache(MaaTasker* tasker)
 
 MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId task_id, const char* pipeline_override)
 {
-    LogFunc << VAR_VOIDP(tasker) << VAR(task_id) << VAR(pipeline_override);
-
     if (!tasker) {
         LogError << "handle is null";
         return false;
@@ -322,6 +320,8 @@ MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId task_id, const ch
         LogError << "pipeline_override is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(tasker) << VAR(task_id) << VAR(pipeline_override);
 
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {

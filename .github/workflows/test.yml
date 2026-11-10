@@ -170,10 +170,8 @@ jobs:
               shell: bash
               run: |
                   python3 -m pip install ./source/binding/Python
-                  python3 ./test/python/binding_test.py ./source/binding/Python ./install
-                  python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
-                  python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
-                  python3 ./test/agent/agent_tcp_main_test.py ./source/binding/Python ./install
+                  python3 -m pip install -r ./test/requirements.txt
+                  python3 ./test/run_tests.py ./source/binding/Python ./install
 
             - name: Run iOS management testing
               shell: bash
@@ -404,10 +402,8 @@ jobs:
                   python3 -m venv .venv
                   source .venv/bin/activate
                   python3 -m pip install ./source/binding/Python
-                  python3 ./test/python/binding_test.py ./source/binding/Python ./install
-                  python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
-                  python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
-                  python3 ./test/agent/agent_tcp_main_test.py ./source/binding/Python ./install
+                  python3 -m pip install -r ./test/requirements.txt
+                  python3 ./test/run_tests.py ./source/binding/Python ./install
 
             - name: Run iOS management testing
               shell: bash
@@ -564,10 +560,8 @@ jobs:
                   python3 -m venv .venv
                   source .venv/bin/activate
                   python3 -m pip install ./source/binding/Python
-                  python3 ./test/python/binding_test.py ./source/binding/Python ./install
-                  python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
-                  python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
-                  python3 ./test/agent/agent_tcp_main_test.py ./source/binding/Python ./install
+                  python3 -m pip install -r ./test/requirements.txt
+                  python3 ./test/run_tests.py ./source/binding/Python ./install
 
             - name: Run iOS management testing
               shell: bash

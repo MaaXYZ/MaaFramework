@@ -18,7 +18,7 @@ MaaId JobImpl::get_id()
 
 MaaStatus JobImpl::get_status()
 {
-    if (!status) {
+    if (!status || (*status != MaaStatus_Succeeded && *status != MaaStatus_Failed)) {
         status = maajs::CallMemberHelper<MaaStatus>(source.Value(), "status", id);
     }
     return *status;

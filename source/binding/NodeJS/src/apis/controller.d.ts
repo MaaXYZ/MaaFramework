@@ -480,6 +480,10 @@ declare global {
             relative_move?(dx: number, dy: number): maa.MaybePromise<boolean>
             shell?(cmd: string, timeout: number): maa.MaybePromise<string | null>
             inactive?(): maa.MaybePromise<boolean>
+            /**
+             * 同步读取 controller.info 时必须同步返回；控制器动作事件支持 Promise。
+             * Return synchronously for controller.info; controller action events also support Promise results.
+             */
             get_info?(): maa.MaybePromise<string | null>
         }
 
