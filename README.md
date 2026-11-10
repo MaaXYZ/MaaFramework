@@ -248,6 +248,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaBanG](https://github.com/hiaatcnd/MaaBanG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![C#](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/hiaatcnd/MaaBanG) ![activity](https://img.shields.io/github/commit-activity/m/hiaatcnd/MaaBanG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/hiaatcnd/MaaBanG?style=social)  
     BanG Dream! 少女乐团派对！中国服自动化助手，支持日常任务、自动演出与 Bestdori 档案同步。由 MaaFramework 强力驱动！
 
+- [MaaRacingMaster](https://github.com/d542Bb/MaaRacingMaster) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![C#](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/d542Bb/MaaRacingMaster) ![activity](https://img.shields.io/github/commit-activity/m/d542Bb/MaaRacingMaster?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/d542Bb/MaaRacingMaster?style=social)  
+    《巅峰极速》小助手。图像技术 + 模拟控制，自动完成活动全流程，解放双手！由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。
