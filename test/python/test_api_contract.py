@@ -107,6 +107,11 @@ class RecordingController(CustomController):
     def relative_move(self, dx, dy):
         return self.record("relative_move", dx, dy)
 
+    def shell(self, cmd, timeout):
+        if not self.record("shell", cmd, timeout):
+            return None
+        return f"stdout:{cmd}\n结果🐱"
+
     def inactive(self):
         return self.record("inactive")
 
@@ -502,6 +507,7 @@ class ControllerContractTest(unittest.TestCase):
             ("post_stop_app", ("test.package",), ("stop_app", "test.package")),
             ("post_scroll", (-120, 240), ("scroll", -120, 240)),
             ("post_relative_move", (-3, 4), ("relative_move", -3, 4)),
+            ("post_shell", ("echo 中文🐱", 1357), ("shell", "echo 中文🐱", 1357)),
             ("post_inactive", (), ("inactive",)),
         ]
         for method, args, expected in cases:
@@ -513,6 +519,9 @@ class ControllerContractTest(unittest.TestCase):
                 self.assertTrue(job.done)
                 self.assertFalse(job.failed)
                 self.assertIn(expected, self.controller.calls)
+                if method == "post_shell":
+                    self.assertEqual(job.get(), "stdout:echo 中文🐱\n结果🐱")
+                    self.assertEqual(self.controller.shell_output, "stdout:echo 中文🐱\n结果🐱")
 
     def test_failed_input_job_recovers_on_next_operation(self):
         self.controller.fail.add("input_text")
@@ -523,6 +532,17 @@ class ControllerContractTest(unittest.TestCase):
         self.controller.fail.clear()
         self.assertTrue(self.controller.post_input_text("accepted").wait().succeeded)
         self.assertIn(("input_text", "accepted"), self.controller.calls)
+        self.controller.fail.add("shell")
+        shell_job = self.controller.post_shell("rejected", 2468).wait()
+        self.assertTrue(shell_job.failed)
+        self.assertTrue(shell_job.done)
+        self.assertFalse(shell_job.succeeded)
+        self.assertIn(("shell", "rejected", 2468), self.controller.calls)
+        self.controller.fail.clear()
+        recovered = self.controller.post_shell("accepted", 3579).wait()
+        self.assertTrue(recovered.succeeded)
+        self.assertEqual(recovered.get(), "stdout:accepted\n结果🐱")
+        self.assertIn(("shell", "accepted", 3579), self.controller.calls)
 
     def test_screencap_and_cached_image_are_pixel_exact_copies(self):
         job = self.controller.post_screencap()

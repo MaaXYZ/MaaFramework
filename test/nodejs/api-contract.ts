@@ -11,6 +11,7 @@ import './maa-client.ts'
 class RecordingActor implements maa.CustomControllerActor {
     calls: unknown[][] = []
     rejectInput = false
+    rejectShell = false
     image = Uint8Array.from(readFileSync(new URL('./empty.png', import.meta.url))).buffer
 
     connect() {
@@ -79,6 +80,10 @@ class RecordingActor implements maa.CustomControllerActor {
     relative_move(dx: number, dy: number) {
         this.calls.push(['relative_move', dx, dy])
         return true
+    }
+    shell(cmd: string, timeout: number) {
+        this.calls.push(['shell', cmd, timeout])
+        return this.rejectShell ? null : `stdout:${cmd}\n结果🐱`
     }
     inactive() {
         return true
@@ -212,6 +217,23 @@ export async function runApiContractTests() {
                     String(expected[0])
                 )
             }
+            actor.calls.length = 0
+            const shell = await tasker
+                .post_action('Shell', { cmd: 'echo 中文🐱', shell_timeout: 1357 }, [0, 0, 0, 0])
+                .wait()
+                .get()
+            assert.ok(shell)
+            assert.equal(shell.nodes.length, 1)
+            const action = tasker.node_detail(shell.nodes[0])!.action!
+            assert.equal(action.action, 'Shell')
+            assert.equal(action.success, true)
+            assert.deepEqual(action.detail, {
+                cmd: 'echo 中文🐱',
+                shell_timeout: 1357,
+                success: true,
+                output: 'stdout:echo 中文🐱\n结果🐱'
+            })
+            assert.deepEqual(actor.calls, [['shell', 'echo 中文🐱', 1357]])
         })
 
         await check('failed jobs and recovery', async () => {
@@ -222,6 +244,35 @@ export async function runApiContractTests() {
             assert.equal(failed.done, true)
             actor.rejectInput = false
             assert.equal(await controller.post_input_text('accepted').wait().succeeded, true)
+            actor.rejectShell = true
+            try {
+                const failedShell = await tasker
+                    .post_task('RejectedShell', {
+                        RejectedShell: {
+                            action: 'Shell',
+                            cmd: 'rejected',
+                            shell_timeout: 2468,
+                            pre_delay: 0,
+                            post_delay: 0
+                        }
+                    })
+                    .wait()
+                assert.equal(failedShell.failed, true)
+                const detail = failedShell.get()!
+                assert.equal(tasker.node_detail(detail.nodes[0])!.action!.success, false)
+                assert.ok(
+                    actor.calls.some(
+                        call => JSON.stringify(call) === JSON.stringify(['shell', 'rejected', 2468])
+                    )
+                )
+            } finally {
+                actor.rejectShell = false
+            }
+            const recovered = await tasker
+                .post_action('Shell', { cmd: 'accepted', shell_timeout: 3579 }, [0, 0, 0, 0])
+                .wait()
+                .get()
+            assert.equal(tasker.node_detail(recovered!.nodes[0])!.action!.success, true)
         })
 
         await check('asynchronous custom info in controller events', async () => {
