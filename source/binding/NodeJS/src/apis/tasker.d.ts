@@ -134,6 +134,12 @@ declare global {
             ): SinkId
             remove_context_sink(id: SinkId): void
             clear_context_sinks(): void
+            /**
+             * Automatically post inactive when a task ends and the queue is empty (default: true).
+             * Disable for tasks posted one at a time as a single batch, then call controller.post_inactive().
+             * The stop task posted by post_stop() is not affected. Throws if the option is unsupported.
+             */
+            set auto_inactive(value: boolean)
             post_task(
                 entry: string,
                 pipeline_override?: Record<string, unknown> | Record<string, unknown>[],
