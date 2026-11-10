@@ -1,5 +1,7 @@
 #include "RawByNetcat.h"
 
+#include <boost/system/system_error.hpp>
+
 #include "MaaUtils/IOStream/ChildPipeIOStream.h"
 #include "MaaUtils/IOStream/SockIOStream.h"
 #include "MaaUtils/Logger.h"
@@ -36,7 +38,13 @@ bool ScreencapRawByNetcat::init()
         local = serial_host.substr(0, shp);
     }
 
-    io_factory_ = std::make_shared<ServerSockIOFactory>(local, 0);
+    try {
+        io_factory_ = std::make_shared<ServerSockIOFactory>(local, 0);
+    }
+    catch (const boost::system::system_error& e) {
+        LogError << "failed to initialize netcat socket" << VAR(local) << VAR(e.what());
+        return false;
+    }
 
     return true;
 }
