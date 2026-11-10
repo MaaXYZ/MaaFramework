@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "Common/Conf.h"
+#include "InferenceContext.h"
 #include "Vision/OCRSession.h"
 
 namespace fastdeploy
@@ -40,6 +41,7 @@ public:
     virtual std::optional<std::vector<MAA_VISION_NS::OCRRecResult>> batch_rec(const std::vector<cv::Mat>& images) override;
 
 private:
+    const InferenceContext context_;
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_;
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_;
     std::shared_ptr<fastdeploy::pipeline::PPOCRv4> ocrer_;

@@ -4,6 +4,7 @@
 #include <ranges>
 
 #include "FastDeployOCRSession.h"
+#include "InferenceContext.h"
 #include "MaaUtils/File.hpp"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
@@ -263,7 +264,8 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const
         }
         LogDebug << VAR(model_path);
 
-        auto det = std::make_shared<fastdeploy::vision::ocr::DBDetector>(
+        const InferenceContext context(det_option_.device != fastdeploy::Device::CPU);
+        auto det = context.make_shared<fastdeploy::vision::ocr::DBDetector>(
             path_to_utf8_string(model_path),
             std::string(),
             det_option_,
@@ -293,7 +295,8 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const
         }
         LogDebug << VAR(model_path);
 
-        auto rec = std::make_shared<fastdeploy::vision::ocr::Recognizer>(
+        const InferenceContext context(rec_option_.device != fastdeploy::Device::CPU);
+        auto rec = context.make_shared<fastdeploy::vision::ocr::Recognizer>(
             path_to_utf8_string(model_path),
             std::string(),
             path_to_utf8_string(label_path),
@@ -322,7 +325,9 @@ std::shared_ptr<fastdeploy::pipeline::PPOCRv4> OCRResMgr::load_ocrer(const std::
         return nullptr;
     }
 
-    auto ocr = std::make_shared<fastdeploy::pipeline::PPOCRv4>(det.get(), rec.get());
+    const InferenceContext context(
+        det->runtime_option.device != fastdeploy::Device::CPU || rec->runtime_option.device != fastdeploy::Device::CPU);
+    auto ocr = context.make_shared<fastdeploy::pipeline::PPOCRv4>(det.get(), rec.get());
 
     if (!ocr || !ocr->Initialized()) {
         LogError << "Failed to load PPOCRv4:" << VAR(name) << VAR(ocr) << VAR(ocr->Initialized());

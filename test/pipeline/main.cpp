@@ -2,6 +2,7 @@
 
 #include "module/BatchOcrRepro.h"
 #include "module/ControllerActionEvents.h"
+#include "module/InferenceContext.h"
 #include "module/NeuralNetworkCache.h"
 #include "module/PipelineSmoking.h"
 #include "module/PostStopInterrupt.h"
@@ -23,6 +24,10 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaGlobalSetOption(MaaGlobalOption_SaveDraw, &on, sizeof(on));
     MaaLoggingLevel lv = MaaLoggingLevel_Info;
     MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &lv, sizeof(lv));
+
+    if (!test_inference_context(testset_dir)) {
+        return -1;
+    }
 
     if (!test_neural_network_cache(testset_dir, cur_dir / "debug")) {
         return -1;

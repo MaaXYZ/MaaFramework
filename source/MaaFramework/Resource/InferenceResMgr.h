@@ -11,6 +11,7 @@
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "Common/Conf.h"
+#include "InferenceContext.h"
 #include "MaaUtils/NonCopyable.hpp"
 #include "Vision/InferenceSession.h"
 
@@ -23,6 +24,7 @@ class InferenceResMgr : public NonCopyable
 {
 public:
     InferenceResMgr();
+    ~InferenceResMgr();
 
 public:
     bool use_cpu();
@@ -60,6 +62,7 @@ private:
 #endif
 
     Ort::Env env_ = Ort::Env(ORT_LOGGING_LEVEL_FATAL, "MaaFW");
+    InferenceContext context_;
     Ort::SessionOptions options_;
     Ort::MemoryInfo memory_info_;
 
