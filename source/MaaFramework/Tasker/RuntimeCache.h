@@ -3,6 +3,7 @@
 #include <deque>
 #include <map>
 #include <optional>
+#include <set>
 #include <shared_mutex>
 #include <string>
 #include <unordered_map>
@@ -33,9 +34,10 @@ public:
     void set_node_detail(MaaNodeId uid, MAA_TASK_NS::NodeDetail detail);
 
     std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId uid) const;
-    void set_task_detail(MaaTaskId uid, MAA_TASK_NS::TaskDetail detail);
+    void set_task_status(MaaTaskId uid, const std::string& entry, MaaStatus status);
+    void append_task_node(MaaTaskId uid, const std::string& entry, MaaNodeId node_id);
 
-    void clear();
+    void clear(const std::set<MaaTaskId>& retained_task_ids);
 
 private:
     struct RecoImageCache
@@ -64,6 +66,7 @@ private:
     mutable std::shared_mutex node_details_mutex_;
 
     std::map<MaaTaskId, MAA_TASK_NS::TaskDetail> task_details_;
+    std::set<MaaTaskId> running_task_ids_;
     mutable std::shared_mutex task_details_mutex_;
 };
 

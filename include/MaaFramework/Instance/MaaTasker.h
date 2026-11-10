@@ -86,6 +86,11 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaController* MaaTaskerGetController(const MaaTasker* tasker);
 
+    /**
+     * Clear historical details and latest-node references. Pending and running tasks
+     * retain their IDs, entry and status, but their node ID lists are reset.
+     * Previously cached node, recognition, action and wait-freezes IDs are invalidated.
+     */
     MAA_FRAMEWORK_API MaaBool MaaTaskerClearCache(MaaTasker* tasker);
 
     MAA_FRAMEWORK_API MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId task_id, const char* pipeline_override);

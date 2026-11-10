@@ -389,7 +389,18 @@ class MyAction(CustomAction):
                     )
 
         # 测试 clear_cache
-        tasker.clear_cache()
+        assert tasker.clear_cache()
+        retained = tasker.get_task_detail(argv.task_detail.task_id)
+        assert retained is not None and retained.status.running
+        assert retained.entry == argv.task_detail.entry
+        assert not retained.node_id_list
+        # Cloned contexts still need the parent's task detail for custom callbacks.
+        nested = context.clone().run_recognition(
+            "CacheAfterClear",
+            controller.cached_image,
+            {"CacheAfterClear": {"recognition": "Custom", "custom_recognition": "FastRec"}},
+        )
+        assert nested is not None and nested.hit
         print("  tasker.clear_cache() called")
 
         global runned

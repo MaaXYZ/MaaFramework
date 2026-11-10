@@ -78,18 +78,11 @@ MaaTaskId Context::run_task(const std::string& entry, const json::value& pipelin
     auto& runtime_cache = tasker_->runtime_cache();
 
     // context 的子任务没有 Pending 状态，直接就是 Running
-    runtime_cache.set_task_detail(
-        subtask.task_id(),
-        MAA_TASK_NS::TaskDetail { .task_id = subtask.task_id(), .entry = subtask.entry(), .status = MaaStatus_Running });
+    runtime_cache.set_task_status(subtask.task_id(), subtask.entry(), MaaStatus_Running);
 
     bool ret = subtask.run();
 
-    {
-        auto task_detail = runtime_cache.get_task_detail(subtask.task_id())
-                               .value_or(MAA_TASK_NS::TaskDetail { .task_id = subtask.task_id(), .entry = entry });
-        task_detail.status = ret ? MaaStatus_Succeeded : MaaStatus_Failed;
-        runtime_cache.set_task_detail(subtask.task_id(), std::move(task_detail));
-    }
+    runtime_cache.set_task_status(subtask.task_id(), entry, ret ? MaaStatus_Succeeded : MaaStatus_Failed);
 
     return subtask.task_id();
 }
