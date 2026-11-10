@@ -2,7 +2,6 @@
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
-#include "WebGpuLock.h"
 
 MAA_RES_NS_BEGIN
 
@@ -11,23 +10,12 @@ std::shared_ptr<OrtSession> OrtSession::create(
     const std::filesystem::path& path,
     const Ort::SessionOptions& options,
     const Ort::MemoryInfo& memory_info,
-    bool use_webgpu)
+    const InferenceContext& context)
 {
     LogFunc << VAR(path);
 
-    auto lock = lock_webgpu(use_webgpu);
-
     try {
-        Ort::Session session(env, path.c_str(), options);
-
-        // Ort::MemoryInfo is not copyable, rebuild an equivalent one
-        Ort::MemoryInfo mem(
-            memory_info.GetAllocatorName().c_str(),
-            memory_info.GetAllocatorType(),
-            memory_info.GetDeviceId(),
-            memory_info.GetMemoryType());
-
-        return std::shared_ptr<OrtSession>(new OrtSession(std::move(session), std::move(mem), use_webgpu), WebGpuDeleter { use_webgpu });
+        return context.make_shared<OrtSession>(env, path, options, memory_info, context);
     }
     catch (const Ort::Exception& e) {
         LogError << "Failed to create onnxruntime session" << VAR(path) << VAR(e.what());
@@ -35,10 +23,20 @@ std::shared_ptr<OrtSession> OrtSession::create(
     }
 }
 
-OrtSession::OrtSession(Ort::Session session, Ort::MemoryInfo memory_info, bool use_webgpu)
-    : use_webgpu_(use_webgpu)
-    , session_(std::move(session))
-    , memory_info_(std::move(memory_info))
+OrtSession::OrtSession(
+    Ort::Env& env,
+    const std::filesystem::path& path,
+    const Ort::SessionOptions& options,
+    const Ort::MemoryInfo& memory_info,
+    const InferenceContext& context)
+    : context_(context)
+    , session_(env, path.c_str(), options)
+    // Ort::MemoryInfo is not copyable, rebuild an equivalent one.
+    , memory_info_(
+          memory_info.GetAllocatorName().c_str(),
+          memory_info.GetAllocatorType(),
+          memory_info.GetDeviceId(),
+          memory_info.GetMemoryType())
 {
     Ort::AllocatorWithDefaultOptions allocator;
 
@@ -60,7 +58,7 @@ OrtSession::OrtSession(Ort::Session session, Ort::MemoryInfo memory_info, bool u
 
 std::optional<MAA_VISION_NS::InferenceOutput> OrtSession::run(const std::vector<float>& input) const
 {
-    auto lock = lock_webgpu(use_webgpu_);
+    auto lock = context_.lock();
 
     try {
         // CreateTensor does not modify the buffer

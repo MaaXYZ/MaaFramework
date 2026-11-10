@@ -4,13 +4,13 @@
 #include <ranges>
 
 #include "FastDeployOCRSession.h"
+#include "InferenceContext.h"
 #include "MaaUtils/File.hpp"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/StringMisc.hpp"
 #include "NcnnOCRSession.h"
 #include "NcnnSession.h"
-#include "WebGpuLock.h"
 
 MAA_RES_NS_BEGIN
 
@@ -264,15 +264,12 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const
         }
         LogDebug << VAR(model_path);
 
-        const bool use_webgpu = det_option_.device == fastdeploy::Device::WEBGPU;
-        auto lock = lock_webgpu(use_webgpu);
-        auto det = std::shared_ptr<fastdeploy::vision::ocr::DBDetector>(
-            new fastdeploy::vision::ocr::DBDetector(
-                path_to_utf8_string(model_path),
-                std::string(),
-                det_option_,
-                fastdeploy::ModelFormat::ONNX),
-            WebGpuDeleter { use_webgpu });
+        const InferenceContext context(det_option_.device != fastdeploy::Device::CPU);
+        auto det = context.make_shared<fastdeploy::vision::ocr::DBDetector>(
+            path_to_utf8_string(model_path),
+            std::string(),
+            det_option_,
+            fastdeploy::ModelFormat::ONNX);
         if (!det || !det->Initialized()) {
             LogError << "Failed to load DBDetector:" << VAR(name) << VAR(det) << VAR(det->Initialized());
             return nullptr;
@@ -298,16 +295,13 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const
         }
         LogDebug << VAR(model_path);
 
-        const bool use_webgpu = rec_option_.device == fastdeploy::Device::WEBGPU;
-        auto lock = lock_webgpu(use_webgpu);
-        auto rec = std::shared_ptr<fastdeploy::vision::ocr::Recognizer>(
-            new fastdeploy::vision::ocr::Recognizer(
-                path_to_utf8_string(model_path),
-                std::string(),
-                path_to_utf8_string(label_path),
-                rec_option_,
-                fastdeploy::ModelFormat::ONNX),
-            WebGpuDeleter { use_webgpu });
+        const InferenceContext context(rec_option_.device != fastdeploy::Device::CPU);
+        auto rec = context.make_shared<fastdeploy::vision::ocr::Recognizer>(
+            path_to_utf8_string(model_path),
+            std::string(),
+            path_to_utf8_string(label_path),
+            rec_option_,
+            fastdeploy::ModelFormat::ONNX);
         if (!rec || !rec->Initialized()) {
             LogError << "Failed to load Recognizer:" << VAR(name) << VAR(rec) << VAR(rec->Initialized());
             return nullptr;
@@ -331,7 +325,9 @@ std::shared_ptr<fastdeploy::pipeline::PPOCRv4> OCRResMgr::load_ocrer(const std::
         return nullptr;
     }
 
-    auto ocr = std::make_shared<fastdeploy::pipeline::PPOCRv4>(det.get(), rec.get());
+    const InferenceContext context(
+        det->runtime_option.device != fastdeploy::Device::CPU || rec->runtime_option.device != fastdeploy::Device::CPU);
+    auto ocr = context.make_shared<fastdeploy::pipeline::PPOCRv4>(det.get(), rec.get());
 
     if (!ocr || !ocr->Initialized()) {
         LogError << "Failed to load PPOCRv4:" << VAR(name) << VAR(ocr) << VAR(ocr->Initialized());

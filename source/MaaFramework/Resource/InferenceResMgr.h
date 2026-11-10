@@ -11,6 +11,7 @@
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "Common/Conf.h"
+#include "InferenceContext.h"
 #include "MaaUtils/NonCopyable.hpp"
 #include "Vision/InferenceSession.h"
 
@@ -61,7 +62,7 @@ private:
 #endif
 
     Ort::Env env_ = Ort::Env(ORT_LOGGING_LEVEL_FATAL, "MaaFW");
-    bool use_webgpu_ = false;
+    InferenceContext context_;
     Ort::SessionOptions options_;
     Ort::MemoryInfo memory_info_;
 

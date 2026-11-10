@@ -1,11 +1,11 @@
 #include <filesystem>
 
 #include "module/BatchOcrRepro.h"
+#include "module/InferenceContext.h"
 #include "module/NeuralNetworkCache.h"
 #include "module/PipelineSmoking.h"
 #include "module/PostStopInterrupt.h"
 #include "module/RunWithoutFile.h"
-#include "module/WebGpuLock.h"
 
 #include "MaaFramework/MaaAPI.h"
 
@@ -24,7 +24,7 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaLoggingLevel lv = MaaLoggingLevel_Info;
     MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &lv, sizeof(lv));
 
-    if (!test_webgpu_lock(testset_dir)) {
+    if (!test_inference_context(testset_dir)) {
         return -1;
     }
 
