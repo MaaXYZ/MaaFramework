@@ -8,7 +8,7 @@
     <member refid="classAndroidNativeControlUnitAPI_1aef52b927e847aa013d425ceb2d15918c" kind="function"><name>~AndroidNativeControlUnitAPI</name></member>
   </compound>
   <compound refid="classControlUnitAPI" kind="class"><name>ControlUnitAPI</name>
-    <member refid="classControlUnitAPI_1a9c5542a5c81747468050d8610a18e6b0" kind="function"><name>~ControlUnitAPI</name></member>
+    <member refid="classControlUnitAPI_1a48e2a67c3a517a5aae398e60fc01033f" kind="function"><name>~ControlUnitAPI</name></member>
     <member refid="classControlUnitAPI_1a5bff4217a5cbd6789dca3957b469cd5b" kind="function"><name>connect</name></member>
     <member refid="classControlUnitAPI_1afc899c23f271738b73540eb9efc93fae" kind="function"><name>connected</name></member>
     <member refid="classControlUnitAPI_1a3bd5a15929e42ef25d990256ed1a97d4" kind="function"><name>request_uuid</name></member>
@@ -150,15 +150,15 @@
     <member refid="structRecordTouch_1aab5878c1a04647e1f335d8c6f7fe29d7" kind="function"><name>MEO_JSONIZATION</name></member>
   </compound>
   <compound refid="classRelativeMovableUnit" kind="class"><name>RelativeMovableUnit</name>
-    <member refid="classRelativeMovableUnit_1a4964cbe22bca1df4d12eba776b92d24c" kind="function"><name>~RelativeMovableUnit</name></member>
+    <member refid="classRelativeMovableUnit_1a10e75b7e6c9ee64ea6686dee3440239d" kind="function"><name>~RelativeMovableUnit</name></member>
     <member refid="classRelativeMovableUnit_1aa0dc25bd17997c2c76feb3e196315320" kind="function"><name>relative_move</name></member>
   </compound>
   <compound refid="classScrollableUnit" kind="class"><name>ScrollableUnit</name>
-    <member refid="classScrollableUnit_1a4ed7de43ab24acb3b1708d5700c37b54" kind="function"><name>~ScrollableUnit</name></member>
+    <member refid="classScrollableUnit_1af28a8972c46ec6d3209dad3659b6f46f" kind="function"><name>~ScrollableUnit</name></member>
     <member refid="classScrollableUnit_1a92ab073b5d139bba1b6c76fea8b9c299" kind="function"><name>scroll</name></member>
   </compound>
   <compound refid="classShellableUnit" kind="class"><name>ShellableUnit</name>
-    <member refid="classShellableUnit_1aa1f70d3f41339f00ab40f2fb95988e6f" kind="function"><name>~ShellableUnit</name></member>
+    <member refid="classShellableUnit_1af5f923dadfb74535c9550e3ceb2defcb" kind="function"><name>~ShellableUnit</name></member>
     <member refid="classShellableUnit_1a5b255f95926f91a4c2452dbaa3043356" kind="function"><name>shell</name></member>
   </compound>
   <compound refid="classWin32ControlUnitAPI" kind="class"><name>Win32ControlUnitAPI</name>
@@ -708,6 +708,7 @@
     <member refid="MaaPort_8h_1aea94eb63afa29e65c59844ec3f57d691" kind="define"><name>MAA_DEPRECATED</name></member>
     <member refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kind="define"><name>MAA_FRAMEWORK_API</name></member>
     <member refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kind="define"><name>MAA_CONTROL_UNIT_API</name></member>
+    <member refid="MaaPort_8h_1a08149017fb1662d50c957212da7472d6" kind="define"><name>MAA_CONTROL_UNIT_TYPES_API</name></member>
     <member refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kind="define"><name>MAA_TOOLKIT_API</name></member>
     <member refid="MaaPort_8h_1a8531b324af2e8db59debbd708e028c3c" kind="define"><name>MAA_AGENT_CLIENT_API</name></member>
     <member refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kind="define"><name>MAA_AGENT_SERVER_API</name></member>

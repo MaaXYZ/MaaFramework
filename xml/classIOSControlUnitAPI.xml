@@ -68,7 +68,7 @@
       <member refid="classControlUnitAPI_1a9ce21c91ca2fbff7369d8a6403cb28df" prot="public" virt="pure-virtual"><scope>IOSControlUnitAPI</scope><name>touch_down</name></member>
       <member refid="classControlUnitAPI_1a987d84182ad2ff7fcba062ec5d7c4b01" prot="public" virt="pure-virtual"><scope>IOSControlUnitAPI</scope><name>touch_move</name></member>
       <member refid="classControlUnitAPI_1a6ac99054d055c4300f1ff6f908113030" prot="public" virt="pure-virtual"><scope>IOSControlUnitAPI</scope><name>touch_up</name></member>
-      <member refid="classControlUnitAPI_1a9c5542a5c81747468050d8610a18e6b0" prot="public" virt="virtual"><scope>IOSControlUnitAPI</scope><name>~ControlUnitAPI</name></member>
+      <member refid="classControlUnitAPI_1a48e2a67c3a517a5aae398e60fc01033f" prot="public" virt="virtual"><scope>IOSControlUnitAPI</scope><name>~ControlUnitAPI</name></member>
       <member refid="classIOSControlUnitAPI_1a9802f89e1afa382c680fa06681eac11b" prot="public" virt="virtual"><scope>IOSControlUnitAPI</scope><name>~IOSControlUnitAPI</name></member>
     </listofallmembers>
   </compounddef>

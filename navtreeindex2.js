@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"MaaTasker_8h.html#ae4b85b9172caa12b04648a98e923390d":[4,0,0,3,1,4,28],
 "MaaTasker_8h.html#aea0f684a6987fc963254f68870537925":[4,0,0,3,1,4,22],
 "MaaTasker_8h.html#af20736e5613012b909a3483757426923":[4,0,0,3,1,4,6],
 "MaaTasker_8h.html#af3d259c9f9fdf89c59870f607e403375":[4,0,0,3,1,4,7],
@@ -161,13 +162,13 @@ var NAVTREEINDEX2 =
 "classControlUnitAPI.html#a221dbd3eb78f32d1574554f11224abb9":[3,0,2,14],
 "classControlUnitAPI.html#a395577c785ecade8664430928c6a201e":[3,0,2,15],
 "classControlUnitAPI.html#a3bd5a15929e42ef25d990256ed1a97d4":[3,0,2,3],
+"classControlUnitAPI.html#a48e2a67c3a517a5aae398e60fc01033f":[3,0,2,0],
 "classControlUnitAPI.html#a5bff4217a5cbd6789dca3957b469cd5b":[3,0,2,1],
 "classControlUnitAPI.html#a6ac99054d055c4300f1ff6f908113030":[3,0,2,12],
 "classControlUnitAPI.html#a816cb859403ae76b9beb202069a0bce9":[3,0,2,5],
 "classControlUnitAPI.html#a94868297b93c4d118396418c838dc0a0":[3,0,2,9],
 "classControlUnitAPI.html#a95ce12fe9d30787af79adbbb84a45e1b":[3,0,2,17],
 "classControlUnitAPI.html#a987d84182ad2ff7fcba062ec5d7c4b01":[3,0,2,11],
-"classControlUnitAPI.html#a9c5542a5c81747468050d8610a18e6b0":[3,0,2,0],
 "classControlUnitAPI.html#a9ce21c91ca2fbff7369d8a6403cb28df":[3,0,2,10],
 "classControlUnitAPI.html#aa163c4ba062d316f248d4b0fe7f3b72d":[3,0,2,7],
 "classControlUnitAPI.html#aa1b8f3ae574ca2edcced418f138e110b":[3,0,2,4],
@@ -189,14 +190,14 @@ var NAVTREEINDEX2 =
 "classMacOSControlUnitAPI.html":[3,0,11],
 "classMacOSControlUnitAPI.html#a265015ca88f15fb013dcf2e735fb262f":[3,0,11,0],
 "classRelativeMovableUnit.html":[3,0,25],
-"classRelativeMovableUnit.html#a4964cbe22bca1df4d12eba776b92d24c":[3,0,25,0],
+"classRelativeMovableUnit.html#a10e75b7e6c9ee64ea6686dee3440239d":[3,0,25,0],
 "classRelativeMovableUnit.html#aa0dc25bd17997c2c76feb3e196315320":[3,0,25,1],
 "classScrollableUnit.html":[3,0,26],
-"classScrollableUnit.html#a4ed7de43ab24acb3b1708d5700c37b54":[3,0,26,0],
 "classScrollableUnit.html#a92ab073b5d139bba1b6c76fea8b9c299":[3,0,26,1],
+"classScrollableUnit.html#af28a8972c46ec6d3209dad3659b6f46f":[3,0,26,0],
 "classShellableUnit.html":[3,0,27],
 "classShellableUnit.html#a5b255f95926f91a4c2452dbaa3043356":[3,0,27,1],
-"classShellableUnit.html#aa1f70d3f41339f00ab40f2fb95988e6f":[3,0,27,0],
+"classShellableUnit.html#af5f923dadfb74535c9550e3ceb2defcb":[3,0,27,0],
 "classWin32ControlUnitAPI.html":[3,0,28],
 "classWin32ControlUnitAPI.html#a0c919ea1e0bd03379b1459e6e09e425e":[3,0,28,0],
 "classWin32ControlUnitAPI.html#a0e52125c2e3d9707510d0d569c92ac51":[3,0,28,2],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "group__MaaMsg.html#ga7297c67f0f81b33f8811e1405a24a437":[2,0,0],
 "group__MaaMsg.html#ga8bc7eb7f0da6c492bb9fc494d94cb11f":[2,0,2],
 "group__MaaMsg.html#ga8f34fcba37dddf0f26c3fa22b2c70ab4":[2,0,6],
-"group__MaaMsg.html#ga9862b79cea1cb5b52a6ee8c6cbf54e4d":[2,0,16],
-"group__MaaMsg.html#gaa665444413869a6bd5d2df4bcf059d6b":[2,0,12]
+"group__MaaMsg.html#ga9862b79cea1cb5b52a6ee8c6cbf54e4d":[2,0,16]
 };

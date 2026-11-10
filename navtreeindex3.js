@@ -1,5 +1,6 @@
 var NAVTREEINDEX3 =
 {
+"group__MaaMsg.html#gaa665444413869a6bd5d2df4bcf059d6b":[2,0,12],
 "group__MaaMsg.html#gaacf32fea61ca2750f2966834d8374cb7":[2,0,22],
 "group__MaaMsg.html#gab65345cec2c40588cb4037c50fc73176":[2,0,10],
 "group__MaaMsg.html#gabbd49acf07521f4aa8ad3a1c5f6ed8a1":[2,0,27],

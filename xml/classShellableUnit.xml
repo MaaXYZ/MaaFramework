@@ -7,10 +7,10 @@
     <derivedcompoundref refid="classFullControlUnitAPI" prot="public" virt="non-virtual">FullControlUnitAPI</derivedcompoundref>
     <includes refid="ControlUnitAPI_8h" local="no">ControlUnitAPI.h</includes>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classShellableUnit_1aa1f70d3f41339f00ab40f2fb95988e6f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classShellableUnit_1af5f923dadfb74535c9550e3ceb2defcb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type></type>
         <definition>virtual ShellableUnit::~ShellableUnit</definition>
-        <argsstring>()=default</argsstring>
+        <argsstring>()</argsstring>
         <name>~ShellableUnit</name>
         <qualifiedname>ShellableUnit::~ShellableUnit</qualifiedname>
         <briefdescription>
@@ -80,7 +80,7 @@
     <location file="include/MaaControlUnit/ControlUnitAPI.h" line="68" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="69" bodyend="75"/>
     <listofallmembers>
       <member refid="classShellableUnit_1a5b255f95926f91a4c2452dbaa3043356" prot="public" virt="pure-virtual"><scope>ShellableUnit</scope><name>shell</name></member>
-      <member refid="classShellableUnit_1aa1f70d3f41339f00ab40f2fb95988e6f" prot="public" virt="virtual"><scope>ShellableUnit</scope><name>~ShellableUnit</name></member>
+      <member refid="classShellableUnit_1af5f923dadfb74535c9550e3ceb2defcb" prot="public" virt="virtual"><scope>ShellableUnit</scope><name>~ShellableUnit</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

@@ -96,10 +96,10 @@
       <member refid="classControlUnitAPI_1a9ce21c91ca2fbff7369d8a6403cb28df" prot="public" virt="pure-virtual"><scope>MacOSControlUnitAPI</scope><name>touch_down</name></member>
       <member refid="classControlUnitAPI_1a987d84182ad2ff7fcba062ec5d7c4b01" prot="public" virt="pure-virtual"><scope>MacOSControlUnitAPI</scope><name>touch_move</name></member>
       <member refid="classControlUnitAPI_1a6ac99054d055c4300f1ff6f908113030" prot="public" virt="pure-virtual"><scope>MacOSControlUnitAPI</scope><name>touch_up</name></member>
-      <member refid="classControlUnitAPI_1a9c5542a5c81747468050d8610a18e6b0" prot="public" virt="virtual"><scope>MacOSControlUnitAPI</scope><name>~ControlUnitAPI</name></member>
+      <member refid="classControlUnitAPI_1a48e2a67c3a517a5aae398e60fc01033f" prot="public" virt="virtual"><scope>MacOSControlUnitAPI</scope><name>~ControlUnitAPI</name></member>
       <member refid="classMacOSControlUnitAPI_1a265015ca88f15fb013dcf2e735fb262f" prot="public" virt="virtual"><scope>MacOSControlUnitAPI</scope><name>~MacOSControlUnitAPI</name></member>
-      <member refid="classRelativeMovableUnit_1a4964cbe22bca1df4d12eba776b92d24c" prot="public" virt="virtual"><scope>MacOSControlUnitAPI</scope><name>~RelativeMovableUnit</name></member>
-      <member refid="classScrollableUnit_1a4ed7de43ab24acb3b1708d5700c37b54" prot="public" virt="virtual"><scope>MacOSControlUnitAPI</scope><name>~ScrollableUnit</name></member>
+      <member refid="classRelativeMovableUnit_1a10e75b7e6c9ee64ea6686dee3440239d" prot="public" virt="virtual"><scope>MacOSControlUnitAPI</scope><name>~RelativeMovableUnit</name></member>
+      <member refid="classScrollableUnit_1af28a8972c46ec6d3209dad3659b6f46f" prot="public" virt="virtual"><scope>MacOSControlUnitAPI</scope><name>~ScrollableUnit</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

@@ -102,8 +102,8 @@
       <member refid="classControlUnitAPI_1a987d84182ad2ff7fcba062ec5d7c4b01" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>touch_move</name></member>
       <member refid="classControlUnitAPI_1a6ac99054d055c4300f1ff6f908113030" prot="public" virt="pure-virtual"><scope>AdbControlUnitAPI</scope><name>touch_up</name></member>
       <member refid="classAdbControlUnitAPI_1abad3a55acb315f087bdbf2b2a6f8d3bb" prot="public" virt="virtual"><scope>AdbControlUnitAPI</scope><name>~AdbControlUnitAPI</name></member>
-      <member refid="classControlUnitAPI_1a9c5542a5c81747468050d8610a18e6b0" prot="public" virt="virtual"><scope>AdbControlUnitAPI</scope><name>~ControlUnitAPI</name></member>
-      <member refid="classShellableUnit_1aa1f70d3f41339f00ab40f2fb95988e6f" prot="public" virt="virtual"><scope>AdbControlUnitAPI</scope><name>~ShellableUnit</name></member>
+      <member refid="classControlUnitAPI_1a48e2a67c3a517a5aae398e60fc01033f" prot="public" virt="virtual"><scope>AdbControlUnitAPI</scope><name>~ControlUnitAPI</name></member>
+      <member refid="classShellableUnit_1af5f923dadfb74535c9550e3ceb2defcb" prot="public" virt="virtual"><scope>AdbControlUnitAPI</scope><name>~ShellableUnit</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

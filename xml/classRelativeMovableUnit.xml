@@ -11,10 +11,10 @@
     <derivedcompoundref refid="classWlRootsControlUnitAPI" prot="public" virt="non-virtual">WlRootsControlUnitAPI</derivedcompoundref>
     <includes refid="ControlUnitAPI_8h" local="no">ControlUnitAPI.h</includes>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classRelativeMovableUnit_1a4964cbe22bca1df4d12eba776b92d24c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classRelativeMovableUnit_1a10e75b7e6c9ee64ea6686dee3440239d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type></type>
         <definition>virtual RelativeMovableUnit::~RelativeMovableUnit</definition>
-        <argsstring>()=default</argsstring>
+        <argsstring>()</argsstring>
         <name>~RelativeMovableUnit</name>
         <qualifiedname>RelativeMovableUnit::~RelativeMovableUnit</qualifiedname>
         <briefdescription>
@@ -103,7 +103,7 @@
     <location file="include/MaaControlUnit/ControlUnitAPI.h" line="60" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="61" bodyend="66"/>
     <listofallmembers>
       <member refid="classRelativeMovableUnit_1aa0dc25bd17997c2c76feb3e196315320" prot="public" virt="pure-virtual"><scope>RelativeMovableUnit</scope><name>relative_move</name></member>
-      <member refid="classRelativeMovableUnit_1a4964cbe22bca1df4d12eba776b92d24c" prot="public" virt="virtual"><scope>RelativeMovableUnit</scope><name>~RelativeMovableUnit</name></member>
+      <member refid="classRelativeMovableUnit_1a10e75b7e6c9ee64ea6686dee3440239d" prot="public" virt="virtual"><scope>RelativeMovableUnit</scope><name>~RelativeMovableUnit</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

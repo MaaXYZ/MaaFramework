@@ -1,6 +1,6 @@
 var classControlUnitAPI =
 [
-    [ "~ControlUnitAPI", "classControlUnitAPI.html#a9c5542a5c81747468050d8610a18e6b0", null ],
+    [ "~ControlUnitAPI", "classControlUnitAPI.html#a48e2a67c3a517a5aae398e60fc01033f", null ],
     [ "connect", "classControlUnitAPI.html#a5bff4217a5cbd6789dca3957b469cd5b", null ],
     [ "connected", "classControlUnitAPI.html#afc899c23f271738b73540eb9efc93fae", null ],
     [ "request_uuid", "classControlUnitAPI.html#a3bd5a15929e42ef25d990256ed1a97d4", null ],
