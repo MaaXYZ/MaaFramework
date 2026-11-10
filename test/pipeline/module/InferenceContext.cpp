@@ -207,6 +207,12 @@ bool test_provider_context(const std::filesystem::path& testset_dir)
 
 bool test_inference_context(const std::filesystem::path& testset_dir)
 {
+    auto unlocked = MAA_RES_NS::InferenceContext().lock();
+    if (unlocked.mutex() != nullptr || unlocked.owns_lock()) {
+        std::cerr << "Disabled inference synchronization did not return an empty lock\n";
+        return false;
+    }
+
     if (!test_ort_context(testset_dir) || !test_ocr_context() || !test_provider_context(testset_dir)) {
         return false;
     }
