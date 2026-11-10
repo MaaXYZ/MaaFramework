@@ -137,18 +137,25 @@ bool IOSSession::create(
             return false;
         }
     }
+    if (!client_.connected()) {
+        if (err.empty()) {
+            err = "iOS connection was lost during startup";
+        }
+        close();
+        return false;
+    }
     err.clear();
     return true;
 }
 
 void IOSSession::close()
 {
-    if (client_.connected()) {
+    if (client_.has_client()) {
         std::string ignored;
         release_inputs(ignored);
         client_.call("connection.close", json::object { }, ignored);
-        client_.close();
     }
+    client_.close();
     udid_.clear();
     properties_ = json::object { };
     mapping_ = { };
@@ -276,7 +283,7 @@ bool IOSSession::release_touch(int contact, std::string& err)
 
 bool IOSSession::send_keyboard(const std::set<uint16_t>& usages, std::string& err)
 {
-    if (!client_.connected()) {
+    if (!client_.has_client() || (!usages.empty() && !client_.connected())) {
         err = "not connected";
         return false;
     }
@@ -362,9 +369,20 @@ bool IOSSession::type_text(const std::string& text, std::string& err)
         err = "release held keys before iOS input_text";
         return false;
     }
-    inputs_.keyboard_release_pending = true;
-    if (client_.call("input.text", json::object { { "text", text }, { "hold_ms", 40 } }, err)) {
+    // Keep each request within the server's 300-second limit, including Shift reports.
+    constexpr size_t chunk_size = 512;
+    for (size_t offset = 0; offset < text.size(); offset += chunk_size) {
+        const auto chunk = text.substr(offset, chunk_size);
+        const auto reports = chunk.size() * 3;
+        const auto timeout = 10000 + reports * 40;
+        inputs_.keyboard_release_pending = true;
+        if (!client_.call(
+                "input.text", json::object { { "text", chunk }, { "hold_ms", 40 }, { "timeout_ms", timeout } }, err)) {
+            break;
+        }
         inputs_.keyboard_release_pending = false;
+    }
+    if (!inputs_.keyboard_release_pending) {
         return true;
     }
     std::string release_err;
@@ -378,7 +396,7 @@ bool IOSSession::release_inputs(std::string& err)
 {
     return inputs_.release(
         [this](int contact, double x, double y, std::string& error) {
-            if (!client_.connected()) {
+            if (!client_.has_client()) {
                 error = "iOS touch service is unavailable during cleanup";
                 return false;
             }
@@ -386,7 +404,7 @@ bool IOSSession::release_inputs(std::string& err)
         },
         [this](std::string& error) { return send_keyboard({ }, error); },
         [this](uint16_t usage, std::string& error) {
-            if (!client_.connected()) {
+            if (!client_.has_client()) {
                 error = "iOS hardware button service is unavailable during cleanup";
                 return false;
             }

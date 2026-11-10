@@ -8,6 +8,7 @@ import tempfile
 root = Path(sys.argv[1])
 sys.path.insert(0, str(root / '3rdparty/XDeviceBridge/tests/support'))
 from fake_server import FakeServer
+FakeServer.server_version = "1.6.0"
 
 
 class InterruptedVideoServer(FakeServer):
@@ -143,6 +144,14 @@ with FakeServer() as server:
             assert action('InputText', '中文'.encode()) == 4000
             assert server.methods().count('input.text') == before
             assert action('InputText', b'abc123') == 3000
+            for text in (b'a' * 400, b'A!' * 2049):
+                before = len(server.calls)
+                assert action('InputText', text) == 3000
+                chunks = [p for n, p in server.calls[before:] if n == 'input.text']
+                assert ''.join(p['text'] for p in chunks).encode() == text
+                assert all(p['hold_ms'] == 40 and len(p['text']) <= 512 and
+                           p['timeout_ms'] >= len(p['text']) * 3 * p['hold_ms'] + 10000
+                           for p in chunks)
             assert action('StartApp', b'test.bundle') == 3000
             assert action('StopApp', b'test.bundle') == 3000
             if method == 1:
@@ -210,3 +219,99 @@ with FakeServer() as server:
 
 print('PASS: native xdb discovery, Stream/PNG/fallback, geometry, input, app control and ownership')
 
+
+for version in ('1.3.0', '1.5.99', '', 'bad', '1.6', '1.6.0garbage', '1.6.0-rc1'):
+    with FakeServer() as server:
+        server.server_version = version
+        ctrl = create(b'mock-iphone', 2, 2, json.dumps(server.config).encode())
+        try:
+            assert wait(ctrl, posts['Connection'](ctrl)) == 4000
+            assert 'connection.open' not in server.methods()
+        finally:
+            destroy(ctrl)
+
+connected = function(fw, 'MaaControllerConnected', B, [P])
+class DisconnectedServer(FakeServer):
+    disconnected = False
+    def handle_call(self, name, params):
+        if self.disconnected:
+            raise ConnectionError('Disconnected by test')
+        return super().handle_call(name, params)
+
+with DisconnectedServer() as server:
+    ctrl = create(b'mock-iphone', 2, 2, json.dumps(server.config).encode())
+    try:
+        assert wait(ctrl, posts['Connection'](ctrl)) == 3000 and connected(ctrl)
+        assert wait(ctrl, posts['Screencap'](ctrl)) == 3000
+        server.disconnected = True
+        assert wait(ctrl, posts['Screencap'](ctrl)) == 4000
+        assert not connected(ctrl), 'failed transport must invalidate controller status'
+        server.disconnected = False
+        assert wait(ctrl, posts['Connection'](ctrl)) == 3000 and connected(ctrl)
+    finally:
+        destroy(ctrl)
+
+for version in ('1.6.0', '1.6.0+build.1', '1.6.1', '1.7.0-rc1', '1.10.0', '2.0.0'):
+    with FakeServer() as server:
+        server.server_version = version
+        ctrl = create(b'mock-iphone', 2, 2, json.dumps(server.config).encode())
+        try:
+            assert wait(ctrl, posts['Connection'](ctrl)) == 3000, version
+        finally:
+            destroy(ctrl)
+
+class StartupDisconnectServer(FakeServer):
+    fail_method = ''
+    def handle_call(self, name, params):
+        if name == self.fail_method:
+            raise ConnectionError('Lost during startup')
+        return super().handle_call(name, params)
+
+for name, method in (('display.info', 2), ('video.start', 3)):
+    with StartupDisconnectServer() as server:
+        server.fail_method = name
+        ctrl = create(b'mock-iphone', method, 2, json.dumps(server.config).encode())
+        try:
+            assert wait(ctrl, posts['Connection'](ctrl)) == 4000
+            assert not connected(ctrl)
+        finally:
+            destroy(ctrl)
+
+# A malformed reply fails the SDK request while leaving this test peer able to clean up.
+from fake_server import Handler
+class CorruptReply:
+    def __init__(self, peer):
+        self.peer = peer
+    def recv(self, size):
+        return self.peer.recv(size)
+    def sendall(self, data):
+        envelope = json.loads(data[16:16 + int.from_bytes(data[8:12], 'big')])
+        if envelope.get('result', {}).pop('corrupt_reply', False):
+            envelope['ok'] = 'invalid'
+            text = json.dumps(envelope).encode()
+            data = data[:8] + len(text).to_bytes(4, 'big') + bytes(4) + text
+        self.peer.sendall(data)
+
+class CorruptHandler(Handler):
+    def handle(self):
+        self.request = CorruptReply(self.request)
+        super().handle()
+
+class AppliedInputServer(FakeServer):
+    def handle_call(self, name, params):
+        result, data = super().handle_call(name, params)
+        if name == 'input.text':
+            result['corrupt_reply'] = True
+        return result, data
+
+with AppliedInputServer() as server:
+    server.RequestHandlerClass = CorruptHandler
+    ctrl = create(b'mock-iphone', 2, 2, json.dumps(server.config).encode())
+    try:
+        assert wait(ctrl, posts['Connection'](ctrl)) == 3000
+        assert wait(ctrl, posts['InputText'](ctrl, b'abc')) == 4000
+        assert not connected(ctrl)
+        assert ('input.keyboard', {'usages': []}) in server.calls
+    finally:
+        destroy(ctrl)
+    assert 'connection.close' in server.methods()
