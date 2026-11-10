@@ -53,7 +53,7 @@ int main(int argc, char** argv)
     };
 
     if (mode == "fallback") {
-        MaaNS::CtrlUnitNs::ScreencapAgent agent(MaaAdbScreencapMethod_RawByNetcat | MaaAdbScreencapMethod_Encode, {});
+        MaaNS::CtrlUnitNs::ScreencapAgent agent(MaaAdbScreencapMethod_RawByNetcat | MaaAdbScreencapMethod_Encode, { });
         if (!configure(agent) || !agent.init()) {
             std::cerr << "failed to fall back from RawByNetcat to Encode\n";
             return 1;
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
         return 1;
     }
     if (mode != "loopback") {
-        MaaNS::CtrlUnitNs::ScreencapAgent agent(MaaAdbScreencapMethod_RawByNetcat, {});
+        MaaNS::CtrlUnitNs::ScreencapAgent agent(MaaAdbScreencapMethod_RawByNetcat, { });
         if (!configure(agent) || agent.init() || agent.screencap()) {
             std::cerr << "unavailable RawByNetcat was not rejected by the agent\n";
             return 1;

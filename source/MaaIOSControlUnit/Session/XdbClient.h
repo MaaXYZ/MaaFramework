@@ -1,12 +1,12 @@
 #pragma once
-#include <memory>
-#include <functional>
+#include <array>
 #include <atomic>
 #include <charconv>
-#include <array>
-#include <string_view>
+#include <functional>
+#include <memory>
 #include <meojson/json.hpp>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <xdb/xdb.h>
 
@@ -21,7 +21,7 @@ public:
     XdbClient(const XdbClient&) = delete;
     XdbClient& operator=(const XdbClient&) = delete;
 
-    bool connect(const std::string& config, std::string& error, std::function<bool()> cancelled = {})
+    bool connect(const std::string& config, std::string& error, std::function<bool()> cancelled = { })
     {
         auto value = json::parse(config.empty() ? "{}" : config);
         if (!value || !value->is_object()) {
@@ -37,8 +37,7 @@ public:
         const auto cancel = [](void* context) -> int {
             return (*static_cast<std::function<bool()>*>(context))();
         };
-        client_ = xdb_client_connect_cancellable(
-            static_cast<uint16_t>(port), nullptr, nullptr, cancelled ? +cancel : nullptr, &cancelled);
+        client_ = xdb_client_connect_cancellable(static_cast<uint16_t>(port), nullptr, nullptr, cancelled ? +cancel : nullptr, &cancelled);
         if (!client_) {
             error = xdb_last_error();
             return false;
@@ -97,15 +96,16 @@ public:
     }
 
     bool connected() const { return alive_; }
+
     bool has_client() const { return client_ != nullptr; }
 
 private:
     static bool supported_version(std::string_view version)
     {
-        std::array<unsigned, 3> parts {};
+        std::array<unsigned, 3> parts { };
         for (size_t i = 0; i < parts.size(); ++i) {
             const auto parsed = std::from_chars(version.data(), version.data() + version.size(), parts[i]);
-            if (parsed.ec != std::errc {} || parsed.ptr == version.data()) {
+            if (parsed.ec != std::errc { } || parsed.ptr == version.data()) {
                 return false;
             }
             version.remove_prefix(parsed.ptr - version.data());

@@ -36,9 +36,8 @@ struct CallbackContext
             // A synchronous getter cannot queue a callback to the JavaScript thread it is blocking.
             auto result = caller(owner_fn.Value());
             if (result.IsPromise()) {
-                result.As<PromiseType>().Catch(Napi::Function::New(result.Env(), [](const Napi::CallbackInfo& info) {
-                    return info.Env().Undefined();
-                }));
+                result.As<PromiseType>().Catch(
+                    Napi::Function::New(result.Env(), [](const Napi::CallbackInfo& info) { return info.Env().Undefined(); }));
                 throw MaaError { "A synchronous API cannot wait for an asynchronous custom callback" };
             }
             return parser(result);

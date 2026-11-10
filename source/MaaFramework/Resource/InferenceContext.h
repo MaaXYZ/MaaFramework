@@ -23,7 +23,7 @@ public:
     [[nodiscard]] std::unique_lock<std::recursive_mutex> lock() const
     {
         if (!use_gpu_) {
-            return {};
+            return { };
         }
 
         // Loading or clearing resources can release models while already locked.

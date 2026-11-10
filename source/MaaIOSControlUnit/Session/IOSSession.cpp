@@ -376,8 +376,7 @@ bool IOSSession::type_text(const std::string& text, std::string& err)
         const auto reports = chunk.size() * 3;
         const auto timeout = 10000 + reports * 40;
         inputs_.keyboard_release_pending = true;
-        if (!client_.call(
-                "input.text", json::object { { "text", chunk }, { "hold_ms", 40 }, { "timeout_ms", timeout } }, err)) {
+        if (!client_.call("input.text", json::object { { "text", chunk }, { "hold_ms", 40 }, { "timeout_ms", timeout } }, err)) {
             break;
         }
         inputs_.keyboard_release_pending = false;

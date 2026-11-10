@@ -66,9 +66,9 @@ bool test_ort_context(const std::filesystem::path& testset_dir)
     }
 
     // Reconfiguring a resource must not change an existing session's policy.
-    context = {};
+    context = { };
     const auto& shape = session->input_shape();
-    const auto size = std::accumulate(shape.begin(), shape.end(), int64_t { 1 }, std::multiplies<int64_t> {});
+    const auto size = std::accumulate(shape.begin(), shape.end(), int64_t { 1 }, std::multiplies<int64_t> { });
     const std::vector<float> input(size, 1.0f);
     if (!blocks_while_locked([&] { return session->run(input).has_value(); })) {
         std::cerr << "GPU inference did not retain its original context\n";

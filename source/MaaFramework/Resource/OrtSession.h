@@ -20,7 +20,7 @@ public:
         const std::filesystem::path& path,
         const Ort::SessionOptions& options,
         const Ort::MemoryInfo& memory_info,
-        const InferenceContext& context = {});
+        const InferenceContext& context = { });
 
     virtual ~OrtSession() override = default;
 

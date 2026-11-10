@@ -68,7 +68,10 @@ public:
             }
             else {
                 maa::ios_unit::XdbClient client;
-                if (client.connect(config->to_string(), error, cancel ? std::function<bool()>([&] { return cancel(userdata); }) : std::function<bool()>())
+                if (client.connect(
+                        config->to_string(),
+                        error,
+                        cancel ? std::function<bool()>([&] { return cancel(userdata); }) : std::function<bool()>())
                     && !(cancel && cancel(userdata))) {
                     CancellationMonitor monitor(client, cancel, userdata);
                     const char* transport = mode == MaaIOSConnectionMethod_USB    ? "usb"
