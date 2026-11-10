@@ -54,6 +54,7 @@ from agent_test_utils import (
     record_sink_event,
     signal_server_ready,
 )
+from remote_contract import REMOTE_CONTRACT_CASES
 
 
 analyzed: bool = False
@@ -396,6 +397,16 @@ class MyAction(CustomAction):
         runned = True
 
         return CustomAction.RunResult(success=True)
+
+
+@AgentServer.custom_action("RemoteContract")
+class RemoteContract(CustomAction):
+    def run(self, context, argv):
+        for case in REMOTE_CONTRACT_CASES:
+            print(f"Remote API contract: {case.__name__}", flush=True)
+            case(context)
+            record_sink_event(f"remote_contract:{case.__name__}")
+        return True
 
 
 @AgentServer.custom_recognition("SlowRec")

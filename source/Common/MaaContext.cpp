@@ -7,8 +7,6 @@
 
 MaaTaskId MaaContextRunTask(MaaContext* context, const char* entry, const char* pipeline_override)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(entry) << VAR(pipeline_override);
-
     if (!context) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -23,6 +21,8 @@ MaaTaskId MaaContextRunTask(MaaContext* context, const char* entry, const char* 
         LogError << "pipeline_override is null";
         return MaaInvalidId;
     }
+
+    LogFunc << VAR_VOIDP(context) << VAR(entry) << VAR(pipeline_override);
 
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
@@ -39,8 +39,6 @@ MaaTaskId MaaContextRunTask(MaaContext* context, const char* entry, const char* 
 
 MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const char* pipeline_override, const MaaImageBuffer* image)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(entry) << VAR(pipeline_override);
-
     if (!context || !image) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -55,6 +53,8 @@ MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const
         LogError << "pipeline_override is null";
         return MaaInvalidId;
     }
+
+    LogFunc << VAR_VOIDP(context) << VAR(entry) << VAR(pipeline_override);
 
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
@@ -78,8 +78,6 @@ MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const
 MaaActId
     MaaContextRunAction(MaaContext* context, const char* entry, const char* pipeline_override, const MaaRect* box, const char* reco_detail)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
-
     if (!context) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -99,6 +97,8 @@ MaaActId
         LogError << "reco_detail is null";
         return MaaInvalidId;
     }
+
+    LogFunc << VAR_VOIDP(context) << VAR(entry) << VAR(pipeline_override) << VAR(static_cast<const void*>(box)) << VAR(reco_detail);
 
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
@@ -122,8 +122,6 @@ MaaActId
 
 MaaRecoId MaaContextRunRecognitionDirect(MaaContext* context, const char* reco_type, const char* reco_param, const MaaImageBuffer* image)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(reco_type) << VAR(reco_param);
-
     if (!context || !image) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -138,6 +136,8 @@ MaaRecoId MaaContextRunRecognitionDirect(MaaContext* context, const char* reco_t
         LogError << "reco_param is null";
         return MaaInvalidId;
     }
+
+    LogFunc << VAR_VOIDP(context) << VAR(reco_type) << VAR(reco_param);
 
     auto param_opt = json::parse(reco_param);
     if (!param_opt) {
@@ -161,8 +161,6 @@ MaaActId MaaContextRunActionDirect(
     const MaaRect* box,
     const char* reco_detail)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(action_type) << VAR(action_param) << VAR(reco_detail);
-
     if (!context) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -188,6 +186,8 @@ MaaActId MaaContextRunActionDirect(
         return MaaInvalidId;
     }
 
+    LogFunc << VAR_VOIDP(context) << VAR(action_type) << VAR(action_param) << VAR(reco_detail);
+
     auto param_opt = json::parse(action_param);
     if (!param_opt) {
         LogError << "failed to parse" << VAR(action_param);
@@ -200,12 +200,12 @@ MaaActId MaaContextRunActionDirect(
 
 MaaBool MaaContextWaitFreezes(MaaContext* context, MaaSize time, const MaaRect* box, const char* wait_freezes_param)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(time) << VAR(wait_freezes_param);
-
     if (!context) {
         LogError << "handle is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(context) << VAR(time) << VAR(wait_freezes_param ? wait_freezes_param : "");
 
     json::value param_json = json::object();
     if (wait_freezes_param) {
@@ -230,8 +230,6 @@ MaaBool MaaContextWaitFreezes(MaaContext* context, MaaSize time, const MaaRect* 
 
 MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_override)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(pipeline_override);
-
     if (!context) {
         LogError << "handle is null";
         return false;
@@ -241,6 +239,8 @@ MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_ove
         LogError << "pipeline_override is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(context) << VAR(pipeline_override);
 
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
@@ -257,8 +257,6 @@ MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_ove
 
 MaaBool MaaContextOverrideNext(MaaContext* context, const char* node_name, const MaaStringListBuffer* next_list)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(node_name);
-
     if (!context || !next_list) {
         LogError << "handle is null";
         return false;
@@ -268,6 +266,8 @@ MaaBool MaaContextOverrideNext(MaaContext* context, const char* node_name, const
         LogError << "node_name is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(context) << VAR(node_name);
 
     std::vector<std::string> next;
 
@@ -281,8 +281,6 @@ MaaBool MaaContextOverrideNext(MaaContext* context, const char* node_name, const
 
 MaaBool MaaContextOverrideImage(MaaContext* context, const char* image_name, const MaaImageBuffer* image)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(image_name);
-
     if (!context || !image) {
         LogError << "handle is null";
         return false;
@@ -293,6 +291,8 @@ MaaBool MaaContextOverrideImage(MaaContext* context, const char* image_name, con
         return false;
     }
 
+    LogFunc << VAR_VOIDP(context) << VAR(image_name);
+
     const cv::Mat& mat = image->get();
 
     return context->override_image(image_name, mat);
@@ -300,8 +300,6 @@ MaaBool MaaContextOverrideImage(MaaContext* context, const char* image_name, con
 
 MaaBool MaaContextGetNodeData(MaaContext* context, const char* node_name, MaaStringBuffer* buffer)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(node_name);
-
     if (!context || !buffer) {
         LogError << "handle is null";
         return false;
@@ -311,6 +309,8 @@ MaaBool MaaContextGetNodeData(MaaContext* context, const char* node_name, MaaStr
         LogError << "node_name is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(context) << VAR(node_name);
 
     auto data_opt = context->get_node_data(node_name);
     if (!data_opt) {
@@ -354,8 +354,6 @@ MaaContext* MaaContextClone(const MaaContext* context)
 
 MaaBool MaaContextSetAnchor(MaaContext* context, const char* anchor_name, const char* node_name)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(anchor_name) << VAR(node_name);
-
     if (!context) {
         LogError << "handle is null";
         return false;
@@ -366,14 +364,14 @@ MaaBool MaaContextSetAnchor(MaaContext* context, const char* anchor_name, const 
         return false;
     }
 
+    LogFunc << VAR_VOIDP(context) << VAR(anchor_name) << VAR(node_name);
+
     context->set_anchor(anchor_name, node_name);
     return true;
 }
 
 MaaBool MaaContextGetAnchor(MaaContext* context, const char* anchor_name, MaaStringBuffer* buffer)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(anchor_name);
-
     if (!context || !buffer) {
         LogError << "handle is null";
         return false;
@@ -383,6 +381,8 @@ MaaBool MaaContextGetAnchor(MaaContext* context, const char* anchor_name, MaaStr
         LogError << "anchor_name is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(context) << VAR(anchor_name);
 
     auto opt = context->get_anchor(anchor_name);
     if (!opt) {
@@ -395,8 +395,6 @@ MaaBool MaaContextGetAnchor(MaaContext* context, const char* anchor_name, MaaStr
 
 MaaBool MaaContextGetHitCount(MaaContext* context, const char* node_name, MaaSize* count)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(node_name);
-
     if (!context || !count) {
         LogError << "handle is null";
         return false;
@@ -407,14 +405,14 @@ MaaBool MaaContextGetHitCount(MaaContext* context, const char* node_name, MaaSiz
         return false;
     }
 
+    LogFunc << VAR_VOIDP(context) << VAR(node_name);
+
     *count = static_cast<MaaSize>(context->get_hit_count(node_name));
     return true;
 }
 
 MaaBool MaaContextClearHitCount(MaaContext* context, const char* node_name)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(node_name);
-
     if (!context) {
         LogError << "handle is null";
         return false;
@@ -424,6 +422,8 @@ MaaBool MaaContextClearHitCount(MaaContext* context, const char* node_name)
         LogError << "node_name is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(context) << VAR(node_name);
 
     context->clear_hit_count(node_name);
     return true;

@@ -43,24 +43,24 @@ void MaaResourceClearSinks(MaaResource* res)
 
 MaaBool MaaResourceRegisterCustomRecognition(MaaResource* res, const char* name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);
-
     if (!res || !name || !recognition) {
         LogError << "handle is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);
 
     return res->register_custom_recognition(name, recognition, trans_arg);
 }
 
 MaaBool MaaResourceUnregisterCustomRecognition(MaaResource* res, const char* name)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(name);
-
     if (!res || !name) {
         LogError << "handle is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(res) << VAR(name);
 
     res->unregister_custom_recognition(name);
     return true;
@@ -81,24 +81,24 @@ MaaBool MaaResourceClearCustomRecognition(MaaResource* res)
 
 MaaBool MaaResourceRegisterCustomAction(MaaResource* res, const char* name, MaaCustomActionCallback action, void* trans_arg)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(trans_arg);
-
     if (!res || !name || !action) {
         LogError << "handle is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(trans_arg);
 
     return res->register_custom_action(name, action, trans_arg);
 }
 
 MaaBool MaaResourceUnregisterCustomAction(MaaResource* res, const char* name)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(name);
-
     if (!res || !name) {
         LogError << "handle is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(res) << VAR(name);
 
     res->unregister_custom_action(name);
     return true;
@@ -119,8 +119,6 @@ MaaBool MaaResourceClearCustomAction(MaaResource* res)
 
 MaaResId MaaResourcePostBundle(MaaResource* res, const char* path)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(path);
-
     if (!res) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -130,14 +128,14 @@ MaaResId MaaResourcePostBundle(MaaResource* res, const char* path)
         LogError << "path is null";
         return MaaInvalidId;
     }
+
+    LogFunc << VAR_VOIDP(res) << VAR(path);
 
     return res->post_bundle(MAA_NS::path(path));
 }
 
 MaaResId MaaResourcePostOcrModel(MaaResource* res, const char* path)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(path);
-
     if (!res) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -147,14 +145,14 @@ MaaResId MaaResourcePostOcrModel(MaaResource* res, const char* path)
         LogError << "path is null";
         return MaaInvalidId;
     }
+
+    LogFunc << VAR_VOIDP(res) << VAR(path);
 
     return res->post_ocr_model(MAA_NS::path(path));
 }
 
 MaaResId MaaResourcePostPipeline(MaaResource* res, const char* path)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(path);
-
     if (!res) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -164,14 +162,14 @@ MaaResId MaaResourcePostPipeline(MaaResource* res, const char* path)
         LogError << "path is null";
         return MaaInvalidId;
     }
+
+    LogFunc << VAR_VOIDP(res) << VAR(path);
 
     return res->post_pipeline(MAA_NS::path(path));
 }
 
 MaaResId MaaResourcePostImage(MaaResource* res, const char* path)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(path);
-
     if (!res) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -182,13 +180,13 @@ MaaResId MaaResourcePostImage(MaaResource* res, const char* path)
         return MaaInvalidId;
     }
 
+    LogFunc << VAR_VOIDP(res) << VAR(path);
+
     return res->post_image(MAA_NS::path(path));
 }
 
 MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_override)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(pipeline_override);
-
     if (!res) {
         LogError << "handle is null";
         return false;
@@ -198,6 +196,8 @@ MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_overr
         LogError << "pipeline_override is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(res) << VAR(pipeline_override);
 
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
@@ -214,8 +214,6 @@ MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_overr
 
 MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const MaaStringListBuffer* next_list)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(node_name);
-
     if (!res || !next_list) {
         LogError << "handle is null";
         return false;
@@ -225,6 +223,8 @@ MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const M
         LogError << "node_name is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(res) << VAR(node_name);
 
     std::vector<std::string> next;
 
@@ -238,8 +238,6 @@ MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const M
 
 MaaBool MaaResourceOverrideImage(MaaResource* res, const char* image_name, const MaaImageBuffer* image)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(image_name);
-
     if (!res || !image) {
         LogError << "handle is null";
         return false;
@@ -250,6 +248,8 @@ MaaBool MaaResourceOverrideImage(MaaResource* res, const char* image_name, const
         return false;
     }
 
+    LogFunc << VAR_VOIDP(res) << VAR(image_name);
+
     const cv::Mat& mat = image->get();
 
     return res->override_image(image_name, mat);
@@ -257,8 +257,6 @@ MaaBool MaaResourceOverrideImage(MaaResource* res, const char* image_name, const
 
 MaaBool MaaResourceGetNodeData(MaaResource* res, const char* node_name, MaaStringBuffer* buffer)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(node_name);
-
     if (!res || !buffer) {
         LogError << "handle is null";
         return false;
@@ -268,6 +266,8 @@ MaaBool MaaResourceGetNodeData(MaaResource* res, const char* node_name, MaaStrin
         LogError << "node_name is null";
         return false;
     }
+
+    LogFunc << VAR_VOIDP(res) << VAR(node_name);
 
     auto data_opt = res->get_node_data(node_name);
     if (!data_opt) {

@@ -1,8 +1,13 @@
 import { join } from 'path'
+import { tmpdir } from 'node:os'
 import './maa-client.ts'
 import { expectRegistrationError } from './custom-registration.ts'
+import { runApiContractTests } from './api-contract.ts'
 
 import * as fs from 'fs/promises'
+
+const binaryDir = process.env.MAAFW_BINARY_PATH ?? '../../install/bin'
+const logDir = join(tmpdir(), `maafw-node-tests-${process.pid}`)
 
 let analyzed = false
 let runned = false
@@ -111,7 +116,7 @@ async function api_test() {
     console.log('rsource', resource)
 
     const dbg_controller = new maa.DbgController(
-        '../../install/test/PipelineSmoking/Screenshot'
+        join(binaryDir, '..', 'test', 'PipelineSmoking', 'Screenshot')
     )
     dbg_controller.add_sink((res, msg) => {
         console.log(msg)
@@ -210,7 +215,7 @@ async function api_test() {
 
     maa.Global.save_draw = true
     maa.Global.stdout_level = 'All'
-    maa.Global.log_dir = '.'
+    maa.Global.log_dir = logDir
 
     const devices = await maa.AdbController.find()
     console.log('devices', devices)
@@ -255,10 +260,9 @@ async function custom_ctrl_test() {
 
     console.log('controller count', myCtrl.count, 'ret', ret)
 
-    // if (!ret) {
-    //     console.log('failed to run custom controller')
-    //     process.exit(1)
-    // }
+    if (!ret) {
+        throw new Error('Custom controller operation failed')
+    }
 }
 
 async function win32_relative_move_test() {
@@ -353,7 +357,7 @@ class MyController implements maa.CustomControllerActor {
     screencap(): maa.MaybePromise<maa.ImageData | null> {
         console.log('on MyController.screencap')
         this.count += 1
-        return fs.readFile('empty.png').then(x => x.buffer)
+        return fs.readFile(new URL('./empty.png', import.meta.url)).then(data => Uint8Array.from(data).buffer)
     }
     click(x: number, y: number): maa.MaybePromise<boolean> {
         console.log('on MyController.click, x', x, 'y', y)
@@ -441,8 +445,10 @@ async function main() {
     console.log('MaaFw Version:', maa.Global.version)
     // console.log('MaaFw Role', maa.AgentRole)
 
-    maa.Global.config_init_option('../../install/bin')
+    maa.Global.config_init_option(binaryDir)
+    maa.Global.log_dir = logDir
 
+    await runApiContractTests()
     await api_test()
     await win32_relative_move_test()
     win32_interception_enum_test()
