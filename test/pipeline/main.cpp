@@ -7,6 +7,7 @@
 #include "module/PipelineSmoking.h"
 #include "module/PostStopInterrupt.h"
 #include "module/RunWithoutFile.h"
+#include "module/RuntimeCache.h"
 
 #include "MaaFramework/MaaAPI.h"
 
@@ -24,6 +25,10 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaGlobalSetOption(MaaGlobalOption_SaveDraw, &on, sizeof(on));
     MaaLoggingLevel lv = MaaLoggingLevel_Info;
     MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &lv, sizeof(lv));
+
+    if (!test_runtime_cache()) {
+        return -1;
+    }
 
     if (!test_inference_context(testset_dir)) {
         return -1;
