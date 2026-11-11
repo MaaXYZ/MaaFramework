@@ -36,13 +36,7 @@ MaaBool MaaToolkitPortalHelperOpenStream(MaaToolkitPortalHelper* helper)
         return false;
     }
 
-    if (!helper->dbus_create_session() || !helper->dbus_select_sources() || !helper->dbus_start_stream()) {
-        // dbus_* methods already logged errors
-        helper->close_internal();
-        return false;
-    }
-
-    return true;
+    return helper->open_stream();
 #else
     std::ignore = helper;
     LogError << "This API " << __FUNCTION__ << " is only available on Linux";

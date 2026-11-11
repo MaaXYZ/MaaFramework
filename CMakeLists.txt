@@ -147,6 +147,7 @@ if(BUILD_MACOS_TEST)
 endif()
 
 if (BUILD_LINUX_TEST)
+    enable_testing()
     add_subdirectory(test/linux_test)
 endif ()
 
