@@ -79,8 +79,9 @@ void RuntimeCache::set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult detail
         reco_image_order_.push_back(uid);
     }
 
-    detail.raw.clear();
-    detail.draws.clear();
+    // Metadata must not retain image allocations when caching is disabled.
+    MAA_TASK_NS::ImageEncodedBuffer().swap(detail.raw);
+    decltype(detail.draws)().swap(detail.draws);
 
     reco_details_.insert_or_assign(uid, std::move(detail));
 }

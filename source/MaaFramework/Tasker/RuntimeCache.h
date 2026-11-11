@@ -40,6 +40,8 @@ public:
     void clear(const std::set<MaaTaskId>& retained_task_ids);
 
 private:
+    friend class RuntimeCacheTest;
+
     struct RecoImageCache
     {
         MAA_TASK_NS::ImageEncodedBuffer raw;

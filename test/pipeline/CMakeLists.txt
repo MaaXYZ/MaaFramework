@@ -9,12 +9,13 @@ add_executable(PipelineTesting ${pipeline_testing_src})
 
 target_link_libraries(PipelineTesting MaaFramework)
 
-# Exercise the private vision classes and real inference sessions without exporting
+# Exercise the private framework classes and real inference sessions without exporting
 # internal APIs from MaaFramework just for tests.
 target_sources(PipelineTesting PRIVATE
     ../../source/MaaFramework/Resource/FastDeployOCRSession.cpp
     ../../source/MaaFramework/Resource/InferenceResMgr.cpp
     ../../source/MaaFramework/Resource/OrtSession.cpp
+    ../../source/MaaFramework/Tasker/RuntimeCache.cpp
     ../../source/MaaFramework/Vision/NeuralNetworkClassifier.cpp
     ../../source/MaaFramework/Vision/NeuralNetworkDetector.cpp
     ../../source/MaaFramework/Vision/VisionBase.cpp
