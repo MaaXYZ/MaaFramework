@@ -20,6 +20,6 @@ if(WIN32)
 endif()
 set_target_properties(MaaToolkitVBoxConfigTest PROPERTIES FOLDER Testing)
 
-foreach(case formatting namespaces filtering addresses snapshots deduplication invalid_xml missing_file unicode_path oversized_file discovery_layouts discovery_boundaries serial_aliases candidate_aliases)
+foreach(case formatting namespaces filtering addresses bracketed_addresses snapshots deduplication invalid_xml missing_file unicode_path oversized_file discovery_layouts discovery_boundaries serial_aliases candidate_aliases)
     add_test(NAME toolkit_vbox_${case} COMMAND MaaToolkitVBoxConfigTest ${case})
 endforeach()

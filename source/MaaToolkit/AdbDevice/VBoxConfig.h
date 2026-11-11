@@ -69,9 +69,18 @@ inline std::optional<std::string> forwarding_serial(const XmlNode& forwarding)
     if (host.empty()) {
         host = "127.0.0.1";
     }
+    // Windows and POSIX inet_pton differ on bracketed IPv6 literals.
+    // Normalize the wrapper here so discovery returns the same addresses on both.
+    const bool bracketed = host.starts_with('[') && host.ends_with(']');
+    if (bracketed) {
+        host = host.substr(1, host.size() - 2);
+    }
+    if (host.empty() || host.find_first_of("[]") != std::string::npos) {
+        return std::nullopt;
+    }
     boost::system::error_code error;
     auto address = boost::asio::ip::make_address(host, error);
-    if (error) {
+    if (error || (bracketed && !address.is_v6())) {
         return std::nullopt;
     }
     if (address.is_unspecified()) {

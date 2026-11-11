@@ -128,9 +128,26 @@ void addresses(const Fixture& fixture)
           <Forwarding proto='1' hostport='62005' guestport='5555' hostip='localhost'/>
           <Forwarding proto='1' hostport='62006' guestport='5555' hostip='example.com'/>
           <Forwarding proto='1' hostport='62007' guestport='5555' hostip='127.0.0.999'/>
-          <Forwarding proto='1' hostport='62008' guestport='5555' hostip='[::1]'/>
         )"))),
         { "127.0.0.1:62001", "192.168.56.1:62002", "[::1]:62003", "[2001:db8::1]:62004" });
+}
+
+void bracketed_addresses(const Fixture& fixture)
+{
+    require_serials(
+        fixture.write(configuration(adapter(R"(
+          <Forwarding proto='1' hostport='62001' guestport='5555' hostip='[::1]'/>
+          <Forwarding proto='1' hostport='62001' guestport='5555' hostip='::1'/>
+          <Forwarding proto='1' hostport='62002' guestport='5555' hostip='[2001:db8::1]'/>
+          <Forwarding proto='1' hostport='62003' guestport='5555' hostip='[::]'/>
+          <Forwarding proto='1' hostport='62004' guestport='5555' hostip='[127.0.0.1]'/>
+          <Forwarding proto='1' hostport='62005' guestport='5555' hostip='[::1'/>
+          <Forwarding proto='1' hostport='62006' guestport='5555' hostip='::1]'/>
+          <Forwarding proto='1' hostport='62007' guestport='5555' hostip='[[::1]]'/>
+          <Forwarding proto='1' hostport='62008' guestport='5555' hostip='[]'/>
+          <Forwarding proto='1' hostport='62009' guestport='5555' hostip='[::1]:5555'/>
+        )"))),
+        { "[::1]:62001", "[2001:db8::1]:62002", "[::1]:62003" });
 }
 
 void snapshots(const Fixture& fixture)
@@ -269,6 +286,7 @@ int main(int argc, char** argv)
         { "namespaces", namespaces },
         { "filtering", filtering },
         { "addresses", addresses },
+        { "bracketed_addresses", bracketed_addresses },
         { "snapshots", snapshots },
         { "deduplication", deduplication },
         { "invalid_xml", invalid_xml },
