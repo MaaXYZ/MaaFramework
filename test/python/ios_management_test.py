@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / '3rdparty/XDeviceBridge/tests/support'))
 from fake_server import FakeServer
+FakeServer.server_version = "1.6.0"
 from maa.controller import IOSController
 from maa.library import Library
 from maa.toolkit import Toolkit
@@ -38,6 +39,24 @@ class IOSClientTest(unittest.TestCase):
             del controller
             self.assertNotIn('pair', server.methods())
             self.assertNotIn('ddi.prepare', server.methods())
+
+    def test_cancel_stalled_hello(self):
+        import time
+        import threading
+        class StalledServer(DiscoveryServer):
+            hello = threading.Event()
+            def handle_call(self, name, params):
+                if name == 'hello':
+                    self.hello.set()
+                    time.sleep(.7)
+                return super().handle_call(name, params)
+        with StalledServer() as server:
+            start = time.monotonic()
+            with self.assertRaisesRegex(RuntimeError, 'cancelled'):
+                Toolkit.find_ios_devices(config=server.config,
+                                         cancelled=lambda: server.hello.is_set() and time.monotonic() - start >= .1)
+            self.assertLess(time.monotonic() - start, .6)
+            self.assertNotIn('devices', server.methods())
 
     def test_invalid_inputs(self):
         with self.assertRaises(ValueError):

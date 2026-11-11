@@ -734,6 +734,7 @@ bool PipelineParser::parse_ocrer_param(
     else {
         u8_text = u8_default_text;
     }
+    output.expected.clear();
     std::ranges::transform(u8_text, std::back_inserter(output.expected), to_u16);
 
     if (!get_and_check_value(input, "threshold", output.threshold, default_value.threshold)) {

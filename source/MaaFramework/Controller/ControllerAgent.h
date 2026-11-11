@@ -169,6 +169,10 @@ struct Action
     } type = Type::invalid;
 
     Param param;
+
+    // 是否派发 Controller.Action.Starting / Succeeded（Failed 总会派发），仅公共 post_* 置位。
+    // 标记必须随动作一起入队：post 返回后再另行登记会与 worker 竞争，worker 先取走动作就会漏发事件
+    bool notify = false;
 };
 
 class ControllerAgent : public MaaController
@@ -283,7 +287,7 @@ private:
     bool release_key_if_held(int keycode);
 
     MaaCtrlId post(Action action);
-    MaaCtrlId focus_id(MaaCtrlId id);
+    MaaCtrlId post_notified(Action action);
     bool check_stop();
 
 private:
@@ -335,8 +339,6 @@ private:
 
     std::string uuid_cache_;
 
-    std::set<AsyncRunner<Action>::Id> focus_ids_;
-    std::mutex focus_ids_mutex_;
     std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
 };
 

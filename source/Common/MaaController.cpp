@@ -129,8 +129,6 @@ MaaCtrlId MaaControllerPostClickKey(MaaController* ctrl, int32_t keycode)
 
 MaaCtrlId MaaControllerPostInputText(MaaController* ctrl, const char* text)
 {
-    LogFunc << VAR_VOIDP(ctrl) << VAR(text);
-
     if (!ctrl) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -141,13 +139,13 @@ MaaCtrlId MaaControllerPostInputText(MaaController* ctrl, const char* text)
         return MaaInvalidId;
     }
 
+    LogFunc << VAR_VOIDP(ctrl) << VAR(text);
+
     return ctrl->post_input_text(text);
 }
 
 MaaCtrlId MaaControllerPostStartApp(MaaController* ctrl, const char* intent)
 {
-    LogFunc << VAR_VOIDP(ctrl) << VAR(intent);
-
     if (!ctrl) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -157,14 +155,14 @@ MaaCtrlId MaaControllerPostStartApp(MaaController* ctrl, const char* intent)
         LogError << "intent is null";
         return MaaInvalidId;
     }
+
+    LogFunc << VAR_VOIDP(ctrl) << VAR(intent);
 
     return ctrl->post_start_app(intent);
 }
 
 MaaCtrlId MaaControllerPostStopApp(MaaController* ctrl, const char* intent)
 {
-    LogFunc << VAR_VOIDP(ctrl) << VAR(intent);
-
     if (!ctrl) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -174,6 +172,8 @@ MaaCtrlId MaaControllerPostStopApp(MaaController* ctrl, const char* intent)
         LogError << "intent is null";
         return MaaInvalidId;
     }
+
+    LogFunc << VAR_VOIDP(ctrl) << VAR(intent);
 
     return ctrl->post_stop_app(intent);
 }
@@ -264,8 +264,6 @@ MaaCtrlId MaaControllerPostScroll(MaaController* ctrl, int32_t dx, int32_t dy)
 
 MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd, int64_t timeout)
 {
-    LogFunc << VAR_VOIDP(ctrl) << VAR(cmd) << VAR(timeout);
-
     if (!ctrl) {
         LogError << "handle is null";
         return MaaInvalidId;
@@ -275,6 +273,8 @@ MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd, int64_t t
         LogError << "Shell command parameter cannot be null";
         return MaaInvalidId;
     }
+
+    LogFunc << VAR_VOIDP(ctrl) << VAR(cmd) << VAR(timeout);
 
     return ctrl->post_shell(cmd, timeout);
 }

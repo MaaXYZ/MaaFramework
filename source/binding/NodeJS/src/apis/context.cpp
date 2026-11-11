@@ -258,6 +258,7 @@ void ContextImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "run_action", ContextImpl::run_action);
     MAA_BIND_FUNC(proto, "run_recognition_direct", ContextImpl::run_recognition_direct);
     MAA_BIND_FUNC(proto, "run_action_direct", ContextImpl::run_action_direct);
+    MAA_BIND_FUNC(proto, "wait_freezes", ContextImpl::wait_freezes);
     MAA_BIND_FUNC(proto, "override_pipeline", ContextImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "override_next", ContextImpl::override_next);
     MAA_BIND_FUNC(proto, "override_image", ContextImpl::override_image);

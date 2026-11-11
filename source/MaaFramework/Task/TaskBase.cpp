@@ -184,23 +184,7 @@ void TaskBase::set_node_detail(MaaNodeId node_id, NodeDetail detail)
         cache.set_latest_node(detail.name, node_id);
     }
 
-    // value_or 的默认值用于 run 到一半调用方手动 clear cache 了的情况
-    TaskDetail task_detail =
-        cache.get_task_detail(task_id_).value_or(TaskDetail { .task_id = task_id_, .entry = entry_, .status = MaaStatus_Running });
-    task_detail.node_ids.emplace_back(node_id);
-
-    set_task_detail(task_detail);
-}
-
-void TaskBase::set_task_detail(TaskDetail detail)
-{
-    if (!tasker_) {
-        LogError << "tasker is null";
-        return;
-    }
-
-    auto& cache = tasker_->runtime_cache();
-    cache.set_task_detail(task_id_, detail);
+    cache.append_task_node(task_id_, entry_, node_id);
 }
 
 void TaskBase::wait_freezes(

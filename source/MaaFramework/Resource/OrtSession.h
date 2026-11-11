@@ -6,6 +6,7 @@
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "Common/Conf.h"
+#include "InferenceContext.h"
 #include "Vision/InferenceSession.h"
 
 MAA_RES_NS_BEGIN
@@ -14,8 +15,12 @@ class OrtSession : public MAA_VISION_NS::InferenceSession
 {
 public:
     // returns nullptr on failure
-    static std::shared_ptr<OrtSession>
-        create(Ort::Env& env, const std::filesystem::path& path, const Ort::SessionOptions& options, const Ort::MemoryInfo& memory_info);
+    static std::shared_ptr<OrtSession> create(
+        Ort::Env& env,
+        const std::filesystem::path& path,
+        const Ort::SessionOptions& options,
+        const Ort::MemoryInfo& memory_info,
+        const InferenceContext& context = { });
 
     virtual ~OrtSession() override = default;
 
@@ -29,8 +34,16 @@ public:
     virtual const std::unordered_map<std::string, std::string>& metadata() const override { return metadata_; }
 
 private:
-    OrtSession(Ort::Session session, Ort::MemoryInfo memory_info);
+    friend class InferenceContext;
 
+    OrtSession(
+        Ort::Env& env,
+        const std::filesystem::path& path,
+        const Ort::SessionOptions& options,
+        const Ort::MemoryInfo& memory_info,
+        const InferenceContext& context);
+
+    const InferenceContext context_;
     mutable Ort::Session session_;
     Ort::MemoryInfo memory_info_;
 

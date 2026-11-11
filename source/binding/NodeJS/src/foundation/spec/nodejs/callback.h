@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <future>
+#include <thread>
 
 #include "../convert.h"
 #include "../types.h"
@@ -14,11 +15,15 @@ struct CallbackContext
     Napi::Function fn;
     Napi::ThreadSafeFunction tsfn;
     const char* name;
+    Napi::FunctionReference owner_fn;
+    const std::thread::id owner_thread;
 
     CallbackContext(Napi::Function cb, const char* name)
         : fn(cb)
         , tsfn(Napi::ThreadSafeFunction::New(cb.Env(), fn, name, 0, 1))
         , name(name)
+        , owner_fn(Napi::Persistent(cb))
+        , owner_thread(std::this_thread::get_id())
     {
     }
 
@@ -27,6 +32,17 @@ struct CallbackContext
     template <typename Result>
     Result Call(std::function<Napi::Value(Napi::Function)> caller, std::function<Result(Napi::Value)> parser)
     {
+        if (std::this_thread::get_id() == owner_thread) {
+            // A synchronous getter cannot queue a callback to the JavaScript thread it is blocking.
+            auto result = caller(owner_fn.Value());
+            if (result.IsPromise()) {
+                result.As<PromiseType>().Catch(
+                    Napi::Function::New(result.Env(), [](const Napi::CallbackInfo& info) { return info.Env().Undefined(); }));
+                throw MaaError { "A synchronous API cannot wait for an asynchronous custom callback" };
+            }
+            return parser(result);
+        }
+
         std::promise<Result> promise;
         std::future<Result> future = promise.get_future();
         tsfn.BlockingCall([&caller, &parser, &promise](Napi::Env env, Napi::Function fn) {

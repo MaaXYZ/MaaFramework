@@ -6,7 +6,14 @@ import time
 from typing import Optional
 import uuid
 
+from maa.custom_action import CustomAction
 from maa.pipeline import JCustomRecognition, JRecognitionType
+from remote_contract import REMOTE_CONTRACT_CASES
+
+
+class LocalAction(CustomAction):
+    def run(self, context, argv):
+        return True
 
 
 SERVER_READY_FILE_ENV = "MAAFW_AGENT_SERVER_READY_FILE"
@@ -107,7 +114,7 @@ def connect_agent_server(
 
 
 def assert_sink_events(report_file: Path) -> None:
-    expected = {"resource", "controller", "tasker"}
+    expected = {"resource", "controller", "tasker", "context"}
     actual = (
         set(report_file.read_text(encoding="utf-8").splitlines())
         if report_file.exists()
@@ -148,7 +155,9 @@ def assert_multi_recognition(tasker) -> None:
                 "index": index,
             },
         }
-        detail = tasker.post_task("Entry", pipeline_override).wait().get()
+        job = tasker.post_task("Entry", pipeline_override).wait()
+        assert job.succeeded, "clearing history in an Agent action must preserve the job's status"
+        detail = job.get()
         assert detail, f"pipeline failed for index {index}"
         node = next((n for n in detail.nodes if n.name == "StaleProbe"), None)
         assert node and node.recognition, f"missing recognition detail for index {index}"
@@ -243,6 +252,7 @@ def run_connected_agent_test(
     try:
         assert agent.connected
         assert agent.alive
+        assert resource.register_custom_action("AgentContractLocalAction", LocalAction())
 
         reco_list = agent.custom_recognition_list
         action_list = agent.custom_action_list
@@ -296,10 +306,36 @@ def run_connected_agent_test(
         # MyRec 通过 "$all" 返回多个结果，index 为 -1 时最终 box 是第二个结果
         assert "MultiRec" in reco_list
         assert_multi_recognition(tasker)
+
+        contract_job = tasker.post_task(
+            "AgentContractEntry",
+            {
+                "AgentContractEntry": {
+                    "action": "Custom",
+                    "custom_action": "RemoteContract",
+                    "pre_delay": 0,
+                    "post_delay": 0,
+                }
+            },
+        ).wait()
+        assert contract_job.succeeded, "remote API contract task should succeed"
+        # Callback exceptions can be swallowed by ctypes; every case must confirm completion.
+        records = set(sink_report_file.read_text(encoding="utf-8").splitlines())
+        expected_contracts = {f"remote_contract:{case.__name__}" for case in REMOTE_CONTRACT_CASES}
+        assert expected_contracts <= records, f"missing remote API contracts: {expected_contracts - records}"
+
         assert_stale_response_dropped(agent, tasker, sink_report_file)
         assert_nested_response_kept(agent, tasker, sink_report_file)
 
         assert agent.disconnect()
+        assert not agent.connected
+        assert not agent.alive
+        assert "MyRec" not in resource.custom_recognition_list
+        assert "MyAct" not in resource.custom_action_list
+        assert "RemoteContract" not in resource.custom_action_list
+        assert agent.custom_recognition_list == []
+        assert agent.custom_action_list == []
+        assert "AgentContractLocalAction" in resource.custom_action_list
         child_process.wait(timeout=PROCESS_TIMEOUT_SECONDS)
         assert child_process.returncode == 0
         assert_sink_events(sink_report_file)
@@ -316,3 +352,5 @@ def run_connected_agent_test(
                 stop_agent_server(child_process)
             finally:
                 sink_report_file.unlink(missing_ok=True)
+                if "AgentContractLocalAction" in resource.custom_action_list:
+                    assert resource.unregister_custom_action("AgentContractLocalAction")

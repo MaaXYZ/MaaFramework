@@ -252,7 +252,13 @@ class Tasker:
         return self.get_node_detail(int(c_node_id.value))
 
     def clear_cache(self) -> bool:
-        """清理所有可查询的信息 / Clear all queryable information
+        """清理历史缓存，保留待执行及运行中任务 / Clear history, preserving pending and running tasks
+
+        保留这些任务的 ID、入口和状态，重置节点 ID 列表。此前缓存的节点、识别、动作、
+        等待画面静止详情及最新节点引用均失效。
+        Preserve these tasks' IDs, entry and status, and reset their node ID lists.
+        Previously cached node, recognition, action and wait-freezes details and
+        latest-node references are invalidated.
 
         Returns:
             bool: 是否成功 / Whether successful

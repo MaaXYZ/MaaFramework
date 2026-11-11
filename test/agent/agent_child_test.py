@@ -54,6 +54,7 @@ from agent_test_utils import (
     record_sink_event,
     signal_server_ready,
 )
+from remote_contract import REMOTE_CONTRACT_CASES
 
 
 analyzed: bool = False
@@ -389,13 +390,34 @@ class MyAction(CustomAction):
                     )
 
         # 测试 clear_cache
-        tasker.clear_cache()
+        assert tasker.clear_cache()
+        retained = tasker.get_task_detail(argv.task_detail.task_id)
+        assert retained is not None and retained.status.running
+        assert retained.entry == argv.task_detail.entry
+        assert not retained.node_id_list
+        # Cloned contexts still need the parent's task detail for custom callbacks.
+        nested = context.clone().run_recognition(
+            "CacheAfterClear",
+            controller.cached_image,
+            {"CacheAfterClear": {"recognition": "Custom", "custom_recognition": "FastRec"}},
+        )
+        assert nested is not None and nested.hit
         print("  tasker.clear_cache() called")
 
         global runned
         runned = True
 
         return CustomAction.RunResult(success=True)
+
+
+@AgentServer.custom_action("RemoteContract")
+class RemoteContract(CustomAction):
+    def run(self, context, argv):
+        for case in REMOTE_CONTRACT_CASES:
+            print(f"Remote API contract: {case.__name__}", flush=True)
+            case(context)
+            record_sink_event(f"remote_contract:{case.__name__}")
+        return True
 
 
 @AgentServer.custom_recognition("SlowRec")

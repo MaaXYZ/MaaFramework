@@ -53,7 +53,6 @@ protected:
     ActionResult run_action(const RecoResult& reco, const PipelineData& data);
     cv::Mat screencap();
     void set_node_detail(MaaNodeId node_id, NodeDetail detail);
-    void set_task_detail(TaskDetail detail);
 
     void wait_freezes(
         const MAA_RES_NS::WaitFreezesParam& param,

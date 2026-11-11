@@ -3,12 +3,14 @@ declare global {
         type ClickParam = {
             point: Point
             contact: number
+            pressure: number
         }
 
         type LongPressParam = {
             point: Point
             duration: number
             contact: number
+            pressure: number
         }
 
         type SwipeParam = {
@@ -19,6 +21,7 @@ declare global {
             only_hover: boolean
             starting: number
             contact: number
+            pressure: number
         }
 
         type MultiSwipeParam = {
@@ -29,10 +32,12 @@ declare global {
             contact: number
             point: Point
             pressure: number
+            auto_up: boolean
         }
 
         type ClickKeyParam = {
             keycode: number[]
+            auto_up: boolean
         }
 
         type LongPressKeyParam = {
@@ -49,6 +54,7 @@ declare global {
         }
 
         type ScrollParam = {
+            point: Point
             dx: number
             dy: number
         }
@@ -56,6 +62,11 @@ declare global {
         type RelativeMoveParam = {
             dx: number
             dy: number
+        }
+
+        type ShellParam = {
+            cmd: string
+            shell_timeout: number
         }
 
         type ActionParam =
@@ -71,6 +82,7 @@ declare global {
             | AppParam
             | ScrollParam
             | RelativeMoveParam
+            | ShellParam
 
         type ControllerNotify = {
             msg: NotifyMessage<'Action'>
@@ -80,7 +92,7 @@ declare global {
         } & (
             | {
                   action: 'connect'
-                  param?: never
+                  param: null
               }
             | {
                   action: 'click'
@@ -120,11 +132,11 @@ declare global {
               }
             | {
                   action: 'screencap'
-                  param?: never
+                  param: null
               }
             | {
                   action: 'inactive'
-                  param?: never
+                  param: null
               }
             | {
                   action: 'start_app' | 'stop_app'
@@ -133,6 +145,10 @@ declare global {
             | {
                   action: 'scroll'
                   param: ScrollParam
+              }
+            | {
+                  action: 'shell'
+                  param: ShellParam
               }
         )
 
@@ -464,6 +480,10 @@ declare global {
             relative_move?(dx: number, dy: number): maa.MaybePromise<boolean>
             shell?(cmd: string, timeout: number): maa.MaybePromise<string | null>
             inactive?(): maa.MaybePromise<boolean>
+            /**
+             * 同步读取 controller.info 时必须同步返回；控制器动作事件支持 Promise。
+             * Return synchronously for controller.info; controller action events also support Promise results.
+             */
             get_info?(): maa.MaybePromise<string | null>
         }
 

@@ -1,11 +1,14 @@
 #include <filesystem>
 
 #include "module/BatchOcrRepro.h"
+#include "module/ControllerActionEvents.h"
 #include "module/FailureFrameOutputTest.h"
+#include "module/InferenceContext.h"
 #include "module/NeuralNetworkCache.h"
 #include "module/PipelineSmoking.h"
 #include "module/PostStopInterrupt.h"
 #include "module/RunWithoutFile.h"
+#include "module/RuntimeCache.h"
 
 #include "MaaFramework/MaaAPI.h"
 
@@ -28,6 +31,14 @@ int main([[maybe_unused]] int argc, char** argv)
         return -1;
     }
 
+    if (!test_runtime_cache()) {
+        return -1;
+    }
+
+    if (!test_inference_context(testset_dir)) {
+        return -1;
+    }
+
     if (!test_neural_network_cache(testset_dir, cur_dir / "debug")) {
         return -1;
     }
@@ -42,6 +53,9 @@ int main([[maybe_unused]] int argc, char** argv)
         return -1;
     }
     if (!post_stop_interrupt(testset_dir)) {
+        return -1;
+    }
+    if (!controller_action_events()) {
         return -1;
     }
 
