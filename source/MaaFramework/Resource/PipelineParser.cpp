@@ -704,6 +704,15 @@ bool PipelineParser::parse_ocrer_param(
         return false;
     }
 
+    if (!get_and_check_value(input, "engine", output.engine, default_value.engine)) {
+        LogError << "failed to get_and_check_value engine" << VAR(input);
+        return false;
+    }
+    if (output.engine != "Default" && output.engine != "WeChatOCR") {
+        LogError << "Unknown OCR engine" << VAR(output.engine);
+        return false;
+    }
+
     if (!get_and_check_value(input, "model", output.model, default_value.model)) {
         LogError << "failed to get_and_check_value model" << VAR(input);
         return false;
@@ -711,6 +720,10 @@ bool PipelineParser::parse_ocrer_param(
 
     if (!get_and_check_value(input, "only_rec", output.only_rec, default_value.only_rec)) {
         LogError << "failed to get_and_check_value only_rec" << VAR(input);
+        return false;
+    }
+    if (output.engine == "WeChatOCR" && (output.only_rec || !output.model.empty())) {
+        LogError << "WeChatOCR requires only_rec=false and an empty model" << VAR(input);
         return false;
     }
 

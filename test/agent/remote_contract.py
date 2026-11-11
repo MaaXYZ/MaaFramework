@@ -183,6 +183,26 @@ def controller_image_round_trip(context):
         assert controller.set_screenshot_use_raw_size(False)
 
 
+def wechat_ocr_configuration_and_pipeline(context):
+    resource = context.tasker.resource
+    # Invalid paths must fail on the host without breaking the reverse RPC channel.
+    assert not resource.configure_wechat_ocr(
+        {"sdk_path": "relative.dll", "runtime_dir": "relative", "ocr_path": "relative.exe"}
+    )
+    assert resource.loaded
+    clone = context.clone()
+    name = "AgentContractWeChatOCR"
+    assert clone.override_pipeline(
+        {name: {"recognition": {"type": "OCR", "param": {"engine": "WeChatOCR", "expected": "开始"}}}}
+    )
+    node = clone.get_node_data(name)
+    assert node["recognition"]["param"]["engine"] == "WeChatOCR"
+    assert clone.get_node_object(name).recognition.param.engine == "WeChatOCR"
+    assert not clone.override_pipeline(
+        {name: {"recognition": {"type": "OCR", "param": {"only_rec": True}}}}
+    )
+
+
 REMOTE_CONTRACT_CASES = (
     context_clone_isolation,
     shared_anchor_state,
@@ -191,5 +211,6 @@ REMOTE_CONTRACT_CASES = (
     recognition_results,
     action_results,
     resource_overrides_and_images,
+    wechat_ocr_configuration_and_pipeline,
     controller_image_round_trip,
 )

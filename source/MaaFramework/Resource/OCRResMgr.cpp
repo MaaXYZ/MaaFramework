@@ -11,6 +11,7 @@
 #include "MaaUtils/StringMisc.hpp"
 #include "NcnnOCRSession.h"
 #include "NcnnSession.h"
+#include "WeChatOCRSession.h"
 
 MAA_RES_NS_BEGIN
 
@@ -136,12 +137,36 @@ void OCRResMgr::clear()
     recers_.clear();
     ocrers_.clear();
     sessions_.clear();
+    wechat_session_.reset();
 }
 
-MAA_VISION_NS::OCRSessionPtr OCRResMgr::session(const std::string& name)
+bool OCRResMgr::configure_wechat(const json::value& config)
+{
+    auto session = WeChatOCRSession::create(config);
+    if (!session) {
+        return false;
+    }
+    std::unique_lock lock(session_mutex_);
+    wechat_session_ = std::move(session);
+    return true;
+}
+
+MAA_VISION_NS::OCRSessionPtr OCRResMgr::session(const std::string& name, const std::string& engine)
 {
     // multiple taskers may share one resource, guard lookup + load + insert
     std::unique_lock lock(session_mutex_);
+
+    if (engine == "WeChatOCR") {
+        if (!name.empty() || !wechat_session_) {
+            LogError << "WeChatOCR needs a configured runtime and an empty model" << VAR(name);
+            return nullptr;
+        }
+        return wechat_session_;
+    }
+    if (engine != "Default") {
+        LogError << "Unknown OCR engine" << VAR(engine);
+        return nullptr;
+    }
 
     if (auto iter = sessions_.find(name); iter != sessions_.end()) {
         return iter->second;

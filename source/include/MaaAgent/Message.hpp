@@ -818,6 +818,23 @@ struct TaskerGetLatestNodeReverseResponse
     MEO_JSONIZATION(has_value, latest_id, _TaskerGetLatestNodeReverseResponse);
 };
 
+struct ResourceConfigureWeChatOCRReverseRequest
+{
+    std::string resource_id;
+    std::string config;
+
+    MessageTypePlaceholder _ResourceConfigureWeChatOCRReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, config, _ResourceConfigureWeChatOCRReverseRequest);
+};
+
+struct ResourceConfigureWeChatOCRReverseResponse
+{
+    bool ret = false;
+
+    MessageTypePlaceholder _ResourceConfigureWeChatOCRReverseResponse = 1;
+    MEO_JSONIZATION(ret, _ResourceConfigureWeChatOCRReverseResponse);
+};
+
 struct ResourcePostBundleReverseRequest
 {
     std::string resource_id;

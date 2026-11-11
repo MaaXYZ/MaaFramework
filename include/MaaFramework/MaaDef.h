@@ -207,6 +207,15 @@ enum MaaResOptionEnum
     /// value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider)
     /// default value is MaaInferenceExecutionProvider_Auto
     MaaResOption_InferenceExecutionProvider = 2,
+
+    /// Configure the optional WeChatOCR engine (Windows x64 and Linux x64).
+    /// value: UTF-8 JSON bytes; val_size excludes the optional terminating NUL.
+    /// Required absolute paths: sdk_path, runtime_dir, ocr_path.
+    /// Optional: worker_path, temp_dir, protocol (0/3/4), startup_timeout_ms (10000),
+    /// request_timeout_ms (10000), max_pending_requests (16).
+    /// Configure before any MaaResourcePost* call. MaaResourceClear resets the configuration.
+    /// This does not change the inference execution provider or select an OCR engine for nodes.
+    MaaResOption_WeChatOCR = 3,
 };
 
 typedef MaaOption MaaCtrlOption;

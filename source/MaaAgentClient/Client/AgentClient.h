@@ -88,6 +88,7 @@ private:
     bool handle_resource_valid(const json::value& j);
     bool handle_resource_running(const json::value& j);
     bool handle_resource_clear(const json::value& j);
+    bool handle_resource_configure_wechat_ocr(const json::value& j);
     bool handle_resource_override_pipeline(const json::value& j);
     bool handle_resource_override_next(const json::value& j);
     bool handle_resource_override_image(const json::value& j);

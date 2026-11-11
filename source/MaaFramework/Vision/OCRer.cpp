@@ -96,6 +96,10 @@ cv::Mat OCRer::apply_color_filter(const cv::Mat& image_roi) const
 
 OCRer::ResultsVec OCRer::predict() const
 {
+    if (param_.only_rec && session_ && !session_->supports_rec_only()) {
+        LogError << "OCR engine does not support only_rec" << VAR(param_.engine);
+        return {};
+    }
     ResultsVec results;
 
     auto image_roi = image_with_roi();
@@ -208,6 +212,10 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
 
 OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
 {
+    if (session_ && !session_->supports_rec_only()) {
+        LogError << "OCR engine does not support only_rec" << VAR(param_.engine);
+        return {};
+    }
     if (!session_) {
         LogError << "OCRSession not loaded";
         return { };
@@ -233,6 +241,11 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
 OCRer::ResultsVec OCRer::predict_batch_rec(const std::vector<cv::Rect>& rois) const
 {
     LogFunc << VAR(rois);
+
+    if (session_ && !session_->supports_rec_only()) {
+        LogError << "OCR engine does not support batch_rec" << VAR(param_.engine);
+        return {};
+    }
 
     if (!session_) {
         LogError << "OCRSession not loaded";
@@ -305,7 +318,8 @@ void OCRer::add_results(ResultsVec results, const std::vector<std::wstring>& exp
 {
     auto copied = results;
     for (auto& res : copied) {
-        if (res.score < param_.threshold) {
+        // An unknown confidence can only pass when score filtering is disabled.
+        if (res.score < 0 ? param_.threshold > 0 : res.score < param_.threshold) {
             continue;
         }
 

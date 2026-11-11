@@ -468,6 +468,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_resource_get_default_recognition_param(j)) {
         return true;
     }
+    else if (handle_resource_configure_wechat_ocr(j)) {
+        return true;
+    }
     else if (handle_resource_get_default_action_param(j)) {
         return true;
     }
@@ -1465,6 +1468,22 @@ bool AgentClient::handle_tasker_get_latest_node(const json::value& j)
     };
     send(resp);
 
+    return true;
+}
+
+bool AgentClient::handle_resource_configure_wechat_ocr(const json::value& j)
+{
+    if (!j.is<ResourceConfigureWeChatOCRReverseRequest>()) {
+        return false;
+    }
+    const auto& req = j.as<ResourceConfigureWeChatOCRReverseRequest>();
+    MaaResource* resource = query_resource(req.resource_id);
+    ResourceConfigureWeChatOCRReverseResponse resp;
+    if (resource && !req.config.empty() && req.config.size() <= 1024 * 1024) {
+        auto config = req.config;
+        resp.ret = resource->set_option(MaaResOption_WeChatOCR, config.data(), config.size());
+    }
+    send(resp);
     return true;
 }
 

@@ -364,6 +364,27 @@ class Resource:
         """
         return self.set_inference(MaaInferenceExecutionProviderEnum.Auto, MaaInferenceDeviceEnum.Auto)
 
+    def configure_wechat_ocr(self, config: dict[str, Any]) -> bool:
+        """配置微信 OCR 引擎 / Configure the optional WeChat OCR engine.
+
+        Windows x64 和 Linux x64 可用；在任何 post_* 前调用，clear() 后需重新配置。
+        Available on Windows x64 and Linux x64. Call before any post_*; clear() resets it.
+        Required absolute paths: sdk_path, runtime_dir, ocr_path.
+        This configures the runtime; select engine="WeChatOCR" in OCR pipeline nodes.
+        """
+        if not isinstance(config, dict):
+            return False
+        payload = json.dumps(config, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        buffer = ctypes.create_string_buffer(payload)
+        return bool(
+            Library.framework().MaaResourceSetOption(
+                self._handle,
+                MaaResOptionEnum.WeChatOCR,
+                buffer,
+                len(payload),
+            )
+        )
+
     # not implemented
     # def use_cuda(self, nvidia_gpu_id: int) -> bool:
     #     return self.set_inference(MaaInferenceExecutionProviderEnum.CUDA, nvidia_gpu_id)
