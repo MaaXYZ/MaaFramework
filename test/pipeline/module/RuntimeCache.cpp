@@ -121,7 +121,7 @@ private:
         if (!result_matches(cache, 201, false) || !result_matches(cache, 202, true) || !result_matches(cache, 203, true)) {
             return false;
         }
-        cache.clear({});
+        cache.clear({ });
         return check(
             !cache.get_reco_result(201) && !cache.get_reco_result(202) && !cache.get_reco_result(203),
             "clear retained recognition history");
@@ -142,7 +142,7 @@ private:
             || !result_matches(cache, 301, true)) {
             return false;
         }
-        cache.clear({});
+        cache.clear({ });
         return check(
             !cache.get_reco_result(301) && !cache.get_reco_result(302) && !cache.get_reco_result(303),
             "clear retained images after disabling caching");
