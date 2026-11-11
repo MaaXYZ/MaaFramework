@@ -284,7 +284,7 @@ def test_resource_api():
     assert not r1.use_ncnn()
 
     # 无效配置和缺失运行时应明确返回 False。
-    assert not r1.configure_wechat_ocr({})
+    assert not r1.configure_wechat_ocr({"runtime_dir": str(Path.cwd().resolve())})
     assert not r1.configure_wechat_ocr(
         {"sdk_path": "relative.dll", "runtime_dir": "relative", "ocr_path": "relative.exe"}
     )

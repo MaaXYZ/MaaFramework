@@ -13,14 +13,6 @@ RemoteResource::RemoteResource(Transceiver& server, const std::string& resource_
 
 bool RemoteResource::set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
-    if (key == MaaResOption_WeChatOCR && value && val_size > 0 && val_size <= 1024 * 1024) {
-        ResourceConfigureWeChatOCRReverseRequest req {
-            .resource_id = resource_id_,
-            .config = std::string(static_cast<const char*>(value), static_cast<size_t>(val_size)),
-        };
-        auto resp = server_.send_and_recv<ResourceConfigureWeChatOCRReverseResponse>(req);
-        return resp && resp->ret;
-    }
     LogError << "Can NOT set option at remote resource" << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
     return false;
 }

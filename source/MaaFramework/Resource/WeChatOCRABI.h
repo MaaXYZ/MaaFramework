@@ -24,6 +24,14 @@ struct Options
     uint32_t max_pending_requests;
 };
 
+struct DiscoveryOptions
+{
+    uint32_t struct_size;
+    uint32_t flags;
+    const char* const* search_roots;
+    uint32_t search_root_count;
+};
+
 struct Image
 {
     uint32_t struct_size;
@@ -65,6 +73,7 @@ struct ResultInfo
 
 #if INTPTR_MAX == INT64_MAX
 static_assert(sizeof(Options) == 56);
+static_assert(sizeof(DiscoveryOptions) == 24);
 static_assert(sizeof(Image) == 40);
 static_assert(sizeof(Line) == 64);
 static_assert(sizeof(Capabilities) == 24);
@@ -79,6 +88,7 @@ static_assert(sizeof(ResultInfo) == 16);
 using Version = const char*(MAA_WCO_CALL*)();
 using LastError = const char*(MAA_WCO_CALL*)();
 using Create = Status(MAA_WCO_CALL*)(const Options*, Engine**);
+using CreateAuto = Status(MAA_WCO_CALL*)(const Options*, const DiscoveryOptions*, Engine**);
 using Recognize = Status(MAA_WCO_CALL*)(Engine*, const Image*, uint32_t, Result**);
 using GetCapabilities = Status(MAA_WCO_CALL*)(const Engine*, Capabilities*);
 using LineCount = uint32_t(MAA_WCO_CALL*)(const Result*);

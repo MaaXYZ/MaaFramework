@@ -27,7 +27,7 @@ struct ResourceImpl : public maajs::NativeClassBase
     void clear_sinks();
     void set_inference_device(std::variant<std::string, int32_t> id);
     void set_inference_execution_provider(std::string provider);
-    bool configure_wechat_ocr(std::variant<std::string, maajs::ObjectType> config);
+    bool configure_wechat_ocr(maajs::OptionalParam<std::variant<std::string, maajs::ObjectType>> config);
     void register_custom_recognition(std::string name, maajs::FunctionType func);
     void unregister_custom_recognition(std::string name);
     void clear_custom_recognition();

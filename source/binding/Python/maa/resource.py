@@ -364,14 +364,14 @@ class Resource:
         """
         return self.set_inference(MaaInferenceExecutionProviderEnum.Auto, MaaInferenceDeviceEnum.Auto)
 
-    def configure_wechat_ocr(self, config: dict[str, Any]) -> bool:
+    def configure_wechat_ocr(self, config: Optional[dict[str, Any]] = None) -> bool:
         """配置微信 OCR 引擎 / Configure the optional WeChat OCR engine.
 
-        Windows x64 和 Linux x64 可用；在任何 post_* 前调用，clear() 后需重新配置。
-        Available on Windows x64 and Linux x64. Call before any post_*; clear() resets it.
-        Required absolute paths: sdk_path, runtime_dir, ocr_path.
-        This configures the runtime; select engine="WeChatOCR" in OCR pipeline nodes.
+        本地 Resource 在 post_* 前调用；省略配置以自动发现，clear() 后需重新配置。
+        Call on a local Resource before post_*; omit config for discovery. clear() resets it.
         """
+        if config is None:
+            config = {}
         if not isinstance(config, dict):
             return False
         payload = json.dumps(config, ensure_ascii=False, allow_nan=False).encode("utf-8")

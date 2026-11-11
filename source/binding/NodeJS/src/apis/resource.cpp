@@ -155,13 +155,14 @@ void ResourceImpl::set_inference_execution_provider(std::string provider)
     }
 }
 
-bool ResourceImpl::configure_wechat_ocr(std::variant<std::string, maajs::ObjectType> config)
+bool ResourceImpl::configure_wechat_ocr(maajs::OptionalParam<std::variant<std::string, maajs::ObjectType>> config)
 {
     if (!resource) {
         return false;
     }
-    const auto* text = std::get_if<std::string>(&config);
-    std::string payload = text ? *text : maajs::JsonStringify(env, std::get<maajs::ObjectType>(config));
+    const auto resolved = config.value_or(std::string("{}"));
+    const auto* text = std::get_if<std::string>(&resolved);
+    std::string payload = text ? *text : maajs::JsonStringify(env, std::get<maajs::ObjectType>(resolved));
     return MaaResourceSetOption(resource, MaaResOption_WeChatOCR, payload.data(), payload.size());
 }
 

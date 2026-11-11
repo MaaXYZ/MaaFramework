@@ -25,12 +25,10 @@ declare global {
             )
 
             /**
-             * Configure the optional Windows x64 / Linux x64 WeChat OCR runtime before any post_* call.
-             * Required absolute paths: sdk_path, runtime_dir, ocr_path.
-             * clear() resets the configuration. Returns false when unsupported or invalid.
-             * Select engine: 'WeChatOCR' in the OCR node to use it.
+             * Configure a local Resource before post_*; omitted config enables discovery.
+             * clear() resets it. Returns false when unsupported or invalid.
              */
-            configure_wechat_ocr(config: WeChatOCRConfig | string): boolean
+            configure_wechat_ocr(config?: WeChatOCRConfig | string): boolean
 
             register_custom_recognition(name: string, func: CustomRecognitionCallback): void
             unregister_custom_recognition(name: string): void
@@ -66,15 +64,17 @@ declare global {
         }
 
         type WeChatOCRConfig = {
-            sdk_path: string
-            runtime_dir: string
-            ocr_path: string
+            sdk_path?: string
+            runtime_dir?: string
+            ocr_path?: string
             worker_path?: string
             temp_dir?: string
             protocol?: 0 | 3 | 4
             startup_timeout_ms?: number
             request_timeout_ms?: number
             max_pending_requests?: number
+            search_roots?: string[]
+            scan_system?: boolean
         }
     }
 }

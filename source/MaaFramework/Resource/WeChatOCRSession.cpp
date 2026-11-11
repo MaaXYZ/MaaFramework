@@ -29,6 +29,7 @@ struct WeChatOCRSession::Impl
     abi::Engine* engine = nullptr;
     abi::LastError last_error = nullptr;
     abi::Create create = nullptr;
+    abi::CreateAuto create_auto = nullptr;
     abi::Recognize recognize = nullptr;
     abi::GetCapabilities capabilities = nullptr;
     abi::LineCount line_count = nullptr;
@@ -64,6 +65,58 @@ WeChatOCRSession::~WeChatOCRSession() = default;
 
 namespace
 {
+[[maybe_unused]] const int kModuleAnchor = 0;
+
+std::filesystem::path framework_directory()
+{
+    std::filesystem::path module_path;
+#ifdef _WIN32
+    HMODULE module = nullptr;
+    if (!GetModuleHandleExW(
+            GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+            reinterpret_cast<LPCWSTR>(&kModuleAnchor),
+            &module)) {
+        return {};
+    }
+    std::wstring filename(32768, L'\0');
+    DWORD length = GetModuleFileNameW(module, filename.data(), static_cast<DWORD>(filename.size()));
+    if (length == 0 || length >= filename.size()) {
+        return {};
+    }
+    filename.resize(length);
+    module_path = std::filesystem::path(filename);
+#elif defined(__linux__) && !defined(__ANDROID__)
+    Dl_info info {};
+    if (dladdr(&kModuleAnchor, &info) == 0 || !info.dli_fname) {
+        return {};
+    }
+    module_path = MAA_NS::path(info.dli_fname);
+#endif
+    return module_path.is_absolute() ? module_path.parent_path() : std::filesystem::path {};
+}
+
+std::string default_sdk_path()
+{
+    const auto directory = framework_directory();
+    if (directory.empty()) {
+        LogError << "Could not determine MaaFramework module directory";
+        return {};
+    }
+#ifdef _WIN32
+    const auto filename = "WeChatOCR.dll";
+#else
+    const auto filename = "libWeChatOCR.so";
+#endif
+    for (const auto& candidate : { directory / filename, directory.parent_path() / "lib" / filename }) {
+        std::error_code ec;
+        if (std::filesystem::is_regular_file(candidate, ec)) {
+            return MAA_NS::path_to_utf8_string(candidate);
+        }
+    }
+    LogError << "WeChatOCR SDK not found beside MaaFramework or in ../lib" << VAR(directory);
+    return {};
+}
+
 bool absolute_path(const json::value& config, const char* key, std::string& output, bool required)
 {
     auto value = config.find<std::string>(key);
@@ -124,16 +177,51 @@ std::shared_ptr<WeChatOCRSession> WeChatOCRSession::create(const json::value& co
     }
     for (const auto& [key, value] : config.as_object()) {
         if (key != "sdk_path" && key != "runtime_dir" && key != "ocr_path" && key != "worker_path" && key != "temp_dir" && key != "protocol"
-            && key != "startup_timeout_ms" && key != "request_timeout_ms" && key != "max_pending_requests") {
+            && key != "startup_timeout_ms" && key != "request_timeout_ms" && key != "max_pending_requests" && key != "search_roots"
+            && key != "scan_system") {
             LogError << "Unknown WeChatOCR option" << VAR(key);
             return nullptr;
         }
     }
     std::string sdk_path, runtime_dir, ocr_path, worker_path, temp_dir;
-    if (!absolute_path(config, "sdk_path", sdk_path, true) || !absolute_path(config, "runtime_dir", runtime_dir, true)
-        || !absolute_path(config, "ocr_path", ocr_path, true) || !absolute_path(config, "worker_path", worker_path, false)
+    if (!absolute_path(config, "sdk_path", sdk_path, false) || !absolute_path(config, "runtime_dir", runtime_dir, false)
+        || !absolute_path(config, "ocr_path", ocr_path, false) || !absolute_path(config, "worker_path", worker_path, false)
         || !absolute_path(config, "temp_dir", temp_dir, false)) {
         return nullptr;
+    }
+    if (runtime_dir.empty() != ocr_path.empty()) {
+        LogError << "Provide both runtime_dir and ocr_path, or omit both for automatic discovery";
+        return nullptr;
+    }
+    bool scan_system = true;
+    if (config.contains("scan_system")) {
+        auto value = config.find<bool>("scan_system");
+        if (!value) {
+            return nullptr;
+        }
+        scan_system = *value;
+    }
+    std::vector<std::string> search_roots;
+    if (config.contains("search_roots")) {
+        auto value = config.find<std::vector<std::string>>("search_roots");
+        if (!value || value->size() > 64) {
+            return nullptr;
+        }
+        search_roots = std::move(*value);
+    }
+    std::vector<const char*> root_pointers;
+    for (const auto& root : search_roots) {
+        if (root.empty() || root.find('\0') != std::string::npos || !MAA_NS::path(root).is_absolute()) {
+            LogError << "WeChatOCR search roots must be absolute UTF-8 paths";
+            return nullptr;
+        }
+        root_pointers.emplace_back(root.c_str());
+    }
+    if (sdk_path.empty()) {
+        sdk_path = default_sdk_path();
+        if (sdk_path.empty()) {
+            return nullptr;
+        }
     }
     uint32_t protocol = 0;
     if (config.contains("protocol")) {
@@ -178,18 +266,30 @@ std::shared_ptr<WeChatOCRSession> WeChatOCRSession::create(const json::value& co
         LogError << "WeChatOCR SDK has no version";
         return nullptr;
     }
+    const bool use_auto = runtime_dir.empty() || !search_roots.empty();
+    if (use_auto && !resolve(impl->module, "wco_create_auto", impl->create_auto)) {
+        LogError << "WeChatOCR auto discovery requires SDK 0.2.0 or newer";
+        return nullptr;
+    }
     abi::Options options {
         .struct_size = sizeof(abi::Options),
         .abi_version = abi::kVersion,
-        .runtime_dir = runtime_dir.c_str(),
-        .ocr_path = ocr_path.c_str(),
+        .runtime_dir = runtime_dir.empty() ? nullptr : runtime_dir.c_str(),
+        .ocr_path = ocr_path.empty() ? nullptr : ocr_path.c_str(),
         .worker_path = worker_path.empty() ? nullptr : worker_path.c_str(),
         .temp_dir = temp_dir.empty() ? nullptr : temp_dir.c_str(),
         .protocol = protocol,
         .startup_timeout_ms = startup_timeout_ms,
         .max_pending_requests = max_pending_requests,
     };
-    if (auto status = impl->create(&options, &impl->engine); status != 0 || !impl->engine) {
+    abi::DiscoveryOptions discovery {
+        .struct_size = sizeof(abi::DiscoveryOptions),
+        .flags = scan_system ? 1u : 0u,
+        .search_roots = root_pointers.empty() ? nullptr : root_pointers.data(),
+        .search_root_count = static_cast<uint32_t>(root_pointers.size()),
+    };
+    auto status = use_auto ? impl->create_auto(&options, &discovery, &impl->engine) : impl->create(&options, &impl->engine);
+    if (status != 0 || !impl->engine) {
         LogError << "WeChatOCR SDK creation failed" << VAR(status) << VAR(impl->last_error());
         return nullptr;
     }

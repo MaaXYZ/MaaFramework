@@ -210,11 +210,11 @@ enum MaaResOptionEnum
 
     /// Configure the optional WeChatOCR engine (Windows x64 and Linux x64).
     /// value: UTF-8 JSON bytes; val_size excludes the optional terminating NUL.
-    /// Required absolute paths: sdk_path, runtime_dir, ocr_path.
-    /// Optional: worker_path, temp_dir, protocol (0/3/4), startup_timeout_ms (10000),
-    /// request_timeout_ms (10000), max_pending_requests (16).
-    /// Configure before any MaaResourcePost* call. MaaResourceClear resets the configuration.
-    /// This does not change the inference execution provider or select an OCR engine for nodes.
+    /// Empty JSON {} enables SDK/runtime discovery. sdk_path is optional; runtime_dir and
+    /// ocr_path must be supplied together or both omitted. Explicit paths must be absolute.
+    /// Configure a local Resource before any MaaResourcePost* call; remote resources do not support it.
+    /// MaaResourceClear resets the configuration. Select engine="WeChatOCR" in OCR nodes.
+    /// Configuration options: https://github.com/MaaXYZ/WeChatOCR/tree/v0.2.0#readme
     MaaResOption_WeChatOCR = 3,
 };
 
