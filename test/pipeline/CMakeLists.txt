@@ -9,6 +9,11 @@ add_executable(PipelineTesting ${pipeline_testing_src})
 
 target_link_libraries(PipelineTesting MaaFramework)
 
+# Exercise the same output implementation as MaaFramework without exporting its internal API.
+target_sources(PipelineTesting PRIVATE
+    ../../source/MaaFramework/Task/FailureFrameOutputPosix.cpp
+    ../../source/MaaFramework/Task/FailureFrameOutputWin32.cpp)
+
 # Exercise the private vision classes and real inference sessions without exporting
 # internal APIs from MaaFramework just for tests.
 target_sources(PipelineTesting PRIVATE

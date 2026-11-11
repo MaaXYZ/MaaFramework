@@ -1,10 +1,11 @@
 #include "FailureFrames.h"
+#include "FailureFrameOutput.h"
 
 #include <algorithm>
 #include <array>
 #include <chrono>
 #include <cstring>
-#include <fstream>
+#include <system_error>
 
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
@@ -247,20 +248,25 @@ void FailureFrames::write(const Export& job)
 {
     auto directory = job.directory;
     try {
-        auto temporary = directory;
-        temporary += ".partial";
-        if (std::filesystem::exists(std::filesystem::symlink_status(directory))
-            || std::filesystem::exists(std::filesystem::symlink_status(temporary))) {
+        // The configured log root is trusted. Open descendants through directory handles.
+        std::filesystem::create_directories(directory.parent_path().parent_path());
+        std::optional<FailureFrameOutput> output;
+        const auto open_output = [&] {
+            auto temporary = directory;
+            temporary += ".partial";
+            output.emplace(directory, temporary);
+        };
+        try {
+            open_output();
+        }
+        catch (const std::system_error& error) {
+            if (error.code() != std::errc::file_exists) {
+                throw;
+            }
             // Each writer needs its own generator state.
             thread_local boost::uuids::random_generator uuid_generator;
             directory += "_" + boost::uuids::to_string(uuid_generator());
-            temporary = directory;
-            temporary += ".partial";
-        }
-        std::filesystem::create_directories(directory.parent_path());
-        if (!std::filesystem::create_directory(temporary) || !std::filesystem::create_directory(temporary / "frames")) {
-            LogWarn << "failure frame export staging directory already exists" << temporary;
-            return;
+            open_output();
         }
         json::array manifest;
         cv::Mat previous;
@@ -271,11 +277,8 @@ void FailureFrames::write(const Export& job)
             if (!cv::imencode(".png", image, png, { cv::IMWRITE_PNG_COMPRESSION, 3 })) {
                 throw std::runtime_error("PNG encoding failed");
             }
-            const std::string filename = std::format("frames/{:04}.png", i);
-            std::ofstream output(temporary / filename, std::ios::binary);
-            output.exceptions(std::ios::badbit | std::ios::failbit);
-            output.write(reinterpret_cast<const char*>(png.data()), png.size());
-            output.close();
+            const std::string filename = std::format("{:04}.png", i);
+            output->write_frame(filename, std::as_bytes(std::span(png)));
             cv::Rect box(0, 0, image.cols, image.rows);
             if (!previous.empty() && previous.size() == image.size() && previous.type() == image.type()) {
                 cv::Mat diff, mask;
@@ -288,7 +291,7 @@ void FailureFrames::write(const Export& job)
                 }
                 box = cv::boundingRect(mask);
             }
-            manifest.emplace_back(json::object { { "file", filename },
+            manifest.emplace_back(json::object { { "file", "frames/" + filename },
                                                  { "first_time_ms", frame.first_ms },
                                                  { "last_time_ms", frame.last_ms },
                                                  { "reco_id", frame.reco_id },
@@ -310,11 +313,8 @@ void FailureFrames::write(const Export& job)
                                                     { "memory_limit_bytes", kMaxBytes },
                                                     { "dropped_for_memory", job.dropped },
                                                     { "frames", std::move(manifest) } };
-        std::ofstream output(temporary / "frames.json");
-        output.exceptions(std::ios::failbit | std::ios::badbit);
-        output << document;
-        output.close();
-        std::filesystem::rename(temporary, directory);
+        output->write_manifest(document.format());
+        output->publish();
         LogInfo << "saved failure frames" << directory << VAR(job.frames.size());
     }
     catch (const std::exception& error) {
