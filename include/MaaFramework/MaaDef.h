@@ -214,7 +214,7 @@ enum MaaResOptionEnum
     /// ocr_path must be supplied together or both omitted. Explicit paths must be absolute.
     /// Configure a local Resource before any MaaResourcePost* call; remote resources do not support it.
     /// MaaResourceClear resets the configuration. Select engine="WeChatOCR" in OCR nodes.
-    /// Configuration options: https://github.com/MaaXYZ/WeChatOCR/tree/v0.2.0#readme
+    /// Configuration options: https://github.com/MaaXYZ/WeChatOCR-SDK/tree/v0.2.0#readme
     MaaResOption_WeChatOCR = 3,
 };
 
