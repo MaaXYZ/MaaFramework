@@ -22,7 +22,7 @@ if sys.stdout.encoding != "utf-8":
 if sys.stderr.encoding != "utf-8":
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
-if len(sys.argv) < 4:
+if len(sys.argv) < 5:
     print("Call agent_main_test.py instead of this file.")
     sys.exit(1)
 

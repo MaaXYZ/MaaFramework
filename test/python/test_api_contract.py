@@ -16,7 +16,7 @@ from maa.context import ContextEventSink
 from maa.controller import Controller, ControllerEventSink, CustomController
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
-from maa.define import Rect
+from maa.define import MaaStatusEnum, Rect
 from maa.event_sink import NotificationType
 from maa.pipeline import JActionType, JClick, JDirectHit, JDoNothing, JRecognitionType, JWaitFreezes
 from maa.resource import Resource, ResourceEventSink
@@ -370,6 +370,29 @@ class ResourceContractTest(unittest.TestCase):
         self.assertIsNone(self.resource.get_load_detail(0))
         self.resource.clear()
         self.assertIsNone(self.resource.get_load_detail(missing.job_id))
+
+    def test_load_outcome_survives_enqueue_from_callbacks(self):
+        for phase in ("Starting", "Succeeded"):
+            with self.subTest(phase=phase):
+                queued = []
+                resource = Resource()
+                source = self.pipeline / "nodes.json"
+
+                class Sink(ResourceEventSink):
+                    def on_raw_notification(self, current, message, details):
+                        if message == "Resource.Loading." + phase and not queued:
+                            queued.append(current.post_pipeline(source))
+
+                sink = Sink()
+                resource.add_sink(sink)
+                first = resource.post_pipeline(source).wait()
+                self.assertEqual(len(queued), 1)
+                second = queued[0].wait()
+                for job in (first, second):
+                    self.assertTrue(job.succeeded)
+                    detail = resource.get_load_detail(job.job_id)
+                    self.assertEqual(detail["status"], MaaStatusEnum.succeeded)
+                    self.assertEqual(detail["errors"], [])
 
     def test_load_diagnostics_do_not_attribute_runtime_overrides_to_files(self):
         self.assertTrue(self.resource.post_bundle(self.bundle).wait().succeeded)

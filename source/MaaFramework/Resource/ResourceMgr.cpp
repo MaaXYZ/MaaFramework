@@ -773,36 +773,38 @@ bool ResourceMgr::run_load(typename AsyncRunner<PostPathItem>::Id id, PostPathIt
 
     notifier_.notify(this, MaaMsg_Resource_Loading_Starting, cb_detail);
     json::array errors;
+    bool success = false;
 
     if (!check_and_set_inference_device()) {
         // loading on would leave the models to a stale backend, i.e. a silent fallback from NCNN
         errors.emplace_back(json::object { { "code", "inference_backend_unavailable" } });
         LogError << "no usable inference backend, skip loading" << VAR(item.path);
-        valid_ = false;
+        success = false;
     }
     else {
         switch (item.type) {
         case PostPathType::Bundle:
-            valid_ = load_bundle(item.path, errors);
+            success = load_bundle(item.path, errors);
             break;
         case PostPathType::OcrModel:
-            valid_ = load_ocr_model(item.path);
+            success = load_ocr_model(item.path);
             break;
         case PostPathType::Pipeline:
-            valid_ = load_pipeline(item.path, errors);
+            success = load_pipeline(item.path, errors);
             break;
         case PostPathType::Image:
-            valid_ = load_image(item.path);
+            success = load_image(item.path);
             break;
         default:
             LogError << "Unknown PostPathType" << VAR(static_cast<int>(item.type));
-            valid_ = false;
+            success = false;
             break;
         }
     }
 
+    valid_ = success;
     cb_detail["hash"] = calc_hash();
-    if (!valid_ && errors.empty()) {
+    if (!success && errors.empty()) {
         std::error_code ec;
         bool exists = std::filesystem::exists(item.path, ec);
         errors.emplace_back(
@@ -811,16 +813,16 @@ bool ResourceMgr::run_load(typename AsyncRunner<PostPathItem>::Id id, PostPathIt
                 { "file", path_to_utf8_string(item.path) },
             });
     }
-    cb_detail["status"] = static_cast<MaaStatus>(valid_ ? MaaStatus_Succeeded : MaaStatus_Failed);
+    cb_detail["status"] = static_cast<MaaStatus>(success ? MaaStatus_Succeeded : MaaStatus_Failed);
     cb_detail["errors"] = std::move(errors);
     {
         std::scoped_lock lock(load_details_mutex_);
         load_details_.insert_or_assign(id, cb_detail.as_object());
     }
 
-    notifier_.notify(this, valid_ ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
+    notifier_.notify(this, success ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
 
-    return valid_;
+    return success;
 }
 
 bool ResourceMgr::load_bundle(const std::filesystem::path& path, json::array& errors)
