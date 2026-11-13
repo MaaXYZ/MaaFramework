@@ -1,5 +1,7 @@
 #include "RuntimeEvents.h"
 
+#include <chrono>
+#include <future>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -16,7 +18,7 @@ struct Capture
     MaaTasker* tasker = nullptr;
     std::vector<json::value> events;
     bool stop_on_action = false;
-    MaaTaskId stop_id = MaaInvalidId;
+    std::promise<MaaTaskId> stop_result;
     bool child_terminal_queryable = false;
 };
 
@@ -35,7 +37,7 @@ void MAA_CALL capture(void*, const char* message, const char* payload, void* arg
     }
     if (state.stop_on_action && std::string_view(message) == MaaMsg_Node_Action_Starting) {
         state.stop_on_action = false;
-        state.stop_id = MaaTaskerPostStop(state.tasker);
+        state.stop_result.set_value(MaaTaskerPostStop(state.tasker));
     }
 }
 
@@ -54,16 +56,42 @@ const json::value* find(const Capture& state, std::string_view message, std::str
     return nullptr;
 }
 
+bool failure(std::string_view stage)
+{
+    std::cerr << "RuntimeEvents: " << stage << std::endl;
+    return false;
+}
+
 bool run(MaaTasker* tasker, Capture& state, const char* entry, const char* pipeline)
 {
     state.events.clear();
-    auto id = MaaTaskerPostTask(tasker, entry, pipeline);
-    if (id == MaaInvalidId || MaaTaskerWait(tasker, id) != MaaStatus_Succeeded) {
-        return false;
+    const bool expects_stop = state.stop_on_action;
+    std::future<MaaTaskId> stop_result;
+    if (expects_stop) {
+        stop_result = state.stop_result.get_future();
     }
-    if (state.stop_id != MaaInvalidId) {
-        MaaTaskerWait(tasker, state.stop_id);
-        state.stop_id = MaaInvalidId;
+    auto id = MaaTaskerPostTask(tasker, entry, pipeline);
+    if (id == MaaInvalidId) {
+        return failure(std::string("post task failed: ") + entry);
+    }
+    auto status = MaaTaskerWait(tasker, id);
+    if (!expects_stop) {
+        return status == MaaStatus_Succeeded || failure(std::string("task failed: ") + entry);
+    }
+
+    // post_stop clears the runner and can wake Wait(original_id) before callbacks finish.
+    // The callback publishes the stop ID only after post_stop returns; waiting that ID
+    // then establishes that the original worker has finished writing all captured events.
+    if (stop_result.wait_for(std::chrono::seconds(5)) != std::future_status::ready) {
+        return failure("stop callback did not publish a stop command");
+    }
+    auto stop_id = stop_result.get();
+    if (stop_id == MaaInvalidId || MaaTaskerWait(tasker, stop_id) != MaaStatus_Succeeded) {
+        return failure("stop command did not finish successfully");
+    }
+    MaaSize size = 0;
+    if (!MaaTaskerGetTaskDetail(tasker, id, nullptr, nullptr, &size, &status) || status != MaaStatus_Succeeded) {
+        return failure("stopped task did not preserve its legacy successful runtime status");
     }
     return true;
 }
@@ -82,7 +110,7 @@ bool check(MaaTasker* tasker, Capture& state)
     if (!outer || !child || !child_node || !state.child_terminal_queryable || child->at("context_id") == outer->at("context_id")
         || child->at("parent_task_id") != outer->at("task_id") || child->at("parent").at("kind").as_string() != "action"
         || child->at("parent").at("id") != outer->at("action_id") || child_node->at("task_parent") != child->at("parent")) {
-        return false;
+        return failure("nested task parent IDs or terminal cache visibility");
     }
 
     // Identical successor lists must report the branch actually chosen by the scheduler.
@@ -110,7 +138,7 @@ bool check(MaaTasker* tasker, Capture& state)
             }
         }
         if (!found) {
-            return false;
+            return failure(std::string("selected candidate identity or branch type: ") + action);
         }
     }
 
@@ -129,15 +157,16 @@ bool check(MaaTasker* tasker, Capture& state)
         }
     }
     if (!resumed) {
-        return false;
+        return failure("jump-back resume execution IDs");
     }
 
     state.stop_on_action = true;
     if (!run(tasker, state, "Stop", R"({"Stop":{"pre_delay":0,"post_delay":0}})")) {
         return false;
     }
-    return find(state, MaaMsg_Node_Action_Cancelled) && find(state, MaaMsg_Node_PipelineNode_Cancelled)
-           && !find(state, MaaMsg_Node_Action_Succeeded) && !find(state, MaaMsg_Node_PipelineNode_Failed);
+    return (find(state, MaaMsg_Node_Action_Cancelled) && find(state, MaaMsg_Node_PipelineNode_Cancelled)
+               && !find(state, MaaMsg_Node_Action_Succeeded) && !find(state, MaaMsg_Node_PipelineNode_Failed))
+           || failure("cancelled action/node terminal closure");
 }
 } // namespace
 
