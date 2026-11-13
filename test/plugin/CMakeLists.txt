@@ -1,7 +1,9 @@
+find_package(Threads REQUIRED)
+
 add_library(PluginTestFixture SHARED fixture.cpp)
 target_compile_definitions(PluginTestFixture PRIVATE MAA_PLUGIN_EXPORTS)
 target_include_directories(PluginTestFixture PUBLIC ${CMAKE_SOURCE_DIR}/3rdparty/include)
-target_link_libraries(PluginTestFixture PRIVATE MaaFramework)
+target_link_libraries(PluginTestFixture PRIVATE MaaFramework Threads::Threads)
 
 add_executable(PluginLifecycleTesting main.cpp)
 target_include_directories(PluginLifecycleTesting PRIVATE ${MAA_PUBLIC_INC})
