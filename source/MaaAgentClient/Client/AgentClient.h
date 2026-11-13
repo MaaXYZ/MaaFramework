@@ -62,6 +62,7 @@ private:
     bool handle_tasker_inited(const json::value& j);
     bool handle_tasker_post_task(const json::value& j);
     bool handle_tasker_post_recognition(const json::value& j);
+    bool handle_tasker_post_recognition_node(const json::value& j);
     bool handle_tasker_post_action(const json::value& j);
     bool handle_tasker_status(const json::value& j);
     bool handle_tasker_wait(const json::value& j);

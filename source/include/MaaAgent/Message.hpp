@@ -519,6 +519,25 @@ struct TaskerPostRecognitionReverseResponse
     MEO_JSONIZATION(task_id, _TaskerPostRecognitionReverseResponse);
 };
 
+struct TaskerPostRecognitionNodeReverseRequest
+{
+    std::string tasker_id;
+    std::string entry;
+    json::value pipeline_override;
+    std::string image;
+
+    MessageTypePlaceholder _TaskerPostRecognitionNodeReverseRequest = 1;
+    MEO_JSONIZATION(tasker_id, entry, pipeline_override, image, _TaskerPostRecognitionNodeReverseRequest);
+};
+
+struct TaskerPostRecognitionNodeReverseResponse
+{
+    int64_t task_id = 0;
+
+    MessageTypePlaceholder _TaskerPostRecognitionNodeReverseResponse = 1;
+    MEO_JSONIZATION(task_id, _TaskerPostRecognitionNodeReverseResponse);
+};
+
 struct TaskerPostActionReverseRequest
 {
     std::string tasker_id;

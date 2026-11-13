@@ -43,6 +43,12 @@ struct TaskerImpl : public maajs::NativeClassBase
         std::string reco_type,
         maajs::ValueType reco_param,
         maajs::ArrayBufferType image);
+    maajs::ValueType post_recognition_node(
+        maajs::ValueType self,
+        maajs::EnvType env,
+        std::string entry,
+        maajs::ArrayBufferType image,
+        maajs::OptionalParam<maajs::ValueType> pipeline_override);
     maajs::ValueType post_action(
         maajs::ValueType self,
         maajs::EnvType env,

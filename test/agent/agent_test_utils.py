@@ -324,6 +324,18 @@ def run_connected_agent_test(
         expected_contracts = {f"remote_contract:{case.__name__}" for case in REMOTE_CONTRACT_CASES}
         assert expected_contracts <= records, f"missing remote API contracts: {expected_contracts - records}"
 
+        probe_ids = [int(record.split(":", 1)[1]) for record in records if record.startswith("remote_probe:")]
+        assert len(probe_ids) == 1, "remote post_recognition_node should return one task ID"
+        # FIFO barrier: the submitted probe runs after RemoteContract returns.
+        assert tasker.post_task("AgentProbeBarrier", {"AgentProbeBarrier": {}}).wait().succeeded
+        probe = tasker.get_task_detail(probe_ids[0])
+        assert probe is not None and probe.status.succeeded
+        assert [node.name for node in probe.nodes] == ["AgentContractProbe"]
+        assert probe.nodes[0].completed, "inverse should turn the supplied black image's miss into a hit"
+        assert probe.nodes[0].recognition is not None and not probe.nodes[0].recognition.hit
+        assert probe.nodes[0].action is None, "recognition-only must not execute the configured action"
+        assert resource.get_node_data("AgentContractProbe") is None, "probe overrides must remain task-local"
+
         assert_stale_response_dropped(agent, tasker, sink_report_file)
         assert_nested_response_kept(agent, tasker, sink_report_file)
 
