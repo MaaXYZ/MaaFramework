@@ -79,6 +79,8 @@ bool ActionHelper::wait_freezes(
     std::vector<MaaRecoId> reco_ids;
 
     auto finish = [&](bool success) {
+        const bool cancelled = context_ && context_->need_to_stop();
+        success = success && !cancelled;
         auto elapsed_ms = duration_since(start_clock).count();
 
         cb_detail["reco_ids"] = json::array(reco_ids);
@@ -98,7 +100,6 @@ bool ActionHelper::wait_freezes(
                 });
         }
 
-        const bool cancelled = context_ && context_->need_to_stop();
         cb_detail["reason"] = cancelled ? "cancelled" : (success ? "completed" : "unknown");
         notify(
             cancelled ? MaaMsg_Node_WaitFreezes_Cancelled : (success ? MaaMsg_Node_WaitFreezes_Succeeded : MaaMsg_Node_WaitFreezes_Failed),
