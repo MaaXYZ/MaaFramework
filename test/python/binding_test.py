@@ -1317,6 +1317,69 @@ def test_binding_init_thread_safety():
     print("  PASS: 8 threads initialised the binding concurrently")
 
 
+def test_cached_image_concurrency():
+    """Cached reads must contain one complete screenshot while capture is running."""
+    import threading
+    import time
+
+    print("\n=== test_cached_image_concurrency ===")
+    frames = [numpy.full((720, 1280, 3), value, dtype=numpy.uint8) for value in (53, 199)]
+    for frame in frames:
+        frame.flags.writeable = False
+
+    class AlternatingController(MyController):
+        def __init__(self):
+            super().__init__(frames[0])
+            self.frame_index = 0
+
+        def screencap(self):
+            self.frame_index += 1
+            return frames[self.frame_index % len(frames)]
+
+    controller = AlternatingController()
+    assert controller.set_screenshot_use_raw_size(True)
+    assert controller.post_connection().wait().succeeded
+    assert controller.post_screencap().wait().succeeded
+    stop = threading.Event()
+    started = threading.Event()
+    errors = []
+    reads = 0
+
+    def read_cache():
+        nonlocal reads
+        started.set()
+        try:
+            while not stop.is_set():
+                image = controller.cached_image
+                assert image.shape == frames[0].shape
+                low, high = int(image.min()), int(image.max())
+                assert low == high and low in (53, 199), f"cached image mixes screenshots: {low}, {high}"
+                reads += 1
+        except Exception as error:
+            errors.append(repr(error))
+            stop.set()
+
+    reader = threading.Thread(target=read_cache)
+    reader.start()
+    captures = 0
+    deadline = time.monotonic() + 20
+    try:
+        assert started.wait(5)
+        while not stop.is_set() and (captures < 128 or reads < 64) and time.monotonic() < deadline:
+            assert controller.post_screencap().wait().succeeded
+            captures += 1
+    finally:
+        stop.set()
+        reader.join(10)
+        assert not reader.is_alive(), "cached image reader did not finish"
+
+    assert not errors, errors
+    assert captures >= 128 and reads >= 64, (captures, reads)
+    for frame, value in zip(frames, (53, 199)):
+        assert numpy.all(frame == value), "source screenshot changed"
+    print(f"  PASS: cached image concurrency ({captures} captures, {reads} reads)")
+
+
 def test_failure_frame_history():
     """验证失败帧开关、像素完整性、容量上限以及停止时的清理。"""
     import json
@@ -1790,6 +1853,7 @@ if __name__ == "__main__":
 
     # 测试 CustomController
     test_custom_controller()
+    test_cached_image_concurrency()
 
     # 回归：Command 动作 {IMAGE} 占位符
     test_command_image_placeholder()
