@@ -78,6 +78,11 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaFwApp](https://github.com/Aliothmoon/MaaFwApp) ![kotlin](https://img.shields.io/badge/Kotlin-7F52FF?logo=kotlin&logoColor=white) ![android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white) ![license](https://img.shields.io/github/license/Aliothmoon/MaaFwApp) ![activity](https://img.shields.io/github/commit-activity/m/Aliothmoon/MaaFwApp?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Aliothmoon/MaaFwApp?style=social)  
     An Android generic GUI based on Kotlin + Jetpack Compose. Powered by MaaFramework!
 
+### Extension Plugins
+
+- [MaaTrace](https://github.com/MaaXYZ/MaaTrace) ![C++](https://img.shields.io/badge/C++-00599C?logo=cplusplus&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MaaTrace) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaTrace?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaTrace?style=social)  
+    A runtime tracing plugin for MaaFramework that captures structured task execution records for inspection, validation, and export.
+
 ### Development Tool
 
 #### Editing & Debugging

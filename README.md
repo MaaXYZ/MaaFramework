@@ -76,6 +76,11 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaFwApp](https://github.com/Aliothmoon/MaaFwApp) ![kotlin](https://img.shields.io/badge/Kotlin-7F52FF?logo=kotlin&logoColor=white) ![android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white) ![license](https://img.shields.io/github/license/Aliothmoon/MaaFwApp) ![activity](https://img.shields.io/github/commit-activity/m/Aliothmoon/MaaFwApp?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Aliothmoon/MaaFwApp?style=social)  
     基于 Kotlin + Jetpack Compose 的 Android 通用 GUI。由 MaaFramework 强力驱动！
 
+### 扩展插件
+
+- [MaaTrace](https://github.com/MaaXYZ/MaaTrace) ![C++](https://img.shields.io/badge/C++-00599C?logo=cplusplus&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MaaTrace) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaTrace?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaTrace?style=social)  
+    MaaFramework 运行记录插件，采集结构化任务执行记录，支持查看、校验与导出。
+
 ### 开发工具
 
 #### 编辑与调试
