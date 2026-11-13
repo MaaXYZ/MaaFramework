@@ -9,7 +9,7 @@ declare global {
             target?: string
         }
         type ResourceLoadDetail = {
-            res_id: ResId
+            res_id: number // ResId
             path: string
             type: 'Bundle' | 'OcrModel' | 'Pipeline' | 'Image'
             hash: string

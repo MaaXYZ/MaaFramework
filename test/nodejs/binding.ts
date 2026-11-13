@@ -107,7 +107,14 @@ async function api_test() {
     r2.inference_execution_provider = 'DirectML'
     r2.inference_device = 114514
     r2.inference_execution_provider = 'CPU'
-    await r2.post_bundle('/path/to/resource').wait()
+    const failedLoad = await r2.post_bundle('/path/to/resource').wait()
+    const loadDetail = r2.get_load_detail(failedLoad.id)
+    assert.ok(loadDetail)
+    const loadId: number = loadDetail.res_id
+    assert.equal(loadId, Number(failedLoad.id))
+    assert.equal(loadDetail.status, failedLoad.status)
+    assert.equal(loadDetail.type, 'Bundle')
+    assert.ok(loadDetail.errors.length > 0)
     r2.destroy()
 
     const resource = new maa.Resource()
