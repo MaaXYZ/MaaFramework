@@ -38,6 +38,7 @@ public:
     virtual void unregister_custom_action(const std::string& name) override;
     virtual void clear_custom_action() override;
 
+    virtual std::optional<json::object> get_load_detail(MaaResId res_id) const override;
     virtual std::string get_hash() const override;
     virtual std::vector<std::string> get_node_list() const override;
     virtual std::vector<std::string> get_custom_recognition_list() const override;

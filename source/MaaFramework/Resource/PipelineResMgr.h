@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <map>
 #include <set>
 #include <unordered_map>
 
@@ -19,8 +20,8 @@ public:
     inline static constexpr std::string_view kFilePrefix_Ignore = ".";
 
 public:
-    bool load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
-    bool load_file(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
+    bool load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr, json::array* errors = nullptr);
+    bool load_file(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr, json::array* errors = nullptr);
     void clear();
 
     const std::vector<std::filesystem::path>& get_paths() const { return paths_; }
@@ -29,18 +30,32 @@ public:
 
     PipelineDataMap& get_pipeline_data_map() { return pipeline_data_map_; }
 
+    void clear_field_source(const std::string& node, const std::string& field) { field_sources_.erase({ node, field }); }
+
     std::vector<std::string> get_node_list() const;
 
 public:
-    bool parse_and_override(const json::value& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr);
+    bool parse_and_override(
+        const json::value& input,
+        std::set<std::string>& existing_keys,
+        const DefaultPipelineMgr& default_mgr,
+        json::array* errors = nullptr);
 
 private:
-    bool load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
-    bool
-        open_and_parse_file(const std::filesystem::path& path, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr);
-    bool parse_and_override_once(const json::object& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr);
+    bool load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr, json::array* errors = nullptr);
+    bool open_and_parse_file(
+        const std::filesystem::path& path,
+        std::set<std::string>& existing_keys,
+        const DefaultPipelineMgr& default_mgr,
+        json::array* errors = nullptr);
+    bool parse_and_override_once(
+        const json::object& input,
+        std::set<std::string>& existing_keys,
+        const DefaultPipelineMgr& default_mgr,
+        json::array* errors = nullptr);
 
 private:
+    std::map<std::pair<std::string, std::string>, json::object> field_sources_;
     std::vector<std::filesystem::path> paths_;
     PipelineDataMap pipeline_data_map_;
 };

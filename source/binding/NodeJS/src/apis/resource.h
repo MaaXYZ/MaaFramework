@@ -47,6 +47,7 @@ struct ResourceImpl : public maajs::NativeClassBase
     MaaStatus status(MaaResId id);
     maajs::PromiseType wait(MaaResId id);
     bool get_loaded();
+    std::optional<maajs::ValueType> get_load_detail(MaaResId id);
     std::optional<std::string> get_hash();
     std::optional<std::vector<std::string>> get_node_list();
     std::optional<std::vector<std::string>> get_custom_recognition_list();

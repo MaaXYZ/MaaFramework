@@ -27,6 +27,8 @@
  *      path: string,
  *      type: string,  // "Bundle" | "OcrModel" | "Pipeline" | "Image"
  *      hash: string,
+ *      status?: number,  // terminal notifications only
+ *      errors?: object[], // same diagnostics as MaaResourceGetLoadDetail
  * }
  */
 #define MaaMsg_Resource_Loading_Starting ("Resource.Loading.Starting")

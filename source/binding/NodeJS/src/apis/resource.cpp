@@ -352,6 +352,15 @@ bool ResourceImpl::get_loaded()
     return MaaResourceLoaded(resource);
 }
 
+std::optional<maajs::ValueType> ResourceImpl::get_load_detail(MaaResId id)
+{
+    StringBuffer buffer;
+    if (!MaaResourceGetLoadDetail(resource, id, buffer)) {
+        return std::nullopt;
+    }
+    return maajs::JsonParse(env, buffer.str());
+}
+
 std::optional<std::string> ResourceImpl::get_hash()
 {
     StringBuffer buf;
@@ -467,6 +476,7 @@ void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "status", ResourceImpl::status);
     MAA_BIND_FUNC(proto, "wait", ResourceImpl::wait);
     MAA_BIND_GETTER(proto, "loaded", ResourceImpl::get_loaded);
+    MAA_BIND_FUNC(proto, "get_load_detail", ResourceImpl::get_load_detail);
     MAA_BIND_GETTER(proto, "hash", ResourceImpl::get_hash);
     MAA_BIND_GETTER(proto, "node_list", ResourceImpl::get_node_list);
     MAA_BIND_GETTER(proto, "custom_recognition_list", ResourceImpl::get_custom_recognition_list);

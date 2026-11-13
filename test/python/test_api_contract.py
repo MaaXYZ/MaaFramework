@@ -346,6 +346,68 @@ class ResourceContractTest(unittest.TestCase):
         )
         self.resource = Resource()
 
+    def test_load_diagnostics_are_operation_scoped_and_visible_in_terminal_callback(self):
+        snapshots = []
+
+        class Sink(ResourceEventSink):
+            def on_raw_notification(self, resource, message, details):
+                if message.endswith((".Succeeded", ".Failed")):
+                    snapshots.append((details, resource.get_load_detail(details["res_id"])))
+
+        sink = Sink()
+        self.resource.add_sink(sink)
+        missing = self.resource.post_pipeline(self.bundle / "missing.json").wait()
+        first = self.resource.get_load_detail(missing.job_id)
+        self.assertTrue(missing.failed)
+        self.assertEqual(first["errors"][0]["code"], "path_not_found")
+        success = self.resource.post_bundle(self.bundle).wait()
+        self.assertTrue(success.succeeded)
+        self.assertEqual(self.resource.get_load_detail(success.job_id)["errors"], [])
+        self.assertEqual(self.resource.get_load_detail(missing.job_id), first)
+        self.assertEqual(len(snapshots), 2)
+        for event, snapshot in snapshots:
+            self.assertEqual(event, snapshot)
+        self.assertIsNone(self.resource.get_load_detail(0))
+        self.resource.clear()
+        self.assertIsNone(self.resource.get_load_detail(missing.job_id))
+
+    def test_load_diagnostics_do_not_attribute_runtime_overrides_to_files(self):
+        self.assertTrue(self.resource.post_bundle(self.bundle).wait().succeeded)
+        self.assertTrue(self.resource.override_next("Entry", ["Missing"]))
+        addition = self.bundle / "addition.json"
+        addition.write_text('{"Other": {}}', encoding="utf-8")
+        job = self.resource.post_pipeline(addition).wait()
+        self.assertTrue(job.failed)
+        error = self.resource.get_load_detail(job.job_id)["errors"][0]
+        self.assertEqual(error["target"], "Missing")
+        self.assertNotIn("file", error)
+        self.assertNotIn("pointer", error)
+
+    def test_load_diagnostics_locate_pipeline_errors(self):
+        source = self.pipeline / "nodes.json"
+        cases = [
+            ("{", "json_read_failed", None),
+            ("[]", "invalid_pipeline_root", None),
+            ('{"Bad": 1}', "invalid_node", "Bad"),
+            ('{"A~/B": {"next": ["Missing"]}}', "node_reference_not_found", "A~/B"),
+            ('{"A": {"on_error": ["Missing"]}}', "node_reference_not_found", "A"),
+        ]
+        for payload, code, node in cases:
+            with self.subTest(code=code, payload=payload):
+                self.resource.clear()
+                source.write_text(payload, encoding="utf-8")
+                job = self.resource.post_bundle(self.bundle).wait()
+                self.assertTrue(job.failed)
+                error = self.resource.get_load_detail(job.job_id)["errors"][0]
+                self.assertEqual(error["code"], code)
+                self.assertEqual(Path(error["file"]), source)
+                if node:
+                    self.assertEqual(error["node"], node)
+                if code == "node_reference_not_found":
+                    self.assertEqual(error["target"], "Missing")
+                    expected = "/A~0~1B/next" if node == "A~/B" else "/A/on_error"
+                    self.assertEqual(error["pointer"], expected)
+
     def test_bundle_job_state_and_exact_node_readback(self):
         job = self.resource.post_bundle(self.bundle)
         self.assertIs(job.wait(), job)

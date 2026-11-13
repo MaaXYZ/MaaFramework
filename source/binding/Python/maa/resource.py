@@ -601,6 +601,17 @@ class Resource:
             raise RuntimeError("Failed to get custom action list.")
         return buffer.get()
 
+    def get_load_detail(self, res_id: int) -> Optional[dict[str, Any]]:
+        """获取已完成加载的诊断快照 / Get a completed load snapshot.
+
+        Available before its terminal notification; cleared by clear().
+        Unknown, pending and cleared IDs return None.
+        """
+        buffer = StringBuffer()
+        if not Library.framework().MaaResourceGetLoadDetail(self._handle, res_id, buffer._handle):
+            return None
+        return json.loads(buffer.get())
+
     @property
     def hash(self) -> str:
         """获取资源 hash / Get resource hash
@@ -765,6 +776,11 @@ class Resource:
             MaaStringBufferHandle,
         ]
 
+        Library.framework().MaaResourceGetLoadDetail.restype = MaaBool
+        Library.framework().MaaResourceGetLoadDetail.argtypes = [
+            MaaResourceHandle, MaaResId, MaaStringBufferHandle,
+        ]
+
         Library.framework().MaaResourceGetHash.restype = MaaBool
         Library.framework().MaaResourceGetHash.argtypes = [
             MaaResourceHandle,
@@ -873,6 +889,8 @@ class ResourceEventSink(EventSink):
         path: str
         type: str
         hash: str
+        status: Optional[int] = None
+        errors: Optional[list[dict[str, Any]]] = None
 
     def on_resource_loading(
         self,
@@ -896,6 +914,8 @@ class ResourceEventSink(EventSink):
                 path=details["path"],
                 type=details.get("type", "Bundle"),
                 hash=details["hash"],
+                status=details.get("status"),
+                errors=details.get("errors"),
             )
             self.on_resource_loading(resource, noti_type, detail)
 

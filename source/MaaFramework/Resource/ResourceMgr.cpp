@@ -153,6 +153,16 @@ size_t vec_hash(const std::vector<size_t>& vec)
     return seed;
 }
 
+std::optional<json::object> ResourceMgr::get_load_detail(MaaResId res_id) const
+{
+    std::scoped_lock lock(load_details_mutex_);
+    auto it = load_details_.find(res_id);
+    if (it == load_details_.end()) {
+        return std::nullopt;
+    }
+    return it->second;
+}
+
 std::string ResourceMgr::get_hash() const
 {
     return hash_cache_;
@@ -262,6 +272,10 @@ bool ResourceMgr::clear()
         return false;
     }
 
+    {
+        std::scoped_lock details_lock(load_details_mutex_);
+        load_details_.clear();
+    }
     pipeline_res_.clear();
     ocr_res_.clear();
     inference_res_.clear();
@@ -289,6 +303,7 @@ bool ResourceMgr::override_next(const std::string& node_name, const std::vector<
 {
     LogInfo << VAR(node_name) << VAR(next);
 
+    pipeline_res_.clear_field_source(node_name, "next");
     if (!PipelineParser::parse_next(next, pipeline_res_.get_pipeline_data_map()[node_name].next)) {
         LogError << "failed to parse_next" << VAR(next);
         return false;
@@ -751,22 +766,24 @@ bool ResourceMgr::run_load(typename AsyncRunner<PostPathItem>::Id id, PostPathIt
     };
 
     notifier_.notify(this, MaaMsg_Resource_Loading_Starting, cb_detail);
+    json::array errors;
 
     if (!check_and_set_inference_device()) {
         // loading on would leave the models to a stale backend, i.e. a silent fallback from NCNN
+        errors.emplace_back(json::object { { "code", "inference_backend_unavailable" } });
         LogError << "no usable inference backend, skip loading" << VAR(item.path);
         valid_ = false;
     }
     else {
         switch (item.type) {
         case PostPathType::Bundle:
-            valid_ = load_bundle(item.path);
+            valid_ = load_bundle(item.path, errors);
             break;
         case PostPathType::OcrModel:
             valid_ = load_ocr_model(item.path);
             break;
         case PostPathType::Pipeline:
-            valid_ = load_pipeline(item.path);
+            valid_ = load_pipeline(item.path, errors);
             break;
         case PostPathType::Image:
             valid_ = load_image(item.path);
@@ -779,13 +796,28 @@ bool ResourceMgr::run_load(typename AsyncRunner<PostPathItem>::Id id, PostPathIt
     }
 
     cb_detail["hash"] = calc_hash();
+    if (!valid_ && errors.empty()) {
+        std::error_code ec;
+        bool exists = std::filesystem::exists(item.path, ec);
+        errors.emplace_back(
+            json::object {
+                { "code", !ec && !exists ? "path_not_found" : "load_failed" },
+                { "file", path_to_utf8_string(item.path) },
+            });
+    }
+    cb_detail["status"] = static_cast<MaaStatus>(valid_ ? MaaStatus_Succeeded : MaaStatus_Failed);
+    cb_detail["errors"] = std::move(errors);
+    {
+        std::scoped_lock lock(load_details_mutex_);
+        load_details_.insert_or_assign(id, cb_detail.as_object());
+    }
 
     notifier_.notify(this, valid_ ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
 
     return valid_;
 }
 
-bool ResourceMgr::load_bundle(const std::filesystem::path& path)
+bool ResourceMgr::load_bundle(const std::filesystem::path& path, json::array& errors)
 {
     LogFunc << VAR(path);
 
@@ -816,7 +848,7 @@ bool ResourceMgr::load_bundle(const std::filesystem::path& path)
 
     if (auto p = path / "pipeline"_path; std::filesystem::exists(p)) {
         to_load = true;
-        ret &= pipeline_res_.load(p, default_pipeline_);
+        ret &= pipeline_res_.load(p, default_pipeline_, &errors);
     }
     if (auto p = path / "model"_path / "ocr"_path; std::filesystem::exists(p)) {
         to_load = true;
@@ -854,7 +886,7 @@ bool ResourceMgr::load_ocr_model(const std::filesystem::path& path)
     return ocr_res_.lazy_load(path);
 }
 
-bool ResourceMgr::load_pipeline(const std::filesystem::path& path)
+bool ResourceMgr::load_pipeline(const std::filesystem::path& path, json::array& errors)
 {
     LogFunc << VAR(path);
 
@@ -866,10 +898,10 @@ bool ResourceMgr::load_pipeline(const std::filesystem::path& path)
     paths_.emplace_back(path);
 
     if (std::filesystem::is_directory(path)) {
-        return pipeline_res_.load(path, default_pipeline_);
+        return pipeline_res_.load(path, default_pipeline_, &errors);
     }
 
-    return pipeline_res_.load_file(path, default_pipeline_);
+    return pipeline_res_.load_file(path, default_pipeline_, &errors);
 }
 
 bool ResourceMgr::load_image(const std::filesystem::path& path)

@@ -93,6 +93,7 @@ private:
     bool handle_resource_override_next(const json::value& j);
     bool handle_resource_override_image(const json::value& j);
     bool handle_resource_get_node_data(const json::value& j);
+    bool handle_resource_get_load_detail(const json::value& j);
     bool handle_resource_get_hash(const json::value& j);
     bool handle_resource_get_node_list(const json::value& j);
     bool handle_resource_get_custom_recognition_list(const json::value& j);

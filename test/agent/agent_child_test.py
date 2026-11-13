@@ -195,6 +195,12 @@ class MyRecognition(CustomRecognition):
         # ============================================================
         resource = tasker.resource
 
+        load_detail = resource.get_load_detail(int(sys.argv[-2]))
+        assert load_detail is not None
+        assert load_detail["errors"] == []
+        assert load_detail["res_id"] == int(sys.argv[-2])
+        assert resource.get_load_detail(0) is None
+
         # 测试 loaded (valid) 属性
         print(f"  resource.loaded: {resource.loaded}")
 

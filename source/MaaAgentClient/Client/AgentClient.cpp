@@ -456,6 +456,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_resource_get_node_data(j)) {
         return true;
     }
+    else if (handle_resource_get_load_detail(j)) {
+        return true;
+    }
     else if (handle_resource_get_hash(j)) {
         return true;
     }
@@ -1855,6 +1858,25 @@ bool AgentClient::handle_resource_get_node_data(const json::value& j)
     };
     send(resp);
 
+    return true;
+}
+
+bool AgentClient::handle_resource_get_load_detail(const json::value& j)
+{
+    if (!j.is<ResourceGetLoadDetailReverseRequest>()) {
+        return false;
+    }
+    const auto& req = j.as<ResourceGetLoadDetailReverseRequest>();
+    auto* resource = query_resource(req.resource_id);
+    if (!resource) {
+        return false;
+    }
+    auto detail = resource->get_load_detail(req.res_id);
+    send(
+        ResourceGetLoadDetailReverseResponse {
+            .has_value = detail.has_value(),
+            .detail = detail.value_or(json::object {}),
+        });
     return true;
 }
 

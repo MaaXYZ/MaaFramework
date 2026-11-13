@@ -239,6 +239,7 @@ export using ::MaaResourceStatus;
 export using ::MaaResourceWait;
 export using ::MaaResourceLoaded;
 export using ::MaaResourceSetOption;
+export using ::MaaResourceGetLoadDetail;
 export using ::MaaResourceGetHash;
 export using ::MaaResourceGetNodeList;
 export using ::MaaResourceGetCustomRecognitionList;

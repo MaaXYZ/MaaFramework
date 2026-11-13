@@ -1058,6 +1058,22 @@ struct ResourceGetNodeDataReverseResponse
     MEO_JSONIZATION(has_value, node_data, _ResourceGetNodeDataReverseResponse);
 };
 
+struct ResourceGetLoadDetailReverseRequest
+{
+    std::string resource_id;
+    int64_t res_id = 0;
+    MessageTypePlaceholder _ResourceGetLoadDetailReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, res_id, _ResourceGetLoadDetailReverseRequest);
+};
+
+struct ResourceGetLoadDetailReverseResponse
+{
+    bool has_value = false;
+    json::object detail;
+    MessageTypePlaceholder _ResourceGetLoadDetailReverseResponse = 1;
+    MEO_JSONIZATION(has_value, detail, _ResourceGetLoadDetailReverseResponse);
+};
+
 struct ResourceGetHashReverseRequest
 {
     std::string resource_id;
