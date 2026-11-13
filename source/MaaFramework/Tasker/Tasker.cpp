@@ -363,6 +363,7 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
         controller_->wait(controller_->post_inactive());
     }
 
+    MAA_LOG_NS::Logger::get_instance().cleanup();
     return ret;
 }
 
