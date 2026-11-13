@@ -65,11 +65,8 @@ extern "C"
      * Does not run actions, next or on_error. The resulting node's completed field
      * is the effective match result after inverse; task status indicates execution.
      */
-    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostRecognitionNode(
-        MaaTasker* tasker,
-        const char* entry,
-        const char* pipeline_override,
-        const MaaImageBuffer* image);
+    MAA_FRAMEWORK_API MaaTaskId
+        MaaTaskerPostRecognitionNode(MaaTasker* tasker, const char* entry, const char* pipeline_override, const MaaImageBuffer* image);
 
     /**
      * @param action_type Action type string

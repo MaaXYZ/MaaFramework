@@ -41,7 +41,7 @@ bool RemoteTasker::inited() const
 bool RemoteTasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     if (!value) {
-    return false;
+        return false;
     }
     TaskerSetOptionReverseRequest req { .tasker_id = tasker_id_, .key = key };
     switch (key) {

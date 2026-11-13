@@ -25,8 +25,7 @@ public:
 
     virtual MaaTaskId post_task(const std::string& entry, const json::value& pipeline_override) override;
     virtual MaaTaskId post_recognition(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image) override;
-    virtual MaaTaskId
-        post_recognition_node(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) override;
+    virtual MaaTaskId post_recognition_node(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) override;
     virtual MaaTaskId
         post_action(const std::string& action_type, const json::value& action_param, const cv::Rect& box, const std::string& reco_detail)
             override;
