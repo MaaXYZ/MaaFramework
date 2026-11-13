@@ -60,14 +60,23 @@ int main(int argc, char** argv)
     CHECK(MaaTaskerBindResource(tasker, resource));
     MaaTaskerAddSink(tasker, ordinary_sink, nullptr);
     MaaTaskerClearSinks(tasker);
+    MaaTaskerAddContextSink(tasker, ordinary_sink, nullptr);
+    MaaTaskerClearContextSinks(tasker);
     const auto task_id = MaaTaskerPostTask(tasker, "Entry", "{}");
     CHECK(task_id != MaaInvalidId);
     CHECK(MaaTaskerWait(tasker, task_id) == MaaStatus_Succeeded);
     CHECK(PluginTestCount(10) == 1 && PluginTestCount(11) == 2);
+    CHECK(PluginTestCount(13) == 1);
     CHECK(ordinary_events == 0);
     auto* controller = MaaDbgControllerCreate(directory.string().c_str());
     CHECK(controller && PluginTestCount(7) == 1);
+    MaaControllerAddSink(controller, ordinary_sink, nullptr);
     MaaControllerClearSinks(controller);
+    const auto connection_id = MaaControllerPostConnection(controller);
+    CHECK(connection_id != MaaInvalidId);
+    // The fixture has no screenshots, so the debug connection fails normally.
+    CHECK(MaaControllerWait(controller, connection_id) == MaaStatus_Failed);
+    CHECK(PluginTestCount(14) == 2 && ordinary_events == 0);
     MaaControllerDestroy(controller);
     CHECK(PluginTestCount(8) == 1);
     MaaTaskerDestroy(tasker);

@@ -10,7 +10,7 @@
 
 namespace
 {
-std::array<std::atomic<int>, 13> counts {};
+std::array<std::atomic<int>, 15> counts {};
 
 MaaBool MAA_CALL action(MaaContext*, MaaTaskId, const char*, const char*, const char*, MaaRecoId, const MaaRect*, void*)
 {
@@ -91,5 +91,15 @@ void OnControllerEvent(void*, const char* message, const char*, void*)
     }
     else if (std::strcmp(message, MaaMsg_Controller_Destroying) == 0) {
         ++counts[8];
+    }
+    else {
+        ++counts[14];
+    }
+}
+
+void OnContextEvent(void* handle, const char* message, const char*, void*)
+{
+    if (std::strcmp(message, MaaMsg_Node_Recognition_Starting) == 0 && MaaContextGetTasker(static_cast<MaaContext*>(handle))) {
+        ++counts[13];
     }
 }
