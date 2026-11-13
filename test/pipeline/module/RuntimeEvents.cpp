@@ -165,7 +165,7 @@ bool check(MaaTasker* tasker, Capture& state)
         return false;
     }
     return (find(state, MaaMsg_Node_Action_Cancelled) && find(state, MaaMsg_Node_PipelineNode_Cancelled)
-               && !find(state, MaaMsg_Node_Action_Succeeded) && !find(state, MaaMsg_Node_PipelineNode_Failed))
+            && !find(state, MaaMsg_Node_Action_Succeeded) && !find(state, MaaMsg_Node_PipelineNode_Failed))
            || failure("cancelled action/node terminal closure");
 }
 } // namespace
