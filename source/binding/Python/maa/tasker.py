@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Optional, Union
 
 import numpy
 
-from .buffer import ImageBuffer, ImageListBuffer, RectBuffer, StringBuffer
+from .buffer import ImageBuffer, ImageListBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .controller import Controller
 from .define import *
 from .event_sink import EventSink, NotificationType
@@ -813,12 +813,34 @@ class Tasker:
         Returns:
             bool: 是否成功 / Whether successful
         """
+        Tasker._set_api_properties()
         strpath = str(path)
         return bool(
             Library.framework().MaaGlobalLoadPlugin(
                 strpath.encode(),
             )
         )
+
+    @staticmethod
+    def get_plugin_list() -> list[str]:
+        """已加载插件路径 / Loaded plugin library paths (including shut-down plugins)."""
+        Tasker._set_api_properties()
+        buffer = StringListBuffer()
+        if not Library.framework().MaaGlobalGetPluginList(buffer._handle):
+            raise RuntimeError("Failed to get plugin list")
+        return buffer.get()
+
+    @staticmethod
+    def flush_plugins() -> bool:
+        """在普通宿主线程刷新插件 / Flush plugins from a normal host thread."""
+        Tasker._set_api_properties()
+        return bool(Library.framework().MaaGlobalFlushPlugins())
+
+    @staticmethod
+    def shutdown_plugins() -> bool:
+        """销毁所有实例后关闭插件 / Shut down plugins after destroying all instances."""
+        Tasker._set_api_properties()
+        return bool(Library.framework().MaaGlobalShutdownPlugins())
 
     _api_properties_initialized: bool = False
 
@@ -916,6 +938,13 @@ class Tasker:
         Library.framework().MaaGlobalLoadPlugin.argtypes = [
             ctypes.c_char_p,
         ]
+
+        Library.framework().MaaGlobalGetPluginList.restype = MaaBool
+        Library.framework().MaaGlobalGetPluginList.argtypes = [MaaStringListBufferHandle]
+        Library.framework().MaaGlobalFlushPlugins.restype = MaaBool
+        Library.framework().MaaGlobalFlushPlugins.argtypes = []
+        Library.framework().MaaGlobalShutdownPlugins.restype = MaaBool
+        Library.framework().MaaGlobalShutdownPlugins.argtypes = []
 
         Library.framework().MaaTaskerCreate.restype = MaaTaskerHandle
         Library.framework().MaaTaskerCreate.argtypes = []

@@ -18,6 +18,18 @@
  * @{
  */
 
+/** Plugin-only lifecycle notifications. details_json is {}.
+ * Created is sent after initialization. Destroying is sent after the worker has
+ * stopped, before members are destroyed. Handles are borrowed; do not destroy
+ * them, retain them beyond Destroying, or enqueue work from Destroying.
+ */
+#define MaaMsg_Resource_Created ("Resource.Created")
+#define MaaMsg_Resource_Destroying ("Resource.Destroying")
+#define MaaMsg_Controller_Created ("Controller.Created")
+#define MaaMsg_Controller_Destroying ("Controller.Destroying")
+#define MaaMsg_Tasker_Created ("Tasker.Created")
+#define MaaMsg_Tasker_Destroying ("Tasker.Destroying")
+
 /**
  * @{
  * @brief The message for the resource loading.

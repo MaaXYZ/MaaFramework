@@ -337,3 +337,6 @@ export using ::MaaRectSet;
 export using ::MaaVersion;
 export using ::MaaGlobalSetOption;
 export using ::MaaGlobalLoadPlugin;
+export using ::MaaGlobalGetPluginList;
+export using ::MaaGlobalFlushPlugins;
+export using ::MaaGlobalShutdownPlugins;

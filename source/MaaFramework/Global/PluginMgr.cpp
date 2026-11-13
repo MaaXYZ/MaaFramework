@@ -27,6 +27,11 @@ bool PluginMgr::load(const std::filesystem::path& library_path)
 {
     LogFunc << VAR(library_path);
 
+    std::lock_guard lock(mutex_);
+    if (instances_ || shutdown_ || managing_) {
+        LogError << "Load plugins before creating framework objects";
+        return false;
+    }
     if (std::filesystem::is_directory(library_path)) {
         bool ret = false;
         for (auto& entry : std::filesystem::recursive_directory_iterator(library_path)) {
@@ -79,6 +84,9 @@ bool PluginMgr::load_and_parse(const std::filesystem::path& library_path)
     auto& library = *opt;
     std::filesystem::path filepath = library.location();
     LogInfo << VAR(library_path) << VAR(filepath);
+    if (plugins_.contains(path_to_utf8_string(filepath))) {
+        return true;
+    }
 
     constexpr const char* kFuncGetPluginVersion = "GetPluginVersion";
     if (library.has(kFuncGetPluginVersion)) {
@@ -112,6 +120,15 @@ bool PluginMgr::load_and_parse(const std::filesystem::path& library_path)
     }
 
     Plugin plugin;
+    if (library.has("OnPluginInit")) {
+        plugin.on_init = library.get<decltype(OnPluginInit)>("OnPluginInit");
+    }
+    if (library.has("OnPluginFlush")) {
+        plugin.on_flush = library.get<decltype(OnPluginFlush)>("OnPluginFlush");
+    }
+    if (library.has("OnPluginShutdown")) {
+        plugin.on_shutdown = library.get<decltype(OnPluginShutdown)>("OnPluginShutdown");
+    }
 
     constexpr const char* kFuncOnResourceEvent = "OnResourceEvent";
     if (library.has(kFuncOnResourceEvent)) {
@@ -158,12 +175,17 @@ bool PluginMgr::load_and_parse(const std::filesystem::path& library_path)
 
 std::vector<std::string> PluginMgr::get_names() const
 {
+    std::lock_guard lock(mutex_);
     auto view = plugins_ | std::views::keys;
     return { view.begin(), view.end() };
 }
 
 std::vector<PluginMgr::Sink> PluginMgr::get_res_sinks() const
 {
+    std::lock_guard lock(mutex_);
+    if (shutdown_) {
+        return {};
+    }
     auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_res_event)
                 | std::views::filter([](const Sink& s) { return s != nullptr; });
     return { view.begin(), view.end() };
@@ -171,6 +193,10 @@ std::vector<PluginMgr::Sink> PluginMgr::get_res_sinks() const
 
 std::vector<PluginMgr::Sink> PluginMgr::get_ctrl_sinks() const
 {
+    std::lock_guard lock(mutex_);
+    if (shutdown_) {
+        return {};
+    }
     auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_ctrl_event)
                 | std::views::filter([](const Sink& s) { return s != nullptr; });
     return { view.begin(), view.end() };
@@ -178,6 +204,10 @@ std::vector<PluginMgr::Sink> PluginMgr::get_ctrl_sinks() const
 
 std::vector<PluginMgr::Sink> PluginMgr::get_tasker_sinks() const
 {
+    std::lock_guard lock(mutex_);
+    if (shutdown_) {
+        return {};
+    }
     auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_tasker_event)
                 | std::views::filter([](const Sink& s) { return s != nullptr; });
     return { view.begin(), view.end() };
@@ -185,9 +215,108 @@ std::vector<PluginMgr::Sink> PluginMgr::get_tasker_sinks() const
 
 std::vector<PluginMgr::Sink> PluginMgr::get_ctx_sinks() const
 {
+    std::lock_guard lock(mutex_);
+    if (shutdown_) {
+        return {};
+    }
     auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_ctx_event)
                 | std::views::filter([](const Sink& s) { return s != nullptr; });
     return { view.begin(), view.end() };
+}
+
+void PluginMgr::initialize(std::unique_lock<std::mutex>& lock)
+{
+    std::vector<void (*)()> callbacks;
+    for (auto& plugin : plugins_ | std::views::values) {
+        if (plugin.initialized) {
+            continue;
+        }
+        plugin.initialized = true;
+        if (plugin.on_init) {
+            callbacks.push_back(plugin.on_init);
+        }
+    }
+    managing_ = true;
+    lock.unlock();
+    for (auto callback : callbacks) {
+        callback();
+    }
+    lock.lock();
+    managing_ = false;
+    management_done_.notify_all();
+}
+
+void PluginMgr::instance_created()
+{
+    std::unique_lock lock(mutex_);
+    management_done_.wait(lock, [this] { return !managing_; });
+    ++instances_;
+    if (!shutdown_) {
+        initialize(lock);
+    }
+}
+
+void PluginMgr::instance_destroyed()
+{
+    std::lock_guard lock(mutex_);
+    --instances_;
+}
+
+bool PluginMgr::flush()
+{
+    std::unique_lock lock(mutex_);
+    if (shutdown_ || managing_) {
+        return false;
+    }
+    initialize(lock);
+    std::vector<void (*)()> callbacks;
+    for (auto& plugin : plugins_ | std::views::values) {
+        if (plugin.on_flush) {
+            callbacks.push_back(plugin.on_flush);
+        }
+    }
+    managing_ = true;
+    lock.unlock();
+    for (auto callback : callbacks) {
+        callback();
+    }
+    lock.lock();
+    managing_ = false;
+    management_done_.notify_all();
+    return true;
+}
+
+bool PluginMgr::shutdown()
+{
+    std::unique_lock lock(mutex_);
+    if (managing_) {
+        return false;
+    }
+    if (shutdown_) {
+        return true;
+    }
+    if (instances_) {
+        return false;
+    }
+    std::vector<void (*)()> callbacks;
+    for (auto& plugin : plugins_ | std::views::values) {
+        if (plugin.initialized && plugin.on_flush) {
+            callbacks.push_back(plugin.on_flush);
+        }
+        if (plugin.initialized && plugin.on_shutdown) {
+            callbacks.push_back(plugin.on_shutdown);
+        }
+    }
+    shutdown_ = true;
+    managing_ = true;
+    lock.unlock();
+    for (auto callback : callbacks) {
+        callback();
+    }
+    lock.lock();
+    managing_ = false;
+    management_done_.notify_all();
+    return true;
 }
 
 MAA_GLOBAL_NS_END

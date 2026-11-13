@@ -40,19 +40,25 @@ ResourceMgr::ResourceMgr()
     LogFunc;
 
     auto& plugin_mgr = MAA_GLOBAL_NS::PluginMgr::get_instance();
+    plugin_mgr.instance_created();
     LogInfo << VAR(plugin_mgr.get_names());
 
     for (const auto& sink : plugin_mgr.get_res_sinks()) {
-        add_sink(sink, this);
+        notifier_.add_plugin_sink(sink, this);
     }
 
     res_loader_ =
         std::make_unique<AsyncRunner<PostPathItem>>(std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));
+    notifier_.notify_plugins(this, MaaMsg_Resource_Created, json::object {});
 }
 
 ResourceMgr::~ResourceMgr()
 {
     LogFunc;
+
+    res_loader_->release();
+    notifier_.notify_plugins(this, MaaMsg_Resource_Destroying, json::object {});
+    MAA_GLOBAL_NS::PluginMgr::get_instance().instance_destroyed();
 }
 
 bool ResourceMgr::set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size)
@@ -406,7 +412,7 @@ CustomRecognitionSession ResourceMgr::custom_recognition(const std::string& name
 {
     auto it = custom_recognition_sessions_.find(name);
     if (it == custom_recognition_sessions_.end()) {
-        return { };
+        return {};
     }
 
     return it->second;
@@ -416,7 +422,7 @@ CustomActionSession ResourceMgr::custom_action(const std::string& name) const
 {
     auto it = custom_action_sessions_.find(name);
     if (it == custom_action_sessions_.end()) {
-        return { };
+        return {};
     }
 
     return it->second;
@@ -1005,7 +1011,7 @@ std::optional<json::object> ResourceMgr::get_default_action_param(const std::str
 
     switch (type) {
     case Type::DoNothing:
-        param = std::monostate { };
+        param = std::monostate {};
         break;
     case Type::Click:
         param = default_pipeline_.get_action_param<ClickParam>(type);
@@ -1047,7 +1053,7 @@ std::optional<json::object> ResourceMgr::get_default_action_param(const std::str
         param = default_pipeline_.get_action_param<ScrollParam>(type);
         break;
     case Type::StopTask:
-        param = std::monostate { };
+        param = std::monostate {};
         break;
     case Type::Command:
         param = default_pipeline_.get_action_param<CommandParam>(type);

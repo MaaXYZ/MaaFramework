@@ -109,6 +109,25 @@ void set_reco_image_cache_limit(size_t value)
     }
 }
 
+std::optional<std::vector<std::string>> get_plugin_list()
+{
+    StringListBuffer buffer;
+    if (!MaaGlobalGetPluginList(buffer)) {
+        return std::nullopt;
+    }
+    return buffer.as_vector([](StringBufferRefer item) { return item.str(); });
+}
+
+bool flush_plugins()
+{
+    return MaaGlobalFlushPlugins();
+}
+
+bool shutdown_plugins()
+{
+    return MaaGlobalShutdownPlugins();
+}
+
 void config_init_option(std::string user_path, maajs::OptionalParam<std::string> default_json)
 {
 #ifdef MAA_JS_WITH_TOOLKIT
@@ -200,6 +219,9 @@ maajs::ObjectType load_global(maajs::EnvType env)
     MAA_BIND_SETTER(globalObject, "debug_mode", set_debug_mode);
     MAA_BIND_SETTER(globalObject, "draw_quality", set_draw_quality);
     MAA_BIND_SETTER(globalObject, "reco_image_cache_limit", set_reco_image_cache_limit);
+    MAA_BIND_FUNC(globalObject, "get_plugin_list", get_plugin_list);
+    MAA_BIND_FUNC(globalObject, "flush_plugins", flush_plugins);
+    MAA_BIND_FUNC(globalObject, "shutdown_plugins", shutdown_plugins);
     MAA_BIND_FUNC(globalObject, "config_init_option", config_init_option);
     MAA_BIND_FUNC(globalObject, "resize_image", resize_image);
     MAA_BIND_FUNC(globalObject, "macos_check_permission", macos_check_permission);

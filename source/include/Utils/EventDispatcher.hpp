@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "Common/MaaTypes.h"
 #include "MaaUtils/Dispatcher.hpp"
 #include "MaaUtils/Logger.h"
@@ -58,6 +60,16 @@ public:
     }
 
 public:
+    void add_plugin_sink(MaaEventCallback callback, void* trans_arg) { plugin_sinks_.push_back(EventSink { callback, trans_arg }); }
+
+    void notify_plugins(void* handle, std::string_view msg, const json::value& details)
+    {
+        const auto serialized = details.to_string();
+        for (auto& sink : plugin_sinks_) {
+            sink.on_event(handle, msg, serialized);
+        }
+    }
+
     void notify(void* handle, std::string_view msg, const json::value& details)
     {
         if (log_) {
@@ -66,6 +78,9 @@ public:
         }
 
         const std::string str_detail = details.to_string();
+        for (auto& sink : plugin_sinks_) {
+            sink.on_event(handle, msg, str_detail);
+        }
         dispatch([&](const std::shared_ptr<EventSink>& sink) {
             if (!sink) {
                 return;
@@ -76,6 +91,7 @@ public:
 
 private:
     bool log_ = false;
+    std::vector<EventSink> plugin_sinks_;
 };
 
 MAA_NS_END
