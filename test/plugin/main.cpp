@@ -4,7 +4,11 @@
 #include <iostream>
 
 #include "MaaFramework/MaaAPI.h"
-#include "fixture.h"
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
 
 #define CHECK(value)                                     \
     do {                                                 \
@@ -27,6 +31,16 @@ void MAA_CALL ordinary_sink(void*, const char*, const char*, void*)
 int main(int argc, char** argv)
 {
     const auto library = argc > 1 ? std::filesystem::path(argv[1]) : std::filesystem::path(argv[0]).parent_path() / PLUGIN_TEST_LIBRARY;
+#ifdef _WIN32
+    auto module = LoadLibraryW(library.c_str());
+    CHECK(module);
+    auto PluginTestCount = reinterpret_cast<int (*)(int)>(GetProcAddress(module, "PluginTestCount"));
+#else
+    auto module = dlopen(library.c_str(), RTLD_NOW | RTLD_LOCAL);
+    CHECK(module);
+    auto PluginTestCount = reinterpret_cast<int (*)(int)>(dlsym(module, "PluginTestCount"));
+#endif
+    CHECK(PluginTestCount);
     CHECK(MaaGlobalLoadPlugin(library.string().c_str()));
     CHECK(MaaGlobalLoadPlugin(library.string().c_str()));
     CHECK(PluginTestCount(0) == 0);
@@ -92,5 +106,10 @@ int main(int argc, char** argv)
     CHECK(resource && PluginTestCount(3) == 1);
     MaaResourceDestroy(resource);
     std::filesystem::remove_all(directory);
+#ifdef _WIN32
+    FreeLibrary(module);
+#else
+    dlclose(module);
+#endif
     std::cout << "Plugin lifecycle and sink isolation passed" << std::endl;
 }
