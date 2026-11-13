@@ -56,6 +56,11 @@ export using ::MaaCtrlOptionEnum;
 
 export using ::MaaTaskerOption;
 export using ::MaaTaskerOptionEnum;
+export constexpr auto _MaaTaskerOption_RecoImageRaw = MaaTaskerOption_RecoImageRaw;
+export constexpr auto _MaaTaskerOption_RecoImageDraws = MaaTaskerOption_RecoImageDraws;
+export constexpr auto _MaaTaskerOption_RecoImageCacheLimit = MaaTaskerOption_RecoImageCacheLimit;
+export constexpr auto _MaaTaskerOption_RecoImageCacheBytes = MaaTaskerOption_RecoImageCacheBytes;
+export constexpr auto _MaaTaskerOption_CaptureConfig = MaaTaskerOption_CaptureConfig;
 
 export using ::MaaAdbScreencapMethod;
 export constexpr auto _MaaAdbScreencapMethod_EncodeToFileAndPull = MaaAdbScreencapMethod_EncodeToFileAndPull;
@@ -274,6 +279,7 @@ export using ::MaaTaskerGetResource;
 export using ::MaaTaskerGetController;
 export using ::MaaTaskerClearCache;
 export using ::MaaTaskerOverridePipeline;
+export using ::MaaTaskerGetRecognitionImageStatus;
 export using ::MaaTaskerGetRecognitionDetail;
 export using ::MaaTaskerGetActionDetail;
 export using ::MaaTaskerGetWaitFreezesDetail;

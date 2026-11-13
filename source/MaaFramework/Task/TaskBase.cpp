@@ -8,6 +8,7 @@
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
+#include "Resource/PipelineDumper.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/InterruptibleSleep.hpp"
 
@@ -77,6 +78,9 @@ RecoResult TaskBase::run_recognition(
         cb_detail["anchor"] = *anchor_name;
     }
 
+    if (tasker_ && tasker_->capture_config()) {
+        cb_detail["pipeline"] = MAA_RES_NS::PipelineDumper::dump(data);
+    }
     notify(MaaMsg_Node_Recognition_Starting, cb_detail);
 
     RecoResult result = recognizer.recognize(data.reco_type, data.reco_param, data.name);
@@ -119,6 +123,9 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         { "name", reco.name },
         { "focus", data.focus },
     };
+    if (tasker_ && tasker_->capture_config()) {
+        cb_detail["pipeline"] = MAA_RES_NS::PipelineDumper::dump(data);
+    }
     notify(MaaMsg_Node_Action_Starting, cb_detail);
 
     ActionResult result;

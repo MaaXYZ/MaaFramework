@@ -400,6 +400,19 @@ class Tasker:
     def _task_wait(self, id: int) -> ctypes.c_int32:
         return Library.framework().MaaTaskerWait(self._handle, id)
 
+    def get_recognition_image_status(self, reco_id: int) -> Optional[str]:
+        """查询当前图片缓存状态 / Query current recognition-image retention status.
+
+        Returns available, not_captured, disabled, budget_exceeded, or evicted;
+        returns None if the recognition ID no longer exists.
+        """
+        buffer = StringBuffer()
+        if not Library.framework().MaaTaskerGetRecognitionImageStatus(
+            self._handle, MaaRecoId(reco_id), buffer._handle
+        ):
+            return None
+        return buffer.get()
+
     def get_recognition_detail(self, reco_id: int) -> Optional[RecognitionDetail]:
         """获取识别信息 / Get recognition info
 
@@ -651,6 +664,41 @@ class Tasker:
             status=Status(status),
             node_detail_func=self.get_node_detail,
         )
+
+    def _set_capture_option(self, key: MaaTaskerOptionEnum, value: Any) -> bool:
+        return bool(
+            Library.framework().MaaTaskerSetOption(
+                self._handle, MaaTaskerOption(key), ctypes.byref(value), ctypes.sizeof(value)
+            )
+        )
+
+    def set_reco_image_raw(self, enabled: bool) -> bool:
+        """仅设置本 Tasker 的识别原图采集 / Set raw-image capture for this Tasker only."""
+        return self._set_capture_option(MaaTaskerOptionEnum.RecoImageRaw, ctypes.c_bool(enabled))
+
+    def set_reco_image_draws(self, enabled: bool) -> bool:
+        """仅设置本 Tasker 的识别标注图采集 / Set draw capture for this Tasker only."""
+        return self._set_capture_option(MaaTaskerOptionEnum.RecoImageDraws, ctypes.c_bool(enabled))
+
+    def set_reco_image_cache_count(self, limit: int) -> bool:
+        """设置本 Tasker 的图片缓存数量；静态 set_reco_image_cache_limit 仍设置全局默认值。
+
+        Set this Tasker's image-cache count. The static set_reco_image_cache_limit
+        method continues to set the global default.
+        """
+        if type(limit) is not int or not 0 <= limit <= 0xFFFFFFFFFFFFFFFF:
+            raise ValueError("limit must be an unsigned 64-bit integer")
+        return self._set_capture_option(MaaTaskerOptionEnum.RecoImageCacheLimit, ctypes.c_uint64(limit))
+
+    def set_reco_image_cache_bytes(self, limit: int) -> bool:
+        """设置本 Tasker 的图片缓存字节上限 / Set this Tasker's image-cache byte budget."""
+        if type(limit) is not int or not 0 <= limit <= 0xFFFFFFFFFFFFFFFF:
+            raise ValueError("limit must be an unsigned 64-bit integer")
+        return self._set_capture_option(MaaTaskerOptionEnum.RecoImageCacheBytes, ctypes.c_uint64(limit))
+
+    def set_capture_config(self, enabled: bool) -> bool:
+        """采集实际执行配置 / Capture the effective configuration used by operations."""
+        return self._set_capture_option(MaaTaskerOptionEnum.CaptureConfig, ctypes.c_bool(enabled))
 
     @staticmethod
     def set_log_dir(path: Union[Path, str]) -> bool:
@@ -964,6 +1012,11 @@ class Tasker:
             MaaControllerHandle,
         ]
 
+        Library.framework().MaaTaskerSetOption.restype = MaaBool
+        Library.framework().MaaTaskerSetOption.argtypes = [
+            MaaTaskerHandle, MaaTaskerOption, MaaOptionValue, MaaOptionValueSize
+        ]
+
         Library.framework().MaaTaskerInited.restype = MaaBool
         Library.framework().MaaTaskerInited.argtypes = [MaaTaskerHandle]
 
@@ -1025,6 +1078,11 @@ class Tasker:
 
         Library.framework().MaaTaskerGetController.restype = MaaControllerHandle
         Library.framework().MaaTaskerGetController.argtypes = [MaaTaskerHandle]
+
+        Library.framework().MaaTaskerGetRecognitionImageStatus.restype = MaaBool
+        Library.framework().MaaTaskerGetRecognitionImageStatus.argtypes = [
+            MaaTaskerHandle, MaaRecoId, MaaStringBufferHandle
+        ]
 
         Library.framework().MaaTaskerGetRecognitionDetail.restype = MaaBool
         Library.framework().MaaTaskerGetRecognitionDetail.argtypes = [

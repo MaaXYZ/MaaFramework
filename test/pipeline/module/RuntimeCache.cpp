@@ -15,7 +15,7 @@ public:
     static bool run()
     {
         const size_t original_limit = MAA_GLOBAL_NS::OptionMgr::get_instance().reco_image_cache_limit();
-        const bool passed = test_disabled() && test_bounded() && test_disable_existing();
+        const bool passed = test_disabled() && test_bounded() && test_disable_existing() && test_instance_budgets();
         const bool restored = set_limit(original_limit);
         if (!passed || !restored) {
             return false;
@@ -125,6 +125,44 @@ private:
         return check(
             !cache.get_reco_result(201) && !cache.get_reco_result(202) && !cache.get_reco_result(203),
             "clear retained recognition history");
+    }
+
+    static bool test_instance_budgets()
+    {
+        if (!set_limit(0)) {
+            return false;
+        }
+        RuntimeCache first;
+        RuntimeCache second;
+        first.set_image_limit(MaaTaskerOption_RecoImageCacheLimit, 10);
+        first.set_image_limit(MaaTaskerOption_RecoImageCacheBytes, 18);
+        for (MaaRecoId id : { 401, 402, 403 }) {
+            first.set_reco_detail(id, make_result(id));
+            second.set_reco_detail(id, make_result(id));
+        }
+        if (!result_matches(first, 401, false) || !result_matches(first, 402, true) || !result_matches(first, 403, true)
+            || !result_matches(second, 403, false)
+            || !check(first.get_reco_result(401)->image_status == "evicted", "eviction reason missing")
+            || !check(first.reco_image_bytes_ == 18, "byte budget accounting incorrect")) {
+            return false;
+        }
+        auto large = make_result(404);
+        large.raw.resize(32);
+        if (!check(first.set_reco_detail(404, std::move(large)) == "budget_exceeded", "oversize entry accepted")
+            || !result_matches(first, 402, true) || !result_matches(first, 403, true)) {
+            return false;
+        }
+        first.set_image_limit(MaaTaskerOption_RecoImageCacheBytes, 9);
+        if (!result_matches(first, 402, false) || !result_matches(first, 403, true)) {
+            return false;
+        }
+        // Replacing an ID must not leave duplicate FIFO entries or double-count bytes.
+        first.set_reco_detail(403, make_result(403));
+        if (!check(first.reco_image_bytes_ == 9 && first.reco_image_order_.size() == 1, "replacement duplicated storage")) {
+            return false;
+        }
+        first.clear({});
+        return check(first.reco_image_bytes_ == 0, "clear retained byte accounting");
     }
 
     static bool test_disable_existing()

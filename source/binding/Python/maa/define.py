@@ -31,6 +31,7 @@ __all__ = [
     "MaaGlobalOption",
     "MaaCtrlOption",
     "MaaResOption",
+    "MaaTaskerOption",
     # Handle aliases
     "MaaStringBufferHandle",
     "MaaImageBufferHandle",
@@ -72,6 +73,7 @@ __all__ = [
     "MaaStatusEnum",
     "MaaGlobalOptionEnum",
     "MaaCtrlOptionEnum",
+    "MaaTaskerOptionEnum",
     "MaaInferenceDeviceEnum",
     "MaaInferenceExecutionProviderEnum",
     "MaaResOptionEnum",
@@ -183,6 +185,7 @@ MaaOption = ctypes.c_int32
 MaaGlobalOption = MaaOption
 MaaCtrlOption = MaaOption
 MaaResOption = MaaOption
+MaaTaskerOption = MaaOption
 
 
 class MaaGlobalOptionEnum(IntEnum):
@@ -237,6 +240,15 @@ class MaaGlobalOptionEnum(IntEnum):
     # value: size_t, eg: 4096; val_size: sizeof(size_t)
     # default value is 4096
     RecoImageCacheLimit = 9
+
+
+class MaaTaskerOptionEnum(IntEnum):
+    Invalid = 0
+    RecoImageRaw = 1
+    RecoImageDraws = 2
+    RecoImageCacheLimit = 3
+    RecoImageCacheBytes = 4
+    CaptureConfig = 5
 
 
 class MaaCtrlOptionEnum(IntEnum):
@@ -1180,8 +1192,8 @@ class RecognitionDetail:
     best_result: Optional[RecognitionResult]
 
     raw_detail: dict[str, Any]
-    raw_image: numpy.ndarray  # only valid in debug mode
-    draw_images: list[numpy.ndarray]  # only valid in debug mode
+    raw_image: numpy.ndarray  # available when enabled and retained by the image cache
+    draw_images: list[numpy.ndarray]  # available when enabled and retained by the image cache
 
 
 @dataclass

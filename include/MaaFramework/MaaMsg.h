@@ -5,6 +5,10 @@
  *
  * A callback consists of a message and a payload. The message is a string that indicates the type
  * of the message. The payload is a JSON object that contains the details of the message.
+ * Recognition/action notifications optionally include pipeline (the execution-time
+ * configuration) when MaaTaskerOption_CaptureConfig is enabled. Recognition result
+ * JSON also includes image_status at cache insertion time; use
+ * MaaTaskerGetRecognitionImageStatus to query current retention.
  *
  * @copyright Copyright (c) 2024
  *

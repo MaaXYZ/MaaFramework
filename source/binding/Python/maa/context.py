@@ -654,6 +654,7 @@ class ContextEventSink(EventSink):
         name: str
         focus: Any
         anchor: Optional[str] = None
+        pipeline: Optional[dict[str, Any]] = None
 
     def on_node_recognition(
         self,
@@ -669,6 +670,7 @@ class ContextEventSink(EventSink):
         action_id: int
         name: str
         focus: Any
+        pipeline: Optional[dict[str, Any]] = None
 
     def on_node_action(self, context: Context, noti_type: NotificationType, detail: NodeActionDetail):
         pass
@@ -784,6 +786,7 @@ class ContextEventSink(EventSink):
                 name=details["name"],
                 focus=details["focus"],
                 anchor=details.get("anchor"),
+                pipeline=details.get("pipeline"),
             )
             self.on_node_recognition(context, noti_type, detail)
 
@@ -793,6 +796,7 @@ class ContextEventSink(EventSink):
                 action_id=details["action_id"],
                 name=details["name"],
                 focus=details["focus"],
+                pipeline=details.get("pipeline"),
             )
             self.on_node_action(context, noti_type, detail)
 

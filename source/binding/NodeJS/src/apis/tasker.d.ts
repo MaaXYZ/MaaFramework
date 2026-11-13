@@ -103,6 +103,7 @@ declare global {
             name: string
             focus: unknown
             anchor?: string
+            pipeline?: Record<string, unknown>
         }
 
         type TaskerContextActionNotify = {
@@ -111,6 +112,7 @@ declare global {
             action_id: number // ActId
             name: string
             focus: unknown
+            pipeline?: Record<string, unknown>
         }
 
         type TaskerContextNotify =
@@ -170,10 +172,20 @@ declare global {
              * tasks retain their IDs, entry and status, but their node ID lists are reset.
              */
             clear_cache(): void
+            /** Instance settings; global defaults remain unchanged. */
+            set reco_image_raw(value: boolean)
+            set reco_image_draws(value: boolean)
+            /** Unsigned decimal string, following the native uint64 binding. */
+            set reco_image_cache_count(value: string)
+            /** Unsigned decimal byte count. */
+            set reco_image_cache_bytes(value: string)
+            set capture_config(value: boolean)
             override_pipeline(
                 task_id: TaskId,
                 pipeline: Record<string, unknown> | Record<string, unknown>[],
             ): void
+            recognition_image_status(id: RecoId):
+                | 'available' | 'not_captured' | 'disabled' | 'budget_exceeded' | 'evicted' | null
             recognition_detail(id: RecoId): RecoDetail | null
             action_detail(id: ActId): ActionDetail | null
             node_detail(id: NodeId): NodeDetail | null

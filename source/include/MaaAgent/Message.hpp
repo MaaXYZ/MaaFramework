@@ -466,6 +466,24 @@ struct ContextWaitFreezesReverseResponse
     MEO_JSONIZATION(ret, _ContextWaitFreezesReverseResponse);
 };
 
+struct TaskerSetOptionReverseRequest
+{
+    std::string tasker_id;
+    int32_t key = 0;
+    json::value value;
+
+    MessageTypePlaceholder _TaskerSetOptionReverseRequest = 1;
+    MEO_JSONIZATION(tasker_id, key, value, _TaskerSetOptionReverseRequest);
+};
+
+struct TaskerSetOptionReverseResponse
+{
+    bool ret = false;
+
+    MessageTypePlaceholder _TaskerSetOptionReverseResponse = 1;
+    MEO_JSONIZATION(ret, _TaskerSetOptionReverseResponse);
+};
+
 struct TaskerInitedReverseRequest
 {
     std::string tasker_id;
@@ -768,8 +786,10 @@ struct TaskerGetRecoResultReverseResponse
     std::string raw;
     std::vector<std::string> draws;
 
+    std::string image_status = "not_captured";
+
     MessageTypePlaceholder _TaskerGetRecoResultReverseResponse = 1;
-    MEO_JSONIZATION(has_value, reco_id, name, algorithm, hit, box, detail, raw, draws, _TaskerGetRecoResultReverseResponse);
+    MEO_JSONIZATION(has_value, reco_id, name, algorithm, hit, box, detail, raw, draws, image_status, _TaskerGetRecoResultReverseResponse);
 };
 
 struct TaskerGetActionResultReverseRequest

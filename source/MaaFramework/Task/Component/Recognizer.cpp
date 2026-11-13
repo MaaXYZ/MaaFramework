@@ -63,6 +63,7 @@ RecoResult Recognizer::recognize(MAA_RES_NS::Recognition::Type type, const MAA_R
         return { };
     }
 
+    MAA_VISION_NS::ScopedDrawOption draw_option(tasker_->reco_image_draws());
     RecoResult result;
 
     switch (type) {
@@ -111,7 +112,7 @@ RecoResult Recognizer::recognize(MAA_RES_NS::Recognition::Type type, const MAA_R
         break;
     }
 
-    if (debug_mode() && !image_.empty()) {
+    if (tasker_->reco_image_raw() && !image_.empty()) {
         ImageEncodedBuffer png;
         cv::imencode(".png", image_, png);
         result.raw = std::move(png);
@@ -119,7 +120,7 @@ RecoResult Recognizer::recognize(MAA_RES_NS::Recognition::Type type, const MAA_R
 
     LogInfo << "reco" << VAR(result);
     auto& rt_cache = tasker_->runtime_cache();
-    rt_cache.set_reco_detail(result.reco_id, result);
+    result.image_status = rt_cache.set_reco_detail(result.reco_id, result);
 
     save_draws(name, result);
 
@@ -668,6 +669,7 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
         return;
     }
 
+    ScopedDrawOption draw_option(tasker_->reco_image_draws());
     OCRerParam batch_param = entries.front().param;
 
     // 获取所有结果

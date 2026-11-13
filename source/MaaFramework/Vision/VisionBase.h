@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <filesystem>
+#include <optional>
 
 #include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"
@@ -34,6 +35,19 @@ protected:
     ResultsVec all_results_;
     ResultsVec filtered_results_;
     std::optional<Result> best_result_ = std::nullopt;
+};
+
+// Nested recognitions restore their caller's draw policy; other worker threads are unaffected.
+class ScopedDrawOption
+{
+public:
+    explicit ScopedDrawOption(std::optional<bool> enabled);
+    ~ScopedDrawOption();
+    ScopedDrawOption(const ScopedDrawOption&) = delete;
+    ScopedDrawOption& operator=(const ScopedDrawOption&) = delete;
+
+private:
+    std::optional<bool> previous_;
 };
 
 class VisionBase
