@@ -100,23 +100,6 @@ MaaTaskId RemoteTasker::post_recognition(const std::string& reco_type, const jso
     return resp_opt->task_id;
 }
 
-MaaTaskId RemoteTasker::post_recognition_node(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
-{
-    TaskerPostRecognitionNodeReverseRequest req {
-        .tasker_id = tasker_id_,
-        .entry = entry,
-        .pipeline_override = pipeline_override,
-        .image = server_.send_image(image),
-    };
-
-    auto resp_opt = server_.send_and_recv<TaskerPostRecognitionNodeReverseResponse>(req);
-    if (!resp_opt) {
-        return MaaInvalidId;
-    }
-
-    return resp_opt->task_id;
-}
-
 MaaTaskId RemoteTasker::post_action(
     const std::string& action_type,
     const json::value& action_param,

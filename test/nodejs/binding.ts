@@ -238,54 +238,6 @@ async function api_test() {
     }
 }
 
-async function recognition_node_test() {
-    const resource = new maa.Resource()
-    const tasker = new maa.Tasker()
-    let actionCalls = 0
-    const image = Uint8Array.from(await fs.readFile(new URL('./empty.png', import.meta.url))).buffer
-    resource.register_custom_action('ProbeForbiddenAction', () => {
-        actionCalls++
-        return true
-    })
-    resource.override_pipeline({
-        Probe: {
-            recognition: 'DirectHit',
-            action: 'Custom',
-            custom_action: 'ProbeForbiddenAction',
-            next: ['ProbeForbidden'],
-            on_error: ['ProbeForbidden']
-        },
-        ProbeForbidden: { action: 'Custom', custom_action: 'ProbeForbiddenAction' }
-    })
-    tasker.resource = resource
-    try {
-        for (const inverse of [false, true]) {
-            const detail = await tasker
-                .post_recognition_node('Probe', image, { Probe: { inverse } })
-                .wait()
-                .get()
-            assert.ok(detail)
-            assert.equal(detail.status, maa.Status.Succeeded)
-            assert.equal(detail.nodes.length, 1)
-            const node = tasker.node_detail(detail.nodes[0])
-            assert.ok(node)
-            assert.equal(node.name, 'Probe')
-            assert.equal(node.completed, !inverse)
-            assert.equal(node.reco?.hit, true)
-            assert.equal(node.action, null)
-        }
-        const unmodified = await tasker.post_recognition_node('Probe', image).wait().get()
-        assert.ok(unmodified)
-        assert.equal(tasker.node_detail(unmodified.nodes[0])?.completed, true)
-        assert.equal(actionCalls, 0)
-        console.log('PASS: named-node recognition is isolated, recognition-only and respects inverse')
-    } finally {
-        await tasker.post_stop().wait()
-        tasker.destroy()
-        resource.destroy()
-    }
-}
-
 async function custom_ctrl_test() {
     console.log('test_custom_controller')
 
@@ -506,7 +458,6 @@ async function main() {
 
     await runApiContractTests()
     await api_test()
-    await recognition_node_test()
     await win32_relative_move_test()
     win32_interception_enum_test()
     linux_enum_test()

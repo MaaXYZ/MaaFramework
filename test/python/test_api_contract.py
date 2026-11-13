@@ -829,59 +829,6 @@ class TaskerContractTest(unittest.TestCase):
         self.assertTrue(recognition.hit)
         self.assertEqual(recognition.algorithm, JRecognitionType.DirectHit)
 
-    def test_recognition_node_uses_pixels_without_actions_or_successors(self):
-        image = numpy.zeros((20, 30, 3), dtype=numpy.uint8)
-        self.controller.calls.clear()
-        detail = self.tasker.post_recognition_node(
-            "Entry", image,
-            {"Entry": {"recognition": "ColorMatch", "lower": [0, 0, 0], "upper": [0, 0, 0],
-                       "action": "Click", "target": [7, 9, 1, 1], "on_error": ["Finish"]}},
-        ).get(wait=True)
-        self.assertTrue(detail.status.succeeded)
-        self.assertEqual([node.name for node in detail.nodes], ["Entry"])
-        self.assertTrue(detail.nodes[0].completed)
-        self.assertTrue(detail.nodes[0].recognition.hit)
-        self.assertIsNone(detail.nodes[0].action)
-        self.assertFalse(any(call[0] in {"click", "screencap"} for call in self.controller.calls))
-        self.assertEqual(self.resource.get_node_data("Entry")["recognition"]["type"], "DirectHit")
-
-    def test_recognition_node_reports_effective_hit_after_inverse(self):
-        image = numpy.zeros((20, 30, 3), dtype=numpy.uint8)
-        for inverse, expected in ((False, False), (True, True)):
-            with self.subTest(inverse=inverse):
-                detail = self.tasker.post_recognition_node(
-                    "Entry", image,
-                    {"Entry": {"recognition": "ColorMatch", "lower": [255, 255, 255],
-                               "upper": [255, 255, 255], "inverse": inverse}},
-                ).get(wait=True)
-                self.assertTrue(detail.status.succeeded)
-                self.assertEqual(len(detail.nodes), 1)
-                self.assertEqual(detail.nodes[0].completed, expected)
-                self.assertFalse(detail.nodes[0].recognition.hit)
-                self.assertIsNone(detail.nodes[0].action)
-
-    def test_recognition_node_supports_composed_and_custom_recognition(self):
-        recognition = FixedRecognition()
-        self.assertTrue(self.resource.register_custom_recognition("Fixed", recognition))
-        for kind, field in (("And", "all_of"), ("Or", "any_of")):
-            with self.subTest(kind=kind):
-                detail = self.tasker.post_recognition_node(
-                    "Entry", self.controller.image,
-                    {"Entry": {"recognition": {"type": kind, "param": {field: ["ProbeCustom"]}}},
-                     "ProbeCustom": {"recognition": "Custom", "custom_recognition": "Fixed"}},
-                ).get(wait=True)
-                self.assertTrue(detail.status.succeeded)
-                self.assertTrue(detail.nodes[0].completed)
-                self.assertEqual(detail.nodes[0].recognition.algorithm, kind)
-                self.assertEqual(len(detail.nodes), 1)
-        self.assertEqual(len(recognition.args), 2)
-        self.assertIsNone(self.resource.get_node_data("ProbeCustom"))
-
-    def test_recognition_node_missing_entry_fails_without_running_successors(self):
-        detail = self.tasker.post_recognition_node("MissingProbe", self.controller.image).get(wait=True)
-        self.assertTrue(detail.status.failed)
-        self.assertEqual(detail.nodes, [])
-
     def test_custom_recognition_forwards_parameters_and_result_details(self):
         recognition = FixedRecognition()
         self.assertTrue(self.resource.register_custom_recognition("Fixed", recognition))

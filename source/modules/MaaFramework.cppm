@@ -268,7 +268,6 @@ export using ::MaaTaskerBindController;
 export using ::MaaTaskerInited;
 export using ::MaaTaskerPostTask;
 export using ::MaaTaskerPostRecognition;
-export using ::MaaTaskerPostRecognitionNode;
 export using ::MaaTaskerPostAction;
 export using ::MaaTaskerStatus;
 export using ::MaaTaskerWait;

@@ -114,23 +114,6 @@ def recognition_results(context):
     assert fetched_miss.box is None
 
 
-def recognition_node_submission(context):
-    from agent_test_utils import record_sink_event
-
-    image = numpy.zeros((20, 30, 3), dtype=numpy.uint8)
-    job = context.tasker.post_recognition_node(
-        "AgentContractProbe", image,
-        {"AgentContractProbe": {"recognition": "ColorMatch", "lower": [255, 255, 255],
-                                "upper": [255, 255, 255], "inverse": True,
-                                "action": "Click", "next": ["AgentContractForbidden"]},
-         "AgentContractForbidden": {"action": "Click"}},
-    )
-    assert job.job_id != 0
-    # The owning Tasker worker is waiting for this Custom callback to return.
-    # The host checks the queued result after this callback, never wait here.
-    record_sink_event(f"remote_probe:{job.job_id}")
-
-
 def action_results(context):
     action = context.run_action_direct(JActionType.DoNothing, JDoNothing())
     assert action is not None and action.action_id != 0 and action.success
@@ -233,7 +216,6 @@ REMOTE_CONTRACT_CASES = (
     shared_hit_counts_and_task_details,
     missing_objects,
     recognition_results,
-    recognition_node_submission,
     action_results,
     resource_overrides_and_images,
     controller_image_round_trip,

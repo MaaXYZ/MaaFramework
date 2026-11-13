@@ -184,23 +184,6 @@ MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* reco_type, con
     return tasker->post_recognition(reco_type, *param_opt, image->get());
 }
 
-MaaTaskId MaaTaskerPostRecognitionNode(MaaTasker* tasker, const char* entry, const char* pipeline_override, const MaaImageBuffer* image)
-{
-    if (!tasker || !entry || !pipeline_override || !image) {
-        LogError << "argument is null";
-        return MaaInvalidId;
-    }
-
-    LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(pipeline_override);
-    auto ov_opt = json::parse(pipeline_override);
-    if (!ov_opt) {
-        LogError << "failed to parse" << VAR(pipeline_override);
-        return MaaInvalidId;
-    }
-
-    return tasker->post_recognition_node(entry, *ov_opt, image->get());
-}
-
 MaaTaskId
     MaaTaskerPostAction(MaaTasker* tasker, const char* action_type, const char* action_param, const MaaRect* box, const char* reco_detail)
 {

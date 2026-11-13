@@ -156,23 +156,6 @@ maajs::ValueType TaskerImpl::post_recognition(
     return maajs::CallCtorHelper(ExtContext::get(env)->taskJobCtor, self, id);
 }
 
-maajs::ValueType TaskerImpl::post_recognition_node(
-    maajs::ValueType self,
-    maajs::EnvType,
-    std::string entry,
-    maajs::ArrayBufferType image,
-    maajs::OptionalParam<maajs::ValueType> pipeline_override)
-{
-    ImageBuffer img;
-    img.set(image);
-    auto id = MaaTaskerPostRecognitionNode(
-        tasker,
-        entry.c_str(),
-        maajs::JsonStringify(env, pipeline_override.value_or(maajs::ObjectType::New(env))).c_str(),
-        img);
-    return maajs::CallCtorHelper(ExtContext::get(env)->taskJobCtor, self, id);
-}
-
 maajs::ValueType TaskerImpl::post_action(
     maajs::ValueType self,
     maajs::EnvType,
@@ -505,7 +488,6 @@ void TaskerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "clear_context_sinks", TaskerImpl::clear_context_sinks);
     MAA_BIND_FUNC(proto, "post_task", TaskerImpl::post_task);
     MAA_BIND_FUNC(proto, "post_recognition", TaskerImpl::post_recognition);
-    MAA_BIND_FUNC(proto, "post_recognition_node", TaskerImpl::post_recognition_node);
     MAA_BIND_FUNC(proto, "post_action", TaskerImpl::post_action);
     MAA_BIND_FUNC(proto, "post_stop", TaskerImpl::post_stop);
     MAA_BIND_FUNC(proto, "status", TaskerImpl::status);

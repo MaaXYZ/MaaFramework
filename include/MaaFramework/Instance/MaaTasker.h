@@ -61,14 +61,6 @@ extern "C"
         MaaTaskerPostRecognition(MaaTasker* tasker, const char* reco_type, const char* reco_param, const MaaImageBuffer* image);
 
     /**
-     * Recognize one named node using the supplied image and task-local overrides.
-     * Does not run actions, next or on_error. The resulting node's completed field
-     * is the effective match result after inverse; task status indicates execution.
-     */
-    MAA_FRAMEWORK_API MaaTaskId
-        MaaTaskerPostRecognitionNode(MaaTasker* tasker, const char* entry, const char* pipeline_override, const MaaImageBuffer* image);
-
-    /**
      * @param action_type Action type string
      * @param action_param Action parameters json
      * @param box Previous recognition position

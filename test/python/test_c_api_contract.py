@@ -245,19 +245,6 @@ class TaskerInputValidationTest(BoundTaskerTest):
                     0,
                 )
 
-    def test_recognition_node_rejects_invalid_arguments(self):
-        image = ImageBuffer()
-        for handle, entry, override, pixels in (
-            (None, b"Entry", b"{}", image._handle),
-            (self.handle, None, b"{}", image._handle),
-            (self.handle, b"Entry", None, image._handle),
-            (self.handle, b"Entry", b"{}", None),
-            (self.handle, b"Entry", b"{", image._handle),
-            (self.handle, b"Entry", b"[1]", image._handle),
-        ):
-            with self.subTest(entry=entry, override=override, image=pixels):
-                self.assertEqual(self.lib.MaaTaskerPostRecognitionNode(handle, entry, override, pixels), 0)
-
     def test_missing_detail_does_not_modify_output(self):
         name = StringBuffer()
         self.assertTrue(name.set("sentinel"))

@@ -128,7 +128,6 @@ public:
 
     virtual MaaTaskId post_task(const std::string& entry, const json::value& pipeline_override) = 0;
     virtual MaaTaskId post_recognition(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image) = 0;
-    virtual MaaTaskId post_recognition_node(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) = 0;
     virtual MaaTaskId post_action(
         const std::string& action_type,
         const json::value& action_param,

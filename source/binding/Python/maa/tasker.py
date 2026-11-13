@@ -166,28 +166,6 @@ class Tasker:
         )
         return self._gen_task_job(taskid)
 
-    def post_recognition_node(
-        self,
-        entry: str,
-        image: numpy.ndarray,
-        pipeline_override: Optional[dict[str, Any]] = None,
-    ) -> TaskJob:
-        """仅识别指定节点，不执行动作或后继节点 / Recognize a named node only.
-
-        使用任务内覆盖和给定图片；结果节点的 completed 表示应用 inverse 后是否命中。
-        Uses task-local overrides and supplied pixels. The resulting node's completed
-        field is the effective hit after inverse; task success alone is not a hit.
-        Custom 识别需事先注册 / Custom recognition handlers must be registered.
-        """
-        img_buffer = ImageBuffer()
-        img_buffer.set(image)
-        taskid = Library.framework().MaaTaskerPostRecognitionNode(
-            self._handle,
-            *Tasker._gen_post_param(entry, pipeline_override if pipeline_override is not None else {}),
-            img_buffer._handle,
-        )
-        return self._gen_task_job(taskid)
-
     def post_action(
         self,
         action_type: JActionType,
@@ -1029,14 +1007,6 @@ class Tasker:
 
         Library.framework().MaaTaskerPostRecognition.restype = MaaId
         Library.framework().MaaTaskerPostRecognition.argtypes = [
-            MaaTaskerHandle,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-            MaaImageBufferHandle,
-        ]
-
-        Library.framework().MaaTaskerPostRecognitionNode.restype = MaaId
-        Library.framework().MaaTaskerPostRecognitionNode.argtypes = [
             MaaTaskerHandle,
             ctypes.c_char_p,
             ctypes.c_char_p,

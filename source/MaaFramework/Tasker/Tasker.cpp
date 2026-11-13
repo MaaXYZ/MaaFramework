@@ -156,18 +156,6 @@ MaaTaskId Tasker::post_recognition(const std::string& reco_type, const json::val
     return post_task(std::move(task_ptr), pipeline_override);
 }
 
-MaaTaskId Tasker::post_recognition_node(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
-{
-    LogInfo << VAR(entry) << VAR(pipeline_override) << VAR(image);
-
-    if (!check_stop()) {
-        return MaaInvalidId;
-    }
-
-    auto task_ptr = std::make_shared<MAA_TASK_NS::RecognitionTask>(image, entry, this);
-    return post_task(std::move(task_ptr), pipeline_override);
-}
-
 MaaTaskId Tasker::post_action(
     const std::string& action_type,
     const json::value& action_param,

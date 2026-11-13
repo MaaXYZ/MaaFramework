@@ -368,9 +368,6 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_tasker_post_recognition(j)) {
         return true;
     }
-    else if (handle_tasker_post_recognition_node(j)) {
-        return true;
-    }
     else if (handle_tasker_post_action(j)) {
         return true;
     }
@@ -1115,27 +1112,6 @@ bool AgentClient::handle_tasker_post_recognition(const json::value& j)
 
     TaskerPostRecognitionReverseResponse resp {
         .task_id = task_id,
-    };
-    send(resp);
-    return true;
-}
-
-bool AgentClient::handle_tasker_post_recognition_node(const json::value& j)
-{
-    if (!j.is<TaskerPostRecognitionNodeReverseRequest>()) {
-        return false;
-    }
-    const auto& req = j.as<TaskerPostRecognitionNodeReverseRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_);
-
-    MaaTasker* tasker = query_tasker(req.tasker_id);
-    if (!tasker) {
-        LogError << "tasker not found" << VAR(req.tasker_id);
-        return false;
-    }
-
-    TaskerPostRecognitionNodeReverseResponse resp {
-        .task_id = tasker->post_recognition_node(req.entry, req.pipeline_override, get_image_cache(req.image)),
     };
     send(resp);
     return true;

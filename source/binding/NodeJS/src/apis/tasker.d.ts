@@ -193,12 +193,6 @@ declare global {
                 reco_param: Record<string, unknown> | Record<string, unknown>[],
                 image: ImageData,
             ): TaskJob
-            /** Recognize one node only. node.completed is the effective hit after inverse. */
-            post_recognition_node(
-                entry: string,
-                image: ImageData,
-                pipeline_override?: Record<string, unknown> | Record<string, unknown>[],
-            ): TaskJob
             post_action(
                 action_type: ActionType,
                 action_param: Record<string, unknown> | Record<string, unknown>[],
