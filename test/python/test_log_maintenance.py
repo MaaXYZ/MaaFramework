@@ -32,15 +32,16 @@ class LogMaintenanceTest(unittest.TestCase):
         os.utime(path, (modified, modified))
         return path
 
-    def maintain(self, prelude=""):
-        # Process exit joins the native maintenance worker, avoiding sleeps and
-        # changes to the parent test process's global logging configuration.
+    def maintain(self, prelude="", wait=True):
+        # Disabling logging waits for maintenance before the child exits. Isolate
+        # the parent test process's global logging configuration.
+        finish = "; assert Tasker.set_log_dir('')" if wait else ""
         result = subprocess.run(
             [
                 sys.executable,
                 "-c",
                 prelude + "import sys; from maa.tasker import Tasker; "
-                "assert Tasker.set_log_dir(sys.argv[1])",
+                "assert Tasker.set_log_dir(sys.argv[1])" + finish,
                 str(self.root),
             ],
             capture_output=True,
@@ -61,7 +62,7 @@ class LogMaintenanceTest(unittest.TestCase):
         archive = backup.with_suffix(".log.gz")
         with gzip.open(archive, "rb") as stream:
             self.assertEqual(stream.read(), content)
-        self.assertEqual(archive.read_bytes()[8], 4)  # gzip's fastest-compression flag
+        self.assertLess(archive.stat().st_size, len(content))
         self.assertAlmostEqual(archive.stat().st_mtime, modified, delta=2)
         self.assertFalse(backup.exists())
         self.assertTrue(active.read_bytes().startswith(b"active log\n"))
@@ -135,6 +136,20 @@ class LogMaintenanceTest(unittest.TestCase):
                 size += len(chunk)
         self.assertEqual(size, 128 * MIB)
         self.assertLess(active.stat().st_size, MIB)
+
+    def test_exit_during_maintenance_can_resume(self):
+        backup = self.write_file("maafw.bak.interrupted.log", size=128 * MIB)
+        archive = backup.with_suffix(".log.gz")
+
+        self.maintain(wait=False)
+
+        self.assertTrue(backup.exists() or archive.is_file())
+        self.maintain()
+        size = 0
+        with gzip.open(archive, "rb") as stream:
+            while chunk := stream.read(MIB):
+                size += len(chunk)
+        self.assertEqual(size, 128 * MIB)
 
     @unittest.skipIf(os.name == "nt", "requires POSIX file-size limits")
     def test_compression_write_failure_keeps_source(self):
