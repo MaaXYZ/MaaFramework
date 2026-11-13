@@ -356,6 +356,14 @@ def run_connected_agent_test(
             if agent.connected:
                 assert agent.set_timeout(CONNECT_TIMEOUT_MS)
                 try:
+                    # Remote callbacks can enqueue work behind the contract task.
+                    # Keep the Agent alive until that work is stopped, even when an assertion fails.
+                    if tasker.running:
+                        stop = tasker.post_stop()
+                        deadline = time.monotonic() + PROCESS_TIMEOUT_SECONDS
+                        while not stop.done and time.monotonic() < deadline:
+                            time.sleep(0.01)
+                        assert stop.done, "tasker did not stop before Agent cleanup"
                     agent.disconnect()
                 finally:
                     assert agent.set_timeout(-1)

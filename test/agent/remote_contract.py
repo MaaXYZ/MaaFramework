@@ -218,7 +218,7 @@ def tasker_capture_options(context):
     assert tasker.set_reco_image_cache_bytes(1)
     assert tasker.get_recognition_image_status(first_id) == "evicted"
     detail = context.run_recognition_direct(JRecognitionType.DirectHit, JDirectHit(), image)
-    assert detail is not None and detail.raw_image is None
+    assert detail is not None and detail.raw_image.size == 0
     assert tasker.get_recognition_image_status(detail.reco_id) == "budget_exceeded"
 
     assert tasker.set_reco_image_raw(False)
