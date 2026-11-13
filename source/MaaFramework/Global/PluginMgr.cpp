@@ -142,8 +142,8 @@ bool PluginMgr::load_and_parse(const std::filesystem::path& library_path)
 
     constexpr const char* kFuncOnContextEvent = "OnContextEvent";
     if (library.has(kFuncOnContextEvent)) {
-        plugin.on_ctrl_event = library.get<decltype(OnContextEvent)>(kFuncOnContextEvent);
-        LogInfo << "Registered" << kFuncOnContextEvent << VAR_VOIDP(plugin.on_ctrl_event) << VAR(filepath);
+        plugin.on_ctx_event = library.get<decltype(OnContextEvent)>(kFuncOnContextEvent);
+        LogInfo << "Registered" << kFuncOnContextEvent << VAR_VOIDP(plugin.on_ctx_event) << VAR(filepath);
     }
     else {
         LogWarn << "No func, ignore" << kFuncOnContextEvent << VAR(filepath);
