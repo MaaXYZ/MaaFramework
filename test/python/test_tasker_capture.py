@@ -10,6 +10,7 @@ from maa.context import ContextEventSink
 from maa.pipeline import JColorMatch, JDirectHit, JRecognitionType
 from maa.resource import Resource
 from maa.tasker import Tasker
+from test_pipeline_execution import MemoryController
 
 
 class CaptureSink(ContextEventSink):
@@ -31,15 +32,17 @@ class TaskerCaptureTest(unittest.TestCase):
         (root / "pipeline" / "test.json").write_text(json.dumps({"Probe": {"recognition": "DirectHit", "roi": [1, 2, 3, 4], "action": "DoNothing"}}))
         self.resource = Resource()
         self.assertTrue(self.resource.post_bundle(root).wait().succeeded)
+        self.controller = MemoryController()
+        self.assertTrue(self.controller.post_connection().wait().succeeded)
         self.first, self.second = Tasker(), Tasker()
-        self.assertTrue(self.first.bind(self.resource, None))
-        self.assertTrue(self.second.bind(self.resource, None))
+        self.assertTrue(self.first.bind(self.resource, self.controller))
+        self.assertTrue(self.second.bind(self.resource, self.controller))
         Tasker.set_debug_mode(False)
         Tasker.set_save_draw(False)
         self.image = numpy.zeros((24, 32, 3), dtype=numpy.uint8)
 
     def tearDown(self):
-        del self.first, self.second, self.resource
+        del self.first, self.second, self.controller, self.resource
         self.directory.cleanup()
 
     def recognize(self, tasker, draw=False):
@@ -58,7 +61,7 @@ class TaskerCaptureTest(unittest.TestCase):
         second = self.recognize(self.second, draw=True)
         numpy.testing.assert_array_equal(first.raw_image, self.image)
         self.assertGreater(len(first.draw_images), 0)
-        self.assertIsNone(second.raw_image)
+        self.assertEqual(second.raw_image.size, 0)
         self.assertEqual(second.draw_images, [])
 
     def test_count_byte_budgets_and_native_diagnostics(self):
@@ -69,13 +72,13 @@ class TaskerCaptureTest(unittest.TestCase):
         self.first.add_context_sink(sink)
         first = self.recognize(self.first)
         second = self.recognize(self.first)
-        self.assertIsNone(self.first.get_recognition_detail(first.reco_id).raw_image)
+        self.assertEqual(self.first.get_recognition_detail(first.reco_id).raw_image.size, 0)
         self.assertEqual(self.first.get_recognition_image_status(first.reco_id), "evicted")
         self.assertEqual(self.first.get_recognition_image_status(second.reco_id), "available")
-        self.assertIsNotNone(self.first.get_recognition_detail(second.reco_id).raw_image)
+        self.assertGreater(self.first.get_recognition_detail(second.reco_id).raw_image.size, 0)
         self.first.set_reco_image_cache_bytes(1)
         third = self.recognize(self.first)
-        self.assertIsNone(third.raw_image)
+        self.assertEqual(third.raw_image.size, 0)
         self.assertEqual(self.first.get_recognition_image_status(third.reco_id), "budget_exceeded")
         self.assertIsNone(self.first.get_recognition_image_status(0))
         terminal = [details for message, details in sink.events if message == "Node.Recognition.Succeeded"][-1]
