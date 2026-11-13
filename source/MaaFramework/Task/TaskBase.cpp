@@ -20,6 +20,15 @@ TaskBase::TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> c
     , cur_node_(entry_)
     , context_(context ? std::move(context) : Context::create(task_id_, tasker))
 {
+    context_->begin_task(task_id_);
+}
+
+std::string TaskBase::termination_reason(bool succeeded) const
+{
+    if (context_ && context_->need_to_stop()) {
+        return "cancelled";
+    }
+    return succeeded ? "completed" : failure_reason_;
 }
 
 bool TaskBase::override_pipeline(const json::value& pipeline_override)
@@ -81,6 +90,8 @@ RecoResult TaskBase::run_recognition(
     if (tasker_ && tasker_->capture_config()) {
         cb_detail["pipeline"] = MAA_RES_NS::PipelineDumper::dump(data);
     }
+    cb_detail["parent"] = context_->operation();
+    Context::OperationScope operation(*context_, "recognition", recognizer.get_id());
     notify(MaaMsg_Node_Recognition_Starting, cb_detail);
 
     RecoResult result = recognizer.recognize(data.reco_type, data.reco_param, data.name);
@@ -91,7 +102,11 @@ RecoResult TaskBase::run_recognition(
     }
 
     cb_detail["reco_details"] = result;
-    notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, cb_detail);
+    const bool cancelled = context_->need_to_stop();
+    cb_detail["reason"] = cancelled ? "cancelled" : (result.box ? "matched" : "unknown");
+    notify(
+        cancelled ? MaaMsg_Node_Recognition_Cancelled : (result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed),
+        cb_detail);
 
     return result;
 }
@@ -126,31 +141,39 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
     if (tasker_ && tasker_->capture_config()) {
         cb_detail["pipeline"] = MAA_RES_NS::PipelineDumper::dump(data);
     }
-    notify(MaaMsg_Node_Action_Starting, cb_detail);
-
+    cb_detail["parent"] = context_->operation();
+    cb_detail["reco_id"] = reco.reco_id;
     ActionResult result;
+    {
+        Context::OperationScope operation(*context_, "action", actuator.get_id());
+        notify(MaaMsg_Node_Action_Starting, cb_detail);
 
-    for (uint i = 0; i < data.repeat; ++i) {
-        if (i > 0) {
-            wait_freezes(data.repeat_wait_freezes, *reco.box, data.name, "repeat", data.focus);
-            sleep(data.repeat_delay);
+        for (uint i = 0; i < data.repeat; ++i) {
+            if (i > 0) {
+                wait_freezes(data.repeat_wait_freezes, *reco.box, data.name, "repeat", data.focus);
+                sleep(data.repeat_delay);
+            }
+
+            if (context_->need_to_stop()) {
+                result = {};
+                break;
+            }
+
+            result = actuator.run(*reco.box, reco.reco_id, data, entry_);
+            LogInfo << "action" << VAR(i) << VAR(data.repeat) << VAR(result);
+
+            if (context_->need_to_stop()) {
+                break;
+            }
         }
 
-        if (context_->need_to_stop()) {
-            return { };
-        }
-
-        result = actuator.run(*reco.box, reco.reco_id, data, entry_);
-        LogInfo << "action" << VAR(i) << VAR(data.repeat) << VAR(result);
-
-        if (context_->need_to_stop()) {
-            break;
-        }
+        cb_detail["action_details"] = result;
+        const bool cancelled = context_->need_to_stop();
+        cb_detail["reason"] = cancelled ? "cancelled" : (result.success ? "completed" : "action_failed");
+        notify(
+            cancelled ? MaaMsg_Node_Action_Cancelled : (result.success ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed),
+            cb_detail);
     }
-
-    cb_detail["action_details"] = result;
-    notify(result.success ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
-
     if (!context_->need_to_stop()) {
         wait_freezes(data.post_wait_freezes, *reco.box, data.name, "post", data.focus);
         sleep(data.post_delay);
@@ -225,7 +248,7 @@ void TaskBase::notify(std::string_view msg, const json::value detail)
         return;
     }
 
-    tasker_->context_notify(context_.get(), msg, detail);
+    context_->notify(msg, detail);
 }
 
 MAA_TASK_NS_END

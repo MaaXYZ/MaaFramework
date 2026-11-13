@@ -46,6 +46,8 @@ MaaRecoId RecognitionTask::run_impl()
         { "focus", cur_node.focus },
     };
 
+    node_cb_detail["parent"] = context_->operation();
+    Context::OperationScope operation(*context_, "node", node_id);
     notify(MaaMsg_Node_RecognitionNode_Starting, node_cb_detail);
 
     auto reco = run_recognition(image_, cur_node);
@@ -64,7 +66,12 @@ MaaRecoId RecognitionTask::run_impl()
     node_cb_detail["node_details"] = result;
     node_cb_detail["reco_details"] = reco;
     node_cb_detail["action_details"] = nullptr;
-    notify(hit ? MaaMsg_Node_RecognitionNode_Succeeded : MaaMsg_Node_RecognitionNode_Failed, node_cb_detail);
+    const bool cancelled = context_->need_to_stop();
+    node_cb_detail["reason"] = cancelled ? "cancelled" : (hit ? "completed" : "unknown");
+    notify(
+        cancelled ? MaaMsg_Node_RecognitionNode_Cancelled
+                  : (hit ? MaaMsg_Node_RecognitionNode_Succeeded : MaaMsg_Node_RecognitionNode_Failed),
+        node_cb_detail);
 
     return reco.reco_id;
 }

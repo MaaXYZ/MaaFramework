@@ -57,7 +57,7 @@ bool ActionHelper::wait_freezes(
     const MaaWfId wf_id = generate_wf_id();
 
     json::value cb_detail {
-        { "task_id", context_ ? context_->task_id() : MaaInvalidId },
+        { "task_id", context_ ? context_->execution_task_id() : MaaInvalidId },
         { "wf_id", wf_id },
         { "name", noti_ctx.name },
         { "phase", noti_ctx.phase },
@@ -72,6 +72,8 @@ bool ActionHelper::wait_freezes(
           } },
         { "focus", noti_ctx.focus },
     };
+    cb_detail["parent"] = context_->operation();
+    Context::OperationScope operation(*context_, "wait_freezes", wf_id);
     notify(MaaMsg_Node_WaitFreezes_Starting, cb_detail);
 
     std::vector<MaaRecoId> reco_ids;
@@ -81,7 +83,6 @@ bool ActionHelper::wait_freezes(
 
         cb_detail["reco_ids"] = json::array(reco_ids);
         cb_detail["elapsed"] = elapsed_ms;
-        notify(success ? MaaMsg_Node_WaitFreezes_Succeeded : MaaMsg_Node_WaitFreezes_Failed, cb_detail);
 
         if (auto* t = tasker()) {
             t->runtime_cache().set_wf_detail(
@@ -96,6 +97,12 @@ bool ActionHelper::wait_freezes(
                     .roi = roi,
                 });
         }
+
+        const bool cancelled = context_ && context_->need_to_stop();
+        cb_detail["reason"] = cancelled ? "cancelled" : (success ? "completed" : "unknown");
+        notify(
+            cancelled ? MaaMsg_Node_WaitFreezes_Cancelled : (success ? MaaMsg_Node_WaitFreezes_Succeeded : MaaMsg_Node_WaitFreezes_Failed),
+            cb_detail);
 
         return success;
     };
@@ -321,7 +328,7 @@ void ActionHelper::notify(std::string_view msg, const json::value& detail)
     if (!t || !context_) {
         return;
     }
-    t->context_notify(context_, msg, detail);
+    context_->notify(msg, detail);
 }
 
 MAA_CTRL_NS::ControllerAgent* ActionHelper::controller()

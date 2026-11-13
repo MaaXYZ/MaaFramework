@@ -394,7 +394,7 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
 
     MaaTaskId task_id = task_ptr->task_id();
     const std::string& entry = task_ptr->entry();
-    const json::value cb_detail = {
+    json::value cb_detail = {
         { "task_id", task_id },
         { "entry", entry },
         { "hash", resource_ ? resource_->get_hash() : std::string() },
@@ -414,6 +414,7 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
 
     LogInfo << "task end:" << VAR(cb_detail) << VAR(ret);
     runtime_cache_.set_task_status(task_id, entry, ret ? MaaStatus_Succeeded : MaaStatus_Failed);
+    cb_detail["reason"] = task_ptr->termination_reason(ret);
     notifier_.notify(this, ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 
     if (controller_ && !task_runner_->pending()) {

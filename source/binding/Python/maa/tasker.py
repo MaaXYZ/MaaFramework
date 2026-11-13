@@ -1200,6 +1200,7 @@ class TaskerEventSink(EventSink):
         entry: str
         uuid: str
         hash: str
+        reason: Optional[str] = None
 
     def on_tasker_task(self, tasker: Tasker, noti_type: NotificationType, detail: TaskerTaskDetail) -> None:
         pass
@@ -1214,6 +1215,7 @@ class TaskerEventSink(EventSink):
         noti_type = EventSink._notification_type(msg)
         if msg.startswith("Tasker.Task"):
             detail = self.TaskerTaskDetail(
+                reason=details.get("reason"),
                 task_id=details["task_id"],
                 entry=details["entry"],
                 uuid=details["uuid"],

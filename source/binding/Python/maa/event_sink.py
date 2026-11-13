@@ -31,6 +31,7 @@ class NotificationType(IntEnum):
     Starting = 1
     Succeeded = 2
     Failed = 3
+    Cancelled = 4
 
 
 class EventSink:
@@ -81,6 +82,8 @@ class EventSink:
             return NotificationType.Succeeded
         elif message.endswith(".Failed"):
             return NotificationType.Failed
+        elif message.endswith(".Cancelled"):
+            return NotificationType.Cancelled
         else:
             return NotificationType.Unknown
 

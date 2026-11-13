@@ -216,4 +216,28 @@
 #define MaaMsg_Node_WaitFreezes_Failed ("Node.WaitFreezes.Failed")
 /// @}
 
+/** Additive runtime correlation. Context notifications include context_id,
+ * parent_task_id (0 for a root task), task_parent and parent ({kind, id} or null).
+ * IDs identify executions, never node definitions or pointer addresses.
+ * Terminal reason is independent of legacy MaaStatus, including cancelled.
+ */
+#define MaaMsg_Context_Task_Starting ("Context.Task.Starting")
+#define MaaMsg_Context_Task_Succeeded ("Context.Task.Succeeded")
+#define MaaMsg_Context_Task_Failed ("Context.Task.Failed")
+#define MaaMsg_Context_Task_Cancelled ("Context.Task.Cancelled")
+#define MaaMsg_Node_PipelineNode_Cancelled ("Node.PipelineNode.Cancelled")
+#define MaaMsg_Node_RecognitionNode_Cancelled ("Node.RecognitionNode.Cancelled")
+#define MaaMsg_Node_ActionNode_Cancelled ("Node.ActionNode.Cancelled")
+#define MaaMsg_Node_NextList_Cancelled ("Node.NextList.Cancelled")
+#define MaaMsg_Node_Recognition_Cancelled ("Node.Recognition.Cancelled")
+#define MaaMsg_Node_Action_Cancelled ("Node.Action.Cancelled")
+#define MaaMsg_Node_WaitFreezes_Cancelled ("Node.WaitFreezes.Cancelled")
+
+/** Actual scheduler transition: task_id, from_node_id, to_node_id, from, to,
+ * reason (entry/next/on_error/jump_back). An ID of 0 denotes no previous execution.
+ * NextList notifications additionally carry list_id, node_id, round, list_type;
+ * successful selection carries selected_index (zero based) and reco_id.
+ */
+#define MaaMsg_Node_Transition ("Node.Transition")
+
 /** @} */
