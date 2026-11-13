@@ -1,5 +1,6 @@
 #include "RuntimeCache.h"
 
+#include <cstring>
 #include <ranges>
 
 #include "Controller/ControllerAgent.h"
@@ -13,7 +14,6 @@
 #include "Task/EmptyTask.h"
 #include "Task/PipelineTask.h"
 #include "Task/RecognitionTask.h"
-#include <cstring>
 
 MAA_NS_BEGIN
 

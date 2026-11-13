@@ -255,8 +255,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 
         auto act = run_action(reco, *hit_opt);
 
-        // 动作被停止打断时 run_action 返回空结果，completed=false 会被下面上报成失败节点；
-        // 与尾部的一致：停止不产生终态
+        // 停止单独上报 Cancelled，避免将动作的空结果记成失败节点。
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop" << VAR(hit_name) << VAR(task_id_);
             node_cb_detail["reason"] = "cancelled";
