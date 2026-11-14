@@ -98,7 +98,7 @@ OCRer::ResultsVec OCRer::predict() const
 {
     if (param_.only_rec && session_ && !session_->supports_rec_only()) {
         LogError << "OCR engine does not support only_rec" << VAR(param_.engine);
-        return {};
+        return { };
     }
     ResultsVec results;
 
@@ -214,7 +214,7 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
 {
     if (session_ && !session_->supports_rec_only()) {
         LogError << "OCR engine does not support only_rec" << VAR(param_.engine);
-        return {};
+        return { };
     }
     if (!session_) {
         LogError << "OCRSession not loaded";
@@ -244,7 +244,7 @@ OCRer::ResultsVec OCRer::predict_batch_rec(const std::vector<cv::Rect>& rois) co
 
     if (session_ && !session_->supports_rec_only()) {
         LogError << "OCR engine does not support batch_rec" << VAR(param_.engine);
-        return {};
+        return { };
     }
 
     if (!session_) {

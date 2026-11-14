@@ -46,7 +46,7 @@ MaaBool MAA_CALL nested(MaaContext* context, MaaTaskId, const char*, const char*
     return MaaContextRunTask(context, "Child", "{}") != MaaInvalidId;
 }
 
-const json::value* find(const Capture& state, std::string_view message, std::string_view name = {})
+const json::value* find(const Capture& state, std::string_view message, std::string_view name = { })
 {
     for (const auto& event : state.events) {
         if (event.at("message").as_string() == message && (name.empty() || event.get("name", std::string()) == name)) {

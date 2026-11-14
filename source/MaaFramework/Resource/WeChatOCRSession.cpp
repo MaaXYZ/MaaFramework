@@ -76,23 +76,23 @@ std::filesystem::path framework_directory()
             GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
             reinterpret_cast<LPCWSTR>(&kModuleAnchor),
             &module)) {
-        return {};
+        return { };
     }
     std::wstring filename(32768, L'\0');
     DWORD length = GetModuleFileNameW(module, filename.data(), static_cast<DWORD>(filename.size()));
     if (length == 0 || length >= filename.size()) {
-        return {};
+        return { };
     }
     filename.resize(length);
     module_path = std::filesystem::path(filename);
 #elif defined(__linux__) && !defined(__ANDROID__)
-    Dl_info info {};
+    Dl_info info { };
     if (dladdr(&kModuleAnchor, &info) == 0 || !info.dli_fname) {
-        return {};
+        return { };
     }
     module_path = MAA_NS::path(info.dli_fname);
 #endif
-    return module_path.is_absolute() ? module_path.parent_path() : std::filesystem::path {};
+    return module_path.is_absolute() ? module_path.parent_path() : std::filesystem::path { };
 }
 
 std::string default_sdk_path()
@@ -100,7 +100,7 @@ std::string default_sdk_path()
     const auto directory = framework_directory();
     if (directory.empty()) {
         LogError << "Could not determine MaaFramework module directory";
-        return {};
+        return { };
     }
 #ifdef _WIN32
     const auto filename = "WeChatOCR.dll";
@@ -114,7 +114,7 @@ std::string default_sdk_path()
         }
     }
     LogError << "WeChatOCR SDK not found beside MaaFramework or in ../lib" << VAR(directory);
-    return {};
+    return { };
 }
 
 bool absolute_path(const json::value& config, const char* key, std::string& output, bool required)

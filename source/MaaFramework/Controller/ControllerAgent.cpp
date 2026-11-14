@@ -24,7 +24,7 @@ ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAP
 
     action_runner_ =
         std::make_unique<AsyncRunner<Action>>(std::bind(&ControllerAgent::run_action, this, std::placeholders::_1, std::placeholders::_2));
-    notifier_.notify_plugins(this, MaaMsg_Controller_Created, json::object {});
+    notifier_.notify_plugins(this, MaaMsg_Controller_Created, json::object { });
 }
 
 ControllerAgent::~ControllerAgent()
@@ -34,7 +34,7 @@ ControllerAgent::~ControllerAgent()
     action_runner_->release();
 
     auto_release_pressed();
-    notifier_.notify_plugins(this, MaaMsg_Controller_Destroying, json::object {});
+    notifier_.notify_plugins(this, MaaMsg_Controller_Destroying, json::object { });
     MAA_GLOBAL_NS::PluginMgr::get_instance().instance_destroyed();
 }
 
@@ -349,7 +349,7 @@ cv::Mat ControllerAgent::screencap()
 {
     auto id = post({ .type = Action::Type::screencap });
     if (wait(id) != MaaStatus_Succeeded) {
-        return {};
+        return { };
     }
     return cached_image();
 }
@@ -583,8 +583,8 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
 
     struct SegmentOperating
     {
-        cv::Point begin {};
-        cv::Point end {};
+        cv::Point begin { };
+        cv::Point end { };
         double total_step = 0;
         double x_step_len = 0;
         double y_step_len = 0;
@@ -1207,7 +1207,7 @@ cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)
         LogWarn << "Invalid image target size" << VAR(image_target_width_) << VAR(image_target_height_);
 
         if (!init_scale_info()) {
-            return {};
+            return { };
         }
     }
 

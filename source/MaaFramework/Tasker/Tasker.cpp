@@ -31,7 +31,7 @@ Tasker::Tasker()
     }
 
     task_runner_ = std::make_unique<AsyncRunner<TaskPtr>>(std::bind(&Tasker::run_task, this, std::placeholders::_1, std::placeholders::_2));
-    notifier_.notify_plugins(this, MaaMsg_Tasker_Created, json::object {});
+    notifier_.notify_plugins(this, MaaMsg_Tasker_Created, json::object { });
 }
 
 Tasker::~Tasker()
@@ -39,7 +39,7 @@ Tasker::~Tasker()
     LogFunc;
 
     task_runner_->release();
-    notifier_.notify_plugins(this, MaaMsg_Tasker_Destroying, json::object {});
+    notifier_.notify_plugins(this, MaaMsg_Tasker_Destroying, json::object { });
     MAA_GLOBAL_NS::PluginMgr::get_instance().instance_destroyed();
 }
 
@@ -187,7 +187,7 @@ MaaTaskId Tasker::post_stop()
 
     static const std::string kStopEntry = "MaaTaskerPostStop";
     auto task_ptr = std::make_shared<MAA_TASK_NS::EmptyTask>(kStopEntry, this);
-    return post_task(std::move(task_ptr), json::object {});
+    return post_task(std::move(task_ptr), json::object { });
 }
 
 bool Tasker::stopping() const

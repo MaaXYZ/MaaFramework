@@ -10,7 +10,7 @@
 
 namespace
 {
-std::array<std::atomic<int>, 15> counts {};
+std::array<std::atomic<int>, 15> counts { };
 
 MaaBool MAA_CALL action(MaaContext*, MaaTaskId, const char*, const char*, const char*, MaaRecoId, const MaaRect*, void*)
 {

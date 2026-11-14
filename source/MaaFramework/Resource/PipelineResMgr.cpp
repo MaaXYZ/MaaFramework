@@ -29,7 +29,7 @@ std::string pointer_token(std::string_view text)
     return result;
 }
 
-void add_error(json::array* errors, const char* code, const std::string& node = {})
+void add_error(json::array* errors, const char* code, const std::string& node = { })
 {
     if (!errors) {
         return;

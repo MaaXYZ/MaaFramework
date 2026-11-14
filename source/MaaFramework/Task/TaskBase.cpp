@@ -155,7 +155,7 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
             }
 
             if (context_->need_to_stop()) {
-                result = {};
+                result = { };
                 break;
             }
 

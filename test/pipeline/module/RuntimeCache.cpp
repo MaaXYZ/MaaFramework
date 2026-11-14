@@ -170,7 +170,7 @@ private:
             || !check(first.reco_image_bytes_ == 9 && first.reco_image_order_.size() == 1, "replacement duplicated storage")) {
             return false;
         }
-        first.clear({});
+        first.clear({ });
         return check(first.reco_image_bytes_ == 0, "clear retained byte accounting");
     }
 

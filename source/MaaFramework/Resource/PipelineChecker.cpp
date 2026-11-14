@@ -32,7 +32,7 @@ bool PipelineChecker::check_all_next_list(
                 errors,
                 name,
                 "next",
-                sources && sources->contains({ name, "next" }) ? sources->at({ name, "next" }) : json::object {})) {
+                sources && sources->contains({ name, "next" }) ? sources->at({ name, "next" }) : json::object { })) {
             LogError << "check_next_list next failed" << VAR(name) << VAR(pipeline_data.next);
             return false;
         }
@@ -42,7 +42,7 @@ bool PipelineChecker::check_all_next_list(
                 errors,
                 name,
                 "on_error",
-                sources && sources->contains({ name, "on_error" }) ? sources->at({ name, "on_error" }) : json::object {})) {
+                sources && sources->contains({ name, "on_error" }) ? sources->at({ name, "on_error" }) : json::object { })) {
             LogError << "check_next_list on_error failed" << VAR(name) << VAR(pipeline_data.on_error);
             return false;
         }

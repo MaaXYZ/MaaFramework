@@ -184,7 +184,7 @@ std::vector<PluginMgr::Sink> PluginMgr::get_res_sinks() const
 {
     std::lock_guard lock(mutex_);
     if (shutdown_) {
-        return {};
+        return { };
     }
     auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_res_event)
                 | std::views::filter([](const Sink& s) { return s != nullptr; });
@@ -195,7 +195,7 @@ std::vector<PluginMgr::Sink> PluginMgr::get_ctrl_sinks() const
 {
     std::lock_guard lock(mutex_);
     if (shutdown_) {
-        return {};
+        return { };
     }
     auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_ctrl_event)
                 | std::views::filter([](const Sink& s) { return s != nullptr; });
@@ -206,7 +206,7 @@ std::vector<PluginMgr::Sink> PluginMgr::get_tasker_sinks() const
 {
     std::lock_guard lock(mutex_);
     if (shutdown_) {
-        return {};
+        return { };
     }
     auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_tasker_event)
                 | std::views::filter([](const Sink& s) { return s != nullptr; });
@@ -217,7 +217,7 @@ std::vector<PluginMgr::Sink> PluginMgr::get_ctx_sinks() const
 {
     std::lock_guard lock(mutex_);
     if (shutdown_) {
-        return {};
+        return { };
     }
     auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_ctx_event)
                 | std::views::filter([](const Sink& s) { return s != nullptr; });
