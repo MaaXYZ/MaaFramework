@@ -3,6 +3,7 @@
 import argparse
 import os
 from pathlib import Path
+import platform
 import signal
 import subprocess
 import sys
@@ -16,6 +17,7 @@ SUITES = {
     "pipeline": ("test/python/pipeline_test.py",),
     "agent": ("test/agent/agent_main_test.py",),
     "agent-tcp": ("test/agent/agent_tcp_main_test.py",),
+    "wechat-ocr": ("test/python/wechat_ocr_contract_test.py",),
 }
 
 
@@ -72,7 +74,21 @@ def main():
     results = []
     for name in dict.fromkeys(args.suite or SUITES):
         command = [sys.executable, "-X", "utf8", *SUITES[name]]
-        if name != "unit":
+        if name == "wechat-ocr":
+            supported = sys.platform in ("win32", "linux") and platform.machine().lower() in ("x86_64", "amd64", "x64")
+            fixture_name = "WeChatOCRTestSDK.dll" if sys.platform == "win32" else "libWeChatOCRTestSDK.so"
+            fixture = install_dir / "test" / "WeChatOCR" / fixture_name
+            reason = None
+            if not supported:
+                reason = "requires Windows x64 or Linux x64"
+            elif not fixture.is_file():
+                reason = "fixture not installed; enable BUILD_PIPELINE_TESTING and install the test build"
+            if reason:
+                print(f"\n=== {name}: SKIP ({reason}) ===", flush=True)
+                results.append((name, f"SKIP ({reason})", 0.0))
+                continue
+            command.extend((str(binding_dir), str(install_dir / "bin"), str(fixture)))
+        elif name != "unit":
             command.extend((str(binding_dir), str(install_dir)))
         print(f"\n=== {name} ===", flush=True)
         started = time.monotonic()
@@ -91,7 +107,7 @@ def main():
     print("\nSuite results:", flush=True)
     for name, outcome, elapsed in results:
         print(f"  {name}: {outcome} [{elapsed:.1f}s]", flush=True)
-    return 0 if all(outcome == "PASS" for _, outcome, _ in results) else 1
+    return 0 if all(outcome == "PASS" or outcome.startswith("SKIP (") for _, outcome, _ in results) else 1
 
 
 if __name__ == "__main__":

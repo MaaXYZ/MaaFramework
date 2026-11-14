@@ -66,10 +66,34 @@ bool ResourceMgr::set_option(MaaResOption key, MaaOptionValue value, MaaOptionVa
     case MaaResOption_InferenceExecutionProvider:
         return set_inference_execution_provider(value, val_size);
 
+    case MaaResOption_WeChatOCR:
+        return set_wechat_ocr(value, val_size);
+
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
     }
+}
+
+bool ResourceMgr::set_wechat_ocr(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    if (!value || val_size == 0 || val_size > 1024 * 1024) {
+        return false;
+    }
+    std::string config_text(static_cast<const char*>(value), static_cast<size_t>(val_size));
+    if (config_text.back() == '\0') {
+        config_text.pop_back();
+    }
+    auto config = json::parse(config_text);
+    if (!config || !config->is_object()) {
+        return false;
+    }
+    std::unique_lock lock(inference_mutex_);
+    if (inference_locked_) {
+        LogError << "Configure WeChatOCR before loading resources; clear resources before reconfiguring";
+        return false;
+    }
+    return ocr_res_.configure_wechat(*config);
 }
 
 MaaResId ResourceMgr::post_bundle(const std::filesystem::path& path)

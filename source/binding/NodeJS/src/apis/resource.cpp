@@ -155,6 +155,17 @@ void ResourceImpl::set_inference_execution_provider(std::string provider)
     }
 }
 
+bool ResourceImpl::configure_wechat_ocr(maajs::OptionalParam<std::variant<std::string, maajs::ObjectType>> config)
+{
+    if (!resource) {
+        return false;
+    }
+    const auto resolved = config.value_or(std::string("{}"));
+    const auto* text = std::get_if<std::string>(&resolved);
+    std::string payload = text ? *text : maajs::JsonStringify(env, std::get<maajs::ObjectType>(resolved));
+    return MaaResourceSetOption(resource, MaaResOption_WeChatOCR, payload.data(), payload.size());
+}
+
 void ResourceImpl::register_custom_recognition(std::string key, maajs::FunctionType func)
 {
     if (!resource) {
@@ -456,6 +467,7 @@ void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_image", ResourceImpl::post_image);
     MAA_BIND_SETTER(proto, "inference_device", ResourceImpl::set_inference_device);
     MAA_BIND_SETTER(proto, "inference_execution_provider", ResourceImpl::set_inference_execution_provider);
+    MAA_BIND_FUNC(proto, "configure_wechat_ocr", ResourceImpl::configure_wechat_ocr);
     MAA_BIND_FUNC(proto, "override_pipeline", ResourceImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "override_next", ResourceImpl::override_next);
     MAA_BIND_FUNC(proto, "override_image", ResourceImpl::override_image);

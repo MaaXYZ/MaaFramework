@@ -364,6 +364,27 @@ class Resource:
         """
         return self.set_inference(MaaInferenceExecutionProviderEnum.Auto, MaaInferenceDeviceEnum.Auto)
 
+    def configure_wechat_ocr(self, config: Optional[dict[str, Any]] = None) -> bool:
+        """配置微信 OCR 引擎 / Configure the optional WeChat OCR engine.
+
+        本地 Resource 在 post_* 前调用；省略配置以自动发现，clear() 后需重新配置。
+        Call on a local Resource before post_*; omit config for discovery. clear() resets it.
+        """
+        if config is None:
+            config = {}
+        if not isinstance(config, dict):
+            return False
+        payload = json.dumps(config, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        buffer = ctypes.create_string_buffer(payload)
+        return bool(
+            Library.framework().MaaResourceSetOption(
+                self._handle,
+                MaaResOptionEnum.WeChatOCR,
+                buffer,
+                len(payload),
+            )
+        )
+
     # not implemented
     # def use_cuda(self, nvidia_gpu_id: int) -> bool:
     #     return self.set_inference(MaaInferenceExecutionProviderEnum.CUDA, nvidia_gpu_id)

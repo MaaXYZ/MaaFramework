@@ -23,6 +23,7 @@ public:
 protected:
     virtual const EmulatorConstDataMap& get_emulator_const_data() const override;
     virtual std::vector<AdbDevice> find_by_emulator_tool(const Emulator& emulator) const override;
+    virtual std::vector<std::string> find_serials_by_emulator_config(const Emulator& emulator) const override;
     virtual std::vector<Emulator> find_extra_emulators() const override;
 
 private:

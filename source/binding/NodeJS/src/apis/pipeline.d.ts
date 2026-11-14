@@ -93,6 +93,7 @@ declare global {
         }
 
         type RecognitionOCR<Mode> = {
+            engine?: 'Default' | 'WeChatOCR'
             roi?: Rect | NodeName
             roi_offset?: Rect
             expected?: MaybeArray<string, Mode>

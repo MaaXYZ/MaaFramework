@@ -175,6 +175,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .order_by = dump_order_by(p.order_by),
             .index = p.result_index,
             .only_rec = p.only_rec,
+            .engine = p.engine,
             .model = p.model,
             .color_filter = p.color_filter,
         };

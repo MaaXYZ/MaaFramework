@@ -351,6 +351,10 @@ class MaaResOptionEnum(IntEnum):
     # default value is MaaInferenceExecutionProvider_Auto
     InferenceExecutionProvider = 2
 
+    # UTF-8 JSON configuration for the optional WeChatOCR engine (Windows x64).
+    # Must be set before any Resource.post_* call. Resource.clear() resets it.
+    WeChatOCR = 3
+
 
 MaaAdbScreencapMethod = ctypes.c_uint64
 
