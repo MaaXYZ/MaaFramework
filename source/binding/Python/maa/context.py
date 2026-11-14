@@ -18,6 +18,7 @@ from .pipeline import (
     JPipelineData,
     JPipelineParser,
     JRecognitionParam,
+    reco_param_to_dict,
     JRecognitionType,
     JWaitFreezes,
 )
@@ -175,7 +176,7 @@ class Context:
         """
         img_buffer = ImageBuffer()
         img_buffer.set(image)
-        reco_param_json = json.dumps(dataclasses.asdict(reco_param), ensure_ascii=False)
+        reco_param_json = json.dumps(reco_param_to_dict(reco_param), ensure_ascii=False)
         reco_id = int(
             Library.framework().MaaContextRunRecognitionDirect(
                 self._handle,

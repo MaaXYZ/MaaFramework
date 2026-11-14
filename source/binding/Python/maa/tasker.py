@@ -13,7 +13,7 @@ from .define import *
 from .event_sink import EventSink, NotificationType
 from .job import Job, TaskJob
 from .library import Library
-from .pipeline import JActionParam, JActionType, JRecognitionParam, JRecognitionType
+from .pipeline import JActionParam, JActionType, JRecognitionParam, JRecognitionType, reco_param_to_dict
 from .resource import Resource
 
 if TYPE_CHECKING:
@@ -157,7 +157,7 @@ class Tasker:
         """
         img_buffer = ImageBuffer()
         img_buffer.set(image)
-        reco_param_json = json.dumps(dataclasses.asdict(reco_param), ensure_ascii=False)
+        reco_param_json = json.dumps(reco_param_to_dict(reco_param), ensure_ascii=False)
         taskid = Library.framework().MaaTaskerPostRecognition(
             self._handle,
             reco_type.encode(),
