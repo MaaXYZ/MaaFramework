@@ -280,15 +280,22 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
     }
 
     // Keep the read-side eligibility in sync with PipelineTask::try_add_ocr_node.
-    const bool can_use_batch_cache = ocr_batch_cache_ && !param.only_rec && param.color_filter.empty()
-                                     && param.roi_target.type != TargetType::PreTask && param.model == ocr_batch_cache_->model;
+    const bool can_use_batch_cache = ocr_batch_cache_ && param.engine == ocr_batch_cache_->engine && !param.only_rec
+                                     && param.color_filter.empty() && param.roi_target.type != TargetType::PreTask
+                                     && param.model == ocr_batch_cache_->model;
     if (can_use_batch_cache && ocr_batch_cache_->results.contains(name)) {
         const auto& cached = ocr_batch_cache_->results.at(name);
         LogDebug << "OCR using batch cache" << VAR(name) << VAR(cached);
-        return build_result(name, "OCR", OCRer(image_, rois, param, cached, resource()->ocr_res().session(param.model), name));
+        return build_result(
+            name,
+            "OCR",
+            OCRer(image_, rois, param, cached, resource()->ocr_res().session(param.model, param.engine), name));
     }
 
-    return build_result(name, "OCR", OCRer(image_, rois, param, resource()->ocr_res().session(param.model), name, std::move(color_filter)));
+    return build_result(
+        name,
+        "OCR",
+        OCRer(image_, rois, param, resource()->ocr_res().session(param.model, param.engine), name, std::move(color_filter)));
 }
 
 RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierParam& param, const std::string& name)
@@ -678,7 +685,10 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
     // det 预处理按整张输入图的最大边计算缩放，超过 max_side_len 便整体降采样。
     // union 混合多个节点的 ROI 时，小 ROI 的文字会被连带缩小而漏检，
     // 因此按 max_side_len 预算分簇，保证每簇的 det 输入不越过降采样拐点，与单独识别同尺度
-    auto ocr_session = resource()->ocr_res().session(batch_param.model);
+    auto ocr_session = resource()->ocr_res().session(batch_param.model, batch_param.engine);
+    if (!ocr_session || !ocr_session->supports_batch_cache()) {
+        return;
+    }
     int max_side_len = ocr_session ? ocr_session->det_max_side_len() : kDetFallbackMaxSideLen;
 
     const auto clusters = cluster_batch_ocr(entries, max_side_len);

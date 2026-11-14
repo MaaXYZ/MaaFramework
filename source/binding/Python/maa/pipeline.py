@@ -102,6 +102,7 @@ class JOCR:
     order_by: str = "Horizontal"
     index: int = 0
     only_rec: bool = False
+    engine: str = "Default"
     model: str = ""
     color_filter: str = ""
 

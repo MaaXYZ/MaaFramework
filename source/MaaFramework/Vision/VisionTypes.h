@@ -78,6 +78,7 @@ struct OCRerParam : public RoiTargetParamBase
 {
     inline static constexpr double kDefaultThreshold = 0.3;
 
+    std::string engine = "Default";
     std::string model;
     bool only_rec = false;
     std::vector<std::wstring> expected;
