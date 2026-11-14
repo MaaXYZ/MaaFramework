@@ -1187,14 +1187,14 @@
             "properties": {
                 "engine": {
                     "title": "Engine Property",
-                    "description": "OCR 引擎。Default 使用现有模型，WeChatOCR 使用已配置的微信 OCR 运行时。",
+                    "description": "OCR 引擎。可选，默认 Default（PPOCR），推荐用于常规场景。WeChatOCR 在大多数场景下效果不如 PPOCR，仅供少数特殊场景按实际效果尝试。",
                     "type": "string",
                     "enum": [
                         "Default",
                         "WeChatOCR"
                     ],
                     "default": "Default",
-                    "markdownDescription": "*string*\n\nOCR 引擎。可选，默认 `Default`。\n\n`WeChatOCR` 仅支持 Windows x64，需要在宿主程序中配置 Resource 的微信 OCR 运行时。其 `only_rec` 必须为 `false`，`model` 必须为空，且不参与 OCR batch 优化。微信未提供有效置信度时，结果 score 为 -1，跳过 threshold 过滤。"
+                    "markdownDescription": "*string*\n\nOCR 引擎。可选，默认 `Default`（PPOCR），推荐用于常规场景。`WeChatOCR` 在大多数场景下效果不如 PPOCR，仅供少数特殊场景按实际效果尝试。\n\n`WeChatOCR` 支持 Windows x64 和 Linux x64，需在本地 Resource 加载资源前配置。要求 `only_rec: false`、`model` 为空，且不参与 batch 优化。`score: -1` 表示置信度未知，仅在 `threshold: 0` 时允许通过。"
                 },
                 "roi": {
                     "$ref": "#/$defs/TemplateMatch/properties/roi"
