@@ -10,3 +10,7 @@ pkg_check_modules(PORTAL_TEST_DBUS REQUIRED IMPORTED_TARGET dbus-1)
 pkg_check_modules(PORTAL_TEST_GIO REQUIRED IMPORTED_TARGET gio-2.0)
 add_executable(portal_fd_test portal_fd_test.cpp)
 target_link_libraries(portal_fd_test MaaToolkit PkgConfig::PORTAL_TEST_DBUS PkgConfig::PORTAL_TEST_GIO Threads::Threads)
+add_test(NAME portal_cleanup COMMAND portal_fd_test)
+set_tests_properties(portal_cleanup PROPERTIES TIMEOUT 180)
+
+add_subdirectory(manager_cleanup)

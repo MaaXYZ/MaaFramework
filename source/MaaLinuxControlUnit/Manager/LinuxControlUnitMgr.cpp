@@ -10,6 +10,7 @@
 #include "Screencap/WlrScreencap.h"
 
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/ScopeLeave.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -20,13 +21,17 @@ LinuxControlUnitMgr::LinuxControlUnitMgr(const LinuxControlUnitConfig& config)
 
 LinuxControlUnitMgr::~LinuxControlUnitMgr()
 {
+    reset_connection();
 }
 
 bool LinuxControlUnitMgr::connect()
 {
-    connected_ = false;
-    screencap_.reset();
-    input_.reset();
+    reset_connection();
+    OnScopeLeave([this]() {
+        if (!connected_) {
+            reset_connection();
+        }
+    });
 
     if (config_.screencap_method == MaaLinuxScreencapMethod_Wlr || config_.input_method == MaaLinuxInputMethod_Wlr) {
         if (!create_wl_client()) {
@@ -53,6 +58,14 @@ bool LinuxControlUnitMgr::connect()
 
     connected_ = true;
     return true;
+}
+
+void LinuxControlUnitMgr::reset_connection()
+{
+    connected_ = false;
+    input_.reset();
+    screencap_.reset();
+    wl_client_.reset();
 }
 
 bool LinuxControlUnitMgr::connected() const
