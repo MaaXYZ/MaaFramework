@@ -555,6 +555,32 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaResource.h" line="70" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="70" declcolumn="31"/>
       </memberdef>
+      <memberdef kind="function" id="MaaResource_8h_1a8dd42b39bb3cf63c27ab4528389b40c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaResourceGetLoadDetail</definition>
+        <argsstring>(const MaaResource *res, MaaResId res_id, MaaStringBuffer *buffer)</argsstring>
+        <name>MaaResourceGetLoadDetail</name>
+        <param>
+          <type>const <ref refid="MaaDef_8h_1ab42b9ae54996623815428a30a8c9250d" kindref="member">MaaResource</ref> *</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1ac1f7514a514f2b5af32cabc02eedca85" kindref="member">MaaResId</ref></type>
+          <declname>res_id</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a4010bb63df489fc09efb6ba9a1fc1c98" kindref="member">MaaStringBuffer</ref> *</type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Completed load snapshot as JSON; unavailable IDs return false. Cleared by MaaResourceClear. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaResource.h" line="73" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="73" declcolumn="31"/>
+      </memberdef>
       <memberdef kind="function" id="MaaResource_8h_1a5b6ebae54e1ebf87ce57ea6ef4333281" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
         <definition>MAA_FRAMEWORK_API MaaBool MaaResourceGetHash</definition>
@@ -574,7 +600,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaResource.h" line="72" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="72" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaResource.h" line="75" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="75" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaResource_8h_1a93292991dbd360311465e875e9053055" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -595,7 +621,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaResource.h" line="74" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="74" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaResource.h" line="77" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="77" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaResource_8h_1a1046bba51b717e5b6f69e673c10141d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -616,7 +642,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaResource.h" line="76" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="76" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaResource.h" line="79" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="79" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaResource_8h_1a131e370cac4c849c1d7a28f58491a9a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -637,7 +663,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaResource.h" line="78" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="78" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaResource.h" line="81" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="81" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaResource_8h_1a54e07840896dd99b1aa1580c84cc25e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -681,7 +707,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaResource.h" line="87" column="9" declfile="include/MaaFramework/Instance/MaaResource.h" declline="87" declcolumn="9"/>
+        <location file="include/MaaFramework/Instance/MaaResource.h" line="90" column="9" declfile="include/MaaFramework/Instance/MaaResource.h" declline="90" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="MaaResource_8h_1a861e1c03118c4cdc4456625fad276ad9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -725,7 +751,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaResource.h" line="96" column="9" declfile="include/MaaFramework/Instance/MaaResource.h" declline="96" declcolumn="9"/>
+        <location file="include/MaaFramework/Instance/MaaResource.h" line="99" column="9" declfile="include/MaaFramework/Instance/MaaResource.h" declline="99" declcolumn="9"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

@@ -24,6 +24,7 @@ var MaaResource_8h =
     [ "MaaResourceWait", "MaaResource_8h.html#a86fe7b46bb25296adac4afc40c1c0374", null ],
     [ "MaaResourceLoaded", "MaaResource_8h.html#a11fd94300f47dd638d5bc8cee8dbc63b", null ],
     [ "MaaResourceSetOption", "MaaResource_8h.html#a85923050e7b1f1b2106fe40e86f01171", null ],
+    [ "MaaResourceGetLoadDetail", "MaaResource_8h.html#a8dd42b39bb3cf63c27ab4528389b40c4", null ],
     [ "MaaResourceGetHash", "MaaResource_8h.html#a5b6ebae54e1ebf87ce57ea6ef4333281", null ],
     [ "MaaResourceGetNodeList", "MaaResource_8h.html#a93292991dbd360311465e875e9053055", null ],
     [ "MaaResourceGetCustomRecognitionList", "MaaResource_8h.html#a1046bba51b717e5b6f69e673c10141d1", null ],

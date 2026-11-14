@@ -24,6 +24,7 @@ var MaaTasker_8h =
     [ "MaaTaskerGetController", "MaaTasker_8h.html#a077181e4d90b12a219ff49d092700a86", null ],
     [ "MaaTaskerClearCache", "MaaTasker_8h.html#aea0f684a6987fc963254f68870537925", null ],
     [ "MaaTaskerOverridePipeline", "MaaTasker_8h.html#a899a756cf686e880c0691105176c6773", null ],
+    [ "MaaTaskerGetRecognitionImageStatus", "MaaTasker_8h.html#a0b81aaf29aca406f50eb7d59aa9f8a48", null ],
     [ "MaaTaskerGetRecognitionDetail", "MaaTasker_8h.html#aa0a412e5b5e08fb4f4e11de826700ff7", null ],
     [ "MaaTaskerGetActionDetail", "MaaTasker_8h.html#ad18ddb1160386ad45e2268b5fc655488", null ],
     [ "MaaTaskerGetWaitFreezesDetail", "MaaTasker_8h.html#aa3aa69ddfe059def8bfd5510fc1ec90b", null ],

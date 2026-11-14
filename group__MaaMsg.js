@@ -1,5 +1,11 @@
 var group__MaaMsg =
 [
+    [ "MaaMsg_Resource_Created", "group__MaaMsg.html#ga44b8967e866ee44afe74f17add92e912", null ],
+    [ "MaaMsg_Resource_Destroying", "group__MaaMsg.html#gaa12fc313100055bc5d6233c456dfc4f6", null ],
+    [ "MaaMsg_Controller_Created", "group__MaaMsg.html#ga137a29bcbb8ce6312526b2f5a4ddeb58", null ],
+    [ "MaaMsg_Controller_Destroying", "group__MaaMsg.html#ga08f454c1b9d04a904e793cdab94a06e0", null ],
+    [ "MaaMsg_Tasker_Created", "group__MaaMsg.html#gac54f98bd5bc028a89e049ceb3cf34d20", null ],
+    [ "MaaMsg_Tasker_Destroying", "group__MaaMsg.html#ga60a3d35925b11e525746ce66396ec13e", null ],
     [ "MaaMsg_Resource_Loading_Starting", "group__MaaMsg.html#ga7297c67f0f81b33f8811e1405a24a437", null ],
     [ "MaaMsg_Resource_Loading_Succeeded", "group__MaaMsg.html#ga46e053d230031807feaed18e628782da", null ],
     [ "MaaMsg_Resource_Loading_Failed", "group__MaaMsg.html#ga8bc7eb7f0da6c492bb9fc494d94cb11f", null ],
@@ -29,5 +35,17 @@ var group__MaaMsg =
     [ "MaaMsg_Node_Action_Failed", "group__MaaMsg.html#gac2e7283ec9099d4826efa131aff46a8e", null ],
     [ "MaaMsg_Node_WaitFreezes_Starting", "group__MaaMsg.html#gabbd49acf07521f4aa8ad3a1c5f6ed8a1", null ],
     [ "MaaMsg_Node_WaitFreezes_Succeeded", "group__MaaMsg.html#gadea7b0a37f4fecce7a93ef4b755deb37", null ],
-    [ "MaaMsg_Node_WaitFreezes_Failed", "group__MaaMsg.html#gae545a1ad8c417848d8d6a279b8314439", null ]
+    [ "MaaMsg_Node_WaitFreezes_Failed", "group__MaaMsg.html#gae545a1ad8c417848d8d6a279b8314439", null ],
+    [ "MaaMsg_Context_Task_Starting", "group__MaaMsg.html#ga5d9557171122fbb1006bd78b79a06cf7", null ],
+    [ "MaaMsg_Context_Task_Succeeded", "group__MaaMsg.html#ga58c44b33785edf757d3f8f89e31af72a", null ],
+    [ "MaaMsg_Context_Task_Failed", "group__MaaMsg.html#ga4d67c1db600aaa27cce2c72bfdba135c", null ],
+    [ "MaaMsg_Context_Task_Cancelled", "group__MaaMsg.html#ga5216febc193c1e822d454c0c2f625d73", null ],
+    [ "MaaMsg_Node_PipelineNode_Cancelled", "group__MaaMsg.html#gabf8e38557b8846bbd13398944814b3be", null ],
+    [ "MaaMsg_Node_RecognitionNode_Cancelled", "group__MaaMsg.html#gaa19f8bb7a4a0a1c0b28df8e383f5bad2", null ],
+    [ "MaaMsg_Node_ActionNode_Cancelled", "group__MaaMsg.html#ga659010d8e4c2583750ae01e28bdf8365", null ],
+    [ "MaaMsg_Node_NextList_Cancelled", "group__MaaMsg.html#ga688496cef5c595fc262455604c475064", null ],
+    [ "MaaMsg_Node_Recognition_Cancelled", "group__MaaMsg.html#ga9749532f59240dcd9edb297b1b4040be", null ],
+    [ "MaaMsg_Node_Action_Cancelled", "group__MaaMsg.html#ga7ec4d4836ca166fdd2456f02226cd0cb", null ],
+    [ "MaaMsg_Node_WaitFreezes_Cancelled", "group__MaaMsg.html#ga9708c5a231bc5e26c59e9776e22091f0", null ],
+    [ "MaaMsg_Node_Transition", "group__MaaMsg.html#ga84af3e472abfc5f93fe69ee6b622d2ca", null ]
 ];

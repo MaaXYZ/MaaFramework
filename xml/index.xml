@@ -326,6 +326,9 @@
   <compound refid="MaaGlobal_8h" kind="file"><name>MaaGlobal.h</name>
     <member refid="MaaGlobal_8h_1ab8a3bdd731560655c4fa049bf5886501" kind="function"><name>MaaGlobalSetOption</name></member>
     <member refid="MaaGlobal_8h_1ab488228d24cc5477ccff6d83ca505441" kind="function"><name>MaaGlobalLoadPlugin</name></member>
+    <member refid="MaaGlobal_8h_1ae64d61bbc7f1ccd44d3a827f7dbda0b3" kind="function"><name>MaaGlobalGetPluginList</name></member>
+    <member refid="MaaGlobal_8h_1a76b462b3b8a86797567dec61cf686e23" kind="function"><name>MaaGlobalFlushPlugins</name></member>
+    <member refid="MaaGlobal_8h_1aaeef00e574f118eee54419c299e18091" kind="function"><name>MaaGlobalShutdownPlugins</name></member>
     <member refid="MaaGlobal_8h_1a0f846923ddbabcfb0343eeabd88ccb94" kind="function"><name>MaaSetGlobalOption</name></member>
   </compound>
   <compound refid="MaaContext_8h" kind="file"><name>MaaContext.h</name>
@@ -424,6 +427,7 @@
     <member refid="MaaResource_8h_1a86fe7b46bb25296adac4afc40c1c0374" kind="function"><name>MaaResourceWait</name></member>
     <member refid="MaaResource_8h_1a11fd94300f47dd638d5bc8cee8dbc63b" kind="function"><name>MaaResourceLoaded</name></member>
     <member refid="MaaResource_8h_1a85923050e7b1f1b2106fe40e86f01171" kind="function"><name>MaaResourceSetOption</name></member>
+    <member refid="MaaResource_8h_1a8dd42b39bb3cf63c27ab4528389b40c4" kind="function"><name>MaaResourceGetLoadDetail</name></member>
     <member refid="MaaResource_8h_1a5b6ebae54e1ebf87ce57ea6ef4333281" kind="function"><name>MaaResourceGetHash</name></member>
     <member refid="MaaResource_8h_1a93292991dbd360311465e875e9053055" kind="function"><name>MaaResourceGetNodeList</name></member>
     <member refid="MaaResource_8h_1a1046bba51b717e5b6f69e673c10141d1" kind="function"><name>MaaResourceGetCustomRecognitionList</name></member>
@@ -456,6 +460,7 @@
     <member refid="MaaTasker_8h_1a077181e4d90b12a219ff49d092700a86" kind="function"><name>MaaTaskerGetController</name></member>
     <member refid="MaaTasker_8h_1aea0f684a6987fc963254f68870537925" kind="function"><name>MaaTaskerClearCache</name></member>
     <member refid="MaaTasker_8h_1a899a756cf686e880c0691105176c6773" kind="function"><name>MaaTaskerOverridePipeline</name></member>
+    <member refid="MaaTasker_8h_1a0b81aaf29aca406f50eb7d59aa9f8a48" kind="function"><name>MaaTaskerGetRecognitionImageStatus</name></member>
     <member refid="MaaTasker_8h_1aa0a412e5b5e08fb4f4e11de826700ff7" kind="function"><name>MaaTaskerGetRecognitionDetail</name></member>
     <member refid="MaaTasker_8h_1ad18ddb1160386ad45e2268b5fc655488" kind="function"><name>MaaTaskerGetActionDetail</name></member>
     <member refid="MaaTasker_8h_1aa3aa69ddfe059def8bfd5510fc1ec90b" kind="function"><name>MaaTaskerGetWaitFreezesDetail</name></member>
@@ -586,6 +591,10 @@
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea34d392a2384c7cc6d0a75112952f5edf" kind="enumvalue"><name>MaaGlobalOption_SaveOnError</name></member>
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eeaa0b82e4c6b2048977eb87578ab41bc5a" kind="enumvalue"><name>MaaGlobalOption_DrawQuality</name></member>
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39" kind="enumvalue"><name>MaaGlobalOption_RecoImageCacheLimit</name></member>
+    <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea16aa8fc1b6783a9a8fce6460cddef07d" kind="enumvalue"><name>MaaGlobalOption_RecoImageRaw</name></member>
+    <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea09a721d12f150c3d2a2ea7f97131691c" kind="enumvalue"><name>MaaGlobalOption_RecoImageDraws</name></member>
+    <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea75d4475a5b3d23603be6d72fa5272e4f" kind="enumvalue"><name>MaaGlobalOption_RecoImageCacheBytes</name></member>
+    <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea01f75ca103a3103b2212deaa5d0ea968" kind="enumvalue"><name>MaaGlobalOption_CaptureConfig</name></member>
     <member refid="MaaDef_8h_1a70d2d23982bb9114d93ce5e811288679" kind="enum"><name>MaaInferenceDeviceEnum</name></member>
     <member refid="MaaDef_8h_1a70d2d23982bb9114d93ce5e811288679ae4eb278e6b02b9b25afa7261d0b5c70e" kind="enumvalue"><name>MaaInferenceDevice_CPU</name></member>
     <member refid="MaaDef_8h_1a70d2d23982bb9114d93ce5e811288679a335e0821f21a444ed2bbb45f61df4e1b" kind="enumvalue"><name>MaaInferenceDevice_Auto</name></member>
@@ -603,6 +612,7 @@
     <member refid="MaaDef_8h_1a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e" kind="enumvalue"><name>MaaResOption_Invalid</name></member>
     <member refid="MaaDef_8h_1a9aa211dbcabe90cacd0c94ea6a03d116a3ff6bf91b8715ced2a6c20ac9c1b4109" kind="enumvalue"><name>MaaResOption_InferenceDevice</name></member>
     <member refid="MaaDef_8h_1a9aa211dbcabe90cacd0c94ea6a03d116ace3b2838a2190168d82cf04fd4d05cf9" kind="enumvalue"><name>MaaResOption_InferenceExecutionProvider</name></member>
+    <member refid="MaaDef_8h_1a9aa211dbcabe90cacd0c94ea6a03d116a7cae90f725e8499dfbd8189896735160" kind="enumvalue"><name>MaaResOption_WeChatOCR</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003" kind="enum"><name>MaaCtrlOptionEnum</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f" kind="enumvalue"><name>MaaCtrlOption_Invalid</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75" kind="enumvalue"><name>MaaCtrlOption_ScreenshotTargetLongSide</name></member>
@@ -699,6 +709,24 @@
     <member refid="group__MaaMsg_1gabbd49acf07521f4aa8ad3a1c5f6ed8a1" kind="define"><name>MaaMsg_Node_WaitFreezes_Starting</name></member>
     <member refid="group__MaaMsg_1gadea7b0a37f4fecce7a93ef4b755deb37" kind="define"><name>MaaMsg_Node_WaitFreezes_Succeeded</name></member>
     <member refid="group__MaaMsg_1gae545a1ad8c417848d8d6a279b8314439" kind="define"><name>MaaMsg_Node_WaitFreezes_Failed</name></member>
+    <member refid="group__MaaMsg_1ga44b8967e866ee44afe74f17add92e912" kind="define"><name>MaaMsg_Resource_Created</name></member>
+    <member refid="group__MaaMsg_1gaa12fc313100055bc5d6233c456dfc4f6" kind="define"><name>MaaMsg_Resource_Destroying</name></member>
+    <member refid="group__MaaMsg_1ga137a29bcbb8ce6312526b2f5a4ddeb58" kind="define"><name>MaaMsg_Controller_Created</name></member>
+    <member refid="group__MaaMsg_1ga08f454c1b9d04a904e793cdab94a06e0" kind="define"><name>MaaMsg_Controller_Destroying</name></member>
+    <member refid="group__MaaMsg_1gac54f98bd5bc028a89e049ceb3cf34d20" kind="define"><name>MaaMsg_Tasker_Created</name></member>
+    <member refid="group__MaaMsg_1ga60a3d35925b11e525746ce66396ec13e" kind="define"><name>MaaMsg_Tasker_Destroying</name></member>
+    <member refid="group__MaaMsg_1ga5d9557171122fbb1006bd78b79a06cf7" kind="define"><name>MaaMsg_Context_Task_Starting</name></member>
+    <member refid="group__MaaMsg_1ga58c44b33785edf757d3f8f89e31af72a" kind="define"><name>MaaMsg_Context_Task_Succeeded</name></member>
+    <member refid="group__MaaMsg_1ga4d67c1db600aaa27cce2c72bfdba135c" kind="define"><name>MaaMsg_Context_Task_Failed</name></member>
+    <member refid="group__MaaMsg_1ga5216febc193c1e822d454c0c2f625d73" kind="define"><name>MaaMsg_Context_Task_Cancelled</name></member>
+    <member refid="group__MaaMsg_1gabf8e38557b8846bbd13398944814b3be" kind="define"><name>MaaMsg_Node_PipelineNode_Cancelled</name></member>
+    <member refid="group__MaaMsg_1gaa19f8bb7a4a0a1c0b28df8e383f5bad2" kind="define"><name>MaaMsg_Node_RecognitionNode_Cancelled</name></member>
+    <member refid="group__MaaMsg_1ga659010d8e4c2583750ae01e28bdf8365" kind="define"><name>MaaMsg_Node_ActionNode_Cancelled</name></member>
+    <member refid="group__MaaMsg_1ga688496cef5c595fc262455604c475064" kind="define"><name>MaaMsg_Node_NextList_Cancelled</name></member>
+    <member refid="group__MaaMsg_1ga9749532f59240dcd9edb297b1b4040be" kind="define"><name>MaaMsg_Node_Recognition_Cancelled</name></member>
+    <member refid="group__MaaMsg_1ga7ec4d4836ca166fdd2456f02226cd0cb" kind="define"><name>MaaMsg_Node_Action_Cancelled</name></member>
+    <member refid="group__MaaMsg_1ga9708c5a231bc5e26c59e9776e22091f0" kind="define"><name>MaaMsg_Node_WaitFreezes_Cancelled</name></member>
+    <member refid="group__MaaMsg_1ga84af3e472abfc5f93fe69ee6b622d2ca" kind="define"><name>MaaMsg_Node_Transition</name></member>
   </compound>
   <compound refid="MaaPort_8h" kind="file"><name>MaaPort.h</name>
     <member refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kind="define"><name>MAA_CALL</name></member>
@@ -881,6 +909,24 @@
     <member refid="group__MaaMsg_1gabbd49acf07521f4aa8ad3a1c5f6ed8a1" kind="define"><name>MaaMsg_Node_WaitFreezes_Starting</name></member>
     <member refid="group__MaaMsg_1gadea7b0a37f4fecce7a93ef4b755deb37" kind="define"><name>MaaMsg_Node_WaitFreezes_Succeeded</name></member>
     <member refid="group__MaaMsg_1gae545a1ad8c417848d8d6a279b8314439" kind="define"><name>MaaMsg_Node_WaitFreezes_Failed</name></member>
+    <member refid="group__MaaMsg_1ga44b8967e866ee44afe74f17add92e912" kind="define"><name>MaaMsg_Resource_Created</name></member>
+    <member refid="group__MaaMsg_1gaa12fc313100055bc5d6233c456dfc4f6" kind="define"><name>MaaMsg_Resource_Destroying</name></member>
+    <member refid="group__MaaMsg_1ga137a29bcbb8ce6312526b2f5a4ddeb58" kind="define"><name>MaaMsg_Controller_Created</name></member>
+    <member refid="group__MaaMsg_1ga08f454c1b9d04a904e793cdab94a06e0" kind="define"><name>MaaMsg_Controller_Destroying</name></member>
+    <member refid="group__MaaMsg_1gac54f98bd5bc028a89e049ceb3cf34d20" kind="define"><name>MaaMsg_Tasker_Created</name></member>
+    <member refid="group__MaaMsg_1ga60a3d35925b11e525746ce66396ec13e" kind="define"><name>MaaMsg_Tasker_Destroying</name></member>
+    <member refid="group__MaaMsg_1ga5d9557171122fbb1006bd78b79a06cf7" kind="define"><name>MaaMsg_Context_Task_Starting</name></member>
+    <member refid="group__MaaMsg_1ga58c44b33785edf757d3f8f89e31af72a" kind="define"><name>MaaMsg_Context_Task_Succeeded</name></member>
+    <member refid="group__MaaMsg_1ga4d67c1db600aaa27cce2c72bfdba135c" kind="define"><name>MaaMsg_Context_Task_Failed</name></member>
+    <member refid="group__MaaMsg_1ga5216febc193c1e822d454c0c2f625d73" kind="define"><name>MaaMsg_Context_Task_Cancelled</name></member>
+    <member refid="group__MaaMsg_1gabf8e38557b8846bbd13398944814b3be" kind="define"><name>MaaMsg_Node_PipelineNode_Cancelled</name></member>
+    <member refid="group__MaaMsg_1gaa19f8bb7a4a0a1c0b28df8e383f5bad2" kind="define"><name>MaaMsg_Node_RecognitionNode_Cancelled</name></member>
+    <member refid="group__MaaMsg_1ga659010d8e4c2583750ae01e28bdf8365" kind="define"><name>MaaMsg_Node_ActionNode_Cancelled</name></member>
+    <member refid="group__MaaMsg_1ga688496cef5c595fc262455604c475064" kind="define"><name>MaaMsg_Node_NextList_Cancelled</name></member>
+    <member refid="group__MaaMsg_1ga9749532f59240dcd9edb297b1b4040be" kind="define"><name>MaaMsg_Node_Recognition_Cancelled</name></member>
+    <member refid="group__MaaMsg_1ga7ec4d4836ca166fdd2456f02226cd0cb" kind="define"><name>MaaMsg_Node_Action_Cancelled</name></member>
+    <member refid="group__MaaMsg_1ga9708c5a231bc5e26c59e9776e22091f0" kind="define"><name>MaaMsg_Node_WaitFreezes_Cancelled</name></member>
+    <member refid="group__MaaMsg_1ga84af3e472abfc5f93fe69ee6b622d2ca" kind="define"><name>MaaMsg_Node_Transition</name></member>
   </compound>
   <compound refid="deprecated" kind="page"><name>deprecated</name>
   </compound>

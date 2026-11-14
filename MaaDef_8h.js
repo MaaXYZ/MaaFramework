@@ -171,7 +171,11 @@ var MaaDef_8h =
       [ "MaaGlobalOption_DebugMode", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f", null ],
       [ "MaaGlobalOption_SaveOnError", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea34d392a2384c7cc6d0a75112952f5edf", null ],
       [ "MaaGlobalOption_DrawQuality", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaa0b82e4c6b2048977eb87578ab41bc5a", null ],
-      [ "MaaGlobalOption_RecoImageCacheLimit", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39", null ]
+      [ "MaaGlobalOption_RecoImageCacheLimit", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39", null ],
+      [ "MaaGlobalOption_RecoImageRaw", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea16aa8fc1b6783a9a8fce6460cddef07d", null ],
+      [ "MaaGlobalOption_RecoImageDraws", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea09a721d12f150c3d2a2ea7f97131691c", null ],
+      [ "MaaGlobalOption_RecoImageCacheBytes", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea75d4475a5b3d23603be6d72fa5272e4f", null ],
+      [ "MaaGlobalOption_CaptureConfig", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea01f75ca103a3103b2212deaa5d0ea968", null ]
     ] ],
     [ "MaaInferenceDeviceEnum", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679", [
       [ "MaaInferenceDevice_CPU", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679ae4eb278e6b02b9b25afa7261d0b5c70e", null ],
@@ -191,7 +195,8 @@ var MaaDef_8h =
     [ "MaaResOptionEnum", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116", [
       [ "MaaResOption_Invalid", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e", null ],
       [ "MaaResOption_InferenceDevice", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116a3ff6bf91b8715ced2a6c20ac9c1b4109", null ],
-      [ "MaaResOption_InferenceExecutionProvider", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116ace3b2838a2190168d82cf04fd4d05cf9", null ]
+      [ "MaaResOption_InferenceExecutionProvider", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116ace3b2838a2190168d82cf04fd4d05cf9", null ],
+      [ "MaaResOption_WeChatOCR", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116a7cae90f725e8499dfbd8189896735160", null ]
     ] ],
     [ "MaaCtrlOptionEnum", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003", [
       [ "MaaCtrlOption_Invalid", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f", null ],

@@ -478,6 +478,14 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="#ad09e62ec1fd03dadaf5fb009026c38eeaa0b82e4c6b2048977eb87578ab41bc5a">MaaGlobalOption_DrawQuality</a> = 8
 , <br />
 &#160;&#160;<a class="el" href="#ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39">MaaGlobalOption_RecoImageCacheLimit</a> = 9
+, <br />
+&#160;&#160;<a class="el" href="#ad09e62ec1fd03dadaf5fb009026c38eea16aa8fc1b6783a9a8fce6460cddef07d">MaaGlobalOption_RecoImageRaw</a> = 10
+, <br />
+&#160;&#160;<a class="el" href="#ad09e62ec1fd03dadaf5fb009026c38eea09a721d12f150c3d2a2ea7f97131691c">MaaGlobalOption_RecoImageDraws</a> = 11
+, <br />
+&#160;&#160;<a class="el" href="#ad09e62ec1fd03dadaf5fb009026c38eea75d4475a5b3d23603be6d72fa5272e4f">MaaGlobalOption_RecoImageCacheBytes</a> = 12
+, <br />
+&#160;&#160;<a class="el" href="#ad09e62ec1fd03dadaf5fb009026c38eea01f75ca103a3103b2212deaa5d0ea968">MaaGlobalOption_CaptureConfig</a> = 13
 <br />
  }</td></tr>
 <tr class="separator:ad09e62ec1fd03dadaf5fb009026c38ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -515,6 +523,8 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="#a9aa211dbcabe90cacd0c94ea6a03d116a3ff6bf91b8715ced2a6c20ac9c1b4109">MaaResOption_InferenceDevice</a> = 1
 , <br />
 &#160;&#160;<a class="el" href="#a9aa211dbcabe90cacd0c94ea6a03d116ace3b2838a2190168d82cf04fd4d05cf9">MaaResOption_InferenceExecutionProvider</a> = 2
+, <br />
+&#160;&#160;<a class="el" href="#a9aa211dbcabe90cacd0c94ea6a03d116a7cae90f725e8499dfbd8189896735160">MaaResOption_WeChatOCR</a> = 3
 <br />
  }</td></tr>
 <tr class="separator:a9aa211dbcabe90cacd0c94ea6a03d116"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -723,7 +733,7 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    (<a class="code hl_define" href="#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~MaaAdbScreencapMethod_RawByNetcat) &amp; (~MaaAdbScreencapMethod_MinicapDirect) \</div>
 <div class="line">     &amp; (~MaaAdbScreencapMethod_MinicapStream))</div>
-<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:320</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:338</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2911,6 +2921,14 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39" name="ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39"></a>MaaGlobalOption_RecoImageCacheLimit&#160;</td><td class="fielddoc"><p>Recognition image cache limit</p>
 <p>value: size_t, eg: 4096; val_size: sizeof(size_t) default value is 4096 </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea16aa8fc1b6783a9a8fce6460cddef07d" name="ad09e62ec1fd03dadaf5fb009026c38eea16aa8fc1b6783a9a8fce6460cddef07d"></a>MaaGlobalOption_RecoImageRaw&#160;</td><td class="fielddoc"><p>Preserve recognition input PNGs. value: bool. Unset follows DebugMode. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea09a721d12f150c3d2a2ea7f97131691c" name="ad09e62ec1fd03dadaf5fb009026c38eea09a721d12f150c3d2a2ea7f97131691c"></a>MaaGlobalOption_RecoImageDraws&#160;</td><td class="fielddoc"><p>Generate recognition annotation images. value: bool. Unset follows SaveDraw/DebugMode and Debug-build defaults. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea75d4475a5b3d23603be6d72fa5272e4f" name="ad09e62ec1fd03dadaf5fb009026c38eea75d4475a5b3d23603be6d72fa5272e4f"></a>MaaGlobalOption_RecoImageCacheBytes&#160;</td><td class="fielddoc"><p>Encoded recognition image byte limit per Tasker. value: size_t. Zero disables new image caching; default unlimited. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea01f75ca103a3103b2212deaa5d0ea968" name="ad09e62ec1fd03dadaf5fb009026c38eea01f75ca103a3103b2212deaa5d0ea968"></a>MaaGlobalOption_CaptureConfig&#160;</td><td class="fielddoc"><p>Include the effective pipeline in recognition/action notifications. value: bool; default false. </p>
+</td></tr>
 </table>
 
 </div>
@@ -2976,6 +2994,8 @@ Enumerations</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a9aa211dbcabe90cacd0c94ea6a03d116ace3b2838a2190168d82cf04fd4d05cf9" name="a9aa211dbcabe90cacd0c94ea6a03d116ace3b2838a2190168d82cf04fd4d05cf9"></a>MaaResOption_InferenceExecutionProvider&#160;</td><td class="fielddoc"><p>Use the specified inference execution provider Please set this option before loading the model. Once resource loading starts (any MaaResourcePost*), switching to or from NCNN fails until <a class="el" href="MaaResource_8h.html#a245abf490b3967003e4645f7bb2f2a32">MaaResourceClear()</a>.</p>
 <p>value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider) default value is MaaInferenceExecutionProvider_Auto </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9aa211dbcabe90cacd0c94ea6a03d116a7cae90f725e8499dfbd8189896735160" name="a9aa211dbcabe90cacd0c94ea6a03d116a7cae90f725e8499dfbd8189896735160"></a>MaaResOption_WeChatOCR&#160;</td><td class="fielddoc"><p>Configure the optional WeChatOCR engine (Windows x64 and Linux x64). value: UTF-8 JSON bytes; val_size excludes the optional terminating NUL. Empty JSON {} enables SDK/runtime discovery. sdk_path is optional; runtime_dir and ocr_path must be supplied together or both omitted. Explicit paths must be absolute. Configure a local Resource before any MaaResourcePost* call; remote resources do not support it. MaaResourceClear resets the configuration. Select engine="WeChatOCR" in OCR nodes. Configuration options: <a href="https://github.com/MaaXYZ/WeChatOCR-SDK#readme">https://github.com/MaaXYZ/WeChatOCR-SDK#readme</a> </p>
 </td></tr>
 </table>
 
@@ -3063,7 +3083,7 @@ Enumerations</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Fri Nov 13 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
+    <li class="footer">Generated on Sat Nov 14 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
 </body>

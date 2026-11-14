@@ -198,8 +198,11 @@ $(function(){initNavTree('globals_func.html',''); initResizable(true); });
 <li>MaaGamepadControlUnitCreate()&#160;:&#160;<a class="el" href="GamepadControlUnitAPI_8h.html#ad3e9a885b37a409655923b92ca9be65f">GamepadControlUnitAPI.h</a></li>
 <li>MaaGamepadControlUnitDestroy()&#160;:&#160;<a class="el" href="GamepadControlUnitAPI_8h.html#a657109c85fb7ec8d750a244d125ab9d3">GamepadControlUnitAPI.h</a></li>
 <li>MaaGamepadControlUnitGetVersion()&#160;:&#160;<a class="el" href="GamepadControlUnitAPI_8h.html#ab9bcf7b6bf623919015fadac32b9cc8d">GamepadControlUnitAPI.h</a></li>
+<li>MaaGlobalFlushPlugins()&#160;:&#160;<a class="el" href="MaaGlobal_8h.html#a76b462b3b8a86797567dec61cf686e23">MaaGlobal.h</a></li>
+<li>MaaGlobalGetPluginList()&#160;:&#160;<a class="el" href="MaaGlobal_8h.html#ae64d61bbc7f1ccd44d3a827f7dbda0b3">MaaGlobal.h</a></li>
 <li>MaaGlobalLoadPlugin()&#160;:&#160;<a class="el" href="MaaGlobal_8h.html#ab488228d24cc5477ccff6d83ca505441">MaaGlobal.h</a></li>
 <li>MaaGlobalSetOption()&#160;:&#160;<a class="el" href="MaaGlobal_8h.html#ab8a3bdd731560655c4fa049bf5886501">MaaGlobal.h</a></li>
+<li>MaaGlobalShutdownPlugins()&#160;:&#160;<a class="el" href="MaaGlobal_8h.html#aaeef00e574f118eee54419c299e18091">MaaGlobal.h</a></li>
 <li>MaaImageBufferChannels()&#160;:&#160;<a class="el" href="MaaBuffer_8h.html#ae853448a1632c7e73ac1004a5b963d40">MaaBuffer.h</a></li>
 <li>MaaImageBufferClear()&#160;:&#160;<a class="el" href="MaaBuffer_8h.html#a848ef7db55af260820035f9187d1c7ab">MaaBuffer.h</a></li>
 <li>MaaImageBufferCreate()&#160;:&#160;<a class="el" href="MaaBuffer_8h.html#a82673f6e6752bfba4a88aa02cd088e5f">MaaBuffer.h</a></li>
@@ -269,6 +272,7 @@ $(function(){initNavTree('globals_func.html',''); initResizable(true); });
 <li>MaaResourceGetDefaultActionParam()&#160;:&#160;<a class="el" href="MaaResource_8h.html#a861e1c03118c4cdc4456625fad276ad9">MaaResource.h</a></li>
 <li>MaaResourceGetDefaultRecognitionParam()&#160;:&#160;<a class="el" href="MaaResource_8h.html#a54e07840896dd99b1aa1580c84cc25e3">MaaResource.h</a></li>
 <li>MaaResourceGetHash()&#160;:&#160;<a class="el" href="MaaResource_8h.html#a5b6ebae54e1ebf87ce57ea6ef4333281">MaaResource.h</a></li>
+<li>MaaResourceGetLoadDetail()&#160;:&#160;<a class="el" href="MaaResource_8h.html#a8dd42b39bb3cf63c27ab4528389b40c4">MaaResource.h</a></li>
 <li>MaaResourceGetNodeData()&#160;:&#160;<a class="el" href="MaaResource_8h.html#ad583785acf9660578fbf229a52dff018">MaaResource.h</a></li>
 <li>MaaResourceGetNodeList()&#160;:&#160;<a class="el" href="MaaResource_8h.html#a93292991dbd360311465e875e9053055">MaaResource.h</a></li>
 <li>MaaResourceLoaded()&#160;:&#160;<a class="el" href="MaaResource_8h.html#a11fd94300f47dd638d5bc8cee8dbc63b">MaaResource.h</a></li>
@@ -318,6 +322,7 @@ $(function(){initNavTree('globals_func.html',''); initResizable(true); });
 <li>MaaTaskerGetLatestNode()&#160;:&#160;<a class="el" href="MaaTasker_8h.html#a5e00add0d572f3baaf90873443af08ec">MaaTasker.h</a></li>
 <li>MaaTaskerGetNodeDetail()&#160;:&#160;<a class="el" href="MaaTasker_8h.html#a2807a557aa5cac9d2bee6281ec22f836">MaaTasker.h</a></li>
 <li>MaaTaskerGetRecognitionDetail()&#160;:&#160;<a class="el" href="MaaTasker_8h.html#aa0a412e5b5e08fb4f4e11de826700ff7">MaaTasker.h</a></li>
+<li>MaaTaskerGetRecognitionImageStatus()&#160;:&#160;<a class="el" href="MaaTasker_8h.html#a0b81aaf29aca406f50eb7d59aa9f8a48">MaaTasker.h</a></li>
 <li>MaaTaskerGetResource()&#160;:&#160;<a class="el" href="MaaTasker_8h.html#a66bcb6d294dd92c294555c826ef2d749">MaaTasker.h</a></li>
 <li>MaaTaskerGetTaskDetail()&#160;:&#160;<a class="el" href="MaaTasker_8h.html#ae4b85b9172caa12b04648a98e923390d">MaaTasker.h</a></li>
 <li>MaaTaskerGetWaitFreezesDetail()&#160;:&#160;<a class="el" href="MaaTasker_8h.html#aa3aa69ddfe059def8bfd5510fc1ec90b">MaaTasker.h</a></li>
@@ -403,7 +408,7 @@ $(function(){initNavTree('globals_func.html',''); initResizable(true); });
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Nov 13 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
+    <li class="footer">Generated on Sat Nov 14 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
 </body>

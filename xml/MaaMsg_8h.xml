@@ -52,13 +52,33 @@
       <member refid="group__MaaMsg_1gadea7b0a37f4fecce7a93ef4b755deb37" kind="define"><name>MaaMsg_Node_WaitFreezes_Succeeded</name></member>
       <member refid="group__MaaMsg_1gae545a1ad8c417848d8d6a279b8314439" kind="define"><name>MaaMsg_Node_WaitFreezes_Failed</name></member>
     </sectiondef>
+    <sectiondef kind="define">
+      <member refid="group__MaaMsg_1ga44b8967e866ee44afe74f17add92e912" kind="define"><name>MaaMsg_Resource_Created</name></member>
+      <member refid="group__MaaMsg_1gaa12fc313100055bc5d6233c456dfc4f6" kind="define"><name>MaaMsg_Resource_Destroying</name></member>
+      <member refid="group__MaaMsg_1ga137a29bcbb8ce6312526b2f5a4ddeb58" kind="define"><name>MaaMsg_Controller_Created</name></member>
+      <member refid="group__MaaMsg_1ga08f454c1b9d04a904e793cdab94a06e0" kind="define"><name>MaaMsg_Controller_Destroying</name></member>
+      <member refid="group__MaaMsg_1gac54f98bd5bc028a89e049ceb3cf34d20" kind="define"><name>MaaMsg_Tasker_Created</name></member>
+      <member refid="group__MaaMsg_1ga60a3d35925b11e525746ce66396ec13e" kind="define"><name>MaaMsg_Tasker_Destroying</name></member>
+      <member refid="group__MaaMsg_1ga5d9557171122fbb1006bd78b79a06cf7" kind="define"><name>MaaMsg_Context_Task_Starting</name></member>
+      <member refid="group__MaaMsg_1ga58c44b33785edf757d3f8f89e31af72a" kind="define"><name>MaaMsg_Context_Task_Succeeded</name></member>
+      <member refid="group__MaaMsg_1ga4d67c1db600aaa27cce2c72bfdba135c" kind="define"><name>MaaMsg_Context_Task_Failed</name></member>
+      <member refid="group__MaaMsg_1ga5216febc193c1e822d454c0c2f625d73" kind="define"><name>MaaMsg_Context_Task_Cancelled</name></member>
+      <member refid="group__MaaMsg_1gabf8e38557b8846bbd13398944814b3be" kind="define"><name>MaaMsg_Node_PipelineNode_Cancelled</name></member>
+      <member refid="group__MaaMsg_1gaa19f8bb7a4a0a1c0b28df8e383f5bad2" kind="define"><name>MaaMsg_Node_RecognitionNode_Cancelled</name></member>
+      <member refid="group__MaaMsg_1ga659010d8e4c2583750ae01e28bdf8365" kind="define"><name>MaaMsg_Node_ActionNode_Cancelled</name></member>
+      <member refid="group__MaaMsg_1ga688496cef5c595fc262455604c475064" kind="define"><name>MaaMsg_Node_NextList_Cancelled</name></member>
+      <member refid="group__MaaMsg_1ga9749532f59240dcd9edb297b1b4040be" kind="define"><name>MaaMsg_Node_Recognition_Cancelled</name></member>
+      <member refid="group__MaaMsg_1ga7ec4d4836ca166fdd2456f02226cd0cb" kind="define"><name>MaaMsg_Node_Action_Cancelled</name></member>
+      <member refid="group__MaaMsg_1ga9708c5a231bc5e26c59e9776e22091f0" kind="define"><name>MaaMsg_Node_WaitFreezes_Cancelled</name></member>
+      <member refid="group__MaaMsg_1ga84af3e472abfc5f93fe69ee6b622d2ca" kind="define"><name>MaaMsg_Node_Transition</name></member>
+    </sectiondef>
     <briefdescription>
 <para>Contains the callback message definitions. </para>
     </briefdescription>
     <detaileddescription>
 <para><simplesect kind="author"><para></para>
 </simplesect>
-A callback consists of a message and a payload. The message is a string that indicates the type of the message. The payload is a JSON object that contains the details of the message.</para>
+A callback consists of a message and a payload. The message is a string that indicates the type of the message. The payload is a JSON object that contains the details of the message. Recognition/action notifications optionally include pipeline (the execution-time configuration) when MaaGlobalOption_CaptureConfig is enabled. Recognition result JSON also includes image_status at cache insertion time; use MaaTaskerGetRecognitionImageStatus to query current retention.</para>
 <para><simplesect kind="copyright"><para>Copyright (c) 2024 </para>
 </simplesect>
 </para>
