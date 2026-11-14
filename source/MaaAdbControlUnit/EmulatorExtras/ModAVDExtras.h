@@ -20,8 +20,9 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 // ModAVDExtras uses the modavd_extras library shipped with ModAVD (<ModAVD root>/extras/) to capture the screen
 // from the emulator's shared frame and to send touches, keys and text through the emulator console.
-// The library never falls back to adb by itself; keys and text fall back to AdbShellInput here when the library
-// or the instance does not support them.
+// The library never falls back to adb by itself; a key or a text it cannot send (MODAVD_E_UNSUPPORTED: the instance
+// has no key command, the key is not on the emulator keyboard, non-ASCII text without a focused text field)
+// goes through AdbShellInput here.
 // API: https://github.com/ModAVD/ModAVDExtras/blob/main/include/modavd_extras.h
 class ModAVDExtras
     : public ScreencapBase
@@ -79,9 +80,6 @@ private:
     std::optional<cv::Mat> capture_once(int& ret);
     std::string error_string(int ret) const;
 
-    // Drops a capability after the library said MODAVD_E_UNSUPPORTED, so later calls go to adb directly.
-    void drop_capability_if_unsupported(int ret, uint32_t cap);
-
 private:
     const Usage usage_;
 
@@ -94,8 +92,6 @@ private:
     uint32_t api_version_ = 0;
     void* handle_ = nullptr;
     uint32_t capabilities_ = 0;
-    // MODAVD_CAP_* the library answered MODAVD_E_UNSUPPORTED for; kept across reopens.
-    uint32_t unsupported_ = 0;
 
     // Keys sent with adb because the library failed on key_down; their key_up is a no-op.
     std::unordered_set<int> adb_clicked_keys_;
@@ -128,7 +124,6 @@ private:
 
     static constexpr int kOk = 0;
     static constexpr int kErrNotReady = -3;
-    static constexpr int kErrUnsupported = -7;
     static constexpr int kNotReadyRetries = 20;
     static constexpr uint32_t kCapScreencap = 1u << 0;
     static constexpr uint32_t kCapTouch = 1u << 1;

@@ -275,8 +275,8 @@ bool ModAVDExtras::click_key(int key)
             LogError << "Failed to release key" << VAR(key) << VAR(ret) << VAR(error_string(ret));
             return false;
         }
+        // MODAVD_E_UNSUPPORTED is about this key (one the emulator keyboard does not have), not about keys in general.
         LogWarn << "ModAVD key failed, fallback to adb" << VAR(key) << VAR(ret) << VAR(error_string(ret));
-        drop_capability_if_unsupported(ret, kCapKey);
     }
 
     if (!adb_shell_input_) {
@@ -297,7 +297,6 @@ bool ModAVDExtras::key_down(int key)
             return true;
         }
         LogWarn << "ModAVD key_down failed, fallback to adb" << VAR(key) << VAR(ret) << VAR(error_string(ret));
-        drop_capability_if_unsupported(ret, kCapKey);
     }
 
     // adb can only send a whole key press: send it now and make the matching key_up a no-op.
@@ -325,7 +324,6 @@ bool ModAVDExtras::key_up(int key)
         return false;
     }
 
-    // Also when the capability was dropped meanwhile: the key went down through the library.
     int ret = key_func_(handle_, 0, key, 0);
     if (ret != kOk) {
         LogError << "Failed to key_up" << VAR(key) << VAR(ret) << VAR(error_string(ret));
@@ -343,8 +341,9 @@ bool ModAVDExtras::input_text(const std::string& text)
         if (ret == kOk) {
             return true;
         }
+        // MODAVD_E_UNSUPPORTED is about this text (not ASCII, and no text field with ModAVD's input method focused),
+        // so the next call tries the library again.
         LogWarn << "ModAVD input_text failed, fallback to adb" << VAR(ret) << VAR(error_string(ret));
-        drop_capability_if_unsupported(ret, kCapText);
     }
 
     if (!adb_shell_input_) {
@@ -386,8 +385,8 @@ bool ModAVDExtras::load_modavd_library()
         return false;
     }
 
-    // API versions only grow: 1 capture, 2 touch. Keys and text are declared from 2 on and announced through
-    // MODAVD_CAP_KEY / MODAVD_CAP_TEXT once they work.
+    // API versions only grow: 1 capture, 2 touch, 3 keys and text. What an instance can do is announced through
+    // MODAVD_CAP_*: text from version 3 on, keys when the emulator console has the key command.
     api_version_ = api_version_func_();
     LogInfo << "ModAVD extras" << VAR(lib_path_) << VAR(api_version_);
     if (api_version_ < 1) {
@@ -450,7 +449,7 @@ bool ModAVDExtras::open_instance()
     }
 
     handle_ = handle;
-    capabilities_ = capabilities_func_(handle_) & ~unsupported_;
+    capabilities_ = capabilities_func_(handle_);
     if (!key_func_) {
         capabilities_ &= ~kCapKey;
     }
@@ -487,16 +486,6 @@ std::string ModAVDExtras::error_string(int ret) const
     }
     const char* s = strerror_func_(ret);
     return s ? s : "";
-}
-
-void ModAVDExtras::drop_capability_if_unsupported(int ret, uint32_t cap)
-{
-    if (ret != kErrUnsupported) {
-        return;
-    }
-    LogInfo << "ModAVD extras does not support it, use adb from now on" << VAR(cap);
-    unsupported_ |= cap;
-    capabilities_ &= ~cap;
 }
 
 MAA_CTRL_UNIT_NS_END
