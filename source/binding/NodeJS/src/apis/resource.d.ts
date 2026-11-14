@@ -1,7 +1,25 @@
 declare global {
     namespace maa {
+        type ResourceLoadError = {
+            code: string
+            file?: string
+            node?: string
+            pointer?: string
+            field?: string
+            target?: string
+        }
+        type ResourceLoadDetail = {
+            res_id: number // ResId
+            path: string
+            type: 'Bundle' | 'OcrModel' | 'Pipeline' | 'Image'
+            hash: string
+            status: Status
+            errors: ResourceLoadError[]
+        }
         type ResourceNotify = {
             msg: NotifyMessage<'Loading'>
+            status?: Status
+            errors?: ResourceLoadError[]
             res_id: number // ResId
             path: string
             hash: string
@@ -57,6 +75,7 @@ declare global {
             status(id: ResId): Status
             wait(id: ResId): Promise<Status>
             get loaded(): boolean
+            get_load_detail(id: ResId): ResourceLoadDetail | null
             get hash(): string | null
             get node_list(): string[] | null
             get custom_recognition_list(): string[] | null

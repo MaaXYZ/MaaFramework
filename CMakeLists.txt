@@ -120,6 +120,8 @@ if(BUILD_SAMPLE)
 endif()
 
 if(BUILD_PIPELINE_TESTING)
+    enable_testing()
+    add_subdirectory(test/plugin)
     add_subdirectory(test/pipeline)
     add_subdirectory(test/TestingDataSet)
     add_subdirectory(test/wechat_ocr)

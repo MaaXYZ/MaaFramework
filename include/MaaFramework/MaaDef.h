@@ -126,6 +126,15 @@ enum MaaGlobalOptionEnum
     /// value: size_t, eg: 4096; val_size: sizeof(size_t)
     /// default value is 4096
     MaaGlobalOption_RecoImageCacheLimit = 9,
+
+    /// Preserve recognition input PNGs. value: bool. Unset follows DebugMode.
+    MaaGlobalOption_RecoImageRaw = 10,
+    /// Generate recognition annotation images. value: bool. Unset follows SaveDraw/DebugMode and Debug-build defaults.
+    MaaGlobalOption_RecoImageDraws = 11,
+    /// Encoded recognition image byte limit per Tasker. value: size_t. Zero disables new image caching; default unlimited.
+    MaaGlobalOption_RecoImageCacheBytes = 12,
+    /// Include the effective pipeline in recognition/action notifications. value: bool; default false.
+    MaaGlobalOption_CaptureConfig = 13,
 };
 
 typedef MaaOption MaaResOption;

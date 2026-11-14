@@ -69,6 +69,9 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaResourceSetOption(MaaResource* res, MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
+    /** Completed load snapshot as JSON; unavailable IDs return false. Cleared by MaaResourceClear. */
+    MAA_FRAMEWORK_API MaaBool MaaResourceGetLoadDetail(const MaaResource* res, MaaResId res_id, /* out */ MaaStringBuffer* buffer);
+
     MAA_FRAMEWORK_API MaaBool MaaResourceGetHash(const MaaResource* res, /* out */ MaaStringBuffer* buffer);
 
     MAA_FRAMEWORK_API MaaBool MaaResourceGetNodeList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer);

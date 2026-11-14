@@ -12,7 +12,14 @@ declare global {
             set stdout_level(value: StdoutLevel)
             set debug_mode(value: boolean)
             set draw_quality(value: number)
-            set reco_image_cache_limit(value: number)
+            set reco_image_cache_limit(value: string)
+            set reco_image_raw(value: boolean)
+            set reco_image_draws(value: boolean)
+            set reco_image_cache_bytes(value: string)
+            set capture_config(value: boolean)
+            get_plugin_list(): string[] | null
+            flush_plugins(): boolean
+            shutdown_plugins(): boolean
             config_init_option(user_path: string, default_json?: string): void
 
             resize_image(image: ArrayBuffer, width: number, height: number): ArrayBuffer

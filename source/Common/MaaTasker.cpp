@@ -338,6 +338,20 @@ MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId task_id, const ch
     }                                                \
     else
 
+MaaBool MaaTaskerGetRecognitionImageStatus(const MaaTasker* tasker, MaaRecoId reco_id, MaaStringBuffer* buffer)
+{
+    if (!tasker || !buffer) {
+        LogError << "handle or buffer is null";
+        return false;
+    }
+    auto result = tasker->get_reco_result(reco_id);
+    if (!result) {
+        return false;
+    }
+    buffer->set(result->image_status);
+    return true;
+}
+
 MaaBool MaaTaskerGetRecognitionDetail(
     const MaaTasker* tasker,
     MaaRecoId reco_id,

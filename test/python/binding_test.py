@@ -1668,6 +1668,8 @@ if __name__ == "__main__":
 
     # 回归：并发初始化线程安全 (#629)
     test_binding_init_thread_safety()
+    from runtime_events_test import test_runtime_event_bindings
+    test_runtime_event_bindings()
     test_tasker_clear_cache()
     test_neural_network_cache()
 

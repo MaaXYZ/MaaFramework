@@ -453,6 +453,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_resource_get_node_data(j)) {
         return true;
     }
+    else if (handle_resource_get_load_detail(j)) {
+        return true;
+    }
     else if (handle_resource_get_hash(j)) {
         return true;
     }
@@ -1371,10 +1374,11 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
         .algorithm = detail.algorithm,
         .hit = detail.box.has_value(),
         .box = detail.box ? std::array<int32_t, 4> { detail.box->x, detail.box->y, detail.box->width, detail.box->height }
-                          : std::array<int32_t, 4> { },
+                          : std::array<int32_t, 4> {},
         .detail = detail.detail,
         .raw = detail.raw.empty() ? std::string() : send_image_encoded(detail.raw),
         .draws = std::move(draws),
+        .image_status = detail.image_status,
     };
     send(resp);
 
@@ -1831,6 +1835,25 @@ bool AgentClient::handle_resource_get_node_data(const json::value& j)
     };
     send(resp);
 
+    return true;
+}
+
+bool AgentClient::handle_resource_get_load_detail(const json::value& j)
+{
+    if (!j.is<ResourceGetLoadDetailReverseRequest>()) {
+        return false;
+    }
+    const auto& req = j.as<ResourceGetLoadDetailReverseRequest>();
+    auto* resource = query_resource(req.resource_id);
+    if (!resource) {
+        return false;
+    }
+    auto detail = resource->get_load_detail(req.res_id);
+    send(
+        ResourceGetLoadDetailReverseResponse {
+            .has_value = detail.has_value(),
+            .detail = detail.value_or(json::object {}),
+        });
     return true;
 }
 

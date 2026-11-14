@@ -14,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
-inline static constexpr int kProtocolVersion = 8;
+inline static constexpr int kProtocolVersion = 9;
 
 struct StartUpRequest
 {
@@ -749,8 +749,10 @@ struct TaskerGetRecoResultReverseResponse
     std::string raw;
     std::vector<std::string> draws;
 
+    std::string image_status = "not_captured";
+
     MessageTypePlaceholder _TaskerGetRecoResultReverseResponse = 1;
-    MEO_JSONIZATION(has_value, reco_id, name, algorithm, hit, box, detail, raw, draws, _TaskerGetRecoResultReverseResponse);
+    MEO_JSONIZATION(has_value, reco_id, name, algorithm, hit, box, detail, raw, draws, image_status, _TaskerGetRecoResultReverseResponse);
 };
 
 struct TaskerGetActionResultReverseRequest
@@ -1037,6 +1039,22 @@ struct ResourceGetNodeDataReverseResponse
 
     MessageTypePlaceholder _ResourceGetNodeDataReverseResponse = 1;
     MEO_JSONIZATION(has_value, node_data, _ResourceGetNodeDataReverseResponse);
+};
+
+struct ResourceGetLoadDetailReverseRequest
+{
+    std::string resource_id;
+    int64_t res_id = 0;
+    MessageTypePlaceholder _ResourceGetLoadDetailReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, res_id, _ResourceGetLoadDetailReverseRequest);
+};
+
+struct ResourceGetLoadDetailReverseResponse
+{
+    bool has_value = false;
+    json::object detail;
+    MessageTypePlaceholder _ResourceGetLoadDetailReverseResponse = 1;
+    MEO_JSONIZATION(has_value, detail, _ResourceGetLoadDetailReverseResponse);
 };
 
 struct ResourceGetHashReverseRequest

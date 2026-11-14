@@ -68,12 +68,7 @@ void VisionBase::handle_draw(const cv::Mat& draw) const
 
 void VisionBase::init_draw()
 {
-#ifdef MAA_DEBUG
-    debug_draw_ = true;
-#else
-    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
-    debug_draw_ = option.save_draw() || option.debug_mode();
-#endif
+    debug_draw_ = MAA_GLOBAL_NS::OptionMgr::get_instance().reco_image_draws();
 }
 
 void VisionBase::save_draws(const std::string& name, const std::vector<ImageEncodedBuffer>& draws)

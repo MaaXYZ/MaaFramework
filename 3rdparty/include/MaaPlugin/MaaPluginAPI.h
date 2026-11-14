@@ -13,6 +13,12 @@ extern "C"
 
     MAA_PLUGIN_API uint32_t GetApiVersion(void);
 
+    // Optional ABI-v1 hooks. Initialization is deferred until first object creation.
+    // Global management hooks must not create objects or reenter plugin management.
+    MAA_PLUGIN_API void OnPluginInit(void);
+    MAA_PLUGIN_API void OnPluginFlush(void);
+    MAA_PLUGIN_API void OnPluginShutdown(void);
+
     MAA_PLUGIN_API void OnResourceEvent(void* handle, const char* message, const char* details_json, void* trans_arg);
     MAA_PLUGIN_API void OnControllerEvent(void* handle, const char* message, const char* details_json, void* trans_arg);
     MAA_PLUGIN_API void OnTaskerEvent(void* handle, const char* message, const char* details_json, void* trans_arg);

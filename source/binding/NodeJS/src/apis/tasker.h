@@ -62,6 +62,7 @@ struct TaskerImpl : public maajs::NativeClassBase
     std::optional<maajs::ValueType> get_controller();
     void clear_cache();
     void override_pipeline(MaaTaskId task_id, maajs::ValueType pipeline);
+    std::optional<std::string> recognition_image_status(MaaRecoId id);
     std::optional<maajs::ValueType> recognition_detail(MaaRecoId id);
     std::optional<maajs::ValueType> action_detail(MaaActId id);
     std::optional<maajs::ValueType> node_detail(MaaNodeId id);

@@ -150,6 +150,8 @@ inline void AsyncRunner<Item>::working()
             std::unique_lock clear_lock(queue_mutex_);
             running_id_ = 0;
             running_item_ = { };
+            // Publish the busy state before completion can wake waiters.
+            running_ = !queue_.empty();
         }
 
         status_lock.lock();

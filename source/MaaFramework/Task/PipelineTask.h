@@ -61,6 +61,12 @@ private:
     void collect_ocr_from_sub_recognitions(OCRCollectContext& ctx, const std::vector<MAA_RES_NS::Recognition::SubRecognition>& subs);
 
     void save_on_error(const std::string& node_name);
+
+    inline static std::atomic<MaaId> next_list_id_ = 0;
+    MaaNodeId source_node_id_ = MaaInvalidId;
+    MaaNodeId active_node_id_ = MaaInvalidId;
+    size_t round_ = 0;
+    std::string list_type_ = "entry";
 };
 
 MAA_TASK_NS_END

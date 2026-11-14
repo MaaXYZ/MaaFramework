@@ -613,6 +613,22 @@ class Context:
 
 class ContextEventSink(EventSink):
     @dataclass
+    class ContextTaskDetail:
+        task_id: int
+        entry: str
+        context_id: Optional[int] = None
+        parent_task_id: Optional[int] = None
+        task_parent: Optional[dict[str, Any]] = None
+        parent: Optional[dict[str, Any]] = None
+        reason: Optional[str] = None
+
+    def on_context_task(self, context: Context, noti_type: NotificationType, detail: ContextTaskDetail):
+        pass
+
+    def on_node_transition(self, context: Context, details: dict[str, Any]):
+        pass
+
+    @dataclass
     class NodeWaitFreezesDetail:
         task_id: int
         wf_id: int
@@ -623,6 +639,11 @@ class ContextEventSink(EventSink):
         reco_ids: list[int]
         elapsed: Optional[int]
         focus: Any
+        context_id: Optional[int] = None
+        parent_task_id: Optional[int] = None
+        task_parent: Optional[dict[str, Any]] = None
+        parent: Optional[dict[str, Any]] = None
+        reason: Optional[str] = None
 
     def on_node_wait_freezes(
         self,
@@ -638,6 +659,17 @@ class ContextEventSink(EventSink):
         name: str
         next_list: list[JNodeAttr]
         focus: Any
+        list_id: Optional[int] = None
+        node_id: Optional[int] = None
+        list_type: Optional[str] = None
+        round: Optional[int] = None
+        selected_index: Optional[int] = None
+        reco_id: Optional[int] = None
+        context_id: Optional[int] = None
+        parent_task_id: Optional[int] = None
+        task_parent: Optional[dict[str, Any]] = None
+        parent: Optional[dict[str, Any]] = None
+        reason: Optional[str] = None
 
     def on_node_next_list(
         self,
@@ -654,6 +686,12 @@ class ContextEventSink(EventSink):
         name: str
         focus: Any
         anchor: Optional[str] = None
+        pipeline: Optional[dict[str, Any]] = None
+        context_id: Optional[int] = None
+        parent_task_id: Optional[int] = None
+        task_parent: Optional[dict[str, Any]] = None
+        parent: Optional[dict[str, Any]] = None
+        reason: Optional[str] = None
 
     def on_node_recognition(
         self,
@@ -669,6 +707,13 @@ class ContextEventSink(EventSink):
         action_id: int
         name: str
         focus: Any
+        pipeline: Optional[dict[str, Any]] = None
+        reco_id: Optional[int] = None
+        context_id: Optional[int] = None
+        parent_task_id: Optional[int] = None
+        task_parent: Optional[dict[str, Any]] = None
+        parent: Optional[dict[str, Any]] = None
+        reason: Optional[str] = None
 
     def on_node_action(self, context: Context, noti_type: NotificationType, detail: NodeActionDetail):
         pass
@@ -679,6 +724,11 @@ class ContextEventSink(EventSink):
         node_id: int
         name: str
         focus: Any
+        context_id: Optional[int] = None
+        parent_task_id: Optional[int] = None
+        task_parent: Optional[dict[str, Any]] = None
+        parent: Optional[dict[str, Any]] = None
+        reason: Optional[str] = None
 
     def on_node_pipeline_node(
         self,
@@ -694,6 +744,11 @@ class ContextEventSink(EventSink):
         node_id: int
         name: str
         focus: Any
+        context_id: Optional[int] = None
+        parent_task_id: Optional[int] = None
+        task_parent: Optional[dict[str, Any]] = None
+        parent: Optional[dict[str, Any]] = None
+        reason: Optional[str] = None
 
     def on_node_recognition_node(
         self,
@@ -709,6 +764,11 @@ class ContextEventSink(EventSink):
         node_id: int
         name: str
         focus: Any
+        context_id: Optional[int] = None
+        parent_task_id: Optional[int] = None
+        task_parent: Optional[dict[str, Any]] = None
+        parent: Optional[dict[str, Any]] = None
+        reason: Optional[str] = None
 
     def on_node_action_node(
         self,
@@ -725,9 +785,11 @@ class ContextEventSink(EventSink):
         context = Context(handle=handle)
         self.on_raw_notification(context, msg, details)
 
+        runtime = {key: details.get(key) for key in ("context_id", "parent_task_id", "task_parent", "parent", "reason")}
         noti_type = EventSink._notification_type(msg)
         if msg.startswith("Node.WaitFreezes"):
             detail = self.NodeWaitFreezesDetail(
+                **runtime,
                 task_id=details["task_id"],
                 wf_id=details["wf_id"],
                 name=details["name"],
@@ -743,15 +805,23 @@ class ContextEventSink(EventSink):
         elif msg.startswith("Node.NextList"):
             next_list = JPipelineParser._parse_node_attr_list(details["list"])
             detail = self.NodeNextListDetail(
+                **runtime,
                 task_id=details["task_id"],
                 name=details["name"],
                 next_list=next_list,
+                list_id=details.get("list_id"),
+                node_id=details.get("node_id"),
+                list_type=details.get("list_type"),
+                round=details.get("round"),
+                selected_index=details.get("selected_index"),
+                reco_id=details.get("reco_id"),
                 focus=details["focus"],
             )
             self.on_node_next_list(context, noti_type, detail)
 
         elif msg.startswith("Node.PipelineNode"):
             detail = self.NodePipelineNodeDetail(
+                **runtime,
                 task_id=details["task_id"],
                 node_id=details["node_id"],
                 name=details["name"],
@@ -761,6 +831,7 @@ class ContextEventSink(EventSink):
 
         elif msg.startswith("Node.RecognitionNode"):
             detail = self.NodeRecognitionNodeDetail(
+                **runtime,
                 task_id=details["task_id"],
                 node_id=details["node_id"],
                 name=details["name"],
@@ -770,6 +841,7 @@ class ContextEventSink(EventSink):
 
         elif msg.startswith("Node.ActionNode"):
             detail = self.NodeActionNodeDetail(
+                **runtime,
                 task_id=details["task_id"],
                 node_id=details["node_id"],
                 name=details["name"],
@@ -779,22 +851,33 @@ class ContextEventSink(EventSink):
 
         elif msg.startswith("Node.Recognition"):
             detail = self.NodeRecognitionDetail(
+                **runtime,
                 task_id=details["task_id"],
                 reco_id=details["reco_id"],
                 name=details["name"],
                 focus=details["focus"],
                 anchor=details.get("anchor"),
+                pipeline=details.get("pipeline"),
             )
             self.on_node_recognition(context, noti_type, detail)
 
         elif msg.startswith("Node.Action"):
             detail = self.NodeActionDetail(
+                reco_id=details.get("reco_id"),
+                **runtime,
                 task_id=details["task_id"],
                 action_id=details["action_id"],
                 name=details["name"],
                 focus=details["focus"],
+                pipeline=details.get("pipeline"),
             )
             self.on_node_action(context, noti_type, detail)
 
+        elif msg.startswith("Context.Task."):
+            self.on_context_task(context, noti_type, self.ContextTaskDetail(
+                task_id=details["task_id"], entry=details["entry"], **runtime,
+            ))
+        elif msg == "Node.Transition":
+            self.on_node_transition(context, details)
         else:
             self.on_unknown_notification(context, msg, details)

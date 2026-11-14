@@ -40,19 +40,25 @@ ResourceMgr::ResourceMgr()
     LogFunc;
 
     auto& plugin_mgr = MAA_GLOBAL_NS::PluginMgr::get_instance();
+    plugin_mgr.instance_created();
     LogInfo << VAR(plugin_mgr.get_names());
 
     for (const auto& sink : plugin_mgr.get_res_sinks()) {
-        add_sink(sink, this);
+        notifier_.add_plugin_sink(sink, this);
     }
 
     res_loader_ =
         std::make_unique<AsyncRunner<PostPathItem>>(std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));
+    notifier_.notify_plugins(this, MaaMsg_Resource_Created, json::object {});
 }
 
 ResourceMgr::~ResourceMgr()
 {
     LogFunc;
+
+    res_loader_->release();
+    notifier_.notify_plugins(this, MaaMsg_Resource_Destroying, json::object {});
+    MAA_GLOBAL_NS::PluginMgr::get_instance().instance_destroyed();
 }
 
 bool ResourceMgr::set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size)
@@ -177,6 +183,16 @@ size_t vec_hash(const std::vector<size_t>& vec)
     return seed;
 }
 
+std::optional<json::object> ResourceMgr::get_load_detail(MaaResId res_id) const
+{
+    std::scoped_lock lock(load_details_mutex_);
+    auto it = load_details_.find(res_id);
+    if (it == load_details_.end()) {
+        return std::nullopt;
+    }
+    return it->second;
+}
+
 std::string ResourceMgr::get_hash() const
 {
     return hash_cache_;
@@ -286,6 +302,10 @@ bool ResourceMgr::clear()
         return false;
     }
 
+    {
+        std::scoped_lock details_lock(load_details_mutex_);
+        load_details_.clear();
+    }
     pipeline_res_.clear();
     ocr_res_.clear();
     inference_res_.clear();
@@ -313,6 +333,7 @@ bool ResourceMgr::override_next(const std::string& node_name, const std::vector<
 {
     LogInfo << VAR(node_name) << VAR(next);
 
+    pipeline_res_.clear_field_source(node_name, "next");
     if (!PipelineParser::parse_next(next, pipeline_res_.get_pipeline_data_map()[node_name].next)) {
         LogError << "failed to parse_next" << VAR(next);
         return false;
@@ -415,7 +436,7 @@ CustomRecognitionSession ResourceMgr::custom_recognition(const std::string& name
 {
     auto it = custom_recognition_sessions_.find(name);
     if (it == custom_recognition_sessions_.end()) {
-        return { };
+        return {};
     }
 
     return it->second;
@@ -425,7 +446,7 @@ CustomActionSession ResourceMgr::custom_action(const std::string& name) const
 {
     auto it = custom_action_sessions_.find(name);
     if (it == custom_action_sessions_.end()) {
-        return { };
+        return {};
     }
 
     return it->second;
@@ -775,41 +796,60 @@ bool ResourceMgr::run_load(typename AsyncRunner<PostPathItem>::Id id, PostPathIt
     };
 
     notifier_.notify(this, MaaMsg_Resource_Loading_Starting, cb_detail);
+    json::array errors;
+    bool success = false;
 
     if (!check_and_set_inference_device()) {
         // loading on would leave the models to a stale backend, i.e. a silent fallback from NCNN
+        errors.emplace_back(json::object { { "code", "inference_backend_unavailable" } });
         LogError << "no usable inference backend, skip loading" << VAR(item.path);
-        valid_ = false;
+        success = false;
     }
     else {
         switch (item.type) {
         case PostPathType::Bundle:
-            valid_ = load_bundle(item.path);
+            success = load_bundle(item.path, errors);
             break;
         case PostPathType::OcrModel:
-            valid_ = load_ocr_model(item.path);
+            success = load_ocr_model(item.path);
             break;
         case PostPathType::Pipeline:
-            valid_ = load_pipeline(item.path);
+            success = load_pipeline(item.path, errors);
             break;
         case PostPathType::Image:
-            valid_ = load_image(item.path);
+            success = load_image(item.path);
             break;
         default:
             LogError << "Unknown PostPathType" << VAR(static_cast<int>(item.type));
-            valid_ = false;
+            success = false;
             break;
         }
     }
 
+    valid_ = success;
     cb_detail["hash"] = calc_hash();
+    if (!success && errors.empty()) {
+        std::error_code ec;
+        bool exists = std::filesystem::exists(item.path, ec);
+        errors.emplace_back(
+            json::object {
+                { "code", !ec && !exists ? "path_not_found" : "load_failed" },
+                { "file", path_to_utf8_string(item.path) },
+            });
+    }
+    cb_detail["status"] = static_cast<MaaStatus>(success ? MaaStatus_Succeeded : MaaStatus_Failed);
+    cb_detail["errors"] = std::move(errors);
+    {
+        std::scoped_lock lock(load_details_mutex_);
+        load_details_.insert_or_assign(id, cb_detail.as_object());
+    }
 
-    notifier_.notify(this, valid_ ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
+    notifier_.notify(this, success ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
 
-    return valid_;
+    return success;
 }
 
-bool ResourceMgr::load_bundle(const std::filesystem::path& path)
+bool ResourceMgr::load_bundle(const std::filesystem::path& path, json::array& errors)
 {
     LogFunc << VAR(path);
 
@@ -840,7 +880,7 @@ bool ResourceMgr::load_bundle(const std::filesystem::path& path)
 
     if (auto p = path / "pipeline"_path; std::filesystem::exists(p)) {
         to_load = true;
-        ret &= pipeline_res_.load(p, default_pipeline_);
+        ret &= pipeline_res_.load(p, default_pipeline_, &errors);
     }
     if (auto p = path / "model"_path / "ocr"_path; std::filesystem::exists(p)) {
         to_load = true;
@@ -878,7 +918,7 @@ bool ResourceMgr::load_ocr_model(const std::filesystem::path& path)
     return ocr_res_.lazy_load(path);
 }
 
-bool ResourceMgr::load_pipeline(const std::filesystem::path& path)
+bool ResourceMgr::load_pipeline(const std::filesystem::path& path, json::array& errors)
 {
     LogFunc << VAR(path);
 
@@ -890,10 +930,10 @@ bool ResourceMgr::load_pipeline(const std::filesystem::path& path)
     paths_.emplace_back(path);
 
     if (std::filesystem::is_directory(path)) {
-        return pipeline_res_.load(path, default_pipeline_);
+        return pipeline_res_.load(path, default_pipeline_, &errors);
     }
 
-    return pipeline_res_.load_file(path, default_pipeline_);
+    return pipeline_res_.load_file(path, default_pipeline_, &errors);
 }
 
 bool ResourceMgr::load_image(const std::filesystem::path& path)
@@ -997,7 +1037,7 @@ std::optional<json::object> ResourceMgr::get_default_action_param(const std::str
 
     switch (type) {
     case Type::DoNothing:
-        param = std::monostate { };
+        param = std::monostate {};
         break;
     case Type::Click:
         param = default_pipeline_.get_action_param<ClickParam>(type);
@@ -1039,7 +1079,7 @@ std::optional<json::object> ResourceMgr::get_default_action_param(const std::str
         param = default_pipeline_.get_action_param<ScrollParam>(type);
         break;
     case Type::StopTask:
-        param = std::monostate { };
+        param = std::monostate {};
         break;
     case Type::Command:
         param = default_pipeline_.get_action_param<CommandParam>(type);

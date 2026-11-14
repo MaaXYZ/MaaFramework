@@ -54,13 +54,38 @@ declare global {
 
         type TaskerNotify = {
             msg: NotifyMessage<'Task'>
+            reason?: string
             task_id: number // TaskId
             entry: string
             uuid: string
             hash: string
         }
 
-        type TaskerContextPipelineNodeNotify = {
+        type RuntimeNotify = {
+            context_id?: number
+            parent_task_id?: number
+            task_parent?: { kind: string; id: number } | null
+            parent?: { kind: string; id: number } | null
+            reason?: string
+        }
+
+        type ContextTaskNotify = RuntimeNotify & {
+            msg: NotifyMessage<'Context.Task'>
+            task_id: number
+            entry: string
+        }
+
+        type NodeTransitionNotify = RuntimeNotify & {
+            msg: 'Transition'
+            task_id: number
+            from_node_id: number
+            to_node_id: number
+            from: string
+            to: string
+            reason: 'entry' | 'next' | 'on_error' | 'jump_back'
+        }
+
+        type TaskerContextPipelineNodeNotify = RuntimeNotify & {
             msg: NotifyMessage<'PipelineNode'>
             task_id: number // TaskId
             node_id: number // NodeId
@@ -68,7 +93,7 @@ declare global {
             focus: unknown
         }
 
-        type TaskerContextRecognitionNodeNotify = {
+        type TaskerContextRecognitionNodeNotify = RuntimeNotify & {
             msg: NotifyMessage<'RecognitionNode'>
             task_id: number // TaskId
             node_id: number // NodeId
@@ -76,7 +101,7 @@ declare global {
             focus: unknown
         }
 
-        type TaskerContextActionNodeNotify = {
+        type TaskerContextActionNodeNotify = RuntimeNotify & {
             msg: NotifyMessage<'ActionNode'>
             task_id: number // TaskId
             node_id: number // NodeId
@@ -84,8 +109,14 @@ declare global {
             focus: unknown
         }
 
-        type TaskerContextNextListNotify = {
+        type TaskerContextNextListNotify = RuntimeNotify & {
             msg: NotifyMessage<'NextList'>
+            list_id?: number
+            node_id?: number
+            round?: number
+            list_type?: 'entry' | 'next' | 'on_error'
+            selected_index?: number
+            reco_id?: number
             task_id: number // TaskId
             name: string
             list: {
@@ -96,24 +127,43 @@ declare global {
             focus: unknown
         }
 
-        type TaskerContextRecognitionNotify = {
+        type TaskerContextRecognitionNotify = RuntimeNotify & {
             msg: NotifyMessage<'Recognition'>
             task_id: number // TaskId
             reco_id: number // RecoId
             name: string
             focus: unknown
             anchor?: string
+            pipeline?: Record<string, unknown>
         }
 
-        type TaskerContextActionNotify = {
+        type TaskerContextActionNotify = RuntimeNotify & {
             msg: NotifyMessage<'Action'>
+            reco_id?: number
             task_id: number // TaskId
             action_id: number // ActId
             name: string
             focus: unknown
+            pipeline?: Record<string, unknown>
+        }
+
+        type TaskerContextWaitFreezesNotify = RuntimeNotify & {
+            msg: NotifyMessage<'WaitFreezes'>
+            task_id: number
+            wf_id: number
+            name: string
+            phase: 'pre' | 'post' | 'repeat' | 'context'
+            roi: Rect
+            param: { time: number; threshold: number; method: number; rate_limit: number; timeout: number }
+            reco_ids?: number[]
+            elapsed?: number
+            focus: unknown
         }
 
         type TaskerContextNotify =
+            | TaskerContextWaitFreezesNotify
+            | ContextTaskNotify
+            | NodeTransitionNotify
             | TaskerContextPipelineNodeNotify
             | TaskerContextRecognitionNodeNotify
             | TaskerContextActionNodeNotify
@@ -168,6 +218,8 @@ declare global {
                 task_id: TaskId,
                 pipeline: Record<string, unknown> | Record<string, unknown>[],
             ): void
+            recognition_image_status(id: RecoId):
+                | 'available' | 'not_captured' | 'disabled' | 'budget_exceeded' | 'evicted' | null
             recognition_detail(id: RecoId): RecoDetail | null
             action_detail(id: ActId): ActionDetail | null
             node_detail(id: NodeId): NodeDetail | null

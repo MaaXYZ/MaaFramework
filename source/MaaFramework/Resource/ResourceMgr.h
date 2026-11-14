@@ -75,6 +75,7 @@ public: // MaaResource
     virtual void unregister_custom_action(const std::string& name) override;
     virtual void clear_custom_action() override;
 
+    virtual std::optional<json::object> get_load_detail(MaaResId res_id) const override;
     virtual std::string get_hash() const override;
     virtual std::vector<std::string> get_node_list() const override;
     virtual std::vector<std::string> get_custom_recognition_list() const override;
@@ -134,9 +135,9 @@ private:
     MaaResId post_path(PostPathType type, const std::filesystem::path& path);
 
     bool run_load(typename AsyncRunner<PostPathItem>::Id id, PostPathItem item);
-    bool load_bundle(const std::filesystem::path& path);
+    bool load_bundle(const std::filesystem::path& path, json::array& errors);
     bool load_ocr_model(const std::filesystem::path& path);
-    bool load_pipeline(const std::filesystem::path& path);
+    bool load_pipeline(const std::filesystem::path& path, json::array& errors);
     bool load_image(const std::filesystem::path& path);
     bool check_stop();
 
@@ -155,6 +156,8 @@ private:
 
 private:
     std::vector<std::filesystem::path> paths_;
+    mutable std::mutex load_details_mutex_;
+    std::unordered_map<MaaResId, json::object> load_details_;
     mutable std::string hash_cache_;
     std::atomic_bool valid_ = true;
 

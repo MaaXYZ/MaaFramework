@@ -224,6 +224,19 @@ void RemoteResource::clear_custom_action()
     LogError << "Can NOT clear custom action at remote resource";
 }
 
+std::optional<json::object> RemoteResource::get_load_detail(MaaResId res_id) const
+{
+    ResourceGetLoadDetailReverseRequest req {
+        .resource_id = resource_id_,
+        .res_id = res_id,
+    };
+    auto resp = server_.send_and_recv<ResourceGetLoadDetailReverseResponse>(req);
+    if (!resp || !resp->has_value) {
+        return std::nullopt;
+    }
+    return resp->detail;
+}
+
 std::string RemoteResource::get_hash() const
 {
     ResourceGetHashReverseRequest req {

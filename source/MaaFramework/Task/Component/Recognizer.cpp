@@ -111,7 +111,7 @@ RecoResult Recognizer::recognize(MAA_RES_NS::Recognition::Type type, const MAA_R
         break;
     }
 
-    if (debug_mode() && !image_.empty()) {
+    if (MAA_GLOBAL_NS::OptionMgr::get_instance().reco_image_raw() && !image_.empty()) {
         ImageEncodedBuffer png;
         cv::imencode(".png", image_, png);
         result.raw = std::move(png);
@@ -119,7 +119,7 @@ RecoResult Recognizer::recognize(MAA_RES_NS::Recognition::Type type, const MAA_R
 
     LogInfo << "reco" << VAR(result);
     auto& rt_cache = tasker_->runtime_cache();
-    rt_cache.set_reco_detail(result.reco_id, result);
+    result.image_status = rt_cache.set_reco_detail(result.reco_id, result);
 
     save_draws(name, result);
 

@@ -1,5 +1,6 @@
 #include "RuntimeCache.h"
 
+#include <algorithm>
 #include <mutex>
 
 #include "Global/OptionMgr.h"
@@ -60,38 +61,73 @@ std::optional<MAA_TASK_NS::RecoResult> RuntimeCache::get_reco_result(MaaRecoId u
     return result;
 }
 
-void RuntimeCache::set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult detail)
+std::string RuntimeCache::set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult detail)
 {
     if (uid == MaaInvalidId) {
-        LogError << "uid is invalid";
-        return;
+        LogWarn << "uid is invalid";
+        return "unavailable";
     }
 
     std::unique_lock lock(reco_details_mutex_);
+    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
+    const MaaSize count = option.reco_image_cache_limit();
+    const MaaSize bytes = option.reco_image_cache_bytes();
+    RecoImageCache images { std::move(detail.raw), std::move(detail.draws) };
+    const MaaSize size = image_bytes(images);
 
-    size_t limit = MAA_GLOBAL_NS::OptionMgr::get_instance().reco_image_cache_limit();
-
-    // limit > 0 means caching is enabled
-    if (limit > 0) {
-        evict_reco_image_cache_if_needed(limit);
-
-        reco_image_cache_.insert_or_assign(uid, RecoImageCache { std::move(detail.raw), std::move(detail.draws) });
+    if (auto existing = reco_image_cache_.find(uid); existing != reco_image_cache_.end()) {
+        reco_image_bytes_ -= image_bytes(existing->second);
+        reco_image_cache_.erase(existing);
+        std::erase(reco_image_order_, uid);
+    }
+    if (size == 0) {
+        detail.image_status = "not_captured";
+    }
+    else if (count == 0 || bytes == 0) {
+        detail.image_status = "disabled";
+    }
+    else if (size > bytes) {
+        detail.image_status = "budget_exceeded";
+    }
+    else {
+        evict_reco_image_cache_if_needed(count - 1, bytes - size);
+        reco_image_cache_.insert_or_assign(uid, std::move(images));
         reco_image_order_.push_back(uid);
+        reco_image_bytes_ += size;
+        detail.image_status = "available";
     }
 
-    // Metadata must not retain image allocations when caching is disabled.
+    // A moved-from container may retain capacity on some standard libraries.
     MAA_TASK_NS::ImageEncodedBuffer().swap(detail.raw);
     decltype(detail.draws)().swap(detail.draws);
-
+    const auto status = detail.image_status;
     reco_details_.insert_or_assign(uid, std::move(detail));
+    return status;
 }
 
-void RuntimeCache::evict_reco_image_cache_if_needed(size_t limit)
+MaaSize RuntimeCache::image_bytes(const RecoImageCache& images)
 {
-    while (reco_image_cache_.size() >= limit && !reco_image_order_.empty()) {
-        MaaRecoId oldest = reco_image_order_.front();
+    MaaSize size = images.raw.size();
+    for (const auto& draw : images.draws) {
+        size += draw.size();
+    }
+    return size;
+}
+
+void RuntimeCache::evict_reco_image_cache_if_needed(MaaSize count, MaaSize bytes)
+{
+    while ((reco_image_cache_.size() > count || reco_image_bytes_ > bytes) && !reco_image_order_.empty()) {
+        const MaaRecoId oldest = reco_image_order_.front();
         reco_image_order_.pop_front();
-        reco_image_cache_.erase(oldest);
+        auto it = reco_image_cache_.find(oldest);
+        if (it == reco_image_cache_.end()) {
+            continue;
+        }
+        reco_image_bytes_ -= image_bytes(it->second);
+        reco_image_cache_.erase(it);
+        if (auto detail = reco_details_.find(oldest); detail != reco_details_.end()) {
+            detail->second.image_status = "evicted";
+        }
     }
 }
 
@@ -241,6 +277,7 @@ void RuntimeCache::clear(const std::set<MaaTaskId>& retained_task_ids)
         reco_details_.clear();
         reco_image_cache_.clear();
         reco_image_order_.clear();
+        reco_image_bytes_ = 0;
     }
     {
         std::unique_lock lock(action_details_mutex_);

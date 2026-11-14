@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Optional, Union
 
 import numpy
 
-from .buffer import ImageBuffer, ImageListBuffer, RectBuffer, StringBuffer
+from .buffer import ImageBuffer, ImageListBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .controller import Controller
 from .define import *
 from .event_sink import EventSink, NotificationType
@@ -377,6 +377,19 @@ class Tasker:
 
     def _task_wait(self, id: int) -> ctypes.c_int32:
         return Library.framework().MaaTaskerWait(self._handle, id)
+
+    def get_recognition_image_status(self, reco_id: int) -> Optional[str]:
+        """查询当前图片缓存状态 / Query current recognition-image retention status.
+
+        Returns available, not_captured, disabled, budget_exceeded, or evicted;
+        returns None if the recognition ID no longer exists.
+        """
+        buffer = StringBuffer()
+        if not Library.framework().MaaTaskerGetRecognitionImageStatus(
+            self._handle, MaaRecoId(reco_id), buffer._handle
+        ):
+            return None
+        return buffer.get()
 
     def get_recognition_detail(self, reco_id: int) -> Optional[RecognitionDetail]:
         """获取识别信息 / Get recognition info
@@ -778,6 +791,48 @@ class Tasker:
         )
 
     @staticmethod
+    def set_reco_image_raw(enabled: bool) -> bool:
+        """设置全局识别原图采集 / Set global recognition input image capture."""
+        value = ctypes.c_bool(enabled)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.RecoImageRaw), ctypes.byref(value), ctypes.sizeof(value)
+            )
+        )
+
+    @staticmethod
+    def set_reco_image_draws(enabled: bool) -> bool:
+        """设置全局识别标注图采集 / Set global recognition annotation image capture."""
+        value = ctypes.c_bool(enabled)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.RecoImageDraws), ctypes.byref(value), ctypes.sizeof(value)
+            )
+        )
+
+    @staticmethod
+    def set_capture_config(enabled: bool) -> bool:
+        """设置全局执行配置采集 / Set global execution configuration capture."""
+        value = ctypes.c_bool(enabled)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.CaptureConfig), ctypes.byref(value), ctypes.sizeof(value)
+            )
+        )
+
+    @staticmethod
+    def set_reco_image_cache_bytes(limit: int) -> bool:
+        """设置每个 Tasker 的统一图片缓存字节上限 / Set the global image-cache byte limit per Tasker."""
+        if type(limit) is not int or not 0 <= limit <= ctypes.c_size_t(-1).value:
+            raise ValueError("limit must fit an unsigned size_t")
+        value = ctypes.c_size_t(limit)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.RecoImageCacheBytes), ctypes.byref(value), ctypes.sizeof(value)
+            )
+        )
+
+    @staticmethod
     def load_plugin(path: Union[Path, str]) -> bool:
         """加载插件 / Load plugin
 
@@ -791,12 +846,34 @@ class Tasker:
         Returns:
             bool: 是否成功 / Whether successful
         """
+        Tasker._set_api_properties()
         strpath = str(path)
         return bool(
             Library.framework().MaaGlobalLoadPlugin(
                 strpath.encode(),
             )
         )
+
+    @staticmethod
+    def get_plugin_list() -> list[str]:
+        """已加载插件路径 / Loaded plugin library paths (including shut-down plugins)."""
+        Tasker._set_api_properties()
+        buffer = StringListBuffer()
+        if not Library.framework().MaaGlobalGetPluginList(buffer._handle):
+            raise RuntimeError("Failed to get plugin list")
+        return buffer.get()
+
+    @staticmethod
+    def flush_plugins() -> bool:
+        """在普通宿主线程刷新插件 / Flush plugins from a normal host thread."""
+        Tasker._set_api_properties()
+        return bool(Library.framework().MaaGlobalFlushPlugins())
+
+    @staticmethod
+    def shutdown_plugins() -> bool:
+        """销毁所有实例后关闭插件 / Shut down plugins after destroying all instances."""
+        Tasker._set_api_properties()
+        return bool(Library.framework().MaaGlobalShutdownPlugins())
 
     _api_properties_initialized: bool = False
 
@@ -895,6 +972,13 @@ class Tasker:
             ctypes.c_char_p,
         ]
 
+        Library.framework().MaaGlobalGetPluginList.restype = MaaBool
+        Library.framework().MaaGlobalGetPluginList.argtypes = [MaaStringListBufferHandle]
+        Library.framework().MaaGlobalFlushPlugins.restype = MaaBool
+        Library.framework().MaaGlobalFlushPlugins.argtypes = []
+        Library.framework().MaaGlobalShutdownPlugins.restype = MaaBool
+        Library.framework().MaaGlobalShutdownPlugins.argtypes = []
+
         Library.framework().MaaTaskerCreate.restype = MaaTaskerHandle
         Library.framework().MaaTaskerCreate.argtypes = []
 
@@ -966,6 +1050,11 @@ class Tasker:
 
         Library.framework().MaaTaskerGetController.restype = MaaControllerHandle
         Library.framework().MaaTaskerGetController.argtypes = [MaaTaskerHandle]
+
+        Library.framework().MaaTaskerGetRecognitionImageStatus.restype = MaaBool
+        Library.framework().MaaTaskerGetRecognitionImageStatus.argtypes = [
+            MaaTaskerHandle, MaaRecoId, MaaStringBufferHandle
+        ]
 
         Library.framework().MaaTaskerGetRecognitionDetail.restype = MaaBool
         Library.framework().MaaTaskerGetRecognitionDetail.argtypes = [
@@ -1083,6 +1172,7 @@ class TaskerEventSink(EventSink):
         entry: str
         uuid: str
         hash: str
+        reason: Optional[str] = None
 
     def on_tasker_task(self, tasker: Tasker, noti_type: NotificationType, detail: TaskerTaskDetail) -> None:
         pass
@@ -1097,6 +1187,7 @@ class TaskerEventSink(EventSink):
         noti_type = EventSink._notification_type(msg)
         if msg.startswith("Tasker.Task"):
             detail = self.TaskerTaskDetail(
+                reason=details.get("reason"),
                 task_id=details["task_id"],
                 entry=details["entry"],
                 uuid=details["uuid"],

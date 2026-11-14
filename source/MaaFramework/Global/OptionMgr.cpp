@@ -24,6 +24,14 @@ bool OptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaOptionV
         return set_draw_quality(value, val_size);
     case MaaGlobalOption_RecoImageCacheLimit:
         return set_reco_image_cache_limit(value, val_size);
+    case MaaGlobalOption_RecoImageRaw:
+        return set_reco_image_raw(value, val_size);
+    case MaaGlobalOption_RecoImageDraws:
+        return set_reco_image_draws(value, val_size);
+    case MaaGlobalOption_RecoImageCacheBytes:
+        return set_reco_image_cache_bytes(value, val_size);
+    case MaaGlobalOption_CaptureConfig:
+        return set_capture_config(value, val_size);
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
@@ -143,8 +151,67 @@ bool OptionMgr::set_reco_image_cache_limit(MaaOptionValue value, MaaOptionValueS
 
     reco_image_cache_limit_ = *reinterpret_cast<const size_t*>(value);
 
-    LogInfo << "Set reco image cache limit" << VAR(reco_image_cache_limit_);
+    LogInfo << "Set reco image cache limit" << VAR(reco_image_cache_limit_.load());
 
+    return true;
+}
+
+bool OptionMgr::reco_image_raw() const
+{
+    const int value = reco_image_raw_.load();
+    return value < 0 ? debug_mode() : value != 0;
+}
+
+bool OptionMgr::reco_image_draws() const
+{
+    const int value = reco_image_draws_.load();
+    if (value >= 0) {
+        return value != 0;
+    }
+#ifdef MAA_DEBUG
+    return true;
+#else
+    return save_draw() || debug_mode();
+#endif
+}
+
+bool OptionMgr::set_reco_image_raw(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    if (!value || val_size != sizeof(bool)) {
+        return false;
+    }
+    reco_image_raw_ = *static_cast<const bool*>(value);
+    LogInfo << "Set reco image raw" << VAR(reco_image_raw_.load());
+    return true;
+}
+
+bool OptionMgr::set_reco_image_draws(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    if (!value || val_size != sizeof(bool)) {
+        return false;
+    }
+    reco_image_draws_ = *static_cast<const bool*>(value);
+    LogInfo << "Set reco image draws" << VAR(reco_image_draws_.load());
+    return true;
+}
+
+bool OptionMgr::set_reco_image_cache_bytes(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    if (!value || val_size != sizeof(size_t)) {
+        return false;
+    }
+    reco_image_cache_bytes_ = *static_cast<const size_t*>(value);
+    LogInfo << "Set reco image cache bytes" << VAR(reco_image_cache_bytes_.load());
+    return true;
+}
+
+bool OptionMgr::set_capture_config(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    if (!value || val_size != sizeof(bool)) {
+        return false;
+    }
+    capture_config_ = *static_cast<const bool*>(value);
+    LogInfo << "Set capture config" << VAR(capture_config_.load());
     return true;
 }
 

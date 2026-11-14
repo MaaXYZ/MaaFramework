@@ -16,7 +16,7 @@ from maa.context import ContextEventSink
 from maa.controller import Controller, ControllerEventSink, CustomController
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
-from maa.define import Rect
+from maa.define import MaaStatusEnum, Rect
 from maa.event_sink import NotificationType
 from maa.pipeline import JActionType, JClick, JDirectHit, JDoNothing, JRecognitionType, JWaitFreezes
 from maa.resource import Resource, ResourceEventSink
@@ -346,6 +346,109 @@ class ResourceContractTest(unittest.TestCase):
         )
         self.resource = Resource()
 
+    def test_load_diagnostics_are_operation_scoped_and_visible_in_terminal_callback(self):
+        snapshots = []
+
+        class Sink(ResourceEventSink):
+            def on_raw_notification(self, resource, message, details):
+                if message.endswith((".Succeeded", ".Failed")):
+                    snapshots.append((details, resource.get_load_detail(details["res_id"])))
+
+        sink = Sink()
+        self.resource.add_sink(sink)
+        missing = self.resource.post_pipeline(self.bundle / "missing.json").wait()
+        first = self.resource.get_load_detail(missing.job_id)
+        self.assertTrue(missing.failed)
+        self.assertEqual(first["errors"][0]["code"], "path_not_found")
+        success = self.resource.post_bundle(self.bundle).wait()
+        self.assertTrue(success.succeeded)
+        self.assertEqual(self.resource.get_load_detail(success.job_id)["errors"], [])
+        self.assertEqual(self.resource.get_load_detail(missing.job_id), first)
+        self.assertEqual(len(snapshots), 2)
+        for event, snapshot in snapshots:
+            self.assertEqual(event, snapshot)
+        self.assertIsNone(self.resource.get_load_detail(0))
+        self.resource.clear()
+        self.assertIsNone(self.resource.get_load_detail(missing.job_id))
+
+    def test_load_outcome_survives_enqueue_from_callbacks(self):
+        for phase in ("Starting", "Succeeded"):
+            with self.subTest(phase=phase):
+                queued = []
+                entered = threading.Event()
+                release = threading.Event()
+                timed_out = []
+                resource = Resource()
+                source = self.pipeline / "nodes.json"
+
+                class Sink(ResourceEventSink):
+                    def on_raw_notification(self, current, message, details):
+                        if message == "Resource.Loading.Starting" and queued and details["res_id"] == queued[0].job_id:
+                            entered.set()
+                            if not release.wait(10):
+                                timed_out.append(True)
+                        if message == "Resource.Loading." + phase and not queued:
+                            queued.append(current.post_pipeline(source))
+
+                sink = Sink()
+                resource.add_sink(sink)
+                first = resource.post_pipeline(source)
+                try:
+                    first.wait()
+                    self.assertTrue(entered.wait(10), "queued load did not start")
+                    self.assertFalse(resource.clear())
+                finally:
+                    release.set()
+                    first.wait()
+                    for job in queued:
+                        job.wait()
+                self.assertFalse(timed_out, "test did not release the queued load")
+                self.assertEqual(len(queued), 1)
+                second = queued[0]
+                for job in (first, second):
+                    self.assertTrue(job.succeeded)
+                    detail = resource.get_load_detail(job.job_id)
+                    self.assertEqual(detail["status"], MaaStatusEnum.succeeded)
+                    self.assertEqual(detail["errors"], [])
+                self.assertTrue(resource.clear())
+
+    def test_load_diagnostics_do_not_attribute_runtime_overrides_to_files(self):
+        self.assertTrue(self.resource.post_bundle(self.bundle).wait().succeeded)
+        self.assertTrue(self.resource.override_next("Entry", ["Missing"]))
+        addition = self.bundle / "addition.json"
+        addition.write_text('{"Other": {}}', encoding="utf-8")
+        job = self.resource.post_pipeline(addition).wait()
+        self.assertTrue(job.failed)
+        error = self.resource.get_load_detail(job.job_id)["errors"][0]
+        self.assertEqual(error["target"], "Missing")
+        self.assertNotIn("file", error)
+        self.assertNotIn("pointer", error)
+
+    def test_load_diagnostics_locate_pipeline_errors(self):
+        source = self.pipeline / "nodes.json"
+        cases = [
+            ("{", "json_read_failed", None),
+            ("[]", "invalid_pipeline_root", None),
+            ('{"Bad": 1}', "invalid_node", "Bad"),
+            ('{"A~/B": {"next": ["Missing"]}}', "node_reference_not_found", "A~/B"),
+            ('{"A": {"on_error": ["Missing"]}}', "node_reference_not_found", "A"),
+        ]
+        for payload, code, node in cases:
+            with self.subTest(code=code, payload=payload):
+                self.resource.clear()
+                source.write_text(payload, encoding="utf-8")
+                job = self.resource.post_bundle(self.bundle).wait()
+                self.assertTrue(job.failed)
+                error = self.resource.get_load_detail(job.job_id)["errors"][0]
+                self.assertEqual(error["code"], code)
+                self.assertEqual(Path(error["file"]), source)
+                if node:
+                    self.assertEqual(error["node"], node)
+                if code == "node_reference_not_found":
+                    self.assertEqual(error["target"], "Missing")
+                    expected = "/A~0~1B/next" if node == "A~/B" else "/A/on_error"
+                    self.assertEqual(error["pointer"], expected)
+
     def test_bundle_job_state_and_exact_node_readback(self):
         job = self.resource.post_bundle(self.bundle)
         self.assertIs(job.wait(), job)
@@ -440,6 +543,16 @@ class ResourceContractTest(unittest.TestCase):
             _ = self.resource.hash
         self.assertTrue(self.resource.post_bundle(self.bundle).wait().succeeded)
         self.assertEqual(set(self.resource.node_list), {"Entry", "Finish"})
+
+    def test_clear_immediately_after_wait_succeeds_for_success_and_failure(self):
+        self.resource.use_cpu()
+        for path, expected in [(self.bundle, "succeeded"), (self.bundle / "missing", "failed")]:
+            with self.subTest(status=expected):
+                # Repeat without a delay to exercise completion/waiter scheduling.
+                for _ in range(500):
+                    job = self.resource.post_bundle(path).wait()
+                    self.assertTrue(self.resource.clear())
+                    self.assertTrue(getattr(job, expected))
 
     def test_loading_sink_correlates_success_failure_and_removal(self):
         sink = RecordingResourceSink()

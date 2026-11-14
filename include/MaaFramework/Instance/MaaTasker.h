@@ -96,6 +96,13 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId task_id, const char* pipeline_override);
 
     /**
+     * Query current image retention: available, not_captured, disabled,
+     * budget_exceeded, or evicted. Unknown recognition IDs return false.
+     */
+    MAA_FRAMEWORK_API MaaBool
+        MaaTaskerGetRecognitionImageStatus(const MaaTasker* tasker, MaaRecoId reco_id, /* out */ MaaStringBuffer* buffer);
+
+    /**
      * @param[out] hit
      */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetRecognitionDetail(
@@ -106,8 +113,8 @@ extern "C"
         /* out */ MaaBool* hit,
         /* out */ MaaRect* box,
         /* out */ MaaStringBuffer* detail_json,
-        /* out */ MaaImageBuffer* raw,      // only valid in debug mode
-        /* out */ MaaImageListBuffer* draws // only valid in debug mode
+        /* out */ MaaImageBuffer* raw,      // available when enabled and retained by the image cache
+        /* out */ MaaImageListBuffer* draws // available when enabled and retained by the image cache
     );
 
     /**

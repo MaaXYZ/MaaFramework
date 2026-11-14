@@ -169,6 +169,7 @@ jobs:
               shell: bash
               run: |
                   ./install/bin/PipelineTesting.exe ./install/test
+                  ./install/bin/PluginLifecycleTesting.exe
 
             - name: Run Python testing
               shell: bash
@@ -403,6 +404,7 @@ jobs:
               shell: bash
               run: |
                   ./install/bin/PipelineTesting ./install/test
+                  ./install/bin/PluginLifecycleTesting
 
             - name: Run Python testing
               shell: bash
@@ -565,6 +567,7 @@ jobs:
               shell: bash
               run: |
                   ./install/bin/PipelineTesting ./install/test
+                  ./install/bin/PluginLifecycleTesting
 
             - name: Run Python testing
               shell: bash

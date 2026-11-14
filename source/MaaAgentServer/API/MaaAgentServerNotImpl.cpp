@@ -118,3 +118,21 @@ MaaBool MaaGlobalLoadPlugin(const char*)
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return false;
 }
+
+MaaBool MaaGlobalGetPluginList(MaaStringListBuffer*)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return false;
+}
+
+MaaBool MaaGlobalFlushPlugins()
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return false;
+}
+
+MaaBool MaaGlobalShutdownPlugins()
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return false;
+}
