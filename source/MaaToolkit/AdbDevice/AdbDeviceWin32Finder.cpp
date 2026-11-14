@@ -1,6 +1,11 @@
 #if defined(_WIN32)
 #include "AdbDeviceWin32Finder.h"
 
+#include <algorithm>
+#include <charconv>
+#include <cmath>
+#include <format>
+#include <ranges>
 #include <unordered_map>
 
 #include "MaaUtils/IOStream/ChildPipeIOStream.h"
@@ -71,6 +76,9 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_by_emulator_tool(const Emulato
     }
     else if (emulator.name == "LDPlayer") {
         return find_ld_devices(emulator);
+    }
+    else if (emulator.name == "AVD") {
+        return find_modavd_devices(emulator);
     }
 
     return { };
@@ -354,6 +362,129 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_ld_devices(const Emulator& emu
         ld_cfg["pid"] = vbox_pid;
 
         LogInfo << "LDPlayer device" << VAR(device);
+
+        result.emplace_back(std::move(device));
+    }
+
+    return result;
+}
+
+namespace
+{
+// mas-avd.json writes portBase as a number; a string or a float with an integral value is accepted too.
+std::optional<int> parse_modavd_port_base(const json::value& value)
+{
+    double base = 0;
+    if (value.is_number()) {
+        base = value.as_double();
+    }
+    else if (value.is_string()) {
+        const std::string& s = value.as_string();
+        int parsed = 0;
+        auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), parsed);
+        if (ec != std::errc { } || ptr != s.data() + s.size()) {
+            return std::nullopt;
+        }
+        base = parsed;
+    }
+    else {
+        return std::nullopt;
+    }
+
+    if (base != std::floor(base) || base <= 0 || base > 65400) {
+        return std::nullopt;
+    }
+    return static_cast<int>(base);
+}
+}
+
+std::vector<AdbDevice> AdbDeviceWin32Finder::find_modavd_devices(const Emulator& emulator) const
+{
+    LogFunc << VAR(emulator.name) << VAR(emulator.process_path);
+
+    // <root>\sdk\emulator\qemu\windows-x86_64\qemu-system-x86_64.exe
+    auto root = emulator.process_path.parent_path().parent_path().parent_path().parent_path().parent_path();
+    auto metadata_path = root / "mas-avd.json"_path;
+    if (!std::filesystem::exists(metadata_path)) {
+        return { };
+    }
+
+    auto jopt = json::open(metadata_path, true);
+    if (!jopt || !jopt->is_object()) {
+        LogWarn << "Failed to parse mas-avd.json" << VAR(metadata_path);
+        return { };
+    }
+    const json::value& metadata = *jopt;
+
+    // Instance i listens on console port portBase + 10 * i and adb port console + 1.
+    constexpr int kDefaultPortBase = 20000;
+    constexpr int kPortStep = 10;
+    constexpr int kMaxIndex = 9;
+
+    int port_base = kDefaultPortBase;
+    if (auto jbase = metadata.find("portBase")) {
+        if (auto base = parse_modavd_port_base(*jbase)) {
+            port_base = *base;
+        }
+        else {
+            LogWarn << "Invalid portBase, use the default" << VAR(*jbase) << VAR(kDefaultPortBase);
+        }
+    }
+
+    std::vector<int> indexes;
+    if (auto jinstances = metadata.find("instances"); jinstances && jinstances->is_object()) {
+        for (const auto& key : jinstances->as_object() | std::views::keys) {
+            if (key.empty() || key.size() > 2 || !std::ranges::all_of(key, [](unsigned char c) { return std::isdigit(c); })) {
+                continue;
+            }
+            int index = std::stoi(key);
+            if (index <= kMaxIndex) {
+                indexes.emplace_back(index);
+            }
+        }
+    }
+    std::ranges::sort(indexes);
+
+    // Only the instances that are running. Probe the console port: it takes any number of clients,
+    // while the adb port is the emulator's single adb transport.
+    std::vector<std::string> consoles;
+    for (int index : indexes) {
+        consoles.emplace_back(std::format("127.0.0.1:{}", port_base + kPortStep * index));
+    }
+    auto running = filter_reachable(consoles);
+
+    auto lib_path = root / "extras"_path / "modavd_extras.dll"_path;
+    bool extras = std::filesystem::exists(lib_path);
+    LogInfo << VAR(root) << VAR(port_base) << VAR(indexes) << VAR(running) << VAR(lib_path) << VAR(extras);
+
+    std::vector<AdbDevice> result;
+    for (int index : indexes) {
+        int console_port = port_base + kPortStep * index;
+        if (std::ranges::find(running, std::format("127.0.0.1:{}", console_port)) == running.end()) {
+            continue;
+        }
+        std::string serial = std::format("127.0.0.1:{}", console_port + 1);
+
+        AdbDevice device;
+        device.name = std::format("emu-{}-ModAVD", index);
+        device.adb_path = emulator.adb_path;
+        device.serial = serial;
+
+        if (extras) {
+            device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
+            device.input_methods = MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras;
+
+            auto& modavd_cfg = device.config["extras"]["modavd"];
+            modavd_cfg["enable"] = true;
+            modavd_cfg["path"] = path_to_utf8_string(root);
+            modavd_cfg["console_port"] = console_port;
+        }
+        else {
+            device.screencap_methods = MaaAdbScreencapMethod_Default;
+            device.input_methods = MaaAdbInputMethod_Default;
+        }
+
+        LogInfo << "ModAVD device" << VAR(device);
 
         result.emplace_back(std::move(device));
     }

@@ -268,6 +268,11 @@ std::vector<AdbDevice> AdbDeviceFinder::find_by_common_serials(
     return result;
 }
 
+std::vector<std::string> AdbDeviceFinder::filter_reachable(const std::vector<std::string>& serials)
+{
+    return filter_reachable_serials(serials);
+}
+
 std::vector<std::string> AdbDeviceFinder::find_serials_by_adb_command(const std::filesystem::path& adb_path) const
 {
     LogFunc << VAR(adb_path);

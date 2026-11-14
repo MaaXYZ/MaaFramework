@@ -70,6 +70,9 @@ protected:
         const std::unordered_set<std::string>& exclude_serials,
         const Emulator& emulator) const;
 
+    // Keeps the serials whose ip:port accepts a TCP connection; serials without a port are kept.
+    static std::vector<std::string> filter_reachable(const std::vector<std::string>& serials);
+
     std::vector<Emulator> find_emulators() const;
     std::filesystem::path get_emulator_adb_path(const EmulatorConstantData& emulator, os_pid pid) const;
 

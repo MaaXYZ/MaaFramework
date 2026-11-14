@@ -305,7 +305,7 @@ enum MaaTaskerOptionEnum
  * | RawByNetcat           | Fast       | Low           | Lossless |                                   |
  * | MinicapDirect         | Fast       | Low           | Lossy    |                                   |
  * | MinicapStream         | Very Fast  | Low           | Lossy    |                                   |
- * | EmulatorExtras        | Very Fast  | Low           | Lossless | Emulators only: MuMu 12, LDPlayer 9 |
+ * | EmulatorExtras        | Very Fast  | Low           | Lossless | Emulators only: MuMu 12, LDPlayer 9, ModAVD |
  */
 typedef uint64_t MaaAdbScreencapMethod;
 #define MaaAdbScreencapMethod_EncodeToFileAndPull 1ULL
@@ -338,7 +338,7 @@ typedef uint64_t MaaAdbScreencapMethod;
  * | AdbShell             | Slow  | High          |                                       |
  * | MinitouchAndAdbKey   | Fast  | Medium        | Key press still uses AdbShell         |
  * | Maatouch             | Fast  | Medium        |                                       |
- * | EmulatorExtras       | Fast  | Low           | Emulators only: MuMu 12               |
+ * | EmulatorExtras       | Fast  | Low           | Emulators only: MuMu 12, ModAVD       |
  */
 typedef uint64_t MaaAdbInputMethod;
 #define MaaAdbInputMethod_AdbShell 1ULL

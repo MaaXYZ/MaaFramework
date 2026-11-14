@@ -30,6 +30,9 @@ private:
 
     std::vector<AdbDevice> find_mumu_devices(const Emulator& emulator) const;
     std::vector<AdbDevice> find_ld_devices(const Emulator& emulator) const;
+    // ModAVD runs the AOSP emulator (qemu-system); its root, four levels above the emulator's directory,
+    // holds mas-avd.json. Returns empty for other AVD installations.
+    std::vector<AdbDevice> find_modavd_devices(const Emulator& emulator) const;
 
     // Androws (Tencent Androws) runs as an elevated process, so its adb.exe path cannot be
     // obtained via process enumeration + OpenProcess. Fall back to Windows Registry:

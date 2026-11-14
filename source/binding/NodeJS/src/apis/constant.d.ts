@@ -21,7 +21,7 @@ declare global {
          * | RawByNetcat           | Fast       | Low           | Lossless |                                   |
          * | MinicapDirect         | Fast       | Low           | Lossy    |                                   |
          * | MinicapStream         | Very Fast  | Low           | Lossy    |                                   |
-         * | EmulatorExtras        | Very Fast  | Low           | Lossless | Emulators only: MuMu 12, LDPlayer 9 |
+         * | EmulatorExtras        | Very Fast  | Low           | Lossless | Emulators only: MuMu 12, LDPlayer 9, ModAVD |
          */
         const AdbScreencapMethod: Record<
             | 'EncodeToFileAndPull'
@@ -51,7 +51,7 @@ declare global {
          * | AdbShell             | Slow  | High          |                                       |
          * | MinitouchAndAdbKey   | Fast  | Medium        | Key press still uses AdbShell         |
          * | Maatouch             | Fast  | Medium        |                                       |
-         * | EmulatorExtras       | Fast  | Low           | Emulators only: MuMu 12               |
+         * | EmulatorExtras       | Fast  | Low           | Emulators only: MuMu 12, ModAVD       |
          */
         const AdbInputMethod: Record<
             'AdbShell' | 'MinitouchAndAdbKey' | 'Maatouch' | 'EmulatorExtras' | 'All' | 'Default',
