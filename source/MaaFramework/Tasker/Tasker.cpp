@@ -1,10 +1,8 @@
 #include "RuntimeCache.h"
 
-#include <cstring>
 #include <ranges>
 
 #include "Controller/ControllerAgent.h"
-#include "Global/OptionMgr.h"
 #include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
@@ -83,48 +81,11 @@ bool Tasker::inited() const
 
 bool Tasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
-    if (!value) {
-        return false;
-    }
-    if (key == MaaTaskerOption_RecoImageRaw || key == MaaTaskerOption_RecoImageDraws || key == MaaTaskerOption_CaptureConfig) {
-        if (val_size != sizeof(bool)) {
-            return false;
-        }
-        bool enabled = false;
-        std::memcpy(&enabled, value, sizeof(enabled));
-        if (key == MaaTaskerOption_RecoImageRaw) {
-            reco_image_raw_ = enabled;
-        }
-        else if (key == MaaTaskerOption_RecoImageDraws) {
-            reco_image_draws_ = enabled;
-        }
-        else {
-            capture_config_ = enabled;
-        }
-        return true;
-    }
-    if (key == MaaTaskerOption_RecoImageCacheLimit || key == MaaTaskerOption_RecoImageCacheBytes) {
-        if (val_size != sizeof(MaaSize)) {
-            return false;
-        }
-        MaaSize limit = 0;
-        std::memcpy(&limit, value, sizeof(limit));
-        runtime_cache_.set_image_limit(key, limit);
-        return true;
-    }
+    std::ignore = key;
+    std::ignore = value;
+    std::ignore = val_size;
+
     return false;
-}
-
-bool Tasker::reco_image_raw() const
-{
-    const int value = reco_image_raw_.load();
-    return value < 0 ? MAA_GLOBAL_NS::OptionMgr::get_instance().debug_mode() : value != 0;
-}
-
-std::optional<bool> Tasker::reco_image_draws() const
-{
-    const int value = reco_image_draws_.load();
-    return value < 0 ? std::nullopt : std::optional<bool>(value != 0);
 }
 
 MaaTaskId Tasker::post_task(const std::string& entry, const json::value& pipeline_override)

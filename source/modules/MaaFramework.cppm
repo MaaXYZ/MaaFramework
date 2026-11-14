@@ -43,6 +43,10 @@ export using ::MaaOptionValueSize;
 
 export using ::MaaGlobalOption;
 export using ::MaaGlobalOptionEnum;
+export constexpr auto _MaaGlobalOption_RecoImageRaw = MaaGlobalOption_RecoImageRaw;
+export constexpr auto _MaaGlobalOption_RecoImageDraws = MaaGlobalOption_RecoImageDraws;
+export constexpr auto _MaaGlobalOption_RecoImageCacheBytes = MaaGlobalOption_RecoImageCacheBytes;
+export constexpr auto _MaaGlobalOption_CaptureConfig = MaaGlobalOption_CaptureConfig;
 
 export using ::MaaResOption;
 export using ::MaaResOptionEnum;
@@ -56,11 +60,6 @@ export using ::MaaCtrlOptionEnum;
 
 export using ::MaaTaskerOption;
 export using ::MaaTaskerOptionEnum;
-export constexpr auto _MaaTaskerOption_RecoImageRaw = MaaTaskerOption_RecoImageRaw;
-export constexpr auto _MaaTaskerOption_RecoImageDraws = MaaTaskerOption_RecoImageDraws;
-export constexpr auto _MaaTaskerOption_RecoImageCacheLimit = MaaTaskerOption_RecoImageCacheLimit;
-export constexpr auto _MaaTaskerOption_RecoImageCacheBytes = MaaTaskerOption_RecoImageCacheBytes;
-export constexpr auto _MaaTaskerOption_CaptureConfig = MaaTaskerOption_CaptureConfig;
 
 export using ::MaaAdbScreencapMethod;
 export constexpr auto _MaaAdbScreencapMethod_EncodeToFileAndPull = MaaAdbScreencapMethod_EncodeToFileAndPull;

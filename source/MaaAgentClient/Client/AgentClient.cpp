@@ -356,9 +356,6 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
 
-    else if (handle_tasker_set_option(j)) {
-        return true;
-    }
     else if (handle_tasker_inited(j)) {
         return true;
     }
@@ -1009,42 +1006,6 @@ bool AgentClient::handle_context_wait_freezes(const json::value& j)
 
     ContextWaitFreezesReverseResponse resp { .ret = ret };
     send(resp);
-    return true;
-}
-
-bool AgentClient::handle_tasker_set_option(const json::value& j)
-{
-    if (!j.is<TaskerSetOptionReverseRequest>()) {
-        return false;
-    }
-    const auto& req = j.as<TaskerSetOptionReverseRequest>();
-    auto* tasker = query_tasker(req.tasker_id);
-    if (!tasker) {
-        send(TaskerSetOptionReverseResponse {});
-        return true;
-    }
-
-    bool ret = false;
-    switch (req.key) {
-    case MaaTaskerOption_RecoImageRaw:
-    case MaaTaskerOption_RecoImageDraws:
-    case MaaTaskerOption_CaptureConfig:
-        if (req.value.is_boolean()) {
-            bool value = req.value.as_boolean();
-            ret = tasker->set_option(req.key, &value, sizeof(value));
-        }
-        break;
-    case MaaTaskerOption_RecoImageCacheLimit:
-    case MaaTaskerOption_RecoImageCacheBytes:
-        if (req.value.is<MaaSize>()) {
-            MaaSize value = req.value.as<MaaSize>();
-            ret = tasker->set_option(req.key, &value, sizeof(value));
-        }
-        break;
-    default:
-        break;
-    }
-    send(TaskerSetOptionReverseResponse { .ret = ret });
     return true;
 }
 

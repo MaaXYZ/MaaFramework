@@ -11,22 +11,6 @@
 
 MAA_VISION_NS_BEGIN
 
-namespace
-{
-thread_local std::optional<bool> tasker_draw_option;
-}
-
-ScopedDrawOption::ScopedDrawOption(std::optional<bool> enabled)
-    : previous_(tasker_draw_option)
-{
-    tasker_draw_option = enabled;
-}
-
-ScopedDrawOption::~ScopedDrawOption()
-{
-    tasker_draw_option = previous_;
-}
-
 VisionBase::VisionBase(cv::Mat image, std::vector<cv::Rect> rois, std::string name)
     : image_(std::move(image))
     , name_(std::move(name))
@@ -84,16 +68,7 @@ void VisionBase::handle_draw(const cv::Mat& draw) const
 
 void VisionBase::init_draw()
 {
-    if (tasker_draw_option.has_value()) {
-        debug_draw_ = *tasker_draw_option;
-        return;
-    }
-#ifdef MAA_DEBUG
-    debug_draw_ = true;
-#else
-    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
-    debug_draw_ = option.save_draw() || option.debug_mode();
-#endif
+    debug_draw_ = MAA_GLOBAL_NS::OptionMgr::get_instance().reco_image_draws();
 }
 
 void VisionBase::save_draws(const std::string& name, const std::vector<ImageEncodedBuffer>& draws)

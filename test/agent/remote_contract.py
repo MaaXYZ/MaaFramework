@@ -183,31 +183,15 @@ def controller_image_round_trip(context):
         assert controller.set_screenshot_use_raw_size(False)
 
 
-def tasker_capture_options(context):
+def recognition_image_status(context):
     tasker = context.tasker
     image = numpy.zeros((24, 32, 3), dtype=numpy.uint8)
-    assert tasker.set_reco_image_raw(True)
-    assert tasker.set_reco_image_draws(False)
-    assert tasker.set_reco_image_cache_count(4)
-    assert tasker.set_reco_image_cache_bytes(1024 * 1024)
-    assert tasker.set_capture_config(True)
+    # Capture is configured by the host; Agent only queries the resulting images.
     detail = context.run_recognition_direct(JRecognitionType.DirectHit, JDirectHit(), image)
     assert detail is not None and detail.raw_image is not None
     numpy.testing.assert_array_equal(detail.raw_image, image)
-    first_id = detail.reco_id
-    assert tasker.get_recognition_image_status(first_id) == "available"
+    assert tasker.get_recognition_image_status(detail.reco_id) == "available"
     assert tasker.get_recognition_image_status(0) is None
-
-    assert tasker.set_reco_image_cache_bytes(1)
-    assert tasker.get_recognition_image_status(first_id) == "evicted"
-    detail = context.run_recognition_direct(JRecognitionType.DirectHit, JDirectHit(), image)
-    assert detail is not None and detail.raw_image.size == 0
-    assert tasker.get_recognition_image_status(detail.reco_id) == "budget_exceeded"
-
-    assert tasker.set_reco_image_raw(False)
-    assert tasker.set_capture_config(False)
-    assert tasker.set_reco_image_cache_bytes(64 * 1024 * 1024)
-    assert tasker.set_reco_image_cache_count(4096)
 
 
 REMOTE_CONTRACT_CASES = (
@@ -219,5 +203,5 @@ REMOTE_CONTRACT_CASES = (
     action_results,
     resource_overrides_and_images,
     controller_image_round_trip,
-    tasker_capture_options,
+    recognition_image_status,
 )

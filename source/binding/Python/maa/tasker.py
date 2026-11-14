@@ -643,41 +643,6 @@ class Tasker:
             node_detail_func=self.get_node_detail,
         )
 
-    def _set_capture_option(self, key: MaaTaskerOptionEnum, value: Any) -> bool:
-        return bool(
-            Library.framework().MaaTaskerSetOption(
-                self._handle, MaaTaskerOption(key), ctypes.byref(value), ctypes.sizeof(value)
-            )
-        )
-
-    def set_reco_image_raw(self, enabled: bool) -> bool:
-        """仅设置本 Tasker 的识别原图采集 / Set raw-image capture for this Tasker only."""
-        return self._set_capture_option(MaaTaskerOptionEnum.RecoImageRaw, ctypes.c_bool(enabled))
-
-    def set_reco_image_draws(self, enabled: bool) -> bool:
-        """仅设置本 Tasker 的识别标注图采集 / Set draw capture for this Tasker only."""
-        return self._set_capture_option(MaaTaskerOptionEnum.RecoImageDraws, ctypes.c_bool(enabled))
-
-    def set_reco_image_cache_count(self, limit: int) -> bool:
-        """设置本 Tasker 的图片缓存数量；静态 set_reco_image_cache_limit 仍设置全局默认值。
-
-        Set this Tasker's image-cache count. The static set_reco_image_cache_limit
-        method continues to set the global default.
-        """
-        if type(limit) is not int or not 0 <= limit <= 0xFFFFFFFFFFFFFFFF:
-            raise ValueError("limit must be an unsigned 64-bit integer")
-        return self._set_capture_option(MaaTaskerOptionEnum.RecoImageCacheLimit, ctypes.c_uint64(limit))
-
-    def set_reco_image_cache_bytes(self, limit: int) -> bool:
-        """设置本 Tasker 的图片缓存字节上限 / Set this Tasker's image-cache byte budget."""
-        if type(limit) is not int or not 0 <= limit <= 0xFFFFFFFFFFFFFFFF:
-            raise ValueError("limit must be an unsigned 64-bit integer")
-        return self._set_capture_option(MaaTaskerOptionEnum.RecoImageCacheBytes, ctypes.c_uint64(limit))
-
-    def set_capture_config(self, enabled: bool) -> bool:
-        """采集实际执行配置 / Capture the effective configuration used by operations."""
-        return self._set_capture_option(MaaTaskerOptionEnum.CaptureConfig, ctypes.c_bool(enabled))
-
     @staticmethod
     def set_log_dir(path: Union[Path, str]) -> bool:
         """设置日志路径 / Set the log path
@@ -822,6 +787,48 @@ class Tasker:
                 MaaOption(MaaGlobalOptionEnum.RecoImageCacheLimit),
                 ctypes.pointer(climit),
                 ctypes.sizeof(ctypes.c_size_t),
+            )
+        )
+
+    @staticmethod
+    def set_reco_image_raw(enabled: bool) -> bool:
+        """设置全局识别原图采集 / Set global recognition input image capture."""
+        value = ctypes.c_bool(enabled)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.RecoImageRaw), ctypes.byref(value), ctypes.sizeof(value)
+            )
+        )
+
+    @staticmethod
+    def set_reco_image_draws(enabled: bool) -> bool:
+        """设置全局识别标注图采集 / Set global recognition annotation image capture."""
+        value = ctypes.c_bool(enabled)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.RecoImageDraws), ctypes.byref(value), ctypes.sizeof(value)
+            )
+        )
+
+    @staticmethod
+    def set_capture_config(enabled: bool) -> bool:
+        """设置全局执行配置采集 / Set global execution configuration capture."""
+        value = ctypes.c_bool(enabled)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.CaptureConfig), ctypes.byref(value), ctypes.sizeof(value)
+            )
+        )
+
+    @staticmethod
+    def set_reco_image_cache_bytes(limit: int) -> bool:
+        """设置每个 Tasker 的统一图片缓存字节上限 / Set the global image-cache byte limit per Tasker."""
+        if type(limit) is not int or not 0 <= limit <= ctypes.c_size_t(-1).value:
+            raise ValueError("limit must fit an unsigned size_t")
+        value = ctypes.c_size_t(limit)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.RecoImageCacheBytes), ctypes.byref(value), ctypes.sizeof(value)
             )
         )
 
@@ -988,11 +995,6 @@ class Tasker:
         Library.framework().MaaTaskerBindController.argtypes = [
             MaaTaskerHandle,
             MaaControllerHandle,
-        ]
-
-        Library.framework().MaaTaskerSetOption.restype = MaaBool
-        Library.framework().MaaTaskerSetOption.argtypes = [
-            MaaTaskerHandle, MaaTaskerOption, MaaOptionValue, MaaOptionValueSize
         ]
 
         Library.framework().MaaTaskerInited.restype = MaaBool

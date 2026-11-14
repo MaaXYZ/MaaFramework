@@ -1,7 +1,9 @@
 #pragma once
 
+#include <atomic>
 #include <chrono>
 #include <filesystem>
+#include <limits>
 #include <string_view>
 
 #include "Common/Conf.h"
@@ -32,6 +34,13 @@ public:
 
     size_t reco_image_cache_limit() const { return reco_image_cache_limit_; }
 
+    bool reco_image_raw() const;
+    bool reco_image_draws() const;
+
+    size_t reco_image_cache_bytes() const { return reco_image_cache_bytes_; }
+
+    bool capture_config() const { return capture_config_; }
+
 private:
     OptionMgr() = default;
 
@@ -43,6 +52,10 @@ private:
     bool set_save_on_error(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_draw_quality(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_reco_image_cache_limit(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_reco_image_raw(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_reco_image_draws(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_reco_image_cache_bytes(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_capture_config(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     std::filesystem::path log_dir_;
@@ -50,7 +63,11 @@ private:
     bool debug_mode_ = false;
     bool save_on_error_ = false;
     int draw_quality_ = 85;
-    size_t reco_image_cache_limit_ = 4096;
+    std::atomic<size_t> reco_image_cache_limit_ = 4096;
+    std::atomic<int> reco_image_raw_ = -1;
+    std::atomic<int> reco_image_draws_ = -1;
+    std::atomic<size_t> reco_image_cache_bytes_ = std::numeric_limits<size_t>::max();
+    std::atomic<bool> capture_config_ = false;
 };
 
 MAA_GLOBAL_NS_END

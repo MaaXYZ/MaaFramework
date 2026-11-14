@@ -1,7 +1,6 @@
 #include "RuntimeCache.h"
 
 #include <algorithm>
-#include <limits>
 #include <mutex>
 
 #include "Global/OptionMgr.h"
@@ -70,8 +69,9 @@ std::string RuntimeCache::set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult
     }
 
     std::unique_lock lock(reco_details_mutex_);
-    const MaaSize count = reco_image_count_limit_.value_or(MAA_GLOBAL_NS::OptionMgr::get_instance().reco_image_cache_limit());
-    const MaaSize bytes = reco_image_byte_limit_.value_or(std::numeric_limits<MaaSize>::max());
+    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
+    const MaaSize count = option.reco_image_cache_limit();
+    const MaaSize bytes = option.reco_image_cache_bytes();
     RecoImageCache images { std::move(detail.raw), std::move(detail.draws) };
     const MaaSize size = image_bytes(images);
 
@@ -112,20 +112,6 @@ MaaSize RuntimeCache::image_bytes(const RecoImageCache& images)
         size += draw.size();
     }
     return size;
-}
-
-void RuntimeCache::set_image_limit(MaaTaskerOption key, MaaSize limit)
-{
-    std::unique_lock lock(reco_details_mutex_);
-    if (key == MaaTaskerOption_RecoImageCacheLimit) {
-        reco_image_count_limit_ = limit;
-    }
-    else if (key == MaaTaskerOption_RecoImageCacheBytes) {
-        reco_image_byte_limit_ = limit;
-    }
-    evict_reco_image_cache_if_needed(
-        reco_image_count_limit_.value_or(MAA_GLOBAL_NS::OptionMgr::get_instance().reco_image_cache_limit()),
-        reco_image_byte_limit_.value_or(std::numeric_limits<MaaSize>::max()));
 }
 
 void RuntimeCache::evict_reco_image_cache_if_needed(MaaSize count, MaaSize bytes)

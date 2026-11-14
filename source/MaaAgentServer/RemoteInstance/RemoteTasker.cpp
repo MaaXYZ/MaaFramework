@@ -40,31 +40,8 @@ bool RemoteTasker::inited() const
 
 bool RemoteTasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
-    if (!value) {
-        return false;
-    }
-    TaskerSetOptionReverseRequest req { .tasker_id = tasker_id_, .key = key };
-    switch (key) {
-    case MaaTaskerOption_RecoImageRaw:
-    case MaaTaskerOption_RecoImageDraws:
-    case MaaTaskerOption_CaptureConfig:
-        if (val_size != sizeof(bool)) {
-            return false;
-        }
-        req.value = *static_cast<const bool*>(value);
-        break;
-    case MaaTaskerOption_RecoImageCacheLimit:
-    case MaaTaskerOption_RecoImageCacheBytes:
-        if (val_size != sizeof(MaaSize)) {
-            return false;
-        }
-        req.value = *static_cast<const MaaSize*>(value);
-        break;
-    default:
-        return false;
-    }
-    auto resp_opt = server_.send_and_recv<TaskerSetOptionReverseResponse>(req);
-    return resp_opt && resp_opt->ret;
+    LogError << "Can NOT set option at remote tasker" << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
+    return false;
 }
 
 MaaTaskId RemoteTasker::post_task(const std::string& entry, const json::value& pipeline_override)

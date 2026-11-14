@@ -37,7 +37,6 @@ bool ActionHelper::wait_freezes(
         return false;
     }
 
-    MAA_VISION_NS::ScopedDrawOption draw_option(tasker() ? tasker()->reco_image_draws() : std::nullopt);
     const auto start_clock = std::chrono::steady_clock::now();
     auto screencap_clock = start_clock;
     // 使用首帧尺寸解析目标，避免依赖空缓存或旧尺寸。

@@ -252,41 +252,6 @@ std::optional<maajs::ValueType> TaskerImpl::get_controller()
     return ControllerImpl::locate_object(env, ctrl);
 }
 
-void TaskerImpl::set_reco_image_raw(bool value)
-{
-    if (!MaaTaskerSetOption(tasker, MaaTaskerOption_RecoImageRaw, &value, sizeof(value))) {
-        throw maajs::MaaError { "Tasker set reco_image_raw failed" };
-    }
-}
-
-void TaskerImpl::set_reco_image_draws(bool value)
-{
-    if (!MaaTaskerSetOption(tasker, MaaTaskerOption_RecoImageDraws, &value, sizeof(value))) {
-        throw maajs::MaaError { "Tasker set reco_image_draws failed" };
-    }
-}
-
-void TaskerImpl::set_reco_image_cache_count(MaaSize value)
-{
-    if (!MaaTaskerSetOption(tasker, MaaTaskerOption_RecoImageCacheLimit, &value, sizeof(value))) {
-        throw maajs::MaaError { "Tasker set reco_image_cache_count failed" };
-    }
-}
-
-void TaskerImpl::set_reco_image_cache_bytes(MaaSize value)
-{
-    if (!MaaTaskerSetOption(tasker, MaaTaskerOption_RecoImageCacheBytes, &value, sizeof(value))) {
-        throw maajs::MaaError { "Tasker set reco_image_cache_bytes failed" };
-    }
-}
-
-void TaskerImpl::set_capture_config(bool value)
-{
-    if (!MaaTaskerSetOption(tasker, MaaTaskerOption_CaptureConfig, &value, sizeof(value))) {
-        throw maajs::MaaError { "Tasker set capture_config failed" };
-    }
-}
-
 void TaskerImpl::clear_cache()
 {
     MaaTaskerClearCache(tasker);
@@ -497,11 +462,6 @@ void TaskerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "stopping", TaskerImpl::get_stopping);
     MAA_BIND_GETTER_SETTER(proto, "resource", TaskerImpl::get_resource, TaskerImpl::set_resource);
     MAA_BIND_GETTER_SETTER(proto, "controller", TaskerImpl::get_controller, TaskerImpl::set_controller);
-    MAA_BIND_SETTER(proto, "reco_image_raw", TaskerImpl::set_reco_image_raw);
-    MAA_BIND_SETTER(proto, "reco_image_draws", TaskerImpl::set_reco_image_draws);
-    MAA_BIND_SETTER(proto, "reco_image_cache_count", TaskerImpl::set_reco_image_cache_count);
-    MAA_BIND_SETTER(proto, "reco_image_cache_bytes", TaskerImpl::set_reco_image_cache_bytes);
-    MAA_BIND_SETTER(proto, "capture_config", TaskerImpl::set_capture_config);
     MAA_BIND_FUNC(proto, "clear_cache", TaskerImpl::clear_cache);
     MAA_BIND_FUNC(proto, "override_pipeline", TaskerImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "recognition_image_status", TaskerImpl::recognition_image_status);

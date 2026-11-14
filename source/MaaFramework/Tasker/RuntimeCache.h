@@ -23,7 +23,6 @@ public:
 
     std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId uid) const;
     std::string set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult);
-    void set_image_limit(MaaTaskerOption key, MaaSize limit);
 
     std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId uid) const;
     void set_action_detail(MaaActId uid, MAA_TASK_NS::ActionResult);
@@ -58,8 +57,6 @@ private:
     std::map<MaaRecoId, MAA_TASK_NS::RecoResult> reco_details_;
     std::unordered_map<MaaRecoId, RecoImageCache> reco_image_cache_;
     std::deque<MaaRecoId> reco_image_order_;
-    std::optional<MaaSize> reco_image_count_limit_;
-    std::optional<MaaSize> reco_image_byte_limit_;
     MaaSize reco_image_bytes_ = 0;
     mutable std::shared_mutex reco_details_mutex_;
 

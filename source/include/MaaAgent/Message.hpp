@@ -466,24 +466,6 @@ struct ContextWaitFreezesReverseResponse
     MEO_JSONIZATION(ret, _ContextWaitFreezesReverseResponse);
 };
 
-struct TaskerSetOptionReverseRequest
-{
-    std::string tasker_id;
-    int32_t key = 0;
-    json::value value;
-
-    MessageTypePlaceholder _TaskerSetOptionReverseRequest = 1;
-    MEO_JSONIZATION(tasker_id, key, value, _TaskerSetOptionReverseRequest);
-};
-
-struct TaskerSetOptionReverseResponse
-{
-    bool ret = false;
-
-    MessageTypePlaceholder _TaskerSetOptionReverseResponse = 1;
-    MEO_JSONIZATION(ret, _TaskerSetOptionReverseResponse);
-};
-
 struct TaskerInitedReverseRequest
 {
     std::string tasker_id;

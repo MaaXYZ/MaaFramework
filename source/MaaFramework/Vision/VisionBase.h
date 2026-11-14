@@ -37,19 +37,6 @@ protected:
     std::optional<Result> best_result_ = std::nullopt;
 };
 
-// Nested recognitions restore their caller's draw policy; other worker threads are unaffected.
-class ScopedDrawOption
-{
-public:
-    explicit ScopedDrawOption(std::optional<bool> enabled);
-    ~ScopedDrawOption();
-    ScopedDrawOption(const ScopedDrawOption&) = delete;
-    ScopedDrawOption& operator=(const ScopedDrawOption&) = delete;
-
-private:
-    std::optional<bool> previous_;
-};
-
 class VisionBase
 {
 public:

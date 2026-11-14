@@ -214,14 +214,6 @@ declare global {
              * tasks retain their IDs, entry and status, but their node ID lists are reset.
              */
             clear_cache(): void
-            /** Instance settings; global defaults remain unchanged. */
-            set reco_image_raw(value: boolean)
-            set reco_image_draws(value: boolean)
-            /** Unsigned decimal string, following the native uint64 binding. */
-            set reco_image_cache_count(value: string)
-            /** Unsigned decimal byte count. */
-            set reco_image_cache_bytes(value: string)
-            set capture_config(value: boolean)
             override_pipeline(
                 task_id: TaskId,
                 pipeline: Record<string, unknown> | Record<string, unknown>[],

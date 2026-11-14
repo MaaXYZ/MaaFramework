@@ -87,7 +87,7 @@ RecoResult TaskBase::run_recognition(
         cb_detail["anchor"] = *anchor_name;
     }
 
-    if (tasker_ && tasker_->capture_config()) {
+    if (MAA_GLOBAL_NS::OptionMgr::get_instance().capture_config()) {
         cb_detail["pipeline"] = MAA_RES_NS::PipelineDumper::dump(data);
     }
     cb_detail["parent"] = context_->operation();
@@ -138,7 +138,7 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         { "name", reco.name },
         { "focus", data.focus },
     };
-    if (tasker_ && tasker_->capture_config()) {
+    if (MAA_GLOBAL_NS::OptionMgr::get_instance().capture_config()) {
         cb_detail["pipeline"] = MAA_RES_NS::PipelineDumper::dump(data);
     }
     cb_detail["parent"] = context_->operation();

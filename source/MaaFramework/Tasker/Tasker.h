@@ -66,11 +66,6 @@ public:
     virtual void clear_context_sinks() override;
 
 public:
-    bool reco_image_raw() const;
-    std::optional<bool> reco_image_draws() const;
-
-    bool capture_config() const { return capture_config_.load(); }
-
     RuntimeCache& runtime_cache();
     const RuntimeCache& runtime_cache() const;
 
@@ -100,9 +95,6 @@ private:
     mutable std::shared_mutex task_id_mapping_mutex_;
 
     RuntimeCache runtime_cache_;
-    std::atomic<int> reco_image_raw_ = -1;
-    std::atomic<int> reco_image_draws_ = -1;
-    std::atomic<bool> capture_config_ = false;
 };
 
 MAA_NS_END

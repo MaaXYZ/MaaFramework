@@ -240,15 +240,14 @@ class MaaGlobalOptionEnum(IntEnum):
     # value: size_t, eg: 4096; val_size: sizeof(size_t)
     # default value is 4096
     RecoImageCacheLimit = 9
+    RecoImageRaw = 10
+    RecoImageDraws = 11
+    RecoImageCacheBytes = 12
+    CaptureConfig = 13
 
 
 class MaaTaskerOptionEnum(IntEnum):
     Invalid = 0
-    RecoImageRaw = 1
-    RecoImageDraws = 2
-    RecoImageCacheLimit = 3
-    RecoImageCacheBytes = 4
-    CaptureConfig = 5
 
 
 class MaaCtrlOptionEnum(IntEnum):

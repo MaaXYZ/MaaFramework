@@ -65,6 +65,7 @@ def api_test():
     print(f"controller: {dbg_controller}")
     dbg_controller.post_connection().wait()
 
+    assert Tasker.set_reco_image_raw(True)
     tasker = Tasker()
     tasker.bind(resource, dbg_controller)
     print(f"tasker: {tasker}")

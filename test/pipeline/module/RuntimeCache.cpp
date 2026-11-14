@@ -15,8 +15,10 @@ public:
     static bool run()
     {
         const size_t original_limit = MAA_GLOBAL_NS::OptionMgr::get_instance().reco_image_cache_limit();
-        const bool passed = test_disabled() && test_bounded() && test_disable_existing() && test_instance_budgets();
-        const bool restored = set_limit(original_limit);
+        const size_t original_bytes = MAA_GLOBAL_NS::OptionMgr::get_instance().reco_image_cache_bytes();
+        const bool passed = test_disabled() && test_bounded() && test_disable_existing() && test_global_budgets();
+        const bool restored_limit = set_limit(original_limit);
+        const bool restored = set_bytes(original_bytes) && restored_limit;
         if (!passed || !restored) {
             return false;
         }
@@ -127,21 +129,26 @@ private:
             "clear retained recognition history");
     }
 
-    static bool test_instance_budgets()
+    static bool set_bytes(size_t limit)
     {
-        if (!set_limit(0)) {
+        return check(
+            MAA_GLOBAL_NS::OptionMgr::get_instance().set_option(MaaGlobalOption_RecoImageCacheBytes, &limit, sizeof(limit)),
+            "failed to set image cache byte limit");
+    }
+
+    static bool test_global_budgets()
+    {
+        if (!set_limit(10) || !set_bytes(18)) {
             return false;
         }
         RuntimeCache first;
         RuntimeCache second;
-        first.set_image_limit(MaaTaskerOption_RecoImageCacheLimit, 10);
-        first.set_image_limit(MaaTaskerOption_RecoImageCacheBytes, 18);
         for (MaaRecoId id : { 401, 402, 403 }) {
             first.set_reco_detail(id, make_result(id));
             second.set_reco_detail(id, make_result(id));
         }
         if (!result_matches(first, 401, false) || !result_matches(first, 402, true) || !result_matches(first, 403, true)
-            || !result_matches(second, 403, false)
+            || !result_matches(second, 401, false) || !result_matches(second, 402, true) || !result_matches(second, 403, true)
             || !check(first.get_reco_result(401)->image_status == "evicted", "eviction reason missing")
             || !check(first.reco_image_bytes_ == 18, "byte budget accounting incorrect")) {
             return false;
@@ -152,13 +159,15 @@ private:
             || !result_matches(first, 402, true) || !result_matches(first, 403, true)) {
             return false;
         }
-        first.set_image_limit(MaaTaskerOption_RecoImageCacheBytes, 9);
-        if (!result_matches(first, 402, false) || !result_matches(first, 403, true)) {
+        if (!set_bytes(9)) {
             return false;
         }
         // Replacing an ID must not leave duplicate FIFO entries or double-count bytes.
         first.set_reco_detail(403, make_result(403));
-        if (!check(first.reco_image_bytes_ == 9 && first.reco_image_order_.size() == 1, "replacement duplicated storage")) {
+        second.set_reco_detail(405, make_result(405));
+        if (!result_matches(first, 402, false) || !result_matches(first, 403, true) || !result_matches(second, 403, false)
+            || !result_matches(second, 405, true)
+            || !check(first.reco_image_bytes_ == 9 && first.reco_image_order_.size() == 1, "replacement duplicated storage")) {
             return false;
         }
         first.clear({});

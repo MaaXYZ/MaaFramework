@@ -60,11 +60,6 @@ struct TaskerImpl : public maajs::NativeClassBase
     std::optional<maajs::ValueType> get_resource();
     void set_controller(std::optional<maajs::NativeObject<ControllerImpl>> ctrl);
     std::optional<maajs::ValueType> get_controller();
-    void set_reco_image_raw(bool value);
-    void set_reco_image_draws(bool value);
-    void set_reco_image_cache_count(MaaSize value);
-    void set_reco_image_cache_bytes(MaaSize value);
-    void set_capture_config(bool value);
     void clear_cache();
     void override_pipeline(MaaTaskId task_id, maajs::ValueType pipeline);
     std::optional<std::string> recognition_image_status(MaaRecoId id);
