@@ -50,6 +50,7 @@ export constexpr auto _MaaGlobalOption_CaptureConfig = MaaGlobalOption_CaptureCo
 
 export using ::MaaResOption;
 export using ::MaaResOptionEnum;
+export constexpr auto _MaaResOption_WeChatOCR = MaaResOption_WeChatOCR;
 export using ::MaaInferenceDevice;
 export using ::MaaInferenceDeviceEnum;
 export using ::MaaInferenceExecutionProvider;

@@ -455,6 +455,10 @@ std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const 
 
 void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& name, const MAA_VISION_NS::OCRerParam& param)
 {
+    // Mask batching needs recognizer-only calls for boxes intersecting an ROI.
+    if (param.engine != "Default") {
+        return;
+    }
     if (param.roi_target.type == MAA_VISION_NS::TargetType::PreTask) {
         const auto& ref_name = std::get<std::string>(param.roi_target.param);
         if (ctx.plan.node_names.contains(ref_name)) {

@@ -42,6 +42,12 @@ declare global {
                 provider: 'Auto' | 'CPU' | 'DirectML' | 'WebGPU' | 'CoreML' | 'CUDA' | 'NCNN',
             )
 
+            /**
+             * Configure a local Resource before post_*; omitted config enables discovery.
+             * clear() resets it. Returns false when unsupported or invalid.
+             */
+            configure_wechat_ocr(config?: WeChatOCRConfig | string): boolean
+
             register_custom_recognition(name: string, func: CustomRecognitionCallback): void
             unregister_custom_recognition(name: string): void
             clear_custom_recognition(): void
@@ -74,6 +80,20 @@ declare global {
             get node_list(): string[] | null
             get custom_recognition_list(): string[] | null
             get custom_action_list(): string[] | null
+        }
+
+        type WeChatOCRConfig = {
+            sdk_path?: string
+            runtime_dir?: string
+            ocr_path?: string
+            worker_path?: string
+            temp_dir?: string
+            protocol?: 0 | 3 | 4
+            startup_timeout_ms?: number
+            request_timeout_ms?: number
+            max_pending_requests?: number
+            search_roots?: string[]
+            scan_system?: boolean
         }
     }
 }

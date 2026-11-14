@@ -92,6 +92,7 @@ private:
 
 struct OCRCache
 {
+    std::string engine = "Default";
     // Batch results are only valid for OCR requests compatible with this model.
     std::string model;
     std::unordered_map<std::string, OCRer::ResultsVec> results;

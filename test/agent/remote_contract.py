@@ -194,6 +194,13 @@ def recognition_image_status(context):
     assert tasker.get_recognition_image_status(0) is None
 
 
+def resource_runtime_configuration_is_local(context):
+    resource = context.tasker.resource
+    assert not resource.configure_wechat_ocr()
+    assert not resource.configure_wechat_ocr({"sdk_path": "/test/WeChatOCR.dll"})
+    assert resource.loaded
+
+
 REMOTE_CONTRACT_CASES = (
     context_clone_isolation,
     shared_anchor_state,
@@ -202,6 +209,7 @@ REMOTE_CONTRACT_CASES = (
     recognition_results,
     action_results,
     resource_overrides_and_images,
+    resource_runtime_configuration_is_local,
     controller_image_round_trip,
     recognition_image_status,
 )

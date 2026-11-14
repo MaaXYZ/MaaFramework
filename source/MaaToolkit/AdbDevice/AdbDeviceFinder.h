@@ -55,6 +55,8 @@ protected:
 
     virtual std::vector<AdbDevice> find_by_emulator_tool(const Emulator&) const { return { }; }
 
+    virtual std::vector<std::string> find_serials_by_emulator_config(const Emulator&) const { return { }; }
+
     // Extra emulator discovery hook for platform-specific fallbacks that cannot rely on process enumeration,
     // e.g. emulators running as elevated processes whose exe path is unreachable via OpenProcess.
     // Subclasses may override to return additional Emulator entries. Results are de-duplicated by adb_path
@@ -65,7 +67,7 @@ protected:
     std::vector<std::string> find_serials_by_adb_command(const std::filesystem::path& adb_path) const;
     std::optional<AdbDevice> try_device(const std::filesystem::path& adb_path, const std::string& serial, const Emulator& emulator) const;
 
-    std::vector<AdbDevice> find_by_common_serials(
+    std::vector<AdbDevice> find_by_candidate_serials(
         const std::filesystem::path& adb_path,
         const std::unordered_set<std::string>& exclude_serials,
         const Emulator& emulator) const;
