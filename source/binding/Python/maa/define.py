@@ -31,7 +31,6 @@ __all__ = [
     "MaaGlobalOption",
     "MaaCtrlOption",
     "MaaResOption",
-    "MaaTaskerOption",
     # Handle aliases
     "MaaStringBufferHandle",
     "MaaImageBufferHandle",
@@ -73,7 +72,6 @@ __all__ = [
     "MaaStatusEnum",
     "MaaGlobalOptionEnum",
     "MaaCtrlOptionEnum",
-    "MaaTaskerOptionEnum",
     "MaaInferenceDeviceEnum",
     "MaaInferenceExecutionProviderEnum",
     "MaaResOptionEnum",
@@ -185,7 +183,6 @@ MaaOption = ctypes.c_int32
 MaaGlobalOption = MaaOption
 MaaCtrlOption = MaaOption
 MaaResOption = MaaOption
-MaaTaskerOption = MaaOption
 
 
 class MaaGlobalOptionEnum(IntEnum):
@@ -244,10 +241,6 @@ class MaaGlobalOptionEnum(IntEnum):
     RecoImageDraws = 11
     RecoImageCacheBytes = 12
     CaptureConfig = 13
-
-
-class MaaTaskerOptionEnum(IntEnum):
-    Invalid = 0
 
 
 class MaaCtrlOptionEnum(IntEnum):
