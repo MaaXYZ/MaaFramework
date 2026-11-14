@@ -1216,6 +1216,7 @@ cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)
 
 bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
 {
+    std::unique_lock lock(image_mutex_);
     if (raw.empty()) {
         image_ = cv::Mat();
         LogError << "Empty screenshot";

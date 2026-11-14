@@ -63,6 +63,10 @@ RecoResult Recognizer::recognize(MAA_RES_NS::Recognition::Type type, const MAA_R
         return { };
     }
 
+    if (MAA_GLOBAL_NS::OptionMgr::get_instance().save_on_error_frames()) {
+        tasker_->failure_frames().observe(image_, reco_id_, name);
+    }
+
     RecoResult result;
 
     switch (type) {
