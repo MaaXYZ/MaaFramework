@@ -4,6 +4,7 @@
 
 #include "ActionTask.h"
 #include "Component/ActionHelper.h"
+#include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Uuid.h"
 #include "PipelineTask.h"
@@ -38,7 +39,8 @@ std::shared_ptr<Context> Context::make_clone() const
 }
 
 Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
-    : task_id_(id)
+    : execution_task_id_(id)
+    , task_id_(id)
     , tasker_(tasker)
     , task_state_(std::make_shared<TaskState>())
     , need_to_stop_(std::make_shared<std::atomic_bool>(false))
@@ -48,6 +50,10 @@ Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
 
 Context::Context(const Context& other)
     : std::enable_shared_from_this<Context>(other)
+    , execution_task_id_(other.execution_task_id_)
+    , parent_task_id_(other.parent_task_id_)
+    , parent_operation_(other.parent_operation_)
+    , operation_(other.operation_)
     , task_id_(other.task_id_)
     , tasker_(other.tasker_)
     , pipeline_override_(other.pipeline_override_)
@@ -59,6 +65,47 @@ Context::Context(const Context& other)
     LogDebug << VAR(other.getptr());
 }
 
+Context::OperationScope::OperationScope(Context& context, std::string_view kind, MaaId id)
+    : context_(context)
+    , previous_(context.operation_)
+{
+    context_.operation_ = json::object { { "kind", std::string(kind) }, { "id", id } };
+}
+
+Context::OperationScope::~OperationScope()
+{
+    context_.operation_ = std::move(previous_);
+}
+
+void Context::begin_task(MaaTaskId id)
+{
+    if (execution_task_id_ != id) {
+        parent_task_id_ = execution_task_id_;
+        parent_operation_ = operation_;
+    }
+    execution_task_id_ = id;
+    operation_ = json::object { { "kind", "task" }, { "id", id } };
+}
+
+const json::value& Context::operation() const
+{
+    return operation_;
+}
+
+void Context::notify(std::string_view message, json::value details)
+{
+    if (!tasker_) {
+        return;
+    }
+    details["context_id"] = context_id_;
+    details["parent_task_id"] = parent_task_id_;
+    details["task_parent"] = parent_operation_;
+    if (!details.contains("parent")) {
+        details["parent"] = operation_;
+    }
+    tasker_->context_notify(this, message, details);
+}
+
 MaaTaskId Context::run_task(const std::string& entry, const json::value& pipeline_override)
 {
     LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
@@ -68,7 +115,8 @@ MaaTaskId Context::run_task(const std::string& entry, const json::value& pipelin
         return MaaInvalidId;
     }
 
-    PipelineTask subtask(entry, tasker_, make_clone());
+    auto child_context = make_clone();
+    PipelineTask subtask(entry, tasker_, child_context);
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
@@ -80,9 +128,15 @@ MaaTaskId Context::run_task(const std::string& entry, const json::value& pipelin
     // context 的子任务没有 Pending 状态，直接就是 Running
     runtime_cache.set_task_status(subtask.task_id(), subtask.entry(), MaaStatus_Running);
 
+    json::value details { { "task_id", subtask.task_id() }, { "entry", entry }, { "parent", operation_ } };
+    child_context->notify(MaaMsg_Context_Task_Starting, details);
     bool ret = subtask.run();
-
     runtime_cache.set_task_status(subtask.task_id(), entry, ret ? MaaStatus_Succeeded : MaaStatus_Failed);
+    details["reason"] = subtask.termination_reason(ret);
+    const bool cancelled = details.at("reason").as_string() == "cancelled";
+    child_context->notify(
+        cancelled ? MaaMsg_Context_Task_Cancelled : (ret ? MaaMsg_Context_Task_Succeeded : MaaMsg_Context_Task_Failed),
+        details);
 
     return subtask.task_id();
 }

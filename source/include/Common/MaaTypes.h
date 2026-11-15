@@ -60,6 +60,7 @@ public:
     virtual void unregister_custom_action(const std::string& name) = 0;
     virtual void clear_custom_action() = 0;
 
+    virtual std::optional<json::object> get_load_detail(MaaResId res_id) const = 0;
     virtual std::string get_hash() const = 0;
     virtual std::vector<std::string> get_node_list() const = 0;
     virtual std::vector<std::string> get_custom_recognition_list() const = 0;

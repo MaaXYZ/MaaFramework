@@ -1,7 +1,25 @@
 declare global {
     namespace maa {
+        type ResourceLoadError = {
+            code: string
+            file?: string
+            node?: string
+            pointer?: string
+            field?: string
+            target?: string
+        }
+        type ResourceLoadDetail = {
+            res_id: number // ResId
+            path: string
+            type: 'Bundle' | 'OcrModel' | 'Pipeline' | 'Image'
+            hash: string
+            status: Status
+            errors: ResourceLoadError[]
+        }
         type ResourceNotify = {
             msg: NotifyMessage<'Loading'>
+            status?: Status
+            errors?: ResourceLoadError[]
             res_id: number // ResId
             path: string
             hash: string
@@ -23,6 +41,12 @@ declare global {
             set inference_execution_provider(
                 provider: 'Auto' | 'CPU' | 'DirectML' | 'WebGPU' | 'CoreML' | 'CUDA' | 'NCNN',
             )
+
+            /**
+             * Configure a local Resource before post_*; omitted config enables discovery.
+             * clear() resets it. Returns false when unsupported or invalid.
+             */
+            configure_wechat_ocr(config?: WeChatOCRConfig | string): boolean
 
             register_custom_recognition(name: string, func: CustomRecognitionCallback): void
             unregister_custom_recognition(name: string): void
@@ -51,10 +75,25 @@ declare global {
             status(id: ResId): Status
             wait(id: ResId): Promise<Status>
             get loaded(): boolean
+            get_load_detail(id: ResId): ResourceLoadDetail | null
             get hash(): string | null
             get node_list(): string[] | null
             get custom_recognition_list(): string[] | null
             get custom_action_list(): string[] | null
+        }
+
+        type WeChatOCRConfig = {
+            sdk_path?: string
+            runtime_dir?: string
+            ocr_path?: string
+            worker_path?: string
+            temp_dir?: string
+            protocol?: 0 | 3 | 4
+            startup_timeout_ms?: number
+            request_timeout_ms?: number
+            max_pending_requests?: number
+            search_roots?: string[]
+            scan_system?: boolean
         }
     }
 }

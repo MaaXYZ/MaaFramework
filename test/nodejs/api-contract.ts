@@ -437,6 +437,46 @@ export async function runApiContractTests() {
             assert.equal(events.length, 2)
         })
 
+        await check('global capture options apply to every Tasker', async () => {
+            const second = new maa.Tasker()
+            second.resource = resource
+            const events: maa.TaskerContextNotify[] = []
+            const sink = tasker.add_context_sink((_context, event) => { events.push(event) })
+            try {
+                maa.Global.capture_config = true
+                maa.Global.reco_image_raw = true
+                maa.Global.reco_image_draws = false
+                maa.Global.reco_image_cache_limit = '4096'
+                maa.Global.reco_image_cache_bytes = '1048576'
+                for (const current of [tasker, second]) {
+                    const detail = await current.post_recognition('ColorMatch', {
+                        lower: [0, 0, 0], upper: [255, 255, 255]
+                    }, actor.image).wait().get()
+                    const reco = current.node_detail(detail!.nodes[0])!.reco!
+                    assert.ok(reco.raw.byteLength > 0)
+                    assert.equal(reco.draws.length, 0)
+                }
+                const recognition = events.filter(event => event.msg === 'Recognition.Starting')
+                assert.equal(recognition.length, 1)
+                assert.ok('pipeline' in recognition[0] && recognition[0].pipeline)
+                maa.Global.reco_image_draws = true
+                const drawn = await second.post_recognition('ColorMatch', {
+                    lower: [0, 0, 0], upper: [255, 255, 255]
+                }, actor.image).wait().get()
+                assert.ok(second.node_detail(drawn!.nodes[0])!.reco!.draws.length > 0)
+                maa.Global.reco_image_cache_bytes = '1'
+                const limited = await second.post_recognition('DirectHit', {}, actor.image).wait().get()
+                assert.equal(second.node_detail(limited!.nodes[0])!.reco!.raw.byteLength, 0)
+            } finally {
+                tasker.remove_context_sink(sink)
+                second.destroy()
+                maa.Global.capture_config = false
+                maa.Global.reco_image_raw = false
+                maa.Global.reco_image_draws = false
+                maa.Global.reco_image_cache_bytes = '67108864'
+            }
+        })
+
         await check('Resource clear and null hash', () => {
             resource.clear()
             assert.deepEqual(resource.node_list, [])

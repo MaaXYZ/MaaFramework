@@ -183,6 +183,24 @@ def controller_image_round_trip(context):
         assert controller.set_screenshot_use_raw_size(False)
 
 
+def recognition_image_status(context):
+    tasker = context.tasker
+    image = numpy.zeros((24, 32, 3), dtype=numpy.uint8)
+    # Capture is configured by the host; Agent only queries the resulting images.
+    detail = context.run_recognition_direct(JRecognitionType.DirectHit, JDirectHit(), image)
+    assert detail is not None and detail.raw_image is not None
+    numpy.testing.assert_array_equal(detail.raw_image, image)
+    assert tasker.get_recognition_image_status(detail.reco_id) == "available"
+    assert tasker.get_recognition_image_status(0) is None
+
+
+def resource_runtime_configuration_is_local(context):
+    resource = context.tasker.resource
+    assert not resource.configure_wechat_ocr()
+    assert not resource.configure_wechat_ocr({"sdk_path": "/test/WeChatOCR.dll"})
+    assert resource.loaded
+
+
 REMOTE_CONTRACT_CASES = (
     context_clone_isolation,
     shared_anchor_state,
@@ -191,5 +209,7 @@ REMOTE_CONTRACT_CASES = (
     recognition_results,
     action_results,
     resource_overrides_and_images,
+    resource_runtime_configuration_is_local,
     controller_image_round_trip,
+    recognition_image_status,
 )

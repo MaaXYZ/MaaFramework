@@ -1,4 +1,5 @@
 #include "AdbDeviceFinder.h"
+#include "AdbDeviceSerial.h"
 
 #include <charconv>
 #include <chrono>
@@ -43,7 +44,12 @@ std::optional<boost::asio::ip::tcp::endpoint> parse_tcp_endpoint(const std::stri
     }
 
     boost::system::error_code ec;
-    auto address = boost::asio::ip::make_address(view.substr(0, colon), ec);
+    auto host = view.substr(0, colon);
+    if (host.starts_with('[') && host.ends_with(']')) {
+        host.remove_prefix(1);
+        host.remove_suffix(1);
+    }
+    auto address = boost::asio::ip::make_address(host, ec);
     if (ec) {
         return std::nullopt; // 不认识的地址形式不做拦截
     }
@@ -92,7 +98,7 @@ std::vector<std::string> filter_reachable_serials(const std::vector<std::string>
             result.emplace_back(serials[i]);
         }
         else {
-            LogInfo << "skip unreachable common serial" << VAR(serials[i]);
+            LogInfo << "skip unreachable candidate serial" << VAR(serials[i]);
         }
     }
     return result;
@@ -126,38 +132,8 @@ bool try_adb_connect(const std::filesystem::path& adb_path, const std::string& s
     return output.find(kConnectedFlag) != std::string::npos;
 }
 
-// 同一设备的串号常有多种写法：adb devices 注册的是 emulator-5554，常量表和手动 connect 常用
-// 127.0.0.1:5555 / localhost:5555。把已知别名归一成同一个键，用于判断"候选串口是否已被枚举结果覆盖"；
-// 只在 find_by_common_serials 的候选过滤里使用，返回给上层的 serial 保持原样，
-// MaaPiCli / 通用 GUI 按原始串号保存设备身份的行为不受影响。
-std::string canonical_serial(const std::string& serial)
-{
-    std::string_view view(serial);
+using adb_device_detail::canonical_serial;
 
-    // 模拟器 console N / adb N+1 的固定约定（AVD 表内两种写法并存即来源于此）
-    constexpr std::string_view kEmulatorPrefix = "emulator-";
-    if (view.starts_with(kEmulatorPrefix)) {
-        std::string_view num = view.substr(kEmulatorPrefix.size());
-        int port = 0;
-        auto [ptr, ec] = std::from_chars(num.data(), num.data() + num.size(), port);
-        if (ec == std::errc { } && ptr == num.data() + num.size() && port > 0 && port < 65535) {
-            return std::format("127.0.0.1:{}", port + 1);
-        }
-        return serial;
-    }
-
-    auto colon = view.rfind(':');
-    if (colon == std::string_view::npos) {
-        return serial;
-    }
-
-    std::string host(view.substr(0, colon));
-    tolowers_(host);
-    if (host == "localhost" || host == "::1" || host == "[::1]") {
-        host = "127.0.0.1";
-    }
-    return std::format("{}:{}", host, view.substr(colon + 1));
-}
 } // namespace
 
 std::vector<AdbDevice> AdbDeviceFinder::find() const
@@ -182,7 +158,7 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
         }
 
         append_unique_devices(result, accurate_serials, find_specified(e.adb_path, accurate_serials, e));
-        append_unique_devices(result, accurate_serials, find_by_common_serials(e.adb_path, accurate_serials, e));
+        append_unique_devices(result, accurate_serials, find_by_candidate_serials(e.adb_path, accurate_serials, e));
     }
 
 #if MAAUTILS_HAS_BOOST_PROCESS
@@ -222,7 +198,7 @@ std::vector<AdbDevice> AdbDeviceFinder::find_specified(
     return result;
 }
 
-std::vector<AdbDevice> AdbDeviceFinder::find_by_common_serials(
+std::vector<AdbDevice> AdbDeviceFinder::find_by_candidate_serials(
     const std::filesystem::path& adb_path,
     const std::unordered_set<std::string>& exclude_serials,
     const Emulator& emulator) const
@@ -240,18 +216,17 @@ std::vector<AdbDevice> AdbDeviceFinder::find_by_common_serials(
         exclude_canonical.emplace(canonical_serial(ser));
     }
 
-    std::vector<std::string> candidates;
-    for (const std::string& ser : emulator.common_serials) {
-        if (exclude_canonical.count(canonical_serial(ser))) {
-            LogInfo << "skip excluded serial" << VAR(ser);
-            continue;
-        }
-        candidates.emplace_back(ser);
-    }
+    auto serials = find_serials_by_emulator_config(emulator);
+    serials.insert(serials.end(), emulator.common_serials.begin(), emulator.common_serials.end());
+
+    auto candidates = adb_device_detail::unique_uncovered_serials(serials, exclude_canonical);
 
     // adb server 与模拟器之间的 TCP 会话可能已断开（模拟器进程与端口仍在），此时 adb devices 不会列出设备，
     // 需要按已知端口重新 connect 一次。
     for (const std::string& ser : filter_reachable_serials(candidates)) {
+        if (exclude_canonical.contains(canonical_serial(ser))) {
+            continue;
+        }
         // adb connect 只对 ip:port 形式有意义，emulator-5554 这类名字交给 try_device 自行判断
         if (ser.find(':') != std::string::npos && !try_adb_connect(adb_path, ser)) {
             continue;
@@ -261,6 +236,7 @@ std::vector<AdbDevice> AdbDeviceFinder::find_by_common_serials(
         if (!res_opt) {
             continue;
         }
+        exclude_canonical.emplace(canonical_serial(ser));
         result.emplace_back(std::move(*res_opt));
     }
 

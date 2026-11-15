@@ -154,7 +154,7 @@ jobs:
               id: publish
               run: |
                   pip install --upgrade twine packaging
-                  python -m twine upload \
+                  python -m twine upload --verbose \
                     assets/pkgs-pip/*.whl \
                     --repository ${{ env.PYPI_REPOSITORY }} \
                     --skip-existing
@@ -296,7 +296,7 @@ jobs:
                   issue=$(gh issue list --state all --limit 100 \
                     --search "in:title \"$ISSUE_TITLE\"" \
                     --json number,state,title \
-                    --jq 'map(select(.title | contains(env.ISSUE_TITLE))) | .[0] // null')
+                    --jq 'map(select(.title | contains(env.ISSUE_TITLE))) | .[0] // null | tojson')
                   echo "issue=$issue" >> "$GITHUB_OUTPUT"
             - name: Create issue
               if: fromJSON(steps.find-issues.outputs.issue) == null

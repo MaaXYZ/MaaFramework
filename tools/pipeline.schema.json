@@ -1185,6 +1185,17 @@
         "Ocr": {
             "type": "object",
             "properties": {
+                "engine": {
+                    "title": "Engine Property",
+                    "description": "OCR 引擎。可选，默认 Default（PPOCR），推荐用于常规场景。WeChatOCR 在大多数场景下效果不如 PPOCR，仅供少数特殊场景按实际效果尝试。",
+                    "type": "string",
+                    "enum": [
+                        "Default",
+                        "WeChatOCR"
+                    ],
+                    "default": "Default",
+                    "markdownDescription": "*string*\n\nOCR 引擎。可选，默认 `Default`（PPOCR），推荐用于常规场景。`WeChatOCR` 在大多数场景下效果不如 PPOCR，仅供少数特殊场景按实际效果尝试。\n\n`WeChatOCR` 支持 Windows x64 和 Linux x64，需在本地 Resource 加载资源前配置。要求 `only_rec: false`、`model` 为空，且不参与 batch 优化。`score: -1` 表示置信度未知，仅在 `threshold: 0` 时允许通过。"
+                },
                 "roi": {
                     "$ref": "#/$defs/TemplateMatch/properties/roi"
                 },
@@ -1247,6 +1258,26 @@
                     "description": "颜色过滤。填写某个 ColorMatch 节点名，先使用该节点的颜色参数对图像进行二值化，再送入 OCR 识别。可选，默认为空。",
                     "type": "string",
                     "markdownDescription": "*string*\n\n颜色过滤。填写某个 `ColorMatch` 节点名，先使用该节点的颜色参数（`method`、`lower`、`upper`）对图像进行二值化，再送入 OCR 识别。可选，默认为空。\n\n仅使用该节点的颜色二值化逻辑，不依赖其 `count`、`order_by` 等结果参数。\n\n设置了该字段的 OCR 节点不参与 batch 优化。"
+                }
+            },
+            "if": {
+                "required": [
+                    "engine"
+                ],
+                "properties": {
+                    "engine": {
+                        "const": "WeChatOCR"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "only_rec": {
+                        "const": false
+                    },
+                    "model": {
+                        "const": ""
+                    }
                 }
             }
         },
@@ -1930,6 +1961,13 @@
                     "anyOf": [
                         {
                             "$ref": "#/$defs/Ocr/properties/only_rec"
+                        }
+                    ]
+                },
+                "engine": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Ocr/properties/engine"
                         }
                     ]
                 },

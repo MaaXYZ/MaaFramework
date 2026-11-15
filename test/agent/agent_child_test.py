@@ -22,7 +22,7 @@ if sys.stdout.encoding != "utf-8":
 if sys.stderr.encoding != "utf-8":
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
-if len(sys.argv) < 4:
+if len(sys.argv) < 5:
     print("Call agent_main_test.py instead of this file.")
     sys.exit(1)
 
@@ -194,6 +194,12 @@ class MyRecognition(CustomRecognition):
         # Resource API 测试 (通过 context.tasker.resource)
         # ============================================================
         resource = tasker.resource
+
+        load_detail = resource.get_load_detail(int(sys.argv[-2]))
+        assert load_detail is not None
+        assert load_detail["errors"] == []
+        assert load_detail["res_id"] == int(sys.argv[-2])
+        assert resource.get_load_detail(0) is None
 
         # 测试 loaded (valid) 属性
         print(f"  resource.loaded: {resource.loaded}")

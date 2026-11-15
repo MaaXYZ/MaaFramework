@@ -285,6 +285,19 @@ def test_resource_api():
     # NCNN 仅在 Android 构建中可用，这里运行的桌面端构建应设置失败
     assert not r1.use_ncnn()
 
+    # 无效配置和缺失运行时应明确返回 False。
+    assert not r1.configure_wechat_ocr({"runtime_dir": str(Path.cwd().resolve())})
+    assert not r1.configure_wechat_ocr(
+        {"sdk_path": "relative.dll", "runtime_dir": "relative", "ocr_path": "relative.exe"}
+    )
+    assert not r1.configure_wechat_ocr(
+        {
+            "sdk_path": "/test/WeChatOCR.dll",
+            "runtime_dir": "/test/runtime",
+            "ocr_path": "/test/runtime/WeChatOCR.exe",
+        }
+    )
+
     r2 = Resource()
     r2.use_directml(0)
     r2.use_webgpu(0)
@@ -1884,6 +1897,8 @@ if __name__ == "__main__":
 
     # 回归：并发初始化线程安全 (#629)
     test_binding_init_thread_safety()
+    from runtime_events_test import test_runtime_event_bindings
+    test_runtime_event_bindings()
     test_tasker_clear_cache()
     test_neural_network_cache()
 

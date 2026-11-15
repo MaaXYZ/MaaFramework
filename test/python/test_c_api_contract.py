@@ -39,7 +39,7 @@ NULL_HANDLE_APIS = {
         "UnregisterCustomRecognition ClearCustomRecognition RegisterCustomAction "
         "UnregisterCustomAction ClearCustomAction PostBundle PostOcrModel PostPipeline "
         "PostImage OverridePipeline OverrideNext OverrideImage GetNodeData Clear Status "
-        "Wait Loaded SetOption GetHash GetNodeList GetCustomRecognitionList "
+        "Wait Loaded SetOption GetLoadDetail GetHash GetNodeList GetCustomRecognitionList "
         "GetCustomActionList GetDefaultRecognitionParam GetDefaultActionParam"
     ),
     "Controller": (

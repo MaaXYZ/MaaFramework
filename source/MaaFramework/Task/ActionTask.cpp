@@ -53,6 +53,8 @@ MaaActId ActionTask::run_impl()
         { "focus", cur_node.focus },
     };
 
+    node_cb_detail["parent"] = context_->operation();
+    Context::OperationScope operation(*context_, "node", node_id);
     notify(MaaMsg_Node_ActionNode_Starting, node_cb_detail);
 
     RecoResult fake_reco {
@@ -76,7 +78,11 @@ MaaActId ActionTask::run_impl()
     node_cb_detail["node_details"] = result;
     node_cb_detail["reco_details"] = fake_reco;
     node_cb_detail["action_details"] = act;
-    notify(act.success ? MaaMsg_Node_ActionNode_Succeeded : MaaMsg_Node_ActionNode_Failed, node_cb_detail);
+    const bool cancelled = context_->need_to_stop();
+    node_cb_detail["reason"] = cancelled ? "cancelled" : (act.success ? "completed" : "unknown");
+    notify(
+        cancelled ? MaaMsg_Node_ActionNode_Cancelled : (act.success ? MaaMsg_Node_ActionNode_Succeeded : MaaMsg_Node_ActionNode_Failed),
+        node_cb_detail);
 
     return act.action_id;
 }

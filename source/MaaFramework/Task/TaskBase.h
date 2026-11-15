@@ -39,6 +39,7 @@ public:
     MaaTaskId task_id() const;
     const std::string& entry() const;
     static MaaNodeId generate_node_id();
+    std::string termination_reason(bool succeeded) const;
 
 protected:
     MAA_RES_NS::ResourceMgr* resource();
@@ -73,6 +74,7 @@ protected:
     std::string cur_node_;
 
     std::shared_ptr<Context> context_ = nullptr;
+    std::string failure_reason_ = "unknown";
 
 private:
     inline static std::atomic<MaaTaskId> s_global_task_id = kTaskIdBase;

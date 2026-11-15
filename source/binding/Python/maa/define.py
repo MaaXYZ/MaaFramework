@@ -237,12 +237,16 @@ class MaaGlobalOptionEnum(IntEnum):
     # value: size_t, eg: 4096; val_size: sizeof(size_t)
     # default value is 4096
     RecoImageCacheLimit = 9
+    RecoImageRaw = 10
+    RecoImageDraws = 11
+    RecoImageCacheBytes = 12
+    CaptureConfig = 13
 
     # Whether to save task failure keyframes
     #
     # value: bool, eg: true; val_size: sizeof(bool)
-    # default value is true, independent of SaveOnError and DebugMode
-    SaveOnErrorFrames = 10
+    # default value is false, independent of SaveOnError and DebugMode
+    SaveOnErrorFrames = 14
 
 
 class MaaCtrlOptionEnum(IntEnum):
@@ -356,6 +360,10 @@ class MaaResOptionEnum(IntEnum):
     # value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider)
     # default value is MaaInferenceExecutionProvider_Auto
     InferenceExecutionProvider = 2
+
+    # UTF-8 JSON configuration for the optional WeChatOCR engine (Windows x64).
+    # Must be set before any Resource.post_* call. Resource.clear() resets it.
+    WeChatOCR = 3
 
 
 MaaAdbScreencapMethod = ctypes.c_uint64
@@ -1186,8 +1194,8 @@ class RecognitionDetail:
     best_result: Optional[RecognitionResult]
 
     raw_detail: dict[str, Any]
-    raw_image: numpy.ndarray  # only valid in debug mode
-    draw_images: list[numpy.ndarray]  # only valid in debug mode
+    raw_image: numpy.ndarray  # available when enabled and retained by the image cache
+    draw_images: list[numpy.ndarray]  # available when enabled and retained by the image cache
 
 
 @dataclass

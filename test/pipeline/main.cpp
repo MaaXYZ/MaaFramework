@@ -9,6 +9,7 @@
 #include "module/PostStopInterrupt.h"
 #include "module/RunWithoutFile.h"
 #include "module/RuntimeCache.h"
+#include "module/RuntimeEvents.h"
 
 #include "MaaFramework/MaaAPI.h"
 
@@ -28,6 +29,10 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &lv, sizeof(lv));
 
     if (!test_failure_frame_output()) {
+        return -1;
+    }
+
+    if (!runtime_events()) {
         return -1;
     }
 

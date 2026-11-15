@@ -5,6 +5,10 @@
  *
  * A callback consists of a message and a payload. The message is a string that indicates the type
  * of the message. The payload is a JSON object that contains the details of the message.
+ * Recognition/action notifications optionally include pipeline (the execution-time
+ * configuration) when MaaGlobalOption_CaptureConfig is enabled. Recognition result
+ * JSON also includes image_status at cache insertion time; use
+ * MaaTaskerGetRecognitionImageStatus to query current retention.
  *
  * @copyright Copyright (c) 2024
  *
@@ -18,6 +22,18 @@
  * @{
  */
 
+/** Plugin-only lifecycle notifications. details_json is {}.
+ * Created is sent after initialization. Destroying is sent after the worker has
+ * stopped, before members are destroyed. Handles are borrowed; do not destroy
+ * them, retain them beyond Destroying, or enqueue work from Destroying.
+ */
+#define MaaMsg_Resource_Created ("Resource.Created")
+#define MaaMsg_Resource_Destroying ("Resource.Destroying")
+#define MaaMsg_Controller_Created ("Controller.Created")
+#define MaaMsg_Controller_Destroying ("Controller.Destroying")
+#define MaaMsg_Tasker_Created ("Tasker.Created")
+#define MaaMsg_Tasker_Destroying ("Tasker.Destroying")
+
 /**
  * @{
  * @brief The message for the resource loading.
@@ -27,6 +43,8 @@
  *      path: string,
  *      type: string,  // "Bundle" | "OcrModel" | "Pipeline" | "Image"
  *      hash: string,
+ *      status?: number,  // terminal notifications only
+ *      errors?: object[], // same diagnostics as MaaResourceGetLoadDetail
  * }
  */
 #define MaaMsg_Resource_Loading_Starting ("Resource.Loading.Starting")
@@ -197,5 +215,29 @@
 #define MaaMsg_Node_WaitFreezes_Succeeded ("Node.WaitFreezes.Succeeded")
 #define MaaMsg_Node_WaitFreezes_Failed ("Node.WaitFreezes.Failed")
 /// @}
+
+/** Additive runtime correlation. Context notifications include context_id,
+ * parent_task_id (0 for a root task), task_parent and parent ({kind, id} or null).
+ * IDs identify executions, never node definitions or pointer addresses.
+ * Terminal reason is independent of legacy MaaStatus, including cancelled.
+ */
+#define MaaMsg_Context_Task_Starting ("Context.Task.Starting")
+#define MaaMsg_Context_Task_Succeeded ("Context.Task.Succeeded")
+#define MaaMsg_Context_Task_Failed ("Context.Task.Failed")
+#define MaaMsg_Context_Task_Cancelled ("Context.Task.Cancelled")
+#define MaaMsg_Node_PipelineNode_Cancelled ("Node.PipelineNode.Cancelled")
+#define MaaMsg_Node_RecognitionNode_Cancelled ("Node.RecognitionNode.Cancelled")
+#define MaaMsg_Node_ActionNode_Cancelled ("Node.ActionNode.Cancelled")
+#define MaaMsg_Node_NextList_Cancelled ("Node.NextList.Cancelled")
+#define MaaMsg_Node_Recognition_Cancelled ("Node.Recognition.Cancelled")
+#define MaaMsg_Node_Action_Cancelled ("Node.Action.Cancelled")
+#define MaaMsg_Node_WaitFreezes_Cancelled ("Node.WaitFreezes.Cancelled")
+
+/** Actual scheduler transition: task_id, from_node_id, to_node_id, from, to,
+ * reason (entry/next/on_error/jump_back). An ID of 0 denotes no previous execution.
+ * NextList notifications additionally carry list_id, node_id, round, list_type;
+ * successful selection carries selected_index (zero based) and reco_id.
+ */
+#define MaaMsg_Node_Transition ("Node.Transition")
 
 /** @} */

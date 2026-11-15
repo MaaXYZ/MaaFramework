@@ -265,6 +265,15 @@ void TaskerImpl::override_pipeline(MaaTaskId task_id, maajs::ValueType pipeline)
     }
 }
 
+std::optional<std::string> TaskerImpl::recognition_image_status(MaaRecoId id)
+{
+    StringBuffer buffer;
+    if (!MaaTaskerGetRecognitionImageStatus(tasker, id, buffer)) {
+        return std::nullopt;
+    }
+    return buffer.str();
+}
+
 std::optional<maajs::ValueType> TaskerImpl::recognition_detail(MaaRecoId id)
 {
     StringBuffer node_name;
@@ -455,6 +464,7 @@ void TaskerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER_SETTER(proto, "controller", TaskerImpl::get_controller, TaskerImpl::set_controller);
     MAA_BIND_FUNC(proto, "clear_cache", TaskerImpl::clear_cache);
     MAA_BIND_FUNC(proto, "override_pipeline", TaskerImpl::override_pipeline);
+    MAA_BIND_FUNC(proto, "recognition_image_status", TaskerImpl::recognition_image_status);
     MAA_BIND_FUNC(proto, "recognition_detail", TaskerImpl::recognition_detail);
     MAA_BIND_FUNC(proto, "action_detail", TaskerImpl::action_detail);
     MAA_BIND_FUNC(proto, "node_detail", TaskerImpl::node_detail);

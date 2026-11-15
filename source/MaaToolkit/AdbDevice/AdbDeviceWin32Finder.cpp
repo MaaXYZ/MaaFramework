@@ -1,5 +1,6 @@
 #if defined(_WIN32)
 #include "AdbDeviceWin32Finder.h"
+#include "VBoxConfigDiscovery.h"
 
 #include <unordered_map>
 
@@ -74,6 +75,14 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_by_emulator_tool(const Emulato
     }
 
     return { };
+}
+
+std::vector<std::string> AdbDeviceWin32Finder::find_serials_by_emulator_config(const Emulator& emulator) const
+{
+    LogFunc << VAR(emulator.name);
+    auto serials = find_vbox_adb_serials(emulator.name, emulator.process_path);
+    LogDebug << VAR(serials);
+    return serials;
 }
 
 namespace

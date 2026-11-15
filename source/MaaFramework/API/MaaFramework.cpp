@@ -432,6 +432,31 @@ MaaBool MaaGlobalLoadPlugin(const char* library_path)
     return MAA_GLOBAL_NS::PluginMgr::get_instance().load(MAA_NS::path(library_path));
 }
 
+MaaBool MaaGlobalGetPluginList(MaaStringListBuffer* buffer)
+{
+    if (!buffer) {
+        return false;
+    }
+    MaaStringListBufferClear(buffer);
+    auto* item = MaaStringBufferCreate();
+    for (const auto& name : MAA_GLOBAL_NS::PluginMgr::get_instance().get_names()) {
+        MaaStringBufferSet(item, name.c_str());
+        MaaStringListBufferAppend(buffer, item);
+    }
+    MaaStringBufferDestroy(item);
+    return true;
+}
+
+MaaBool MaaGlobalFlushPlugins()
+{
+    return MAA_GLOBAL_NS::PluginMgr::get_instance().flush();
+}
+
+MaaBool MaaGlobalShutdownPlugins()
+{
+    return MAA_GLOBAL_NS::PluginMgr::get_instance().shutdown();
+}
+
 MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogError << "Deprecated API, use MaaGlobalSetOption instead";

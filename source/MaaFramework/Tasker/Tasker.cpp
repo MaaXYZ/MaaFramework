@@ -21,21 +21,27 @@ Tasker::Tasker()
     LogFunc;
 
     auto& plugin_mgr = MAA_GLOBAL_NS::PluginMgr::get_instance();
+    plugin_mgr.instance_created();
     LogInfo << VAR(plugin_mgr.get_names());
 
     for (const auto& sink : plugin_mgr.get_tasker_sinks()) {
-        add_sink(sink, this);
+        notifier_.add_plugin_sink(sink, this);
     }
     for (const auto& sink : plugin_mgr.get_ctx_sinks()) {
-        add_context_sink(sink, this);
+        context_notifier_.add_plugin_sink(sink, this);
     }
 
     task_runner_ = std::make_unique<AsyncRunner<TaskPtr>>(std::bind(&Tasker::run_task, this, std::placeholders::_1, std::placeholders::_2));
+    notifier_.notify_plugins(this, MaaMsg_Tasker_Created, json::object { });
 }
 
 Tasker::~Tasker()
 {
     LogFunc;
+
+    task_runner_->release();
+    notifier_.notify_plugins(this, MaaMsg_Tasker_Destroying, json::object { });
+    MAA_GLOBAL_NS::PluginMgr::get_instance().instance_destroyed();
 }
 
 bool Tasker::bind_resource(MaaResource* resource)
@@ -338,7 +344,7 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
 
     MaaTaskId task_id = task_ptr->task_id();
     const std::string& entry = task_ptr->entry();
-    const json::value cb_detail = {
+    json::value cb_detail = {
         { "task_id", task_id },
         { "entry", entry },
         { "hash", resource_ ? resource_->get_hash() : std::string() },
@@ -364,6 +370,7 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
 
     LogInfo << "task end:" << VAR(cb_detail) << VAR(ret);
     runtime_cache_.set_task_status(task_id, entry, ret ? MaaStatus_Succeeded : MaaStatus_Failed);
+    cb_detail["reason"] = task_ptr->termination_reason(ret);
     notifier_.notify(this, ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 
     if (controller_ && !task_runner_->pending()) {

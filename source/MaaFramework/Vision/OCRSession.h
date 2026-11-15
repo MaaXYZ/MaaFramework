@@ -30,6 +30,10 @@ class OCRSession
 public:
     virtual ~OCRSession() = default;
 
+    virtual bool supports_rec_only() const { return true; }
+
+    virtual bool supports_batch_cache() const { return true; }
+
     // Keep batch clustering within the detector resize budget.
     virtual int det_max_side_len() const = 0;
 

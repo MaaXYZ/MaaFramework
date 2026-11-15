@@ -127,11 +127,20 @@ enum MaaGlobalOptionEnum
     /// default value is 4096
     MaaGlobalOption_RecoImageCacheLimit = 9,
 
+    /// Preserve recognition input PNGs. value: bool. Unset follows DebugMode.
+    MaaGlobalOption_RecoImageRaw = 10,
+    /// Generate recognition annotation images. value: bool. Unset follows SaveDraw/DebugMode and Debug-build defaults.
+    MaaGlobalOption_RecoImageDraws = 11,
+    /// Encoded recognition image byte limit per Tasker. value: size_t. Zero disables new image caching; default unlimited.
+    MaaGlobalOption_RecoImageCacheBytes = 12,
+    /// Include the effective pipeline in recognition/action notifications. value: bool; default false.
+    MaaGlobalOption_CaptureConfig = 13,
+
     /// Whether to save unredacted task failure keyframes in the log directory
     ///
     /// value: bool, eg: true; val_size: sizeof(bool)
     /// default value is false, independent of SaveOnError and DebugMode
-    MaaGlobalOption_SaveOnErrorFrames = 10,
+    MaaGlobalOption_SaveOnErrorFrames = 14,
 };
 
 typedef MaaOption MaaResOption;
@@ -213,6 +222,15 @@ enum MaaResOptionEnum
     /// value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider)
     /// default value is MaaInferenceExecutionProvider_Auto
     MaaResOption_InferenceExecutionProvider = 2,
+
+    /// Configure the optional WeChatOCR engine (Windows x64 and Linux x64).
+    /// value: UTF-8 JSON bytes; val_size excludes the optional terminating NUL.
+    /// Empty JSON {} enables SDK/runtime discovery. sdk_path is optional; runtime_dir and
+    /// ocr_path must be supplied together or both omitted. Explicit paths must be absolute.
+    /// Configure a local Resource before any MaaResourcePost* call; remote resources do not support it.
+    /// MaaResourceClear resets the configuration. Select engine="WeChatOCR" in OCR nodes.
+    /// Configuration options: https://github.com/MaaXYZ/WeChatOCR-SDK#readme
+    MaaResOption_WeChatOCR = 3,
 };
 
 typedef MaaOption MaaCtrlOption;

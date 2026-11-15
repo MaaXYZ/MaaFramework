@@ -364,6 +364,27 @@ class Resource:
         """
         return self.set_inference(MaaInferenceExecutionProviderEnum.Auto, MaaInferenceDeviceEnum.Auto)
 
+    def configure_wechat_ocr(self, config: Optional[dict[str, Any]] = None) -> bool:
+        """配置微信 OCR 引擎 / Configure the optional WeChat OCR engine.
+
+        本地 Resource 在 post_* 前调用；省略配置以自动发现，clear() 后需重新配置。
+        Call on a local Resource before post_*; omit config for discovery. clear() resets it.
+        """
+        if config is None:
+            config = {}
+        if not isinstance(config, dict):
+            return False
+        payload = json.dumps(config, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        buffer = ctypes.create_string_buffer(payload)
+        return bool(
+            Library.framework().MaaResourceSetOption(
+                self._handle,
+                MaaResOptionEnum.WeChatOCR,
+                buffer,
+                len(payload),
+            )
+        )
+
     # not implemented
     # def use_cuda(self, nvidia_gpu_id: int) -> bool:
     #     return self.set_inference(MaaInferenceExecutionProviderEnum.CUDA, nvidia_gpu_id)
@@ -601,6 +622,17 @@ class Resource:
             raise RuntimeError("Failed to get custom action list.")
         return buffer.get()
 
+    def get_load_detail(self, res_id: int) -> Optional[dict[str, Any]]:
+        """获取已完成加载的诊断快照 / Get a completed load snapshot.
+
+        Available before its terminal notification; cleared by clear().
+        Unknown, pending and cleared IDs return None.
+        """
+        buffer = StringBuffer()
+        if not Library.framework().MaaResourceGetLoadDetail(self._handle, res_id, buffer._handle):
+            return None
+        return json.loads(buffer.get())
+
     @property
     def hash(self) -> str:
         """获取资源 hash / Get resource hash
@@ -765,6 +797,11 @@ class Resource:
             MaaStringBufferHandle,
         ]
 
+        Library.framework().MaaResourceGetLoadDetail.restype = MaaBool
+        Library.framework().MaaResourceGetLoadDetail.argtypes = [
+            MaaResourceHandle, MaaResId, MaaStringBufferHandle,
+        ]
+
         Library.framework().MaaResourceGetHash.restype = MaaBool
         Library.framework().MaaResourceGetHash.argtypes = [
             MaaResourceHandle,
@@ -873,6 +910,8 @@ class ResourceEventSink(EventSink):
         path: str
         type: str
         hash: str
+        status: Optional[int] = None
+        errors: Optional[list[dict[str, Any]]] = None
 
     def on_resource_loading(
         self,
@@ -896,6 +935,8 @@ class ResourceEventSink(EventSink):
                 path=details["path"],
                 type=details.get("type", "Bundle"),
                 hash=details["hash"],
+                status=details.get("status"),
+                errors=details.get("errors"),
             )
             self.on_resource_loading(resource, noti_type, detail)
 

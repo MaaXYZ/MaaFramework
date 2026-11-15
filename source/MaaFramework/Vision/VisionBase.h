@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <filesystem>
+#include <optional>
 
 #include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"

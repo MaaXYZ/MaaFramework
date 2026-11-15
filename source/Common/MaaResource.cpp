@@ -339,6 +339,19 @@ MaaBool MaaResourceSetOption(MaaResource* res, MaaResOption key, MaaOptionValue 
     return res->set_option(key, value, val_size);
 }
 
+MaaBool MaaResourceGetLoadDetail(const MaaResource* res, MaaResId res_id, MaaStringBuffer* buffer)
+{
+    if (!res || !buffer) {
+        return false;
+    }
+    auto detail = res->get_load_detail(res_id);
+    if (!detail) {
+        return false;
+    }
+    buffer->set(detail->to_string());
+    return true;
+}
+
 MaaBool MaaResourceGetHash(const MaaResource* res, MaaStringBuffer* buffer)
 {
     if (!res || !buffer) {

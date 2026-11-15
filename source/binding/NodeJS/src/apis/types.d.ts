@@ -27,6 +27,7 @@ declare global {
             | `${Category}.Starting`
             | `${Category}.Succeeded`
             | `${Category}.Failed`
+            | `${Category}.Cancelled`
 
         interface CustomRecognitionSelf {
             context: Context

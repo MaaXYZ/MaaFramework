@@ -22,7 +22,7 @@ target_include_directories(
 
 target_compile_definitions(MaaToolkit PRIVATE MAA_TOOLKIT_EXPORTS)
 
-target_link_libraries(MaaToolkit PRIVATE MaaUtils MaaFramework LibraryHolder Boost::system ${OpenCV_LIBS})
+target_link_libraries(MaaToolkit PRIVATE MaaUtils MaaFramework LibraryHolder HeaderOnlyLibraries Boost::system ${OpenCV_LIBS})
 
 if (LINUX)
     set(DBUS_ABS_LIB)

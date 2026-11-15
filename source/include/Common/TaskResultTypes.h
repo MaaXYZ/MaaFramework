@@ -21,8 +21,9 @@ struct RecoResult
     json::value detail;
     ImageEncodedBuffer raw;
     std::vector<ImageEncodedBuffer> draws;
+    std::string image_status = "unavailable";
 
-    MEO_TOJSON(reco_id, name, algorithm, box, detail);
+    MEO_TOJSON(reco_id, name, algorithm, box, detail, image_status);
 };
 
 struct ActionResult

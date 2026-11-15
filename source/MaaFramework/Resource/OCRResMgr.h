@@ -16,6 +16,7 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
 
+#include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/NoWarningCV.hpp"
 #include "MaaUtils/NonCopyable.hpp"
 #include "Vision/OCRSession.h"
@@ -37,10 +38,11 @@ public:
 
     bool lazy_load(const std::filesystem::path& path);
     void clear();
+    bool configure_wechat(const json::value& config);
 
 public:
     // det + rec + keys of `name`, null if rec / keys are missing or fail to load
-    MAA_VISION_NS::OCRSessionPtr session(const std::string& name);
+    MAA_VISION_NS::OCRSessionPtr session(const std::string& name, const std::string& engine = "Default");
 
 private:
     inline static const std::filesystem::path kDetModelFilename = "det.onnx";
@@ -76,6 +78,7 @@ private:
 
     std::mutex session_mutex_;
     std::unordered_map<std::string, MAA_VISION_NS::OCRSessionPtr> sessions_;
+    MAA_VISION_NS::OCRSessionPtr wechat_session_;
 };
 
 MAA_RES_NS_END

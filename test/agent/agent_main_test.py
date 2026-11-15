@@ -54,7 +54,7 @@ def api_test():
     print(f"resource: {resource}")
 
     # 加载资源
-    resource.post_bundle(
+    resource_load = resource.post_bundle(
         install_dir / "test" / "PipelineSmoking" / "resource"
     ).wait()
     print(f"resource.loaded: {resource.loaded}")
@@ -65,6 +65,7 @@ def api_test():
     print(f"controller: {dbg_controller}")
     dbg_controller.post_connection().wait()
 
+    assert Tasker.set_reco_image_raw(True)
     tasker = Tasker()
     tasker.bind(resource, dbg_controller)
     print(f"tasker: {tasker}")
@@ -126,6 +127,7 @@ def api_test():
         str(Path(__file__).parent / "agent_child_test.py"),
         str(binding_dir),
         str(install_dir),
+        str(resource_load.job_id),
         socket_id,
     ]
     child_process = start_agent_server(agent_server_command)
