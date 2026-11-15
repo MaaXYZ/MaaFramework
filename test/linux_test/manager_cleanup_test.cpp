@@ -1,7 +1,6 @@
-#include <algorithm>
+#include <cstdio>
+#include <cstdlib>
 #include <filesystem>
-#include <iostream>
-#include <stdexcept>
 
 #include "Backends.h"
 #include "Manager/LinuxControlUnitMgr.h"
@@ -14,14 +13,18 @@ namespace
 void require(bool condition, const char* message)
 {
     if (!condition) {
-        throw std::runtime_error(message);
+        std::fprintf(stderr, "%s\n", message);
+        std::exit(1);
     }
 }
 
 size_t count_fds()
 {
-    const auto entries = std::filesystem::directory_iterator("/proc/self/fd");
-    return std::distance(begin(entries), end(entries));
+    size_t count = 0;
+    for ([[maybe_unused]] const auto& entry : std::filesystem::directory_iterator("/proc/self/fd")) {
+        ++count;
+    }
+    return count;
 }
 
 LinuxControlUnitConfig pipewire_config()
@@ -51,7 +54,7 @@ void require_disconnected(LinuxControlUnitMgr& manager)
     require(!manager.screencap(image), "failed manager retains callable screencap");
 }
 
-void input_init_failure()
+void test_input_init_failure()
 {
     state.init_input = false;
     LinuxControlUnitMgr manager(pipewire_config());
@@ -64,7 +67,7 @@ void input_init_failure()
     require(state.screencap_inits == 8 && state.input_inits == 8, "failure was not injected after capture initialization");
 }
 
-void screencap_init_failure()
+void test_screencap_init_failure()
 {
     state.init_screencap = false;
     LinuxControlUnitMgr manager(pipewire_config());
@@ -73,7 +76,7 @@ void screencap_init_failure()
     require(state.input_inits == 0, "input initialized after screencap failure");
 }
 
-void input_creation_failure()
+void test_input_creation_failure()
 {
     auto config = pipewire_config();
     config.input_method = -1;
@@ -83,7 +86,7 @@ void input_creation_failure()
     require(state.screencap_inits == 0, "capture initialized after input creation failure");
 }
 
-void screencap_creation_failure()
+void test_screencap_creation_failure()
 {
     auto config = wayland_config();
     config.screencap_method = -1;
@@ -93,7 +96,7 @@ void screencap_creation_failure()
     require(state.wayland_connections == 1, "failure did not follow Wayland creation");
 }
 
-void wayland_failure_retry()
+void test_wayland_failure_retry()
 {
     state.connect_wayland = false;
     LinuxControlUnitMgr manager(wayland_config());
@@ -110,7 +113,7 @@ void wayland_failure_retry()
     require(state.wayland_connections == 3, "Wayland recovery reused a failed client");
 }
 
-void failure_then_success()
+void test_failure_then_success()
 {
     state.init_input = false;
     LinuxControlUnitMgr manager(pipewire_config());
@@ -122,7 +125,7 @@ void failure_then_success()
     require(manager.click(0, 0), "successful retry lost input");
 }
 
-void repeated_success_then_failure()
+void test_repeated_success_then_failure()
 {
     const auto baseline = count_fds();
     {
@@ -140,7 +143,7 @@ void repeated_success_then_failure()
     require(state.live_resources == 0, "destructor retains resources after failure");
 }
 
-void destructor_after_success()
+void test_destructor_after_success()
 {
     const auto baseline = count_fds();
     {
@@ -152,32 +155,31 @@ void destructor_after_success()
     require(count_fds() == baseline, "destructor retains descriptors");
     require(state.events.back() == "destroy wayland", "Wayland destroyed before its consumers");
 }
-}
+
+struct TestCase
+{
+    const char* name;
+    void (*run)();
+};
+} // namespace
 
 int main()
 {
-    const std::pair<const char*, void (*)()> tests[] = {
-        { "input init failure", input_init_failure },
-        { "screencap init failure", screencap_init_failure },
-        { "input creation failure", input_creation_failure },
-        { "screencap creation failure", screencap_creation_failure },
-        { "Wayland failure and retry", wayland_failure_retry },
-        { "failure then success", failure_then_success },
-        { "repeated success then failure", repeated_success_then_failure },
-        { "destructor after success", destructor_after_success },
+    static constexpr TestCase tests[] = {
+        { "input init failure", test_input_init_failure },
+        { "screencap init failure", test_screencap_init_failure },
+        { "input creation failure", test_input_creation_failure },
+        { "screencap creation failure", test_screencap_creation_failure },
+        { "Wayland failure and retry", test_wayland_failure_retry },
+        { "failure then success", test_failure_then_success },
+        { "repeated success then failure", test_repeated_success_then_failure },
+        { "destructor after success", test_destructor_after_success },
     };
-    int failures = 0;
-    for (const auto& [name, run] : tests) {
+    for (const auto& test : tests) {
         state = {};
-        try {
-            run();
-            require(state.live_resources == 0, "test left resources after destruction");
-            std::cout << "PASS " << name << '\n';
-        }
-        catch (const std::exception& error) {
-            ++failures;
-            std::cerr << "FAIL " << name << ": " << error.what() << '\n';
-        }
+        test.run();
+        require(state.live_resources == 0, "test left resources after destruction");
+        std::printf("PASS %s\n", test.name);
     }
-    return failures == 0 ? 0 : 1;
+    return 0;
 }

@@ -1,8 +1,10 @@
 #pragma once
 
 #include <filesystem>
+#include <memory>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <fcntl.h>
@@ -10,6 +12,10 @@
 
 #include "Base/UnitBase.h"
 
+// The production manager includes each backend header by path. The files under
+// Input/, Screencap/ and Wayland/ shadow those includes and forward here, so the
+// real manager runs against fake backends without a compositor, PipeWire server
+// or input device.
 namespace ManagerCleanupTest
 {
 struct State
@@ -24,6 +30,8 @@ struct State
     std::vector<std::string> events;
 };
 
+// Shared by the manager translation unit and the test translation unit, so the
+// failures injected by the test are observed by the production code.
 inline State state;
 
 // A real descriptor stands in for each backend's partially acquired resources.
@@ -74,7 +82,9 @@ class TestScreencap : public ScreencapBase
 {
 public:
     TestScreencap() = default;
-    TestScreencap(int, uint32_t) { }
+
+    TestScreencap(int, uint32_t) {}
+
     explicit TestScreencap(std::shared_ptr<WaylandClient> client)
         : client_(std::move(client))
     {
@@ -85,6 +95,7 @@ public:
         ++ManagerCleanupTest::state.screencap_inits;
         return ManagerCleanupTest::state.init_screencap;
     }
+
     bool screencap(cv::Mat&) override { return true; }
 
 private:
@@ -96,8 +107,11 @@ class TestInput : public RelativeMoveInput
 {
 public:
     TestInput() = default;
-    explicit TestInput(const std::string&) { }
-    TestInput(const std::string&, int, int) { }
+
+    explicit TestInput(const std::string&) {}
+
+    TestInput(const std::string&, int, int) {}
+
     explicit TestInput(std::shared_ptr<WaylandClient> client)
         : client_(std::move(client))
     {
@@ -108,17 +122,29 @@ public:
         ++ManagerCleanupTest::state.input_inits;
         return ManagerCleanupTest::state.init_input;
     }
+
     MaaControllerFeature get_features() const override { return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick; }
+
     bool click(int, int) override { return true; }
+
     bool swipe(int, int, int, int, int) override { return true; }
+
     bool touch_down(int, int, int, int) override { return true; }
+
     bool touch_move(int, int, int, int) override { return true; }
+
     bool touch_up(int) override { return true; }
+
     bool click_key(int) override { return true; }
+
     bool input_text(const std::string&) override { return true; }
+
     bool key_down(int) override { return true; }
+
     bool key_up(int) override { return true; }
+
     bool scroll(int, int) override { return true; }
+
     bool relative_move(int, int) override { return true; }
 
 private:
