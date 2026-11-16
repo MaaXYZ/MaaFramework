@@ -5,6 +5,7 @@
 #include <unordered_set>
 
 #include "EmulatorExtras/AndrowsExtras.h"
+#include "EmulatorExtras/ModAVDExtras.h"
 #include "EmulatorExtras/MuMuPlayerExtras.h"
 #include "Input/AdbShellInput.h"
 #include "Input/MaatouchInput.h"
@@ -20,6 +21,9 @@ InputAgent::InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& a
 #ifdef _WIN32
         method_vector.emplace_back(InputAgent::Method::MuMuPlayerExtras);
         method_vector.emplace_back(InputAgent::Method::AndrowsExtras);
+#endif
+#ifndef __ANDROID__
+        method_vector.emplace_back(InputAgent::Method::ModAVDExtras);
 #else
         LogWarn << "EmulatorExtras is not supported on this platform";
 #endif
@@ -74,6 +78,11 @@ InputAgent::InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& a
             }
             unit = std::make_shared<AndrowsExtras>(minitouch_path);
         } break;
+#endif
+#ifndef __ANDROID__
+        case Method::ModAVDExtras:
+            unit = std::make_shared<ModAVDExtras>(ModAVDExtras::Usage::Input);
+            break;
 #endif
 
         default:

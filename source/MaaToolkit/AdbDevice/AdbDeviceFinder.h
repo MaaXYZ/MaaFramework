@@ -72,6 +72,8 @@ protected:
         const std::unordered_set<std::string>& exclude_serials,
         const Emulator& emulator) const;
 
+    static std::vector<std::string> filter_reachable_serials(const std::vector<std::string>& serials);
+
     std::vector<Emulator> find_emulators() const;
     std::filesystem::path get_emulator_adb_path(const EmulatorConstantData& emulator, os_pid pid) const;
 

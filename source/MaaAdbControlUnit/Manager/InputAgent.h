@@ -17,6 +17,7 @@ public:
         Maatouch,
         MuMuPlayerExtras,
         AndrowsExtras,
+        ModAVDExtras,
     };
 
 public:

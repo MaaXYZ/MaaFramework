@@ -7,6 +7,7 @@
 #include "EmulatorExtras/AVDExtras.h"
 #include "EmulatorExtras/AndrowsExtras.h"
 #include "EmulatorExtras/LDPlayerExtras.h"
+#include "EmulatorExtras/ModAVDExtras.h"
 #include "EmulatorExtras/MuMuPlayerExtras.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/NoWarningCV.hpp"
@@ -48,6 +49,7 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
 #endif
 #ifndef __ANDROID__
         method_set.emplace(ScreencapAgent::Method::AVDExtras);
+        method_set.emplace(ScreencapAgent::Method::ModAVDExtras);
 #else
         LogWarn << "EmulatorExtras is not supported on this platform";
 #endif
@@ -101,6 +103,9 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
 #ifndef __ANDROID__
         case Method::AVDExtras:
             unit = std::make_shared<AVDExtras>();
+            break;
+        case Method::ModAVDExtras:
+            unit = std::make_shared<ModAVDExtras>(ModAVDExtras::Usage::Screencap);
             break;
 #endif
 

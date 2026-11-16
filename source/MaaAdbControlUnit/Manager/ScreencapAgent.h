@@ -24,6 +24,7 @@ public:
         LDPlayerExtras,
         AVDExtras,
         AndrowsExtras,
+        ModAVDExtras,
     };
 
 public:
