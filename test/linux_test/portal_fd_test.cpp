@@ -88,9 +88,13 @@ public:
     }
 
     void set_fault(Fault fault) { fault_ = fault; }
+
     unsigned close_calls() const { return close_calls_; }
+
     unsigned live_sessions() const { return live_sessions_; }
+
     unsigned create_calls() const { return create_calls_; }
+
     unsigned request_close_calls() const { return request_close_calls_; }
 
     void sync()
@@ -218,8 +222,8 @@ private:
             dbus_message_iter_get_basic(&args, &current_session);
             require(sessions_.contains(current_session), "request used a closed or unknown session");
         }
-        if ((create && fault == Fault::CreateError) || (select && fault == Fault::SelectError)
-            || (start && fault == Fault::StartError) || (remote && fault == Fault::RemoteError)) {
+        if ((create && fault == Fault::CreateError) || (select && fault == Fault::SelectError) || (start && fault == Fault::StartError)
+            || (remote && fault == Fault::RemoteError)) {
             send(dbus_message_new_error(call, DBUS_ERROR_FAILED, "Injected Portal failure"));
             return;
         }
@@ -264,10 +268,10 @@ private:
         dbus_message_set_destination(signal, dbus_message_get_sender(call));
         DBusMessageIter args, dict;
         dbus_message_iter_init_append(signal, &args);
-        uint32_t response = (create && fault == Fault::CreateCancel) || (select && fault == Fault::SelectCancel)
-                || (start && fault == Fault::StartCancel)
-            ? 1
-            : 0;
+        uint32_t response =
+            (create && fault == Fault::CreateCancel) || (select && fault == Fault::SelectCancel) || (start && fault == Fault::StartCancel)
+                ? 1
+                : 0;
         dbus_message_iter_append_basic(&args, DBUS_TYPE_UINT32, &response);
         dbus_message_iter_open_container(&args, DBUS_TYPE_ARRAY, "{sv}", &dict);
         if (create && response == 0) {
@@ -275,7 +279,7 @@ private:
             // session_handle_token. Other tests use unique paths to isolate
             // FD ownership from collisions between retained exported sessions.
             const std::string session = std::string(kPortalPath) + "/session/mock/"
-                + (fixed_session_path_ ? "maa_session" : "session" + std::to_string(create_calls_));
+                                        + (fixed_session_path_ ? "maa_session" : "session" + std::to_string(create_calls_));
             require(sessions_.insert(session).second, "duplicate mock session");
             live_sessions_ = sessions_.size();
             append_session(dict, session);
@@ -357,8 +361,8 @@ void test_failure(gconstpointer data)
     std::printf("%s: closes=%u live=%u\n", scenario.name, portal.close_calls(), portal.live_sessions());
     require(portal.close_calls() == expected, "failed Portal request did not close its session exactly once");
     require(portal.live_sessions() == 0, "failed Portal request left a live session");
-    const bool timed_out = scenario.fault == Fault::CreateTimeout || scenario.fault == Fault::SelectTimeout
-        || scenario.fault == Fault::StartTimeout;
+    const bool timed_out =
+        scenario.fault == Fault::CreateTimeout || scenario.fault == Fault::SelectTimeout || scenario.fault == Fault::StartTimeout;
     require(portal.request_close_calls() == (timed_out ? 1u : 0u), "timed-out Portal request was not closed exactly once");
 
     portal.set_fault(Fault::None);

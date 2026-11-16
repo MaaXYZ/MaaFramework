@@ -83,7 +83,7 @@ class TestScreencap : public ScreencapBase
 public:
     TestScreencap() = default;
 
-    TestScreencap(int, uint32_t) {}
+    TestScreencap(int, uint32_t) { }
 
     explicit TestScreencap(std::shared_ptr<WaylandClient> client)
         : client_(std::move(client))
@@ -108,9 +108,9 @@ class TestInput : public RelativeMoveInput
 public:
     TestInput() = default;
 
-    explicit TestInput(const std::string&) {}
+    explicit TestInput(const std::string&) { }
 
-    TestInput(const std::string&, int, int) {}
+    TestInput(const std::string&, int, int) { }
 
     explicit TestInput(std::shared_ptr<WaylandClient> client)
         : client_(std::move(client))

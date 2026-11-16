@@ -68,7 +68,7 @@ static bool dbus_wait_for_signal(
     uint32_t& response,
     const char* extract_key,
     std::string& out_value,
-    const std::string& session_path = {},
+    const std::string& session_path = { },
     int timeout_sec = kStartResponseTimeoutSec)
 {
     auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(timeout_sec);
@@ -140,8 +140,9 @@ static bool dbus_wait_for_signal(
                 return true;
             }
         }
-        else if (dbus_message_is_signal(msg, kSessionInterface, "Closed") && !session_path.empty()
-                 && session_path == dbus_message_get_path(msg)) {
+        else if (
+            dbus_message_is_signal(msg, kSessionInterface, "Closed") && !session_path.empty()
+            && session_path == dbus_message_get_path(msg)) {
             dbus_message_unref(msg);
             dbus_close_object(conn, request_path, kPortalRequestInterface);
             return false;
@@ -534,8 +535,9 @@ bool MaaToolkitPortalHelper::dbus_start_stream()
 
                     got_start_response = true;
                 }
-                else if (dbus_message_is_signal(sig_msg, kSessionInterface, "Closed")
-                         && dbus_session_handle_ == dbus_message_get_path(sig_msg)) {
+                else if (
+                    dbus_message_is_signal(sig_msg, kSessionInterface, "Closed")
+                    && dbus_session_handle_ == dbus_message_get_path(sig_msg)) {
                     dbus_message_unref(sig_msg);
                     dbus_close_object(conn, start_request_path, kPortalRequestInterface);
                     dbus_bus_remove_match(conn, match_rule.c_str(), nullptr);

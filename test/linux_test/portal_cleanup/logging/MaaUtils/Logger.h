@@ -15,4 +15,7 @@ struct PortalTestLog
     }
 };
 
-#define LogError PortalTestLog {}
+#define LogError  \
+    PortalTestLog \
+    {             \
+    }

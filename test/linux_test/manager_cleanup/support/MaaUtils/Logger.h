@@ -12,6 +12,9 @@ struct NullLog
 };
 }
 
-#define LogError ::ManagerCleanupTest::NullLog { }
+#define LogError                  \
+    ::ManagerCleanupTest::NullLog \
+    {                             \
+    }
 #define LogFunc ((void)0)
 #define VAR(value) value

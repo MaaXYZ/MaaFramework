@@ -176,7 +176,7 @@ int main()
         { "destructor after success", test_destructor_after_success },
     };
     for (const auto& test : tests) {
-        state = {};
+        state = { };
         test.run();
         require(state.live_resources == 0, "test left resources after destruction");
         std::printf("PASS %s\n", test.name);
