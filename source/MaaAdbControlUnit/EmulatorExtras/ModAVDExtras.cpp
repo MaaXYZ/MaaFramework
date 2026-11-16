@@ -14,7 +14,6 @@ MAA_CTRL_UNIT_NS_BEGIN
 ModAVDExtras::ModAVDExtras(Usage usage)
     : usage_(usage)
 {
-    // Keys and text fall back to adb shell input, so only the input unit needs it.
     if (usage_ == Usage::Input) {
         adb_shell_input_ = std::make_shared<AdbShellInput>();
         children_.emplace_back(adb_shell_input_);
@@ -46,11 +45,9 @@ bool ModAVDExtras::parse(const json::value& config)
             enabled_ = false;
             return false;
         }
-        // LibraryHolder adds the platform decorations: modavd_extras.dll, libmodavd_extras.so, libmodavd_extras.dylib
         lib_path_ = MAA_NS::path(root) / MAA_NS::path("extras") / MAA_NS::path("modavd_extras");
     }
 
-    // Empty address: use the adb serial. console_port 0: the library derives it from the address.
     address_ = config.get("extras", "modavd", "address", "");
     console_port_ = config.get("extras", "modavd", "console_port", 0);
 
@@ -65,7 +62,6 @@ bool ModAVDExtras::parse(const json::value& config)
 
 bool ModAVDExtras::init()
 {
-    // InputAgent tries every unit, including ones whose parse failed
     if (!enabled_) {
         return false;
     }
@@ -91,7 +87,6 @@ bool ModAVDExtras::init()
     }
 
     if (usage_ == Usage::Input) {
-        // Touch is what makes this unit worth using; without it, let InputAgent pick the next method.
         if (!(capabilities_ & kCapTouch) || !touch_down_func_ || !touch_move_func_ || !touch_up_func_) {
             LogWarn << "ModAVD extras has no touch input" << VAR(api_version_) << VAR(capabilities_);
             close_instance();
@@ -105,7 +100,6 @@ bool ModAVDExtras::init()
 
 std::optional<cv::Mat> ModAVDExtras::screencap()
 {
-    // A failed reopen (e.g. after a resolution change) leaves no handle; try once more here.
     if (!handle_ && library_loaded_) {
         reopen_instance();
     }
@@ -120,8 +114,6 @@ std::optional<cv::Mat> ModAVDExtras::screencap()
         return image;
     }
 
-    // MODAVD_E_RESIZED needs a new handle; for the other errors one reopen is cheap and
-    // saves AdbControlUnitMgr from retrying with delays.
     if (!reopen_instance()) {
         LogError << "ModAVD capture failed and reopen failed" << VAR(ret) << VAR(error_string(ret));
         return std::nullopt;
@@ -138,8 +130,7 @@ std::optional<cv::Mat> ModAVDExtras::capture_frame(int& ret)
 {
     auto image = capture_once(ret);
 
-    // MODAVD_E_NOT_READY: no frame has arrived since sharing started, or new frames kept
-    // arriving during the copy. Both clear up quickly.
+    // Frame sharing may start before the first frame is available.
     using namespace std::chrono_literals;
     for (int i = 0; !image && ret == kErrNotReady && i < kNotReadyRetries; ++i) {
         std::this_thread::sleep_for(50ms);
@@ -150,7 +141,6 @@ std::optional<cv::Mat> ModAVDExtras::capture_frame(int& ret)
 
 std::optional<cv::Mat> ModAVDExtras::capture_once(int& ret)
 {
-    // Probe the size, then copy straight into a BGR Mat: top-down rows, no conversion needed.
     FrameInfo info { };
     info.size = sizeof(info);
     ret = capture_func_(handle_, 0, kFormatBgr, 0, nullptr, 0, &info);
@@ -174,6 +164,13 @@ std::optional<cv::Mat> ModAVDExtras::capture_once(int& ret)
         return std::nullopt;
     }
 
+    // A rotation between the probe and copy can fit the buffer while changing its dimensions.
+    if (info.width != image.cols || info.height != image.rows) {
+        LogWarn << "ModAVD frame size changed during capture" << VAR(info.width) << VAR(info.height) << VAR(image);
+        ret = kErrResized;
+        return std::nullopt;
+    }
+
     return image;
 }
 
@@ -186,8 +183,6 @@ MaaControllerFeature ModAVDExtras::get_features() const
     return feat;
 }
 
-// get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick,
-// ControllerAgent uses touch_down/touch_move/touch_up instead of click/swipe
 bool ModAVDExtras::click(int x, int y)
 {
     LogError << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
@@ -216,8 +211,7 @@ bool ModAVDExtras::touch_down(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
-    // Coordinates are display pixels of the shared frame, the same as the screencap.
-    // Pressure 0 is the library's default; the scale of MaaFramework's pressure does not apply here.
+    // Use the library's default pressure; MaaFramework's pressure scale does not apply here.
     int ret = touch_down_func_(handle_, 0, contact, x, y, 0);
     if (ret != kOk) {
         LogError << "Failed to touch_down" << VAR(ret) << VAR(error_string(ret));
@@ -275,7 +269,6 @@ bool ModAVDExtras::click_key(int key)
             LogError << "Failed to release key" << VAR(key) << VAR(ret) << VAR(error_string(ret));
             return false;
         }
-        // MODAVD_E_UNSUPPORTED is about this key (one the emulator keyboard does not have), not about keys in general.
         LogWarn << "ModAVD key failed, fallback to adb" << VAR(key) << VAR(ret) << VAR(error_string(ret));
     }
 
@@ -341,8 +334,6 @@ bool ModAVDExtras::input_text(const std::string& text)
         if (ret == kOk) {
             return true;
         }
-        // MODAVD_E_UNSUPPORTED is about this text (not ASCII, and no text field with ModAVD's input method focused),
-        // so the next call tries the library again.
         LogWarn << "ModAVD input_text failed, fallback to adb" << VAR(ret) << VAR(error_string(ret));
     }
 
@@ -385,8 +376,6 @@ bool ModAVDExtras::load_modavd_library()
         return false;
     }
 
-    // API versions only grow: 1 capture, 2 touch, 3 keys and text. What an instance can do is announced through
-    // MODAVD_CAP_*: text from version 3 on, keys when the emulator console has the key command.
     api_version_ = api_version_func_();
     LogInfo << "ModAVD extras" << VAR(lib_path_) << VAR(api_version_);
     if (api_version_ < 1) {
@@ -399,6 +388,8 @@ bool ModAVDExtras::load_modavd_library()
         touch_down_func_ = Library::get_function<TouchFunc>(kTouchDownFuncName);
         touch_move_func_ = Library::get_function<TouchFunc>(kTouchMoveFuncName);
         touch_up_func_ = Library::get_function<TouchUpFunc>(kTouchUpFuncName);
+    }
+    if (usage_ == Usage::Input && api_version_ >= 3) {
         key_func_ = Library::get_function<KeyFunc>(kKeyFuncName);
         input_text_func_ = Library::get_function<InputTextFunc>(kInputTextFuncName);
     }
@@ -408,7 +399,6 @@ bool ModAVDExtras::load_modavd_library()
 
 void ModAVDExtras::unload_modavd_library()
 {
-    // The functions point into the library; drop them before it goes away.
     api_version_func_.clear();
     open_func_.clear();
     close_func_.clear();
@@ -422,7 +412,6 @@ void ModAVDExtras::unload_modavd_library()
     input_text_func_.clear();
     api_version_ = 0;
 
-    // Only give back the reference this unit took.
     if (library_loaded_) {
         Library::unload_library();
         library_loaded_ = false;
@@ -462,13 +451,11 @@ bool ModAVDExtras::open_instance()
 
 void ModAVDExtras::close_instance()
 {
-    // modavd_close lifts the contacts this handle still holds down
     if (handle_ && close_func_) {
         close_func_(handle_);
     }
     handle_ = nullptr;
     capabilities_ = 0;
-    adb_clicked_keys_.clear();
 }
 
 bool ModAVDExtras::reopen_instance()

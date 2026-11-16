@@ -64,46 +64,6 @@ std::optional<boost::asio::ip::tcp::endpoint> parse_tcp_endpoint(const std::stri
     return boost::asio::ip::tcp::endpoint(address, static_cast<std::uint16_t>(port));
 }
 
-// 端口没人监听时 adb connect 要等到自己的超时（Connection::connect_remote() 给的是 60s），
-// 枚举阶段先用一次 TCP 可达性筛选。拒绝和丢包都可能被防火墙/VPN 拖慢，所以所有候选串口并行探测、
-// 共用同一个预算，单个串口不会各自吃掉一份超时。
-std::vector<std::string> filter_reachable_serials(const std::vector<std::string>& serials)
-{
-    constexpr auto kProbeBudget = std::chrono::milliseconds(500);
-
-    boost::asio::io_context context;
-    std::vector<std::unique_ptr<boost::asio::ip::tcp::socket>> sockets;
-    std::vector<bool> reachable(serials.size(), true);
-
-    for (size_t i = 0; i < serials.size(); ++i) {
-        auto endpoint = parse_tcp_endpoint(serials[i]);
-        if (!endpoint) {
-            continue;
-        }
-
-        reachable[i] = false;
-        sockets.emplace_back(std::make_unique<boost::asio::ip::tcp::socket>(context));
-        sockets.back()->async_connect(*endpoint, [&reachable, i](const boost::system::error_code& connect_ec) {
-            reachable[i] = !connect_ec;
-        });
-    }
-
-    if (!sockets.empty()) {
-        context.run_for(kProbeBudget);
-    }
-
-    std::vector<std::string> result;
-    for (size_t i = 0; i < serials.size(); ++i) {
-        if (reachable[i]) {
-            result.emplace_back(serials[i]);
-        }
-        else {
-            LogInfo << "skip unreachable candidate serial" << VAR(serials[i]);
-        }
-    }
-    return result;
-}
-
 // 探测只能证明端口有人接 TCP，接的人是不是 adb 只有 adb 自己知道；被中间设备接管或 adbd 半死时
 // adb connect 会卡到 Connection::connect_remote() 的 60s 上限，枚举阶段用短超时直接放弃这个串口。
 bool try_adb_connect(const std::filesystem::path& adb_path, const std::string& serial)
@@ -244,9 +204,44 @@ std::vector<AdbDevice> AdbDeviceFinder::find_by_candidate_serials(
     return result;
 }
 
-std::vector<std::string> AdbDeviceFinder::filter_reachable(const std::vector<std::string>& serials)
+// 端口没人监听时 adb connect 要等到自己的超时（Connection::connect_remote() 给的是 60s），
+// 枚举阶段先用一次 TCP 可达性筛选。拒绝和丢包都可能被防火墙/VPN 拖慢，所以所有候选串口并行探测、
+// 共用同一个预算，单个串口不会各自吃掉一份超时。
+std::vector<std::string> AdbDeviceFinder::filter_reachable_serials(const std::vector<std::string>& serials)
 {
-    return filter_reachable_serials(serials);
+    constexpr auto kProbeBudget = std::chrono::milliseconds(500);
+
+    boost::asio::io_context context;
+    std::vector<std::unique_ptr<boost::asio::ip::tcp::socket>> sockets;
+    std::vector<bool> reachable(serials.size(), true);
+
+    for (size_t i = 0; i < serials.size(); ++i) {
+        auto endpoint = parse_tcp_endpoint(serials[i]);
+        if (!endpoint) {
+            continue;
+        }
+
+        reachable[i] = false;
+        sockets.emplace_back(std::make_unique<boost::asio::ip::tcp::socket>(context));
+        sockets.back()->async_connect(*endpoint, [&reachable, i](const boost::system::error_code& connect_ec) {
+            reachable[i] = !connect_ec;
+        });
+    }
+
+    if (!sockets.empty()) {
+        context.run_for(kProbeBudget);
+    }
+
+    std::vector<std::string> result;
+    for (size_t i = 0; i < serials.size(); ++i) {
+        if (reachable[i]) {
+            result.emplace_back(serials[i]);
+        }
+        else {
+            LogInfo << "skip unreachable candidate serial" << VAR(serials[i]);
+        }
+    }
+    return result;
 }
 
 std::vector<std::string> AdbDeviceFinder::find_serials_by_adb_command(const std::filesystem::path& adb_path) const

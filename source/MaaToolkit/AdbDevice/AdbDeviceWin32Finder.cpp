@@ -380,7 +380,6 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_ld_devices(const Emulator& emu
 
 namespace
 {
-// mas-avd.json writes portBase as a number; a string or a float with an integral value is accepted too.
 std::optional<int> parse_modavd_port_base(const json::value& value)
 {
     double base = 0;
@@ -425,7 +424,6 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_modavd_devices(const Emulator&
     }
     const json::value& metadata = *jopt;
 
-    // Instance i listens on console port portBase + 10 * i and adb port console + 1.
     constexpr int kDefaultPortBase = 20000;
     constexpr int kPortStep = 10;
     constexpr int kMaxIndex = 9;
@@ -454,13 +452,12 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_modavd_devices(const Emulator&
     }
     std::ranges::sort(indexes);
 
-    // Only the instances that are running. Probe the console port: it takes any number of clients,
-    // while the adb port is the emulator's single adb transport.
+    // Probe the console port to avoid disrupting the single-client adb transport.
     std::vector<std::string> consoles;
     for (int index : indexes) {
         consoles.emplace_back(std::format("127.0.0.1:{}", port_base + kPortStep * index));
     }
-    auto running = filter_reachable(consoles);
+    auto running = filter_reachable_serials(consoles);
 
     auto lib_path = root / "extras"_path / "modavd_extras.dll"_path;
     bool extras = std::filesystem::exists(lib_path);
@@ -479,18 +476,14 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_modavd_devices(const Emulator&
         device.adb_path = emulator.adb_path;
         device.serial = serial;
 
-        if (extras) {
-            device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
-            device.input_methods = MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras;
+        device.screencap_methods = extras ? MaaAdbScreencapMethod_EmulatorExtras : MaaAdbScreencapMethod_Default;
+        device.input_methods = extras ? (MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras) : MaaAdbInputMethod_Default;
 
+        if (extras) {
             auto& modavd_cfg = device.config["extras"]["modavd"];
             modavd_cfg["enable"] = true;
             modavd_cfg["path"] = path_to_utf8_string(root);
             modavd_cfg["console_port"] = console_port;
-        }
-        else {
-            device.screencap_methods = MaaAdbScreencapMethod_Default;
-            device.input_methods = MaaAdbInputMethod_Default;
         }
 
         LogInfo << "ModAVD device" << VAR(device);

@@ -18,12 +18,6 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-// ModAVDExtras uses the modavd_extras library shipped with ModAVD (<ModAVD root>/extras/) to capture the screen
-// from the emulator's shared frame and to send touches, keys and text through the emulator console.
-// The library never falls back to adb by itself; a key or a text it cannot send (MODAVD_E_UNSUPPORTED: the instance
-// has no key command, the key is not on the emulator keyboard, non-ASCII text without a focused text field)
-// goes through AdbShellInput here.
-// API: https://github.com/ModAVD/ModAVDExtras/blob/main/include/modavd_extras.h
 class ModAVDExtras
     : public ScreencapBase
     , public InputBase
@@ -66,8 +60,7 @@ public: // from ControlUnitSink
     virtual void on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur) override;
 
 private:
-    // Not derived from LibraryHolder: its destructor always drops a reference, and the count is shared by every
-    // instance of the type. ScreencapAgent and InputAgent both construct this unit even when it is not enabled.
+    // Disabled units must not release another unit's library reference through LibraryHolder's destructor.
     using Library = LibraryHolder<ModAVDExtras>;
 
     bool load_modavd_library();
@@ -75,7 +68,6 @@ private:
     bool open_instance();
     void close_instance();
     bool reopen_instance();
-    // ret: the library's last error code; kOk when the failure did not come from the library
     std::optional<cv::Mat> capture_frame(int& ret);
     std::optional<cv::Mat> capture_once(int& ret);
     std::string error_string(int ret) const;
@@ -99,8 +91,7 @@ private:
     std::shared_ptr<AdbShellInput> adb_shell_input_ = nullptr;
 
 private:
-    // Same layout as modavd_open_params / modavd_frame_info in modavd_extras.h; the size field keeps
-    // older and newer libraries compatible.
+    // ABI: https://github.com/ModAVD/ModAVDExtras/blob/main/include/modavd_extras.h
     struct OpenParams
     {
         uint32_t size;
@@ -124,6 +115,7 @@ private:
 
     static constexpr int kOk = 0;
     static constexpr int kErrNotReady = -3;
+    static constexpr int kErrResized = -4;
     static constexpr int kNotReadyRetries = 20;
     static constexpr uint32_t kCapScreencap = 1u << 0;
     static constexpr uint32_t kCapTouch = 1u << 1;
