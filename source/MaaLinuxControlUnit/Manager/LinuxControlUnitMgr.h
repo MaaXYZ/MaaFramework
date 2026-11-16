@@ -52,6 +52,7 @@ public:
     virtual json::object get_info() const override;
 
 private:
+    void reset_connection();
     bool create_screencap();
     bool create_input();
     bool create_wl_client();

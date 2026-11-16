@@ -2,9 +2,12 @@
 
 #include "PortalHelper.h"
 
+#include <chrono>
+#include <cstring>
 #include <string>
 
 #include <dbus/dbus.h>
+#include <unistd.h>
 
 #include "MaaUtils/Logger.h"
 
@@ -29,6 +32,28 @@ static constexpr int kStartResponseTimeoutSec = 30;
 /// D-Bus polling interval when waiting for signals (milliseconds).
 static constexpr int kDBusPollIntervalMs = 100;
 
+static void dbus_close_object(DBusConnection* conn, const std::string& path, const char* interface)
+{
+    if (!conn || path.empty() || !dbus_connection_get_is_connected(conn)) {
+        return;
+    }
+
+    DBusMessage* msg = dbus_message_new_method_call(kPortalBusName, path.c_str(), interface, "Close");
+    if (!msg) {
+        LogError << "Failed to create Close message for" << path;
+        return;
+    }
+
+    // Cleanup must not wait for a reply from a portal that may already have
+    // closed the object or stopped responding to the original request.
+    dbus_message_set_no_reply(msg, true);
+    if (!dbus_connection_send(conn, msg, nullptr)) {
+        LogError << "Failed to send Close for" << path;
+    }
+    dbus_message_unref(msg);
+    dbus_connection_flush(conn);
+}
+
 // ---------------------------------------------------------------------------
 // Helper: wait for a D-Bus Response signal on a given request path.
 //
@@ -43,6 +68,7 @@ static bool dbus_wait_for_signal(
     uint32_t& response,
     const char* extract_key,
     std::string& out_value,
+    const std::string& session_path = {},
     int timeout_sec = kStartResponseTimeoutSec)
 {
     auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(timeout_sec);
@@ -52,7 +78,7 @@ static bool dbus_wait_for_signal(
 
         // Non-blocking read with short timeout to allow deadline expiry
         if (!dbus_connection_read_write(conn, kDBusPollIntervalMs)) {
-            continue;
+            break;
         }
 
         DBusMessage* msg = dbus_connection_pop_message(conn);
@@ -114,8 +140,10 @@ static bool dbus_wait_for_signal(
                 return true;
             }
         }
-        else if (dbus_message_is_signal(msg, kSessionInterface, "Closed")) {
+        else if (dbus_message_is_signal(msg, kSessionInterface, "Closed") && !session_path.empty()
+                 && session_path == dbus_message_get_path(msg)) {
             dbus_message_unref(msg);
+            dbus_close_object(conn, request_path, kPortalRequestInterface);
             return false;
         }
 
@@ -123,6 +151,7 @@ static bool dbus_wait_for_signal(
     }
 
     LogError << "Timeout waiting for D-Bus Response signal on" << request_path;
+    dbus_close_object(conn, request_path, kPortalRequestInterface);
     return false;
 }
 
@@ -200,6 +229,21 @@ static void dbus_append_dict_entry_bool(DBusMessageIter* dict, const char* key, 
     dbus_message_iter_append_basic(&variant, DBUS_TYPE_BOOLEAN, &dbus_bool_val);
     dbus_message_iter_close_container(&entry, &variant);
     dbus_message_iter_close_container(dict, &entry);
+}
+
+bool MaaToolkitPortalHelper::open_stream()
+{
+    if (pipewire_fd_exported_) {
+        LogError << "PipeWire FD already transferred; use a new Portal helper for another stream";
+        return false;
+    }
+
+    close_internal();
+    if (!dbus_create_session() || !dbus_select_sources() || !dbus_start_stream()) {
+        close_internal();
+        return false;
+    }
+    return true;
 }
 
 bool MaaToolkitPortalHelper::dbus_create_session()
@@ -337,7 +381,7 @@ bool MaaToolkitPortalHelper::dbus_select_sources()
 
     uint32_t select_response = 0;
     std::string unused;
-    if (!dbus_wait_for_signal(conn, select_request_path, select_response, nullptr, unused)) {
+    if (!dbus_wait_for_signal(conn, select_request_path, select_response, nullptr, unused, dbus_session_handle_)) {
         LogError << "SelectSources: no response signal";
         dbus_message_unref(reply);
         return false;
@@ -424,7 +468,9 @@ bool MaaToolkitPortalHelper::dbus_start_stream()
         auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(kStartResponseTimeoutSec);
 
         while (!got_start_response && std::chrono::steady_clock::now() < deadline) {
-            dbus_connection_read_write(conn, kDBusPollIntervalMs);
+            if (!dbus_connection_read_write(conn, kDBusPollIntervalMs)) {
+                break;
+            }
 
             DBusMessage* sig_msg = nullptr;
             while ((sig_msg = dbus_connection_pop_message(conn)) != nullptr) {
@@ -488,8 +534,10 @@ bool MaaToolkitPortalHelper::dbus_start_stream()
 
                     got_start_response = true;
                 }
-                else if (dbus_message_is_signal(sig_msg, kSessionInterface, "Closed")) {
+                else if (dbus_message_is_signal(sig_msg, kSessionInterface, "Closed")
+                         && dbus_session_handle_ == dbus_message_get_path(sig_msg)) {
                     dbus_message_unref(sig_msg);
+                    dbus_close_object(conn, start_request_path, kPortalRequestInterface);
                     dbus_bus_remove_match(conn, match_rule.c_str(), nullptr);
                     dbus_message_unref(reply);
                     return false;
@@ -504,6 +552,7 @@ bool MaaToolkitPortalHelper::dbus_start_stream()
 
     if (!got_start_response) {
         LogError << "Start timed out after" << kStartResponseTimeoutSec << "s (auth dialog not accepted?)";
+        dbus_close_object(conn, start_request_path, kPortalRequestInterface);
         dbus_message_unref(reply);
         return false;
     }
@@ -533,8 +582,17 @@ bool MaaToolkitPortalHelper::dbus_start_stream()
 
 void MaaToolkitPortalHelper::close_internal()
 {
+    // Existing callers may destroy the helper before connecting the exported
+    // FD. Only the untransferred stream is still ours to close.
+    if (!pipewire_fd_exported_) {
+        dbus_close_object(dbus_connection_, dbus_session_handle_, kSessionInterface);
+        if (pipewire_fd_ >= 0) {
+            close(pipewire_fd_);
+        }
+    }
     pipewire_node_id_ = 0;
     pipewire_fd_ = -1;
+    pipewire_fd_exported_ = false;
     dbus_session_handle_.clear();
     if (dbus_connection_) {
         dbus_connection_unref(dbus_connection_);
@@ -542,8 +600,11 @@ void MaaToolkitPortalHelper::close_internal()
     }
 }
 
-int MaaToolkitPortalHelper::get_fd() const
+int MaaToolkitPortalHelper::get_fd()
 {
+    if (pipewire_fd_ >= 0) {
+        pipewire_fd_exported_ = true;
+    }
     return pipewire_fd_;
 }
 

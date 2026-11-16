@@ -8,12 +8,13 @@ struct DBusConnection;
 struct MaaToolkitPortalHelper
 {
 public:
+    bool open_stream();
     bool dbus_create_session();
     bool dbus_select_sources();
     bool dbus_start_stream();
     void close_internal();
 
-    int get_fd() const;
+    int get_fd();
     uint32_t get_node_id() const;
     bool get_persist() const;
     void set_persist(bool enable);
@@ -27,6 +28,7 @@ private:
     std::string dbus_session_handle_;
     uint32_t pipewire_node_id_ = 0;
     int pipewire_fd_ = -1;
+    bool pipewire_fd_exported_ = false;
     bool persist_ = false;
     std::string restore_token_;
 };
