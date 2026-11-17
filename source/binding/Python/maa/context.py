@@ -438,6 +438,10 @@ class Context:
         Note:
             - time 和 wait_freezes_param.time 互斥，不能同时为非零或同时为零
             time and wait_freezes_param.time are mutually exclusive
+            - target 的内置默认值为 True（Self），使用 box；默认参数下省略 box 会返回 False
+            The built-in default target is True (Self) and uses box; omitting box with default parameters returns False
+            - 全屏等待请显式设置 target=[0, 0, 0, 0]，按当前截图尺寸解析
+            For a full-screen wait, explicitly set target=[0, 0, 0, 0], resolved using the current screenshot size
         """
         rect_buffer = None
         if box:
