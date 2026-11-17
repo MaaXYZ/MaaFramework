@@ -29,6 +29,14 @@ declare global {
                 box: Rect,
                 reco_detail: string,
             ): Promise<NodeDetail | null>
+            /**
+             * 内置默认 target 为 true（Self），使用 box；默认参数下省略 box 会返回 false。
+             * The built-in default target is true (Self) and uses box;
+             * omitting box with default parameters returns false.
+             * 全屏等待请显式设置 target: [0, 0, 0, 0]，按当前截图尺寸解析。
+             * For a full-screen wait, explicitly set target: [0, 0, 0, 0],
+             * resolved using the current screenshot size.
+             */
             wait_freezes(
                 time: Uint64,
                 box?: Rect,
