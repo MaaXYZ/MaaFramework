@@ -2438,7 +2438,7 @@
 </entry><entry thead="no"><para>Very Fast   </para>
 </entry><entry thead="no"><para>Low   </para>
 </entry><entry thead="no"><para>Lossless   </para>
-</entry><entry thead="no"><para>Emulators only: MuMu 12, LDPlayer 9   </para>
+</entry><entry thead="no"><para>Emulators only: MuMu 12, LDPlayer 9, AVD, Androws, ModAVD   </para>
 </entry></row>
 </table>
 </para>
@@ -2487,7 +2487,7 @@
 <entry thead="no"><para>EmulatorExtras   </para>
 </entry><entry thead="no"><para>Fast   </para>
 </entry><entry thead="no"><para>Low   </para>
-</entry><entry thead="no"><para>Emulators only: MuMu 12   </para>
+</entry><entry thead="no"><para>Emulators only: MuMu 12, Androws, ModAVD   </para>
 </entry></row>
 </table>
 </para>
