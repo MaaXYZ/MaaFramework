@@ -106,6 +106,7 @@ __all__ = [
     "BoxAndCountResult",
     "FeatureMatchResult",
     "ColorMatchResult",
+    "MultiColorMatchResult",
     "OCRResult",
     "NeuralNetworkResult",
     "NeuralNetworkClassifyResult",
@@ -1065,6 +1066,7 @@ class AlgorithmEnum(StrEnum):
     OCR = "OCR"
     NeuralNetworkClassify = "NeuralNetworkClassify"
     NeuralNetworkDetect = "NeuralNetworkDetect"
+    MultiColorMatch = "MultiColorMatch"
     And = "And"
     Or = "Or"
     Custom = "Custom"
@@ -1110,6 +1112,7 @@ class BoxAndCountResult:
 
 FeatureMatchResult = BoxAndCountResult
 ColorMatchResult = BoxAndCountResult
+MultiColorMatchResult = BoxAndCountResult
 
 
 @dataclass
@@ -1153,6 +1156,7 @@ RecognitionResult = Union[
     TemplateMatchResult,
     FeatureMatchResult,
     ColorMatchResult,
+    MultiColorMatchResult,
     OCRResult,
     NeuralNetworkClassifyResult,
     NeuralNetworkDetectResult,
@@ -1166,6 +1170,7 @@ AlgorithmResultDict = {
     AlgorithmEnum.TemplateMatch: TemplateMatchResult,
     AlgorithmEnum.FeatureMatch: FeatureMatchResult,
     AlgorithmEnum.ColorMatch: ColorMatchResult,
+    AlgorithmEnum.MultiColorMatch: MultiColorMatchResult,
     AlgorithmEnum.OCR: OCRResult,
     AlgorithmEnum.NeuralNetworkClassify: NeuralNetworkClassifyResult,
     AlgorithmEnum.NeuralNetworkDetect: NeuralNetworkDetectResult,

@@ -76,6 +76,10 @@ private:
         const json::value& input,
         MAA_VISION_NS::ColorMatcherParam& output,
         const MAA_VISION_NS::ColorMatcherParam& default_value);
+    static bool parse_multi_color_matcher_param(
+        const json::value& input,
+        MAA_VISION_NS::MultiColorMatcherParam& output,
+        const MAA_VISION_NS::MultiColorMatcherParam& default_value);
     static bool parse_and_param(
         const json::value& input,
         std::shared_ptr<Recognition::AndParam>& output,
