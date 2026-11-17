@@ -7,6 +7,7 @@ var annotated_dup =
     [ "FullControlUnitAPI", "classFullControlUnitAPI.html", "classFullControlUnitAPI" ],
     [ "GamepadControlUnitAPI", "classGamepadControlUnitAPI.html", "classGamepadControlUnitAPI" ],
     [ "IOSControlUnitAPI", "classIOSControlUnitAPI.html", "classIOSControlUnitAPI" ],
+    [ "IOSDeviceAPI", "classIOSDeviceAPI.html", "classIOSDeviceAPI" ],
     [ "KWinControlUnitAPI", "classKWinControlUnitAPI.html", "classKWinControlUnitAPI" ],
     [ "LinuxControlUnitAPI", "classLinuxControlUnitAPI.html", "classLinuxControlUnitAPI" ],
     [ "MaaCustomControllerCallbacks", "structMaaCustomControllerCallbacks.html", "structMaaCustomControllerCallbacks" ],

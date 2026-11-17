@@ -23,7 +23,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="63" column="13"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="66" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classRelativeMovableUnit_1aa0dc25bd17997c2c76feb3e196315320" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="65" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="68" column="18"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -100,7 +100,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="60" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="61" bodyend="66"/>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="63" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="64" bodyend="69"/>
     <listofallmembers>
       <member refid="classRelativeMovableUnit_1aa0dc25bd17997c2c76feb3e196315320" prot="public" virt="pure-virtual"><scope>RelativeMovableUnit</scope><name>relative_move</name></member>
       <member refid="classRelativeMovableUnit_1a10e75b7e6c9ee64ea6686dee3440239d" prot="public" virt="virtual"><scope>RelativeMovableUnit</scope><name>~RelativeMovableUnit</name></member>

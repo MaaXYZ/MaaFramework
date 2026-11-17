@@ -5,10 +5,10 @@
     <basecompoundref refid="classControlUnitAPI" prot="public" virt="non-virtual">ControlUnitAPI</basecompoundref>
     <includes refid="ControlUnitAPI_8h" local="no">ControlUnitAPI.h</includes>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classAndroidNativeControlUnitAPI_1aef52b927e847aa013d425ceb2d15918c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classAndroidNativeControlUnitAPI_1a83fd88c31c2ac34d7c3e9d950ab462ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>AndroidNativeControlUnitAPI::~AndroidNativeControlUnitAPI</definition>
-        <argsstring>() override=default</argsstring>
+        <argsstring>() override</argsstring>
         <name>~AndroidNativeControlUnitAPI</name>
         <qualifiedname>AndroidNativeControlUnitAPI::~AndroidNativeControlUnitAPI</qualifiedname>
         <briefdescription>
@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="98" column="5"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="101" column="5"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -48,7 +48,7 @@
         <link refid="classControlUnitAPI"/>
       </node>
     </collaborationgraph>
-    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="95" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="96" bodyend="99"/>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="98" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="99" bodyend="102"/>
     <listofallmembers>
       <member refid="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>click</name></member>
       <member refid="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>click_key</name></member>
@@ -68,7 +68,7 @@
       <member refid="classControlUnitAPI_1a9ce21c91ca2fbff7369d8a6403cb28df" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>touch_down</name></member>
       <member refid="classControlUnitAPI_1a987d84182ad2ff7fcba062ec5d7c4b01" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>touch_move</name></member>
       <member refid="classControlUnitAPI_1a6ac99054d055c4300f1ff6f908113030" prot="public" virt="pure-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>touch_up</name></member>
-      <member refid="classAndroidNativeControlUnitAPI_1aef52b927e847aa013d425ceb2d15918c" prot="public" virt="non-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>~AndroidNativeControlUnitAPI</name></member>
+      <member refid="classAndroidNativeControlUnitAPI_1a83fd88c31c2ac34d7c3e9d950ab462ca" prot="public" virt="non-virtual"><scope>AndroidNativeControlUnitAPI</scope><name>~AndroidNativeControlUnitAPI</name></member>
       <member refid="classControlUnitAPI_1a48e2a67c3a517a5aae398e60fc01033f" prot="public" virt="virtual"><scope>AndroidNativeControlUnitAPI</scope><name>~ControlUnitAPI</name></member>
     </listofallmembers>
   </compounddef>

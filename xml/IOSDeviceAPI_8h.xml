@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.12.0" xml:lang="en-US">
+  <compounddef id="IOSDeviceAPI_8h" kind="file" language="C++">
+    <compoundname>IOSDeviceAPI.h</compoundname>
+    <includes refid="MaaControlUnitDef_8h" local="yes">MaaControlUnit/MaaControlUnitDef.h</includes>
+    <includes refid="MaaToolkitIOSDevice_8h" local="yes">MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h</includes>
+    <includedby refid="IOSControlUnitAPI_8h" local="yes">include/MaaControlUnit/IOSControlUnitAPI.h</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>include/MaaControlUnit/IOSDeviceAPI.h</label>
+        <link refid="IOSDeviceAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>MaaControlUnit/MaaControlUnitDef.h</label>
+        <link refid="MaaControlUnitDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>MaaFramework/MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="4">
+        <label>MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h</label>
+        <link refid="MaaToolkitIOSDevice_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>../MaaToolkitDef.h</label>
+        <link refid="MaaToolkitDef_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>include/MaaControlUnit/IOSControlUnitAPI.h</label>
+        <link refid="IOSControlUnitAPI_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>include/MaaControlUnit/IOSDeviceAPI.h</label>
+        <link refid="IOSDeviceAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
+        <link refid="MaaControlUnitAPI_8h"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classIOSDeviceAPI" prot="public">IOSDeviceAPI</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="IOSDeviceAPI_8h_1a4a87c003344044971e38b59f1413cafe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaControlUnitDef_8h_1adaa9552e903ded8ccc393ee19f6c480b" kindref="member">MAA_CTRL_UNIT_NS_END</ref> <ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> MAA_CTRL_UNIT_NS::IOSDeviceAPI *</type>
+        <definition>MAA_CTRL_UNIT_NS_END MAA_CONTROL_UNIT_API MAA_CTRL_UNIT_NS::IOSDeviceAPI * MaaIOSControlUnitGetDeviceAPI</definition>
+        <argsstring>()</argsstring>
+        <name>MaaIOSControlUnitGetDeviceAPI</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/IOSDeviceAPI.h" line="24" column="64" declfile="include/MaaControlUnit/IOSDeviceAPI.h" declline="24" declcolumn="64"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/IOSDeviceAPI.h"/>
+  </compounddef>
+</doxygen>

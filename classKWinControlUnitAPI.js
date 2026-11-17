@@ -1,4 +1,4 @@
 var classKWinControlUnitAPI =
 [
-    [ "~KWinControlUnitAPI", "classKWinControlUnitAPI.html#a389ab6c486a3e34f238a2a84c190733c", null ]
+    [ "~KWinControlUnitAPI", "classKWinControlUnitAPI.html#a65671440723f4bd20d01347a2e3a8f69", null ]
 ];

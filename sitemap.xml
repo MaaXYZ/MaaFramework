@@ -38,6 +38,9 @@
     <loc>https://maafw.com/IOSControlUnitAPI_8h_source.html</loc>
   </url>
   <url>
+    <loc>https://maafw.com/IOSDeviceAPI_8h_source.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.com/KWinControlUnitAPI_8h_source.html</loc>
   </url>
   <url>
@@ -165,6 +168,9 @@
   </url>
   <url>
     <loc>https://maafw.com/IOSControlUnitAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/IOSDeviceAPI_8h.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/KWinControlUnitAPI_8h.html</loc>
@@ -309,6 +315,12 @@
   </url>
   <url>
     <loc>https://maafw.com/classIOSControlUnitAPI-members.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classIOSDeviceAPI.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/classIOSDeviceAPI-members.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/classKWinControlUnitAPI.html</loc>
@@ -573,6 +585,9 @@
   </url>
   <url>
     <loc>https://maafw.com/functions.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.com/functions_func.html</loc>
   </url>
   <url>
     <loc>https://maafw.com/functions_func.html</loc>

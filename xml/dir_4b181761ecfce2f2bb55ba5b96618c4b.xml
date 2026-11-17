@@ -9,6 +9,7 @@
     <innerfile refid="DbgControlUnitAPI_8h">DbgControlUnitAPI.h</innerfile>
     <innerfile refid="GamepadControlUnitAPI_8h">GamepadControlUnitAPI.h</innerfile>
     <innerfile refid="IOSControlUnitAPI_8h">IOSControlUnitAPI.h</innerfile>
+    <innerfile refid="IOSDeviceAPI_8h">IOSDeviceAPI.h</innerfile>
     <innerfile refid="KWinControlUnitAPI_8h">KWinControlUnitAPI.h</innerfile>
     <innerfile refid="LinuxControlUnitAPI_8h">LinuxControlUnitAPI.h</innerfile>
     <innerfile refid="MaaControlUnitAPI_8h">MaaControlUnitAPI.h</innerfile>

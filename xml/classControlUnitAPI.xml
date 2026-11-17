@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="19" column="13"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="22" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a5bff4217a5cbd6789dca3957b469cd5b" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="21" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="24" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1afc899c23f271738b73540eb9efc93fae" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="22" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="25" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a3bd5a15929e42ef25d990256ed1a97d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -73,7 +73,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="24" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="27" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1aa1b8f3ae574ca2edcced418f138e110b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type><ref refid="MaaDef_8h_1a350d60e24f82240806bc6569f4da65f8" kindref="member">MaaControllerFeature</ref></type>
@@ -87,7 +87,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="25" column="34"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="28" column="34"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a816cb859403ae76b9beb202069a0bce9" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -105,7 +105,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="27" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="30" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1ab1d3190020919a44d6866e589d51e937" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -123,7 +123,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="28" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="31" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1aa163c4ba062d316f248d4b0fe7f3b72d" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -141,7 +141,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="30" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="33" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -163,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="32" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="35" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a94868297b93c4d118396418c838dc0a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -197,7 +197,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="33" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="36" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a9ce21c91ca2fbff7369d8a6403cb28df" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -227,7 +227,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="35" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="38" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a987d84182ad2ff7fcba062ec5d7c4b01" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -257,7 +257,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="36" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="39" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a6ac99054d055c4300f1ff6f908113030" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -275,7 +275,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="37" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="40" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -293,7 +293,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="39" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="42" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a221dbd3eb78f32d1574554f11224abb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -311,7 +311,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="40" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="43" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a395577c785ecade8664430928c6a201e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -329,7 +329,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="42" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="45" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1afcdd6f7125786389adef584492f214e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -347,7 +347,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="43" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="46" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a95ce12fe9d30787af79adbbb84a45e1b" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -361,7 +361,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="45" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="48" column="18"/>
       </memberdef>
       <memberdef kind="function" id="classControlUnitAPI_1a1bba5cdf24de2b536f4ed436bdda9513" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>json::object</type>
@@ -375,7 +375,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="47" column="26"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="50" column="26"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -454,7 +454,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="16" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="17" bodyend="48"/>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="19" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="20" bodyend="51"/>
     <listofallmembers>
       <member refid="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" prot="public" virt="pure-virtual"><scope>ControlUnitAPI</scope><name>click</name></member>
       <member refid="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" prot="public" virt="pure-virtual"><scope>ControlUnitAPI</scope><name>click_key</name></member>

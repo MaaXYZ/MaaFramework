@@ -19,7 +19,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="71" column="13"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="74" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classShellableUnit_1a5b255f95926f91a4c2452dbaa3043356" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="74" column="9"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="77" column="9"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -77,7 +77,7 @@
         <link refid="classShellableUnit"/>
       </node>
     </inheritancegraph>
-    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="68" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="69" bodyend="75"/>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="71" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="72" bodyend="78"/>
     <listofallmembers>
       <member refid="classShellableUnit_1a5b255f95926f91a4c2452dbaa3043356" prot="public" virt="pure-virtual"><scope>ShellableUnit</scope><name>shell</name></member>
       <member refid="classShellableUnit_1af5f923dadfb74535c9550e3ceb2defcb" prot="public" virt="virtual"><scope>ShellableUnit</scope><name>~ShellableUnit</name></member>

@@ -23,7 +23,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="55" column="13"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="58" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classScrollableUnit_1a92ab073b5d139bba1b6c76fea8b9c299" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>bool</type>
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="57" column="18"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="60" column="18"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -100,7 +100,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="52" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="53" bodyend="58"/>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="55" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="56" bodyend="61"/>
     <listofallmembers>
       <member refid="classScrollableUnit_1a92ab073b5d139bba1b6c76fea8b9c299" prot="public" virt="pure-virtual"><scope>ScrollableUnit</scope><name>scroll</name></member>
       <member refid="classScrollableUnit_1af28a8972c46ec6d3209dad3659b6f46f" prot="public" virt="virtual"><scope>ScrollableUnit</scope><name>~ScrollableUnit</name></member>

@@ -8,10 +8,10 @@
     <basecompoundref refid="classShellableUnit" prot="public" virt="non-virtual">ShellableUnit</basecompoundref>
     <includes refid="ControlUnitAPI_8h" local="no">ControlUnitAPI.h</includes>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classFullControlUnitAPI_1a9c11d11a471a89189a07e709a3aef5e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classFullControlUnitAPI_1a586569d0f3ad973b8204ee53ef5dadfc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
-        <definition>virtual FullControlUnitAPI::~FullControlUnitAPI</definition>
-        <argsstring>()=default</argsstring>
+        <definition>FullControlUnitAPI::~FullControlUnitAPI</definition>
+        <argsstring>() override</argsstring>
         <name>~FullControlUnitAPI</name>
         <qualifiedname>FullControlUnitAPI::~FullControlUnitAPI</qualifiedname>
         <briefdescription>
@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="173" column="13"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="176" column="5"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -87,7 +87,7 @@
         <link refid="classShellableUnit"/>
       </node>
     </collaborationgraph>
-    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="166" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="171" bodyend="174"/>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="169" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="174" bodyend="177"/>
     <listofallmembers>
       <member refid="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" prot="public" virt="pure-virtual"><scope>FullControlUnitAPI</scope><name>click</name></member>
       <member refid="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" prot="public" virt="pure-virtual"><scope>FullControlUnitAPI</scope><name>click_key</name></member>
@@ -111,7 +111,7 @@
       <member refid="classControlUnitAPI_1a987d84182ad2ff7fcba062ec5d7c4b01" prot="public" virt="pure-virtual"><scope>FullControlUnitAPI</scope><name>touch_move</name></member>
       <member refid="classControlUnitAPI_1a6ac99054d055c4300f1ff6f908113030" prot="public" virt="pure-virtual"><scope>FullControlUnitAPI</scope><name>touch_up</name></member>
       <member refid="classControlUnitAPI_1a48e2a67c3a517a5aae398e60fc01033f" prot="public" virt="virtual"><scope>FullControlUnitAPI</scope><name>~ControlUnitAPI</name></member>
-      <member refid="classFullControlUnitAPI_1a9c11d11a471a89189a07e709a3aef5e9" prot="public" virt="virtual"><scope>FullControlUnitAPI</scope><name>~FullControlUnitAPI</name></member>
+      <member refid="classFullControlUnitAPI_1a586569d0f3ad973b8204ee53ef5dadfc" prot="public" virt="non-virtual"><scope>FullControlUnitAPI</scope><name>~FullControlUnitAPI</name></member>
       <member refid="classRelativeMovableUnit_1a10e75b7e6c9ee64ea6686dee3440239d" prot="public" virt="virtual"><scope>FullControlUnitAPI</scope><name>~RelativeMovableUnit</name></member>
       <member refid="classScrollableUnit_1af28a8972c46ec6d3209dad3659b6f46f" prot="public" virt="virtual"><scope>FullControlUnitAPI</scope><name>~ScrollableUnit</name></member>
       <member refid="classShellableUnit_1af5f923dadfb74535c9550e3ceb2defcb" prot="public" virt="virtual"><scope>FullControlUnitAPI</scope><name>~ShellableUnit</name></member>

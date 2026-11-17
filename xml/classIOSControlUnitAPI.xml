@@ -5,10 +5,10 @@
     <basecompoundref refid="classControlUnitAPI" prot="public" virt="non-virtual">ControlUnitAPI</basecompoundref>
     <includes refid="ControlUnitAPI_8h" local="no">ControlUnitAPI.h</includes>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="classIOSControlUnitAPI_1a9802f89e1afa382c680fa06681eac11b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classIOSControlUnitAPI_1a31aaf42b8ca9ca951ac98efb2a6aae8f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
-        <definition>virtual IOSControlUnitAPI::~IOSControlUnitAPI</definition>
-        <argsstring>()=default</argsstring>
+        <definition>IOSControlUnitAPI::~IOSControlUnitAPI</definition>
+        <argsstring>() override</argsstring>
         <name>~IOSControlUnitAPI</name>
         <qualifiedname>IOSControlUnitAPI::~IOSControlUnitAPI</qualifiedname>
         <briefdescription>
@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="92" column="13"/>
+        <location file="include/MaaControlUnit/ControlUnitAPI.h" line="95" column="5"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -48,7 +48,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="89" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="90" bodyend="93"/>
+    <location file="include/MaaControlUnit/ControlUnitAPI.h" line="92" column="1" bodyfile="include/MaaControlUnit/ControlUnitAPI.h" bodystart="93" bodyend="96"/>
     <listofallmembers>
       <member refid="classControlUnitAPI_1a19aeca99e7ca9df969b8dbd9ead5bd11" prot="public" virt="pure-virtual"><scope>IOSControlUnitAPI</scope><name>click</name></member>
       <member refid="classControlUnitAPI_1a1358bdac52ebc09c52d50588a6b6fa92" prot="public" virt="pure-virtual"><scope>IOSControlUnitAPI</scope><name>click_key</name></member>
@@ -69,7 +69,7 @@
       <member refid="classControlUnitAPI_1a987d84182ad2ff7fcba062ec5d7c4b01" prot="public" virt="pure-virtual"><scope>IOSControlUnitAPI</scope><name>touch_move</name></member>
       <member refid="classControlUnitAPI_1a6ac99054d055c4300f1ff6f908113030" prot="public" virt="pure-virtual"><scope>IOSControlUnitAPI</scope><name>touch_up</name></member>
       <member refid="classControlUnitAPI_1a48e2a67c3a517a5aae398e60fc01033f" prot="public" virt="virtual"><scope>IOSControlUnitAPI</scope><name>~ControlUnitAPI</name></member>
-      <member refid="classIOSControlUnitAPI_1a9802f89e1afa382c680fa06681eac11b" prot="public" virt="virtual"><scope>IOSControlUnitAPI</scope><name>~IOSControlUnitAPI</name></member>
+      <member refid="classIOSControlUnitAPI_1a31aaf42b8ca9ca951ac98efb2a6aae8f" prot="public" virt="non-virtual"><scope>IOSControlUnitAPI</scope><name>~IOSControlUnitAPI</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

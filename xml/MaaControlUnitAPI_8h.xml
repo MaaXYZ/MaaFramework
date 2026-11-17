@@ -12,6 +12,7 @@
     <includes refid="GamepadControlUnitAPI_8h" local="yes">GamepadControlUnitAPI.h</includes>
     <includes refid="IOSControlUnitAPI_8h" local="yes">IOSControlUnitAPI.h</includes>
     <includes refid="KWinControlUnitAPI_8h" local="yes">KWinControlUnitAPI.h</includes>
+    <includes refid="LinuxControlUnitAPI_8h" local="yes">LinuxControlUnitAPI.h</includes>
     <includes refid="MacOSControlUnitAPI_8h" local="yes">MacOSControlUnitAPI.h</includes>
     <includes refid="PlayCoverControlUnitAPI_8h" local="yes">PlayCoverControlUnitAPI.h</includes>
     <includes refid="RecordControlUnitAPI_8h" local="yes">RecordControlUnitAPI.h</includes>
@@ -28,7 +29,7 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="17">
@@ -36,7 +37,7 @@
         <link refid="AndroidNativeControlUnitAPI_8h"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="4">
@@ -52,9 +53,11 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="18">
@@ -68,7 +71,7 @@
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="20">
@@ -86,7 +89,7 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="22">
@@ -94,15 +97,33 @@
         <link refid="IOSControlUnitAPI_8h"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="23">
+        <label>MaaControlUnit/IOSDeviceAPI.h</label>
+        <link refid="IOSDeviceAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
         <label>KWinControlUnitAPI.h</label>
         <link refid="KWinControlUnitAPI_8h"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>LinuxControlUnitAPI.h</label>
+        <link refid="LinuxControlUnitAPI_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -112,7 +133,7 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
@@ -126,12 +147,6 @@
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
         <childnode refid="26" relation="include">
         </childnode>
         <childnode refid="27" relation="include">
@@ -140,6 +155,14 @@
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>MaaControlUnitDef.h</label>
@@ -147,7 +170,7 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="24">
+      <node id="28">
         <label>MacOSControlUnitAPI.h</label>
         <link refid="MacOSControlUnitAPI_8h"/>
         <childnode refid="15" relation="include">
@@ -156,44 +179,44 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="25">
+      <node id="29">
         <label>PlayCoverControlUnitAPI.h</label>
         <link refid="PlayCoverControlUnitAPI_8h"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="26">
+      <node id="30">
         <label>RecordControlUnitAPI.h</label>
         <link refid="RecordControlUnitAPI_8h"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>RecordTypes.h</label>
         <link refid="RecordTypes_8h"/>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
         <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="27">
+      <node id="31">
         <label>ReplayControlUnitAPI.h</label>
         <link refid="ReplayControlUnitAPI_8h"/>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="28">
+      <node id="32">
         <label>Win32ControlUnitAPI.h</label>
         <link refid="Win32ControlUnitAPI_8h"/>
         <childnode refid="15" relation="include">
@@ -202,29 +225,29 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="29">
+      <node id="33">
         <label>WlRootsControlUnitAPI.h</label>
         <link refid="WlRootsControlUnitAPI_8h"/>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="19">
         <label>MaaFramework/Instance/MaaCustomController.h</label>
         <link refid="MaaCustomController_8h"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>MaaFramework/MaaDef.h</label>
         <link refid="MaaDef_8h"/>
-        <childnode refid="11" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
@@ -233,22 +256,34 @@
         <label>MaaFramework/MaaPort.h</label>
         <link refid="MaaPort_8h"/>
       </node>
+      <node id="24">
+        <label>MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h</label>
+        <link refid="MaaToolkitIOSDevice_8h"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>../MaaToolkitDef.h</label>
+        <link refid="MaaToolkitDef_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
       <node id="5">
         <label>chrono</label>
       </node>
       <node id="15">
         <label>memory</label>
       </node>
-      <node id="8">
+      <node id="9">
         <label>meojson/json.hpp</label>
       </node>
-      <node id="9">
+      <node id="10">
         <label>opencv2/core/mat.hpp</label>
       </node>
       <node id="16">
         <label>optional</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>stdint.h</label>
       </node>
       <node id="6">
@@ -257,7 +292,7 @@
       <node id="7">
         <label>utility</label>
       </node>
-      <node id="13">
+      <node id="8">
         <label>vector</label>
       </node>
     </incdepgraph>

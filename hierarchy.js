@@ -13,6 +13,7 @@ var hierarchy =
       [ "Win32ControlUnitAPI", "classWin32ControlUnitAPI.html", null ],
       [ "WlRootsControlUnitAPI", "classWlRootsControlUnitAPI.html", null ]
     ] ],
+    [ "IOSDeviceAPI", "classIOSDeviceAPI.html", null ],
     [ "MaaCustomControllerCallbacks", "structMaaCustomControllerCallbacks.html", null ],
     [ "MaaRect", "structMaaRect.html", null ],
     [ "RecordApp", "structRecordApp.html", null ],

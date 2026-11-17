@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.12.0" xml:lang="en-US">
   <compound refid="classAdbControlUnitAPI" kind="class"><name>AdbControlUnitAPI</name>
-    <member refid="classAdbControlUnitAPI_1abad3a55acb315f087bdbf2b2a6f8d3bb" kind="function"><name>~AdbControlUnitAPI</name></member>
+    <member refid="classAdbControlUnitAPI_1a165d1613b0780cffe6da07305d35c451" kind="function"><name>~AdbControlUnitAPI</name></member>
     <member refid="classAdbControlUnitAPI_1a2debdeaa087d38facc106ba574da6b91" kind="function"><name>find_device</name></member>
   </compound>
   <compound refid="classAndroidNativeControlUnitAPI" kind="class"><name>AndroidNativeControlUnitAPI</name>
-    <member refid="classAndroidNativeControlUnitAPI_1aef52b927e847aa013d425ceb2d15918c" kind="function"><name>~AndroidNativeControlUnitAPI</name></member>
+    <member refid="classAndroidNativeControlUnitAPI_1a83fd88c31c2ac34d7c3e9d950ab462ca" kind="function"><name>~AndroidNativeControlUnitAPI</name></member>
   </compound>
   <compound refid="classControlUnitAPI" kind="class"><name>ControlUnitAPI</name>
     <member refid="classControlUnitAPI_1a48e2a67c3a517a5aae398e60fc01033f" kind="function"><name>~ControlUnitAPI</name></member>
@@ -29,22 +29,26 @@
     <member refid="classControlUnitAPI_1a1bba5cdf24de2b536f4ed436bdda9513" kind="function"><name>get_info</name></member>
   </compound>
   <compound refid="classCustomControlUnitAPI" kind="class"><name>CustomControlUnitAPI</name>
-    <member refid="classCustomControlUnitAPI_1a1ab89bbb9bfd999605ce10c28a7559cd" kind="function"><name>~CustomControlUnitAPI</name></member>
+    <member refid="classCustomControlUnitAPI_1a128e18789b617d5916b5a370364765b1" kind="function"><name>~CustomControlUnitAPI</name></member>
   </compound>
   <compound refid="classFullControlUnitAPI" kind="class"><name>FullControlUnitAPI</name>
-    <member refid="classFullControlUnitAPI_1a9c11d11a471a89189a07e709a3aef5e9" kind="function"><name>~FullControlUnitAPI</name></member>
+    <member refid="classFullControlUnitAPI_1a586569d0f3ad973b8204ee53ef5dadfc" kind="function"><name>~FullControlUnitAPI</name></member>
   </compound>
   <compound refid="classGamepadControlUnitAPI" kind="class"><name>GamepadControlUnitAPI</name>
-    <member refid="classGamepadControlUnitAPI_1ac3b2653203c9ca157a70b11aac8db99b" kind="function"><name>~GamepadControlUnitAPI</name></member>
+    <member refid="classGamepadControlUnitAPI_1ae4ee5ea2a846fcf5747ce0fb49c2bc2d" kind="function"><name>~GamepadControlUnitAPI</name></member>
   </compound>
   <compound refid="classIOSControlUnitAPI" kind="class"><name>IOSControlUnitAPI</name>
-    <member refid="classIOSControlUnitAPI_1a9802f89e1afa382c680fa06681eac11b" kind="function"><name>~IOSControlUnitAPI</name></member>
+    <member refid="classIOSControlUnitAPI_1a31aaf42b8ca9ca951ac98efb2a6aae8f" kind="function"><name>~IOSControlUnitAPI</name></member>
+  </compound>
+  <compound refid="classIOSDeviceAPI" kind="class"><name>IOSDeviceAPI</name>
+    <member refid="classIOSDeviceAPI_1affe01633b316e3aac31d9bce1a4653da" kind="function"><name>~IOSDeviceAPI</name></member>
+    <member refid="classIOSDeviceAPI_1ae63afeba1b7e09ea7aead4d7aad2517c" kind="function"><name>discover</name></member>
   </compound>
   <compound refid="classKWinControlUnitAPI" kind="class"><name>KWinControlUnitAPI</name>
-    <member refid="classKWinControlUnitAPI_1a389ab6c486a3e34f238a2a84c190733c" kind="function"><name>~KWinControlUnitAPI</name></member>
+    <member refid="classKWinControlUnitAPI_1a65671440723f4bd20d01347a2e3a8f69" kind="function"><name>~KWinControlUnitAPI</name></member>
   </compound>
   <compound refid="classLinuxControlUnitAPI" kind="class"><name>LinuxControlUnitAPI</name>
-    <member refid="classLinuxControlUnitAPI_1aee3c984ec2a9bd478bc957b799cd4c8b" kind="function"><name>~LinuxControlUnitAPI</name></member>
+    <member refid="classLinuxControlUnitAPI_1a4f49411b32a419853bbdaf0a4cfa95bd" kind="function"><name>~LinuxControlUnitAPI</name></member>
   </compound>
   <compound refid="structMaaCustomControllerCallbacks" kind="struct"><name>MaaCustomControllerCallbacks</name>
     <member refid="structMaaCustomControllerCallbacks_1a74d6aa4b9e6fc074f4d97d6ebe3be6ad" kind="variable"><name>connect</name></member>
@@ -76,7 +80,7 @@
     <member refid="structMaaRect_1adfa84de77550a2afc6c92349f20e12cc" kind="variable"><name>height</name></member>
   </compound>
   <compound refid="classMacOSControlUnitAPI" kind="class"><name>MacOSControlUnitAPI</name>
-    <member refid="classMacOSControlUnitAPI_1a265015ca88f15fb013dcf2e735fb262f" kind="function"><name>~MacOSControlUnitAPI</name></member>
+    <member refid="classMacOSControlUnitAPI_1a62a0ebb041578bd19ed911bab5f6f9fe" kind="function"><name>~MacOSControlUnitAPI</name></member>
   </compound>
   <compound refid="structRecordApp" kind="struct"><name>RecordApp</name>
     <member refid="structRecordApp_1a0f733944303312b8bffb7aced69a087a" kind="variable"><name>package</name></member>
@@ -162,12 +166,12 @@
     <member refid="classShellableUnit_1a5b255f95926f91a4c2452dbaa3043356" kind="function"><name>shell</name></member>
   </compound>
   <compound refid="classWin32ControlUnitAPI" kind="class"><name>Win32ControlUnitAPI</name>
-    <member refid="classWin32ControlUnitAPI_1a0c919ea1e0bd03379b1459e6e09e425e" kind="function"><name>~Win32ControlUnitAPI</name></member>
+    <member refid="classWin32ControlUnitAPI_1adb656ca82e1a9ce12d6a3e4c13726603" kind="function"><name>~Win32ControlUnitAPI</name></member>
     <member refid="classWin32ControlUnitAPI_1a23c7db44eae91fcecfb87800016ff288" kind="function"><name>set_mouse_lock_follow</name></member>
     <member refid="classWin32ControlUnitAPI_1a0e52125c2e3d9707510d0d569c92ac51" kind="function"><name>set_background_managed_keys_option</name></member>
   </compound>
   <compound refid="classWlRootsControlUnitAPI" kind="class"><name>WlRootsControlUnitAPI</name>
-    <member refid="classWlRootsControlUnitAPI_1a11f61ddf28bfa39ca3ce354d0442e640" kind="function"><name>~WlRootsControlUnitAPI</name></member>
+    <member refid="classWlRootsControlUnitAPI_1a10a856dab9d3f8460d023c908d118e71" kind="function"><name>~WlRootsControlUnitAPI</name></member>
   </compound>
   <compound refid="namespacestd" kind="namespace"><name>std</name>
   </compound>
@@ -232,6 +236,7 @@
     <member refid="ControlUnitAPI_8h_1aa8183f5044591116d0ce44318571d14e" kind="typedef"><name>MaaRecordControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1a90d6e45f84fbbed8d11f88ca1c2eb09d" kind="typedef"><name>MaaDbgControlUnitHandle</name></member>
     <member refid="ControlUnitAPI_8h_1a2f106931f75023960c2b0a313bd26174" kind="typedef"><name>MaaAndroidNativeControlUnitHandle</name></member>
+    <member refid="ControlUnitAPI_8h_1ab4782c04e5ed650108e349a966bedb8f" kind="function"><name>MaaControlUnitGetVersion</name></member>
   </compound>
   <compound refid="CustomControlUnitAPI_8h" kind="file"><name>CustomControlUnitAPI.h</name>
     <member refid="CustomControlUnitAPI_8h_1ad6294c247a6f7021b5f86ca2060e9298" kind="function"><name>MaaCustomControlUnitGetVersion</name></member>
@@ -252,6 +257,9 @@
     <member refid="IOSControlUnitAPI_8h_1af75ee8c6a800e7c43c27aabba9b42725" kind="function"><name>MaaIOSControlUnitGetVersion</name></member>
     <member refid="IOSControlUnitAPI_8h_1aae6cbc2f4c755f3436e9db863996dc19" kind="function"><name>MaaIOSControlUnitCreate</name></member>
     <member refid="IOSControlUnitAPI_8h_1aae9ddaeb3b12e85ec5591d0cd7a03684" kind="function"><name>MaaIOSControlUnitDestroy</name></member>
+  </compound>
+  <compound refid="IOSDeviceAPI_8h" kind="file"><name>IOSDeviceAPI.h</name>
+    <member refid="IOSDeviceAPI_8h_1a4a87c003344044971e38b59f1413cafe" kind="function"><name>MaaIOSControlUnitGetDeviceAPI</name></member>
   </compound>
   <compound refid="KWinControlUnitAPI_8h" kind="file"><name>KWinControlUnitAPI.h</name>
     <member refid="KWinControlUnitAPI_8h_1a34ef84a47540c42f3f1c602f197e0dc5" kind="function"><name>MaaKWinControlUnitGetVersion</name></member>

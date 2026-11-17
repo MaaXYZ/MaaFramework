@@ -4,6 +4,7 @@
     <compoundname>LinuxControlUnitAPI.h</compoundname>
     <includes refid="ControlUnitAPI_8h" local="yes">MaaControlUnit/ControlUnitAPI.h</includes>
     <includes refid="MaaDef_8h" local="yes">MaaFramework/MaaDef.h</includes>
+    <includedby refid="MaaControlUnitAPI_8h" local="yes">include/MaaControlUnit/MaaControlUnitAPI.h</includedby>
     <incdepgraph>
       <node id="2">
         <label>MaaControlUnit/ControlUnitAPI.h</label>
@@ -20,7 +21,9 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -28,37 +31,37 @@
         <link refid="LinuxControlUnitAPI_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>MaaControlUnit/MaaControlUnitDef.h</label>
-        <link refid="MaaControlUnitDef_8h"/>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>MaaFramework/MaaDef.h</label>
-        <link refid="MaaDef_8h"/>
         <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
         </childnode>
       </node>
       <node id="9">
+        <label>MaaControlUnit/MaaControlUnitDef.h</label>
+        <link refid="MaaControlUnitDef_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
         <label>MaaFramework/MaaPort.h</label>
         <link refid="MaaPort_8h"/>
       </node>
       <node id="3">
         <label>chrono</label>
       </node>
-      <node id="6">
+      <node id="7">
         <label>meojson/json.hpp</label>
       </node>
-      <node id="7">
+      <node id="8">
         <label>opencv2/core/mat.hpp</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>stdint.h</label>
       </node>
       <node id="4">
@@ -67,7 +70,22 @@
       <node id="5">
         <label>utility</label>
       </node>
+      <node id="6">
+        <label>vector</label>
+      </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>include/MaaControlUnit/LinuxControlUnitAPI.h</label>
+        <link refid="LinuxControlUnitAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
+        <link refid="MaaControlUnitAPI_8h"/>
+      </node>
+    </invincdepgraph>
     <sectiondef kind="func">
       <memberdef kind="function" id="LinuxControlUnitAPI_8h_1a8215a06e4becf9aaa34385fa0a3cf8e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> const char *</type>

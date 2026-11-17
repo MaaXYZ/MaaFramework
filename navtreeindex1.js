@@ -1,5 +1,9 @@
 var NAVTREEINDEX1 =
 {
+"MaaDef_8h.html#a28df53af4d4eb7411ec15d6e5ca4632b":[4,0,0,3,4,31],
+"MaaDef_8h.html#a28f884858b13895fa20adec0fede3aaf":[4,0,0,3,4,36],
+"MaaDef_8h.html#a294262e494093148a4205e34c3fea63f":[4,0,0,3,4,87],
+"MaaDef_8h.html#a29af4457ff72b57b157a1d58d6d28878":[4,0,0,3,4,132],
 "MaaDef_8h.html#a2cb24665bfde6623c6f0ebc131784f10":[4,0,0,3,4,40],
 "MaaDef_8h.html#a2dc4a41f22232f13e5224e40aa666b64":[4,0,0,3,4,135],
 "MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6":[4,0,0,3,4,97],
@@ -245,9 +249,5 @@ var NAVTREEINDEX1 =
 "MaaTasker_8h.html#a489c89310019ea5780c253beca2a4e07":[4,0,0,3,1,4,3],
 "MaaTasker_8h.html#a5a7ad510d2569e8cae40a60725ca5a22":[4,0,0,3,1,4,2],
 "MaaTasker_8h.html#a5ad0df51290ce3cb6241667b05cf659f":[4,0,0,3,1,4,19],
-"MaaTasker_8h.html#a5e00add0d572f3baaf90873443af08ec":[4,0,0,3,1,4,30],
-"MaaTasker_8h.html#a66bcb6d294dd92c294555c826ef2d749":[4,0,0,3,1,4,20],
-"MaaTasker_8h.html#a7211fa8675cadb5b95c3394f0bbbc8f2":[4,0,0,3,1,4,18],
-"MaaTasker_8h.html#a764d15d4825e8b7c42da8bec00749632":[4,0,0,3,1,4,14],
-"MaaTasker_8h.html#a8946c572b50a0e298a31092496b89475":[4,0,0,3,1,4,17]
+"MaaTasker_8h.html#a5e00add0d572f3baaf90873443af08ec":[4,0,0,3,1,4,30]
 };

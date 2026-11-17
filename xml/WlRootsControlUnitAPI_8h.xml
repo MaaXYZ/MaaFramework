@@ -21,13 +21,15 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="9">
         <label>MaaControlUnit/MaaControlUnitDef.h</label>
         <link refid="MaaControlUnitDef_8h"/>
-        <childnode refid="9" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -35,31 +37,31 @@
         <link refid="WlRootsControlUnitAPI_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="12" relation="include">
+        </childnode>
         <childnode refid="10" relation="include">
         </childnode>
       </node>
       <node id="10">
-        <label>MaaFramework/MaaDef.h</label>
-        <link refid="MaaDef_8h"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
         <label>MaaFramework/MaaPort.h</label>
         <link refid="MaaPort_8h"/>
       </node>
       <node id="3">
         <label>chrono</label>
       </node>
-      <node id="6">
+      <node id="7">
         <label>meojson/json.hpp</label>
       </node>
-      <node id="7">
+      <node id="8">
         <label>opencv2/core/mat.hpp</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>stdint.h</label>
       </node>
       <node id="4">
@@ -67,6 +69,9 @@
       </node>
       <node id="5">
         <label>utility</label>
+      </node>
+      <node id="6">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <invincdepgraph>

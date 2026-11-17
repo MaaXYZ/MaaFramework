@@ -3,6 +3,7 @@
   <compounddef id="IOSControlUnitAPI_8h" kind="file" language="C++">
     <compoundname>IOSControlUnitAPI.h</compoundname>
     <includes refid="ControlUnitAPI_8h" local="yes">MaaControlUnit/ControlUnitAPI.h</includes>
+    <includes refid="IOSDeviceAPI_8h" local="yes">MaaControlUnit/IOSDeviceAPI.h</includes>
     <includes refid="MaaDef_8h" local="yes">MaaFramework/MaaDef.h</includes>
     <includedby refid="MaaControlUnitAPI_8h" local="yes">include/MaaControlUnit/MaaControlUnitAPI.h</includedby>
     <incdepgraph>
@@ -21,7 +22,9 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -29,37 +32,59 @@
         <link refid="IOSControlUnitAPI_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-      </node>
-      <node id="8">
-        <label>MaaControlUnit/MaaControlUnitDef.h</label>
-        <link refid="MaaControlUnitDef_8h"/>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>MaaFramework/MaaDef.h</label>
-        <link refid="MaaDef_8h"/>
         <childnode refid="11" relation="include">
         </childnode>
+      </node>
+      <node id="13">
+        <label>MaaControlUnit/IOSDeviceAPI.h</label>
+        <link refid="IOSDeviceAPI_8h"/>
         <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
       <node id="9">
+        <label>MaaControlUnit/MaaControlUnitDef.h</label>
+        <link refid="MaaControlUnitDef_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
         <label>MaaFramework/MaaPort.h</label>
         <link refid="MaaPort_8h"/>
+      </node>
+      <node id="14">
+        <label>MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h</label>
+        <link refid="MaaToolkitIOSDevice_8h"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>../MaaToolkitDef.h</label>
+        <link refid="MaaToolkitDef_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
       </node>
       <node id="3">
         <label>chrono</label>
       </node>
-      <node id="6">
+      <node id="7">
         <label>meojson/json.hpp</label>
       </node>
-      <node id="7">
+      <node id="8">
         <label>opencv2/core/mat.hpp</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>stdint.h</label>
       </node>
       <node id="4">
@@ -67,6 +92,9 @@
       </node>
       <node id="5">
         <label>utility</label>
+      </node>
+      <node id="6">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
@@ -93,7 +121,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/IOSControlUnitAPI.h" line="11" column="37" declfile="include/MaaControlUnit/IOSControlUnitAPI.h" declline="11" declcolumn="37"/>
+        <location file="include/MaaControlUnit/IOSControlUnitAPI.h" line="12" column="37" declfile="include/MaaControlUnit/IOSControlUnitAPI.h" declline="12" declcolumn="37"/>
       </memberdef>
       <memberdef kind="function" id="IOSControlUnitAPI_8h_1aae6cbc2f4c755f3436e9db863996dc19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> <ref refid="ControlUnitAPI_8h_1a9f95bfc3dda6d9c3093f9fe4fa129f23" kindref="member">MaaIOSControlUnitHandle</ref></type>
@@ -123,7 +151,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/IOSControlUnitAPI.h" line="22" column="50" declfile="include/MaaControlUnit/IOSControlUnitAPI.h" declline="22" declcolumn="50"/>
+        <location file="include/MaaControlUnit/IOSControlUnitAPI.h" line="23" column="50" declfile="include/MaaControlUnit/IOSControlUnitAPI.h" declline="23" declcolumn="50"/>
       </memberdef>
       <memberdef kind="function" id="IOSControlUnitAPI_8h_1aae9ddaeb3b12e85ec5591d0cd7a03684" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" kindref="member">MAA_CONTROL_UNIT_API</ref> void</type>
@@ -140,7 +168,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaControlUnit/IOSControlUnitAPI.h" line="28" column="31" declfile="include/MaaControlUnit/IOSControlUnitAPI.h" declline="28" declcolumn="31"/>
+        <location file="include/MaaControlUnit/IOSControlUnitAPI.h" line="29" column="31" declfile="include/MaaControlUnit/IOSControlUnitAPI.h" declline="29" declcolumn="31"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

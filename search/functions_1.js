@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['find_5fdevice_0',['find_device',['../classAdbControlUnitAPI.html#a2debdeaa087d38facc106ba574da6b91',1,'AdbControlUnitAPI']]]
+  ['discover_0',['discover',['../classIOSDeviceAPI.html#ae63afeba1b7e09ea7aead4d7aad2517c',1,'IOSDeviceAPI']]]
 ];

@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.12.0" xml:lang="en-US">
+  <compounddef id="classIOSDeviceAPI" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>IOSDeviceAPI</compoundname>
+    <includes refid="IOSDeviceAPI_8h" local="no">IOSDeviceAPI.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classIOSDeviceAPI_1affe01633b316e3aac31d9bce1a4653da" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual IOSDeviceAPI::~IOSDeviceAPI</definition>
+        <argsstring>()</argsstring>
+        <name>~IOSDeviceAPI</name>
+        <qualifiedname>IOSDeviceAPI::~IOSDeviceAPI</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/IOSDeviceAPI.h" line="11" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classIOSDeviceAPI_1ae63afeba1b7e09ea7aead4d7aad2517c" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>virtual MaaBool IOSDeviceAPI::discover</definition>
+        <argsstring>(MaaIOSConnectionMethod connection_method, const char *options_json, MaaToolkitIOSDeviceCancelCallback cancel_callback, void *userdata, MaaStringBuffer *result)=0</argsstring>
+        <name>discover</name>
+        <qualifiedname>IOSDeviceAPI::discover</qualifiedname>
+        <param>
+          <type><ref refid="MaaDef_8h_1a77dd92b19ca71371f9a043b63fbbe966" kindref="member">MaaIOSConnectionMethod</ref></type>
+          <declname>connection_method</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>options_json</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaToolkitIOSDevice_8h_1ad0bd754d668f93ef10e8b9a86f553aca" kindref="member">MaaToolkitIOSDeviceCancelCallback</ref></type>
+          <declname>cancel_callback</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>userdata</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a4010bb63df489fc09efb6ba9a1fc1c98" kindref="member">MaaStringBuffer</ref> *</type>
+          <declname>result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaControlUnit/IOSDeviceAPI.h" line="13" column="21"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaControlUnit/IOSDeviceAPI.h" line="8" column="1" bodyfile="include/MaaControlUnit/IOSDeviceAPI.h" bodystart="9" bodyend="19"/>
+    <listofallmembers>
+      <member refid="classIOSDeviceAPI_1ae63afeba1b7e09ea7aead4d7aad2517c" prot="public" virt="pure-virtual"><scope>IOSDeviceAPI</scope><name>discover</name></member>
+      <member refid="classIOSDeviceAPI_1affe01633b316e3aac31d9bce1a4653da" prot="public" virt="virtual"><scope>IOSDeviceAPI</scope><name>~IOSDeviceAPI</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

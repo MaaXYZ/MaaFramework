@@ -5,5 +5,7 @@ var searchData=
   ['introduction_2',['Introduction',['../index.html#intro_sec',1,'']]],
   ['invalid_3',['invalid',['../RecordTypes_8h.html#ad7dc06ed9ae2cf0a910eed652dca9a44afedb2d84cafe20862cb4399751a8a7e3',1,'RecordTypes.h']]],
   ['ioscontrolunitapi_4',['IOSControlUnitAPI',['../classIOSControlUnitAPI.html',1,'']]],
-  ['ioscontrolunitapi_2eh_5',['IOSControlUnitAPI.h',['../IOSControlUnitAPI_8h.html',1,'']]]
+  ['ioscontrolunitapi_2eh_5',['IOSControlUnitAPI.h',['../IOSControlUnitAPI_8h.html',1,'']]],
+  ['iosdeviceapi_6',['IOSDeviceAPI',['../classIOSDeviceAPI.html',1,'']]],
+  ['iosdeviceapi_2eh_7',['IOSDeviceAPI.h',['../IOSDeviceAPI_8h.html',1,'']]]
 ];

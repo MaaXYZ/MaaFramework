@@ -35,6 +35,22 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="9">
+        <label>include/MaaControlUnit/IOSControlUnitAPI.h</label>
+        <link refid="IOSControlUnitAPI_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>include/MaaControlUnit/IOSDeviceAPI.h</label>
+        <link refid="IOSDeviceAPI_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>include/MaaControlUnit/MaaControlUnitAPI.h</label>
+        <link refid="MaaControlUnitAPI_8h"/>
+      </node>
       <node id="2">
         <label>include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h</label>
         <link refid="MaaToolkitAdbDevice_8h"/>
@@ -62,6 +78,8 @@
       <node id="7">
         <label>include/MaaToolkit/IOSDevice/MaaToolkitIOSDevice.h</label>
         <link refid="MaaToolkitIOSDevice_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
@@ -84,18 +102,18 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="11">
         <label>include/MaaToolkit/MacOS/MaaToolkitMacOS.h</label>
         <link refid="MaaToolkitMacOS_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="9">
+      <node id="12">
         <label>include/MaaToolkit/Portal/MaaToolkitPortal.h</label>
         <link refid="MaaToolkitPortal_8h"/>
         <childnode refid="3" relation="include">

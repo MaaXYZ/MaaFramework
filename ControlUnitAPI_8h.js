@@ -28,5 +28,6 @@ var ControlUnitAPI_8h =
     [ "MaaReplayControlUnitHandle", "ControlUnitAPI_8h.html#a0e8e5772a651edd77531940be1d0304a", null ],
     [ "MaaRecordControlUnitHandle", "ControlUnitAPI_8h.html#aa8183f5044591116d0ce44318571d14e", null ],
     [ "MaaDbgControlUnitHandle", "ControlUnitAPI_8h.html#a90d6e45f84fbbed8d11f88ca1c2eb09d", null ],
-    [ "MaaAndroidNativeControlUnitHandle", "ControlUnitAPI_8h.html#a2f106931f75023960c2b0a313bd26174", null ]
+    [ "MaaAndroidNativeControlUnitHandle", "ControlUnitAPI_8h.html#a2f106931f75023960c2b0a313bd26174", null ],
+    [ "MaaControlUnitGetVersion", "ControlUnitAPI_8h.html#ab4782c04e5ed650108e349a966bedb8f", null ]
 ];
