@@ -1,6 +1,7 @@
 #include "OCRer.h"
 
 #include <ranges>
+#include <set>
 #include <shared_mutex>
 
 #include <boost/regex.hpp>
@@ -35,30 +36,118 @@ OCRer::OCRer(
     OCRerParam param,
     OCRSessionPtr session,
     std::string name,
-    std::optional<ColorFilterConfig> color_filter)
+    std::optional<ColorFilterConfig> color_filter,
+    OCRCache* cache)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , color_filter_(std::move(color_filter))
+    , cache_(cache)
     , session_(std::move(session))
 {
     analyze();
 }
 
-OCRer::OCRer(cv::Mat image, std::vector<cv::Rect> rois, OCRerParam param, const ResultsVec& cached, OCRSessionPtr session, std::string name)
-    : VisionBase(std::move(image), std::move(rois), std::move(name))
-    , param_(std::move(param))
-    , cache_(cached)
-    , session_(std::move(session))
+void OCRer::prefetch(const cv::Mat& image, const std::vector<cv::Rect>& rois, const OCRSessionPtr& session, OCRCache& cache)
 {
-    analyze();
+    constexpr size_t kMaxBatchSize = 4;
+    constexpr int64_t kMaxBatchPixels = 2 * 960 * 960;
+
+    if (image.empty() || !session || !session->supports_batch_cache() || rois.size() < kMinBatchSize) {
+        return;
+    }
+
+    // Batch only equal detector input shapes: padding a smaller crop to a peer's
+    // shape changes its boundary context, even when neither crop is downscaled.
+    std::map<std::pair<int, int>, std::vector<cv::Rect>> groups;
+    std::set<std::tuple<int, int, int, int>> seen;
+    const cv::Rect bounds(0, 0, image.cols, image.rows);
+    for (const auto& roi : rois) {
+        if (roi.empty() || (roi & bounds) != roi || cache.find(session, roi) || !seen.emplace(roi.x, roi.y, roi.width, roi.height).second) {
+            continue;
+        }
+        const auto shape = session->batch_det_shape(roi.size());
+        if (!shape || shape->width <= 0 || shape->height <= 0) {
+            continue;
+        }
+        groups[{ shape->width, shape->height }].emplace_back(roi);
+    }
+
+    for (const auto& [shape, group] : groups) {
+        // Small groups stay lazy so an early hit does not pay for unused peers.
+        // Count only distinct, uncached crops with the same detector input shape.
+        if (group.size() < kMinBatchSize) {
+            continue;
+        }
+        const int64_t pixels = static_cast<int64_t>(shape.first) * shape.second;
+        const auto batch_size = static_cast<size_t>(std::min<int64_t>(kMaxBatchSize, kMaxBatchPixels / pixels));
+        if (batch_size < kMinBatchSize) {
+            continue;
+        }
+        for (size_t begin = 0; begin < group.size(); begin += batch_size) {
+            const auto end = std::min(begin + batch_size, group.size());
+            if (end - begin < kMinBatchSize) {
+                break;
+            }
+            prefetch_group(image, { group.begin() + begin, group.begin() + end }, session, cache);
+        }
+    }
+}
+
+void OCRer::prefetch_group(const cv::Mat& image, const std::vector<cv::Rect>& rois, const OCRSessionPtr& session, OCRCache& cache)
+{
+    std::vector<cv::Mat> images;
+    images.reserve(rois.size());
+    for (const auto& roi : rois) {
+        images.emplace_back(image(roi));
+    }
+
+    std::optional<std::vector<OCRDetRecResult>> predictions;
+    {
+        std::unique_lock lock(s_predict_mutex_);
+        predictions = session->batch_det_and_rec(images);
+    }
+    if (!predictions || predictions->size() != rois.size()) {
+        LogWarn << "OCR tensor batch failed; candidates will retry independently" << VAR(rois);
+        return;
+    }
+    for (size_t i = 0; i < rois.size(); ++i) {
+        auto results = decode_det_and_rec(predictions->at(i), rois[i].size());
+        if (!results) {
+            continue;
+        }
+        for (auto& result : *results) {
+            result.box.x += rois[i].x;
+            result.box.y += rois[i].y;
+        }
+        cache.insert(session, rois[i], std::move(*results));
+    }
+    LogDebug << "OCR tensor batch completed" << VAR(rois);
 }
 
 void OCRer::analyze()
 {
     auto start_time = std::chrono::steady_clock::now();
 
+    // Enlarging a crop changes detector resizing and context, even below its size limit.
+    // Share only exact crops; cache raw results before each node's filtering and sorting.
+    const bool use_cache = cache_ && session_ && session_->supports_batch_cache() && !param_.only_rec && !color_filter_;
     while (next_roi()) {
-        auto results = cache_ ? handle_cached() : predict();
+        ResultsVec results;
+        const auto* cached = use_cache ? cache_->find(session_, roi_) : nullptr;
+        if (cached) {
+            LogDebug << "OCR using inference cache" << VAR(name_) << VAR(roi_);
+            results = *cached;
+        }
+        else {
+            auto predicted = predict();
+            if (!predicted) {
+                continue;
+            }
+            results = std::move(*predicted);
+            if (use_cache) {
+                cache_->insert(session_, roi_, results);
+            }
+        }
 
         if (debug_draw_) {
             auto draw = draw_result(results);
@@ -71,7 +160,7 @@ void OCRer::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogDebug << name_ << VAR(cache_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
+    LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
              << VAR(param_.only_rec) << VAR(param_.expected);
 }
 
@@ -94,7 +183,7 @@ cv::Mat OCRer::apply_color_filter(const cv::Mat& image_roi) const
     return result;
 }
 
-OCRer::ResultsVec OCRer::predict() const
+std::optional<OCRer::ResultsVec> OCRer::predict() const
 {
     if (param_.only_rec && session_ && !session_->supports_rec_only()) {
         LogError << "OCR engine does not support only_rec" << VAR(param_.engine);
@@ -106,7 +195,20 @@ OCRer::ResultsVec OCRer::predict() const
     if (color_filter_) {
         image_roi = apply_color_filter(image_roi);
     }
-    results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) } : predict_det_and_rec(image_roi);
+    if (param_.only_rec) {
+        auto result = predict_only_rec(image_roi);
+        if (!result) {
+            return std::nullopt;
+        }
+        results.emplace_back(std::move(*result));
+    }
+    else {
+        auto predicted = predict_det_and_rec(image_roi);
+        if (!predicted) {
+            return std::nullopt;
+        }
+        results = std::move(*predicted);
+    }
 
     std::ranges::for_each(results, [&](auto& res) {
         res.box.x += roi_.x;
@@ -116,50 +218,7 @@ OCRer::ResultsVec OCRer::predict() const
     return results;
 }
 
-OCRer::ResultsVec OCRer::handle_cached() const
-{
-    if (!cache_) {
-        LogError << "cache is null";
-        return { };
-    }
-
-    if (cache_->empty()) {
-        LogWarn << "cache is empty";
-        return { };
-    }
-
-    auto contains = [](const cv::Rect& outer, const cv::Rect& inner) {
-        return outer.x <= inner.x && outer.y <= inner.y && (outer.x + outer.width) >= (inner.x + inner.width)
-               && (outer.y + outer.height) >= (inner.y + inner.height);
-    };
-
-    ResultsVec results;
-    std::vector<cv::Rect> intersections;
-
-    for (const Result& c : *cache_) {
-        if (contains(roi_, c.box)) {
-            results.emplace_back(c);
-        }
-        else if (cv::Rect ints = roi_ & c.box; ints.area() > 0) {
-            // 交集不到框高的一半时（框只擦到 ROI 上下边缘，或 ROI 比框还矮），交集可能只是 1px 高的细缝，
-            // rec 按高度缩放到 48px 后宽度放大数百倍，耗费数 GB 内存。这种 ROI 不用缓存，自己做一次 det+rec，结果和不开 batch 时一致。
-            if (ints.height * 2 < c.box.height) {
-                return predict();
-            }
-            intersections.emplace_back(ints);
-        }
-    }
-
-    // ROI 和 缓存结果相交的部分，拿相交的部分重新做一下识别
-    if (!intersections.empty()) {
-        ResultsVec res = predict_batch_rec(intersections);
-        results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
-    }
-
-    return results;
-}
-
-OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
+std::optional<OCRer::ResultsVec> OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
 {
     if (!session_) {
         LogError << "OCRSession not loaded";
@@ -175,7 +234,12 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
         LogWarn << "det_and_rec failed" << VAR(image_) << VAR(image_roi);
         return { };
     }
-    const auto& [boxes, texts, scores] = *ocr_opt;
+    return decode_det_and_rec(*ocr_opt, image_roi.size());
+}
+
+std::optional<OCRer::ResultsVec> OCRer::decode_det_and_rec(const OCRDetRecResult& prediction, const cv::Size& image_size)
+{
+    const auto& [boxes, texts, scores] = prediction;
 
     ResultsVec results;
 
@@ -186,11 +250,12 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
             if (const auto& raw_text = texts.front(); !raw_text.empty()) {
                 // 这种情况是 det 模型没出结果，整个 ROI 直接被送给了 rec 模型。凑合用吧（
                 results.emplace_back(
-                    Result { .text = to_u16(raw_text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = scores.front() });
+                    Result { .text = to_u16(raw_text), .box = { 0, 0, image_size.width, image_size.height }, .score = scores.front() });
             }
+            return results;
         }
 
-        return results;
+        return std::nullopt;
     }
 
     for (size_t i = 0; i != texts.size(); ++i) {
@@ -210,7 +275,7 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
     return results;
 }
 
-OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
+std::optional<OCRer::Result> OCRer::predict_only_rec(const cv::Mat& image_roi) const
 {
     if (session_ && !session_->supports_rec_only()) {
         LogError << "OCR engine does not support only_rec" << VAR(param_.engine);
@@ -236,58 +301,6 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
     Result result { .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = reco_score };
 
     return result;
-}
-
-OCRer::ResultsVec OCRer::predict_batch_rec(const std::vector<cv::Rect>& rois) const
-{
-    LogFunc << VAR(rois);
-
-    if (session_ && !session_->supports_rec_only()) {
-        LogError << "OCR engine does not support batch_rec" << VAR(param_.engine);
-        return { };
-    }
-
-    if (!session_) {
-        LogError << "OCRSession not loaded";
-        return { };
-    }
-    if (rois.empty()) {
-        LogError << "rois is empty";
-        return { };
-    }
-
-    std::vector<cv::Mat> imgs;
-    for (const cv::Rect& r : rois) {
-        imgs.emplace_back(image_(r));
-    }
-
-    std::optional<std::vector<OCRRecResult>> batch_opt;
-    {
-        std::unique_lock lock(s_predict_mutex_);
-        batch_opt = session_->batch_rec(imgs);
-    }
-    if (!batch_opt) {
-        LogWarn << "batch_rec failed" << VAR(rois);
-        return { };
-    }
-    if (batch_opt->size() != rois.size()) {
-        LogError << "Bad ocr result size" << VAR(rois) << VAR(batch_opt->size());
-        return { };
-    }
-
-    ResultsVec results;
-
-    for (size_t i = 0; i != batch_opt->size(); ++i) {
-        auto text = to_u16(batch_opt->at(i).first);
-        cv::Rect my_box = rois.at(i);
-        auto score = batch_opt->at(i).second;
-
-        results.emplace_back(Result { .text = std::move(text), .box = my_box, .score = score });
-    }
-
-    LogInfo << VAR(results);
-
-    return results;
 }
 
 cv::Mat OCRer::draw_result(const ResultsVec& results) const

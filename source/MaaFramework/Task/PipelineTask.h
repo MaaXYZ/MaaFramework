@@ -18,8 +18,6 @@ struct BatchOCREntry
 {
     std::string name;
     MAA_VISION_NS::OCRerParam param;
-
-    MEO_TOJSON(name);
 };
 
 class PipelineTask : public TaskBase
@@ -35,8 +33,6 @@ public:
 private:
     struct BatchOCRPlan
     {
-        std::string model;
-        std::set<std::string> node_names;
         std::set<std::string> owner_node_names;
         std::vector<BatchOCREntry> entries;
     };
@@ -44,14 +40,12 @@ private:
     struct OCRCollectContext
     {
         BatchOCRPlan plan;
-        bool first = true;
+        std::set<std::string> visiting_nodes;
     };
 
-private:
     NodeDetail run_next(const std::vector<MAA_RES_NS::NodeAttr>& next, const PipelineData& pretask);
     RecoResult recognize_list(const cv::Mat& image, const std::vector<MAA_RES_NS::NodeAttr>& list);
     std::optional<BatchOCRPlan> prepare_batch_ocr(const std::vector<MAA_RES_NS::NodeAttr>& list);
-
     void try_add_ocr_node(OCRCollectContext& ctx, const std::string& name, const MAA_VISION_NS::OCRerParam& param);
     void collect_ocr_from_reco(
         OCRCollectContext& ctx,
