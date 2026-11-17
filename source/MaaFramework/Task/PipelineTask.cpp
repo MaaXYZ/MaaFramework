@@ -426,7 +426,7 @@ std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const 
         const auto& data = *data_opt;
         const auto old_size = ctx.plan.entries.size();
         ctx.visiting_nodes.emplace(data.name);
-        collect_ocr_from_reco(ctx, data.name, data.reco_type, data.reco_param);
+        collect_ocr_from_reco(ctx, data.reco_type, data.reco_param);
         ctx.visiting_nodes.erase(data.name);
         if (ctx.plan.entries.size() > old_size) {
             ctx.plan.owner_node_names.emplace(data.name);
@@ -439,7 +439,7 @@ std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const 
     return std::move(ctx.plan);
 }
 
-void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& name, const MAA_VISION_NS::OCRerParam& param)
+void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const MAA_VISION_NS::OCRerParam& param)
 {
     // Dynamic ROIs may depend on recognition that has not run yet. Filtered and
     // rec-only inputs have a different inference contract from the raw ROI cache.
@@ -448,19 +448,18 @@ void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& n
         return;
     }
 
-    ctx.plan.entries.emplace_back(BatchOCREntry { .name = name, .param = param });
+    ctx.plan.entries.emplace_back(param);
 }
 
 void PipelineTask::collect_ocr_from_reco(
     OCRCollectContext& ctx,
-    const std::string& name,
     MAA_RES_NS::Recognition::Type type,
     const MAA_RES_NS::Recognition::Param& param)
 {
     using namespace MAA_RES_NS::Recognition;
 
     if (type == Type::OCR) {
-        try_add_ocr_node(ctx, name, std::get<MAA_VISION_NS::OCRerParam>(param));
+        try_add_ocr_node(ctx, std::get<MAA_VISION_NS::OCRerParam>(param));
     }
     else if (type == Type::And) {
         const auto& and_param = std::get<std::shared_ptr<AndParam>>(param);
@@ -489,13 +488,13 @@ void PipelineTask::collect_ocr_from_sub_recognitions(
             }
             auto sub_opt = context_->get_pipeline_data(*node_name);
             if (sub_opt) {
-                collect_ocr_from_reco(ctx, sub_opt->name, sub_opt->reco_type, sub_opt->reco_param);
+                collect_ocr_from_reco(ctx, sub_opt->reco_type, sub_opt->reco_param);
             }
             ctx.visiting_nodes.erase(*node_name);
         }
         else {
             const auto& inline_sub = std::get<InlineSubRecognition>(sub);
-            collect_ocr_from_reco(ctx, inline_sub.sub_name, inline_sub.type, inline_sub.param);
+            collect_ocr_from_reco(ctx, inline_sub.type, inline_sub.param);
         }
     }
 }

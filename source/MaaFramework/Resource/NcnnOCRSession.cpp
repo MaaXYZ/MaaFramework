@@ -355,11 +355,6 @@ std::shared_ptr<NcnnOCRSession> NcnnOCRSession::create(const std::filesystem::pa
     return session;
 }
 
-int NcnnOCRSession::det_max_side_len() const
-{
-    return kDetMaxSideLen;
-}
-
 NcnnOCRSession::~NcnnOCRSession()
 {
     det_.reset();

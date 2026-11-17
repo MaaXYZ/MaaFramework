@@ -30,11 +30,6 @@ FastDeployOCRSession::FastDeployOCRSession(
 {
 }
 
-int FastDeployOCRSession::det_max_side_len() const
-{
-    return deter_ ? deter_->GetPreprocessor().GetMaxSideLen() : 960;
-}
-
 std::optional<MAA_VISION_NS::OCRDetRecResult> FastDeployOCRSession::det_and_rec(const cv::Mat& image)
 {
     auto lock = context_.lock();

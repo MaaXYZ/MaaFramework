@@ -8,7 +8,7 @@
 #include "Resource/PipelineTypes.h"
 #include "Task/Context.h"
 #include "Tasker/Tasker.h"
-#include "Vision/OCRer.h"
+#include "Vision/OCRTypes.h"
 
 MAA_VISION_NS_BEGIN
 struct NeuralNetworkCache;
@@ -16,11 +16,8 @@ MAA_VISION_NS_END
 
 MAA_TASK_NS_BEGIN
 
-struct BatchOCREntry;
-
 class Recognizer
 {
-public:
 public:
     Recognizer(
         Tasker* tasker,
@@ -35,7 +32,7 @@ public:
 
     RecoResult recognize(MAA_RES_NS::Recognition::Type type, const MAA_RES_NS::Recognition::Param& param, const std::string& name);
 
-    void prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries);
+    void prefetch_batch_ocr(const std::vector<MAA_VISION_NS::OCRerParam>& params);
 
     MaaRecoId get_id() const { return reco_id_; }
 
