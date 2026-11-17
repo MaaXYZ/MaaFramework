@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.28)
 
 project(MaaFrameworkPackageTest LANGUAGES CXX)
 
-find_package(MaaFramework CONFIG REQUIRED)
+set(control_unit_components MaaCustomControlUnit)
+if(WIN32)
+    list(APPEND control_unit_components MaaWin32ControlUnit)
+endif()
+find_package(MaaFramework CONFIG REQUIRED COMPONENTS ${control_unit_components})
 
 enable_testing()
 
@@ -16,3 +20,9 @@ target_link_libraries(
             MaaFramework::MaaUtils)
 
 add_test(NAME MaaFrameworkPackageTest COMMAND MaaFrameworkPackageTest)
+
+foreach(backend IN LISTS control_unit_components)
+    add_executable(${backend}PackageTest ${backend}.cpp)
+    target_link_libraries(${backend}PackageTest PRIVATE MaaFramework::${backend})
+    add_test(NAME ${backend}PackageTest COMMAND ${backend}PackageTest)
+endforeach()

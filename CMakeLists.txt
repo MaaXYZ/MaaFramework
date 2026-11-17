@@ -100,12 +100,11 @@ add_subdirectory(tools)
 
 target_include_directories(
     MaaUtils
-    PUBLIC $<BUILD_INTERFACE:${MAAUTILS_DIR}/include> $<INSTALL_INTERFACE:include>
-    PRIVATE ${MAA_PUBLIC_INC})
-# Core and dynamically loaded control units must resolve capability RTTI from one
-# shared dependency, including hosts that load MaaFramework with RTLD_LOCAL.
-target_sources(MaaUtils PRIVATE source/ControlUnitCommon/ControlUnitAPI.cpp)
-target_compile_definitions(MaaUtils PRIVATE MAA_CONTROL_UNIT_TYPES_EXPORTS)
+    PUBLIC $<BUILD_INTERFACE:${MAAUTILS_DIR}/include> $<INSTALL_INTERFACE:include>)
+# Both public C++ interfaces include UTF-8 meojson headers.
+foreach(target MaaUtils MaaControlUnit)
+    target_compile_options(${target} INTERFACE $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>)
+endforeach()
 # MaaUtils public headers expose Boost and OpenCV types.
 target_link_libraries(
     MaaUtils PUBLIC Boost::headers Boost::system ${OpenCV_LIBS})
@@ -174,7 +173,7 @@ endif()
 maadeps_install(bin)
 
 install(
-    TARGETS MaaUtils
+    TARGETS MaaUtils MaaControlUnit
     EXPORT MaaFrameworkTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
@@ -185,7 +184,7 @@ install(DIRECTORY "${MAAUTILS_DIR}/include/MaaUtils" DESTINATION "include")
 install(DIRECTORY "${MAAUTILS_DIR}/include/meojson" DESTINATION "include")
 
 if(WIN32)
-    install(FILES $<TARGET_PDB_FILE:MaaUtils> DESTINATION symbol OPTIONAL)
+    install(FILES $<TARGET_PDB_FILE:MaaUtils> $<TARGET_PDB_FILE:MaaControlUnit> DESTINATION symbol OPTIONAL)
 endif()
 
 install(

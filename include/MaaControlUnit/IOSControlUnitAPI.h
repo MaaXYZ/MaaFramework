@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MaaControlUnit/ControlUnitAPI.h"
+#include "MaaControlUnit/IOSDeviceAPI.h"
 #include "MaaFramework/MaaDef.h"
 
 #ifdef __cplusplus

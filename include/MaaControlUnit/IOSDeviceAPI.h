@@ -5,10 +5,10 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class IOSDeviceAPI
+class MAA_CONTROL_UNIT_TYPES_API IOSDeviceAPI
 {
 public:
-    virtual ~IOSDeviceAPI() = default;
+    virtual ~IOSDeviceAPI();
 
     virtual MaaBool discover(
         MaaIOSConnectionMethod connection_method,

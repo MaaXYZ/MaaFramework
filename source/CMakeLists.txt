@@ -1,3 +1,31 @@
+# A single library owns the interface RTTI even when hosts load backends with
+# RTLD_LOCAL or supply their own build of MaaUtils.
+add_library(MaaControlUnit SHARED ControlUnitCommon/ControlUnitAPI.cpp)
+target_compile_definitions(MaaControlUnit PRIVATE MAA_CONTROL_UNIT_TYPES_EXPORTS)
+target_compile_features(MaaControlUnit PUBLIC cxx_std_20)
+target_include_directories(MaaControlUnit PUBLIC
+    $<BUILD_INTERFACE:${MAA_PUBLIC_INC}>
+    $<BUILD_INTERFACE:${MAAUTILS_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+target_link_libraries(MaaControlUnit PUBLIC opencv_core)
+
+function(add_control_unit target)
+    add_library(${target} SHARED ${ARGN})
+    target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC})
+    target_compile_definitions(${target} PRIVATE MAA_CONTROL_UNIT_EXPORTS)
+    target_link_libraries(${target} PUBLIC MaaControlUnit PRIVATE MaaUtils ${OpenCV_LIBS})
+
+    install(
+        TARGETS ${target}
+        EXPORT MaaFrameworkTargets
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION bin
+        ARCHIVE DESTINATION lib)
+    if(WIN32)
+        install(FILES $<TARGET_PDB_FILE:${target}> DESTINATION symbol OPTIONAL)
+    endif()
+endfunction()
+
 if(WITH_ADB_CONTROLLER)
     add_subdirectory(MaaAdbControlUnit)
 endif()

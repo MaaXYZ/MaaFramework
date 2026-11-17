@@ -20,6 +20,7 @@ add_executable(manager_cleanup_test
     "${MAA_SOURCE_ROOT}/source/MaaLinuxControlUnit/Manager/LinuxControlUnitMgr.cpp"
     "${MAA_SOURCE_ROOT}/source/ControlUnitCommon/ControlUnitAPI.cpp")
 target_compile_features(manager_cleanup_test PRIVATE cxx_std_20)
+target_compile_definitions(manager_cleanup_test PRIVATE MAA_VERSION="test")
 # Inject backend failures without a compositor, PipeWire server, or input device.
 target_include_directories(manager_cleanup_test BEFORE PRIVATE "${CMAKE_CURRENT_LIST_DIR}/support")
 target_include_directories(manager_cleanup_test PRIVATE
