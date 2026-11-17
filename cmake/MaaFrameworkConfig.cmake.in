@@ -9,4 +9,11 @@ endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/MaaFramework.cmake")
 
+foreach(component IN LISTS MaaFramework_FIND_COMPONENTS)
+    if(TARGET MaaFramework::${component})
+        set(MaaFramework_${component}_FOUND TRUE)
+    else()
+        set(MaaFramework_${component}_FOUND FALSE)
+    endif()
+endforeach()
 check_required_components(MaaFramework)

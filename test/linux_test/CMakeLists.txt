@@ -15,14 +15,13 @@ set_tests_properties(portal_cleanup PROPERTIES TIMEOUT 180)
 
 add_executable(manager_cleanup_test
     manager_cleanup_test.cpp
-    "${CMAKE_SOURCE_DIR}/source/MaaLinuxControlUnit/Manager/LinuxControlUnitMgr.cpp"
-    "${CMAKE_SOURCE_DIR}/source/ControlUnitCommon/ControlUnitAPI.cpp")
+    "${CMAKE_SOURCE_DIR}/source/MaaLinuxControlUnit/Manager/LinuxControlUnitMgr.cpp")
 # Inject backend failures without a compositor, PipeWire server, or input device.
 target_include_directories(manager_cleanup_test BEFORE PRIVATE "${CMAKE_CURRENT_LIST_DIR}/manager_cleanup/support")
 target_include_directories(manager_cleanup_test PRIVATE
     "${CMAKE_SOURCE_DIR}/include"
     "${CMAKE_SOURCE_DIR}/source/include"
     "${CMAKE_SOURCE_DIR}/source/MaaLinuxControlUnit")
-target_link_libraries(manager_cleanup_test PRIVATE ${OpenCV_LIBS})
+target_link_libraries(manager_cleanup_test PRIVATE MaaControlUnit ${OpenCV_LIBS})
 add_test(NAME manager_cleanup COMMAND manager_cleanup_test)
 set_tests_properties(manager_cleanup PROPERTIES TIMEOUT 30)

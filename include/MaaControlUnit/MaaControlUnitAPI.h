@@ -12,6 +12,7 @@
 #include "GamepadControlUnitAPI.h"
 #include "IOSControlUnitAPI.h"
 #include "KWinControlUnitAPI.h"
+#include "LinuxControlUnitAPI.h"
 #include "MacOSControlUnitAPI.h"
 #include "PlayCoverControlUnitAPI.h"
 #include "RecordControlUnitAPI.h"

@@ -5,12 +5,9 @@ set(maa_macos_app_lifecycle_src
     ${CMAKE_CURRENT_SOURCE_DIR}/../ControlUnitCommon/MacOS/MacOSAppLifecycle.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../ControlUnitCommon/MacOS/MacOSAppLifecycle.mm)
 
-add_library(MaaMacOSControlUnit SHARED ${maa_macos_control_unit_src} ${maa_macos_control_unit_header} ${maa_macos_app_lifecycle_src})
+add_control_unit(MaaMacOSControlUnit ${maa_macos_control_unit_src} ${maa_macos_control_unit_header} ${maa_macos_app_lifecycle_src})
 
-target_include_directories(MaaMacOSControlUnit
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ControlUnitCommon ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
-
-target_link_libraries(MaaMacOSControlUnit PRIVATE MaaUtils ${OpenCV_LIBS})
+target_include_directories(MaaMacOSControlUnit PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../ControlUnitCommon)
 
 # macOS frameworks
 find_library(APPLICATION_SERVICES ApplicationServices REQUIRED)
@@ -31,18 +28,6 @@ target_link_libraries(MaaMacOSControlUnit PRIVATE
     ${CORE_VIDEO}
     ${APP_KIT}
     ${CARBON}
-)
-
-target_compile_definitions(MaaMacOSControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
-
-add_dependencies(MaaMacOSControlUnit MaaUtils)
-
-install(
-    TARGETS MaaMacOSControlUnit
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION bin
-
-    # ARCHIVE DESTINATION lib
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_macos_control_unit_src})

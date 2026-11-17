@@ -1,8 +1,8 @@
 #include "LibraryHolder/ControlUnit.h"
 
 #include <filesystem>
+#include <string_view>
 
-#include "ControlUnit/IOSDeviceAPI.h"
 #include "MaaUtils/ScopeLeave.hpp"
 
 #include "MaaControlUnit/AdbControlUnitAPI.h"
@@ -32,11 +32,13 @@ bool check_version(const std::string& func_name)
         LogError << "Failed to get function get_version";
         return false;
     }
-    auto version = version_func();
-    LogInfo << typeid(ControlUnitT).name() << "Library version:" << version;
+    const std::string_view backend_version = version_func();
+    const std::string_view interface_version = MaaControlUnitGetVersion();
+    constexpr std::string_view framework_version = MAA_VERSION;
+    LogInfo << typeid(ControlUnitT).name() << "Library version:" << backend_version;
 
-    if (std::strcmp(version, MAA_VERSION) != 0) {
-        LogWarn << "ControlUnit and MaaFramework are not same version," << "ControlUnit:" << version << "MaaFramework:" << MAA_VERSION;
+    if (backend_version != framework_version || interface_version != framework_version) {
+        LogWarn << "ControlUnit version mismatch" << VAR(backend_version) << VAR(interface_version) << VAR(framework_version);
     }
     return true;
 }

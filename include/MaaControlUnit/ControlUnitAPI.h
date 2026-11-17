@@ -3,6 +3,7 @@
 #include <chrono>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <meojson/json.hpp>
 
@@ -10,6 +11,8 @@
 
 #include "MaaControlUnit/MaaControlUnitDef.h"
 #include "MaaFramework/MaaDef.h"
+
+extern "C" MAA_CONTROL_UNIT_TYPES_API const char* MaaControlUnitGetVersion();
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -76,101 +79,101 @@ public:
 
 // Platform-specific APIs, composed from base + capability mixins
 
-class AdbControlUnitAPI
+class MAA_CONTROL_UNIT_TYPES_API AdbControlUnitAPI
     : public ControlUnitAPI
     , public ShellableUnit
 {
 public:
-    virtual ~AdbControlUnitAPI() = default;
+    ~AdbControlUnitAPI() override;
 
     virtual bool find_device(/*out*/ std::vector<std::string>& devices) = 0;
 };
 
-class IOSControlUnitAPI : public ControlUnitAPI
+class MAA_CONTROL_UNIT_TYPES_API IOSControlUnitAPI : public ControlUnitAPI
 {
 public:
-    virtual ~IOSControlUnitAPI() = default;
+    ~IOSControlUnitAPI() override;
 };
 
-class AndroidNativeControlUnitAPI : public ControlUnitAPI
+class MAA_CONTROL_UNIT_TYPES_API AndroidNativeControlUnitAPI : public ControlUnitAPI
 {
 public:
-    ~AndroidNativeControlUnitAPI() override = default;
+    ~AndroidNativeControlUnitAPI() override;
 };
 
-class Win32ControlUnitAPI
+class MAA_CONTROL_UNIT_TYPES_API Win32ControlUnitAPI
     : public ControlUnitAPI
     , public ScrollableUnit
     , public RelativeMovableUnit
 {
 public:
-    virtual ~Win32ControlUnitAPI() = default;
+    ~Win32ControlUnitAPI() override;
 
     virtual bool set_mouse_lock_follow(bool /*enabled*/) { return false; }
 
     virtual bool set_background_managed_keys_option(const int32_t* /*keycodes*/, size_t /*count*/) { return false; }
 };
 
-class MacOSControlUnitAPI
+class MAA_CONTROL_UNIT_TYPES_API MacOSControlUnitAPI
     : public ControlUnitAPI
     , public ScrollableUnit
     , public RelativeMovableUnit
 {
 public:
-    virtual ~MacOSControlUnitAPI() = default;
+    ~MacOSControlUnitAPI() override;
 };
 
-class WlRootsControlUnitAPI
+class MAA_CONTROL_UNIT_TYPES_API WlRootsControlUnitAPI
     : public ControlUnitAPI
     , public ScrollableUnit
     , public RelativeMovableUnit
 {
 public:
-    virtual ~WlRootsControlUnitAPI() = default;
+    ~WlRootsControlUnitAPI() override;
 };
 
-class KWinControlUnitAPI
+class MAA_CONTROL_UNIT_TYPES_API KWinControlUnitAPI
     : public ControlUnitAPI
     , public ScrollableUnit
     , public RelativeMovableUnit
 {
 public:
-    virtual ~KWinControlUnitAPI() = default;
+    ~KWinControlUnitAPI() override;
 };
 
-class LinuxControlUnitAPI
+class MAA_CONTROL_UNIT_TYPES_API LinuxControlUnitAPI
     : public ControlUnitAPI
     , public ScrollableUnit
     , public RelativeMovableUnit
 {
 public:
-    virtual ~LinuxControlUnitAPI() = default;
+    ~LinuxControlUnitAPI() override;
 };
 
-class CustomControlUnitAPI
-    : public ControlUnitAPI
-    , public ScrollableUnit
-    , public RelativeMovableUnit
-    , public ShellableUnit
-{
-public:
-    virtual ~CustomControlUnitAPI() = default;
-};
-
-class GamepadControlUnitAPI : public ControlUnitAPI
-{
-public:
-    virtual ~GamepadControlUnitAPI() = default;
-};
-
-class FullControlUnitAPI
+class MAA_CONTROL_UNIT_TYPES_API CustomControlUnitAPI
     : public ControlUnitAPI
     , public ScrollableUnit
     , public RelativeMovableUnit
     , public ShellableUnit
 {
 public:
-    virtual ~FullControlUnitAPI() = default;
+    ~CustomControlUnitAPI() override;
+};
+
+class MAA_CONTROL_UNIT_TYPES_API GamepadControlUnitAPI : public ControlUnitAPI
+{
+public:
+    ~GamepadControlUnitAPI() override;
+};
+
+class MAA_CONTROL_UNIT_TYPES_API FullControlUnitAPI
+    : public ControlUnitAPI
+    , public ScrollableUnit
+    , public RelativeMovableUnit
+    , public ShellableUnit
+{
+public:
+    ~FullControlUnitAPI() override;
 };
 
 MAA_CTRL_UNIT_NS_END
