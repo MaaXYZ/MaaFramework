@@ -2,6 +2,7 @@
 
 #include "module/BatchOcrRepro.h"
 #include "module/ControllerActionEvents.h"
+#include "module/FailureFrameOutputTest.h"
 #include "module/InferenceContext.h"
 #include "module/NeuralNetworkCache.h"
 #include "module/PipelineSmoking.h"
@@ -26,6 +27,10 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaGlobalSetOption(MaaGlobalOption_SaveDraw, &on, sizeof(on));
     MaaLoggingLevel lv = MaaLoggingLevel_Info;
     MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &lv, sizeof(lv));
+
+    if (!test_failure_frame_output()) {
+        return -1;
+    }
 
     if (!runtime_events()) {
         return -1;

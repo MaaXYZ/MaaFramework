@@ -135,6 +135,12 @@ enum MaaGlobalOptionEnum
     MaaGlobalOption_RecoImageCacheBytes = 12,
     /// Include the effective pipeline in recognition/action notifications. value: bool; default false.
     MaaGlobalOption_CaptureConfig = 13,
+
+    /// Whether to save unredacted task failure keyframes in the log directory
+    ///
+    /// value: bool, eg: true; val_size: sizeof(bool)
+    /// default value is false, independent of SaveOnError and DebugMode
+    MaaGlobalOption_SaveOnErrorFrames = 14,
 };
 
 typedef MaaOption MaaResOption;

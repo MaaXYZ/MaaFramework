@@ -12,6 +12,8 @@ target_link_libraries(PipelineTesting MaaFramework)
 # Exercise the private framework classes and real inference sessions without exporting
 # internal APIs from MaaFramework just for tests.
 target_sources(PipelineTesting PRIVATE
+    ../../source/MaaFramework/Task/FailureFrameOutputPosix.cpp
+    ../../source/MaaFramework/Task/FailureFrameOutputWin32.cpp
     ../../source/MaaFramework/Resource/FastDeployOCRSession.cpp
     ../../source/MaaFramework/Resource/InferenceResMgr.cpp
     ../../source/MaaFramework/Resource/OrtSession.cpp

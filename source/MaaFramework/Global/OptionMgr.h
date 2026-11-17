@@ -30,6 +30,8 @@ public:
 
     bool save_on_error() const { return save_on_error_; }
 
+    bool save_on_error_frames() const { return save_on_error_frames_.load(std::memory_order_relaxed); }
+
     int draw_quality() const { return draw_quality_; }
 
     size_t reco_image_cache_limit() const { return reco_image_cache_limit_; }
@@ -50,6 +52,7 @@ private:
     bool set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_save_on_error(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_save_on_error_frames(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_draw_quality(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_reco_image_cache_limit(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_reco_image_raw(MaaOptionValue value, MaaOptionValueSize val_size);
@@ -62,6 +65,7 @@ private:
     bool save_draw_ = false;
     bool debug_mode_ = false;
     bool save_on_error_ = false;
+    std::atomic_bool save_on_error_frames_ = false;
     int draw_quality_ = 85;
     std::atomic<size_t> reco_image_cache_limit_ = 4096;
     std::atomic<int> reco_image_raw_ = -1;
