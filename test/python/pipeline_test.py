@@ -735,6 +735,7 @@ class PipelineTestRecognition(CustomRecognition):
                 "RecoOCR": {
                     "recognition": "OCR",
                     "expected": ["Hello", "World"],
+                    "condition": "$0 != 0",
                     "threshold": 0.5,
                     "replace": [["0", "O"], ["1", "I"]],
                     "only_rec": True,
@@ -748,6 +749,7 @@ class PipelineTestRecognition(CustomRecognition):
         param = obj.recognition.param
         assert_true(isinstance(param, JOCR), "OCR param")
         assert_eq(param.expected, ["Hello", "World"], "expected")
+        assert_eq(param.condition, "$0 != 0", "condition")
         assert_eq(param.threshold, 0.5, "threshold")
         assert_eq(param.replace, [["0", "O"], ["1", "I"]], "replace")
         assert_eq(param.only_rec, True, "only_rec")

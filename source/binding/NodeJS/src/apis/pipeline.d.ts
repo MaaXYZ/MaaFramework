@@ -97,6 +97,7 @@ declare global {
             roi?: Rect | NodeName
             roi_offset?: Rect
             expected?: MaybeArray<string, Mode>
+            condition?: string
             threshold?: MaybeArray<number, Mode>
             replace?: MaybeArray<FixedArray<string, 2>, Mode>
             order_by?: OrderByMap['OCR']

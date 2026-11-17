@@ -51,6 +51,14 @@ class PipelineSchemaTest(unittest.TestCase):
         fixture = json.loads((ROOT / "test/schema/pipeline.schema.correct.json").read_text(encoding="utf-8"))
         self.validator.validate(fixture)
 
+    def test_ocr_condition_is_an_optional_string_in_v1_and_v2(self):
+        for condition in ("", "$2 > 50", "$1 == $2", "$0 >= -1.5", None, True, 50, [], {}):
+            for v2 in (False, True):
+                with self.subTest(condition=condition, v2=v2):
+                    params = {"expected": r"(\d+)/(\d+)", "condition": condition}
+                    node = {"recognition": {"type": "OCR", "param": params}} if v2 else {"recognition": "OCR", **params}
+                    self.assertEqual(self.validator.is_valid({"Node": node}), isinstance(condition, str))
+
 
 def pipeline_fixture_test(name, node, *, valid):
     def test(self):

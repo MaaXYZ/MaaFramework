@@ -6,6 +6,7 @@
 #include "module/InferenceContext.h"
 #include "module/NeuralNetworkCache.h"
 #include "module/OCRCache.h"
+#include "module/OCRCondition.h"
 #include "module/OCRRegression.h"
 #include "module/PipelineSmoking.h"
 #include "module/PostStopInterrupt.h"
@@ -17,6 +18,10 @@
 
 int main([[maybe_unused]] int argc, char** argv)
 {
+    if (argc == 2 && std::string_view(argv[1]) == "--ocr-condition") {
+        return test_ocr_condition() ? 0 : 1;
+    }
+
     auto cur_dir = std::filesystem::path(argv[0]).parent_path();
     auto testset_dir = cur_dir.parent_path() / "test";
     const bool ocr_only = argc >= 2 && std::string_view(argv[1]) == "--ocr-regression";
@@ -41,6 +46,10 @@ int main([[maybe_unused]] int argc, char** argv)
     if (ocr_only) {
         const auto report_dir = argc == 4 ? std::filesystem::path(argv[3]) : cur_dir / "debug" / "ocr-regression";
         return ocr_regression(testset_dir, report_dir) ? 0 : 1;
+    }
+
+    if (!test_ocr_condition()) {
+        return -1;
     }
 
     if (!runtime_events()) {

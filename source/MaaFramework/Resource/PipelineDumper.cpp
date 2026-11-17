@@ -170,6 +170,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .roi = dump_target(p.roi_target),
             .roi_offset = dump_rect(p.roi_target.offset),
             .expected = std::move(expected),
+            .condition = p.condition.expression(),
             .threshold = p.threshold,
             .replace = std::move(replace),
             .order_by = dump_order_by(p.order_by),

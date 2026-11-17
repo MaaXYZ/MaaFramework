@@ -73,6 +73,7 @@ struct JOCR
     JTarget roi;
     JRect roi_offset;
     std::vector<std::string> expected;
+    std::string condition;
     double threshold = 0;
     std::vector<std::pair<std::string, std::string>> replace;
     std::string order_by;
@@ -82,7 +83,7 @@ struct JOCR
     std::string model;
     std::string color_filter;
 
-    MEO_TOJSON(roi, roi_offset, expected, threshold, replace, order_by, index, only_rec, engine, model, color_filter);
+    MEO_TOJSON(roi, roi_offset, expected, condition, threshold, replace, order_by, index, only_rec, engine, model, color_filter);
 };
 
 struct JNeuralNetworkClassify
