@@ -105,6 +105,7 @@ class JOCR:
     engine: str = "Default"
     model: str = ""
     color_filter: str = ""
+    condition: str = ""
 
 
 @dataclass

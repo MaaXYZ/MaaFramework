@@ -1208,6 +1208,18 @@
                     "$ref": "#/$defs/jsonRegexOrList",
                     "markdownDescription": "*string* | *list<string, >*\n\n期望的结果，支持正则。可选，默认匹配所有结果。"
                 },
+                "condition": {
+                    "title": "Condition Property",
+                    "description": "数值比较条件，如 $2 > 50 或 $1 == $2。$0 为整个正则匹配，$1、$2 等为捕获组。可选，空字符串表示不比较。",
+                    "type": "string",
+                    "default": "",
+                    "examples": [
+                        "$2 > 50",
+                        "$1 == $2",
+                        "$0 >= -1.5"
+                    ],
+                    "markdownDescription": "*string*\n\n数值比较条件，格式为 `数字或捕获组 比较符 数字或捕获组`，支持 `>`、`>=`、`<`、`<=`、`==`、`!=`。可选，空字符串表示不比较。\n\n`$0` 为整个正则匹配，`$1`、`$2` 等为捕获组；未设置 `expected` 或其为空列表时，`$0` 为完整 OCR 文本。对 `replace` 后的文本进行匹配和数值比较，捕获组不存在、未匹配或不能完整转换为有限数值时视为未命中。条件格式错误时加载失败。"
+                },
                 "threshold": {
                     "title": "Threshold Property",
                     "description": "模型置信度阈值。可选，默认 0.3 。",

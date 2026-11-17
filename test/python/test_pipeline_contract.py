@@ -81,6 +81,7 @@ RECOGNITION_CASES = {
         p.JOCR,
         {
             "expected": ["测试.*", "second"],
+            "condition": "$1 >= -1.5",
             "replace": [["0", "O"], ["１", "1"]],
             "threshold": 0.55,
             "only_rec": True,
@@ -346,6 +347,49 @@ class PipelineContractTest(unittest.TestCase):
 
     def test_all_action_types_have_cases(self):
         self.assertEqual(set(ACTION_CASES), set(p.JActionType))
+
+    def test_ocr_condition_roundtrip_and_override(self):
+        for v2 in (False, True):
+            with self.subTest(v2=v2):
+                params = {"expected": r"(\d+)/(\d+)", "condition": "$2 > 50"}
+                node = {"recognition": {"type": "OCR", "param": params}} if v2 else {"recognition": "OCR", **params}
+                dumped = self.assert_roundtrip(node)
+                self.assertEqual(dumped["recognition"]["param"]["condition"], "$2 > 50")
+                self.assertEqual(self.resource.get_node_object("Node").recognition.param.condition, "$2 > 50")
+
+                self.assertTrue(self.resource.override_pipeline({"Node": {"threshold": 0.9}}))
+                self.assertEqual(self.resource.get_node_object("Node").recognition.param.condition, "$2 > 50")
+                self.assertTrue(self.resource.override_pipeline({"Node": {"condition": "$1 == $2"}}))
+                self.assertEqual(self.resource.get_node_object("Node").recognition.param.condition, "$1 == $2")
+                self.assertTrue(self.resource.override_pipeline({"Node": {"condition": ""}}))
+                self.assertEqual(self.resource.get_node_object("Node").recognition.param.condition, "")
+                self.assertEqual(self.resource.get_node_object("Node").recognition.param.expected, [params["expected"]])
+
+    def test_ocr_condition_defaults_and_algorithm_changes(self):
+        self.assertEqual(self.resource.get_default_recognition_param(p.JRecognitionType.OCR).condition, "")
+        self.assertTrue(self.resource.override_pipeline({"Node": {"recognition": "OCR"}}))
+        self.assertEqual(self.resource.get_node_object("Node").recognition.param.condition, "")
+        self.assertTrue(self.resource.override_pipeline({"Node": {"condition": "$0 >= 0"}}))
+        self.assertTrue(self.resource.override_pipeline({"Node": {"recognition": "DirectHit"}}))
+        self.assertTrue(self.resource.override_pipeline({"Node": {"recognition": "OCR"}}))
+        self.assertEqual(self.resource.get_node_object("Node").recognition.param.condition, "")
+
+    def test_ocr_condition_rejects_invalid_configuration(self):
+        invalid = [
+            None, True, 50, [], {}, ["$1 > 50"], " ", "> 50", "$1 = 50", "$1 === 50",
+            "$1 > 50 trailing", "$1 + 2 > 50", "$1 > 50 && $1 < 100", "0 < $1 < 100",
+            "$ 1 > 0", "$-1 > 0", "$1 > nan", "$1 > inf", "$1 > 1e9999",
+            "$999999999999999999999999999999 > 0",
+        ]
+        for condition in invalid:
+            for v2 in (False, True):
+                with self.subTest(condition=condition, v2=v2):
+                    original = {"recognition": "OCR", "condition": "$0 > 50"}
+                    self.assertTrue(self.resource.override_pipeline({"Node": original}))
+                    before = self.resource.get_node_data("Node")
+                    override = {"recognition": {"param": {"condition": condition}}} if v2 else {"condition": condition}
+                    self.assertFalse(self.resource.override_pipeline({"Node": override}))
+                    self.assertEqual(self.resource.get_node_data("Node"), before)
 
     def test_custom_recognition_rejects_invalid_index_types(self):
         for index in ("-1", True, [1], {"index": 1}):

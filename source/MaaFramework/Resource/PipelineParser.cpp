@@ -750,6 +750,18 @@ bool PipelineParser::parse_ocrer_param(
     output.expected.clear();
     std::ranges::transform(u8_text, std::back_inserter(output.expected), to_u16);
 
+    std::string condition;
+    if (!get_and_check_value(input, "condition", condition, default_value.condition.expression())) {
+        LogError << "failed to get_and_check_value condition" << VAR(input);
+        return false;
+    }
+    auto parsed_condition = MAA_VISION_NS::OCRCondition::parse(condition);
+    if (!parsed_condition) {
+        LogError << "invalid OCR condition, expected: operand >|>=|<|<=|==|!= operand" << VAR(condition);
+        return false;
+    }
+    output.condition = std::move(*parsed_condition);
+
     if (!get_and_check_value(input, "threshold", output.threshold, default_value.threshold)) {
         LogError << "failed to get_and_check_value threshold" << VAR(input);
         return false;

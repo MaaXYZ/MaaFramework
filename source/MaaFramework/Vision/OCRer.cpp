@@ -262,11 +262,12 @@ void OCRer::postproc_replace_(Result& res) const
 bool OCRer::filter_by_required(const Result& res, const std::vector<std::wstring>& expected) const
 {
     if (expected.empty()) {
-        return true;
+        return param_.condition.evaluate(res.text);
     }
 
     for (const auto& regex : expected) {
-        if (boost::regex_search(res.text, gen_regex(regex))) {
+        boost::wsmatch match;
+        if (boost::regex_search(res.text, match, gen_regex(regex)) && param_.condition.evaluate(res.text, match)) {
             return true;
         }
     }

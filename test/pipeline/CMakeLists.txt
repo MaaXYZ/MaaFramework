@@ -19,6 +19,7 @@ target_sources(PipelineTesting PRIVATE
     ../../source/MaaFramework/Vision/NeuralNetworkClassifier.cpp
     ../../source/MaaFramework/Vision/NeuralNetworkDetector.cpp
     ../../source/MaaFramework/Vision/OCRBatcher.cpp
+    ../../source/MaaFramework/Vision/OCRCondition.cpp
     ../../source/MaaFramework/Vision/OCRer.cpp
     ../../source/MaaFramework/Vision/VisionBase.cpp
     ../../source/MaaFramework/Global/OptionMgr.cpp)

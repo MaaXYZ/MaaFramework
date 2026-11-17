@@ -10,6 +10,7 @@
 
 #include "Common/Conf.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
+#include "OCRCondition.h"
 
 MAA_VISION_NS_BEGIN
 
@@ -82,6 +83,7 @@ struct OCRerParam : public RoiTargetParamBase
     std::string model;
     bool only_rec = false;
     std::vector<std::wstring> expected;
+    OCRCondition condition;
     double threshold = kDefaultThreshold;
     std::vector<std::pair<std::wstring, std::wstring>> replace;
     std::string color_filter;
