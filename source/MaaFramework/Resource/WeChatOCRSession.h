@@ -16,9 +16,7 @@ public:
 
     bool supports_rec_only() const override { return false; }
 
-    bool supports_batch_cache() const override { return false; }
-
-    int det_max_side_len() const override { return 0; }
+    bool supports_cache() const override { return false; }
 
     std::optional<MAA_VISION_NS::OCRDetRecResult> det_and_rec(const cv::Mat& image) override;
     std::optional<MAA_VISION_NS::OCRRecResult> rec(const cv::Mat& image) override;

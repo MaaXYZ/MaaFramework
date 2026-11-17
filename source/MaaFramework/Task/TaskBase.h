@@ -13,7 +13,7 @@
 #include "Resource/ResourceMgr.h"
 #include "Tasker/RuntimeCache.h"
 #include "Tasker/Tasker.h"
-#include "Vision/OCRer.h"
+#include "Vision/OCRTypes.h"
 
 MAA_VISION_NS_BEGIN
 struct NeuralNetworkCache;

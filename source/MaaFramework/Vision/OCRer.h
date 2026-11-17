@@ -1,34 +1,18 @@
 #pragma once
 
-#include <mutex>
 #include <ostream>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include <boost/regex.hpp>
 
 #include "Common/Conf.h"
 
-#include "InferenceCache.hpp"
-#include "MaaUtils/Encoding.h"
-#include "MaaUtils/JsonExt.hpp"
-#include "OCRSession.h"
+#include "OCRTypes.h"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
 MAA_VISION_NS_BEGIN
-
-struct OCRerResult
-{
-    std::wstring text;
-    cv::Rect box { };
-    double score = 0.0;
-
-    MEO_JSONIZATION(text, box, score);
-};
-
-using OCRCache = InferenceCache<OCRerResult, OCRSessionPtr>;
 
 struct ColorFilterConfig
 {
@@ -41,8 +25,6 @@ class OCRer
     , public RecoResultAPI<OCRerResult>
 {
 public:
-    static constexpr size_t kMinBatchSize = 4;
-
     OCRer(
         cv::Mat image,
         std::vector<cv::Rect> rois,
@@ -51,8 +33,6 @@ public:
         std::string name = "",
         std::optional<ColorFilterConfig> color_filter = std::nullopt,
         OCRCache* cache = nullptr);
-
-    static void prefetch(const cv::Mat& image, const std::vector<cv::Rect>& rois, const OCRSessionPtr& session, OCRCache& cache);
 
 private:
     void analyze();
@@ -66,9 +46,6 @@ private:
     cv::Mat apply_color_filter(const cv::Mat& image_roi) const;
     std::optional<ResultsVec> predict_det_and_rec(const cv::Mat& image_roi) const;
     std::optional<Result> predict_only_rec(const cv::Mat& image_roi) const;
-
-    static std::optional<ResultsVec> decode_det_and_rec(const OCRDetRecResult& prediction, const cv::Size& image_size);
-    static void prefetch_group(const cv::Mat& image, const std::vector<cv::Rect>& rois, const OCRSessionPtr& session, OCRCache& cache);
 
     cv::Mat draw_result(const ResultsVec& results) const;
 
@@ -87,8 +64,6 @@ private:
     OCRCache* cache_ = nullptr;
 
     OCRSessionPtr session_ = nullptr;
-
-    inline static std::mutex s_predict_mutex_;
 };
 
 MAA_VISION_NS_END

@@ -2,6 +2,7 @@
 
 #include <array>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <utility>
@@ -24,18 +25,22 @@ struct OCRDetRecResult
 using OCRRecResult = std::pair<std::string, float>;
 
 // OCR engine of one model (det + rec + keys), the only OCR dependency of the Vision layer.
-// Not thread-safe, callers serialize the calls.
+// Not thread-safe, callers acquire lock() before accessing the runtime.
 class OCRSession
 {
 public:
     virtual ~OCRSession() = default;
 
+    [[nodiscard]] std::unique_lock<std::mutex> lock() const
+    {
+        // Keep OCR runtimes serialized across sessions, including detector shape queries.
+        static std::mutex mutex;
+        return std::unique_lock(mutex);
+    }
+
     virtual bool supports_rec_only() const { return true; }
 
-    virtual bool supports_batch_cache() const { return true; }
-
-    // Detector preprocessing limit, in pixels.
-    virtual int det_max_side_len() const = 0;
+    virtual bool supports_cache() const { return true; }
 
     // det, then rec on each box. If det finds nothing, the whole image is recognized as one line:
     // boxes is empty and texts / scores have one element.

@@ -9,13 +9,13 @@
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/Logger.h"
 #include "Resource/ResourceMgr.h"
-#include "Task/PipelineTask.h"
 #include "Task/TaskBase.h"
 #include "Vision/ColorMatcher.h"
 #include "Vision/FeatureMatcher.h"
 #include "Vision/NeuralNetworkCache.h"
 #include "Vision/NeuralNetworkClassifier.h"
 #include "Vision/NeuralNetworkDetector.h"
+#include "Vision/OCRBatcher.h"
 #include "Vision/OCRer.h"
 #include "Vision/TemplateMatcher.h"
 #include "Vision/VisionUtils.hpp"
@@ -276,15 +276,15 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
         return { };
     }
 
-        return build_result(
-            name,
-            "OCR",
+    return build_result(
+        name,
+        "OCR",
         OCRer(
             image_,
             rois,
             param,
             resource()->ocr_res().session(param.model, param.engine),
-        name,
+            name,
             std::move(color_filter),
             ocr_cache_.get()));
 }
@@ -653,17 +653,16 @@ MAA_RES_NS::ResourceMgr* Recognizer::resource()
     return tasker_ ? tasker_->resource() : nullptr;
 }
 
-void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
+void Recognizer::prefetch_batch_ocr(const std::vector<MAA_VISION_NS::OCRerParam>& params)
 {
     using namespace MAA_VISION_NS;
 
-    if (!ocr_cache_ || entries.empty() || !resource() || image_.empty()) {
+    if (!ocr_cache_ || params.empty() || !resource() || image_.empty()) {
         return;
     }
 
     std::map<std::string, std::vector<cv::Rect>> model_rois;
-    for (const auto& entry : entries) {
-        const auto& param = entry.param;
+    for (const auto& param : params) {
         if (param.engine != "Default" || param.only_rec || !param.color_filter.empty() || param.roi_target.type != TargetType::Region) {
             continue;
         }
@@ -678,14 +677,14 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
 
     for (const auto& [model, rois] : model_rois) {
         // Preserve lazy model loading when this model cannot form a batch.
-        if (rois.size() < OCRer::kMinBatchSize) {
+        if (rois.size() < OCRBatcher::kBatchSize) {
             continue;
         }
         auto session = resource()->ocr_res().session(model, "Default");
-        if (!session || !session->supports_batch_cache()) {
+        if (!session || !session->supports_cache()) {
             continue;
         }
-        OCRer::prefetch(image_, rois, session, *ocr_cache_);
+        OCRBatcher batcher(image_, rois, std::move(session), *ocr_cache_);
     }
 }
 

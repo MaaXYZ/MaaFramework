@@ -39,7 +39,7 @@ def validate(root: Path) -> None:
         if not case.get("source") or not case.get("source_image"):
             raise ValueError(f"{case_id}: missing issue or original attachment provenance")
         if not case.get("peers"):
-            raise ValueError(f"{case_id}: at least one peer is required to exercise batching")
+            raise ValueError(f"{case_id}: at least one peer is required to exercise candidate-order comparisons")
         images.add(image)
 
     print(f"OCR corpus validated: {len(ids)} cases, {len(images)} original images")

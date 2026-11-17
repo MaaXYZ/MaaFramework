@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "MaaUtils/NoWarningCV.hpp"
+#include "Vision/OCRBatcher.h"
 #include "Vision/OCRer.h"
 
 namespace
@@ -13,9 +14,7 @@ using namespace MAA_VISION_NS;
 class CountingOCRSession : public OCRSession
 {
 public:
-    int det_max_side_len() const override { return 960; }
-
-    bool supports_batch_cache() const override { return cache_supported; }
+    bool supports_cache() const override { return cache_supported; }
 
     std::optional<OCRDetRecResult> det_and_rec(const cv::Mat& image) override
     {
@@ -302,7 +301,7 @@ bool test_batch_threshold(const cv::Mat& image)
         auto session = std::make_shared<CountingBatchOCRSession>();
         OCRCache cache;
         const auto rois = batch_test_rois(count);
-        OCRer::prefetch(image, rois, session, cache);
+        OCRBatcher(image, rois, session, cache);
         if (!check(
                 session->batch_inputs.empty() && session->inputs.empty() && !cache.find(session, rois.front()),
                 "one to three compatible ROIs must remain lazy without prefetching")) {
@@ -317,11 +316,11 @@ bool test_batch_threshold(const cv::Mat& image)
     const auto rois = batch_test_rois(5);
     auto session = std::make_shared<CountingBatchOCRSession>();
     OCRCache cache;
-    OCRer::prefetch(image, { rois[0], rois[1], rois[2], rois[0], rois[1], rois[2] }, session, cache);
+    OCRBatcher(image, { rois[0], rois[1], rois[2], rois[0], rois[1], rois[2] }, session, cache);
     if (!check(session->batch_inputs.empty(), "duplicate ROIs must not count toward the four-ROI threshold")) {
         return false;
     }
-    OCRer::prefetch(
+    OCRBatcher(
         image,
         { rois[0], rois[1], rois[2], cv::Rect(0, 96, 48, 32), cv::Rect(64, 96, 48, 32), cv::Rect(128, 96, 48, 32) },
         session,
@@ -331,13 +330,13 @@ bool test_batch_threshold(const cv::Mat& image)
     }
 
     OCRer cached(image, { rois[0] }, {}, session, "already-cached", std::nullopt, &cache);
-    OCRer::prefetch(image, { rois[0], rois[1], rois[2], rois[3] }, session, cache);
+    OCRBatcher(image, { rois[0], rois[1], rois[2], rois[3] }, session, cache);
     if (!check(
             session->batch_inputs.empty() && session->inputs.size() == 1 && !cache.find(session, rois[1]),
             "cached ROIs must not count toward the threshold or trigger eager solo work")) {
         return false;
     }
-    OCRer::prefetch(image, rois, session, cache);
+    OCRBatcher(image, rois, session, cache);
     return check(
         session->batch_inputs.size() == 1 && session->batch_inputs.front().size() == 4 && session->inputs.size() == 1
             && cache.find(session, rois[4]),
@@ -359,7 +358,7 @@ bool test_batch_prefetch_and_mapping(const cv::Mat& original_image)
     auto session = std::make_shared<CountingBatchOCRSession>();
     OCRCache cache;
 
-    OCRer::prefetch(image, { second, different_shape, first, second, fourth, third }, session, cache);
+    OCRBatcher(image, { second, different_shape, first, second, fourth, third }, session, cache);
     if (!check(
             session->batch_inputs.size() == 1 && session->batch_inputs.front().size() == 4 && session->inputs.empty()
                 && !cache.find(session, different_shape),
@@ -396,7 +395,7 @@ bool test_batch_prefetch_and_mapping(const cv::Mat& original_image)
         return false;
     }
 
-    OCRer::prefetch(image, { first, second, third, fourth, different_shape }, session, cache);
+    OCRBatcher(image, { first, second, third, fourth, different_shape }, session, cache);
     OCRer unmatched(image, { different_shape }, {}, session, "unmatched-shape", std::nullopt, &cache);
     if (!check(
             unmatched.best_result() && session->inputs.size() == 1 && session->batch_inputs.size() == 1,
@@ -407,7 +406,7 @@ bool test_batch_prefetch_and_mapping(const cv::Mat& original_image)
     auto other_session = std::make_shared<CountingBatchOCRSession>();
     OCRer other_model(image, { first }, {}, other_session, "other-session", std::nullopt, &cache);
     OCRCache next_frame;
-    OCRer::prefetch(image, compatible, session, next_frame);
+    OCRBatcher(image, compatible, session, next_frame);
     return check(
         other_model.best_result() && other_session->inputs.size() == 1 && session->batch_inputs.size() == 2,
         "prefetched results must remain isolated by session and screenshot cache");
@@ -420,7 +419,7 @@ bool test_batch_empty_and_fallback(const cv::Mat& image)
     auto empty_session = std::make_shared<CountingBatchOCRSession>();
     empty_session->empty = true;
     OCRCache empty_cache;
-    OCRer::prefetch(image, rois, empty_session, empty_cache);
+    OCRBatcher(image, rois, empty_session, empty_cache);
     OCRer empty(image, rois, {}, empty_session, "empty-batch", std::nullopt, &empty_cache);
     if (!check(
             empty_session->batch_inputs.size() == 1 && empty_session->inputs.empty() && empty.all_results().empty()
@@ -435,7 +434,7 @@ bool test_batch_empty_and_fallback(const cv::Mat& image)
         session->malformed_batch = failure == 1;
         session->wrong_batch_size = failure == 2;
         OCRCache cache;
-        OCRer::prefetch(image, rois, session, cache);
+        OCRBatcher(image, rois, session, cache);
         if (!check(
                 session->batch_inputs.size() == 1 && session->inputs.empty() && !cache.find(session, first),
                 "failed or malformed batch items must remain uncached for lazy fallback")) {
@@ -459,7 +458,7 @@ bool test_batch_empty_and_fallback(const cv::Mat& image)
 
     auto unsupported = std::make_shared<CountingOCRSession>();
     OCRCache cache;
-    OCRer::prefetch(image, rois, unsupported, cache);
+    OCRBatcher(image, rois, unsupported, cache);
     OCRer solo(image, { first }, {}, unsupported, "unsupported-batch", std::nullopt, &cache);
     if (!check(
             solo.best_result() && unsupported->inputs.size() == 1 && !cache.find(unsupported, rois[1]),
@@ -468,7 +467,7 @@ bool test_batch_empty_and_fallback(const cv::Mat& image)
     }
     auto uncached = std::make_shared<CountingBatchOCRSession>();
     uncached->cache_supported = false;
-    OCRer::prefetch(image, rois, uncached, cache);
+    OCRBatcher(image, rois, uncached, cache);
     return check(
         uncached->batch_inputs.empty() && !cache.find(uncached, first) && !cache.find(uncached, rois[1]),
         "sessions that disable caching must not be prefetched");
@@ -480,7 +479,7 @@ bool test_batch_limits(const cv::Mat& image)
         const auto rois = batch_test_rois(count);
         auto session = std::make_shared<CountingBatchOCRSession>();
         OCRCache cache;
-        OCRer::prefetch(image, rois, session, cache);
+        OCRBatcher(image, rois, session, cache);
         if (!check(
                 session->batch_inputs.size() == count / 4 && session->inputs.empty(),
                 "compatible groups must form batches of four without prefetching incomplete tails")) {
@@ -508,7 +507,7 @@ bool test_batch_limits(const cv::Mat& image)
     auto large_session = std::make_shared<CountingBatchOCRSession>();
     large_session->fixed_shape = cv::Size(960, 960);
     OCRCache cache;
-    OCRer::prefetch(image, rois, large_session, cache);
+    OCRBatcher(image, rois, large_session, cache);
     if (!check(
             large_session->batch_inputs.empty() && large_session->inputs.empty(),
             "the pixel budget must prevent batching when fewer than four crops fit, even for a large group")) {
@@ -527,7 +526,8 @@ bool test_ocr_cache()
     cv::RNG rng(1448);
     rng.fill(image, cv::RNG::UNIFORM, 0, 256);
     if (!test_filters_and_rois(image) || !test_empty_failure_and_lifetime(image) || !test_incompatible_requests(image)
-        || !test_batch_threshold(image) || !test_batch_prefetch_and_mapping(image) || !test_batch_empty_and_fallback(image) || !test_batch_limits(image)) {
+        || !test_batch_threshold(image) || !test_batch_prefetch_and_mapping(image) || !test_batch_empty_and_fallback(image)
+        || !test_batch_limits(image)) {
         return false;
     }
     std::cout << "OCR cache: exact crops, tensor batching, independent filters, session isolation and failure handling passed\n";
