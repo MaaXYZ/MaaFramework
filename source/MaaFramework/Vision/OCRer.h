@@ -10,6 +10,7 @@
 
 #include "Common/Conf.h"
 
+#include "InferenceCache.hpp"
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "OCRSession.h"
@@ -26,6 +27,8 @@ struct OCRerResult
 
     MEO_JSONIZATION(text, box, score);
 };
+
+using OCRCache = InferenceCache<OCRerResult, OCRSessionPtr>;
 
 struct ColorFilterConfig
 {
@@ -44,30 +47,21 @@ public:
         OCRerParam param,
         OCRSessionPtr session,
         std::string name = "",
-        std::optional<ColorFilterConfig> color_filter = std::nullopt);
-
-    OCRer(
-        cv::Mat image,
-        std::vector<cv::Rect> rois,
-        OCRerParam param,
-        const ResultsVec& cached,
-        OCRSessionPtr session,
-        std::string name = "");
+        std::optional<ColorFilterConfig> color_filter = std::nullopt,
+        OCRCache* cache = nullptr);
 
 private:
     void analyze();
 
-    ResultsVec predict() const;
-    ResultsVec handle_cached() const;
+    std::optional<ResultsVec> predict() const;
 
     void add_results(ResultsVec results, const std::vector<std::wstring>& expected);
     void cherry_pick();
 
 private:
     cv::Mat apply_color_filter(const cv::Mat& image_roi) const;
-    ResultsVec predict_det_and_rec(const cv::Mat& image_roi) const;
-    Result predict_only_rec(const cv::Mat& image_roi) const;
-    ResultsVec predict_batch_rec(const std::vector<cv::Rect>& rois) const;
+    std::optional<ResultsVec> predict_det_and_rec(const cv::Mat& image_roi) const;
+    std::optional<Result> predict_only_rec(const cv::Mat& image_roi) const;
 
     cv::Mat draw_result(const ResultsVec& results) const;
 
@@ -83,19 +77,11 @@ private:
     const OCRerParam param_;
     const std::optional<ColorFilterConfig> color_filter_;
 
-    std::optional<ResultsVec> cache_;
+    OCRCache* cache_ = nullptr;
 
     OCRSessionPtr session_ = nullptr;
 
     inline static std::mutex s_predict_mutex_;
-};
-
-struct OCRCache
-{
-    std::string engine = "Default";
-    // Batch results are only valid for OCR requests compatible with this model.
-    std::string model;
-    std::unordered_map<std::string, OCRer::ResultsVec> results;
 };
 
 MAA_VISION_NS_END

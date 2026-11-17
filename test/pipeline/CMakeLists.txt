@@ -18,28 +18,28 @@ target_sources(PipelineTesting PRIVATE
     ../../source/MaaFramework/Tasker/RuntimeCache.cpp
     ../../source/MaaFramework/Vision/NeuralNetworkClassifier.cpp
     ../../source/MaaFramework/Vision/NeuralNetworkDetector.cpp
+    ../../source/MaaFramework/Vision/OCRer.cpp
     ../../source/MaaFramework/Vision/VisionBase.cpp
     ../../source/MaaFramework/Global/OptionMgr.cpp)
 target_include_directories(PipelineTesting PRIVATE ../../source/MaaFramework ${MAA_PRIVATE_INC})
 target_link_libraries(PipelineTesting MaaUtils ${OpenCV_LIBS} fastdeploy_ppocr ONNXRuntime::ONNXRuntime Boost::regex HeaderOnlyLibraries)
 
-# BatchOcrRepro 用例的 OCR 模型构建时从 TestingDataSet 子模块复制（不入库，见 .gitignore）
-set(batch_ocr_repro_model_dir ${CMAKE_CURRENT_SOURCE_DIR}/resources/BatchOcrRepro/resource/model/ocr)
-add_custom_command(
-    OUTPUT ${batch_ocr_repro_model_dir}/det.onnx
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
+# Stage the issue corpus and models in the build tree, leaving the data submodule clean.
+set(ocr_regression_dir ${CMAKE_CURRENT_BINARY_DIR}/OCRRegression)
+add_custom_target(OCRRegressionResource ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+            ${CMAKE_SOURCE_DIR}/test/TestingDataSet/OCRRegression ${ocr_regression_dir}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
             ${CMAKE_SOURCE_DIR}/test/TestingDataSet/MaaCommonAssets/OCR/ppocr_v4/zh_cn
-            ${batch_ocr_repro_model_dir}
-    DEPENDS ${CMAKE_SOURCE_DIR}/test/TestingDataSet/MaaCommonAssets/OCR/ppocr_v4/zh_cn/det.onnx)
-add_custom_target(BatchOcrReproResource ALL DEPENDS ${batch_ocr_repro_model_dir}/det.onnx)
-set_target_properties(BatchOcrReproResource PROPERTIES FOLDER Testing)
+            ${ocr_regression_dir}/resource/model/ocr)
+set_target_properties(OCRRegressionResource PROPERTIES FOLDER Testing)
 
-add_dependencies(PipelineTesting MaaFramework PipelineSmokingResource BatchOcrReproResource)
+add_dependencies(PipelineTesting MaaFramework PipelineSmokingResource OCRRegressionResource)
 set_target_properties(PipelineTesting PROPERTIES FOLDER Testing)
 
 install(TARGETS PipelineTesting RUNTIME DESTINATION bin)
 install(DIRECTORY resource/NeuralNetworkCache DESTINATION test)
-install(DIRECTORY resources/BatchOcrRepro DESTINATION test)
+install(DIRECTORY ${ocr_regression_dir} DESTINATION test)
 install(DIRECTORY resources/PostStopInterrupt DESTINATION test)
 
 if(WIN32)

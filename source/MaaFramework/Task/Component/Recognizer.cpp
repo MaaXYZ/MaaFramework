@@ -8,6 +8,7 @@
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/Logger.h"
 #include "Resource/ResourceMgr.h"
+#include "Task/TaskBase.h"
 #include "Vision/ColorMatcher.h"
 #include "Vision/FeatureMatcher.h"
 #include "Vision/NeuralNetworkCache.h"
@@ -19,24 +20,18 @@
 
 MAA_TASK_NS_BEGIN
 
-namespace
-{
-// 默认 det 缩放上限，仅在拿不到 OCR 会话时兜底
-constexpr int kDetFallbackMaxSideLen = 960;
-}
-
 Recognizer::Recognizer(
     Tasker* tasker,
     Context& context,
     const cv::Mat& image_,
-    std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_batch_cache,
+    std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_cache,
     std::shared_ptr<MAA_VISION_NS::NeuralNetworkCache> nn_cache)
     : tasker_(tasker)
     , context_(context)
     , image_(image_)
     , sub_filtered_boxes_(std::make_shared<typename decltype(sub_filtered_boxes_)::element_type>())
     , sub_best_box_(std::make_shared<typename decltype(sub_best_box_)::element_type>())
-    , ocr_batch_cache_(std::move(ocr_batch_cache))
+    , ocr_cache_(ocr_cache ? std::move(ocr_cache) : std::make_shared<MAA_VISION_NS::OCRCache>())
     , nn_cache_(nn_cache ? std::move(nn_cache) : std::make_shared<MAA_VISION_NS::NeuralNetworkCache>())
 {
 }
@@ -48,7 +43,7 @@ Recognizer::Recognizer(const Recognizer& recognizer)
     // do not copy reco_id_
     , sub_filtered_boxes_(recognizer.sub_filtered_boxes_)
     , sub_best_box_(recognizer.sub_best_box_)
-    , ocr_batch_cache_(recognizer.ocr_batch_cache_)
+    , ocr_cache_(recognizer.ocr_cache_)
     , nn_cache_(recognizer.nn_cache_)
 {
 }
@@ -279,23 +274,17 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
         return { };
     }
 
-    // Keep the read-side eligibility in sync with PipelineTask::try_add_ocr_node.
-    const bool can_use_batch_cache = ocr_batch_cache_ && param.engine == ocr_batch_cache_->engine && !param.only_rec
-                                     && param.color_filter.empty() && param.roi_target.type != TargetType::PreTask
-                                     && param.model == ocr_batch_cache_->model;
-    if (can_use_batch_cache && ocr_batch_cache_->results.contains(name)) {
-        const auto& cached = ocr_batch_cache_->results.at(name);
-        LogDebug << "OCR using batch cache" << VAR(name) << VAR(cached);
         return build_result(
             name,
             "OCR",
-            OCRer(image_, rois, param, cached, resource()->ocr_res().session(param.model, param.engine), name));
-    }
-
-    return build_result(
+        OCRer(
+            image_,
+            rois,
+            param,
+            resource()->ocr_res().session(param.model, param.engine),
         name,
-        "OCR",
-        OCRer(image_, rois, param, resource()->ocr_res().session(param.model, param.engine), name, std::move(color_filter)));
+            std::move(color_filter),
+            ocr_cache_.get()));
 }
 
 RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierParam& param, const std::string& name)
@@ -660,115 +649,6 @@ bool Recognizer::debug_mode() const
 MAA_RES_NS::ResourceMgr* Recognizer::resource()
 {
     return tasker_ ? tasker_->resource() : nullptr;
-}
-
-void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
-{
-    // 这个函数虽然叫 batch，最一开始的实现也确实是 gpu batch
-    // 但后来发现，直接做 mask 效率更高，于是就走普通 OCR 了
-    // 对外接口仍然可以理解为 batch，实际我们的代码实现是 mask
-
-    using namespace MAA_VISION_NS;
-
-    if (!ocr_batch_cache_ || entries.empty() || !resource() || image_.empty()) {
-        LogDebug << "prefetch_batch_ocr skipped" << VAR(ocr_batch_cache_) << VAR(entries.empty()) << VAR(resource()) << VAR(image_.empty());
-        return;
-    }
-
-    OCRerParam batch_param = entries.front().param;
-
-    // 获取所有结果
-    batch_param.expected.clear();
-    batch_param.threshold = 0;
-    batch_param.replace.clear();
-
-    // det 预处理按整张输入图的最大边计算缩放，超过 max_side_len 便整体降采样。
-    // union 混合多个节点的 ROI 时，小 ROI 的文字会被连带缩小而漏检，
-    // 因此按 max_side_len 预算分簇，保证每簇的 det 输入不越过降采样拐点，与单独识别同尺度
-    auto ocr_session = resource()->ocr_res().session(batch_param.model, batch_param.engine);
-    if (!ocr_session || !ocr_session->supports_batch_cache()) {
-        return;
-    }
-    int max_side_len = ocr_session ? ocr_session->det_max_side_len() : kDetFallbackMaxSideLen;
-
-    const auto clusters = cluster_batch_ocr(entries, max_side_len);
-    if (clusters.empty()) {
-        LogWarn << "clusters is empty" << VAR(entries);
-        return;
-    }
-
-    // 这里先把全部沾点边的结果（有交集的）都收集起来，后面实际要用的时候 (OCR::handle_cached) 再进一步划分
-    auto intersect = [](const cv::Rect& a, const cv::Rect& b) {
-        return (a & b).area() > 0;
-    };
-
-    cv::Mat masked_image = cv::Mat::zeros(image_.size(), image_.type());
-    for (const auto& cluster : clusters) {
-        // 各簇单独贴图，避免其他簇的内容落进本簇 union 被一并识别
-        masked_image.setTo(0);
-        for (const auto& [node, rois] : cluster.node_rois) {
-            for (const cv::Rect& r : rois) {
-                image_(r).copyTo(masked_image(r));
-            }
-        }
-
-        OCRer ocrer(masked_image, { cluster.union_roi }, batch_param, ocr_session, cluster.batch_name);
-
-        for (const auto& [node, rois] : cluster.node_rois) {
-            auto& cache = ocr_batch_cache_->results[node];
-            for (const MAA_VISION_NS::OCRerResult& res : ocrer.all_results()) {
-                for (const auto& r : rois) {
-                    if (!intersect(r, res.box)) {
-                        continue;
-                    }
-                    cache.emplace_back(res);
-                }
-            }
-        }
-
-        LogInfo << "prefetch_batch_ocr cluster completed" << VAR(cluster.batch_name) << VAR(cluster.union_roi);
-    }
-
-    LogInfo << "prefetch_batch_ocr completed" << VAR(entries) << VAR(ocr_batch_cache_->results);
-}
-
-std::vector<Recognizer::BatchOcrCluster> Recognizer::cluster_batch_ocr(const std::vector<BatchOCREntry>& entries, int max_side_len)
-{
-    std::vector<BatchOcrCluster> clusters;
-
-    for (const auto& entry : entries) {
-        auto entry_rois = get_rois(entry.param.roi_target);
-        if (entry_rois.empty()) {
-            LogWarn << "failed to get rois for batch OCR entry" << VAR(entry.name);
-            continue;
-        }
-
-        cv::Rect entry_union = entry_rois.front();
-        for (const cv::Rect& r : entry_rois | std::views::drop(1)) {
-            entry_union |= r;
-        }
-
-        // 优先合并进不触发 det 降采样的现有簇，装不下则新开一簇
-        auto it = std::ranges::find_if(clusters, [&](const BatchOcrCluster& c) {
-            cv::Rect merged = c.union_roi | entry_union;
-            return std::max(merged.width, merged.height) <= max_side_len;
-        });
-
-        if (it == clusters.end()) {
-            it = clusters.emplace(clusters.end());
-            it->union_roi = entry_union;
-        }
-        else {
-            it->union_roi |= entry_union;
-        }
-
-        for (const cv::Rect& r : entry_rois) {
-            it->node_rois[entry.name].emplace_back(r);
-        }
-        it->batch_name += entry.name + "+";
-    }
-
-    return clusters;
 }
 
 MAA_TASK_NS_END

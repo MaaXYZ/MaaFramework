@@ -34,7 +34,7 @@ public:
 
     virtual bool supports_batch_cache() const { return true; }
 
-    // Keep batch clustering within the detector resize budget.
+    // Detector preprocessing limit, in pixels.
     virtual int det_max_side_len() const = 0;
 
     // det, then rec on each box. If det finds nothing, the whole image is recognized as one line:
