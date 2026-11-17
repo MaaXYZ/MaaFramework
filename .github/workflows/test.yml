@@ -171,6 +171,12 @@ jobs:
                   ./install/bin/PipelineTesting.exe ./install/test
                   ./install/bin/PluginLifecycleTesting.exe
 
+            - name: Run OCR solo/batch regression
+              shell: bash
+              run: |
+                  python3 test/ocr_regression/validate_corpus.py ./install/test/OCRRegression
+                  ./install/bin/PipelineTesting.exe --ocr-regression ./install/test ./install/bin/debug/ocr-regression
+
             - name: Run Python testing
               shell: bash
               run: |
@@ -199,6 +205,7 @@ jobs:
                   name: MAA-win-${{ matrix.arch }}-text_log
                   path: |
                       install/bin/debug/*.log
+                      install/bin/debug/ocr-regression/
                       build/Testing/Temporary/LastTest.log
 
             - uses: actions/upload-artifact@v7
@@ -406,6 +413,12 @@ jobs:
                   ./install/bin/PipelineTesting ./install/test
                   ./install/bin/PluginLifecycleTesting
 
+            - name: Run OCR solo/batch regression
+              shell: bash
+              run: |
+                  python3 test/ocr_regression/validate_corpus.py ./install/test/OCRRegression
+                  ./install/bin/PipelineTesting --ocr-regression ./install/test ./install/bin/debug/ocr-regression
+
             - name: Run Python testing
               shell: bash
               run: |
@@ -436,7 +449,9 @@ jobs:
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-text_log
-                  path: 'install/bin/debug/*.log'
+                  path: |
+                      install/bin/debug/*.log
+                      install/bin/debug/ocr-regression/
 
             - uses: actions/upload-artifact@v7
               if: always()
@@ -569,6 +584,12 @@ jobs:
                   ./install/bin/PipelineTesting ./install/test
                   ./install/bin/PluginLifecycleTesting
 
+            - name: Run OCR solo/batch regression
+              shell: bash
+              run: |
+                  python3 test/ocr_regression/validate_corpus.py ./install/test/OCRRegression
+                  ./install/bin/PipelineTesting --ocr-regression ./install/test ./install/bin/debug/ocr-regression
+
             - name: Run Python testing
               shell: bash
               run: |
@@ -599,7 +620,9 @@ jobs:
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-text_log
-                  path: 'install/bin/debug/*.log'
+                  path: |
+                      install/bin/debug/*.log
+                      install/bin/debug/ocr-regression/
 
             - uses: actions/upload-artifact@v7
               if: always()

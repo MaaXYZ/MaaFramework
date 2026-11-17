@@ -37,6 +37,8 @@ public:
 public:
     virtual int det_max_side_len() const override;
     virtual std::optional<MAA_VISION_NS::OCRDetRecResult> det_and_rec(const cv::Mat& image) override;
+    virtual std::optional<cv::Size> batch_det_shape(const cv::Size& image_size) const override;
+    virtual std::optional<std::vector<MAA_VISION_NS::OCRDetRecResult>> batch_det_and_rec(const std::vector<cv::Mat>& images) override;
     virtual std::optional<MAA_VISION_NS::OCRRecResult> rec(const cv::Mat& image) override;
     virtual std::optional<std::vector<MAA_VISION_NS::OCRRecResult>> batch_rec(const std::vector<cv::Mat>& images) override;
 

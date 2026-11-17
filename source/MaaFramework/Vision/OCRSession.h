@@ -34,12 +34,18 @@ public:
 
     virtual bool supports_batch_cache() const { return true; }
 
-    // Keep batch clustering within the detector resize budget.
+    // Detector preprocessing limit, in pixels.
     virtual int det_max_side_len() const = 0;
 
     // det, then rec on each box. If det finds nothing, the whole image is recognized as one line:
     // boxes is empty and texts / scores have one element.
     virtual std::optional<OCRDetRecResult> det_and_rec(const cv::Mat& image) = 0;
+
+    // Images with the same returned detector shape can share a batch without adding padding.
+    // Unsupported engines and fixed-batch models keep using det_and_rec.
+    virtual std::optional<cv::Size> batch_det_shape(const cv::Size&) const { return std::nullopt; }
+
+    virtual std::optional<std::vector<OCRDetRecResult>> batch_det_and_rec(const std::vector<cv::Mat>&) { return std::nullopt; }
 
     // rec only, the whole image is one line
     virtual std::optional<OCRRecResult> rec(const cv::Mat& image) = 0;
