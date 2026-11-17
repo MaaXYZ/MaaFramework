@@ -28,7 +28,7 @@ public:
             return OCRDetRecResult { .texts = { "missing scores" } };
         }
         if (empty) {
-            return OCRDetRecResult {};
+            return OCRDetRecResult { };
         }
         return OCRDetRecResult {
             .boxes = { { 1, 2, 11, 2, 11, 8, 1, 8 }, { 13, 2, 23, 2, 23, 8, 13, 8 } },
@@ -108,7 +108,7 @@ private:
     OCRDetRecResult make_result(const cv::Mat& image) const
     {
         if (empty) {
-            return {};
+            return { };
         }
         return OCRDetRecResult {
             .boxes = { { 1, 2, 11, 2, 11, 8, 1, 8 }, { 13, 2, 23, 2, 23, 8, 13, 8 } },
@@ -169,7 +169,7 @@ bool test_filters_and_rois(const cv::Mat& image)
         return false;
     }
 
-    param = {};
+    param = { };
     OCRer containing(image, { large }, param, session, "same-name", std::nullopt, &cache);
     OCRer intersecting(image, { overlap }, param, session, "same-name", std::nullopt, &cache);
     OCRer multi(image, { small, large, overlap }, param, session, "multiple", std::nullopt, &cache);
@@ -244,7 +244,7 @@ bool test_empty_failure_and_lifetime(const cv::Mat& image)
     if (!check(!previous_session.expired(), "cached sessions must stay alive to prevent address reuse")) {
         return false;
     }
-    lifetime_cache = {};
+    lifetime_cache = { };
     return check(previous_session.expired(), "releasing the cache must release the retained session");
 }
 
@@ -307,7 +307,7 @@ bool test_batch_threshold(const cv::Mat& image)
                 "one to three compatible ROIs must remain lazy without prefetching")) {
             return false;
         }
-        OCRer first(image, { rois.front() }, {}, session, "below-batch-threshold", std::nullopt, &cache);
+        OCRer first(image, { rois.front() }, { }, session, "below-batch-threshold", std::nullopt, &cache);
         if (!check(first.best_result() && session->inputs.size() == 1, "small groups must run only the requested ROI")) {
             return false;
         }
@@ -329,7 +329,7 @@ bool test_batch_threshold(const cv::Mat& image)
         return false;
     }
 
-    OCRer cached(image, { rois[0] }, {}, session, "already-cached", std::nullopt, &cache);
+    OCRer cached(image, { rois[0] }, { }, session, "already-cached", std::nullopt, &cache);
     OCRBatcher(image, { rois[0], rois[1], rois[2], rois[3] }, session, cache);
     if (!check(
             session->batch_inputs.empty() && session->inputs.size() == 1 && !cache.find(session, rois[1]),
@@ -396,7 +396,7 @@ bool test_batch_prefetch_and_mapping(const cv::Mat& original_image)
     }
 
     OCRBatcher(image, { first, second, third, fourth, different_shape }, session, cache);
-    OCRer unmatched(image, { different_shape }, {}, session, "unmatched-shape", std::nullopt, &cache);
+    OCRer unmatched(image, { different_shape }, { }, session, "unmatched-shape", std::nullopt, &cache);
     if (!check(
             unmatched.best_result() && session->inputs.size() == 1 && session->batch_inputs.size() == 1,
             "cached crops must not be prefetched again and singleton shapes must run only when requested")) {
@@ -404,7 +404,7 @@ bool test_batch_prefetch_and_mapping(const cv::Mat& original_image)
     }
 
     auto other_session = std::make_shared<CountingBatchOCRSession>();
-    OCRer other_model(image, { first }, {}, other_session, "other-session", std::nullopt, &cache);
+    OCRer other_model(image, { first }, { }, other_session, "other-session", std::nullopt, &cache);
     OCRCache next_frame;
     OCRBatcher(image, compatible, session, next_frame);
     return check(
@@ -420,7 +420,7 @@ bool test_batch_empty_and_fallback(const cv::Mat& image)
     empty_session->empty = true;
     OCRCache empty_cache;
     OCRBatcher(image, rois, empty_session, empty_cache);
-    OCRer empty(image, rois, {}, empty_session, "empty-batch", std::nullopt, &empty_cache);
+    OCRer empty(image, rois, { }, empty_session, "empty-batch", std::nullopt, &empty_cache);
     if (!check(
             empty_session->batch_inputs.size() == 1 && empty_session->inputs.empty() && empty.all_results().empty()
                 && std::ranges::all_of(rois, [&](const cv::Rect& roi) { return empty_cache.find(empty_session, roi); }),
@@ -447,8 +447,8 @@ bool test_batch_empty_and_fallback(const cv::Mat& image)
                 return false;
             }
         }
-        OCRer retried(image, { first }, {}, session, "batch-fallback", std::nullopt, &cache);
-        OCRer reused(image, { first }, {}, session, "fallback-reused", std::nullopt, &cache);
+        OCRer retried(image, { first }, { }, session, "batch-fallback", std::nullopt, &cache);
+        OCRer reused(image, { first }, { }, session, "fallback-reused", std::nullopt, &cache);
         if (!check(
                 retried.best_result() && details(reused) == details(retried) && session->inputs.size() == 1,
                 "a failed batch item must retry through solo inference and cache its successful result")) {
@@ -459,7 +459,7 @@ bool test_batch_empty_and_fallback(const cv::Mat& image)
     auto unsupported = std::make_shared<CountingOCRSession>();
     OCRCache cache;
     OCRBatcher(image, rois, unsupported, cache);
-    OCRer solo(image, { first }, {}, unsupported, "unsupported-batch", std::nullopt, &cache);
+    OCRer solo(image, { first }, { }, unsupported, "unsupported-batch", std::nullopt, &cache);
     if (!check(
             solo.best_result() && unsupported->inputs.size() == 1 && !cache.find(unsupported, rois[1]),
             "sessions without tensor batch support must preserve lazy solo inference")) {
@@ -495,7 +495,7 @@ bool test_batch_limits(const cv::Mat& image)
                 return false;
             }
         }
-        OCRer all(image, rois, {}, session, "bounded-batch", std::nullopt, &cache);
+        OCRer all(image, rois, { }, session, "bounded-batch", std::nullopt, &cache);
         if (!check(
                 session->inputs.size() == count % 4 && all.all_results().size() == 2 * rois.size(),
                 "incomplete tails must use solo inference without losing any ROI result")) {
@@ -513,7 +513,7 @@ bool test_batch_limits(const cv::Mat& image)
             "the pixel budget must prevent batching when fewer than four crops fit, even for a large group")) {
         return false;
     }
-    OCRer all(image, rois, {}, large_session, "over-budget-batch", std::nullopt, &cache);
+    OCRer all(image, rois, { }, large_session, "over-budget-batch", std::nullopt, &cache);
     return check(
         large_session->inputs.size() == rois.size() && all.all_results().size() == 2 * rois.size(),
         "groups exceeding the pixel budget must retain independent on-demand inference");

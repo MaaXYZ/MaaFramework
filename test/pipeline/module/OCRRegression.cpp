@@ -31,8 +31,8 @@ struct RecognitionResult
 
     bool succeeded() const
     {
-        return task_succeeded && observations == 1 && hit && detail.is_object() && detail.contains("all")
-               && detail.contains("filtered") && detail.contains("best") && !detail.at("best").is_null();
+        return task_succeeded && observations == 1 && hit && detail.is_object() && detail.contains("all") && detail.contains("filtered")
+               && detail.contains("best") && !detail.at("best").is_null();
     }
 
     json::value to_json() const
@@ -190,8 +190,8 @@ json::value make_pipeline(const json::value& recognition, const json::array& pee
 
 bool valid_case(const json::value& item)
 {
-    if (!item.is_object() || !item.contains("recognition") || !item.at("recognition").is_object()
-        || !item.contains("peers") || !item.at("peers").is_array() || item.at("peers").as_array().empty()) {
+    if (!item.is_object() || !item.contains("recognition") || !item.at("recognition").is_object() || !item.contains("peers")
+        || !item.at("peers").is_array() || item.at("peers").as_array().empty()) {
         return false;
     }
     const auto& recognition = item.at("recognition");
@@ -220,8 +220,16 @@ json::value run_case(MaaResource* resource, const std::filesystem::path& data_di
         report["error"] = "Invalid case: require an image, target expectations and OCR peers";
         return report;
     }
-    for (const char* field : {
-             "source", "source_image", "image", "image_sha256", "original_size", "image_size", "recognition", "peers", "derived_from", "notes" }) {
+    for (const char* field : { "source",
+                               "source_image",
+                               "image",
+                               "image_sha256",
+                               "original_size",
+                               "image_size",
+                               "recognition",
+                               "peers",
+                               "derived_from",
+                               "notes" }) {
         if (item.contains(field)) {
             report[field] = item.at(field);
         }
@@ -229,8 +237,8 @@ json::value run_case(MaaResource* resource, const std::filesystem::path& data_di
     const auto original_size = item.get("original_size", std::vector<int> { });
     const auto image_size = item.get("image_size", std::vector<int> { });
     auto image = MAA_NS::imread(data_dir / item.at("image").as_string());
-    if (image.empty() || original_size.size() != 2 || image.size() != cv::Size(original_size[0], original_size[1])
-        || image_size.size() != 2 || image_size[0] <= 0 || image_size[1] <= 0) {
+    if (image.empty() || original_size.size() != 2 || image.size() != cv::Size(original_size[0], original_size[1]) || image_size.size() != 2
+        || image_size[0] <= 0 || image_size[1] <= 0) {
         report["error"] = "Image could not be read or its dimensions differ from the manifest";
         return report;
     }
@@ -253,12 +261,13 @@ json::value run_case(MaaResource* resource, const std::filesystem::path& data_di
         const auto batch = fixture.run(make_pipeline(recognition, peers, mode));
         const bool equal = batch.detail == standalone.detail;
         const bool match = standalone.succeeded() && batch.succeeded() && equal;
-        comparisons.emplace_back(json::object {
-            { "mode", mode },
-            { "passed", match },
-            { "details_equal", equal },
-            { "batch", batch.to_json() },
-        });
+        comparisons.emplace_back(
+            json::object {
+                { "mode", mode },
+                { "passed", match },
+                { "details_equal", equal },
+                { "batch", batch.to_json() },
+            });
         passed &= match;
         std::cout << "OCRRegression " << item.at("id").as_string() << '/' << mode << ": " << (match ? "PASS" : "FAIL")
                   << "\n  standalone: " << standalone.detail.to_string() << "\n  batch: " << batch.detail.to_string() << '\n';
@@ -305,10 +314,11 @@ json::value run_four_roi_regression(MaaResource* resource, const std::filesystem
         json::object { { "roi", json::array { 700, 186, 178, 150 } } },
         json::object { { "roi", json::array { 1102, 400, 178, 150 } } },
     };
-    item["notes"] = "Framework-derived four-ROI fixture. The original issue image and target recognition are unchanged; "
-                    "the three independent peer crops are test parameters, not settings reported in the issue. "
-                    "target_first and peers_first each supply four distinct 178x150 ROIs (detector shape 192x160). "
-                    "shared_roi_first remains a duplicate-ROI cache control. Compare all/filtered/best exactly.";
+    item["notes"] =
+        "Framework-derived four-ROI fixture. The original issue image and target recognition are unchanged; "
+        "the three independent peer crops are test parameters, not settings reported in the issue. "
+        "target_first and peers_first each supply four distinct 178x150 ROIs (detector shape 192x160). "
+        "shared_roi_first remains a duplicate-ROI cache control. Compare all/filtered/best exactly.";
     return run_case(resource, data_dir, item);
 }
 
@@ -332,10 +342,7 @@ bool ocr_regression(const std::filesystem::path& testset_dir, const std::filesys
     const auto data_dir = testset_dir / "OCRRegression";
     const auto manifest = json::open(data_dir / "cases.json");
     json::value report {
-        { "version", 1 },
-        { "framework_version", MaaVersion() },
-        { "provider", "CPU" },
-        { "resize_method", "INTER_AREA" },
+        { "version", 1 },    { "framework_version", MaaVersion() }, { "provider", "CPU" }, { "resize_method", "INTER_AREA" },
         { "passed", false },
     };
     if (!manifest || manifest->get("version", 0) != 1 || !manifest->contains("cases") || !manifest->at("cases").is_array()
@@ -385,6 +392,7 @@ bool ocr_regression(const std::filesystem::path& testset_dir, const std::filesys
 
     const bool saved = save_report(report_dir, report);
     std::cout << "OCRRegression: " << report.at("total").as_integer() << " corpus cases, " << failed << " failed; "
-              << "1 supplemental case, " << (supplemental_passed ? 0 : 1) << " failed; report: " << (report_dir / "ocr-regression.json") << '\n';
+              << "1 supplemental case, " << (supplemental_passed ? 0 : 1) << " failed; report: " << (report_dir / "ocr-regression.json")
+              << '\n';
     return failed == 0 && supplemental_passed && saved;
 }

@@ -11,7 +11,7 @@ public:
 int main()
 {
     ScrollProbe probe;
-    MaaCustomControllerCallbacks callbacks {};
+    MaaCustomControllerCallbacks callbacks { };
     callbacks.scroll = [](int32_t dx, int32_t dy, void* arg) -> MaaBool {
         return static_cast<ScrollProbe*>(arg)->scroll(dx, dy);
     };

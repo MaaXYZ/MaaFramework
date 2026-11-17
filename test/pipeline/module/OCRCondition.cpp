@@ -113,7 +113,7 @@ bool test_filtering()
         first.best_result() && first.best_result()->text == L"30/100" && first.best_result()->box == cached[0].box,
         "preserve replaced text and original box");
 
-    param.condition = {};
+    param.condition = { };
     OCRer legacy(image, rois, param, session, "", std::nullopt, &cache);
     passed &=
         check(legacy.filtered_results().size() == 3 && legacy.best_result()->text == L"20/40", "empty condition preserves old behavior");

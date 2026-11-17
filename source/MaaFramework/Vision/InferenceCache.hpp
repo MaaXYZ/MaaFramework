@@ -33,10 +33,7 @@ public:
 private:
     using Key = std::tuple<SessionPtr, int, int, int, int>;
 
-    static Key make_key(const SessionPtr& session, const cv::Rect& roi)
-    {
-        return { session, roi.x, roi.y, roi.width, roi.height };
-    }
+    static Key make_key(const SessionPtr& session, const cv::Rect& roi) { return { session, roi.x, roi.y, roi.width, roi.height }; }
 
     std::map<Key, Results> results_;
 };
