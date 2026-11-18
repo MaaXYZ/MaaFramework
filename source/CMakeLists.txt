@@ -8,6 +8,14 @@ target_include_directories(MaaControlUnit PUBLIC
     $<BUILD_INTERFACE:${MAAUTILS_DIR}/include>
     $<INSTALL_INTERFACE:include>)
 target_link_libraries(MaaControlUnit PUBLIC opencv_core)
+# Android builds use the NDK default ANDROID_STL=c++_static. MaaControlUnit does not link MaaUtils, so it pulls in
+# its own copy of libc++ and would export it. Control units list MaaControlUnit before MaaUtils in DT_NEEDED and
+# would bind std:: symbols to that copy while MaaUtils (Logger, etc.) uses its own, mixing two libc++ runtimes in
+# one process. Keep this copy private so std:: symbols keep resolving to MaaUtils as before.
+if(ANDROID)
+    target_link_options(MaaControlUnit PRIVATE "LINKER:--exclude-libs,libc++_static.a"
+                        "LINKER:--exclude-libs,libc++abi.a")
+endif()
 
 function(add_control_unit target)
     add_library(${target} SHARED ${ARGN})
