@@ -39,8 +39,12 @@ struct NativeClass
             .finalizer = +[](JSRuntime* rt, JSValueConst data) { delete take(rt, data); },
             .gc_mark =
                 +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
-                    take(rt, data)->gc_mark([rt, func](const ValueType& value) {
-                        func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
+                    auto* impl = take(rt, data);
+                    if (!impl) {
+                        return;
+                    }
+                    impl->gc_mark([rt, func](const ValueType& value) {
+                        JS_MarkValue(rt, value.peek(), func);
                     });
                 },
             .call = nullptr,
@@ -66,26 +70,22 @@ struct NativeClass
             }
 
             try {
+                QjsObject self { info.Env(), obj };
                 auto impl = Inherit::ctor(info);
                 if (!impl) {
-                    // 对象已经分配，失败路径必须自己回收，否则构造失败会漏一个 JS 对象
-                    JS_FreeValue(info.context, obj);
                     std::string what = std::format("maa.{}.ctor: failed to create instance", Inherit::name);
                     return ThrowTypeError(info.Env(), what);
                 }
 
                 impl->env = info.Env();
 
-                JS_SetOpaque(obj, impl);
+                JS_SetOpaque(self.peek(), impl);
 
-                auto self = QjsObject { info.Env(), obj };
                 impl->init_bind(self);
 
                 return self;
             }
             catch (const MaaError& exc) {
-                // impl 若已挂在 obj 上，随对象释放一起回收
-                JS_FreeValue(info.context, obj);
                 std::string what = std::format("maa.{}.ctor: {}", Inherit::name, exc.what());
                 return ThrowTypeError(info.Env(), what);
             }
