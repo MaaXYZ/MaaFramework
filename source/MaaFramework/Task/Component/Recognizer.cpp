@@ -687,14 +687,27 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
         return;
     }
 
+    // 单节点簇没有可分摊的识别成本，留到节点真正被访问时按需识别即可。
+    // 只有至少一个多节点簇时才值得预取，否则直接跳过，避免白算 mask 与推理。
+    const bool has_multi = std::ranges::any_of(clusters, [](const BatchOcrCluster& c) { return c.entry_count > 1; });
+    if (!has_multi) {
+        LogDebug << "prefetch_batch_ocr skipped, no multi-entry cluster" << VAR(entries);
+        return;
+    }
+
     // 这里先把全部沾点边的结果（有交集的）都收集起来，后面实际要用的时候 (OCR::handle_cached) 再进一步划分
     auto intersect = [](const cv::Rect& a, const cv::Rect& b) {
         return (a & b).area() > 0;
     };
 
-    cv::Mat masked_image = cv::Mat::zeros(image_.size(), image_.type());
+    cv::Mat masked_image;
     for (const auto& cluster : clusters) {
+        if (cluster.entry_count == 1) {
+            continue;
+        }
+
         // 各簇单独贴图，避免其他簇的内容落进本簇 union 被一并识别
+        masked_image.create(image_.size(), image_.type());
         masked_image.setTo(0);
         for (const auto& [node, rois] : cluster.node_rois) {
             for (const cv::Rect& r : rois) {
@@ -717,6 +730,17 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
         }
 
         LogInfo << "prefetch_batch_ocr cluster completed" << VAR(cluster.batch_name) << VAR(cluster.union_roi);
+    }
+
+    // 单节点簇不参与预取，但内联 OCR 可能与其他簇同名；缓存按名称索引，
+    // 预取后再删掉这些名字，保证按需识别的节点不会读到别的簇的结果。
+    for (const auto& cluster : clusters) {
+        if (cluster.entry_count != 1) {
+            continue;
+        }
+        for (const auto& [node, _] : cluster.node_rois) {
+            ocr_batch_cache_->results.erase(node);
+        }
     }
 
     LogInfo << "prefetch_batch_ocr completed" << VAR(entries) << VAR(ocr_batch_cache_->results);
@@ -755,6 +779,7 @@ std::vector<Recognizer::BatchOcrCluster> Recognizer::cluster_batch_ocr(const std
         for (const cv::Rect& r : entry_rois) {
             it->node_rois[entry.name].emplace_back(r);
         }
+        ++it->entry_count;
         it->batch_name += entry.name + "+";
     }
 

@@ -38,5 +38,26 @@
         ],
         "threshold": 0.9,
         "action": "DoNothing"
+    },
+    "SelectArtsDecoyMode": {
+        "recognition": "DirectHit",
+        "action": "DoNothing",
+        "next": [
+            "SelectArtsBattleNormal",
+            "DecoyOther"
+        ]
+    },
+    "DecoyOther": {
+        "recognition": "OCR",
+        "expected": [
+            "奖励"
+        ],
+        "roi": [
+            900,
+            186,
+            180,
+            150
+        ],
+        "action": "DoNothing"
     }
 }

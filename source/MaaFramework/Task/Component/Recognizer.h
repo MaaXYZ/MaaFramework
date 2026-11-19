@@ -58,6 +58,7 @@ private:
     struct BatchOcrCluster
     {
         cv::Rect union_roi;
+        size_t entry_count = 0;
         std::string batch_name;
         std::unordered_map<std::string, std::vector<cv::Rect>> node_rois;
     };
