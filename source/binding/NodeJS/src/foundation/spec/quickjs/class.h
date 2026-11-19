@@ -43,9 +43,7 @@ struct NativeClass
                     if (!impl) {
                         return;
                     }
-                    impl->gc_mark([rt, func](const ValueType& value) {
-                        JS_MarkValue(rt, value.peek(), func);
-                    });
+                    impl->gc_mark([rt, func](const ValueType& value) { JS_MarkValue(rt, value.peek(), func); });
                 },
             .call = nullptr,
             .exotic = nullptr,
