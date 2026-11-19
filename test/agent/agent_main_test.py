@@ -46,15 +46,30 @@ from agent_test_utils import (
 
 
 CONCURRENT_CREATE_FLAG = "--concurrent-create"
+CANARY_CREATE_FLAG = "--canary-create"
 CONCURRENT_CREATE_THREADS = 8
 CONCURRENT_CREATE_TIMEOUT_SECONDS = 20
+
+
+def run_canary_create() -> int:
+    """子进程入口：单独探一次当前环境能不能创建 AgentClient。
+
+    用于把「环境不支持」和「并发创建坏了」区分开，避免全部失败时测试静默通过。
+    """
+    try:
+        AgentClient.create_tcp(0)
+    except RuntimeError as exc:
+        print(f"agent channel unavailable in this environment: {exc}")
+        return 3
+    print("agent channel available")
+    return 0
 
 
 def run_concurrent_create() -> int:
     """子进程入口：并发做首次 AgentClient 创建，验证探测不会互相卡住。
 
-    健康环境里所有创建都应成功；已知不可用的环境（沙箱等）里所有创建都应快速失败。
-    只断言「不挂起」和「结果一致」，不假设当前环境属于哪一类。
+    调用方已用 canary 确认当前环境能创建 AgentClient，所以这里任何一个线程失败
+    都视为回归，不再把失败当成预期。
     """
     identifiers: list[Optional[str]] = [None] * CONCURRENT_CREATE_THREADS
     errors: list[BaseException] = []
@@ -66,9 +81,6 @@ def run_concurrent_create() -> int:
             barrier.wait()
             client = AgentClient.create_tcp(0)
             identifiers[index] = client.identifier
-        except RuntimeError:
-            # 环境本身不可用时 create_tcp 直接失败，属于预期分支
-            identifiers[index] = None
         except BaseException as exc:  # noqa: BLE001
             errors.append(exc)
 
@@ -92,8 +104,8 @@ def run_concurrent_create() -> int:
         return 1
 
     created = [identifier for identifier in identifiers if identifier]
-    if created and len(created) != CONCURRENT_CREATE_THREADS:
-        print(f"concurrent create returned mixed results: {identifiers}")
+    if len(created) != CONCURRENT_CREATE_THREADS:
+        print(f"concurrent create returned partial results: {identifiers}")
         return 1
 
     print(
@@ -108,8 +120,39 @@ class ConflictingAction(CustomAction):
         return True
 
 
+def run_child(flag: str, timeout_seconds: float) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [
+            sys.executable,
+            str(Path(__file__).resolve()),
+            str(binding_dir),
+            str(install_dir),
+            flag,
+        ],
+        timeout=timeout_seconds,
+        check=False,
+    )
+
+
+def agent_channel_available() -> bool:
+    """新起一个进程探一次环境；只有它能建出 AgentClient 时才继续做并发断言。"""
+    try:
+        result = run_child(CANARY_CREATE_FLAG, CONCURRENT_CREATE_TIMEOUT_SECONDS)
+    except subprocess.TimeoutExpired:
+        raise AssertionError("agent client canary hung") from None
+
+    if result.returncode == 3:
+        return False
+    assert result.returncode == 0, "agent client canary failed unexpectedly"
+    return True
+
+
 def run_concurrent_create_in_child() -> None:
     """首次创建必须在全新进程里发生，所以用子进程跑，父进程只负责限时等待。"""
+    if not agent_channel_available():
+        print("concurrent create skipped: this environment cannot create an agent client")
+        return
+
     try:
         result = subprocess.run(
             [
@@ -258,6 +301,9 @@ if __name__ == "__main__":
     print(f"AgentClient MaaFw Version: {Library.version()}")
 
     Toolkit.init_option(install_dir / "bin")
+
+    if len(sys.argv) >= 4 and sys.argv[3] == CANARY_CREATE_FLAG:
+        sys.exit(run_canary_create())
 
     if len(sys.argv) >= 4 and sys.argv[3] == CONCURRENT_CREATE_FLAG:
         sys.exit(run_concurrent_create())

@@ -82,8 +82,8 @@ static std::string temp_directory()
     // 测了写权限了还不行，我没招了，直接拉💩
     auto path = MaaNS::path("C:/Temp");
 
-    if (!std::filesystem::exists(path)) {
-        std::error_code ec;
+    std::error_code ec;
+    if (!std::filesystem::exists(path, ec)) {
         std::filesystem::create_directories(path, ec);
     }
 #endif
@@ -481,38 +481,34 @@ bool Transceiver::should_fallback_to_tcp()
 
 #ifdef _WIN32
     // Windows 从 Build 17063 开始支持 AF_UNIX (Unix Domain Socket)
-    // 直接尝试创建 socket 来检测系统是否支持，比检测版本号更可靠
+    // 直接尝试创建 socket 来检测系统是否支持，比检测版本号更可靠。
+    // 结果用函数内 static 缓存：并发首次创建时由标准保证只计算一次
+    static const bool cached_result = [] {
+        // 需要先初始化 Winsock，否则 socket() 会失败
+        WSADATA wsa_data;
+        int wsa_result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+        if (wsa_result != 0) {
+            LogWarn << "WSAStartup failed, falling back to TCP" << VAR(wsa_result);
+            return true;
+        }
 
-    static std::optional<bool> cached_result;
-    if (cached_result.has_value()) {
-        return *cached_result;
-    }
+        SOCKET test_sock = socket(AF_UNIX, SOCK_STREAM, 0);
+        if (test_sock == INVALID_SOCKET) {
+            int err = WSAGetLastError();
+            WSACleanup();
+            // WSAEAFNOSUPPORT (10047) 表示地址族不支持
+            LogWarn << "AF_UNIX socket not supported on this Windows version, falling back to TCP" << VAR(err);
+            return true;
+        }
 
-    // 需要先初始化 Winsock，否则 socket() 会失败
-    WSADATA wsa_data;
-    int wsa_result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
-    if (wsa_result != 0) {
-        LogWarn << "WSAStartup failed, falling back to TCP" << VAR(wsa_result);
-        cached_result = true;
-        return true;
-    }
-
-    SOCKET test_sock = socket(AF_UNIX, SOCK_STREAM, 0);
-    if (test_sock == INVALID_SOCKET) {
-        int err = WSAGetLastError();
+        closesocket(test_sock);
         WSACleanup();
-        // WSAEAFNOSUPPORT (10047) 表示地址族不支持
-        LogWarn << "AF_UNIX socket not supported on this Windows version, falling back to TCP" << VAR(err);
-        cached_result = true;
-        return true;
-    }
 
-    closesocket(test_sock);
-    WSACleanup();
-    cached_result = false;
+        LogInfo << "AF_UNIX socket supported on this Windows version";
+        return false;
+    }();
 
-    LogInfo << "AF_UNIX socket supported on this Windows version";
-    return false;
+    return cached_result;
 #else
     // 非 Windows 系统通常 IPC 工作正常
     LogInfo << "IPC supported on this system";
@@ -841,10 +837,14 @@ bool Transceiver::send_no_wait(const json::value& j)
 
 bool Transceiver::send_impl(const json::value& j)
 {
-    std::string jstr = j.dumps();
-    zmq::message_t msg(jstr.data(), jstr.size());
+    // message_t 构造与 send 都可能抛 zmq::error_t，这里不能让它越过 C API
+    bool sent = false;
+    zmq_call("send msg", [&] {
+        std::string jstr = j.dumps();
+        zmq::message_t msg(jstr.data(), jstr.size());
+        sent = zmq_sock_.send(std::move(msg), zmq::send_flags::dontwait).has_value();
+    });
 
-    bool sent = zmq_sock_.send(std::move(msg), zmq::send_flags::dontwait).has_value();
     if (!sent) {
         LogError << "failed to send msg" << VAR(j);
         return false;
@@ -861,24 +861,25 @@ std::optional<json::value> Transceiver::recv()
         return std::nullopt;
     }
 
-    zmq::message_t msg;
+    std::optional<json::value> result;
+    zmq_call("recv msg", [&] {
+        zmq::message_t msg;
 
-    auto size_opt = zmq_sock_.recv(msg, zmq::recv_flags::dontwait);
-    if (!size_opt || *size_opt == 0) {
-        LogError << "failed to recv msg" << VAR(ipc_addr_);
-        return std::nullopt;
-    }
+        auto size_opt = zmq_sock_.recv(msg, zmq::recv_flags::dontwait);
+        if (!size_opt || *size_opt == 0) {
+            LogError << "failed to recv msg" << VAR(ipc_addr_);
+            return;
+        }
 
-    std::string_view init_str = msg.to_string_view();
-    auto jopt = json::parse(init_str);
-    if (!jopt) {
-        LogError << "failed to parse msg" << VAR(ipc_addr_);
-        return std::nullopt;
-    }
-    auto j = *std::move(jopt);
-    // LogTrace << VAR(j.to_string()) << VAR(ipc_addr_);
+        auto jopt = json::parse(msg.to_string_view());
+        if (!jopt) {
+            LogError << "failed to parse msg" << VAR(ipc_addr_);
+            return;
+        }
+        result = *std::move(jopt);
+    });
 
-    return j;
+    return result;
 }
 
 std::string Transceiver::send_image(const cv::Mat& mat)
@@ -903,19 +904,21 @@ std::string Transceiver::send_image(const cv::Mat& mat)
         LogError << "send header canceled";
         return { };
     }
-    std::string jstr = json::value(header).dumps();
-    zmq::message_t header_msg(jstr.data(), jstr.size());
-    bool sent = zmq_sock_.send(std::move(header_msg), zmq::send_flags::dontwait).has_value();
-    if (!sent) {
-        LogError << "failed to send header" << VAR(header) << VAR(ipc_addr_);
-        return { };
-    }
 
-    // send image data
-    zmq::message_t img_msg(mat.data, mat.total() * mat.elemSize());
-    sent = zmq_sock_.send(img_msg, zmq::send_flags::none).has_value();
+    bool sent = false;
+    zmq_call("send image", [&] {
+        std::string jstr = json::value(header).dumps();
+        zmq::message_t header_msg(jstr.data(), jstr.size());
+        if (!zmq_sock_.send(std::move(header_msg), zmq::send_flags::dontwait).has_value()) {
+            return;
+        }
+
+        zmq::message_t img_msg(mat.data, mat.total() * mat.elemSize());
+        sent = zmq_sock_.send(img_msg, zmq::send_flags::none).has_value();
+    });
+
     if (!sent) {
-        LogError << "failed to send msg" << VAR(ipc_addr_);
+        LogError << "failed to send image" << VAR(header) << VAR(ipc_addr_);
         return { };
     }
     return header.uuid;
@@ -940,19 +943,21 @@ std::string Transceiver::send_image_encoded(const ImageEncodedBuffer& encoded_da
         LogError << "send encoded header canceled";
         return { };
     }
-    std::string jstr = json::value(header).dumps();
-    zmq::message_t header_msg(jstr.data(), jstr.size());
-    bool sent = zmq_sock_.send(std::move(header_msg), zmq::send_flags::dontwait).has_value();
-    if (!sent) {
-        LogError << "failed to send encoded header" << VAR(header) << VAR(ipc_addr_);
-        return { };
-    }
 
-    // send encoded image data
-    zmq::message_t img_msg(encoded_data.data(), encoded_data.size());
-    sent = zmq_sock_.send(img_msg, zmq::send_flags::none).has_value();
+    bool sent = false;
+    zmq_call("send encoded image", [&] {
+        std::string jstr = json::value(header).dumps();
+        zmq::message_t header_msg(jstr.data(), jstr.size());
+        if (!zmq_sock_.send(std::move(header_msg), zmq::send_flags::dontwait).has_value()) {
+            return;
+        }
+
+        zmq::message_t img_msg(encoded_data.data(), encoded_data.size());
+        sent = zmq_sock_.send(img_msg, zmq::send_flags::none).has_value();
+    });
+
     if (!sent) {
-        LogError << "failed to send encoded image data" << VAR(ipc_addr_);
+        LogError << "failed to send encoded image" << VAR(header) << VAR(ipc_addr_);
         return { };
     }
     return header.uuid;
@@ -1002,20 +1007,22 @@ void Transceiver::handle_image(const ImageHeader& header)
 
     std::unique_lock lock(socket_mutex_);
 
-    zmq::message_t msg;
-    auto size_opt = zmq_sock_.recv(msg);
-    if (!size_opt || *size_opt == 0) {
-        LogError << "failed to recv msg" << VAR(ipc_addr_);
-        return;
-    }
+    zmq_call("recv image", [&] {
+        zmq::message_t msg;
+        auto size_opt = zmq_sock_.recv(msg);
+        if (!size_opt || *size_opt == 0) {
+            LogError << "failed to recv msg" << VAR(ipc_addr_);
+            return;
+        }
 
-    if (header.size != msg.size()) {
-        LogError << "size mismatch" << VAR(header.size) << VAR(msg.size());
-        return;
-    }
+        if (header.size != msg.size()) {
+            LogError << "size mismatch" << VAR(header.size) << VAR(msg.size());
+            return;
+        }
 
-    cv::Mat image = cv::Mat(header.rows, header.cols, header.type, msg.data()).clone();
-    recved_images_.insert_or_assign(header.uuid, std::move(image));
+        cv::Mat image = cv::Mat(header.rows, header.cols, header.type, msg.data()).clone();
+        recved_images_.insert_or_assign(header.uuid, std::move(image));
+    });
 }
 
 void Transceiver::handle_image_encoded(const ImageEncodedHeader& header)
@@ -1024,20 +1031,22 @@ void Transceiver::handle_image_encoded(const ImageEncodedHeader& header)
 
     std::unique_lock lock(socket_mutex_);
 
-    zmq::message_t msg;
-    auto size_opt = zmq_sock_.recv(msg);
-    if (!size_opt || *size_opt == 0) {
-        LogError << "failed to recv encoded image data" << VAR(ipc_addr_);
-        return;
-    }
+    zmq_call("recv encoded image", [&] {
+        zmq::message_t msg;
+        auto size_opt = zmq_sock_.recv(msg);
+        if (!size_opt || *size_opt == 0) {
+            LogError << "failed to recv encoded image data" << VAR(ipc_addr_);
+            return;
+        }
 
-    if (header.size != msg.size()) {
-        LogError << "encoded size mismatch" << VAR(header.size) << VAR(msg.size());
-        return;
-    }
+        if (header.size != msg.size()) {
+            LogError << "encoded size mismatch" << VAR(header.size) << VAR(msg.size());
+            return;
+        }
 
-    ImageEncodedBuffer encoded_data(static_cast<const uint8_t*>(msg.data()), static_cast<const uint8_t*>(msg.data()) + msg.size());
-    recved_images_encoded_.insert_or_assign(header.uuid, std::move(encoded_data));
+        ImageEncodedBuffer encoded_data(static_cast<const uint8_t*>(msg.data()), static_cast<const uint8_t*>(msg.data()) + msg.size());
+        recved_images_encoded_.insert_or_assign(header.uuid, std::move(encoded_data));
+    });
 }
 
 MAA_AGENT_NS_END
