@@ -39,9 +39,11 @@ struct NativeClass
             .finalizer = +[](JSRuntime* rt, JSValueConst data) { delete take(rt, data); },
             .gc_mark =
                 +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
-                    take(rt, data)->gc_mark([rt, func](const ValueType& value) {
-                        func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
-                    });
+                    auto* impl = take(rt, data);
+                    if (!impl) {
+                        return;
+                    }
+                    impl->gc_mark([rt, func](const ValueType& value) { JS_MarkValue(rt, value.peek(), func); });
                 },
             .call = nullptr,
             .exotic = nullptr,
@@ -66,16 +68,17 @@ struct NativeClass
             }
 
             try {
+                QjsObject self { info.Env(), obj };
                 auto impl = Inherit::ctor(info);
                 if (!impl) {
-                    return { info.Env(), JS_EXCEPTION };
+                    std::string what = std::format("maa.{}.ctor: failed to create instance", Inherit::name);
+                    return ThrowTypeError(info.Env(), what);
                 }
 
                 impl->env = info.Env();
 
-                JS_SetOpaque(obj, impl);
+                JS_SetOpaque(self.peek(), impl);
 
-                auto self = QjsObject { info.Env(), obj };
                 impl->init_bind(self);
 
                 return self;

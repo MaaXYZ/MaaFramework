@@ -4,6 +4,7 @@
 
 #include "Common/MaaTypes.h"
 #include "MaaAgent/Message.hpp"
+#include "MaaAgent/ZmqProbe.h"
 #include "MaaFramework/MaaAPI.h"
 #include "MaaUtils/Buffer/ImageBuffer.hpp"
 #include "MaaUtils/Buffer/ListBuffer.hpp"
@@ -24,23 +25,57 @@ AgentClient::AgentClient(const std::string& identifier)
 {
     LogFunc;
 
-    if (auto port_opt = parse_tcp_port(identifier)) {
-        LogInfo << "Using TCP mode" << VAR(*port_opt);
-        uint16_t port = init_tcp_socket(*port_opt, true);
-        identifier_ = std::to_string(port);
-    }
-    // Windows 上检测 IPC 是否可能失败，如果失败则自动使用 TCP
-    else if (should_fallback_to_tcp()) {
-        LogInfo << "IPC may fail on this system, using TCP instead";
-        uint16_t port = init_tcp_socket(0, true);
-        identifier_ = std::to_string(port);
-    }
-    else {
-        identifier_ = identifier.empty() ? make_uuid() : identifier;
-        init_socket(identifier_, true);
+    if (!zmq_socket_available()) {
+        return;
     }
 
-    LogInfo << VAR(identifier) << VAR(identifier_);
+    auto use_tcp = [&](uint16_t port) -> bool {
+        auto actual = init_tcp_socket(port, true);
+        if (!actual) {
+            LogError << "failed to bind TCP socket" << VAR(port);
+            return false;
+        }
+        identifier_ = std::to_string(*actual);
+        valid_ = true;
+        return true;
+    };
+
+    // 纯数字 identifier 视为 TCP 端口号
+    if (auto port_opt = parse_tcp_port(identifier)) {
+        LogInfo << "Using TCP mode" << VAR(*port_opt);
+        use_tcp(*port_opt);
+        LogInfo << VAR(identifier) << VAR(identifier_) << VAR(valid_);
+        return;
+    }
+
+    // Windows 上 AF_UNIX 可能整体不可用，提前换成 TCP
+    if (should_fallback_to_tcp()) {
+        LogInfo << "IPC may fail on this system, using TCP instead";
+        use_tcp(0);
+        LogInfo << VAR(identifier) << VAR(identifier_) << VAR(valid_);
+        return;
+    }
+
+    // 工作目录被限制在更低完整性等级时，从这里启动的 agent 也是低完整性进程，
+    // 会被内核挡在普通 IPC socket 外面（M9A 等运行在沙箱目录下的工程就是这样）
+    if (workdir_is_restricted()) {
+        LogInfo << "working directory is restricted, agents started from here need TCP";
+        use_tcp(0);
+        LogInfo << VAR(identifier) << VAR(identifier_) << VAR(valid_);
+        return;
+    }
+
+    identifier_ = identifier.empty() ? make_uuid() : identifier;
+    valid_ = init_socket(identifier_, true);
+    if (!valid_) {
+        // IPC 建不出来（路径不可用、被安全软件拦截、AF_UNIX 不可用等）就退回 TCP，
+        // 不能让 ZeroMQ 的异常穿过 C API 把宿主带走（MaaEnd#95）
+        LogWarn << "failed to bind IPC socket, falling back to TCP" << VAR(identifier_);
+        identifier_.clear();
+        use_tcp(0);
+    }
+
+    LogInfo << VAR(identifier) << VAR(identifier_) << VAR(valid_);
 }
 
 AgentClient::~AgentClient()
@@ -56,6 +91,11 @@ AgentClient::~AgentClient()
 std::string AgentClient::identifier() const
 {
     return identifier_;
+}
+
+bool AgentClient::valid() const
+{
+    return valid_;
 }
 
 bool AgentClient::bind_resource(MaaResource* new_res)
@@ -126,6 +166,10 @@ std::string AgentClient::create_socket(const std::string& identifier)
         return identifier_;
     }
 
+    if (!zmq_socket_available()) {
+        return { };
+    }
+
     if (auto port_opt = parse_tcp_port(identifier)) {
         LogInfo << "Using TCP mode" << VAR(*port_opt);
         return create_tcp_socket(*port_opt);
@@ -136,11 +180,21 @@ std::string AgentClient::create_socket(const std::string& identifier)
         return create_tcp_socket(0);
     }
 
+    if (workdir_is_restricted()) {
+        LogInfo << "working directory is restricted, agents started from here need TCP";
+        return create_tcp_socket(0);
+    }
+
     // Create a new socket with the provided identifier or generate a new one if empty.
     identifier_ = identifier.empty() ? make_uuid() : identifier;
-    init_socket(identifier_, true);
+    if (init_socket(identifier_, true)) {
+        valid_ = true;
+        return identifier_;
+    }
 
-    return identifier_;
+    LogWarn << "failed to bind IPC socket, falling back to TCP" << VAR(identifier_);
+    identifier_.clear();
+    return create_tcp_socket(0);
 }
 
 std::string AgentClient::create_tcp_socket(uint16_t port)
@@ -153,9 +207,19 @@ std::string AgentClient::create_tcp_socket(uint16_t port)
         return identifier_;
     }
 
+    if (!zmq_socket_available()) {
+        return { };
+    }
+
     // init_tcp_socket 返回实际绑定的端口（如果传入 0 则自动选择）
-    uint16_t actual_port = init_tcp_socket(port, true);
-    identifier_ = std::to_string(actual_port);
+    auto actual_port = init_tcp_socket(port, true);
+    if (!actual_port) {
+        LogError << "failed to bind TCP socket" << VAR(port);
+        return { };
+    }
+
+    valid_ = true;
+    identifier_ = std::to_string(*actual_port);
 
     return identifier_;
 }
@@ -169,7 +233,10 @@ bool AgentClient::connect()
         return false;
     }
 
-    reset_socket_if_needed();
+    if (!reset_socket_if_needed()) {
+        LogError << "failed to reset socket before connect";
+        return false;
+    }
 
     clear_custom_registration();
     connected_ = false;
@@ -223,8 +290,7 @@ bool AgentClient::disconnect()
 
     connected_ = false;
     shutdown_remote_session(ShutdownMode::WaitForResponse);
-    reset_socket_if_needed();
-    return true;
+    return reset_socket_if_needed();
 }
 
 bool AgentClient::connected()
@@ -268,14 +334,21 @@ bool AgentClient::shutdown_remote_session(ShutdownMode mode)
     return shutdown_queued;
 }
 
-void AgentClient::reset_socket_if_needed(std::chrono::milliseconds linger)
+bool AgentClient::reset_socket_if_needed(std::chrono::milliseconds linger)
 {
     if (!socket_needs_reset_) {
-        return;
+        return true;
     }
 
-    reset_socket(linger);
+    if (!reset_socket(linger)) {
+        // 保留重试标记：这次重建失败不代表下次也不行，调用方必须中止本次握手
+        LogError << "failed to reset socket" << VAR(ipc_addr_);
+        valid_ = false;
+        return false;
+    }
+
     socket_needs_reset_ = false;
+    return true;
 }
 
 void AgentClient::set_timeout(const std::chrono::milliseconds& timeout)

@@ -25,9 +25,11 @@ struct NativePointerHolder
                 },
             .gc_mark =
                 +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
-                    take<NativeClassBase>(rt, data)->gc_mark([rt, func](const ValueType& value) {
-                        func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
-                    });
+                    auto* impl = take<NativeClassBase>(rt, data);
+                    if (!impl) {
+                        return;
+                    }
+                    impl->gc_mark([rt, func](const ValueType& value) { JS_MarkValue(rt, value.peek(), func); });
                 },
             .call = nullptr,
             .exotic = nullptr,

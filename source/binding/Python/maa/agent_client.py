@@ -30,10 +30,13 @@ class AgentClient:
         """创建 Agent 客户端 / Create Agent client
 
         默认使用 IPC 模式；如果 identifier 为纯数字字符串，则会将其视为 TCP 端口号并监听 127.0.0.1。
-        在不支持 AF_UNIX 的旧版 Windows（Build 17063 之前）上也会自动回退到 TCP 模式。
+        IPC socket 创建失败（不支持 AF_UNIX、路径不可用、被安全软件拦截等）时会自动改用 TCP 模式。
+        Windows 下若工作目录完整性等级低于宿主（沙箱目录），也会直接使用 TCP。
         Uses IPC mode by default; if identifier is a numeric string, it is treated as a TCP port
-        and listens on 127.0.0.1. On older Windows versions that don't support AF_UNIX
-        (before Build 17063), it will also automatically fall back to TCP mode.
+        and listens on 127.0.0.1. If the IPC socket cannot be created (AF_UNIX unsupported,
+        unusable path, blocked by security software, etc.), it falls back to TCP mode.
+        On Windows, TCP is also used when the working directory has a lower integrity level
+        than the host (sandbox or protected directories).
 
         Args:
             identifier: 可选的连接标识符；纯数字字符串会被视为 TCP 端口号 /
@@ -41,8 +44,9 @@ class AgentClient:
             _handle: 内部使用，直接传入已创建的句柄 / Internal use, directly pass in an already created handle
 
         Raises:
-            RuntimeError: 如果创建失败
+            RuntimeError: 如果创建失败（IPC 与 TCP 都不可用）/ If creation fails (neither IPC nor TCP is available)
         """
+        self._handle = None
         self._set_api_properties()
 
         if _handle:
@@ -56,7 +60,7 @@ class AgentClient:
         else:
             id_buffer_handle = None
 
-        self._handle = Library.agent_client().MaaAgentClientCreateV2(id_buffer_handle)
+        self._handle = self._create(id_buffer_handle)
         if not self._handle:
             raise RuntimeError("Failed to create agent client.")
 
@@ -85,7 +89,13 @@ class AgentClient:
 
         cls._set_api_properties()
 
-        handle = Library.agent_client().MaaAgentClientCreateTcp(ctypes.c_uint16(port))
+        try:
+            handle = Library.agent_client().MaaAgentClientCreateTcp(ctypes.c_uint16(port))
+        except OSError as e:
+            raise RuntimeError(
+                "Failed to create TCP agent client: this environment blocks the agent channel "
+                "(sandbox / AppContainer / security software). See the debug log for details."
+            ) from e
         if not handle:
             raise RuntimeError("Failed to create TCP agent client.")
 
@@ -236,6 +246,21 @@ class AgentClient:
 
             AgentClient._assign_api_properties()
             AgentClient._api_properties_initialized = True
+
+    @staticmethod
+    def _create(id_buffer_handle) -> Optional[MaaAgentClientHandle]:
+        """创建句柄，并把底层抛出的系统异常统一成 RuntimeError。
+
+        受限环境里 libzmq 可能直接被系统终止调用（SEH），ctypes 会把它转成 OSError，
+        这里给出可读的提示，避免用户只看到一个 WinError。
+        """
+        try:
+            return Library.agent_client().MaaAgentClientCreateV2(id_buffer_handle)
+        except OSError as e:
+            raise RuntimeError(
+                "Failed to create agent client: this environment blocks the agent channel "
+                "(sandbox / AppContainer / security software). See the debug log for details."
+            ) from e
 
     @staticmethod
     def _assign_api_properties() -> None:

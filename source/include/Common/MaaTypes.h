@@ -195,6 +195,8 @@ public:
     virtual ~MaaAgentClient() = default;
 
     virtual std::string identifier() const = 0;
+    // 底层通信套接字是否成功建立；建立失败时 identifier() 为空，能力为零，宿主应据此报错
+    virtual bool valid() const = 0;
     virtual bool bind_resource(MaaResource* resource) = 0;
     virtual void register_resource_sink(MaaResource* res) = 0;
     virtual void register_controller_sink(MaaController* ctrl) = 0;
