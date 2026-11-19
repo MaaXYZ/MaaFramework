@@ -1,10 +1,43 @@
 #include "MaaAgentClient/MaaAgentClientAPI.h"
 
 #include "Client/AgentClient.h"
+#include "MaaAgent/ZmqProbe.h"
 #include "MaaUtils/Buffer/ListBuffer.hpp"
 #include "MaaUtils/Buffer/StringBuffer.hpp"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
+
+namespace
+{
+// ZeroMQ 用异常报告失败，异常穿过 C API 会直接打断宿主进程（MaaEnd#95），这里统一兜底
+template <typename Func>
+MaaAgentClient* create_client(const char* action, Func&& func)
+{
+    // 探测要先于任何 zmq 对象构造：受限环境里构造 zmq 上下文本身就会 terminate 宿主
+    if (!MAA_AGENT_NS::zmq_socket_available()) {
+        LogError << "agent channel is not usable in this environment" << VAR(action);
+        return nullptr;
+    }
+
+    try {
+        auto* client = func();
+        if (!client) {
+            LogError << "failed to create agent client" << VAR(action);
+            return nullptr;
+        }
+        if (!client->valid()) {
+            LogError << "agent client has no usable socket, likely IPC and TCP both failed" << VAR(action);
+            delete client;
+            return nullptr;
+        }
+        return client;
+    }
+    catch (const std::exception& e) {
+        LogError << "failed to create agent client" << VAR(action) << VAR(e.what());
+        return nullptr;
+    }
+}
+} // namespace
 
 MaaAgentClient* MaaAgentClientCreate()
 {
@@ -17,17 +50,23 @@ MaaAgentClient* MaaAgentClientCreateV2(const MaaStringBuffer* identifier)
 {
     LogFunc << VAR(identifier);
 
-    return new MAA_AGENT_CLIENT_NS::AgentClient(identifier ? identifier->get() : "");
+    return create_client("MaaAgentClientCreateV2", [&]() -> MaaAgentClient* {
+        return new MAA_AGENT_CLIENT_NS::AgentClient(identifier ? identifier->get() : "");
+    });
 }
 
 MaaAgentClient* MaaAgentClientCreateTcp(uint16_t port)
 {
     LogFunc << VAR(port);
 
-    auto* client = new MAA_AGENT_CLIENT_NS::AgentClient();
-    client->create_tcp_socket(port);
-
-    return client;
+    return create_client("MaaAgentClientCreateTcp", [&]() -> MaaAgentClient* {
+        auto* client = new MAA_AGENT_CLIENT_NS::AgentClient();
+        if (client->create_tcp_socket(port).empty()) {
+            delete client;
+            return nullptr;
+        }
+        return client;
+    });
 }
 
 void MaaAgentClientDestroy(MaaAgentClient* client)
@@ -118,6 +157,11 @@ MaaBool MaaAgentClientCreateSocket(MaaAgentClient* client, MaaStringBuffer* iden
     }
 
     std::string id = client->create_socket(identifier->get());
+    if (id.empty()) {
+        // 不能把失败当成成功：宿主会照常去拉起 agent，然后连不上
+        LogError << "failed to create socket";
+        return false;
+    }
 
     identifier->set(std::move(id));
 

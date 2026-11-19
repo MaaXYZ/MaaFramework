@@ -9,7 +9,11 @@ AgentClient 端测试
 
 import os
 from pathlib import Path
+import subprocess
 import sys
+import threading
+import time
+from typing import Optional
 
 if len(sys.argv) < 3:
     print("Usage: python agent_main_test.py <binding_dir> <install_dir>")
@@ -41,12 +45,95 @@ from agent_test_utils import (
 )
 
 
+CONCURRENT_CREATE_FLAG = "--concurrent-create"
+CONCURRENT_CREATE_THREADS = 8
+CONCURRENT_CREATE_TIMEOUT_SECONDS = 20
+
+
+def run_concurrent_create() -> int:
+    """子进程入口：并发做首次 AgentClient 创建，验证探测不会互相卡住。
+
+    健康环境里所有创建都应成功；已知不可用的环境（沙箱等）里所有创建都应快速失败。
+    只断言「不挂起」和「结果一致」，不假设当前环境属于哪一类。
+    """
+    identifiers: list[Optional[str]] = [None] * CONCURRENT_CREATE_THREADS
+    errors: list[BaseException] = []
+    # 起跑线：否则首个线程可能在其它线程进入前就把探测结果缓存掉，测不到并发路径
+    barrier = threading.Barrier(CONCURRENT_CREATE_THREADS)
+
+    def worker(index: int) -> None:
+        try:
+            barrier.wait()
+            client = AgentClient.create_tcp(0)
+            identifiers[index] = client.identifier
+        except RuntimeError:
+            # 环境本身不可用时 create_tcp 直接失败，属于预期分支
+            identifiers[index] = None
+        except BaseException as exc:  # noqa: BLE001
+            errors.append(exc)
+
+    threads = [
+        threading.Thread(target=worker, args=(index,), daemon=True)
+        for index in range(CONCURRENT_CREATE_THREADS)
+    ]
+    start = time.monotonic()
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=CONCURRENT_CREATE_TIMEOUT_SECONDS)
+    elapsed = time.monotonic() - start
+
+    stuck = [index for index, thread in enumerate(threads) if thread.is_alive()]
+    if stuck:
+        print(f"concurrent create stuck: threads={stuck} elapsed={elapsed:.1f}s")
+        return 1
+    if errors:
+        print(f"concurrent create raised unexpected errors: {errors[0]!r}")
+        return 1
+
+    created = [identifier for identifier in identifiers if identifier]
+    if created and len(created) != CONCURRENT_CREATE_THREADS:
+        print(f"concurrent create returned mixed results: {identifiers}")
+        return 1
+
+    print(
+        f"concurrent create ok: threads={CONCURRENT_CREATE_THREADS} "
+        f"created={len(created)} elapsed={elapsed * 1000:.0f}ms"
+    )
+    return 0
+
+
 class ConflictingAction(CustomAction):
     def run(self, context, argv):
         return True
 
 
+def run_concurrent_create_in_child() -> None:
+    """首次创建必须在全新进程里发生，所以用子进程跑，父进程只负责限时等待。"""
+    try:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(Path(__file__).resolve()),
+                str(binding_dir),
+                str(install_dir),
+                CONCURRENT_CREATE_FLAG,
+            ],
+            timeout=CONCURRENT_CREATE_TIMEOUT_SECONDS * 2,
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        raise AssertionError("concurrent agent client creation hung") from None
+
+    assert result.returncode == 0, "concurrent agent client creation failed"
+
+
 def api_test():
+    # ============================================================
+    # 并发首次创建回归（必须在本次进程首次创建之前跑）
+    # ============================================================
+    run_concurrent_create_in_child()
+
     # ============================================================
     # 创建并初始化 Resource, Controller, Tasker
     # ============================================================
@@ -171,5 +258,8 @@ if __name__ == "__main__":
     print(f"AgentClient MaaFw Version: {Library.version()}")
 
     Toolkit.init_option(install_dir / "bin")
+
+    if len(sys.argv) >= 4 and sys.argv[3] == CONCURRENT_CREATE_FLAG:
+        sys.exit(run_concurrent_create())
 
     api_test()

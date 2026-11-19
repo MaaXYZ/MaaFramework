@@ -1,6 +1,8 @@
 #include "MaaAgent/Transceiver.h"
 
 #include <algorithm>
+#include <array>
+#include <atomic>
 #include <cctype>
 #include <cerrno>
 #include <cstdlib>
@@ -8,16 +10,19 @@
 #include <fstream>
 #include <optional>
 #include <string_view>
+#include <tuple>
 #include <utility>
 
 #ifdef _WIN32
 #include "MaaUtils/SafeWindows.hpp"
+#include <aclapi.h>
 // afunix.h 在旧版 SDK 中可能不存在，直接定义 AF_UNIX 常量
 #ifndef AF_UNIX
 #define AF_UNIX 1
 #endif
 #endif
 
+#include "MaaAgent/ZmqProbe.h"
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/ScopeLeave.hpp"
 #include "MaaUtils/StringMisc.hpp"
@@ -65,7 +70,13 @@ bool Transceiver::handle_image_encoded_header(const json::value& j)
 static std::string temp_directory()
 {
 #ifndef _WIN32
-    auto path = std::filesystem::temp_directory_path();
+    std::error_code ec;
+    const auto path = std::filesystem::temp_directory_path(ec);
+    if (ec) {
+        // TMPDIR 指向不存在的目录等情况；这里不抛，交给上层退回 TCP
+        LogError << "failed to get temp directory" << VAR(ec.message());
+        return { };
+    }
 #else
     // https://github.com/MaaEnd/MaaEnd/issues/95
     // 测了写权限了还不行，我没招了，直接拉💩
@@ -78,6 +89,251 @@ static std::string temp_directory()
 #endif
 
     return path_to_utf8_string(path);
+}
+
+namespace
+{
+// ZeroMQ 只用异常报告失败。异常越过 C API 边界就会打断整个宿主进程（MaaEnd#95），
+// 所以在这里统一收敛成返回值，让上层能降级或明确报错。
+template <typename Func>
+bool zmq_call(const char* action, Func&& func)
+{
+    try {
+        func();
+        return true;
+    }
+    catch (const std::exception& e) {
+        LogError << "zmq call failed" << VAR(action) << VAR(e.what());
+        return false;
+    }
+}
+
+#ifdef _WIN32
+// 受限令牌（沙箱、受限 SID）下 libzmq 的内部 socketpair 会失败，并在 iothread 上直接 abort，
+// 那种 SEH 无法在调用线程里兜住，只能提前避开；这条属性不会变，可以缓存
+bool token_is_restricted()
+{
+    HANDLE token = nullptr;
+    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token)) {
+        return false;
+    }
+
+    DWORD restricted = 0;
+    DWORD size = 0;
+    const BOOL ok = GetTokenInformation(token, TokenIsRestricted, &restricted, sizeof(restricted), &size);
+    CloseHandle(token);
+
+    return ok != FALSE && restricted != 0;
+}
+#else
+bool token_is_restricted()
+{
+    return false;
+}
+#endif
+
+#ifdef _MSC_VER
+enum class ProbeResult
+{
+    failed,
+    passed,
+    crashed,
+};
+
+// 下面几个函数只碰 POD：__try 不能和需要析构的局部对象同处一个函数（C2712）
+void* create_probe_context()
+{
+    void* ctx = nullptr;
+    __try {
+        ctx = zmq_ctx_new();
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER) {
+        ctx = nullptr;
+    }
+    return ctx;
+}
+
+ProbeResult run_probe(void* ctx)
+{
+    int result = static_cast<int>(ProbeResult::failed);
+    __try {
+        void* sock = zmq_socket(ctx, ZMQ_PAIR);
+        if (sock != nullptr) {
+            int linger = 0;
+            zmq_setsockopt(sock, ZMQ_LINGER, &linger, sizeof(linger));
+            zmq_close(sock);
+            result = static_cast<int>(ProbeResult::passed);
+        }
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER) {
+        result = static_cast<int>(ProbeResult::crashed);
+    }
+    return static_cast<ProbeResult>(result);
+}
+
+void terminate_probe_context(void* ctx)
+{
+    __try {
+        zmq_ctx_term(ctx);
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER) {
+    }
+}
+
+bool probe_zmq()
+{
+    // 同一把锁覆盖「状态检查 + 探测 + 结论落库」：并发首次创建时只有一个线程真正进 libzmq，
+    // 其余线程等锁后直接读结论，避免多个线程同时踩 zmq_socket 互相卡住
+    static std::mutex mutex;
+    static std::optional<bool> s_result;
+
+    std::unique_lock lock(mutex);
+    if (s_result.has_value()) {
+        return *s_result;
+    }
+
+    void* ctx = create_probe_context();
+    if (ctx == nullptr) {
+        // 临时失败不落结论，下次还能重试
+        return false;
+    }
+
+    switch (run_probe(ctx)) {
+    case ProbeResult::passed:
+        // 健康环境下立刻回收，避免 DLL 反复装卸时句柄跟着泄漏
+        terminate_probe_context(ctx);
+        s_result = true;
+        return true;
+    case ProbeResult::crashed:
+        // 失败路径上销毁 context 本身就会 abort，只能留着；
+        // 结论保证每次加载该 DLL 最多发生一次硬失败探测
+        s_result = false;
+        return false;
+    default:
+        terminate_probe_context(ctx);
+        return false;
+    }
+}
+#else
+bool probe_zmq()
+{
+    return true;
+}
+#endif
+
+
+#ifdef _WIN32
+std::optional<DWORD> process_integrity_level()
+{
+    HANDLE token = nullptr;
+    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token)) {
+        return std::nullopt;
+    }
+    OnScopeLeave([&] { CloseHandle(token); });
+
+    std::array<BYTE, sizeof(TOKEN_MANDATORY_LABEL) + SECURITY_MAX_SID_SIZE> buffer { };
+    DWORD size = 0;
+    if (!GetTokenInformation(token, TokenIntegrityLevel, buffer.data(), static_cast<DWORD>(buffer.size()), &size)) {
+        return std::nullopt;
+    }
+
+    auto* label = reinterpret_cast<TOKEN_MANDATORY_LABEL*>(buffer.data());
+    auto* sid = static_cast<SID*>(label->Label.Sid);
+    return *GetSidSubAuthority(sid, static_cast<DWORD>(*GetSidSubAuthorityCount(sid) - 1));
+}
+
+struct FileLabel
+{
+    DWORD level = SECURITY_MANDATORY_MEDIUM_RID;
+    ACCESS_MASK rights = SYSTEM_MANDATORY_LABEL_NO_WRITE_UP;
+    // 无显式标签时 Windows 按 Medium + NO_WRITE_UP 处理，这与「查询失败」是两件事
+    bool explicit_label = false;
+};
+
+// nullopt 表示查询本身失败（无权限等），调用方按尽力而为处理
+std::optional<FileLabel> file_integrity_label(const std::filesystem::path& file)
+{
+    PSECURITY_DESCRIPTOR sd = nullptr;
+    if (GetNamedSecurityInfoW(file.c_str(), SE_FILE_OBJECT, LABEL_SECURITY_INFORMATION, nullptr, nullptr, nullptr, nullptr, &sd)
+        != ERROR_SUCCESS) {
+        return std::nullopt;
+    }
+    OnScopeLeave([&] { LocalFree(sd); });
+
+    PACL sacl = nullptr;
+    BOOL present = FALSE;
+    BOOL defaulted = FALSE;
+    if (!GetSecurityDescriptorSacl(sd, &present, &sacl, &defaulted)) {
+        return std::nullopt;
+    }
+    if (!present || !sacl) {
+        return FileLabel { };
+    }
+
+    void* ace = nullptr;
+    if (!GetAce(sacl, 0, &ace)) {
+        return FileLabel { };
+    }
+
+    auto* label = static_cast<SYSTEM_MANDATORY_LABEL_ACE*>(ace);
+
+    FileLabel result;
+    auto* sid = reinterpret_cast<SID*>(&label->SidStart);
+    result.level = *GetSidSubAuthority(sid, static_cast<DWORD>(*GetSidSubAuthorityCount(sid) - 1));
+    result.rights = label->Mask;
+    result.explicit_label = true;
+    return result;
+}
+
+std::string_view integrity_level_name(DWORD level)
+{
+    switch (level) {
+    case SECURITY_MANDATORY_UNTRUSTED_RID:
+        return "Untrusted";
+    case SECURITY_MANDATORY_LOW_RID:
+        return "Low";
+    case SECURITY_MANDATORY_MEDIUM_RID:
+        return "Medium";
+    case SECURITY_MANDATORY_HIGH_RID:
+        return "High";
+    case SECURITY_MANDATORY_SYSTEM_RID:
+        return "System";
+    default:
+        return "Unknown";
+    }
+}
+#endif
+} // namespace
+
+bool zmq_socket_available()
+{
+    static const bool restricted = token_is_restricted();
+    if (restricted) {
+        static const bool kLogged = [] {
+            LogError << "This process runs with a restricted token (sandbox), which breaks ZeroMQ's internal "
+                        "socket pair; the agent channel is unavailable. Run the host outside the sandbox to use "
+                        "the agent.";
+            return true;
+        }();
+        std::ignore = kLogged;
+        return false;
+    }
+
+    // 只缓存成功：探测失败可能只是临时资源不足，缓存住会让整个进程再也开不出 Agent
+    static std::atomic<bool> s_probe_passed { false };
+    if (s_probe_passed.load(std::memory_order_relaxed)) {
+        return true;
+    }
+
+    if (!probe_zmq()) {
+        LogError << "ZeroMQ cannot create sockets in this process. Sandbox / AppContainer / security software "
+                    "likely blocks it, so the agent channel is unavailable. Run the host at a normal integrity "
+                    "level or outside the sandbox.";
+        return false;
+    }
+
+    s_probe_passed.store(true, std::memory_order_relaxed);
+    return true;
 }
 
 static std::optional<uint16_t> parse_port_string(std::string_view port_str)
@@ -100,36 +356,63 @@ static std::optional<uint16_t> parse_port_string(std::string_view port_str)
     return static_cast<uint16_t>(port);
 }
 
-void Transceiver::create_pair_socket()
+bool Transceiver::create_pair_socket()
 {
-    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
-    zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
-    zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
+    if (!zmq_ctx_) {
+        if (!zmq_call("create context", [&] { zmq_ctx_.emplace(); })) {
+            return false;
+        }
+    }
+
+    return zmq_call("create pair socket", [&] {
+        zmq_sock_ = zmq::socket_t(*zmq_ctx_, zmq::socket_type::pair);
+        zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
+        zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
+    });
 }
 
-void Transceiver::init_socket(const std::string& identifier, bool bind)
+std::filesystem::path Transceiver::ipc_socket_path(const std::string& identifier)
+{
+    static const auto kTempDir = temp_directory();
+
+    if (kTempDir.empty()) {
+        return { };
+    }
+
+    return MaaNS::path(std::format("{}/maafw-agent-{}.sock", kTempDir, identifier));
+}
+
+bool Transceiver::init_socket(const std::string& identifier, bool bind)
 {
     LogFunc << VAR(bind);
 
-    static auto kTempDir = temp_directory();
+    ipc_path_ = ipc_socket_path(identifier);
+    if (ipc_path_.empty()) {
+        LogError << "failed to resolve ipc socket path" << VAR(identifier);
+        return false;
+    }
 
-    std::string path = std::format("{}/maafw-agent-{}.sock", kTempDir, identifier);
-    ipc_addr_ = std::format("ipc://{}", path);
-    ipc_path_ = MaaNS::path(path);
+    ipc_addr_ = std::format("ipc://{}", path_to_utf8_string(ipc_path_));
     is_tcp_ = false;
 
     LogInfo << VAR(ipc_addr_) << VAR(identifier);
 
-    create_pair_socket();
+    if (!create_pair_socket()) {
+        return false;
+    }
 
     is_bound_ = bind;
 
-    if (is_bound_) {
-        zmq_sock_.bind(ipc_addr_);
-    }
-    else {
-        zmq_sock_.connect(ipc_addr_);
-    }
+    // Windows 上 AF_UNIX 可能整体不可用（WSAENETDOWN，见 MaaEnd#95），bind 也可能被
+    // 路径/权限问题挡住，这里返回失败让上层退回 TCP，而不是把异常抛给宿主
+    return zmq_call(bind ? "bind ipc" : "connect ipc", [&] {
+        if (is_bound_) {
+            zmq_sock_.bind(ipc_addr_);
+        }
+        else {
+            zmq_sock_.connect(ipc_addr_);
+        }
+    });
 }
 
 static uint16_t parse_port_from_endpoint(const std::string& endpoint)
@@ -148,34 +431,44 @@ std::optional<uint16_t> Transceiver::parse_tcp_port(const std::string& identifie
     return parse_port_string(identifier);
 }
 
-uint16_t Transceiver::init_tcp_socket(uint16_t port, bool bind)
+std::optional<uint16_t> Transceiver::init_tcp_socket(uint16_t port, bool bind)
 {
     LogFunc << VAR(port) << VAR(bind);
 
     is_tcp_ = true;
 
-    create_pair_socket();
+    if (!create_pair_socket()) {
+        return std::nullopt;
+    }
 
     is_bound_ = bind;
 
+    if (!zmq_call(bind ? "bind tcp" : "connect tcp", [&] {
+            if (is_bound_) {
+                // 如果 port 为 0，使用通配符让系统自动分配端口
+                std::string bind_addr = std::format("tcp://127.0.0.1:{}", port == 0 ? "*" : std::to_string(port));
+                zmq_sock_.bind(bind_addr);
+
+                // 获取实际绑定的端点
+                char endpoint[256] = { };
+                size_t endpoint_len = sizeof(endpoint);
+                zmq_getsockopt(zmq_sock_.handle(), ZMQ_LAST_ENDPOINT, endpoint, &endpoint_len);
+                ipc_addr_ = endpoint;
+            }
+            else {
+                ipc_addr_ = std::format("tcp://127.0.0.1:{}", port);
+                zmq_sock_.connect(ipc_addr_);
+            }
+        })) {
+        return std::nullopt;
+    }
+
     if (is_bound_) {
-        // 如果 port 为 0，使用通配符让系统自动分配端口
-        std::string bind_addr = std::format("tcp://127.0.0.1:{}", port == 0 ? "*" : std::to_string(port));
-        zmq_sock_.bind(bind_addr);
-
-        // 获取实际绑定的端点
-        char endpoint[256] = { };
-        size_t endpoint_len = sizeof(endpoint);
-        zmq_getsockopt(zmq_sock_.handle(), ZMQ_LAST_ENDPOINT, endpoint, &endpoint_len);
-        ipc_addr_ = endpoint;
-
         tcp_port_ = parse_port_from_endpoint(ipc_addr_);
         LogInfo << "TCP socket bound" << VAR(ipc_addr_) << VAR(tcp_port_);
     }
     else {
-        ipc_addr_ = std::format("tcp://127.0.0.1:{}", port);
         tcp_port_ = port;
-        zmq_sock_.connect(ipc_addr_);
         LogInfo << "TCP socket connected" << VAR(ipc_addr_);
     }
 
@@ -227,6 +520,69 @@ bool Transceiver::should_fallback_to_tcp()
 #endif
 }
 
+bool Transceiver::workdir_is_restricted()
+{
+#ifndef _WIN32
+    return false;
+#else
+    std::error_code ec;
+    const auto cwd = std::filesystem::current_path(ec);
+    if (ec) {
+        return false;
+    }
+
+    const auto dir_label = file_integrity_label(cwd);
+    const auto proc_level = process_integrity_level();
+    // 只有显式标签才算数：无标签目录不会让其中的 exe 变成低完整性
+    if (!dir_label || !proc_level || !dir_label->explicit_label || *proc_level <= dir_label->level) {
+        return false;
+    }
+
+    // 目录被打了低完整性标签时，从这里（比如 .venv）启动的 agent 继承该标签，
+    // 而宿主创建的 IPC socket 跟随宿主，agent 会连不上，只能走 TCP
+    LogInfo << "working directory has a lower integrity level than this process" << VAR(path_to_utf8_string(cwd))
+            << VAR(integrity_level_name(dir_label->level)) << VAR(integrity_level_name(*proc_level));
+    return true;
+#endif
+}
+
+bool Transceiver::ipc_connect_permitted(const std::filesystem::path& sock_path)
+{
+#ifndef _WIN32
+    std::ignore = sock_path;
+    return true;
+#else
+    std::error_code ec;
+    if (!std::filesystem::exists(sock_path, ec)) {
+        // 宿主还没 bind，交给 zmq 自己重试
+        return true;
+    }
+
+    const auto sock_label = file_integrity_label(sock_path);
+    const auto proc_level = process_integrity_level();
+    if (!sock_label || !proc_level) {
+        // 查不出来就保持尽力而为，交给 zmq 自己决定
+        return true;
+    }
+    if (*proc_level >= sock_label->level) {
+        return true;
+    }
+    if ((sock_label->rights & SYSTEM_MANDATORY_LABEL_NO_WRITE_UP) == 0) {
+        // 标签显式允许向上写，实际能连上
+        return true;
+    }
+
+    // 完整性标签是 Windows 的强制访问控制：低完整性进程不能写入高完整性对象，
+    // 表现是 WSAEACCES（10013）。zmq 会把它当成普通连接失败无限重连，日志里什么都看不到。
+    LogError << "IPC connect will be blocked by Windows integrity level (MAC)" << VAR(path_to_utf8_string(sock_path))
+             << VAR(integrity_level_name(*proc_level)) << VAR(integrity_level_name(sock_label->level)) << VAR(sock_label->explicit_label);
+    LogError << "The agent socket is created with a higher integrity level than this process, so the kernel rejects "
+                "the connection. Run this process at the same or higher integrity level, or use the TCP transport "
+                "instead (numeric identifier / MaaAgentClientCreateTcp).";
+    return false;
+#endif
+}
+
 void Transceiver::uninit_socket()
 {
     LogFunc << VAR(ipc_addr_);
@@ -242,11 +598,16 @@ void Transceiver::uninit_socket()
 
     // AgentClient owns the bound socket and may be destroyed without a disconnect handshake.
     if (is_bound_) {
-        zmq_sock_.set(zmq::sockopt::linger, 0);
+        zmq_call("set linger", [&] { zmq_sock_.set(zmq::sockopt::linger, 0); });
     }
 
-    zmq_sock_.close();
-    zmq_ctx_.close();
+    zmq_call("close socket", [&] { zmq_sock_.close(); });
+    zmq_call("close context", [&] {
+        if (zmq_ctx_) {
+            zmq_ctx_->close();
+        }
+    });
+    zmq_ctx_.reset();
 
     // TCP 模式无需删除 socket 文件
     if (!is_tcp_) {
@@ -255,35 +616,54 @@ void Transceiver::uninit_socket()
     }
 }
 
-void Transceiver::reset_socket(std::chrono::milliseconds linger)
+bool Transceiver::reset_socket(std::chrono::milliseconds linger)
 {
     std::unique_lock lock(socket_mutex_);
 
-    zmq_sock_.set(zmq::sockopt::linger, static_cast<int>(linger.count()));
-    zmq_sock_.close();
+    zmq_call("reset close socket", [&] {
+        zmq_sock_.set(zmq::sockopt::linger, static_cast<int>(linger.count()));
+        zmq_sock_.close();
+    });
 
     if (is_bound_ && !is_tcp_) {
         std::error_code ec;
         std::filesystem::remove(ipc_path_, ec);
     }
 
-    zmq_ctx_.close(); // 同步等待 socket 销毁完成
-    zmq_ctx_ = zmq::context_t();
+    zmq_call("reset context", [&] {
+        if (zmq_ctx_) {
+            zmq_ctx_->close(); // 同步等待 socket 销毁完成
+        }
+    });
+    zmq_ctx_.reset();
 
-    create_pair_socket();
+    if (!create_pair_socket()) {
+        return false;
+    }
 
-    if (is_bound_) {
-        zmq_sock_.bind(ipc_addr_);
-    }
-    else {
-        zmq_sock_.connect(ipc_addr_);
-    }
+    return zmq_call(is_bound_ ? "rebind" : "reconnect", [&] {
+        if (is_bound_) {
+            zmq_sock_.bind(ipc_addr_);
+        }
+        else {
+            zmq_sock_.connect(ipc_addr_);
+        }
+    });
 }
 
 bool Transceiver::alive()
 {
     std::unique_lock lock(socket_mutex_);
-    return zmq_sock_.handle() != nullptr && zmq::detail::poll(&zmq_pollitem_send_, 1, 0);
+
+    if (zmq_sock_.handle() == nullptr) {
+        return false;
+    }
+
+    bool ready = false;
+    // poll 也会抛 zmq 异常，不能让调用方看到异常；但返回值必须保留，
+    // 零等待轮询返回 0 表示没有对端，不能当成存活
+    const bool ok = zmq_call("poll alive", [&] { ready = zmq::detail::poll(&zmq_pollitem_send_, 1, 0) > 0; });
+    return ok && ready;
 }
 
 void Transceiver::set_timeout(const std::chrono::milliseconds& timeout)
@@ -310,7 +690,8 @@ bool Transceiver::poll(zmq::pollitem_t& pollitem)
         catch (const zmq::error_t& e) {
             // Android/Linux: signals may interrupt poll; retry with remaining timeout.
             if (e.num() != EINTR) {
-                throw;
+                LogError << "zmq poll failed" << VAR(e.num()) << VAR(e.what()) << VAR(ipc_addr_);
+                return false;
             }
         }
 

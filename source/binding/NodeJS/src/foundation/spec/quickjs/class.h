@@ -68,7 +68,10 @@ struct NativeClass
             try {
                 auto impl = Inherit::ctor(info);
                 if (!impl) {
-                    return { info.Env(), JS_EXCEPTION };
+                    // 对象已经分配，失败路径必须自己回收，否则构造失败会漏一个 JS 对象
+                    JS_FreeValue(info.context, obj);
+                    std::string what = std::format("maa.{}.ctor: failed to create instance", Inherit::name);
+                    return ThrowTypeError(info.Env(), what);
                 }
 
                 impl->env = info.Env();
@@ -81,6 +84,8 @@ struct NativeClass
                 return self;
             }
             catch (const MaaError& exc) {
+                // impl 若已挂在 obj 上，随对象释放一起回收
+                JS_FreeValue(info.context, obj);
                 std::string what = std::format("maa.{}.ctor: {}", Inherit::name, exc.what());
                 return ThrowTypeError(info.Env(), what);
             }

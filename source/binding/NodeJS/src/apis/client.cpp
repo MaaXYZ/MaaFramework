@@ -10,6 +10,9 @@ ClientImpl::ClientImpl(std::string identifier)
     StringBuffer buf;
     buf.set(identifier);
     client = MaaAgentClientCreateV2(buf);
+    if (!client) {
+        throw maajs::MaaError { "Client create failed" };
+    }
 }
 
 ClientImpl::~ClientImpl()
@@ -121,6 +124,10 @@ ClientImpl* ClientImpl::ctor(const maajs::CallbackInfo& info)
     try {
         auto params = maajs::UnWrapArgs<std::tuple<maajs::OptionalParam<std::string>>>(info);
         return new ClientImpl { std::get<0>(params).value_or("") };
+    }
+    catch (const maajs::MaaError&) {
+        // 交给外层 ctor() 转成带原因的 TypeError，别退化成通用失败
+        throw;
     }
     catch (std::exception&) {
         return nullptr;
