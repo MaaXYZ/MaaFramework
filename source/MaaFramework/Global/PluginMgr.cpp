@@ -8,6 +8,7 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/Runtime.h"
+#include "MaaUtils/ScopeLeave.hpp"
 
 MAA_GLOBAL_NS_BEGIN
 
@@ -49,11 +50,6 @@ std::optional<boost::dll::shared_library> PluginMgr::load_dll(const std::filesys
 {
     LogFunc << VAR(library_path);
 
-    if (auto it = plugins_.find(path_to_utf8_string(library_path)); it != plugins_.end()) {
-        LogDebug << "Library already loaded" << VAR(library_path);
-        return it->second.library;
-    }
-
     boost::dll::shared_library library;
     boost::dll::fs::error_code ec;
     library.load(library_path, ec, boost::dll::load_mode::append_decorations | boost::dll::load_mode::search_system_folders);
@@ -83,8 +79,11 @@ bool PluginMgr::load_and_parse(const std::filesystem::path& library_path)
 
     auto& library = *opt;
     std::filesystem::path filepath = library.location();
+    std::error_code ec;
+    auto canonical_path = std::filesystem::weakly_canonical(filepath, ec);
+    auto plugin_path = path_to_utf8_string(ec ? filepath : canonical_path);
     LogInfo << VAR(library_path) << VAR(filepath);
-    if (plugins_.contains(path_to_utf8_string(filepath))) {
+    if (plugins_.contains(plugin_path)) {
         return true;
     }
 
@@ -130,6 +129,25 @@ bool PluginMgr::load_and_parse(const std::filesystem::path& library_path)
         plugin.on_shutdown = library.get<decltype(OnPluginShutdown)>("OnPluginShutdown");
     }
 
+    constexpr const char* kFuncGetCustomControllerName = "GetCustomControllerName";
+    constexpr const char* kFuncCreateCustomController = "CreateCustomController";
+    const bool has_name = library.has(kFuncGetCustomControllerName);
+    if (has_name != library.has(kFuncCreateCustomController)) {
+        LogError << "A controller plugin must export both" << kFuncGetCustomControllerName << kFuncCreateCustomController << VAR(filepath);
+        return false;
+    }
+    std::string controller_name;
+    ControllerFactory factory = nullptr;
+    if (has_name) {
+        const char* name = library.get<decltype(GetCustomControllerName)>(kFuncGetCustomControllerName)();
+        if (!name || !*name) {
+            LogError << "Empty plugin controller name" << VAR(filepath);
+            return false;
+        }
+        controller_name = name;
+        factory = library.get<decltype(CreateCustomController)>(kFuncCreateCustomController);
+    }
+
     constexpr const char* kFuncOnResourceEvent = "OnResourceEvent";
     if (library.has(kFuncOnResourceEvent)) {
         plugin.on_res_event = library.get<decltype(OnResourceEvent)>(kFuncOnResourceEvent);
@@ -168,8 +186,12 @@ bool PluginMgr::load_and_parse(const std::filesystem::path& library_path)
 
     plugin.library = std::move(library);
 
-    plugins_.insert_or_assign(path_to_utf8_string(filepath), std::move(plugin));
-    LogInfo << "Plugin registerd" << VAR(filepath);
+    if (factory && !controller_factories_.try_emplace(controller_name, factory).second) {
+        LogError << "Duplicate plugin controller name" << VAR(controller_name) << VAR(filepath);
+        return false;
+    }
+    plugins_.emplace(std::move(plugin_path), std::move(plugin));
+    LogInfo << "Plugin registered" << VAR(filepath);
     return true;
 }
 
@@ -178,6 +200,39 @@ std::vector<std::string> PluginMgr::get_names() const
     std::lock_guard lock(mutex_);
     auto view = plugins_ | std::views::keys;
     return { view.begin(), view.end() };
+}
+
+std::vector<std::string> PluginMgr::get_controller_names() const
+{
+    std::lock_guard lock(mutex_);
+    if (shutdown_) {
+        return { };
+    }
+    auto view = controller_factories_ | std::views::keys;
+    return { view.begin(), view.end() };
+}
+
+MaaController* PluginMgr::create_controller(const std::string& name, const char* config_json)
+{
+    ControllerFactory factory;
+    {
+        std::unique_lock lock(mutex_);
+        management_done_.wait(lock, [this] { return !managing_ || shutdown_; });
+        if (shutdown_) {
+            return nullptr;
+        }
+        auto it = controller_factories_.find(name);
+        if (it == controller_factories_.end()) {
+            LogError << "Unknown plugin controller" << VAR(name);
+            return nullptr;
+        }
+        factory = it->second;
+        // Keep shutdown from running between initialization and the factory's creation of a framework object.
+        initialize(lock);
+        ++instances_;
+    }
+    OnScopeLeave([this]() { instance_destroyed(); });
+    return factory(config_json);
 }
 
 std::vector<PluginMgr::Sink> PluginMgr::get_res_sinks() const

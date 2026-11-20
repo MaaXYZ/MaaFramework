@@ -14,3 +14,10 @@ target_compile_definitions(PluginLifecycleTesting PRIVATE
 set_target_properties(PluginTestFixture PluginLifecycleTesting PROPERTIES FOLDER Testing)
 install(TARGETS PluginTestFixture PluginLifecycleTesting RUNTIME DESTINATION bin LIBRARY DESTINATION bin)
 add_test(NAME PluginLifecycle COMMAND PluginLifecycleTesting $<TARGET_FILE:PluginTestFixture>)
+
+if(WITH_CUSTOM_CONTROLLER)
+    add_library(ControllerFixture MODULE controller_fixture.cpp)
+    target_link_libraries(ControllerFixture PRIVATE MaaFramework HeaderOnlyLibraries ${OpenCV_LIBS})
+    set_target_properties(ControllerFixture PROPERTIES PREFIX "" FOLDER Testing)
+    install(TARGETS ControllerFixture LIBRARY DESTINATION test/plugins RUNTIME DESTINATION test/plugins)
+endif()

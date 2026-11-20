@@ -35,6 +35,8 @@ ControllerAgent::~ControllerAgent()
 
     auto_release_pressed();
     notifier_.notify_plugins(this, MaaMsg_Controller_Destroying, json::object { });
+    // A plugin-owned control unit may invoke its release callback during destruction.
+    control_unit_.reset();
     MAA_GLOBAL_NS::PluginMgr::get_instance().instance_destroyed();
 }
 

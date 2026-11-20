@@ -223,6 +223,22 @@ class AgentClient:
             raise RuntimeError("Failed to get custom action list.")
         return buffer.get()
 
+    @property
+    def custom_controller_list(self) -> list[str]:
+        """列出对端注册的控制器名称 / List the controller names registered by the peer."""
+        buffer = StringListBuffer()
+        if not Library.agent_client().MaaAgentClientGetCustomControllerList(self._handle, buffer._handle):
+            raise RuntimeError("Failed to get custom controller list.")
+        return buffer.get()
+
+    def create_custom_controller(self, name: str) -> Controller:
+        """为已连接的 Agent 创建控制器 / Create a controller for the connected Agent.
+
+        使用期间保持此客户端连接，重新连接后需创建新的控制器。
+        Keep the client alive and connected while using the controller. Create a new controller after reconnecting.
+        """
+        return _AgentController(self, name)
+
     _api_properties_initialized: bool = False
 
     @staticmethod
@@ -322,3 +338,23 @@ class AgentClient:
             MaaAgentClientHandle,
             MaaStringListBufferHandle,
         ]
+
+        Library.agent_client().MaaAgentClientGetCustomControllerList.restype = MaaBool
+        Library.agent_client().MaaAgentClientGetCustomControllerList.argtypes = [
+            MaaAgentClientHandle,
+            MaaStringListBufferHandle,
+        ]
+
+        Library.agent_client().MaaAgentClientCreateCustomController.restype = MaaControllerHandle
+        Library.agent_client().MaaAgentClientCreateCustomController.argtypes = [
+            MaaAgentClientHandle,
+            ctypes.c_char_p,
+        ]
+
+
+class _AgentController(Controller):
+    def __init__(self, client: AgentClient, name: str):
+        super().__init__()
+        self._handle = Library.agent_client().MaaAgentClientCreateCustomController(client._handle, name.encode())
+        if not self._handle:
+            raise RuntimeError(f"Failed to create agent controller: {name!r}")

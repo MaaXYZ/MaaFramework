@@ -221,3 +221,23 @@ MaaBool MaaAgentClientGetCustomActionList(MaaAgentClient* client, /* out */ MaaS
 
     return true;
 }
+
+MaaBool MaaAgentClientGetCustomControllerList(MaaAgentClient* client, MaaStringListBuffer* buffer)
+{
+    if (!client || !buffer) {
+        return false;
+    }
+    buffer->clear();
+    for (const auto& name : client->get_custom_controller_list()) {
+        buffer->append(MaaNS::StringBuffer(name));
+    }
+    return true;
+}
+
+MaaController* MaaAgentClientCreateCustomController(MaaAgentClient* client, const char* name)
+{
+    if (!client || !name || !*name) {
+        return nullptr;
+    }
+    return client->create_custom_controller(name);
+}

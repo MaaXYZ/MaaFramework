@@ -45,45 +45,48 @@ struct CallbackContext
 
         std::promise<Result> promise;
         std::future<Result> future = promise.get_future();
-        tsfn.BlockingCall([&caller, &parser, &promise](Napi::Env env, Napi::Function fn) {
-            Napi::Value result = caller(fn);
-            if (result.IsPromise()) {
-                auto pro = result.As<PromiseType>();
-                pro.Then(
-                    Napi::Function::New(
-                        env,
-                        [&promise, &parser](const Napi::CallbackInfo& info) {
-                            if constexpr (std::is_same_v<Result, void>) {
-                                parser(info[0]);
-                                promise.set_value();
-                            }
-                            else {
-                                promise.set_value(parser(info[0]));
-                            }
-                            return info.Env().Undefined();
-                        }),
-                    // 即使reject依然尝试将其转化为目标值; 回调函数总是需要一个返回结果.
-                    Napi::Function::New(env, [&promise, &parser](const Napi::CallbackInfo& info) {
-                        if constexpr (std::is_same_v<Result, void>) {
-                            parser(info[0]);
-                            promise.set_value();
-                        }
-                        else {
-                            promise.set_value(parser(info[0]));
-                        }
-                        info.Env().Undefined();
-                    }));
+        auto fail = [&promise]() {
+            if constexpr (std::is_void_v<Result>) {
+                promise.set_value();
             }
             else {
-                if constexpr (std::is_same_v<Result, void>) {
-                    parser(result);
+                promise.set_value(Result {});
+            }
+        };
+        auto resolve = [&parser, &promise, fail](Napi::Value value) {
+            try {
+                if constexpr (std::is_void_v<Result>) {
+                    parser(value);
                     promise.set_value();
                 }
                 else {
-                    promise.set_value(parser(result));
+                    promise.set_value(parser(value));
                 }
             }
+            catch (const std::exception& error) {
+                std::cerr << error.what() << std::endl;
+                fail();
+            }
+        };
+        auto status = tsfn.BlockingCall([&caller, resolve, fail](Napi::Env env, Napi::Function fn) {
+            try {
+                auto result = caller(fn);
+                if (!result.IsPromise()) {
+                    resolve(result);
+                    return;
+                }
+                result.As<PromiseType>().Then(
+                    Napi::Function::New(env, [resolve](const Napi::CallbackInfo& info) { resolve(info[0]); }),
+                    Napi::Function::New(env, [fail](const Napi::CallbackInfo&) { fail(); }));
+            }
+            catch (const std::exception& error) {
+                std::cerr << error.what() << std::endl;
+                fail();
+            }
         });
+        if (status != napi_ok) {
+            return Result();
+        }
         return future.get();
     }
 

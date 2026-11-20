@@ -11,6 +11,8 @@ import os
 from pathlib import Path
 import sys
 
+import numpy
+
 if len(sys.argv) < 3:
     print("Usage: python agent_main_test.py <binding_dir> <install_dir>")
     sys.exit(1)
@@ -34,6 +36,8 @@ from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from agent_test_utils import (
     CONNECT_TIMEOUT_MS,
+    PROCESS_TIMEOUT_SECONDS,
+    connect_agent_server,
     create_marker_path,
     run_connected_agent_test,
     start_agent_server,
@@ -44,6 +48,52 @@ from agent_test_utils import (
 class ConflictingAction(CustomAction):
     def run(self, context, argv):
         return True
+
+
+def controller_only_test():
+    agent = AgentClient()
+    command = [
+        sys.executable,
+        str(Path(__file__).with_name("agent_controller_child.py")),
+        str(binding_dir),
+        agent.identifier,
+    ]
+    previous = None
+    for _ in range(2):
+        child = connect_agent_server(agent, command)
+        try:
+            assert agent.custom_controller_list == ["RecordingDevice"]
+            try:
+                agent.create_custom_controller("MissingDevice")
+            except RuntimeError:
+                pass
+            else:
+                raise AssertionError("Unknown controller name accepted")
+
+            controller = agent.create_custom_controller("RecordingDevice")
+            assert controller.post_connection().wait().succeeded
+            sibling = agent.create_custom_controller("RecordingDevice")
+            assert controller.post_input_text("shared").wait().succeeded
+            assert ["input_text", "shared"] in sibling.info["calls"]
+            if previous is None:
+                assert controller.set_screenshot_use_raw_size(True)
+                assert controller.post_input_text("delay-frame").wait().succeeded
+                assert agent.set_timeout(500)
+                try:
+                    assert controller.post_screencap().wait().failed
+                finally:
+                    assert agent.set_timeout(CONNECT_TIMEOUT_MS)
+                pixels = numpy.arange(24 * 32 * 3, dtype=numpy.uint8).reshape(24, 32, 3)
+                numpy.testing.assert_array_equal(controller.post_screencap().get(wait=True), pixels)
+            else:
+                assert previous.post_input_text("stale").wait().failed
+                assert ["input_text", "stale"] not in controller.info["calls"]
+            previous = controller
+            assert agent.disconnect()
+            child.wait(timeout=PROCESS_TIMEOUT_SECONDS)
+            assert child.returncode == 0
+        finally:
+            stop_agent_server(child)
 
 
 def api_test():
@@ -162,6 +212,7 @@ def api_test():
     # 验证断开连接后的状态
     print(f"agent.connected after disconnect: {agent.connected}")
 
+    controller_only_test()
     print("\n" + "=" * 50)
     print("All agent tests passed!")
     print("=" * 50)

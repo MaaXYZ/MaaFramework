@@ -26,6 +26,7 @@ maajs::ValueType load_wlroots_controller(maajs::EnvType env);
 maajs::ValueType load_kwin_controller(maajs::EnvType env);
 maajs::ValueType load_linux_controller(maajs::EnvType env);
 maajs::ValueType load_custom_controller(maajs::EnvType env);
+maajs::ValueType load_plugin_controller(maajs::EnvType env);
 
 maajs::ValueType load_task_job(maajs::EnvType env);
 maajs::ValueType load_tasker(maajs::EnvType env);

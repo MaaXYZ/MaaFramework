@@ -6,6 +6,7 @@
 
 #include "../foundation/spec.h"
 #include "callback.h"
+#include "controller.h"
 #include "ext.h"
 
 static void register_custom_recognition(maajs::EnvType env, std::string key, maajs::FunctionType func)
@@ -32,6 +33,28 @@ static void register_custom_action(maajs::EnvType env, std::string key, maajs::F
         throw maajs::MaaError { std::format("Custom name is already registered: '{}'", key) };
     }
     ExtContext::get(env)->globalCallbacks.push_back(std::move(ctx));
+}
+
+static void register_custom_controller(maajs::EnvType env, std::string name, maajs::ObjectType actor)
+{
+    if (name.empty()) {
+        throw maajs::MaaError { "Custom name must not be empty" };
+    }
+    auto ctx = CustomControllerContext::create(actor);
+    ctx->add_bind("connected", "CustomConnected", 0, [](maajs::EnvType env) { return maajs::BooleanType::New(env, true); });
+    if (!MaaAgentServerRegisterCustomController(name.c_str(), &CustomCallbacks, ctx.get())) {
+        throw maajs::MaaError { std::format("Failed to register custom controller '{}'", name) };
+    }
+    // Server.join() keeps the event loop alive while this Agent is serving.
+    for (const auto& [_, callback] : ctx->callbacks) {
+        callback->tsfn.Unref(env);
+    }
+    auto* owner = ExtContext::get(env);
+    if (owner->controllerCallbacks.empty()) {
+        // Release threadsafe functions before Node waits for their finalizers.
+        env.AddCleanupHook([](ExtContext* data) { data->controllerCallbacks.clear(); }, owner);
+    }
+    owner->controllerCallbacks.push_back(std::move(ctx));
 }
 
 static void add_resource_sink(maajs::FunctionType func)
@@ -100,6 +123,7 @@ maajs::ValueType load_server(maajs::EnvType env)
 
     MAA_BIND_FUNC(obj, "register_custom_recognition", register_custom_recognition);
     MAA_BIND_FUNC(obj, "register_custom_action", register_custom_action);
+    MAA_BIND_FUNC(obj, "register_custom_controller", register_custom_controller);
     MAA_BIND_FUNC(obj, "add_resource_sink", add_resource_sink);
     MAA_BIND_FUNC(obj, "add_controller_sink", add_controller_sink);
     MAA_BIND_FUNC(obj, "add_tasker_sink", add_tasker_sink);

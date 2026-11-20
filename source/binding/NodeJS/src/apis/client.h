@@ -34,6 +34,8 @@ struct ClientImpl : public maajs::NativeClassBase
     void set_timeout(uint64_t ms);
     std::optional<std::vector<std::string>> get_custom_recognition_list();
     std::optional<std::vector<std::string>> get_custom_action_list();
+    std::optional<std::vector<std::string>> get_custom_controller_list();
+    maajs::ValueType create_custom_controller(std::string name);
 
     std::string to_string() override;
 

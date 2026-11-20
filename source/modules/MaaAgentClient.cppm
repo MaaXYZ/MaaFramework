@@ -27,6 +27,8 @@ export using ::MaaAgentClientAlive;
 export using ::MaaAgentClientSetTimeout;
 export using ::MaaAgentClientGetCustomRecognitionList;
 export using ::MaaAgentClientGetCustomActionList;
+export using ::MaaAgentClientGetCustomControllerList;
+export using ::MaaAgentClientCreateCustomController;
 
 // Deprecated APIs
 export using ::MaaAgentClientCreate;

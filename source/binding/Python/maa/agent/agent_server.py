@@ -7,7 +7,7 @@ from ..library import Library
 
 if TYPE_CHECKING:
     from ..context import ContextEventSink
-    from ..controller import ControllerEventSink
+    from ..controller import ControllerEventSink, CustomController
     from ..custom_action import CustomAction
     from ..custom_recognition import CustomRecognition
     from ..resource import ResourceEventSink
@@ -150,6 +150,34 @@ class AgentServer:
             AgentServer._custom_action_holder[name] = action
 
         return success
+
+    _custom_controller_holder: dict[str, "CustomController"] = {}
+
+    @staticmethod
+    def register_custom_controller(name: str, controller: "CustomController") -> bool:
+        """注册一个具名控制器实例 / Register a named controller instance before starting the Agent."""
+        AgentServer._set_api_properties()
+        success = bool(
+            Library.agent_server().MaaAgentServerRegisterCustomController(
+                name.encode(), controller.c_handle, controller.c_arg
+            )
+        )
+        if success:
+            AgentServer._custom_controller_holder[name] = controller
+        return success
+
+    @staticmethod
+    def custom_controller(name: str) -> Callable[[type["CustomController"]], type["CustomController"]]:
+        """为此名称创建并注册一个控制器实例 / Instantiate and register one controller under this name."""
+        if not name:
+            raise ValueError("Custom name must not be empty")
+
+        def wrapper(controller: type["CustomController"]) -> type["CustomController"]:
+            if not AgentServer.register_custom_controller(name, controller()):
+                raise RuntimeError(f"Failed to register custom controller: {name!r}")
+            return controller
+
+        return wrapper
 
     @staticmethod
     def start_up(identifier: str) -> bool:
@@ -340,6 +368,13 @@ class AgentServer:
         Library.agent_server().MaaAgentServerRegisterCustomAction.argtypes = [
             ctypes.c_char_p,
             MaaCustomActionCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.agent_server().MaaAgentServerRegisterCustomController.restype = MaaBool
+        Library.agent_server().MaaAgentServerRegisterCustomController.argtypes = [
+            ctypes.c_char_p,
+            ctypes.POINTER(MaaCustomControllerCallbacks),
             ctypes.c_void_p,
         ]
 

@@ -4,6 +4,7 @@
 
 #include <condition_variable>
 #include <filesystem>
+#include <map>
 #include <mutex>
 #include <unordered_map>
 
@@ -22,6 +23,7 @@ class PluginMgr : public SingletonHolder<PluginMgr>
 {
 public:
     using Sink = void (*)(void* handle, const char* message, const char* details_json, void* trans_arg);
+    using ControllerFactory = decltype(&CreateCustomController);
 
     struct Plugin
     {
@@ -47,6 +49,8 @@ public:
     void instance_destroyed();
     bool flush();
     bool shutdown();
+    std::vector<std::string> get_controller_names() const;
+    MaaController* create_controller(const std::string& name, const char* config_json);
     std::vector<Sink> get_res_sinks() const;
     std::vector<Sink> get_ctrl_sinks() const;
     std::vector<Sink> get_tasker_sinks() const;
@@ -65,6 +69,7 @@ private:
     bool shutdown_ = false;
     bool managing_ = false;
     std::unordered_map<std::string, Plugin> plugins_;
+    std::map<std::string, ControllerFactory> controller_factories_;
 };
 
 MAA_GLOBAL_NS_END

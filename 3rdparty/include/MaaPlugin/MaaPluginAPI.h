@@ -19,6 +19,13 @@ extern "C"
     MAA_PLUGIN_API void OnPluginFlush(void);
     MAA_PLUGIN_API void OnPluginShutdown(void);
 
+    struct MaaController;
+
+    /// Optional pair for a plugin that provides a controller. The name must be nonempty and unique.
+    MAA_PLUGIN_API const char* GetCustomControllerName(void);
+    /// Return a newly owned MaaFramework controller, or NULL on failure. config_json is valid during this call.
+    MAA_PLUGIN_API struct MaaController* CreateCustomController(const char* config_json);
+
     MAA_PLUGIN_API void OnResourceEvent(void* handle, const char* message, const char* details_json, void* trans_arg);
     MAA_PLUGIN_API void OnControllerEvent(void* handle, const char* message, const char* details_json, void* trans_arg);
     MAA_PLUGIN_API void OnTaskerEvent(void* handle, const char* message, const char* details_json, void* trans_arg);
