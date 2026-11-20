@@ -146,9 +146,27 @@ enum class Type
 using TargetObj = MAA_VISION_NS::TargetObj;
 using Target = MAA_VISION_NS::Target;
 
+enum class PointMethod
+{
+    Gaussian,
+    Uniform,
+    Center,
+    UniformInset,
+    UniformEllipse,
+};
+
+inline const std::map<PointMethod, std::string> kPointMethodNames = {
+    { PointMethod::Gaussian, "Gaussian" },
+    { PointMethod::Uniform, "Uniform" },
+    { PointMethod::Center, "Center" },
+    { PointMethod::UniformInset, "UniformInset" },
+    { PointMethod::UniformEllipse, "UniformEllipse" },
+};
+
 struct ClickParam
 {
     Target target;
+    PointMethod target_method = PointMethod::Gaussian;
     uint contact = 0;
     int pressure = 1;
 };
@@ -156,6 +174,7 @@ struct ClickParam
 struct LongPressParam
 {
     Target target;
+    PointMethod target_method = PointMethod::Gaussian;
     uint duration = 1000;
     uint contact = 0;
     int pressure = 1;
@@ -164,8 +183,10 @@ struct LongPressParam
 struct SwipeParam
 {
     Target begin;
+    PointMethod begin_method = PointMethod::Gaussian;
     std::vector<TargetObj> end = { { } };
     std::vector<cv::Rect> end_offset;
+    std::vector<PointMethod> end_method = { PointMethod::Gaussian };
     std::vector<uint> end_hold;
     std::vector<uint> duration = { 200 };
 
@@ -185,6 +206,7 @@ struct TouchParam
 {
     uint contact = 0;
     Target target;
+    PointMethod target_method = PointMethod::Gaussian;
     int pressure = 0;
     bool auto_up = false;
 };
@@ -224,6 +246,7 @@ struct AppParam
 struct ScrollParam
 {
     Target target;
+    PointMethod target_method = PointMethod::Gaussian;
     int dx = 0;
     int dy = 0;
 };

@@ -81,5 +81,46 @@
         "recognition": "Custom",
         "custom_recognition": "<custom_1>",
         "order_by": "Horizontal"
+    },
+    "click_unknown_target_method": {
+        "action": "Click",
+        "target_method": "center"
+    },
+    "swipe_unknown_end_method": {
+        "action": "Swipe",
+        "end_method": "TopLeft"
+    },
+    "touch_move_method_list": {
+        "action": {
+            "type": "TouchMove",
+            "param": {
+                "target_method": [
+                    "Gaussian"
+                ]
+            }
+        }
+    },
+    "swipe_empty_end_method": {
+        "action": "Swipe",
+        "end_method": []
+    },
+    "multi_swipe_invalid_end_method_item": {
+        "action": {
+            "type": "MultiSwipe",
+            "param": {
+                "swipes": [
+                    {
+                        "end_method": [
+                            "Center",
+                            1
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "touch_up_target_method": {
+        "action": "TouchUp",
+        "target_method": "Center"
     }
 }

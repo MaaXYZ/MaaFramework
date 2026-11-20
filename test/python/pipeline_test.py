@@ -17,6 +17,7 @@ import json
 import io
 import tempfile
 import unittest
+from threading import Timer
 
 # Fix encoding issues on Windows
 if sys.stdout.encoding != "utf-8":
@@ -1436,6 +1437,7 @@ class TargetController(CustomController):
         self.scale_points = False
         self.use_touch = False
         self.inputs = []
+        self.contact_events = {}
 
     def connect(self):
         return True
@@ -1462,13 +1464,16 @@ class TargetController(CustomController):
 
     def touch_down(self, contact, x, y, pressure):
         self.inputs.append(("down", x, y))
+        self.contact_events.setdefault(contact, []).append(("down", x, y))
         return True
 
     def touch_move(self, contact, x, y, pressure):
         self.inputs.append(("move", x, y))
+        self.contact_events.setdefault(contact, []).append(("move", x, y))
         return True
 
     def touch_up(self, contact):
+        self.contact_events.setdefault(contact, []).append(("up",))
         return True
 
     def scroll(self, dx, dy):
@@ -1713,6 +1718,114 @@ class DirectHitTargetTest(unittest.TestCase):
         self.assertTrue(all(n.completed for n in job.get().nodes))
         self.assertEqual(self.controller.inputs, [("click", 100, 200)])
         self.assertEqual(self.controller.screenshot_count, 0)
+
+    def test_target_method_after_offset(self):
+        cases = [
+            ("Click", {}, "click"),
+            ("LongPress", {"duration": 1}, "down"),
+            ("TouchDown", {}, "down"),
+            ("TouchMove", {}, "move"),
+            ("Scroll", {"dy": 1}, "move"),
+        ]
+        for action, extra, event in cases:
+            with self.subTest(action=action):
+                self.controller.use_touch = action == "LongPress"
+                self.controller.inputs.clear()
+                self.run_node({
+                    "action": action,
+                    "roi": [10, 20, 4, 3],
+                    "target": True,
+                    "target_offset": [3, 4, 2, 2],
+                    "target_method": "Center",
+                    **extra,
+                })
+                self.assertIn((event, 16, 26), self.controller.inputs)
+
+    def assert_sampled_point(self, point, rect, method):
+        left, top, width, height = rect
+        x, y = point[0] - left, point[1] - top
+        self.assertIn(x, range(width))
+        self.assertIn(y, range(height))
+        if method == "UniformInset":
+            self.assertIn(x, range(width // 4, width - width // 4))
+            self.assertIn(y, range(height // 4, height - height // 4))
+        elif method == "UniformEllipse":
+            # Twice the pixel-center displacement, to test the ellipse with integer arithmetic.
+            dx, dy = 2 * x + 1 - width, 2 * y + 1 - height
+            self.assertLessEqual((dx * height) ** 2 + (dy * width) ** 2, (width * height) ** 2)
+        elif method == "Gaussian" and min(width, height) <= 2:
+            self.assertEqual((x, y), (width // 2, height // 2))
+
+    def test_random_target_methods(self):
+        for method in ("Gaussian", "Uniform", "UniformInset", "UniformEllipse"):
+            for width, height in ((1, 1), (1, 9), (8, 1), (7, 12), (12, 8)):
+                with self.subTest(method=method, size=(width, height)):
+                    self.controller.inputs.clear()
+                    self.run_node({
+                        "action": "Click",
+                        "target": [27, 44, width, height],
+                        "target_offset": [3, -4, 0, 0],
+                        "target_method": method,
+                        "repeat": 16,
+                        "repeat_delay": 0,
+                    })
+                    self.assertEqual(len(self.controller.inputs), 16)
+                    for _, x, y in self.controller.inputs:
+                        self.assert_sampled_point((x, y), (30, 40, width, height), method)
+
+    def test_swipe_waypoint_methods(self):
+        swipe = {
+            "begin": [10, 20, 6, 8],
+            "begin_offset": [1, 0, 0, 0],
+            "begin_method": "UniformEllipse",
+            "end": [[20, 20, 8, 8], [30, 30, 3, 5], [40, 40, 3, 5]],
+            "end_offset": [1, -1, 0, 0],
+            "end_method": ["UniformInset", "Center"],
+            "duration": [10, 0, 10],
+        }
+
+        def check_waypoints(detail):
+            self.assert_sampled_point(detail["begin"], (11, 20, 6, 8), "UniformEllipse")
+            self.assert_sampled_point(detail["end"][0], (21, 19, 8, 8), "UniformInset")
+            self.assertEqual(detail["end"][1:], [[32, 31], [42, 41]])
+
+        detail = self.run_node({"action": "Swipe", **swipe}).nodes[0].action.raw_detail
+        check_waypoints(detail)
+        points = [detail["begin"], *detail["end"]]
+        self.assertEqual(
+            self.controller.inputs,
+            [("swipe", *begin, *end) for begin, end in zip(points, points[1:])],
+        )
+
+        self.controller.use_touch = True
+        second = {
+            "begin": [10, 20, 6, 8], "begin_method": "Center",
+            "end": [[60, 60, 3, 5], [70, 70, 3, 5]], "end_method": "Center",
+            "duration": 15, "only_hover": True,
+        }
+        # A regression in handling non-integral step counts can leave the controller running.
+        timeout = Timer(5, self.tasker.post_stop)
+        timeout.start()
+        try:
+            detail = self.run_node({"action": "MultiSwipe", "swipes": [swipe, second]}).nodes[0].action.raw_detail
+        finally:
+            timeout.cancel()
+            timeout.join()
+        first = detail["swipes"][0]
+        check_waypoints(first)
+        pressed = self.controller.contact_events[0]
+        self.assertEqual(pressed[0], ("down", *first["begin"]))
+        self.assertEqual(pressed[1:-1], [("move", *end) for end in first["end"]])
+        self.assertEqual(pressed[-1], ("up",))
+        hover = self.controller.contact_events[1]
+        self.assertTrue(all(event[0] == "move" for event in hover))
+        self.assertEqual(hover[0], ("move", 13, 24))
+        self.assertIn(("move", 61, 62), hover)
+        self.assertEqual(hover[-1], ("move", 71, 72))
+
+        self.controller.contact_events.clear()
+        self.run_node({"action": "Swipe", **second, "end": [60, 60, 3, 5], "duration": 1})
+        self.assertEqual(self.controller.contact_events[0], [("move", 13, 24), ("move", 61, 62)])
 
     def test_input_scaling_remains_lazy(self):
         self.controller.scale_points = True

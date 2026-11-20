@@ -214,9 +214,12 @@ declare global {
 
         type ActionDoNothing = {}
 
+        type PointMethod = 'Gaussian' | 'Uniform' | 'UniformInset' | 'UniformEllipse' | 'Center'
+
         type ActionClick = {
             target?: true | NodeName | Rect
             target_offset?: Rect
+            target_method?: PointMethod
             contact?: number
             pressure?: number
         }
@@ -224,15 +227,18 @@ declare global {
         type ActionLongPress = {
             target?: true | NodeName | Rect
             target_offset?: Rect
+            target_method?: PointMethod
             duration?: number
             contact?: number
         }
 
-        type ActionSwipe = {
+        type ActionSwipe<Mode = ModeFragment> = {
             begin?: true | NodeName | Rect
             begin_offset?: Rect
+            begin_method?: PointMethod
             end?: true | NodeName | Rect | (true | NodeName | Rect)[]
             end_offset?: Rect | Rect[]
+            end_method?: [PointMethod, ...PointMethod[]] | RemoveIfDump<PointMethod, Mode>
             duration?: number | number[]
             end_hold?: number | number[]
             only_hover?: boolean
@@ -241,17 +247,7 @@ declare global {
 
         type ActionMultiSwipe<Mode> = RequiredIfStrict<
             {
-                swipes?: {
-                    starting?: number
-                    begin?: true | NodeName | Rect
-                    begin_offset?: Rect
-                    end?: true | NodeName | Rect | (true | NodeName | Rect)[]
-                    end_offset?: Rect | Rect[]
-                    duration?: number | number[]
-                    end_hold?: number | number[]
-                    only_hover?: boolean
-                    contact?: number
-                }[]
+                swipes?: (ActionSwipe<Mode> & { starting?: number })[]
             },
             'swipes',
             Mode
@@ -262,6 +258,7 @@ declare global {
                 contact?: number
                 target?: true | NodeName | Rect
                 target_offset?: Rect
+                target_method?: PointMethod
                 pressure?: number
                 auto_up?: boolean
             },
@@ -332,6 +329,7 @@ declare global {
         type ActionScroll = {
             target?: true | NodeName | Rect
             target_offset?: Rect
+            target_method?: PointMethod
             dx?: number
             dy?: number
         }
@@ -423,7 +421,7 @@ declare global {
             | MixAct<'DoNothing', ActionDoNothing, Mode>
             | MixAct<'Click', ActionClick, Mode>
             | MixAct<'LongPress', ActionLongPress, Mode>
-            | MixAct<'Swipe', ActionSwipe, Mode>
+            | MixAct<'Swipe', ActionSwipe<Mode>, Mode>
             | MixAct<'MultiSwipe', ActionMultiSwipe<Mode>, Mode>
             | MixAct<'TouchDown', ActionTouch<Mode>, Mode>
             | MixAct<'TouchMove', ActionTouch<Mode>, Mode>

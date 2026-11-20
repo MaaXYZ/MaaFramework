@@ -143,5 +143,51 @@
                 "index": -1
             }
         }
+    },
+    "click_target_method_v1": {
+        "action": "Click",
+        "target_method": "Gaussian"
+    },
+    "touch_down_target_method_v2": {
+        "action": {
+            "type": "TouchDown",
+            "param": {
+                "target_method": "Center"
+            }
+        }
+    },
+    "swipe_point_methods_v1": {
+        "action": "Swipe",
+        "begin_method": "UniformInset",
+        "end_method": "Uniform"
+    },
+    "multi_swipe_point_methods_v2": {
+        "action": {
+            "type": "MultiSwipe",
+            "param": {
+                "swipes": [
+                    {
+                        "begin_method": "Center",
+                        "end_method": [
+                            "UniformInset",
+                            "UniformEllipse"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "override_target_method_v1": {
+        "target_method": "UniformEllipse"
+    },
+    "override_swipe_methods_v2": {
+        "action": {
+            "param": {
+                "begin_method": "Center",
+                "end_method": [
+                    "Center"
+                ]
+            }
+        }
     }
 }
