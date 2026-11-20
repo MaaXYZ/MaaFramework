@@ -280,7 +280,8 @@ void MessageInput::stop_window_tracking()
     tracking_stop_generation_ = 0;
     tracking_stop_deadline_ticks_ = 0;
     tracking_active_ = false;
-    s_active_instance_ = nullptr;
+    MessageInput* expected = this;
+    s_active_instance_.compare_exchange_strong(expected, nullptr);
     pending_mouse_x_ = 0;
     pending_mouse_y_ = 0;
     has_pending_mouse_ = false;
