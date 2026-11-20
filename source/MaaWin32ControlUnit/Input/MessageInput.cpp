@@ -822,6 +822,18 @@ void MessageInput::unblock_input()
     BlockInput(FALSE);
 }
 
+void MessageInput::inactive_after_loss()
+{
+    // Drop saved positions and gesture destinations before normal cleanup so a
+    // recycled HWND or a new foreground window never receives movement or input.
+    gesture_target_ = nullptr;
+    mouse_down_sent_ = false;
+    cursor_pos_saved_ = false;
+    window_pos_saved_ = false;
+    stop_window_tracking();
+    inactive();
+}
+
 void MessageInput::inactive()
 {
     LogFunc;

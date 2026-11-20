@@ -13,6 +13,7 @@
 #include "module/RunWithoutFile.h"
 #include "module/RuntimeCache.h"
 #include "module/RuntimeEvents.h"
+#include "module/Win32HeldInput.h"
 
 #include "MaaFramework/MaaAPI.h"
 
@@ -79,6 +80,9 @@ int main([[maybe_unused]] int argc, char** argv)
         return -1;
     }
     if (!post_stop_interrupt(testset_dir)) {
+        return -1;
+    }
+    if (!test_win32_held_input()) {
         return -1;
     }
     if (!controller_action_events()) {

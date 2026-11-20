@@ -45,6 +45,18 @@ public:
 
     virtual bool scroll(int dx, int dy) = 0;
 
+    // Window-message input disappears with its HWND. System-wide input must
+    // release only the owned make event, without foregrounding a new window.
+    virtual bool release_lost_key(int) { return true; }
+
+    virtual bool release_lost_contact(int)
+    {
+        inactive_after_loss();
+        return true;
+    }
+
+    virtual void inactive_after_loss() { inactive(); }
+
     virtual void inactive() { }
 };
 

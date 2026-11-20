@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "Base/HeldInput.h"
 #include "Base/UnitBase.h"
 #include "Input/BackgroundManagedKeyInput.h"
 #include "MaaControlUnit/ControlUnitAPI.h"
@@ -24,7 +25,7 @@ public:
         MaaWin32ScreencapMethod screencap_method,
         MaaWin32InputMethod mouse_method,
         MaaWin32InputMethod keyboard_method);
-    virtual ~Win32ControlUnitMgr() override = default;
+    ~Win32ControlUnitMgr() override;
 
 public: // from ControlUnitAPI
     virtual bool connect() override;
@@ -91,7 +92,15 @@ private:
         std::shared_ptr<ScreencapBase> screencap;
         std::shared_ptr<BackgroundManagedKeyInput> background_keyboard;
 
+        HeldInput contacts;
+        HeldInput keys;
+        HeldInput guarded_keys;
+
         bool available() const;
+        bool release_key(int key);
+        bool release_contact(int contact);
+        bool release_guarded_key(int key);
+        bool release_held();
         void inactive();
     };
 

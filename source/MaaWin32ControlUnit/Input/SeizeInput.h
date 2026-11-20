@@ -42,6 +42,11 @@ public: // from RelativeMoveInput
 
     virtual void inactive() override;
 
+    void inactive_after_loss() override { unblock_input(); }
+
+    bool release_lost_key(int key) override;
+    bool release_lost_contact(int contact) override;
+
 private:
     void ensure_foreground();
     // 获取 last_pos_，若未设置则返回窗口客户区中心坐标

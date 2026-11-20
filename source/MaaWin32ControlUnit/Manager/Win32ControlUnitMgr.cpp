@@ -46,6 +46,40 @@ Win32ControlUnitMgr::Win32ControlUnitMgr(
     target_.background_keyboard = std::make_shared<BackgroundManagedKeyInput>(hWnd);
 }
 
+Win32ControlUnitMgr::~Win32ControlUnitMgr()
+{
+    if (!target_.release_held()) {
+        LogError << "Could not release all held input during destruction";
+    }
+    if (!target_.available() && target_.lost) {
+        target_.inactive();
+    }
+}
+
+bool Win32ControlUnitMgr::Target::release_key(int key)
+{
+    return keyboard && (available() ? keyboard->key_up(key) : keys.contains(key) && keyboard->release_lost_key(key));
+}
+
+bool Win32ControlUnitMgr::Target::release_contact(int contact)
+{
+    return mouse && (available() ? mouse->touch_up(contact) : contacts.contains(contact) && mouse->release_lost_contact(contact));
+}
+
+bool Win32ControlUnitMgr::Target::release_guarded_key(int key)
+{
+    // Removing a key from the managed domain already schedules its release.
+    return background_keyboard && (!background_keyboard->is_managed_key(key) || background_keyboard->key_up(key));
+}
+
+bool Win32ControlUnitMgr::Target::release_held()
+{
+    const bool mouse_ok = contacts.release_all([this](int code) { return release_contact(code); });
+    const bool keyboard_ok = keys.release_all([this](int code) { return release_key(code); });
+    const bool guard_ok = guarded_keys.release_all([this](int code) { return release_guarded_key(code); });
+    return mouse_ok && keyboard_ok && guard_ok;
+}
+
 bool Win32ControlUnitMgr::Target::available() const
 {
     if (!ready || lost || !hwnd) {
@@ -92,6 +126,12 @@ bool Win32ControlUnitMgr::connect()
         return true;
     }
 
+    if (!target_.release_held()) {
+        return false;
+    }
+    if (!target_.available() && target_.lost) {
+        target_.inactive();
+    }
     target_.ready = false;
     target_.lost = false;
     target_.mouse.reset();
@@ -189,6 +229,9 @@ bool Win32ControlUnitMgr::bind_target(
     }
     std::lock_guard lock(mutex_);
     if (!candidate.available() || (cancelled && cancelled())) {
+        return false;
+    }
+    if (!target_.release_held()) {
         return false;
     }
     if (target_.background_keyboard) {
@@ -598,7 +641,7 @@ bool Win32ControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    return target_.mouse->touch_down(contact, x, y, pressure);
+    return target_.contacts.down(contact, target_.mouse->touch_down(contact, x, y, pressure));
 }
 
 bool Win32ControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
@@ -615,12 +658,7 @@ bool Win32ControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 bool Win32ControlUnitMgr::touch_up(int contact)
 {
     std::lock_guard lock(mutex_);
-    if (!target_.available() || !target_.mouse) {
-        LogError << "Target mouse is unavailable";
-        return false;
-    }
-
-    return target_.mouse->touch_up(contact);
+    return target_.contacts.up(contact, target_.available(), [this](int code) { return target_.release_contact(code); });
 }
 
 bool Win32ControlUnitMgr::relative_move(int dx, int dy)
@@ -651,8 +689,9 @@ bool Win32ControlUnitMgr::click_key(int key)
             LogError << "target_.background_keyboard is null";
             return false;
         }
-        const bool key_down_ok = target_.background_keyboard->key_down(key);
-        const bool key_up_ok = target_.background_keyboard->key_up(key);
+        const bool key_down_ok = target_.guarded_keys.down(key, target_.background_keyboard->key_down(key));
+        const bool key_up_ok =
+            target_.guarded_keys.up(key, target_.available(), [this](int code) { return target_.release_guarded_key(code); });
         if (key_down_ok && !key_up_ok) {
             LogError << "Managed key" << VAR(key) << "key_down succeeded but key_up failed; key may remain logically pressed";
         }
@@ -689,7 +728,7 @@ bool Win32ControlUnitMgr::key_down(int key)
             LogError << "target_.background_keyboard is null";
             return false;
         }
-        return target_.background_keyboard->key_down(key);
+        return target_.guarded_keys.down(key, target_.background_keyboard->key_down(key));
     }
 
     if (!target_.keyboard) {
@@ -697,29 +736,18 @@ bool Win32ControlUnitMgr::key_down(int key)
         return false;
     }
 
-    return target_.keyboard->key_down(key);
+    return target_.keys.down(key, target_.keyboard->key_down(key));
 }
 
 bool Win32ControlUnitMgr::key_up(int key)
 {
     std::lock_guard lock(mutex_);
-    if (!target_.available()) {
-        return false;
+    const bool available = target_.available();
+    // Keep using the issuing backend when the configured managed domain changes.
+    if (target_.guarded_keys.contains(key) || (managed_keys_.contains(key) && !target_.keys.contains(key))) {
+        return target_.guarded_keys.up(key, available, [this](int code) { return target_.release_guarded_key(code); });
     }
-    if (managed_keys_.contains(key)) {
-        if (!target_.background_keyboard) {
-            LogError << "target_.background_keyboard is null";
-            return false;
-        }
-        return target_.background_keyboard->key_up(key);
-    }
-
-    if (!target_.keyboard) {
-        LogError << "target_.keyboard is null";
-        return false;
-    }
-
-    return target_.keyboard->key_up(key);
+    return target_.keys.up(key, available, [this](int code) { return target_.release_key(code); });
 }
 
 bool Win32ControlUnitMgr::scroll(int dx, int dy)
@@ -775,23 +803,33 @@ bool Win32ControlUnitMgr::set_background_managed_keys_option(const int32_t* keyc
 
 void Win32ControlUnitMgr::Target::inactive()
 {
+    available();
     if (background_keyboard) {
         background_keyboard->inactive();
     }
     if (screencap) {
         screencap->inactive();
     }
-    if (mouse) {
-        mouse->inactive();
-    }
-    if (keyboard && keyboard != mouse) {
-        keyboard->inactive();
+    const auto deactivate = [this](const std::shared_ptr<InputBase>& input) {
+        if (input && lost) {
+            input->inactive_after_loss();
+        }
+        else if (input) {
+            input->inactive();
+        }
+    };
+    deactivate(mouse);
+    if (keyboard != mouse) {
+        deactivate(keyboard);
     }
 }
 
 bool Win32ControlUnitMgr::inactive()
 {
     std::lock_guard lock(mutex_);
+    if (!target_.release_held()) {
+        return false;
+    }
     target_.inactive();
     return true;
 }

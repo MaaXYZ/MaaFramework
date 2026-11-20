@@ -55,6 +55,7 @@ public: // from InputBase
     virtual bool scroll(int dx, int dy) override;
 
     virtual void inactive() override;
+    void inactive_after_loss() override;
 
     virtual bool relative_move(int dx, int dy) override;
 

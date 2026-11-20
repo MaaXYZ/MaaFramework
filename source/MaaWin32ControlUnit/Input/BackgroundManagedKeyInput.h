@@ -47,9 +47,10 @@ private:
     static void send_key_event(int keycode, bool key_up);
     static void pump_messages();
 
-    void send_activation_hint() const;
+    bool send_activation_hint() const;
     // 后缀 _locked 约定：调用方必须已持有 mutex_。
     bool target_valid_locked() const;
+    void clear_domain_locked();
     Snapshot snapshot_locked();
     void guard_loop();
     bool correct_snapshot(const Snapshot& snapshot);
@@ -60,6 +61,7 @@ private:
 
 private:
     HWND hwnd_ = nullptr;
+    mutable bool window_lost_ = false;
     DWORD window_thread_id_ = 0;
     DWORD window_process_id_ = 0;
 

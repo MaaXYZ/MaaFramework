@@ -1100,6 +1100,8 @@ void ControllerAgent::release_pressed(bool all)
     std::unique_lock release_lock(target_release_mutex_, std::defer_lock);
     if (bindable_unit_) {
         release_lock.lock();
+        // A lost target cannot receive a later explicit release from the task.
+        all = all || !bindable_unit_->target_available();
     }
 
     std::set<int> contacts;
@@ -1122,7 +1124,7 @@ void ControllerAgent::release_pressed(bool all)
         }
     }
 
-    if ((contacts.empty() && keys.empty()) || (bindable_unit_ && !bindable_unit_->target_available())) {
+    if (contacts.empty() && keys.empty()) {
         return;
     }
 
