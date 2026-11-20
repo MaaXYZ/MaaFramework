@@ -103,6 +103,20 @@ static std::optional<uint16_t> parse_port_string(std::string_view port_str)
 void Transceiver::create_pair_socket()
 {
     zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
+    if (is_bound_) {
+        // The bound peer owns this endpoint. Set linger before any shutdown can interrupt the context.
+        zmq_sock_.set(zmq::sockopt::linger, 0);
+    }
+    if (monitor_events_) {
+        // A departed peer cannot drain its queue during context termination.
+        zmq_sock_.set(zmq::sockopt::linger, 200);
+        constexpr auto address = "inproc://maa-agent-peer-monitor";
+        if (zmq_socket_monitor(zmq_sock_.handle(), address, monitor_events_) != 0) {
+            throw zmq::error_t();
+        }
+        peer_monitor_.emplace(zmq_ctx_, zmq::socket_type::pair);
+        peer_monitor_->connect(address);
+    }
     zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
     zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
 }
@@ -120,9 +134,8 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
 
     LogInfo << VAR(ipc_addr_) << VAR(identifier);
 
-    create_pair_socket();
-
     is_bound_ = bind;
+    create_pair_socket();
 
     if (is_bound_) {
         zmq_sock_.bind(ipc_addr_);
@@ -154,9 +167,8 @@ uint16_t Transceiver::init_tcp_socket(uint16_t port, bool bind)
 
     is_tcp_ = true;
 
-    create_pair_socket();
-
     is_bound_ = bind;
+    create_pair_socket();
 
     if (is_bound_) {
         // 如果 port 为 0，使用通配符让系统自动分配端口
@@ -240,16 +252,12 @@ void Transceiver::uninit_socket()
     //     }
     // }
 
-    // AgentClient owns the bound socket and may be destroyed without a disconnect handshake.
-    if (is_bound_) {
-        zmq_sock_.set(zmq::sockopt::linger, 0);
-    }
-
+    peer_monitor_.reset();
     zmq_sock_.close();
     zmq_ctx_.close();
 
     // TCP 模式无需删除 socket 文件
-    if (!is_tcp_) {
+    if (is_bound_ && !is_tcp_) {
         std::error_code ec;
         std::filesystem::remove(ipc_path_, ec);
     }
@@ -259,6 +267,7 @@ void Transceiver::reset_socket(std::chrono::milliseconds linger)
 {
     std::unique_lock lock(socket_mutex_);
 
+    peer_monitor_.reset();
     zmq_sock_.set(zmq::sockopt::linger, static_cast<int>(linger.count()));
     zmq_sock_.close();
 
@@ -299,11 +308,24 @@ bool Transceiver::poll(zmq::pollitem_t& pollitem)
 
     while (true) {
         auto elapsed = duration_since(start_clock);
-        auto remaining_time = timeout_ > elapsed ? timeout_ - elapsed : std::chrono::milliseconds(0);
+        const auto timeout = timeout_.load();
+        auto remaining_time = timeout > elapsed ? timeout - elapsed : std::chrono::milliseconds(0);
         auto interval = std::min(remaining_time, std::chrono::milliseconds(1000));
 
         try {
-            if (zmq::poll(&pollitem, 1, interval)) {
+            if (peer_monitor_) {
+                zmq::pollitem_t items[] { pollitem, { peer_monitor_->handle(), 0, ZMQ_POLLIN, 0 } };
+                zmq::poll(items, 2, interval);
+                // Only loss of the peer is subscribed. Leave the event readable: a session
+                // that lost its peer must keep failing rather than reconnect to a recycled endpoint.
+                if (items[1].revents & ZMQ_POLLIN) {
+                    return false;
+                }
+                if (items[0].revents & pollitem.events) {
+                    return true;
+                }
+            }
+            else if (zmq::poll(&pollitem, 1, interval)) {
                 return true;
             }
         }
@@ -314,8 +336,8 @@ bool Transceiver::poll(zmq::pollitem_t& pollitem)
             }
         }
 
-        if (elapsed > timeout_) {
-            LogWarn << "socket is not alive" << VAR(elapsed) << VAR(timeout_) << VAR(ipc_addr_);
+        if (elapsed > timeout) {
+            LogWarn << "socket is not alive" << VAR(elapsed) << VAR(timeout) << VAR(ipc_addr_);
             return false;
         }
     }
@@ -502,11 +524,13 @@ std::optional<json::value> Transceiver::recv()
 
 std::string Transceiver::send_image(const cv::Mat& mat)
 {
-    if (mat.empty()) {
-        LogWarn << "empty image" << VAR(ipc_addr_);
+    if (mat.empty() || mat.dims != 2) {
+        LogWarn << "expected a nonempty 2D image" << VAR(ipc_addr_);
         return { };
     }
 
+    // A cropped Mat can have padding between rows. The wire format stores packed pixels.
+    const cv::Mat packed = mat.isContinuous() ? mat : mat.clone();
     std::unique_lock lock(socket_mutex_);
 
     ImageHeader header {
@@ -531,8 +555,8 @@ std::string Transceiver::send_image(const cv::Mat& mat)
     }
 
     // send image data
-    zmq::message_t img_msg(mat.data, mat.total() * mat.elemSize());
-    sent = zmq_sock_.send(img_msg, zmq::send_flags::none).has_value();
+    zmq::message_t img_msg(packed.data, header.size);
+    sent = poll(zmq_pollitem_send_) && zmq_sock_.send(img_msg, zmq::send_flags::dontwait).has_value();
     if (!sent) {
         LogError << "failed to send msg" << VAR(ipc_addr_);
         return { };
@@ -620,16 +644,27 @@ void Transceiver::handle_image(const ImageHeader& header)
     LogFunc << VAR(header);
 
     std::unique_lock lock(socket_mutex_);
-
+    if (!poll(zmq_pollitem_recv_)) {
+        LogError << "image payload timed out or peer disconnected" << VAR(ipc_addr_);
+        return;
+    }
     zmq::message_t msg;
-    auto size_opt = zmq_sock_.recv(msg);
+    auto size_opt = zmq_sock_.recv(msg, zmq::recv_flags::dontwait);
     if (!size_opt || *size_opt == 0) {
         LogError << "failed to recv msg" << VAR(ipc_addr_);
         return;
     }
 
-    if (header.size != msg.size()) {
-        LogError << "size mismatch" << VAR(header.size) << VAR(msg.size());
+    if (header.size != msg.size() || header.rows <= 0 || header.cols <= 0 || header.type != CV_MAT_TYPE(header.type)) {
+        LogError << "invalid image header" << VAR(header) << VAR(msg.size());
+        return;
+    }
+    const size_t pixel_size = CV_ELEM_SIZE(header.type);
+    const auto row_count = static_cast<size_t>(header.rows);
+    const auto col_count = static_cast<size_t>(header.cols);
+    // Bound both multiplications by the received payload size before constructing a Mat over it.
+    if (col_count > msg.size() / pixel_size / row_count || row_count * col_count * pixel_size != msg.size()) {
+        LogError << "image dimensions do not match the payload" << VAR(header) << VAR(msg.size());
         return;
     }
 

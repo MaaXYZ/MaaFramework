@@ -4,6 +4,7 @@
 #include "Global/OptionMgr.h"
 #include "Global/PluginMgr.h"
 #include "LibraryHolder/ControlUnit.h"
+#include "MaaUtils/Buffer/StringBuffer.hpp"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "Resource/ResourceMgr.h"
@@ -150,14 +151,26 @@ MaaController* MaaAndroidNativeControllerCreate(const char* config_json)
 
 MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg)
 {
+    return MaaCustomControllerCreateWithRelease(controller, controller_arg, nullptr);
+}
+
+MaaController* MaaCustomControllerCreateWithRelease(
+    MaaCustomControllerCallbacks* controller,
+    void* controller_arg,
+    MaaCustomControllerReleaseCallback release)
+{
     LogFunc << VAR(controller) << VAR(controller_arg);
 
+    std::shared_ptr<void> arg_owner;
+    if (release) {
+        arg_owner = std::shared_ptr<void>(controller_arg, release);
+    }
     if (!controller) {
         LogError << "controller is null";
         return nullptr;
     }
 
-    auto control_unit = MAA_NS::CustomControlUnitLibraryHolder::create_control_unit(controller, controller_arg);
+    auto control_unit = MAA_NS::CustomControlUnitLibraryHolder::create_control_unit(controller, controller_arg, std::move(arg_owner));
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -165,6 +178,15 @@ MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controlle
     }
 
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+}
+
+MaaController* MaaPluginControllerCreate(const char* name, const char* config_json)
+{
+    if (!name || !*name) {
+        LogError << "Plugin controller name is required";
+        return nullptr;
+    }
+    return MAA_GLOBAL_NS::PluginMgr::get_instance().create_controller(name, config_json ? config_json : "{}");
 }
 
 MaaController* MaaDbgControllerCreate(const char* read_path)
@@ -455,6 +477,19 @@ MaaBool MaaGlobalFlushPlugins()
 MaaBool MaaGlobalShutdownPlugins()
 {
     return MAA_GLOBAL_NS::PluginMgr::get_instance().shutdown();
+}
+
+MaaBool MaaGlobalGetPluginControllerList(MaaStringListBuffer* buffer)
+{
+    if (!buffer) {
+        LogError << "buffer is null";
+        return false;
+    }
+    buffer->clear();
+    for (const auto& name : MAA_GLOBAL_NS::PluginMgr::get_instance().get_controller_names()) {
+        buffer->append(MAA_NS::StringBuffer(name));
+    }
+    return true;
 }
 
 MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)

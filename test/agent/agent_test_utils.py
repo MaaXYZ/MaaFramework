@@ -6,8 +6,11 @@ import time
 from typing import Optional
 import uuid
 
+import numpy
+
 from maa.custom_action import CustomAction
 from maa.pipeline import JCustomRecognition, JRecognitionType
+from maa.tasker import Tasker
 from remote_contract import REMOTE_CONTRACT_CASES
 
 
@@ -240,6 +243,40 @@ def assert_nested_response_kept(agent, tasker, report_file: Path) -> None:
     )
 
 
+def verify_agent_controller(agent, resource):
+    assert "RecordingDevice" in agent.custom_controller_list
+    controller = agent.create_custom_controller("RecordingDevice")
+    assert controller.set_screenshot_use_raw_size(True)
+    assert controller.post_connection().wait().succeeded
+    assert controller.connected
+    assert controller.uuid == "api-contract-controller"
+
+    pixels = numpy.arange(24 * 32 * 3, dtype=numpy.uint8).reshape(24, 32, 3)
+    numpy.testing.assert_array_equal(controller.post_screencap().get(wait=True), pixels)
+    assert controller.resolution == (32, 24)
+    assert controller.post_input_text("").wait().failed
+    assert controller.post_input_text("测试🐱").wait().succeeded
+    assert controller.post_touch_down(4, 9, 2, 7).wait().succeeded
+    assert controller.post_touch_up(2).wait().succeeded
+    assert controller.post_shell("echo 猫", 1234).get(wait=True) == "stdout:echo 猫\n结果🐱"
+
+    # During the action's reverse wait the same Agent must be able to serve its device.
+    tasker = Tasker()
+    assert tasker.bind(resource, controller)
+    node = {"action": "Custom", "custom_action": "ClickAgentDevice", "pre_delay": 0, "post_delay": 0}
+    assert tasker.post_task("AgentDevice", {"AgentDevice": node}).wait().succeeded
+    calls = controller.info["calls"]
+    for call in (
+        ["input_text", "测试🐱"],
+        ["touch_down", 2, 4, 9, 7],
+        ["touch_up", 2],
+        ["shell", "echo 猫", 1234],
+        ["click", 7, 3],
+    ):
+        assert call in calls, (call, calls)
+    return controller
+
+
 def run_connected_agent_test(
     agent,
     command: list[str],
@@ -327,6 +364,12 @@ def run_connected_agent_test(
         assert_stale_response_dropped(agent, tasker, sink_report_file)
         assert_nested_response_kept(agent, tasker, sink_report_file)
 
+        assert agent.set_timeout(CONNECT_TIMEOUT_MS)
+        try:
+            agent_controller = verify_agent_controller(agent, resource)
+        finally:
+            assert agent.set_timeout(-1)
+
         assert agent.disconnect()
         assert not agent.connected
         assert not agent.alive
@@ -335,6 +378,9 @@ def run_connected_agent_test(
         assert "RemoteContract" not in resource.custom_action_list
         assert agent.custom_recognition_list == []
         assert agent.custom_action_list == []
+        assert agent.custom_controller_list == []
+        assert not agent_controller.connected
+        assert agent_controller.post_input_text("disconnected").wait().failed
         assert "AgentContractLocalAction" in resource.custom_action_list
         child_process.wait(timeout=PROCESS_TIMEOUT_SECONDS)
         assert child_process.returncode == 0

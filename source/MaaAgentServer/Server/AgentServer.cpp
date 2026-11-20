@@ -20,62 +20,87 @@ bool AgentServer::start_up(const std::string& identifier)
         return false;
     }
 
-    auto port_opt = parse_tcp_port(identifier);
-
-    if (port_opt) {
-        LogInfo << "Using TCP mode" << VAR(*port_opt);
-        init_tcp_socket(*port_opt, false);
-    }
-    else {
-        init_socket(identifier, false);
-    }
-
-    msg_loop_running_ = true;
-    msg_thread_ = std::thread(&AgentServer::request_msg_loop, this);
-    if (!msg_thread_.joinable()) {
-        LogError << "failed to start msg_thread";
+    std::scoped_lock state_lock(state_mutex_);
+    if (!msg_loop_finished_) {
         return false;
     }
-
+    std::scoped_lock thread_lock(thread_mutex_);
+    if (msg_thread_.joinable()) {
+        return false;
+    }
+    if (!custom_controllers_.empty()) {
+        watch_peer_disconnect();
+    }
+    try {
+        // A previous joined session may already have closed its ZeroMQ context.
+        if (zmq_sock_.handle() || !zmq_ctx_.handle()) {
+            uninit_socket();
+            zmq_ctx_ = zmq::context_t();
+        }
+        if (auto port = parse_tcp_port(identifier)) {
+            init_tcp_socket(*port, false);
+        }
+        else {
+            init_socket(identifier, false);
+        }
+        msg_loop_running_ = true;
+        msg_loop_finished_ = false;
+        msg_thread_ = std::thread(&AgentServer::request_msg_loop, this);
+    }
+    catch (const std::exception& e) {
+        LogError << "failed to start Agent server" << e.what();
+        msg_loop_running_ = false;
+        msg_loop_finished_ = true;
+        msg_loop_finished_.notify_all();
+        return false;
+    }
     return true;
 }
 
 void AgentServer::shut_down()
 {
     LogFunc << VAR(ipc_addr_);
-
-    msg_loop_running_ = false;
-
-    if (msg_thread_.joinable()) {
-        msg_thread_.join();
+    {
+        std::scoped_lock lock(state_mutex_);
+        if (msg_loop_running_.exchange(false)) {
+            zmq_ctx_.shutdown();
+        }
     }
-
-    zmq_sock_.close();
-    zmq_ctx_.close();
+    // A callback cannot wait for its own thread to exit. An external join still
+    // waits for both the main loop and the controller service to finish.
+    if (is_agent_server_thread) {
+        return;
+    }
+    join();
+    std::scoped_lock lock(state_mutex_);
+    if (msg_loop_finished_) {
+        uninit_socket();
+    }
 }
 
 void AgentServer::join()
 {
     LogFunc << VAR(ipc_addr_);
 
-    if (!msg_thread_.joinable()) {
-        LogError << "msg_thread is not joinable";
+    if (is_agent_server_thread) {
         return;
     }
-
-    msg_thread_.join();
+    std::scoped_lock lock(thread_mutex_);
+    if (msg_thread_.joinable()) {
+        msg_thread_.join();
+    }
+    else {
+        msg_loop_finished_.wait(false);
+    }
 }
 
 void AgentServer::detach()
 {
     LogFunc << VAR(ipc_addr_);
-
-    if (!msg_thread_.joinable()) {
-        LogError << "msg_thread is not joinable";
-        return;
+    std::scoped_lock lock(thread_mutex_);
+    if (msg_thread_.joinable()) {
+        msg_thread_.detach();
     }
-
-    msg_thread_.detach();
 }
 
 bool AgentServer::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)
@@ -110,6 +135,16 @@ bool AgentServer::register_custom_action(const std::string& name, MaaCustomActio
     }
 
     return custom_actions_.emplace(name, CustomActionSession { action, trans_arg }).second;
+}
+
+bool AgentServer::register_custom_controller(const std::string& name, const MaaCustomControllerCallbacks& callbacks, void* arg)
+{
+    std::scoped_lock lock(state_mutex_);
+    if (!msg_loop_finished_) {
+        LogError << "Register controllers before Agent startup";
+        return false;
+    }
+    return custom_controllers_.emplace(name, ControllerRegistration { callbacks, arg }).second;
 }
 
 MaaSinkId AgentServer::add_resource_sink(MaaEventCallback sink, void* trans_arg)
@@ -292,6 +327,20 @@ bool AgentServer::handle_start_up_request(const json::value& j)
         .recognitions = { reco_names.begin(), reco_names.end() },
     };
 
+    if (req.protocol == kProtocolVersion && req.supports_controllers && !custom_controllers_.empty()) {
+        controller_service_ = std::make_unique<ControllerService>(custom_controllers_);
+        try {
+            msg.controller_endpoint = controller_service_->start(is_tcp_);
+        }
+        catch (const std::exception& e) {
+            // Empty endpoint and nonempty names make startup fail on the client.
+            LogError << "failed to start controller service" << e.what();
+            controller_service_.reset();
+        }
+        for (const auto& [name, registration] : custom_controllers_) {
+            msg.controllers.push_back(name);
+        }
+    }
     return send(msg);
 }
 
@@ -383,15 +432,25 @@ void AgentServer::request_msg_loop()
 {
     LogFunc << VAR(ipc_addr_);
 
-    while (msg_loop_running_) {
-        auto msg_opt = recv();
-        if (!msg_opt) {
-            LogError << "failed to recv msg" << VAR(ipc_addr_);
-            return;
+    is_agent_server_thread = true;
+    try {
+        while (msg_loop_running_) {
+            auto msg_opt = recv();
+            if (!msg_opt) {
+                break;
+            }
+            dispatch_inserted_request(*msg_opt);
         }
-        const json::value& j = *msg_opt;
-        dispatch_inserted_request(j);
     }
+    catch (const zmq::error_t& e) {
+        if (e.num() != ETERM) {
+            LogError << "agent server socket error" << e.what();
+        }
+    }
+    controller_service_.reset();
+    msg_loop_running_ = false;
+    msg_loop_finished_ = true;
+    msg_loop_finished_.notify_all();
 }
 
 MAA_AGENT_SERVER_NS_END

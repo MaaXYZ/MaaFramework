@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MaaAgentServerDef.h"
+#include "MaaFramework/Instance/MaaCustomController.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -11,6 +12,10 @@ extern "C"
     MaaBool MaaAgentServerRegisterCustomRecognition(const char* name, MaaCustomRecognitionCallback recognition, void* trans_arg);
 
     MAA_AGENT_SERVER_API MaaBool MaaAgentServerRegisterCustomAction(const char* name, MaaCustomActionCallback action, void* trans_arg);
+
+    /// Publish a named device before startup. The table is copied. Keep trans_arg valid until the server exits.
+    MAA_AGENT_SERVER_API MaaBool
+        MaaAgentServerRegisterCustomController(const char* name, const struct MaaCustomControllerCallbacks* callbacks, void* trans_arg);
 
     MAA_AGENT_SERVER_API MaaSinkId MaaAgentServerAddResourceSink(MaaEventCallback sink, void* trans_arg);
     MAA_AGENT_SERVER_API MaaSinkId MaaAgentServerAddControllerSink(MaaEventCallback sink, void* trans_arg);

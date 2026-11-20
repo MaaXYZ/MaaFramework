@@ -75,6 +75,14 @@ private:
     void stash_response(int64_t resp_id, json::value msg);
 
 protected:
+    void watch_peer_disconnect(bool peer_already_listening = false)
+    {
+        monitor_events_ = ZMQ_EVENT_DISCONNECTED;
+        if (peer_already_listening) {
+            monitor_events_ |= ZMQ_EVENT_CONNECT_RETRIED;
+        }
+    }
+
     // 返回实际绑定的端口号，如果传入 0 则自动选择可用端口
     uint16_t init_tcp_socket(uint16_t port, bool bind);
 
@@ -117,11 +125,13 @@ private:
     std::map<int64_t, std::optional<json::value>> pending_responses_;
 
     bool is_bound_ = false;
+    int monitor_events_ = 0;
+    std::optional<zmq::socket_t> peer_monitor_;
 
     std::mutex socket_mutex_;
     zmq::pollitem_t zmq_pollitem_send_ { };
     zmq::pollitem_t zmq_pollitem_recv_ { };
-    std::chrono::milliseconds timeout_ = std::chrono::milliseconds::max();
+    std::atomic<std::chrono::milliseconds> timeout_ { std::chrono::milliseconds::max() };
 };
 
 MAA_AGENT_NS_END

@@ -6,6 +6,9 @@
 #include <MaaFramework/MaaAPI.h>
 
 #include "../foundation/spec.h"
+#ifdef MAA_JS_BUILD_SERVER
+#include "controller.h"
+#endif
 
 template <typename Handle>
 struct WeakHandleMap
@@ -110,6 +113,9 @@ struct ExtContext : public maajs::NativeClassBase
     HandleMap<MaaTasker> taskers;
 
     std::vector<std::unique_ptr<maajs::CallbackContext>> globalCallbacks;
+#ifdef MAA_JS_BUILD_SERVER
+    std::vector<std::unique_ptr<CustomControllerContext>> controllerCallbacks;
+#endif
 
     void gc_mark(maajs::NativeMarkerFunc marker) override
     {
@@ -144,6 +150,11 @@ struct ExtContext : public maajs::NativeClassBase
         controllers.gc_mark(marker);
         taskers.gc_mark(marker);
 
+#ifdef MAA_JS_BUILD_SERVER
+        for (const auto& ctx : controllerCallbacks) {
+            ctx->gc_mark(marker);
+        }
+#endif
         for (const auto& ptr : globalCallbacks) {
             marker(ptr->fn);
         }

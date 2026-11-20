@@ -21,8 +21,10 @@ struct StartUpRequest
     std::string version = MAA_VERSION;
     int protocol = kProtocolVersion;
 
+    bool supports_controllers = false;
+
     MessageTypePlaceholder _StartUpRequest = 1;
-    MEO_JSONIZATION(version, protocol, _StartUpRequest);
+    MEO_JSONIZATION(version, protocol, MEO_OPT supports_controllers, _StartUpRequest);
 };
 
 struct StartUpResponse
@@ -32,8 +34,11 @@ struct StartUpResponse
     std::vector<std::string> actions;
     std::vector<std::string> recognitions;
 
+    std::vector<std::string> controllers;
+    std::string controller_endpoint;
+
     MessageTypePlaceholder _StartUpResponse = 1;
-    MEO_JSONIZATION(version, protocol, actions, recognitions, _StartUpResponse);
+    MEO_JSONIZATION(version, protocol, actions, recognitions, MEO_OPT controllers, MEO_OPT controller_endpoint, _StartUpResponse);
 };
 
 struct ShutDownRequest
@@ -100,6 +105,31 @@ struct CustomActionResponse
 
     MessageTypePlaceholder _CustomActionResponse = 1;
     MEO_JSONIZATION(ret, _CustomActionResponse);
+};
+
+// Controller callbacks use their own PAIR channel. An action on the primary channel may
+// synchronously wait for the controller worker to call back into the same Agent.
+struct CustomControllerRequest
+{
+    std::string name;
+    std::string method;
+    std::vector<int32_t> args;
+    std::string text;
+    int64_t timeout = 0;
+
+    MessageTypePlaceholder _CustomControllerRequest = 1;
+    MEO_JSONIZATION(name, method, args, text, timeout, _CustomControllerRequest);
+};
+
+struct CustomControllerResponse
+{
+    bool success = false;
+    uint64_t features = 0;
+    std::string text;
+    std::string image;
+
+    MessageTypePlaceholder _CustomControllerResponse = 1;
+    MEO_JSONIZATION(success, features, text, image, _CustomControllerResponse);
 };
 
 struct ResourceEventRequest

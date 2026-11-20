@@ -38,6 +38,22 @@ MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks*, void*)
     return nullptr;
 }
 
+MaaController*
+    MaaCustomControllerCreateWithRelease(MaaCustomControllerCallbacks*, void* controller_arg, MaaCustomControllerReleaseCallback release)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    if (release) {
+        release(controller_arg);
+    }
+    return nullptr;
+}
+
+MaaController* MaaPluginControllerCreate(const char*, const char*)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
 MaaController* MaaDbgControllerCreate(const char*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
@@ -132,6 +148,12 @@ MaaBool MaaGlobalFlushPlugins()
 }
 
 MaaBool MaaGlobalShutdownPlugins()
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return false;
+}
+
+MaaBool MaaGlobalGetPluginControllerList(MaaStringListBuffer*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return false;

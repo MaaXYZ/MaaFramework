@@ -208,4 +208,6 @@ public:
     virtual void set_timeout(const std::chrono::milliseconds& timeout) = 0;
     virtual std::vector<std::string> get_custom_recognition_list() const = 0;
     virtual std::vector<std::string> get_custom_action_list() const = 0;
+    virtual std::vector<std::string> get_custom_controller_list() const = 0;
+    virtual MaaController* create_custom_controller(const std::string& name) = 0;
 };
