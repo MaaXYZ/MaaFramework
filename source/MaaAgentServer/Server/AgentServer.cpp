@@ -20,6 +20,7 @@ bool AgentServer::start_up(const std::string& identifier)
         return false;
     }
 
+    peer_supports_bind_target_ = false;
     auto port_opt = parse_tcp_port(identifier);
 
     if (port_opt) {
@@ -44,6 +45,7 @@ void AgentServer::shut_down()
 {
     LogFunc << VAR(ipc_addr_);
 
+    peer_supports_bind_target_ = false;
     msg_loop_running_ = false;
 
     if (msg_thread_.joinable()) {
@@ -278,6 +280,8 @@ bool AgentServer::handle_start_up_request(const json::value& j)
     const StartUpRequest& req = j.as<StartUpRequest>();
     LogInfo << VAR(req) << VAR(ipc_addr_);
 
+    peer_supports_bind_target_ = req.supports_bind_target;
+
     if (req.protocol != kProtocolVersion) {
         LogError << "Protocol version mismatch" << "client:" << VAR(req.version) << VAR(req.protocol) << "server:" << VAR(MAA_VERSION)
                  << VAR(kProtocolVersion) << VAR(ipc_addr_);
@@ -303,6 +307,7 @@ bool AgentServer::handle_shut_down_request(const json::value& j)
 
     LogInfo << VAR(ipc_addr_);
 
+    peer_supports_bind_target_ = false;
     msg_loop_running_ = false;
 
     send(ShutDownResponse { });

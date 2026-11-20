@@ -144,6 +144,22 @@ MaaCtrlId MaaControllerPostInputText(MaaController* ctrl, const char* text)
     return ctrl->post_input_text(text);
 }
 
+MaaCtrlId MaaControllerPostBindTarget(MaaController* ctrl, const char* target_json)
+{
+    LogFunc << VAR_VOIDP(ctrl);
+    if (!ctrl || !target_json) {
+        LogError << "controller or target_json is null";
+        return MaaInvalidId;
+    }
+
+    auto target = json::parse(target_json);
+    if (!target || !target->is_object()) {
+        LogError << "expected a target object" << VAR(target_json);
+        return MaaInvalidId;
+    }
+    return ctrl->post_bind_target(target->as_object());
+}
+
 MaaCtrlId MaaControllerPostStartApp(MaaController* ctrl, const char* intent)
 {
     if (!ctrl) {

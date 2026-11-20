@@ -80,6 +80,7 @@ public: // from InputBase
     virtual bool scroll(int dx, int dy) override;
 
     virtual void inactive() override;
+    void inactive_after_loss() override;
 
 private:
     struct ContactState
@@ -148,6 +149,7 @@ private:
     HWND hwnd_ = nullptr;
 
     std::thread worker_;
+    std::atomic_bool target_lost_ = false;
     std::atomic_bool running_ = false;
     std::atomic_bool ready_ = false;
     std::atomic_bool setup_failed_ = false;

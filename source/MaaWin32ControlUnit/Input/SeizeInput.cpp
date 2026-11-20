@@ -58,6 +58,12 @@ bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
 
 bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
 {
+    MouseEventFlags flags_info;
+    if (!contact_to_mouse_down_flags(contact, flags_info)) {
+        LogError << "contact out of range" << VAR(contact);
+        return false;
+    }
+
     POINT point = { x, y };
 
     if (hwnd_) {
@@ -73,16 +79,13 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
     INPUT input = { };
     input.type = INPUT_MOUSE;
 
-    MouseEventFlags flags_info;
-    if (!contact_to_mouse_down_flags(contact, flags_info)) {
-        LogError << "contact out of range" << VAR(contact);
-        return false;
-    }
-
     input.mi.dwFlags = flags_info.flags;
     input.mi.mouseData = flags_info.button_data;
 
-    SendInput(1, &input, sizeof(INPUT));
+    if (SendInput(1, &input, sizeof(INPUT)) != 1) {
+        unblock_input();
+        return false;
+    }
 
     last_pos_ = { x, y };
     last_pos_set_ = true;
@@ -133,6 +136,11 @@ bool SeizeInput::touch_up(int contact)
     }
     LogInfo << VAR(contact) << VAR(hwnd_);
 
+    return release_lost_contact(contact);
+}
+
+bool SeizeInput::release_lost_contact(int contact)
+{
     OnScopeLeave([this]() { unblock_input(); });
 
     INPUT input = { };
@@ -147,9 +155,7 @@ bool SeizeInput::touch_up(int contact)
     input.mi.dwFlags = flags_info.flags;
     input.mi.mouseData = flags_info.button_data;
 
-    SendInput(1, &input, sizeof(INPUT));
-
-    return true;
+    return SendInput(1, &input, sizeof(INPUT)) == 1;
 }
 
 bool SeizeInput::relative_move(int dx, int dy)
@@ -239,9 +245,7 @@ bool SeizeInput::key_down(int key)
     inputs[0].ki.wVk = static_cast<WORD>(key);
     inputs[0].ki.wScan = static_cast<WORD>(MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC));
 
-    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
-
-    return true;
+    return SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT)) == ARRAYSIZE(inputs);
 }
 
 bool SeizeInput::key_up(int key)
@@ -251,8 +255,11 @@ bool SeizeInput::key_up(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
-    // OnScopeLeave([this]() { unblock_input(); });
+    return release_lost_key(key);
+}
 
+bool SeizeInput::release_lost_key(int key)
+{
     INPUT inputs[1] = { };
 
     inputs[0].type = INPUT_KEYBOARD;
@@ -260,9 +267,7 @@ bool SeizeInput::key_up(int key)
     inputs[0].ki.wScan = static_cast<WORD>(MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC));
     inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
 
-    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
-
-    return true;
+    return SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT)) == ARRAYSIZE(inputs);
 }
 
 bool SeizeInput::scroll(int dx, int dy)

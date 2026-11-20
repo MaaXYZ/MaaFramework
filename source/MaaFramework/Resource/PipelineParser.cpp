@@ -1232,6 +1232,15 @@ bool PipelineParser::parse_action(
             same_type ? std::get<InputTextParam>(parent_param) : default_param);
     } break;
 
+    case Type::BindTarget: {
+        auto default_param = default_mgr.get_action_param<BindTargetParam>(Type::BindTarget);
+        out_param = default_param;
+        return parse_bind_target(
+            param_input,
+            std::get<BindTargetParam>(out_param),
+            same_type ? std::get<BindTargetParam>(parent_param) : default_param);
+    } break;
+
     case Type::StartApp: {
         auto default_param = default_mgr.get_action_param<AppParam>(Type::StartApp);
         out_param = default_param;
@@ -1547,6 +1556,46 @@ bool PipelineParser::parse_scroll(const json::value& input, Action::ScrollParam&
     }
 
     return true;
+}
+
+bool PipelineParser::parse_bind_target(
+    const json::value& input,
+    Action::BindTargetParam& output,
+    const Action::BindTargetParam& default_value)
+{
+    if (!input.is_object() || !get_and_check_value(input, "bind_timeout", output.bind_timeout, default_value.bind_timeout)
+        || output.bind_timeout < 0) {
+        LogError << "Invalid bind_timeout" << VAR(input);
+        return false;
+    }
+
+    auto selector = input.find("win32").value_or(json::object { });
+    if (!selector.is_object() || !get_and_check_value(selector, "method", output.method, default_value.method)
+        || (output.method != "Window" && output.method != "Desktop")) {
+        LogError << "Expected win32.method Window or Desktop" << VAR(input);
+        return false;
+    }
+    for (const auto& [field, _] : selector.as_object()) {
+        if (field != "method" && field != "class_regex" && field != "window_regex") {
+            LogError << "Unknown win32 selector field" << VAR(field);
+            return false;
+        }
+    }
+
+    // A method change replaces the selector; same-method overrides inherit individual filters.
+    const bool inherit = output.method == default_value.method;
+    if (!get_and_check_value(selector, "class_regex", output.class_regex, inherit ? default_value.class_regex : std::string { })
+        || !get_and_check_value(selector, "window_regex", output.window_regex, inherit ? default_value.window_regex : std::string { })) {
+        return false;
+    }
+
+    const bool has_filter = !output.class_regex.empty() || !output.window_regex.empty();
+    if (has_filter != (output.method == "Window")) {
+        LogError << "Window requires a filter; Desktop accepts no filters" << VAR(input);
+        return false;
+    }
+    return (output.class_regex.empty() || regex_valid(to_u16(output.class_regex)))
+           && (output.window_regex.empty() || regex_valid(to_u16(output.window_regex)));
 }
 
 bool PipelineParser::parse_shell(const json::value& input, Action::ShellParam& output, const Action::ShellParam& default_value)

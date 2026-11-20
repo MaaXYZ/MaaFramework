@@ -100,6 +100,27 @@ MaaController* MaaWin32ControllerCreate(
 #endif
 }
 
+MaaController* MaaWin32ControllerCreateDeferred(
+    MaaWin32ScreencapMethod screencap_method,
+    MaaWin32InputMethod mouse_method,
+    MaaWin32InputMethod keyboard_method)
+{
+    LogFunc << VAR(screencap_method) << VAR(mouse_method) << VAR(keyboard_method);
+
+#ifdef _WIN32
+    auto unit = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(nullptr, screencap_method, mouse_method, keyboard_method);
+    auto* bindable = dynamic_cast<MAA_CTRL_UNIT_NS::BindableUnit*>(unit.get());
+    if (!bindable || !bindable->set_deferred_binding()) {
+        LogError << "failed to create a Win32 controller with deferred binding";
+        return nullptr;
+    }
+    return new MAA_CTRL_NS::ControllerAgent(std::move(unit));
+#else
+    LogError << "This API " << __FUNCTION__ << " is only available on Windows";
+    return nullptr;
+#endif
+}
+
 MaaController* MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method)
 {
     LogFunc << VAR(window_id) << VAR(screencap_method) << VAR(input_method);

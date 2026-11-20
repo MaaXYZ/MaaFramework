@@ -1071,6 +1071,9 @@ std::optional<json::object> ResourceMgr::get_default_action_param(const std::str
     case Type::InputText:
         param = default_pipeline_.get_action_param<InputTextParam>(type);
         break;
+    case Type::BindTarget:
+        param = default_pipeline_.get_action_param<BindTargetParam>(type);
+        break;
     case Type::StartApp:
     case Type::StopApp:
         param = default_pipeline_.get_action_param<AppParam>(type);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <functional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -51,6 +52,17 @@ public:
 };
 
 // Capability mixins: optional interfaces that controllers may support
+
+class MAA_CONTROL_UNIT_TYPES_API BindableUnit
+{
+public:
+    virtual ~BindableUnit();
+
+    virtual bool set_deferred_binding() = 0;
+    virtual bool
+        bind_target(const json::object& target, const std::function<bool()>& cancelled, const std::function<void()>& before_switch) = 0;
+    virtual bool target_available() const = 0;
+};
 
 class MAA_CONTROL_UNIT_TYPES_API ScrollableUnit
 {

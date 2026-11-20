@@ -290,6 +290,30 @@ bool InterceptionInput::touch_up(int contact)
     return send_button(contact, false);
 }
 
+bool InterceptionInput::release_lost_contact(int contact)
+{
+    // Down was sent using this handle. Never initialize a replacement device here.
+    return send_button(contact, false);
+}
+
+bool InterceptionInput::release_lost_key(int key)
+{
+    if (!pressed_keys_.contains(key)) {
+        return true;
+    }
+    if (!keyboard_device_attached()) {
+        // The original device is gone. Sending a break on another keyboard
+        // would release a key that this controller never pressed there.
+        pressed_keys_.erase(key);
+        return true;
+    }
+    if (!send_key(key, true)) {
+        return false;
+    }
+    pressed_keys_.erase(key);
+    return true;
+}
+
 bool InterceptionInput::click_key(int key)
 {
     LogError << "deprecated: get_features() returns MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick, "

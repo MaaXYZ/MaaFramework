@@ -39,6 +39,8 @@ public:
         return resp_opt->as<ResponseT>();
     }
 
+    bool peer_supports_bind_target() const { return peer_supports_bind_target_; }
+
     std::string send_image(const cv::Mat& mat);
     std::string send_image_encoded(const ImageEncodedBuffer& encoded_data);
     cv::Mat get_image_cache(const std::string& uuid);
@@ -88,6 +90,7 @@ protected:
     zmq::context_t zmq_ctx_;
     zmq::socket_t zmq_sock_;
 
+    std::atomic_bool peer_supports_bind_target_ = false;
     std::string ipc_addr_;
     std::filesystem::path ipc_path_;
     bool is_tcp_ = false;

@@ -11,6 +11,7 @@ MAA_CTRL_NS_BEGIN
 
 ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit)
     : control_unit_(std::move(control_unit))
+    , bindable_unit_(std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::BindableUnit>(control_unit_))
 {
     LogFunc << VAR(control_unit_);
 
@@ -31,6 +32,7 @@ ControllerAgent::~ControllerAgent()
 {
     LogFunc;
 
+    need_to_stop_ = true;
     action_runner_->release();
 
     auto_release_pressed();
@@ -67,6 +69,11 @@ bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOpt
 MaaCtrlId ControllerAgent::post_connection()
 {
     return post_notified({ .type = Action::Type::connect });
+}
+
+MaaCtrlId ControllerAgent::post_bind_target(const json::object& target)
+{
+    return post_notified({ .type = Action::Type::bind_target, .param = target });
 }
 
 MaaCtrlId ControllerAgent::post_click(int x, int y, int contact, int pressure)
@@ -200,6 +207,9 @@ bool ControllerAgent::connected() const
 
 cv::Mat ControllerAgent::cached_image() const
 {
+    if (bindable_unit_ && !bindable_unit_->target_available()) {
+        return { };
+    }
     std::unique_lock lock(image_mutex_);
     return image_.clone();
 }
@@ -212,14 +222,15 @@ std::string ControllerAgent::cached_shell_output() const
 
 std::string ControllerAgent::get_uuid()
 {
-    if (uuid_cache_.empty()) {
-        request_uuid();
-    }
-    return uuid_cache_;
+    return read_uuid(false);
 }
 
 bool ControllerAgent::get_resolution(int32_t& width, int32_t& height) const
 {
+    if (bindable_unit_ && !bindable_unit_->target_available()) {
+        return false;
+    }
+    std::scoped_lock lock(image_mutex_);
     if (image_raw_width_ == 0 || image_raw_height_ == 0) {
         return false;
     }
@@ -354,6 +365,12 @@ cv::Mat ControllerAgent::screencap()
     return cached_image();
 }
 
+bool ControllerAgent::bind_target(const json::object& target)
+{
+    auto id = post({ .type = Action::Type::bind_target, .param = target });
+    return wait(id) == MaaStatus_Succeeded;
+}
+
 bool ControllerAgent::start_app(AppParam p)
 {
     auto id = post({ .type = Action::Type::start_app, .param = std::move(p) });
@@ -424,9 +441,32 @@ bool ControllerAgent::handle_connect()
 
     bool ret = control_unit_->connect();
 
-    request_uuid();
+    read_uuid(true);
 
     return ret;
+}
+
+bool ControllerAgent::handle_bind_target(const json::object& target)
+{
+    if (!bindable_unit_) {
+        LogError << "Controller does not support BindTarget";
+        return false;
+    }
+
+    std::unique_lock image_lock(image_mutex_, std::defer_lock);
+    const auto before_switch = [&] {
+        release_pressed(true);
+        image_lock.lock();
+    };
+    bool bound = bindable_unit_->bind_target(target, [this] { return need_to_stop_.load(); }, before_switch);
+    if (bound && image_lock.owns_lock()) {
+        // A same-target bind skips the switch and keeps its cached image.
+        image_.release();
+        image_raw_width_ = 0;
+        image_raw_height_ = 0;
+        clear_target_image_size();
+    }
+    return bound;
 }
 
 bool ControllerAgent::handle_click(const ClickParam& param)
@@ -1050,23 +1090,36 @@ bool ControllerAgent::release_key_if_held(int keycode)
 
 void ControllerAgent::auto_release_pressed()
 {
+    release_pressed(false);
+}
+
+void ControllerAgent::release_pressed(bool all)
+{
+    // A stop can release input from another thread while the queue is switching targets.
+    // Finish those releases on the old backend before committing the switch.
+    std::unique_lock release_lock(target_release_mutex_, std::defer_lock);
+    if (bindable_unit_) {
+        release_lock.lock();
+        // A lost target cannot receive a later explicit release from the task.
+        all = all || !bindable_unit_->target_available();
+    }
+
     std::set<int> contacts;
     std::set<int> keys;
     {
-        std::unique_lock lock(pressed_mutex_);
-        std::set<int> pending_contacts;
-        pending_contacts.swap(auto_up_contacts_);
-        for (int contact : pending_contacts) {
-            if (held_contacts_.erase(contact)) {
-                contacts.insert(contact);
-            }
+        std::scoped_lock lock(pressed_mutex_);
+        contacts.swap(all ? held_contacts_ : auto_up_contacts_);
+        keys.swap(all ? held_keys_ : auto_up_keys_);
+        if (all) {
+            auto_up_contacts_.clear();
+            auto_up_keys_.clear();
         }
-
-        std::set<int> pending_keys;
-        pending_keys.swap(auto_up_keys_);
-        for (int keycode : pending_keys) {
-            if (held_keys_.erase(keycode)) {
-                keys.insert(keycode);
+        else {
+            for (int contact : contacts) {
+                held_contacts_.erase(contact);
+            }
+            for (int keycode : keys) {
+                held_keys_.erase(keycode);
             }
         }
     }
@@ -1095,7 +1148,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     bool ret = false;
     const bool notify = action.notify;
 
-    const json::value cb_detail = {
+    json::value cb_detail = {
         { "ctrl_id", id },
         { "uuid", get_uuid() },
         { "action", action.type },
@@ -1112,6 +1165,14 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     switch (action.type) {
     case Action::Type::connect:
         ret = handle_connect();
+        break;
+
+    case Action::Type::bind_target:
+        ret = handle_bind_target(std::get<json::object>(action.param));
+        if (ret) {
+            cb_detail["uuid"] = read_uuid(true);
+            cb_detail["info"] = control_unit_->get_info();
+        }
         break;
 
     case Action::Type::click:
@@ -1203,10 +1264,16 @@ cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)
         return p;
     }
 
+    std::unique_lock lock(image_mutex_);
     if (image_target_width_ == 0 || image_target_height_ == 0) {
         LogWarn << "Invalid image target size" << VAR(image_target_width_) << VAR(image_target_height_);
 
+        lock.unlock();
         if (!init_scale_info()) {
+            return { };
+        }
+        lock.lock();
+        if (image_target_width_ == 0 || image_target_height_ == 0) {
             return { };
         }
     }
@@ -1222,6 +1289,7 @@ cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)
 
 bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
 {
+    std::scoped_lock lock(image_mutex_);
     if (raw.empty()) {
         image_ = cv::Mat();
         LogError << "Empty screenshot";
@@ -1312,16 +1380,14 @@ void ControllerAgent::clear_target_image_size()
     image_target_height_ = 0;
 }
 
-bool ControllerAgent::request_uuid()
+std::string ControllerAgent::read_uuid(bool refresh)
 {
-    if (!control_unit_) {
-        LogError << "control_unit_ is nullptr";
-        return false;
+    std::scoped_lock lock(uuid_mutex_);
+    if (control_unit_ && (refresh || uuid_cache_.empty())) {
+        uuid_cache_.clear();
+        control_unit_->request_uuid(uuid_cache_);
     }
-
-    uuid_cache_.clear();
-
-    return control_unit_->request_uuid(uuid_cache_);
+    return uuid_cache_;
 }
 
 bool ControllerAgent::init_scale_info()
@@ -1338,6 +1404,7 @@ bool ControllerAgent::set_image_target_long_side(MaaOptionValue value, MaaOption
         LogError << "invalid value size: " << val_size;
         return false;
     }
+    std::scoped_lock lock(image_mutex_);
     image_target_long_side_ = *reinterpret_cast<const int32_t*>(value);
     image_target_short_side_ = 0;
     image_target_expand_width_ = 0;
@@ -1357,6 +1424,7 @@ bool ControllerAgent::set_image_target_short_side(MaaOptionValue value, MaaOptio
         LogError << "invalid value size: " << val_size;
         return false;
     }
+    std::scoped_lock lock(image_mutex_);
     image_target_long_side_ = 0;
     image_target_short_side_ = *reinterpret_cast<const int32_t*>(value);
     image_target_expand_width_ = 0;
@@ -1381,6 +1449,7 @@ bool ControllerAgent::set_image_target_expand(MaaOptionValue value, MaaOptionVal
         LogError << "invalid expand size" << VAR(arr[0]) << VAR(arr[1]);
         return false;
     }
+    std::scoped_lock lock(image_mutex_);
     image_target_expand_width_ = arr[0];
     image_target_expand_height_ = arr[1];
     image_target_long_side_ = 0;
@@ -1400,6 +1469,7 @@ bool ControllerAgent::set_image_use_raw_size(MaaOptionValue value, MaaOptionValu
         LogError << "invalid value size: " << val_size;
         return false;
     }
+    std::scoped_lock lock(image_mutex_);
     image_use_raw_size_ = *reinterpret_cast<const bool*>(value);
 
     clear_target_image_size();
@@ -1447,6 +1517,7 @@ bool ControllerAgent::set_screenshot_resize_method(MaaOptionValue value, MaaOpti
         return false;
     }
 
+    std::scoped_lock lock(image_mutex_);
     image_resize_method_ = raw;
     LogInfo << "image_resize_method_ = " << image_resize_method_;
     return true;

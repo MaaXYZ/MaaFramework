@@ -49,6 +49,16 @@ declare global {
             text: string
         }
 
+        type BindTargetParam = {
+            win32:
+                | { method: 'Desktop' }
+                | ({ method: 'Window' } & (
+                    | { class_regex: string; window_regex?: string }
+                    | { class_regex?: string; window_regex: string }
+                ))
+            bind_timeout?: number
+        }
+
         type AppParam = {
             package: string
         }
@@ -79,6 +89,7 @@ declare global {
             | ClickKeyParam
             | LongPressKeyParam
             | InputTextParam
+            | BindTargetParam
             | AppParam
             | ScrollParam
             | RelativeMoveParam
@@ -139,6 +150,10 @@ declare global {
                   param: null
               }
             | {
+                  action: 'bind_target'
+                  param: BindTargetParam
+              }
+            | {
                   action: 'start_app' | 'stop_app'
                   param: AppParam
               }
@@ -188,6 +203,7 @@ declare global {
             ): Job<CtrlId, Controller>
             post_click_key(keycode: number): Job<CtrlId, Controller>
             post_input_text(text: string): Job<CtrlId, Controller>
+            post_bind_target(target: BindTargetParam): Job<CtrlId, Controller>
             post_start_app(intent: string): Job<CtrlId, Controller>
             post_stop_app(intent: string): Job<CtrlId, Controller>
             post_touch_down(
@@ -276,10 +292,11 @@ declare global {
 
         class Win32Controller extends Controller {
             constructor(
-                hwnd: DesktopHandle,
+                hwnd: DesktopHandle | null,
                 screencap_method: ScreencapOrInputMethods,
                 mouse_method: ScreencapOrInputMethods,
                 keyboard_method: ScreencapOrInputMethods,
+                deferred_binding?: boolean,
             )
 
             static find(): Promise<DesktopDevice[] | null>

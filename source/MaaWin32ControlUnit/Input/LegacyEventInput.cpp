@@ -44,6 +44,12 @@ bool LegacyEventInput::swipe(int x1, int y1, int x2, int y2, int duration)
 
 bool LegacyEventInput::touch_down(int contact, int x, int y, int pressure)
 {
+    MouseEventFlags flags_info;
+    if (!contact_to_mouse_down_flags(contact, flags_info)) {
+        LogError << "contact out of range" << VAR(contact);
+        return false;
+    }
+
     POINT point = { x, y };
 
     if (hwnd_) {
@@ -57,12 +63,6 @@ bool LegacyEventInput::touch_down(int contact, int x, int y, int pressure)
     SetCursorPos(point.x, point.y);
 
     // 使用旧的mouse_event API（已废弃，但某些情况下可能仍然有效）
-    MouseEventFlags flags_info;
-    if (!contact_to_mouse_down_flags(contact, flags_info)) {
-        LogError << "contact out of range" << VAR(contact);
-        return false;
-    }
-
     mouse_event(flags_info.flags, 0, 0, flags_info.button_data, 0);
 
     return true;
@@ -105,6 +105,11 @@ bool LegacyEventInput::touch_up(int contact)
     }
     LogInfo << VAR(contact) << VAR(hwnd_);
 
+    return release_lost_contact(contact);
+}
+
+bool LegacyEventInput::release_lost_contact(int contact)
+{
     OnScopeLeave([this]() { unblock_input(); });
 
     MouseEventFlags flags_info;
@@ -173,8 +178,11 @@ bool LegacyEventInput::key_up(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
-    // OnScopeLeave([this]() { unblock_input(); });
+    return release_lost_key(key);
+}
 
+bool LegacyEventInput::release_lost_key(int key)
+{
     keybd_event(static_cast<BYTE>(key), static_cast<BYTE>(MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC)), KEYEVENTF_KEYUP, 0);
 
     return true;

@@ -44,7 +44,7 @@ NULL_HANDLE_APIS = {
     ),
     "Controller": (
         "Destroy AddSink RemoveSink ClearSinks SetOption PostConnection PostClick "
-        "PostClickV2 PostSwipe PostSwipeV2 PostClickKey PostInputText PostStartApp "
+        "PostClickV2 PostSwipe PostSwipeV2 PostClickKey PostInputText PostBindTarget PostStartApp "
         "PostStopApp PostTouchDown PostTouchMove PostTouchUp PostRelativeMove "
         "PostKeyDown PostKeyUp PostScroll PostShell GetShellOutput PostScreencap "
         "PostInactive Status Wait Connected CachedImage GetUuid GetResolution GetInfo"
@@ -266,6 +266,11 @@ class TaskerInputValidationTest(BoundTaskerTest):
 
 
 class ControllerInputValidationTest(BoundTaskerTest):
+    def test_invalid_bind_target_is_rejected_before_enqueueing(self):
+        for target in (None, b"", b"{", b"null", b"[]", b"1", b'"Desktop"'):
+            with self.subTest(target=target):
+                self.assertEqual(self.lib.MaaControllerPostBindTarget(self.controller._handle, target), 0)
+
     def test_null_text_is_rejected_before_enqueueing(self):
         for action in ("PostInputText", "PostStartApp", "PostStopApp"):
             with self.subTest(action=action):

@@ -175,7 +175,7 @@ bool AgentClient::connect()
     connected_ = false;
     remote_session_may_have_started_ = true;
 
-    auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest { });
+    auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest { .supports_bind_target = true });
 
     if (!resp_opt) {
         LogError << "failed to send_and_recv";
@@ -488,6 +488,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_controller_post_input_text(j)) {
+        return true;
+    }
+    else if (handle_controller_post_bind_target(j)) {
         return true;
     }
     else if (handle_controller_post_start_app(j)) {
@@ -2094,6 +2097,21 @@ bool AgentClient::handle_controller_post_input_text(const json::value& j)
     MaaCtrlId ctrl_id = controller->post_input_text(req.text);
     ControllerPostInputTextReverseResponse resp {
         .ctrl_id = ctrl_id,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_post_bind_target(const json::value& j)
+{
+    if (!j.is<ControllerPostBindTargetReverseRequest>()) {
+        return false;
+    }
+    const auto& req = j.as<ControllerPostBindTargetReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    ControllerPostBindTargetReverseResponse resp {
+        .ctrl_id = controller ? controller->post_bind_target(req.target) : MaaInvalidId,
     };
     send(resp);
     return true;

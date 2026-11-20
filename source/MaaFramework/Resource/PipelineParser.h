@@ -115,6 +115,7 @@ private:
     static bool parse_input_text(const json::value& input, Action::InputTextParam& output, const Action::InputTextParam& default_value);
     static bool parse_app_info(const json::value& input, Action::AppParam& output, const Action::AppParam& default_value);
     static bool parse_scroll(const json::value& input, Action::ScrollParam& output, const Action::ScrollParam& default_value);
+    static bool parse_bind_target(const json::value& input, Action::BindTargetParam& output, const Action::BindTargetParam& default_value);
     static bool parse_shell(const json::value& input, Action::ShellParam& output, const Action::ShellParam& default_value);
     static bool parse_command_param(const json::value& input, Action::CommandParam& output, const Action::CommandParam& default_value);
     static bool parse_screencap(const json::value& input, Action::ScreencapParam& output, const Action::ScreencapParam& default_value);

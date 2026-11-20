@@ -141,6 +141,7 @@ enum class Type
     Shell,
     Screencap,
     Custom,
+    BindTarget,
 };
 
 using TargetObj = MAA_VISION_NS::TargetObj;
@@ -221,6 +222,29 @@ struct AppParam
     std::string package;
 };
 
+struct BindTargetParam
+{
+    std::string method;
+    std::string class_regex;
+    std::string window_regex;
+    int32_t bind_timeout = 20000;
+
+    json::value to_json() const
+    {
+        json::object win32;
+        if (!method.empty()) {
+            win32["method"] = method;
+        }
+        if (!class_regex.empty()) {
+            win32["class_regex"] = class_regex;
+        }
+        if (!window_regex.empty()) {
+            win32["window_regex"] = window_regex;
+        }
+        return json::object { { "win32", std::move(win32) }, { "bind_timeout", bind_timeout } };
+    }
+};
+
 struct ScrollParam
 {
     Target target;
@@ -267,6 +291,7 @@ using Param = std::variant<
     ClickKeyParam,
     LongPressKeyParam,
     InputTextParam,
+    BindTargetParam,
     AppParam,
     ScrollParam,
     ShellParam,
@@ -299,6 +324,8 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "longpresskey", Type::LongPressKey },
     { "InputText", Type::InputText },
     { "inputtext", Type::InputText },
+    { "BindTarget", Type::BindTarget },
+    { "bindtarget", Type::BindTarget },
     { "StartApp", Type::StartApp },
     { "startapp", Type::StartApp },
     { "StopApp", Type::StopApp },
@@ -334,7 +361,7 @@ inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
     { Type::KeyUp, "KeyUp" },           { Type::Scroll, "Scroll" },
     { Type::StopTask, "StopTask" },     { Type::Command, "Command" },
     { Type::Shell, "Shell" },           { Type::Screencap, "Screencap" },
-    { Type::Custom, "Custom" },
+    { Type::Custom, "Custom" },         { Type::BindTarget, "BindTarget" },
 };
 } // namespace Action
 
