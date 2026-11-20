@@ -1,6 +1,8 @@
 #include "Actuator.h"
 
 #include <algorithm>
+#include <cmath>
+#include <random>
 
 #include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
@@ -14,7 +16,84 @@
 
 MAA_TASK_NS_BEGIN
 
-std::mt19937 Actuator::rand_engine_(std::random_device { }());
+namespace
+{
+thread_local std::mt19937 rand_engine(std::random_device { }());
+
+cv::Point uniform_point(cv::Size size)
+{
+    std::uniform_int_distribution<int> dist_x(0, size.width - 1);
+    std::uniform_int_distribution<int> dist_y(0, size.height - 1);
+    return { dist_x(rand_engine), dist_y(rand_engine) };
+}
+
+cv::Point uniform_ellipse_point(cv::Size size)
+{
+    const double rx = size.width / 2.0;
+    const double ry = size.height / 2.0;
+    // Test pixel centers so a one-pixel axis still has a positive radius.
+    while (true) {
+        const auto point = uniform_point(size);
+        const double dx = (point.x + 0.5 - rx) / rx;
+        const double dy = (point.y + 0.5 - ry) / ry;
+        if (dx * dx + dy * dy <= 1.0) {
+            return point;
+        }
+    }
+}
+
+cv::Point rect_to_point(const cv::Rect& r, MAA_RES_NS::Action::PointMethod method)
+{
+    using enum MAA_RES_NS::Action::PointMethod;
+    // Without a cached screenshot the rectangle can extend beyond the range of int coordinates.
+    const cv::Point2l origin { r.x, r.y };
+    const cv::Point center = origin + cv::Point2l { r.width / 2, r.height / 2 };
+    const cv::Point last = origin + cv::Point2l { r.width - 1, r.height - 1 };
+    const cv::Size size { last.x - r.x + 1, last.y - r.y + 1 };
+
+    switch (method) {
+    case Center:
+        return center;
+    case Uniform:
+        return r.tl() + uniform_point(size);
+    case UniformInset: {
+        const cv::Point inset { size.width / 4, size.height / 4 };
+        const cv::Size inner { size.width - 2 * inset.x, size.height - 2 * inset.y };
+        return r.tl() + inset + uniform_point(inner);
+    }
+    case UniformEllipse:
+        return r.tl() + uniform_ellipse_point(size);
+    case Gaussian:
+        break;
+    }
+
+    // Preserve the original center-biased sampler for existing pipelines.
+    if (r.width <= 2 || r.height <= 2) {
+        return center;
+    }
+
+    constexpr double kStdDevFactor = 3.0;
+
+    const double std_dev_x = r.width / kStdDevFactor;
+    const double std_dev_y = r.height / kStdDevFactor;
+
+    std::normal_distribution<double> dist_x(r.x + r.width / 2.0, std_dev_x);
+    std::normal_distribution<double> dist_y(r.y + r.height / 2.0, std_dev_y);
+
+    // 优先进行有限次拒绝采样
+    constexpr int kMaxAttempts = 8;
+    for (int i = 0; i < kMaxAttempts; ++i) {
+        const double x = std::round(dist_x(rand_engine));
+        const double y = std::round(dist_y(rand_engine));
+        if (x >= r.x && x <= last.x && y >= r.y && y <= last.y) {
+            return { static_cast<int>(x), static_cast<int>(y) };
+        }
+    }
+
+    LogWarn << "Too many sampling attempts";
+    return center;
+}
+} // namespace
 
 Actuator::Actuator(Tasker* tasker, Context& context)
     : tasker_(tasker)
@@ -142,39 +221,6 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
     return result;
 }
 
-cv::Point Actuator::rand_point(const cv::Rect& r)
-{
-    // 过小矩形直接返回中心点，避免死循环
-    if (r.width <= 2 || r.height <= 2) {
-        return { r.x + r.width / 2, r.y + r.height / 2 };
-    }
-
-    constexpr double kStdDevFactor = 3.0;
-
-    const double std_dev_x = r.width / kStdDevFactor;
-    const double std_dev_y = r.height / kStdDevFactor;
-
-    std::normal_distribution<double> dist_x(r.x + r.width / 2.0, std_dev_x);
-    std::normal_distribution<double> dist_y(r.y + r.height / 2.0, std_dev_y);
-
-    // 优先进行有限次拒绝采样
-    constexpr int kMaxAttempts = 8;
-    for (int i = 0; i < kMaxAttempts; ++i) {
-        const int x = static_cast<int>(std::round(dist_x(rand_engine_)));
-        const int y = static_cast<int>(std::round(dist_y(rand_engine_)));
-        const cv::Point sampled { x, y };
-        if (!r.contains(sampled)) {
-            continue;
-        }
-
-        return sampled;
-    }
-
-    LogWarn << "Too many sampling attempts";
-    // 返回中心点
-    return { r.x + r.width / 2, r.y + r.height / 2 };
-}
-
 ActionResult Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box, const std::string& name)
 {
     if (!controller()) {
@@ -187,7 +233,7 @@ ActionResult Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const 
         LogError << "failed to get target rect" << VAR(name);
         return { };
     }
-    cv::Point point = rand_point(target_rect);
+    cv::Point point = rect_to_point(target_rect, param.target_method);
     MAA_CTRL_NS::ClickParam ctrl_param { .point = point, .contact = static_cast<int>(param.contact), .pressure = param.pressure };
     bool ret = controller()->click(ctrl_param);
 
@@ -213,7 +259,7 @@ ActionResult Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& para
         LogError << "failed to get target rect" << VAR(name);
         return { };
     }
-    cv::Point point = rand_point(target_rect);
+    cv::Point point = rect_to_point(target_rect, param.target_method);
     MAA_CTRL_NS::LongPressParam ctrl_param { .point = point, .duration = param.duration, .contact = static_cast<int>(param.contact) };
     bool ret = controller()->long_press(ctrl_param);
 
@@ -227,19 +273,15 @@ ActionResult Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& para
     };
 }
 
-ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box, const std::string& name)
+std::optional<MAA_CTRL_NS::SwipeParam>
+    Actuator::resolve_swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box, const std::string& name)
 {
-    if (!controller()) {
-        LogError << "Controller is null";
-        return { };
-    }
-
     auto begin_rect = helper_.get_target_rect(param.begin, box);
     if (begin_rect.empty()) {
         LogError << "failed to get swipe begin rect" << VAR(name);
-        return { };
+        return std::nullopt;
     }
-    cv::Point begin = rand_point(begin_rect);
+    cv::Point begin = rect_to_point(begin_rect, param.begin_method);
 
     std::vector<cv::Point> end;
     for (size_t i = 0; i < param.end.size(); ++i) {
@@ -251,19 +293,35 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
         auto end_rect = helper_.get_target_rect(end_target, box);
         if (end_rect.empty()) {
             LogError << "failed to get swipe end rect" << VAR(name) << VAR(i);
-            return { };
+            return std::nullopt;
         }
-        end.emplace_back(rand_point(end_rect));
+        auto method = param.end_method.at(std::min(i, param.end_method.size() - 1));
+        end.emplace_back(rect_to_point(end_rect, method));
     }
 
-    MAA_CTRL_NS::SwipeParam ctrl_param { .begin = begin,
-                                         .end = std::move(end),
-                                         .end_hold = param.end_hold,
-                                         .duration = param.duration,
-                                         .only_hover = param.only_hover,
-                                         .starting = param.starting,
-                                         .contact = static_cast<int>(param.contact) };
-    bool ret = controller()->swipe(ctrl_param);
+    return MAA_CTRL_NS::SwipeParam {
+        .begin = begin,
+        .end = std::move(end),
+        .end_hold = param.end_hold,
+        .duration = param.duration,
+        .only_hover = param.only_hover,
+        .starting = param.starting,
+        .contact = static_cast<int>(param.contact),
+    };
+}
+
+ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return { };
+    }
+
+    auto ctrl_param = resolve_swipe(param, box, name);
+    if (!ctrl_param) {
+        return { };
+    }
+    bool ret = controller()->swipe(*ctrl_param);
 
     return ActionResult {
         .action_id = action_id_,
@@ -271,7 +329,7 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
         .action = "Swipe",
         .box = box,
         .success = ret,
-        .detail = json::value(ctrl_param),
+        .detail = json::value(*ctrl_param),
     };
 }
 
@@ -284,35 +342,11 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
 
     std::vector<MAA_CTRL_NS::SwipeParam> swipes;
     for (const auto& swipe : param.swipes) {
-        auto swipe_begin_rect = helper_.get_target_rect(swipe.begin, box);
-        if (swipe_begin_rect.empty()) {
-            LogError << "failed to get multi_swipe begin rect" << VAR(name);
+        auto ctrl_swipe = resolve_swipe(swipe, box, name);
+        if (!ctrl_swipe) {
             return { };
         }
-        cv::Point begin = rand_point(swipe_begin_rect);
-
-        std::vector<cv::Point> end;
-        for (size_t i = 0; i < swipe.end.size(); ++i) {
-            const auto& e = swipe.end.at(i);
-            cv::Rect end_offset = swipe.end_offset.empty()      ? cv::Rect { }
-                                  : i < swipe.end_offset.size() ? swipe.end_offset.at(i)
-                                                                : swipe.end_offset.back();
-            MAA_RES_NS::Action::Target end_target { .type = e.type, .param = e.param, .offset = end_offset };
-            auto swipe_end_rect = helper_.get_target_rect(end_target, box);
-            if (swipe_end_rect.empty()) {
-                LogError << "failed to get multi_swipe end rect" << VAR(name) << VAR(i);
-                return { };
-            }
-            end.emplace_back(rand_point(swipe_end_rect));
-        }
-        swipes.push_back(
-            { .begin = begin,
-              .end = std::move(end),
-              .end_hold = swipe.end_hold,
-              .duration = swipe.duration,
-              .only_hover = swipe.only_hover,
-              .starting = swipe.starting,
-              .contact = static_cast<int>(swipe.contact) });
+        swipes.emplace_back(std::move(*ctrl_swipe));
     }
 
     MAA_CTRL_NS::MultiSwipeParam ctrl_param { .swipes = std::move(swipes) };
@@ -340,7 +374,7 @@ ActionResult Actuator::touch_down(const MAA_RES_NS::Action::TouchParam& param, c
         LogError << "failed to get target rect" << VAR(name);
         return { };
     }
-    cv::Point point = rand_point(target_rect);
+    cv::Point point = rect_to_point(target_rect, param.target_method);
     MAA_CTRL_NS::TouchParam ctrl_param {
         .contact = static_cast<int>(param.contact),
         .point = point,
@@ -371,7 +405,7 @@ ActionResult Actuator::touch_move(const MAA_RES_NS::Action::TouchParam& param, c
         LogError << "failed to get target rect" << VAR(name);
         return { };
     }
-    cv::Point point = rand_point(target_rect);
+    cv::Point point = rect_to_point(target_rect, param.target_method);
     MAA_CTRL_NS::TouchParam ctrl_param {
         .contact = static_cast<int>(param.contact),
         .point = point,
@@ -522,7 +556,7 @@ ActionResult Actuator::scroll(const MAA_RES_NS::Action::ScrollParam& param, cons
         LogError << "failed to get target rect" << VAR(name);
         return { };
     }
-    cv::Point point = rand_point(target_rect);
+    cv::Point point = rect_to_point(target_rect, param.target_method);
     MAA_CTRL_NS::ScrollParam ctrl_param { .point = point, .dx = param.dx, .dy = param.dy };
     bool ret = controller()->scroll(ctrl_param);
 

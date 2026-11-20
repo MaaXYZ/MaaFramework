@@ -1295,6 +1295,65 @@ bool PipelineParser::parse_action(
     return false;
 }
 
+namespace
+{
+
+bool parse_point_method(const json::value& value, Action::PointMethod& output)
+{
+    if (!value.is_string()) {
+        LogError << "Point method must be a string" << VAR(value);
+        return false;
+    }
+    for (const auto& [method, name] : Action::kPointMethodNames) {
+        if (name == value.as_string_view()) {
+            output = method;
+            return true;
+        }
+    }
+
+    LogError << "Unknown point method" << VAR(value);
+    return false;
+}
+
+bool parse_point_method(const json::value& input, const std::string& key, Action::PointMethod& output, Action::PointMethod default_value)
+{
+    const auto* value = input.find_value(key);
+    if (!value) {
+        output = default_value;
+        return true;
+    }
+    return parse_point_method(*value, output);
+}
+
+bool parse_end_method(
+    const json::value& input,
+    std::vector<Action::PointMethod>& output,
+    const std::vector<Action::PointMethod>& default_value)
+{
+    const auto* value = input.find_value("end_method");
+    if (!value) {
+        output = default_value;
+        return true;
+    }
+
+    output.clear();
+    if (!value->is_array()) {
+        return parse_point_method(*value, output.emplace_back());
+    }
+    if (value->as_array().empty()) {
+        LogError << "end_method array must be nonempty";
+        return false;
+    }
+    for (const auto& item : value->as_array()) {
+        if (!parse_point_method(item, output.emplace_back())) {
+            return false;
+        }
+    }
+    return true;
+}
+
+} // namespace
+
 bool PipelineParser::parse_click(const json::value& input, Action::ClickParam& output, const Action::ClickParam& default_value)
 {
     if (!parse_action_target(input, "target", output.target, default_value.target)) {
@@ -1312,7 +1371,7 @@ bool PipelineParser::parse_click(const json::value& input, Action::ClickParam& o
         return false;
     }
 
-    return true;
+    return parse_point_method(input, "target_method", output.target_method, default_value.target_method);
 }
 
 bool PipelineParser::parse_long_press(const json::value& input, Action::LongPressParam& output, const Action::LongPressParam& default_value)
@@ -1337,7 +1396,7 @@ bool PipelineParser::parse_long_press(const json::value& input, Action::LongPres
         return false;
     }
 
-    return true;
+    return parse_point_method(input, "target_method", output.target_method, default_value.target_method);
 }
 
 bool PipelineParser::parse_swipe(const json::value& input, Action::SwipeParam& output, const Action::SwipeParam& default_value)
@@ -1393,7 +1452,8 @@ bool PipelineParser::parse_swipe(const json::value& input, Action::SwipeParam& o
         return false;
     }
 
-    return true;
+    return parse_point_method(input, "begin_method", output.begin_method, default_value.begin_method)
+           && parse_end_method(input, output.end_method, default_value.end_method);
 }
 
 bool PipelineParser::parse_multi_swipe(
@@ -1466,7 +1526,7 @@ bool PipelineParser::parse_touch(const json::value& input, Action::TouchParam& o
         return false;
     }
 
-    return true;
+    return parse_point_method(input, "target_method", output.target_method, default_value.target_method);
 }
 
 bool PipelineParser::parse_touch_up(const json::value& input, Action::TouchUpParam& output, const Action::TouchUpParam& default_value)
@@ -1546,7 +1606,7 @@ bool PipelineParser::parse_scroll(const json::value& input, Action::ScrollParam&
         return false;
     }
 
-    return true;
+    return parse_point_method(input, "target_method", output.target_method, default_value.target_method);
 }
 
 bool PipelineParser::parse_shell(const json::value& input, Action::ShellParam& output, const Action::ShellParam& default_value)

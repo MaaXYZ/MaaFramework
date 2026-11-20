@@ -148,6 +148,7 @@ ACTION_CASES = {
         {
             "target": "[Anchor]Button",
             "target_offset": [1, 2, 3, 4],
+            "target_method": "Center",
             "contact": 2,
             "pressure": 90,
         },
@@ -157,6 +158,7 @@ ACTION_CASES = {
         {
             "target": [10, 20, 30, 40],
             "target_offset": [1, 2, 3, 4],
+            "target_method": "UniformInset",
             "duration": 345,
             "contact": 2,
             "pressure": 90,
@@ -167,8 +169,10 @@ ACTION_CASES = {
         {
             "begin": [10, 20, 30, 40],
             "begin_offset": [1, 2, 3, 4],
+            "begin_method": "Uniform",
             "end": [[50, 60, 70, 80], "[Anchor]End"],
             "end_offset": [[-1, -2, -3, -4], [1, 2, 3, 4]],
+            "end_method": ["Center", "UniformEllipse"],
             "end_hold": [12, 34],
             "duration": [123, 456],
             "only_hover": True,
@@ -180,8 +184,8 @@ ACTION_CASES = {
         p.JMultiSwipe,
         {
             "swipes": [
-                {"begin": [10, 20], "end": [30, 40], "starting": 150, "contact": 1},
-                {"begin": True, "end": "Reference", "contact": 2},
+                {"begin": [10, 20], "begin_method": "UniformInset", "end": [30, 40], "starting": 150, "contact": 1},
+                {"begin": True, "end": "Reference", "end_method": "Center", "contact": 2},
             ]
         },
     ),
@@ -191,6 +195,7 @@ ACTION_CASES = {
             "contact": 2,
             "target": "Reference",
             "target_offset": [1, 2, 3, 4],
+            "target_method": "UniformEllipse",
             "pressure": 90,
             "auto_up": True,
         },
@@ -201,6 +206,7 @@ ACTION_CASES = {
             "contact": 3,
             "target": [10, 20, 30, 40],
             "target_offset": [1, 2, 3, 4],
+            "target_method": "UniformInset",
             "pressure": 80,
             "auto_up": True,
         },
@@ -219,6 +225,7 @@ ACTION_CASES = {
         {
             "target": "[Anchor]List",
             "target_offset": [1, 2, 3, 4],
+            "target_method": "UniformEllipse",
             "dx": -120,
             "dy": 240,
         },
@@ -265,6 +272,8 @@ INVALID_NODES = {
     "target_three_coordinates": {"action": "Click", "target": [1, 2, 3]},
     "target_non_numeric": {"action": "Click", "target": [1, "2"]},
     "target_offset_type": {"action": "Click", "target_offset": "1,2"},
+    "target_method_case": {"action": "Click", "target_method": "center"},
+    "target_method_type": {"action": "Click", "target_method": ["Center"]},
     "roi_false": {"recognition": "DirectHit", "roi": False},
     "roi_three_coordinates": {"recognition": "DirectHit", "roi": [1, 2, 3]},
     "template_type": {"recognition": "TemplateMatch", "template": 42},
@@ -312,6 +321,10 @@ INVALID_NODES = {
     "or_empty": {"recognition": "Or", "any_of": []},
     "or_non_array": {"recognition": "Or", "any_of": "Reference"},
     "swipe_end_type": {"action": "Swipe", "end": [False]},
+    "swipe_begin_method_type": {"action": "Swipe", "begin_method": 1},
+    "swipe_end_method_empty": {"action": "Swipe", "end_method": []},
+    "swipe_end_method_mixed": {"action": "Swipe", "end_method": ["Center", None]},
+    "multi_swipe_end_method": {"action": "MultiSwipe", "swipes": [{"end_method": "corner"}]},
     "swipe_duration_type": {"action": "Swipe", "duration": [100, "bad"]},
     "multi_swipe_type": {"action": "MultiSwipe", "swipes": {}},
     "click_key_type": {"action": "ClickKey", "key": [65, "bad"]},
@@ -711,6 +724,22 @@ class PipelineContractTest(unittest.TestCase):
                 for key, value in expected.items():
                     self.assertEqual(dumped[section]["param"][key], value)
 
+    def test_swipe_point_method_partial_override(self):
+        self.assertTrue(self.resource.override_pipeline({"Node": {"action": "Swipe"}}))
+        param = self.resource.get_node_object("Node").action.param
+        self.assertEqual(param.begin_method, "Gaussian")
+        self.assertEqual(param.end_method, ["Gaussian"])
+        self.assertTrue(self.resource.override_pipeline({"Node": {"begin_method": "Center", "end_method": "Uniform"}}))
+        self.assertTrue(self.resource.override_pipeline({"Node": {"end_method": ["UniformInset", "UniformEllipse"]}}))
+        param = self.resource.get_node_object("Node").action.param
+        self.assertEqual(param.begin_method, "Center")
+        self.assertEqual(param.end_method, ["UniformInset", "UniformEllipse"])
+
+    def test_corner_methods_are_rejected(self):
+        for method in ("TopLeft", "TopRight", "BottomLeft", "BottomRight"):
+            with self.subTest(method=method):
+                self.assertFalse(self.resource.override_pipeline({"Node": {"action": "Click", "target_method": method}}))
+
     def test_wait_freezes_scalar_and_partial_override(self):
         for key in ("pre_wait_freezes", "post_wait_freezes", "repeat_wait_freezes"):
             with self.subTest(field=key):
@@ -802,7 +831,7 @@ class PipelineFileTest(unittest.TestCase):
                     "model": "custom",
                     "only_rec": True,
                 },
-                "Click": {"action": "Click", "target": [10, 20], "pressure": 90},
+                "Click": {"action": "Click", "target": [10, 20], "pressure": 90, "target_method": "Center"},
             },
         )
         self.write_json(
@@ -814,6 +843,7 @@ class PipelineFileTest(unittest.TestCase):
                     "expected": ["explicit"],
                     "action": "Click",
                     "pressure": 50,
+                    "target_method": "UniformInset",
                     "timeout": 789,
                 },
             },
@@ -833,10 +863,12 @@ class PipelineFileTest(unittest.TestCase):
         )
         self.assertEqual(inherited.recognition.param.expected, ["default text"])
         self.assertEqual(inherited.action.param.target, [10, 20, 1, 1])
+        self.assertEqual(inherited.action.param.target_method, "Center")
         explicit = self.resource.get_node_object("Explicit")
         self.assertEqual(explicit.recognition.param.expected, ["explicit"])
         self.assertEqual(explicit.recognition.param.model, "custom")
         self.assertEqual(explicit.action.param.pressure, 50)
+        self.assertEqual(explicit.action.param.target_method, "UniformInset")
         self.assertEqual(explicit.timeout, 789)
 
 
@@ -887,6 +919,8 @@ def action_case_test(type_name, param_class, params):
                     self.assertEqual(swipes[0]["begin"], [10, 20, 1, 1])
                     self.assertEqual(swipes[0]["end"], [[30, 40, 1, 1]])
                     self.assertEqual(swipes[1]["end"], ["Reference"])
+                    self.assertEqual([s["begin_method"] for s in swipes], ["UniformInset", "Gaussian"])
+                    self.assertEqual([s["end_method"] for s in swipes], [["Gaussian"], ["Center"]])
                     self.assertEqual([s["contact"] for s in swipes], [1, 2])
 
     return test

@@ -56,6 +56,29 @@ std::vector<PipelineV2::JRect> dump_rect_array(const std::vector<cv::Rect>& vec)
     return result;
 }
 
+PipelineV2::JSwipe dump_swipe(const Action::SwipeParam& param, uint32_t starting)
+{
+    std::vector<std::string> end_methods;
+    for (auto method : param.end_method) {
+        end_methods.emplace_back(Action::kPointMethodNames.at(method));
+    }
+
+    return PipelineV2::JSwipe {
+        .starting = starting,
+        .begin = dump_target(param.begin),
+        .begin_offset = dump_rect(param.begin.offset),
+        .begin_method = Action::kPointMethodNames.at(param.begin_method),
+        .end = dump_target_obj_array(param.end),
+        .end_offset = dump_rect_array(param.end_offset),
+        .end_method = std::move(end_methods),
+        .end_hold = param.end_hold,
+        .duration = param.duration,
+        .only_hover = param.only_hover,
+        .contact = param.contact,
+        .pressure = param.pressure,
+    };
+}
+
 std::string dump_order_by(MAA_VISION_NS::ResultOrderBy order_by)
 {
     static const std::unordered_map<MAA_VISION_NS::ResultOrderBy, std::string> order_by_map = {
@@ -298,6 +321,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         act.param = PipelineV2::JClick {
             .target = dump_target(p.target),
             .target_offset = dump_rect(p.target.offset),
+            .target_method = Action::kPointMethodNames.at(p.target_method),
             .contact = p.contact,
             .pressure = p.pressure,
         };
@@ -308,6 +332,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         act.param = PipelineV2::JLongPress {
             .target = dump_target(p.target),
             .target_offset = dump_rect(p.target.offset),
+            .target_method = Action::kPointMethodNames.at(p.target_method),
             .duration = p.duration,
             .contact = p.contact,
             .pressure = p.pressure,
@@ -316,37 +341,14 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
 
     case Action::Type::Swipe: {
         const auto& p = std::get<Action::SwipeParam>(param);
-        act.param = PipelineV2::JSwipe {
-            .starting = 0,
-            .begin = dump_target(p.begin),
-            .begin_offset = dump_rect(p.begin.offset),
-            .end = dump_target_obj_array(p.end),
-            .end_offset = dump_rect_array(p.end_offset),
-            .end_hold = p.end_hold,
-            .duration = p.duration,
-            .only_hover = p.only_hover,
-            .contact = p.contact,
-            .pressure = p.pressure,
-        };
+        act.param = dump_swipe(p, 0);
     } break;
 
     case Action::Type::MultiSwipe: {
         const auto& p = std::get<Action::MultiSwipeParam>(param);
         PipelineV2::JMultiSwipe jswipes;
         for (const auto& s : p.swipes) {
-            jswipes.swipes.emplace_back(
-                PipelineV2::JSwipe {
-                    .starting = s.starting,
-                    .begin = dump_target(s.begin),
-                    .begin_offset = dump_rect(s.begin.offset),
-                    .end = dump_target_obj_array(s.end),
-                    .end_offset = dump_rect_array(s.end_offset),
-                    .end_hold = s.end_hold,
-                    .duration = s.duration,
-                    .only_hover = s.only_hover,
-                    .contact = s.contact,
-                    .pressure = s.pressure,
-                });
+            jswipes.swipes.emplace_back(dump_swipe(s, s.starting));
         }
         act.param = std::move(jswipes);
     } break;
@@ -358,6 +360,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
             .contact = p.contact,
             .target = dump_target(p.target),
             .target_offset = dump_rect(p.target.offset),
+            .target_method = Action::kPointMethodNames.at(p.target_method),
             .pressure = p.pressure,
             .auto_up = p.auto_up,
         };
@@ -420,6 +423,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         act.param = PipelineV2::JScroll {
             .target = dump_target(p.target),
             .target_offset = dump_rect(p.target.offset),
+            .target_method = Action::kPointMethodNames.at(p.target_method),
             .dx = p.dx,
             .dy = p.dy,
         };

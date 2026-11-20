@@ -1,7 +1,7 @@
 #pragma once
 
 #include <atomic>
-#include <random>
+#include <optional>
 
 #include <meojson/json.hpp>
 
@@ -29,8 +29,6 @@ public:
     MaaActId get_id() const { return action_id_; }
 
 private:
-    static cv::Point rand_point(const cv::Rect& r);
-    static std::mt19937 rand_engine_;
     inline static std::atomic<MaaActId> s_global_action_id = kActIdBase;
 
 private:
@@ -61,6 +59,8 @@ private:
     ActionResult stop_task(const std::string& name);
 
 private:
+    std::optional<MAA_CTRL_NS::SwipeParam>
+        resolve_swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box, const std::string& name);
     MAA_CTRL_NS::ControllerAgent* controller();
 
 private:

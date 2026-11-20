@@ -1,12 +1,13 @@
 import json
 from dataclasses import dataclass, field
-from typing import Any, Optional, Union, cast
+from typing import Any, Literal, Optional, Union, cast
 
 from strenum import StrEnum
 
 # Type aliases to match C++ std::variant types
 JRect = tuple[int, int, int, int]  # std::array<int, 4>
 JTarget = Union[bool, str, JRect]  # std::variant<bool, std::string, JRect>
+JPointMethod = Literal["Gaussian", "Uniform", "UniformInset", "UniformEllipse", "Center"]
 
 
 # strenum
@@ -184,6 +185,7 @@ class JClick:
     target_offset: JRect = (0, 0, 0, 0)
     contact: int = 0
     pressure: int = 1
+    target_method: JPointMethod = "Gaussian"
 
 
 @dataclass
@@ -193,6 +195,7 @@ class JLongPress:
     duration: int = 1000
     contact: int = 0
     pressure: int = 1
+    target_method: JPointMethod = "Gaussian"
 
 
 @dataclass
@@ -207,6 +210,8 @@ class JSwipe:
     only_hover: bool = False
     contact: int = 0
     pressure: int = 1
+    begin_method: JPointMethod = "Gaussian"
+    end_method: list[JPointMethod] = field(default_factory=lambda: ["Gaussian"])
 
 
 @dataclass
@@ -221,6 +226,7 @@ class JTouch:
     target_offset: JRect = (0, 0, 0, 0)
     pressure: int = 0
     auto_up: bool = False
+    target_method: JPointMethod = "Gaussian"
 
 
 @dataclass
@@ -271,6 +277,7 @@ class JScroll:
     target_offset: JRect = (0, 0, 0, 0)
     dx: int = 0
     dy: int = 0
+    target_method: JPointMethod = "Gaussian"
 
 
 @dataclass

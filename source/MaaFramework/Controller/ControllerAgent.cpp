@@ -508,6 +508,10 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         const uint end_hold = param.end_hold.empty() ? 0 : (i < param.end_hold.size()) ? param.end_hold.at(i) : param.end_hold.back();
 
         if (use_touch_down_up) {
+            if (param.only_hover && i == 0) {
+                ret &= control_unit_->touch_move(param.contact, begin.x, begin.y, param.pressure);
+            }
+
             constexpr double kInterval = 10; // ms
             const std::chrono::milliseconds delay(static_cast<int>(kInterval));
 
@@ -588,22 +592,26 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
         double total_step = 0;
         double x_step_len = 0;
         double y_step_len = 0;
-        size_t step_index = 0;
         uint duration = 0;
         uint end_hold = 0;
     };
 
-    struct CotactOperating
+    struct ContactOperating
     {
         std::vector<SegmentOperating> seg;
         size_t seg_index = 0;
+        size_t step_index = 0;
     };
 
     // contact index < end index < op >>
-    std::vector<CotactOperating> operating(param.swipes.size());
+    std::vector<ContactOperating> operating(param.swipes.size());
 
     for (size_t s_i = 0; s_i < param.swipes.size(); ++s_i) {
         const SwipeParam& s = param.swipes.at(s_i);
+        if (s.end.empty()) {
+            LogError << "MultiSwipe contact has no end point" << VAR(s_i);
+            return false;
+        }
 
         cv::Point begin = preproc_touch_point(s.begin);
         for (size_t e_i = 0; e_i < s.end.size(); ++e_i) {
@@ -614,15 +622,13 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
             SegmentOperating o;
             o.begin = begin;
             o.end = end;
-            o.total_step = duration / kInterval;
-            o.x_step_len = (end.x - begin.x) / o.total_step;
-            o.y_step_len = (end.y - begin.y) / o.total_step;
-            o.step_index = 0;
+            o.total_step = std::max(1.0, duration / kInterval);
+            o.x_step_len = (static_cast<double>(end.x) - begin.x) / o.total_step;
+            o.y_step_len = (static_cast<double>(end.y) - begin.y) / o.total_step;
             o.duration = duration;
             o.end_hold = end_hold;
 
             operating.at(s_i).seg.emplace_back(std::move(o));
-            operating.at(s_i).seg_index = 0;
 
             begin = end;
         }
@@ -632,8 +638,8 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
     auto now = starting;
 
     bool ret = !param.swipes.empty();
-    size_t over_count = 0;
-    while (over_count < param.swipes.size()) {
+    size_t finished_contacts = 0;
+    while (finished_contacts < param.swipes.size()) {
         if (need_to_stop_) {
             break;
         }
@@ -648,40 +654,39 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
 
             int contact = s.contact != 0 ? s.contact : static_cast<int>(i);
 
-            if (i >= operating.size()) {
-                LogError << "Invalid contact index" << VAR(i) << VAR(operating.size());
-                continue;
-            }
             auto& contact_op = operating.at(i);
 
             if (contact_op.seg_index >= contact_op.seg.size()) {
                 continue; // all segments done
             }
-            auto& seg_op = contact_op.seg.at(contact_op.seg_index);
+            const auto& seg_op = contact_op.seg.at(contact_op.seg_index);
+            const auto step = contact_op.step_index++;
 
-            if (seg_op.step_index == 0) {
-                if (!s.only_hover) {
+            if (step == 0) {
+                if (s.only_hover) {
+                    ret &= control_unit_->touch_move(contact, seg_op.begin.x, seg_op.begin.y, s.pressure);
+                }
+                else {
                     remember_touch_down(contact, true);
                     ret &= control_unit_->touch_down(contact, seg_op.begin.x, seg_op.begin.y, s.pressure);
                 }
-                ++seg_op.step_index;
+                continue;
             }
-            else if (seg_op.step_index < seg_op.total_step) {
-                int mx = static_cast<int>(seg_op.begin.x + seg_op.step_index * seg_op.x_step_len);
-                int my = static_cast<int>(seg_op.begin.y + seg_op.step_index * seg_op.y_step_len);
+            if (step < seg_op.total_step) {
+                int mx = static_cast<int>(seg_op.begin.x + step * seg_op.x_step_len);
+                int my = static_cast<int>(seg_op.begin.y + step * seg_op.y_step_len);
                 ret &= control_unit_->touch_move(contact, mx, my, s.pressure);
-                ++seg_op.step_index;
+                continue;
             }
-            else if (seg_op.step_index == seg_op.total_step) {
+
+            ret &= control_unit_->touch_move(contact, seg_op.end.x, seg_op.end.y, s.pressure);
+            ++contact_op.seg_index;
+            contact_op.step_index = 1; // The endpoint also starts the next segment.
+            if (contact_op.seg_index == contact_op.seg.size()) {
                 if (!s.only_hover) {
                     ret &= release_touch_if_held(contact);
                 }
-                ++seg_op.step_index;
-                ++over_count;
-            }
-            else { // step_index > total
-                ++contact_op.seg_index;
-                continue;
+                ++finished_contacts;
             }
         }
 

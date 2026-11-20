@@ -722,6 +722,24 @@
             ],
             "default": true
         },
+        "jsonPointMethod": {
+            "type": "string",
+            "enum": [
+                "Gaussian",
+                "Uniform",
+                "UniformInset",
+                "UniformEllipse",
+                "Center"
+            ],
+            "enumDescriptions": [
+                "中心附近命中概率更高的高斯随机点。",
+                "矩形内每个像素等概率。",
+                "左右各留出四分之一宽度，上下各留出四分之一高度（向下取整），在剩余矩形内均匀取点。",
+                "从像素中心落在内接椭圆内或边界上的所有像素中均匀取点。",
+                "矩形中心像素。"
+            ],
+            "default": "Gaussian"
+        },
         "jsonInt32OrStringOrList": {
             "anyOf": [
                 {
@@ -2331,13 +2349,18 @@
                     "title": "Target Property",
                     "description": "点击目标的位置。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n点击目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。也支持 `[Anchor]锚点名` 格式引用锚点对应的节点。若引用的前置节点或锚点识别结果为空，则视为动作失败。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低），若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n点击目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。也支持 `[Anchor]锚点名` 格式引用锚点对应的节点。若引用的前置节点或锚点识别结果为空，则视为动作失败。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，由 `target_method` 选择矩形内的点，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "target_offset": {
                     "title": "Target Offset Property",
                     "description": "在 `target` 的基础上额外移动再作为点击目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
                     "$ref": "#/$defs/jsonRect",
                     "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为点击目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                },
+                "target_method": {
+                    "title": "Target Method Property",
+                    "description": "应用偏移后，在目标矩形内取点的方法。默认 Gaussian。",
+                    "$ref": "#/$defs/jsonPointMethod"
                 },
                 "contact": {
                     "title": "Contact Property",
@@ -2392,13 +2415,18 @@
                     "title": "Target Property",
                     "description": "长按目标的位置。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n长按目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。也支持 `[Anchor]锚点名` 格式引用锚点对应的节点。若引用的前置节点或锚点识别结果为空，则视为动作失败。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低），若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n长按目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。也支持 `[Anchor]锚点名` 格式引用锚点对应的节点。若引用的前置节点或锚点识别结果为空，则视为动作失败。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，由 `target_method` 选择矩形内的点，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "target_offset": {
                     "title": "Target Offset Property",
                     "description": "在 `target` 的基础上额外移动再作为长按目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
                     "$ref": "#/$defs/jsonRect",
                     "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为长按目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                },
+                "target_method": {
+                    "title": "Target Method Property",
+                    "description": "应用偏移后，在目标矩形内取点的方法。默认 Gaussian。",
+                    "$ref": "#/$defs/jsonPointMethod"
                 },
                 "duration": {
                     "title": "Duration Property",
@@ -2460,7 +2488,7 @@
                     "title": "Begin Property",
                     "description": "滑动起点。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n滑动起点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。也支持 `[Anchor]锚点名` 格式引用锚点对应的节点。若引用的前置节点或锚点识别结果为空，则视为动作失败。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低），若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n滑动起点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。也支持 `[Anchor]锚点名` 格式引用锚点对应的节点。若引用的前置节点或锚点识别结果为空，则视为动作失败。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，由 `begin_method` 选择矩形内的点，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "begin_offset": {
                     "title": "Begin Offset Property",
@@ -2468,17 +2496,39 @@
                     "$ref": "#/$defs/jsonRect",
                     "markdownDescription": "*array<int, 4>*\n\n在 `begin` 的基础上额外移动再作为起点，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
                 },
+                "begin_method": {
+                    "title": "Begin Method Property",
+                    "description": "应用偏移后，在滑动起点矩形内取点的方法。默认 Gaussian。",
+                    "$ref": "#/$defs/jsonPointMethod"
+                },
                 "end": {
                     "title": "End Property",
                     "description": "滑动终点。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTargetOrList",
-                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>* | *list<true | string | array<int, 2> | array<int, 4>>*\n\n滑动终点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。也支持 `[Anchor]锚点名` 格式引用锚点对应的节点。若引用的前置节点或锚点识别结果为空，则视为动作失败。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低），若希望全屏可设为 [0, 0, 0, 0] 。\n\n- *list<...>*: v4.5.x 版本新增支持，可配置滑动途径点，列表内各项不抬手连续滑动。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>* | *list<true | string | array<int, 2> | array<int, 4>>*\n\n滑动终点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。也支持 `[Anchor]锚点名` 格式引用锚点对应的节点。若引用的前置节点或锚点识别结果为空，则视为动作失败。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，由 `end_method` 选择矩形内的点，若希望全屏可设为 [0, 0, 0, 0] 。\n\n- *list<...>*: v4.5.x 版本新增支持，可配置滑动途径点，列表内各项不抬手连续滑动。"
                 },
                 "end_offset": {
                     "title": "End Offset Property",
                     "description": "在 `end` 的基础上额外移动再作为终点，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
                     "$ref": "#/$defs/jsonRectOrList",
                     "markdownDescription": "*array<int, 4>* | *list<array<int, 4>>*\n\n在 `end` 的基础上额外移动再作为终点，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                },
+                "end_method": {
+                    "title": "End Method Property",
+                    "description": "应用偏移后，在滑动途经点和终点矩形内取点的方法。默认 Gaussian。单值应用到所有点，非空列表逐点对应，后续点沿用最后一项。",
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/jsonPointMethod"
+                        },
+                        {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "$ref": "#/$defs/jsonPointMethod"
+                            }
+                        }
+                    ],
+                    "default": "Gaussian"
                 },
                 "duration": {
                     "title": "Duration Property",
@@ -2645,13 +2695,18 @@
                     "title": "Target Property",
                     "description": "触控目标的位置。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n触控目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。也支持 `[Anchor]锚点名` 格式引用锚点对应的节点。若引用的前置节点或锚点识别结果为空，则视为动作失败。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n触控目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。也支持 `[Anchor]锚点名` 格式引用锚点对应的节点。若引用的前置节点或锚点识别结果为空，则视为动作失败。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，由 `target_method` 选择矩形内的点，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "target_offset": {
                     "title": "Target Offset Property",
                     "description": "在 `target` 的基础上额外移动再作为触控目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
                     "$ref": "#/$defs/jsonRect",
                     "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为触控目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                },
+                "target_method": {
+                    "title": "Target Method Property",
+                    "description": "应用偏移后，在目标矩形内取点的方法。默认 Gaussian。",
+                    "$ref": "#/$defs/jsonPointMethod"
                 },
                 "pressure": {
                     "title": "Pressure Property",
@@ -2778,13 +2833,18 @@
                     "title": "Target Property",
                     "description": "滚动目标的位置，鼠标会先移动到该位置再进行滚动。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n滚动目标的位置，鼠标会先移动到该位置再进行滚动。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。也支持 `[Anchor]锚点名` 格式引用锚点对应的节点。若引用的前置节点或锚点识别结果为空，则视为动作失败。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n滚动目标的位置，鼠标会先移动到该位置再进行滚动。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。也支持 `[Anchor]锚点名` 格式引用锚点对应的节点。若引用的前置节点或锚点识别结果为空，则视为动作失败。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，由 `target_method` 选择矩形内的点，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "target_offset": {
                     "title": "Target Offset Property",
                     "description": "在 `target` 的基础上额外移动再作为滚动目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
                     "$ref": "#/$defs/jsonRect",
                     "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为滚动目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                },
+                "target_method": {
+                    "title": "Target Method Property",
+                    "description": "应用偏移后，在目标矩形内取点的方法。默认 Gaussian。",
+                    "$ref": "#/$defs/jsonPointMethod"
                 },
                 "dx": {
                     "title": "Scroll Dx Property",
@@ -3666,6 +3726,9 @@
                         }
                     ]
                 },
+                "target_method": {
+                    "$ref": "#/$defs/Click/properties/target_method"
+                },
                 "contact": {
                     "anyOf": [
                         {
@@ -3719,6 +3782,9 @@
                         }
                     ]
                 },
+                "begin_method": {
+                    "$ref": "#/$defs/Swipe/properties/begin_method"
+                },
                 "end": {
                     "anyOf": [
                         {
@@ -3732,6 +3798,9 @@
                             "$ref": "#/$defs/Swipe/properties/end_offset"
                         }
                     ]
+                },
+                "end_method": {
+                    "$ref": "#/$defs/Swipe/properties/end_method"
                 },
                 "swipes": {
                     "anyOf": [
