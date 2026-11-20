@@ -190,6 +190,11 @@ export async function runApiContractTests() {
             assert.deepEqual(controller.resolution, [png.readUInt32BE(16), png.readUInt32BE(20)])
         })
 
+        await check('unsupported target binding completes as a failed job', async () => {
+            const job = controller.post_bind_target({ win32: { method: 'Desktop' } })
+            assert.equal(await job.wait().failed, true)
+        })
+
         await check('input arguments and default parameters', async () => {
             const inputs: [() => maa.Job<maa.CtrlId, maa.Controller>, unknown[]][] = [
                 [() => controller.post_click(3, 4), ['click', 3, 4]],

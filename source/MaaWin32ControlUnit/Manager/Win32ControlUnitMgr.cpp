@@ -1,11 +1,16 @@
 #include "Win32ControlUnitMgr.h"
 
+#include <algorithm>
 #include <chrono>
+#include <sstream>
+
+#include "Win32TargetSelector.h"
 
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Time.hpp"
+#include "MaaUtils/Uuid.h"
 
 #include <tlhelp32.h>
 
@@ -32,21 +37,44 @@ Win32ControlUnitMgr::Win32ControlUnitMgr(
     MaaWin32ScreencapMethod screencap_method,
     MaaWin32InputMethod mouse_method,
     MaaWin32InputMethod keyboard_method)
-    : hwnd_(hWnd)
+    : initial_hwnd_(hWnd)
     , screencap_method_(screencap_method)
     , mouse_method_(mouse_method)
     , keyboard_method_(keyboard_method)
-    , background_keyboard_(std::make_shared<BackgroundManagedKeyInput>(hWnd))
 {
+    target_.hwnd = hWnd;
+    target_.background_keyboard = std::make_shared<BackgroundManagedKeyInput>(hWnd);
+}
+
+bool Win32ControlUnitMgr::Target::available() const
+{
+    if (!ready || lost || !hwnd) {
+        return ready && !lost;
+    }
+
+    DWORD pid = 0;
+    const DWORD tid = GetWindowThreadProcessId(hwnd, &pid);
+    lost = !tid || tid != thread_id || pid != process_id;
+    return !lost;
+}
+
+bool Win32ControlUnitMgr::set_deferred_binding()
+{
+    std::scoped_lock lock(connection_mutex_, mutex_);
+    if (connected_ || target_.hwnd) {
+        return false;
+    }
+    independent_connection_ = true;
+    target_ = { };
+    if (session_uuid_.empty()) {
+        session_uuid_ = make_uuid();
+    }
+    return true;
 }
 
 bool Win32ControlUnitMgr::connect()
 {
-    connected_ = false;
-    screencap_.reset();
-    mouse_.reset();
-    keyboard_.reset();
-
+    std::scoped_lock lock(connection_mutex_, mutex_);
 #ifndef MAA_WIN32_COMPATIBLE
     // 设置 Per-Monitor DPI Aware V2，确保 GetClientRect/GetWindowRect 等 API 返回物理像素。
     // 修复高 DPI 缩放下 PrintWindow/FramePool 等截图方式只能截取部分区域的问题。
@@ -59,76 +87,172 @@ bool Win32ControlUnitMgr::connect()
     }
 #endif
 
-    if (hwnd_) {
-        if (!IsWindow(hwnd_)) {
-            LogError << "hwnd_ is invalid";
+    if (independent_connection_) {
+        connected_ = true;
+        return true;
+    }
+
+    target_.ready = false;
+    target_.lost = false;
+    target_.mouse.reset();
+    target_.keyboard.reset();
+    target_.screencap.reset();
+    connected_ = prepare_target(target_, false);
+    return connected_;
+}
+
+namespace
+{
+bool supports_desktop_input(MaaWin32InputMethod method)
+{
+    return method == MaaWin32InputMethod_None || method == MaaWin32InputMethod_Seize || method == MaaWin32InputMethod_LegacyEvent
+           || method == MaaWin32InputMethod_Interception;
+}
+}
+
+bool Win32ControlUnitMgr::prepare_target(Target& target, bool explicit_bind, const std::function<bool()>& cancelled) const
+{
+    auto capture_methods = screencap_method_;
+    if (target.hwnd) {
+        target.thread_id = GetWindowThreadProcessId(target.hwnd, &target.process_id);
+        if (explicit_bind && capture_methods) {
+            capture_methods &= ~MaaWin32ScreencapMethod_DXGI_DesktopDup;
+            if (!capture_methods) {
+                LogError << "Window Bind requires a window-relative screencap method";
+                return false;
+            }
+        }
+        if (!target.thread_id) {
+            LogError << "Invalid target window" << VAR_VOIDP(target.hwnd);
             return false;
         }
     }
-    else {
-        LogWarn << "hwnd_ is nullptr";
+    else if (explicit_bind) {
+        if (!supports_desktop_input(mouse_method_) || !supports_desktop_input(keyboard_method_)
+            || (capture_methods && !(capture_methods & MaaWin32ScreencapMethod_DXGI_DesktopDup))) {
+            LogError << "Requested methods cannot operate on the primary desktop" << VAR(capture_methods) << VAR(mouse_method_)
+                     << VAR(keyboard_method_);
+            return false;
+        }
+        capture_methods &= MaaWin32ScreencapMethod_DXGI_DesktopDup;
     }
 
-    if (!init_screencap()) {
+    if (!init_screencap(target, capture_methods, cancelled)) {
+        return false;
+    }
+    target.mouse = make_input(target.hwnd, mouse_method_);
+    target.keyboard = mouse_method_ == keyboard_method_ ? target.mouse : make_input(target.hwnd, keyboard_method_);
+    if (explicit_bind && ((mouse_method_ && !target.mouse) || (keyboard_method_ && !target.keyboard))) {
+        return false;
+    }
+    target.ready = true;
+    return target.available();
+}
+
+bool Win32ControlUnitMgr::bind_target(
+    const json::object& target,
+    const std::function<bool()>& cancelled,
+    const std::function<void()>& before_switch)
+{
+    std::lock_guard connection_lock(connection_mutex_);
+    {
+        std::lock_guard lock(mutex_);
+        if (!connected_) {
+            LogError << "Bind requires a connected controller";
+            return false;
+        }
+    }
+    if (cancelled && cancelled()) {
+        return false;
+    }
+    const auto hwnd = resolve_bind_target(target, cancelled);
+    if (!hwnd) {
+        return false;
+    }
+    {
+        std::lock_guard lock(mutex_);
+        if (independent_connection_ && target_.hwnd == *hwnd && target_.available()) {
+            return !cancelled || !cancelled();
+        }
+    }
+
+    Target candidate;
+    candidate.hwnd = *hwnd;
+    candidate.background_keyboard = std::make_shared<BackgroundManagedKeyInput>(*hwnd);
+    if (!prepare_target(candidate, true, cancelled) || (cancelled && cancelled())) {
         return false;
     }
 
-    if (mouse_method_ == keyboard_method_) {
-        mouse_ = make_input(mouse_method_);
-        keyboard_ = mouse_;
+    // The callback can call key_up/touch_up on this control unit.
+    if (before_switch) {
+        before_switch();
     }
-    else {
-        mouse_ = make_input(mouse_method_);
-        keyboard_ = make_input(keyboard_method_);
+    std::lock_guard lock(mutex_);
+    if (!candidate.available() || (cancelled && cancelled())) {
+        return false;
     }
-
-    connected_ = true;
+    if (target_.background_keyboard) {
+        if (!target_.background_keyboard->rebind(candidate.hwnd, managed_keys_)) {
+            return false;
+        }
+        candidate.background_keyboard = std::move(target_.background_keyboard);
+    }
+    else if (!managed_keys_.empty()) {
+        const std::vector<int> keys(managed_keys_.begin(), managed_keys_.end());
+        if (!candidate.background_keyboard->set_managed_keys(keys)) {
+            return false;
+        }
+    }
+    target_.inactive();
+    target_ = std::move(candidate);
+    independent_connection_ = true;
     return true;
 }
 
-std::unordered_map<Win32ControlUnitMgr::ScreencapMethod, std::shared_ptr<ScreencapBase>> Win32ControlUnitMgr::build_screencap_units() const
+std::unordered_map<Win32ControlUnitMgr::ScreencapMethod, std::shared_ptr<ScreencapBase>>
+    Win32ControlUnitMgr::build_screencap_units(HWND hwnd, MaaWin32ScreencapMethod methods) const
 {
     std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>> units;
 
     const auto add = [&](MaaWin32ScreencapMethod flag, ScreencapMethod method, auto factory) {
-        if (screencap_method_ & flag) {
+        if (methods & flag) {
             units.emplace(method, factory());
         }
     };
 
-    add(MaaWin32ScreencapMethod_GDI, ScreencapMethod::GDI, [this] { return std::make_shared<GdiScreencap>(hwnd_); });
-    add(MaaWin32ScreencapMethod_FramePool, ScreencapMethod::FramePool, [this] {
-        return std::make_shared<FramePoolWithPseudoMinimizeScreencap>(hwnd_);
+    add(MaaWin32ScreencapMethod_GDI, ScreencapMethod::GDI, [hwnd] { return std::make_shared<GdiScreencap>(hwnd); });
+    add(MaaWin32ScreencapMethod_FramePool, ScreencapMethod::FramePool, [hwnd] {
+        return std::make_shared<FramePoolWithPseudoMinimizeScreencap>(hwnd);
     });
-    add(MaaWin32ScreencapMethod_DXGI_DesktopDup, ScreencapMethod::DXGI_DesktopDup, [this] {
-        return std::make_shared<DesktopDupScreencap>(hwnd_);
+    add(MaaWin32ScreencapMethod_DXGI_DesktopDup, ScreencapMethod::DXGI_DesktopDup, [hwnd] {
+        return std::make_shared<DesktopDupScreencap>(hwnd);
     });
-    add(MaaWin32ScreencapMethod_DXGI_DesktopDup_Window, ScreencapMethod::DXGI_DesktopDup_Window, [this] {
-        return std::make_shared<DesktopDupWindowScreencap>(hwnd_);
+    add(MaaWin32ScreencapMethod_DXGI_DesktopDup_Window, ScreencapMethod::DXGI_DesktopDup_Window, [hwnd] {
+        return std::make_shared<DesktopDupWindowScreencap>(hwnd);
     });
-    add(MaaWin32ScreencapMethod_PrintWindow, ScreencapMethod::PrintWindow, [this] {
-        return std::make_shared<PrintWindowWithPseudoMinimizeScreencap>(hwnd_);
+    add(MaaWin32ScreencapMethod_PrintWindow, ScreencapMethod::PrintWindow, [hwnd] {
+        return std::make_shared<PrintWindowWithPseudoMinimizeScreencap>(hwnd);
     });
-    add(MaaWin32ScreencapMethod_ScreenDC, ScreencapMethod::ScreenDC, [this] { return std::make_shared<ScreenDCScreencap>(hwnd_); });
+    add(MaaWin32ScreencapMethod_ScreenDC, ScreencapMethod::ScreenDC, [hwnd] { return std::make_shared<ScreenDCScreencap>(hwnd); });
 
     return units;
 }
 
-bool Win32ControlUnitMgr::init_screencap()
+bool Win32ControlUnitMgr::init_screencap(Target& target, MaaWin32ScreencapMethod methods, const std::function<bool()>& cancelled) const
 {
-    if (screencap_method_ == MaaWin32ScreencapMethod_None) {
+    if (methods == MaaWin32ScreencapMethod_None) {
         LogWarn << "No screencap method selected";
         return true;
     }
 
-    auto units = build_screencap_units();
+    auto units = build_screencap_units(target.hwnd, methods);
     if (units.empty()) {
         LogError << "No available screencap method to test";
         return false;
     }
 
-    screencap_ = speed_test(units);
-    if (!screencap_) {
+    target.screencap = speed_test(units, cancelled);
+    if (!target.screencap) {
         LogError << "failed to select screencap method";
         return false;
     }
@@ -136,31 +260,33 @@ bool Win32ControlUnitMgr::init_screencap()
     return true;
 }
 
-std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(MaaWin32InputMethod method) const
+std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(HWND hwnd, MaaWin32InputMethod method) const
 {
     switch (method) {
+    case MaaWin32InputMethod_None:
+        return nullptr;
     case MaaWin32InputMethod_Seize:
-        return std::make_shared<SeizeInput>(hwnd_, false);
+        return std::make_shared<SeizeInput>(hwnd, false);
     case MaaWin32InputMethod_SendMessage:
-        return std::make_shared<MessageInput>(hwnd_, MessageInput::Config { .mode = MessageInput::Mode::SendMessage });
+        return std::make_shared<MessageInput>(hwnd, MessageInput::Config { .mode = MessageInput::Mode::SendMessage });
     case MaaWin32InputMethod_PostMessage:
-        return std::make_shared<MessageInput>(hwnd_, MessageInput::Config { .mode = MessageInput::Mode::PostMessage });
+        return std::make_shared<MessageInput>(hwnd, MessageInput::Config { .mode = MessageInput::Mode::PostMessage });
     case MaaWin32InputMethod_LegacyEvent:
-        return std::make_shared<LegacyEventInput>(hwnd_, true);
+        return std::make_shared<LegacyEventInput>(hwnd, true);
     case MaaWin32InputMethod_PostThreadMessage:
         LogError << "MaaWin32InputMethod_PostThreadMessage is deprecated and no longer implemented";
         return nullptr;
     case MaaWin32InputMethod_SendMessageWithCursorPos:
         return std::make_shared<MessageInput>(
-            hwnd_,
+            hwnd,
             MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_cursor_pos = true, .block_input = true });
     case MaaWin32InputMethod_PostMessageWithCursorPos:
         return std::make_shared<MessageInput>(
-            hwnd_,
+            hwnd,
             MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_cursor_pos = true, .block_input = true });
     case MaaWin32InputMethod_SendMessageWithWindowPos:
         return std::make_shared<MessageInput>(
-            hwnd_,
+            hwnd,
             MessageInput::Config {
                 .mode = MessageInput::Mode::SendMessage,
                 .with_window_pos = true,
@@ -169,7 +295,7 @@ std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(MaaWin32InputMethod m
             });
     case MaaWin32InputMethod_PostMessageWithWindowPos:
         return std::make_shared<MessageInput>(
-            hwnd_,
+            hwnd,
             MessageInput::Config {
                 .mode = MessageInput::Mode::PostMessage,
                 .with_window_pos = true,
@@ -177,17 +303,18 @@ std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(MaaWin32InputMethod m
                 .block_input = false,
             });
     case MaaWin32InputMethod_Interception:
-        return std::make_shared<InterceptionInput>(hwnd_);
+        return std::make_shared<InterceptionInput>(hwnd);
     case MaaWin32InputMethod_AnchoredTouch:
-        return std::make_shared<AnchoredTouchInput>(hwnd_);
+        return std::make_shared<AnchoredTouchInput>(hwnd);
     default:
         LogError << "Unknown input method: " << static_cast<int>(method);
         return nullptr;
     }
 }
 
-std::shared_ptr<ScreencapBase>
-    Win32ControlUnitMgr::speed_test(const std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>>& units) const
+std::shared_ptr<ScreencapBase> Win32ControlUnitMgr::speed_test(
+    const std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>>& units,
+    const std::function<bool()>& cancelled) const
 {
     LogFunc;
 
@@ -204,11 +331,17 @@ std::shared_ptr<ScreencapBase>
     };
 
     for (auto& [method, unit] : units) {
+        if (cancelled && cancelled()) {
+            return nullptr;
+        }
         LogInfo << "Warming up" << method;
         if (!unit->screencap()) {
             LogWarn << "failed to warm up" << method;
         }
 
+        if (cancelled && cancelled()) {
+            return nullptr;
+        }
         LogInfo << "Testing" << method;
         auto now = std::chrono::steady_clock::now();
         if (!unit->screencap()) {
@@ -229,26 +362,25 @@ std::shared_ptr<ScreencapBase>
 
 bool Win32ControlUnitMgr::connected() const
 {
-    // 除了检查连接标志，还需要检查窗口是否仍然有效
-    if (!connected_) {
-        return false;
-    }
+    std::lock_guard lock(mutex_);
+    return connected_ && (independent_connection_ || target_.available());
+}
 
-    if (hwnd_ && !IsWindow(hwnd_)) {
-        return false;
-    }
-
-    return true;
+bool Win32ControlUnitMgr::target_available() const
+{
+    std::lock_guard lock(mutex_);
+    return target_.available();
 }
 
 bool Win32ControlUnitMgr::request_uuid(std::string& uuid)
 {
-    if (!hwnd_) {
-        LogWarn << "hwnd_ is nullptr";
+    std::lock_guard lock(mutex_);
+    if (!session_uuid_.empty()) {
+        uuid = session_uuid_;
+        return true;
     }
-
     std::stringstream ss;
-    ss << hwnd_;
+    ss << initial_hwnd_;
     uuid = std::move(ss).str();
 
     return true;
@@ -256,12 +388,16 @@ bool Win32ControlUnitMgr::request_uuid(std::string& uuid)
 
 MaaControllerFeature Win32ControlUnitMgr::get_features() const
 {
-    MaaControllerFeature feat = MaaControllerFeature_None;
-    if (mouse_) {
-        feat |= mouse_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+    std::lock_guard lock(mutex_);
+    if (!target_.available()) {
+        return MaaControllerFeature_None;
     }
-    if (keyboard_) {
-        feat |= keyboard_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+    MaaControllerFeature feat = MaaControllerFeature_None;
+    if (target_.mouse) {
+        feat |= target_.mouse->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+    }
+    if (target_.keyboard) {
+        feat |= target_.keyboard->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
     }
     return feat;
 }
@@ -339,13 +475,14 @@ bool Win32ControlUnitMgr::stop_app(const std::string& intent)
     LogFunc << VAR(intent);
 
     if (intent.empty()) {
-        if (!hwnd_ || !IsWindow(hwnd_)) {
-            LogError << "hwnd_ is invalid and intent is empty";
+        std::lock_guard lock(mutex_);
+        if (!target_.hwnd || !target_.available()) {
+            LogError << "target_.hwnd is invalid and intent is empty";
             return false;
         }
 
         DWORD processId = 0;
-        GetWindowThreadProcessId(hwnd_, &processId);
+        GetWindowThreadProcessId(target_.hwnd, &processId);
         if (processId == 0) {
             LogError << "GetWindowThreadProcessId failed, error:" << GetLastError();
             return false;
@@ -414,12 +551,13 @@ bool Win32ControlUnitMgr::stop_app(const std::string& intent)
 
 bool Win32ControlUnitMgr::screencap(cv::Mat& image)
 {
-    if (!screencap_) {
-        LogError << "screencap_ is null";
+    std::lock_guard lock(mutex_);
+    if (!target_.available() || !target_.screencap) {
+        LogError << "Target screencap is unavailable";
         return false;
     }
 
-    auto opt = screencap_->screencap();
+    auto opt = target_.screencap->screencap();
     if (!opt) {
         LogError << "failed to screencap";
         return false;
@@ -432,62 +570,68 @@ bool Win32ControlUnitMgr::screencap(cv::Mat& image)
 
 bool Win32ControlUnitMgr::click(int x, int y)
 {
-    if (!mouse_) {
-        LogError << "mouse_ is null";
+    std::lock_guard lock(mutex_);
+    if (!target_.available() || !target_.mouse) {
+        LogError << "Target mouse is unavailable";
         return false;
     }
 
-    return mouse_->click(x, y);
+    return target_.mouse->click(x, y);
 }
 
 bool Win32ControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    if (!mouse_) {
-        LogError << "mouse_ is null";
+    std::lock_guard lock(mutex_);
+    if (!target_.available() || !target_.mouse) {
+        LogError << "Target mouse is unavailable";
         return false;
     }
 
-    return mouse_->swipe(x1, y1, x2, y2, duration);
+    return target_.mouse->swipe(x1, y1, x2, y2, duration);
 }
 
 bool Win32ControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
-    if (!mouse_) {
-        LogError << "mouse_ is null";
+    std::lock_guard lock(mutex_);
+    if (!target_.available() || !target_.mouse) {
+        LogError << "Target mouse is unavailable";
         return false;
     }
 
-    return mouse_->touch_down(contact, x, y, pressure);
+    return target_.mouse->touch_down(contact, x, y, pressure);
 }
 
 bool Win32ControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 {
-    if (!mouse_) {
-        LogError << "mouse_ is null";
+    std::lock_guard lock(mutex_);
+    if (!target_.available() || !target_.mouse) {
+        LogError << "Target mouse is unavailable";
         return false;
     }
 
-    return mouse_->touch_move(contact, x, y, pressure);
+    return target_.mouse->touch_move(contact, x, y, pressure);
 }
 
 bool Win32ControlUnitMgr::touch_up(int contact)
 {
-    if (!mouse_) {
-        LogError << "mouse_ is null";
+    std::lock_guard lock(mutex_);
+    if (!target_.available() || !target_.mouse) {
+        LogError << "Target mouse is unavailable";
         return false;
     }
 
-    return mouse_->touch_up(contact);
+    return target_.mouse->touch_up(contact);
 }
 
 bool Win32ControlUnitMgr::relative_move(int dx, int dy)
 {
-    if (!mouse_) {
-        LogError << "mouse_ is null";
+    std::lock_guard lock(mutex_);
+    if (!target_.available() || !target_.mouse) {
+        LogError << "Target mouse is unavailable";
         return false;
     }
 
-    auto relative_move_input = std::dynamic_pointer_cast<RelativeMoveInput>(mouse_);
+    auto relative_move_input = std::dynamic_pointer_cast<RelativeMoveInput>(target_.mouse);
     if (!relative_move_input) {
         LogError << "relative_move is not supported by the current Win32 input method";
         return false;
@@ -498,91 +642,106 @@ bool Win32ControlUnitMgr::relative_move(int dx, int dy)
 
 bool Win32ControlUnitMgr::click_key(int key)
 {
+    std::lock_guard lock(mutex_);
+    if (!target_.available()) {
+        return false;
+    }
     if (managed_keys_.contains(key)) {
-        if (!background_keyboard_) {
-            LogError << "background_keyboard_ is null";
+        if (!target_.background_keyboard) {
+            LogError << "target_.background_keyboard is null";
             return false;
         }
-        const bool key_down_ok = background_keyboard_->key_down(key);
-        const bool key_up_ok = background_keyboard_->key_up(key);
+        const bool key_down_ok = target_.background_keyboard->key_down(key);
+        const bool key_up_ok = target_.background_keyboard->key_up(key);
         if (key_down_ok && !key_up_ok) {
             LogError << "Managed key" << VAR(key) << "key_down succeeded but key_up failed; key may remain logically pressed";
         }
         return key_down_ok && key_up_ok;
     }
 
-    if (!keyboard_) {
-        LogError << "keyboard_ is null";
+    if (!target_.keyboard) {
+        LogError << "target_.keyboard is null";
         return false;
     }
 
-    return keyboard_->click_key(key);
+    return target_.keyboard->click_key(key);
 }
 
 bool Win32ControlUnitMgr::input_text(const std::string& text)
 {
-    if (!keyboard_) {
-        LogError << "keyboard_ is null";
+    std::lock_guard lock(mutex_);
+    if (!target_.available() || !target_.keyboard) {
+        LogError << "Target keyboard is unavailable";
         return false;
     }
 
-    return keyboard_->input_text(text);
+    return target_.keyboard->input_text(text);
 }
 
 bool Win32ControlUnitMgr::key_down(int key)
 {
+    std::lock_guard lock(mutex_);
+    if (!target_.available()) {
+        return false;
+    }
     if (managed_keys_.contains(key)) {
-        if (!background_keyboard_) {
-            LogError << "background_keyboard_ is null";
+        if (!target_.background_keyboard) {
+            LogError << "target_.background_keyboard is null";
             return false;
         }
-        return background_keyboard_->key_down(key);
+        return target_.background_keyboard->key_down(key);
     }
 
-    if (!keyboard_) {
-        LogError << "keyboard_ is null";
+    if (!target_.keyboard) {
+        LogError << "target_.keyboard is null";
         return false;
     }
 
-    return keyboard_->key_down(key);
+    return target_.keyboard->key_down(key);
 }
 
 bool Win32ControlUnitMgr::key_up(int key)
 {
+    std::lock_guard lock(mutex_);
+    if (!target_.available()) {
+        return false;
+    }
     if (managed_keys_.contains(key)) {
-        if (!background_keyboard_) {
-            LogError << "background_keyboard_ is null";
+        if (!target_.background_keyboard) {
+            LogError << "target_.background_keyboard is null";
             return false;
         }
-        return background_keyboard_->key_up(key);
+        return target_.background_keyboard->key_up(key);
     }
 
-    if (!keyboard_) {
-        LogError << "keyboard_ is null";
+    if (!target_.keyboard) {
+        LogError << "target_.keyboard is null";
         return false;
     }
 
-    return keyboard_->key_up(key);
+    return target_.keyboard->key_up(key);
 }
 
 bool Win32ControlUnitMgr::scroll(int dx, int dy)
 {
-    if (!mouse_) {
-        LogError << "mouse_ is null";
+    std::lock_guard lock(mutex_);
+    if (!target_.available() || !target_.mouse) {
+        LogError << "Target mouse is unavailable";
         return false;
     }
 
-    return mouse_->scroll(dx, dy);
+    return target_.mouse->scroll(dx, dy);
 }
 
 bool Win32ControlUnitMgr::set_mouse_lock_follow(bool enabled)
 {
-    if (!mouse_) {
-        LogError << "mouse_ is null";
+    std::lock_guard lock(mutex_);
+    if (!target_.available() || !target_.mouse) {
+        LogError << "Target mouse is unavailable";
         return false;
     }
 
-    auto message_input = std::dynamic_pointer_cast<MessageInput>(mouse_);
+    auto message_input = std::dynamic_pointer_cast<MessageInput>(target_.mouse);
     if (!message_input) {
         LogError << "Mouse lock follow is only supported by MessageInput-based input methods";
         return false;
@@ -594,47 +753,64 @@ bool Win32ControlUnitMgr::set_mouse_lock_follow(bool enabled)
 bool Win32ControlUnitMgr::set_background_managed_keys_option(const int32_t* keycodes, size_t count)
 {
     LogFunc << VAR(count);
-
-    if (!background_keyboard_) {
-        LogError << "background_keyboard_ is null";
+    std::lock_guard lock(mutex_);
+    std::vector<int> keys;
+    if (count) {
+        if (!keycodes) {
+            return false;
+        }
+        keys.assign(keycodes, keycodes + count);
+    }
+    if (std::ranges::any_of(keys, [](int key) { return key <= 0 || key > 0xFF; })) {
         return false;
     }
-
-    std::vector<int> keys(keycodes, keycodes + count);
-    if (!background_keyboard_->set_managed_keys(keys)) {
+    // Deferred sessions remember the configuration without starting a global keyboard guard.
+    if (target_.background_keyboard && !target_.background_keyboard->set_managed_keys(keys)) {
         LogError << "set_managed_keys failed";
         return false;
     }
-
     managed_keys_ = std::unordered_set<int>(keys.begin(), keys.end());
     return true;
 }
 
+void Win32ControlUnitMgr::Target::inactive()
+{
+    if (background_keyboard) {
+        background_keyboard->inactive();
+    }
+    if (screencap) {
+        screencap->inactive();
+    }
+    if (mouse) {
+        mouse->inactive();
+    }
+    if (keyboard && keyboard != mouse) {
+        keyboard->inactive();
+    }
+}
+
 bool Win32ControlUnitMgr::inactive()
 {
-    LogFunc;
-
-    if (background_keyboard_) {
-        background_keyboard_->inactive();
-    }
-    if (screencap_) {
-        screencap_->inactive();
-    }
-    if (mouse_) {
-        mouse_->inactive();
-    }
-    if (keyboard_ && keyboard_ != mouse_) {
-        keyboard_->inactive();
-    }
-
+    std::lock_guard lock(mutex_);
+    target_.inactive();
     return true;
 }
 
 json::object Win32ControlUnitMgr::get_info() const
 {
+    std::lock_guard lock(mutex_);
     json::object info;
+    if (!target_.ready) {
+        info["target_state"] = "Unbound";
+    }
+    else if (!target_.available()) {
+        info["target_state"] = "Lost";
+    }
+    else {
+        info["target_state"] = target_.hwnd ? "Window" : "Desktop";
+    }
     info["type"] = "win32";
-    info["hwnd"] = reinterpret_cast<uint64_t>(hwnd_);
+    info["hwnd"] = reinterpret_cast<uint64_t>(target_.hwnd);
     info["screencap_method"] = static_cast<int64_t>(screencap_method_);
     info["mouse_method"] = static_cast<int64_t>(mouse_method_);
     info["keyboard_method"] = static_cast<int64_t>(keyboard_method_);

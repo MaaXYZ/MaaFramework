@@ -122,6 +122,7 @@ __all__ = [
     "ClickKeyActionResult",
     "LongPressKeyActionResult",
     "InputTextActionResult",
+    "BindTargetActionResult",
     "AppActionResult",
     "ScrollActionResult",
     "TouchActionResult",
@@ -1079,6 +1080,7 @@ class ActionEnum(StrEnum):
     ClickKey = "ClickKey"
     LongPressKey = "LongPressKey"
     InputText = "InputText"
+    BindTarget = "BindTarget"
     StartApp = "StartApp"
     StopApp = "StopApp"
     Scroll = "Scroll"
@@ -1241,6 +1243,12 @@ class InputTextActionResult:
 
 
 @dataclass
+class BindTargetActionResult:
+    win32: dict[str, str]
+    bind_timeout: int
+
+
+@dataclass
 class AppActionResult:
     package: str
 
@@ -1275,6 +1283,7 @@ ActionResult = Union[
     ClickKeyActionResult,
     LongPressKeyActionResult,
     InputTextActionResult,
+    BindTargetActionResult,
     AppActionResult,
     ScrollActionResult,
     TouchActionResult,
@@ -1291,6 +1300,7 @@ ActionResultDict = {
     ActionEnum.ClickKey: ClickKeyActionResult,
     ActionEnum.LongPressKey: LongPressKeyActionResult,
     ActionEnum.InputText: InputTextActionResult,
+    ActionEnum.BindTarget: BindTargetActionResult,
     ActionEnum.StartApp: AppActionResult,
     ActionEnum.StopApp: AppActionResult,
     ActionEnum.Scroll: ScrollActionResult,

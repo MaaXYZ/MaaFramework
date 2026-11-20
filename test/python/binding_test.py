@@ -503,6 +503,8 @@ def test_controller_api():
     assert not dbg_controller.post_scroll(0, 120).wait().succeeded, (
         "dbg controller scroll should fail"
     )
+    bind_job = dbg_controller.post_bind_target({"win32": {"method": "Desktop"}})
+    assert bind_job.job_id > 0 and bind_job.wait().failed
     dbg_controller.post_start_app("com.test.app").wait()
     dbg_controller.post_stop_app("com.test.app").wait()
     dbg_controller.post_inactive().wait()

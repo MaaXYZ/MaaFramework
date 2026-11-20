@@ -105,6 +105,7 @@ private:
     bool handle_controller_post_swipe(const json::value& j);
     bool handle_controller_post_click_key(const json::value& j);
     bool handle_controller_post_input_text(const json::value& j);
+    bool handle_controller_post_bind_target(const json::value& j);
     bool handle_controller_post_start_app(const json::value& j);
     bool handle_controller_post_stop_app(const json::value& j);
     bool handle_controller_post_screencap(const json::value& j);

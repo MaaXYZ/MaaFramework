@@ -211,6 +211,10 @@ ACTION_CASES = {
     "KeyDown": (p.JKey, {"key": 65, "auto_up": True}),
     "KeyUp": (p.JKey, {"key": 66}),
     "InputText": (p.JInputText, {"input_text": '中文\nquoted "text" 🐈'}),
+    "BindTarget": (
+        p.JBindTarget,
+        {"win32": {"method": "Window", "class_regex": "^MyClass$", "window_regex": "窗口"}, "bind_timeout": 0},
+    ),
     "StartApp": (p.JStartApp, {"package": "com.example.test/.MainActivity"}),
     "StopApp": (p.JStopApp, {"package": "com.example.test"}),
     "StopTask": (p.JStopTask, {}),
@@ -318,6 +322,16 @@ INVALID_NODES = {
     "key_down_array": {"action": "KeyDown", "key": [65]},
     "input_text_type": {"action": "InputText", "input_text": 42},
     "command_args_type": {"action": "Command", "args": ["valid", 42]},
+    "bind_missing_selector": {"action": "BindTarget"},
+    "bind_selector_type": {"action": "BindTarget", "win32": []},
+    "bind_unknown_method": {"action": "BindTarget", "win32": {"method": "Active"}},
+    "bind_unknown_field": {"action": "BindTarget", "win32": {"method": "Desktop", "windwow_regex": "Game"}},
+    "bind_unfiltered": {"action": "BindTarget", "win32": {"method": "Window", "class_regex": ""}},
+    "bind_bad_regex": {"action": "BindTarget", "win32": {"method": "Window", "window_regex": "("}},
+    "bind_filtered_desktop": {"action": "BindTarget", "win32": {"method": "Desktop", "class_regex": ".+"}},
+    "bind_negative_timeout": {"action": "BindTarget", "win32": {"method": "Desktop"}, "bind_timeout": -1},
+    "bind_too_large_timeout": {"action": "BindTarget", "win32": {"method": "Desktop"}, "bind_timeout": 2**31},
+    "bind_noninteger_timeout": {"action": "BindTarget", "win32": {"method": "Desktop"}, "bind_timeout": 1.5},
     "shell_timeout_type": {"action": "Shell", "shell_timeout": "1000"},
     "screencap_format": {"action": "Screencap", "format": "gif"},
     "pre_wait_freezes_type": {"pre_wait_freezes": True},
@@ -390,6 +404,23 @@ class PipelineContractTest(unittest.TestCase):
                     override = {"recognition": {"param": {"condition": condition}}} if v2 else {"condition": condition}
                     self.assertFalse(self.resource.override_pipeline({"Node": override}))
                     self.assertEqual(self.resource.get_node_data("Node"), before)
+
+    def test_bind_target_partial_overrides(self):
+        self.assertTrue(self.resource.override_pipeline({"Node": {
+            "action": "BindTarget", "win32": {"method": "Window", "class_regex": "Alpha"}
+        }}))
+        for patch, win32, timeout in (
+            ({"action": {"param": {"win32": {"window_regex": "Beta"}, "bind_timeout": 0}}},
+             {"method": "Window", "class_regex": "Alpha", "window_regex": "Beta"}, 0),
+            ({"win32": {"class_regex": ""}}, {"method": "Window", "window_regex": "Beta"}, 0),
+            ({"win32": {"method": "Desktop"}}, {"method": "Desktop"}, 0),
+        ):
+            self.assertTrue(self.resource.override_pipeline({"Node": patch}))
+            self.assertEqual(self.resource.get_node_object("Node").action.param, p.JBindTarget(win32, timeout))
+
+        before = self.resource.get_node_data("Node")
+        self.assertFalse(self.resource.override_pipeline({"Node": {"win32": {"method": "Window"}}}))
+        self.assertEqual(self.resource.get_node_data("Node"), before)
 
     def test_custom_recognition_rejects_invalid_index_types(self):
         for index in ("-1", True, [1], {"index": 1}):
@@ -911,7 +942,7 @@ def default_param_test(section, type_name, param_class):
         self.assertIsInstance(actual, param_class)
         if section == "recognition":
             actual = parsed_default_recognition(actual)
-        if type_name not in ("And", "Or"):
+        if type_name not in ("And", "Or", "BindTarget"):
             self.assertTrue(self.resource.override_pipeline({"Node": {section: type_name}}))
             node = self.resource.get_node_object("Node")
             self.assertEqual(getattr(node, section).param, actual)

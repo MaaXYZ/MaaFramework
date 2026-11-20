@@ -28,6 +28,7 @@ public:
     bool key_down(int keycode);
     bool key_up(int keycode);
     bool inactive();
+    bool rebind(HWND hwnd, const std::unordered_set<int>& keys);
 
 private:
     struct Snapshot
@@ -48,7 +49,8 @@ private:
 
     void send_activation_hint() const;
     // 后缀 _locked 约定：调用方必须已持有 mutex_。
-    Snapshot snapshot_locked() const;
+    bool target_valid_locked() const;
+    Snapshot snapshot_locked();
     void guard_loop();
     bool correct_snapshot(const Snapshot& snapshot);
     bool ensure_key_state(int keycode, bool desired_pressed);
@@ -58,6 +60,8 @@ private:
 
 private:
     HWND hwnd_ = nullptr;
+    DWORD window_thread_id_ = 0;
+    DWORD window_process_id_ = 0;
 
     mutable std::mutex mutex_;
     std::condition_variable guard_cv_;

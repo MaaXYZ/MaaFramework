@@ -50,6 +50,7 @@ private:
     ActionResult shell(const MAA_RES_NS::Action::ShellParam& param, const std::string& name);
     ActionResult screencap(const MAA_RES_NS::Action::ScreencapParam& param, const std::string& name);
 
+    ActionResult bind_target(const MAA_RES_NS::Action::BindTargetParam& param, const std::string& name);
     ActionResult start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name);
     ActionResult stop_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name);
 

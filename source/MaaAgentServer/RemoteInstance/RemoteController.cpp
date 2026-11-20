@@ -160,6 +160,20 @@ MaaCtrlId RemoteController::post_input_text(const std::string& text)
     return resp_opt->ctrl_id;
 }
 
+MaaCtrlId RemoteController::post_bind_target(const json::object& target)
+{
+    if (!server_.peer_supports_bind_target()) {
+        LogError << "AgentClient does not support target binding";
+        return MaaInvalidId;
+    }
+    ControllerPostBindTargetReverseRequest req {
+        .controller_id = controller_id_,
+        .target = target,
+    };
+    auto resp = server_.send_and_recv<ControllerPostBindTargetReverseResponse>(req);
+    return resp ? resp->ctrl_id : MaaInvalidId;
+}
+
 MaaCtrlId RemoteController::post_start_app(const std::string& intent)
 {
     ControllerPostStartAppReverseRequest req {

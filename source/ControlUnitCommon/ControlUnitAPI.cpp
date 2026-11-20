@@ -9,6 +9,7 @@ const char* MaaControlUnitGetVersion()
 MAA_CTRL_UNIT_NS_BEGIN
 
 ControlUnitAPI::~ControlUnitAPI() = default;
+BindableUnit::~BindableUnit() = default;
 ScrollableUnit::~ScrollableUnit() = default;
 RelativeMovableUnit::~RelativeMovableUnit() = default;
 ShellableUnit::~ShellableUnit() = default;

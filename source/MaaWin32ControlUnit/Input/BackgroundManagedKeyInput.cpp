@@ -24,6 +24,39 @@ constexpr int stop_max_retries = 10;
 BackgroundManagedKeyInput::BackgroundManagedKeyInput(HWND hwnd)
     : hwnd_(hwnd)
 {
+    if (hwnd) {
+        window_thread_id_ = GetWindowThreadProcessId(hwnd, &window_process_id_);
+    }
+}
+
+bool BackgroundManagedKeyInput::target_valid_locked() const
+{
+    if (!hwnd_) {
+        return true;
+    }
+    DWORD pid = 0;
+    const DWORD tid = GetWindowThreadProcessId(hwnd_, &pid);
+    return tid && tid == window_thread_id_ && pid == window_process_id_;
+}
+
+bool BackgroundManagedKeyInput::rebind(HWND hwnd, const std::unordered_set<int>& keys)
+{
+    std::unique_lock lock(mutex_);
+    if (thread_started_ && (!managed_keys_.empty() || !release_keys_.empty())) {
+        release_keys_.insert(desired_pressed_keys_.begin(), desired_pressed_keys_.end());
+        desired_pressed_keys_.clear();
+        const auto generation = ++desired_generation_;
+        guard_cv_.notify_all();
+        if (!applied_cv_.wait_for(lock, apply_timeout, [this, generation] { return applied_generation_ >= generation; })) {
+            return false;
+        }
+    }
+    hwnd_ = hwnd;
+    window_thread_id_ = hwnd ? GetWindowThreadProcessId(hwnd, &window_process_id_) : 0;
+    managed_keys_ = keys;
+    ++desired_generation_;
+    guard_cv_.notify_all();
+    return true;
 }
 
 BackgroundManagedKeyInput::~BackgroundManagedKeyInput()
@@ -53,7 +86,10 @@ bool BackgroundManagedKeyInput::set_managed_keys(const std::vector<int>& keycode
     {
         std::lock_guard lock(mutex_);
 
-        if (!thread_started_ && !clear_all) {
+        if (!thread_started_ && clear_all) {
+            return true;
+        }
+        if (!thread_started_) {
             guard_thread_ = std::thread(&BackgroundManagedKeyInput::guard_loop, this);
             thread_started_ = true;
         }
@@ -218,18 +254,26 @@ void BackgroundManagedKeyInput::pump_messages()
 
 void BackgroundManagedKeyInput::send_activation_hint() const
 {
-    send_activate_message(hwnd_, true);
+    std::lock_guard lock(mutex_);
+    if (target_valid_locked()) {
+        send_activate_message(hwnd_, true);
+    }
 }
 
-BackgroundManagedKeyInput::Snapshot BackgroundManagedKeyInput::snapshot_locked() const
+BackgroundManagedKeyInput::Snapshot BackgroundManagedKeyInput::snapshot_locked()
 {
     Snapshot snapshot;
     snapshot.generation = desired_generation_;
-    snapshot.desired_pressed_keys = desired_pressed_keys_;
     snapshot.keys.reserve(managed_keys_.size() + release_keys_.size());
 
-    for (const int keycode : managed_keys_) {
-        snapshot.keys.emplace_back(keycode);
+    if (target_valid_locked()) {
+        snapshot.desired_pressed_keys = desired_pressed_keys_;
+        snapshot.keys.insert(snapshot.keys.end(), managed_keys_.begin(), managed_keys_.end());
+    }
+    else {
+        // Once the window is gone, only release keys this guard was holding.
+        release_keys_.insert(desired_pressed_keys_.begin(), desired_pressed_keys_.end());
+        desired_pressed_keys_.clear();
     }
     for (const int keycode : release_keys_) {
         snapshot.keys.emplace_back(keycode);

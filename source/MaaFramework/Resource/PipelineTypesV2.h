@@ -336,6 +336,7 @@ using JActionParam = std::variant<
     JLongPressKey,
     JKey,
     JInputText,
+    Action::BindTargetParam,
     JStartApp,
     JStopApp,
     JScroll,

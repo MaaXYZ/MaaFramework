@@ -194,6 +194,12 @@ maajs::ValueType ControllerImpl::post_input_text(maajs::ValueType self, maajs::E
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+maajs::ValueType ControllerImpl::post_bind_target(maajs::ValueType self, maajs::EnvType, maajs::ObjectType target)
+{
+    auto id = MaaControllerPostBindTarget(controller, maajs::JsonStringify(env, target).c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
 maajs::ValueType ControllerImpl::post_start_app(maajs::ValueType self, maajs::EnvType, std::string intent)
 {
     auto id = MaaControllerPostStartApp(controller, intent.c_str());
@@ -391,6 +397,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_swipe", ControllerImpl::post_swipe);
     MAA_BIND_FUNC(proto, "post_click_key", ControllerImpl::post_click_key);
     MAA_BIND_FUNC(proto, "post_input_text", ControllerImpl::post_input_text);
+    MAA_BIND_FUNC(proto, "post_bind_target", ControllerImpl::post_bind_target);
     MAA_BIND_FUNC(proto, "post_start_app", ControllerImpl::post_start_app);
     MAA_BIND_FUNC(proto, "post_stop_app", ControllerImpl::post_stop_app);
     MAA_BIND_FUNC(proto, "post_touch_down", ControllerImpl::post_touch_down);
@@ -594,8 +601,13 @@ maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
 
 Win32ControllerImpl* Win32ControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [hwnd, screencap_method, mouse_method, keyboard_method] = maajs::UnWrapArgs<Win32ControllerCtorParam, void>(info);
-    auto ctrl = MaaWin32ControllerCreate(reinterpret_cast<void*>(hwnd), screencap_method, mouse_method, keyboard_method);
+    auto [hwnd, screencap_method, mouse_method, keyboard_method, deferred_binding] = maajs::UnWrapArgs<Win32ControllerCtorParam, void>(info);
+    auto handle = reinterpret_cast<void*>(hwnd.value_or(0));
+    if (deferred_binding.value_or(false) && handle) {
+        throw maajs::MaaError { "deferred binding requires a null window handle" };
+    }
+    auto ctrl = deferred_binding.value_or(false) ? MaaWin32ControllerCreateDeferred(screencap_method, mouse_method, keyboard_method)
+                                                 : MaaWin32ControllerCreate(handle, screencap_method, mouse_method, keyboard_method);
     if (!ctrl) {
         return nullptr;
     }
