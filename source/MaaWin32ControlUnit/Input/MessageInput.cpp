@@ -126,7 +126,8 @@ HWND MessageInput::get_active_hwnd()
         return hwnd_;
     }
     HWND popup = GetLastActivePopup(root);
-    if (popup && popup != hwnd_ && IsWindowVisible(popup)) {
+    // GetLastActivePopup 也可能返回 root 本身，应保留原始目标。
+    if (popup && popup != root && IsWindowVisible(popup)) {
         return popup;
     }
     return hwnd_;
