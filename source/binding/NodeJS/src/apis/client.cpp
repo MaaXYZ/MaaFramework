@@ -120,13 +120,13 @@ std::optional<std::vector<std::string>> ClientImpl::get_custom_controller_list()
     return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
 }
 
-maajs::ValueType ClientImpl::create_custom_controller(std::string name)
+maajs::ValueType ClientImpl::create_custom_controller(std::string controller_name)
 {
     std::unique_ptr<MaaController, decltype(&MaaControllerDestroy)> ctrl(
-        MaaAgentClientCreateCustomController(client, name.c_str()),
+        MaaAgentClientCreateCustomController(client, controller_name.c_str()),
         MaaControllerDestroy);
     if (!ctrl) {
-        throw maajs::MaaError { std::format("Failed to create agent controller '{}'", name) };
+        throw maajs::MaaError { std::format("Failed to create agent controller '{}'", controller_name) };
     }
     auto object = ControllerImpl::locate_object(env, ctrl.get());
     maajs::NativeClass<ControllerImpl>::take(object)->own = true;

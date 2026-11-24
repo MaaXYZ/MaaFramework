@@ -35,7 +35,7 @@ struct ClientImpl : public maajs::NativeClassBase
     std::optional<std::vector<std::string>> get_custom_recognition_list();
     std::optional<std::vector<std::string>> get_custom_action_list();
     std::optional<std::vector<std::string>> get_custom_controller_list();
-    maajs::ValueType create_custom_controller(std::string name);
+    maajs::ValueType create_custom_controller(std::string controller_name);
 
     std::string to_string() override;
 

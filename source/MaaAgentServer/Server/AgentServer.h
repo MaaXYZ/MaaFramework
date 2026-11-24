@@ -35,6 +35,7 @@ class AgentServer
     };
 
 public:
+    AgentServer();
     ~AgentServer() = default;
 
     bool start_up(const std::string& identifier);

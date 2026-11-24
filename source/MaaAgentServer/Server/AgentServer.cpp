@@ -11,6 +11,12 @@
 
 MAA_AGENT_SERVER_NS_BEGIN
 
+AgentServer::AgentServer()
+{
+    // Transceiver logs during static destruction, so the logger must outlive this singleton.
+    MAA_LOG_NS::Logger::get_instance();
+}
+
 bool AgentServer::start_up(const std::string& identifier)
 {
     LogFunc << VAR(identifier);

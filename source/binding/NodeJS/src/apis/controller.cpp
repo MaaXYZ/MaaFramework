@@ -946,8 +946,8 @@ maajs::ValueType load_wlroots_controller(maajs::EnvType env)
 #ifdef MAA_JS_BUILD_CLIENT
 PluginControllerImpl* PluginControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [name, config] = maajs::UnWrapArgs<std::tuple<std::string, maajs::OptionalParam<std::string>>>(info);
-    auto ctrl = MaaPluginControllerCreate(name.c_str(), config.value_or("{}").c_str());
+    auto [controller_name, config] = maajs::UnWrapArgs<std::tuple<std::string, maajs::OptionalParam<std::string>>>(info);
+    auto ctrl = MaaPluginControllerCreate(controller_name.c_str(), config.value_or("{}").c_str());
     if (!ctrl) {
         return nullptr;
     }
