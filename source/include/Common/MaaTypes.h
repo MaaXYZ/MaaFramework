@@ -113,6 +113,8 @@ public:
     virtual bool get_resolution(int32_t& width, int32_t& height) const = 0;
 
     virtual json::object get_info() const = 0;
+
+    virtual MaaCtrlId post_bind_target(const json::object& target) = 0;
 };
 
 struct MaaTasker : public IMaaEventDispatcher

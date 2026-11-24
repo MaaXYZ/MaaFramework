@@ -41,6 +41,11 @@ public: // from InputBase
 
     virtual void inactive() override;
 
+    void inactive_after_loss() override { unblock_input(); }
+
+    bool release_lost_key(int key) override;
+    bool release_lost_contact(int contact) override;
+
 private:
     void ensure_foreground();
 

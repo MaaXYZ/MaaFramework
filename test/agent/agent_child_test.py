@@ -320,6 +320,8 @@ class MyAction(CustomAction):
         assert not controller.post_scroll(0, 120).wait().succeeded
 
         # 测试应用操作
+        bind_job = controller.post_bind_target({"win32": {"method": "Desktop"}})
+        assert bind_job.job_id > 0 and bind_job.wait().failed
         controller.post_start_app("aaa")
         controller.post_stop_app("bbb")
 

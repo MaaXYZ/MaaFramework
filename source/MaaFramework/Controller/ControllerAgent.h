@@ -139,7 +139,8 @@ using Param = std::variant<
     AppParam,
     ScrollParam,
     ShellParam,
-    RelativeMoveParam>;
+    RelativeMoveParam,
+    json::object>;
 
 struct Action
 {
@@ -166,6 +167,7 @@ struct Action
         shell,
         relative_move,
         inactive,
+        bind_target,
     } type = Type::invalid;
 
     Param param;
@@ -185,6 +187,7 @@ public: // MaaController
     virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaCtrlId post_connection() override;
+    virtual MaaCtrlId post_bind_target(const json::object& target) override;
     virtual MaaCtrlId post_click(int x, int y, int contact, int pressure) override;
     virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure) override;
     virtual MaaCtrlId post_click_key(int keycode) override;
@@ -249,6 +252,7 @@ public: // for Actuator
     bool input_text(InputTextParam p);
     cv::Mat screencap();
 
+    bool bind_target(const json::object& target);
     bool start_app(AppParam p);
     bool stop_app(AppParam p);
 
@@ -259,6 +263,8 @@ public: // for Actuator
 
 private:
     bool handle_connect();
+    bool handle_bind_target(const json::object& target);
+    void release_pressed(bool all);
     bool handle_click(const ClickParam& param);
     bool handle_long_press(const LongPressParam& param);
     bool handle_swipe(const SwipeParam& param);
@@ -296,7 +302,7 @@ private:
     bool postproc_screenshot(const cv::Mat& raw);
     bool calc_target_image_size();
     void clear_target_image_size();
-    bool request_uuid();
+    std::string read_uuid(bool refresh);
     bool init_scale_info();
 
 private: // options
@@ -311,6 +317,7 @@ private: // options
 private:
     std::atomic<bool> need_to_stop_ = false;
 
+    std::mutex target_release_mutex_;
     std::mutex pressed_mutex_;
     std::set<int> held_contacts_;
     std::set<int> auto_up_contacts_;
@@ -319,6 +326,7 @@ private:
 
 private:
     const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;
+    const std::shared_ptr<MAA_CTRL_UNIT_NS::BindableUnit> bindable_unit_;
     EventDispatcher notifier_ = EventDispatcher(false);
 
     mutable std::mutex image_mutex_;
@@ -337,6 +345,7 @@ private:
     int image_raw_height_ = 0;
     int image_resize_method_ = 3; // cv::INTER_AREA
 
+    std::mutex uuid_mutex_;
     std::string uuid_cache_;
 
     std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;

@@ -39,6 +39,8 @@ public: // from InputBase
     virtual bool scroll(int dx, int dy) override;
 
     virtual void inactive() override;
+    bool release_lost_key(int key) override;
+    bool release_lost_contact(int contact) override;
 
 private:
     struct KeyboardStroke

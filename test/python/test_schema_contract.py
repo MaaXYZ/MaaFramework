@@ -51,6 +51,23 @@ class PipelineSchemaTest(unittest.TestCase):
         fixture = json.loads((ROOT / "test/schema/pipeline.schema.correct.json").read_text(encoding="utf-8"))
         self.validator.validate(fixture)
 
+    def test_bind_target_v1_and_v2(self):
+        for params, valid in (
+            ({"win32": {"method": "Desktop"}}, True),
+            ({"win32": {"method": "Window", "class_regex": "Game"}, "bind_timeout": 0}, True),
+            ({"win32": {"method": "Window", "window_regex": "窗口"}}, True),
+            ({}, False),
+            ({"win32": {"class_regex": ".+"}}, False),
+            ({"win32": {"method": "Window", "window_regex": ""}}, False),
+            ({"win32": {"method": "Desktop", "class_regex": ".+"}}, False),
+            ({"win32": {"method": "Desktop"}, "bind_timeout": -1}, False),
+            ({"win32": {"method": "Desktop"}, "bind_timeout": "0"}, False),
+        ):
+            for node in ({"action": "BindTarget", **params}, {"action": {"type": "BindTarget", "param": params}}):
+                with self.subTest(node=node):
+                    self.assertEqual(self.validator.is_valid({"Node": node}), valid)
+        self.validator.validate({"Node": {"action": {"param": {"win32": {"window_regex": "updated"}}}}})
+
     def test_ocr_condition_is_an_optional_string_in_v1_and_v2(self):
         for condition in ("", "$2 > 50", "$1 == $2", "$0 >= -1.5", None, True, 50, [], {}):
             for v2 in (False, True):

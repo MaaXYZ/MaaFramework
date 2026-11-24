@@ -173,6 +173,11 @@ class Controller:
         ctrl_id = Library.framework().MaaControllerPostInputText(self._handle, text.encode())
         return self._gen_ctrl_job(ctrl_id)
 
+    def post_bind_target(self, target: dict[str, Any]) -> Job:
+        """绑定截图与输入目标，参数与 BindTarget 动作相同 / Bind a target using BindTarget action parameters."""
+        ctrl_id = Library.framework().MaaControllerPostBindTarget(self._handle, json.dumps(target).encode())
+        return self._gen_ctrl_job(ctrl_id)
+
     def post_start_app(self, intent: str) -> Job:
         """启动应用 / Start app
 
@@ -714,6 +719,12 @@ class Controller:
             MaaControllerHandle,
         ]
 
+        Library.framework().MaaControllerPostBindTarget.restype = MaaCtrlId
+        Library.framework().MaaControllerPostBindTarget.argtypes = [
+            MaaControllerHandle,
+            ctypes.c_char_p,
+        ]
+
         Library.framework().MaaControllerPostStartApp.restype = MaaCtrlId
         Library.framework().MaaControllerPostStartApp.argtypes = [
             MaaControllerHandle,
@@ -941,6 +952,8 @@ class Win32Controller(Controller):
         screencap_method: int = MaaWin32ScreencapMethodEnum.Background,
         mouse_method: int = MaaWin32InputMethodEnum.Seize,
         keyboard_method: int = MaaWin32InputMethodEnum.Seize,
+        *,
+        deferred_binding: bool = False,
     ):
         """创建 Win32 控制器 / Create Win32 controller
 
@@ -948,6 +961,7 @@ class Win32Controller(Controller):
             hWnd: 窗口句柄 / window handle
             screencap_method: 使用的截图方式 / screenshot method used
             mouse_method: 使用的鼠标输入方式 / mouse input method used
+            deferred_binding: 延迟到 BindTarget 动作选择目标 / Select the target later with BindTarget (requires a null hWnd)
             keyboard_method: 使用的键盘输入方式 / keyboard input method used
 
         Raises:
@@ -956,17 +970,28 @@ class Win32Controller(Controller):
         super().__init__()
         self._set_win32_api_properties()
 
-        self._handle = Library.framework().MaaWin32ControllerCreate(
-            hWnd,
-            MaaWin32ScreencapMethod(screencap_method),
-            MaaWin32InputMethod(mouse_method),
-            MaaWin32InputMethod(keyboard_method),
-        )
+        if deferred_binding:
+            if hWnd:
+                self._handle = None
+                raise ValueError("deferred binding requires a null window handle")
+            self._handle = Library.framework().MaaWin32ControllerCreateDeferred(
+                screencap_method, mouse_method, keyboard_method
+            )
+        else:
+            self._handle = Library.framework().MaaWin32ControllerCreate(
+                hWnd, screencap_method, mouse_method, keyboard_method
+            )
 
         if not self._handle:
             raise RuntimeError("Failed to create Win32 controller.")
 
     def _set_win32_api_properties(self):
+        Library.framework().MaaWin32ControllerCreateDeferred.restype = MaaControllerHandle
+        Library.framework().MaaWin32ControllerCreateDeferred.argtypes = [
+            MaaWin32ScreencapMethod,
+            MaaWin32InputMethod,
+            MaaWin32InputMethod,
+        ]
         Library.framework().MaaWin32ControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaWin32ControllerCreate.argtypes = [
             ctypes.c_void_p,

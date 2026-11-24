@@ -638,6 +638,12 @@
                     "title": "Win32 控制器配置",
                     "description": "Win32 控制器的具体配置",
                     "properties": {
+                        "deferred_binding": {
+                            "type": "boolean",
+                            "title": "延迟绑定目标",
+                            "description": "启用后客户端在未选择窗口时连接控制器，由 Pipeline 的 BindTarget 动作选择窗口或桌面",
+                            "default": false
+                        },
                         "class_regex": {
                             "type": "string",
                             "title": "窗口类名正则",

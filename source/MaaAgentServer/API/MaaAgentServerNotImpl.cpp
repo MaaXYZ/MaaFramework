@@ -20,6 +20,12 @@ MaaController* MaaWin32ControllerCreate(void*, MaaWin32ScreencapMethod, MaaWin32
     return nullptr;
 }
 
+MaaController* MaaWin32ControllerCreateDeferred(MaaWin32ScreencapMethod, MaaWin32InputMethod, MaaWin32InputMethod)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
 MaaController* MaaMacOSControllerCreate(uint32_t, MaaMacOSScreencapMethod, MaaMacOSInputMethod)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";

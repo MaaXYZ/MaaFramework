@@ -3155,6 +3155,130 @@
                 }
             }
         },
+        "Win32TargetFields": {
+            "type": "object",
+            "properties": {
+                "method": {
+                    "title": "Win32 Target Method",
+                    "description": "Window 按正则表达式查找窗口，Desktop 绑定整个桌面。",
+                    "enum": [
+                        "Window",
+                        "Desktop"
+                    ]
+                },
+                "class_regex": {
+                    "title": "Window Class Regex",
+                    "description": "用于搜索窗口类名的正则表达式。",
+                    "type": "string"
+                },
+                "window_regex": {
+                    "title": "Window Title Regex",
+                    "description": "用于搜索窗口标题的正则表达式。",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "BindTarget": {
+            "type": "object",
+            "properties": {
+                "win32": {
+                    "title": "Win32 Target",
+                    "description": "Win32 目标选择器。",
+                    "$ref": "#/$defs/Win32TargetFields",
+                    "required": [
+                        "method"
+                    ],
+                    "if": {
+                        "properties": {
+                            "method": {
+                                "const": "Window"
+                            }
+                        }
+                    },
+                    "then": {
+                        "anyOf": [
+                            {
+                                "required": [
+                                    "class_regex"
+                                ],
+                                "properties": {
+                                    "class_regex": {
+                                        "minLength": 1
+                                    }
+                                }
+                            },
+                            {
+                                "required": [
+                                    "window_regex"
+                                ],
+                                "properties": {
+                                    "window_regex": {
+                                        "minLength": 1
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "else": {
+                        "properties": {
+                            "class_regex": {
+                                "maxLength": 0
+                            },
+                            "window_regex": {
+                                "maxLength": 0
+                            }
+                        }
+                    }
+                },
+                "bind_timeout": {
+                    "title": "Bind Timeout",
+                    "description": "等待目标出现的最长毫秒数。0 表示只查找一次。",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2147483647,
+                    "default": 20000
+                }
+            },
+            "required": [
+                "win32"
+            ]
+        },
+        "BindTargetV1": {
+            "properties": {
+                "action": {
+                    "const": "BindTarget"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/BindTarget"
+                }
+            ]
+        },
+        "BindTargetV2": {
+            "properties": {
+                "type": {
+                    "const": "BindTarget"
+                },
+                "param": {
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/BindTarget"
+                        },
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
         "StartApp": {
             "type": "object",
             "properties": {
@@ -3623,6 +3747,7 @@
                 "KeyDown",
                 "KeyUp",
                 "InputText",
+                "BindTarget",
                 "StartApp",
                 "StopApp",
                 "StopTask",
@@ -3762,6 +3887,12 @@
                             "$ref": "#/$defs/InputText/properties/input_text"
                         }
                     ]
+                },
+                "win32": {
+                    "$ref": "#/$defs/Win32TargetFields"
+                },
+                "bind_timeout": {
+                    "$ref": "#/$defs/BindTarget/properties/bind_timeout"
                 },
                 "package": {
                     "anyOf": [
@@ -4010,6 +4141,22 @@
                     }
                 },
                 {
+                    "label": "BindTargetV1",
+                    "body": "^ \"BindTarget\",\n\"win32\": { \"method\": \"Window\", \"class_regex\": \"^MyWindow$\" }"
+                },
+                {
+                    "label": "BindTargetV2",
+                    "body": {
+                        "type": "BindTarget",
+                        "param": {
+                            "win32": {
+                                "method": "Window",
+                                "class_regex": "^MyWindow$"
+                            }
+                        }
+                    }
+                },
+                {
                     "label": "StartAppV1",
                     "body": "^ \"StartApp\",\n\"package\": \"\""
                 },
@@ -4158,6 +4305,9 @@
                     "$ref": "#/$defs/InputTextV1"
                 },
                 {
+                    "$ref": "#/$defs/BindTargetV1"
+                },
+                {
                     "$ref": "#/$defs/StartAppV1"
                 },
                 {
@@ -4243,6 +4393,9 @@
                         },
                         {
                             "$ref": "#/$defs/InputTextV2"
+                        },
+                        {
+                            "$ref": "#/$defs/BindTargetV2"
                         },
                         {
                             "$ref": "#/$defs/StartAppV2"
@@ -4422,7 +4575,7 @@
                     "title": "Action Property",
                     "description": "执行的动作。可选，默认 `DoNothing` 。",
                     "$ref": "#/$defs/ActionProperty",
-                    "markdownDescription": "*string* | *object* (v2)\n\n执行的动作。可选，默认 `DoNothing` 。\n\n可选的值：`DoNothing` | `Click` | `LongPress` | `Swipe` | `MultiSwipe` | `TouchDown` | `TouchMove` | `TouchUp` | `ClickKey` | `LongPressKey` | `KeyDown` | `KeyUp` | `InputText` | `StartApp` | `StopApp` | `StopTask` | `Command` | `Custom`\n\n详见 [动作类型](#动作类型)。"
+                    "markdownDescription": "*string* | *object* (v2)\n\n执行的动作。可选，默认 `DoNothing` 。\n\n可选的值：`DoNothing` | `Click` | `LongPress` | `Swipe` | `MultiSwipe` | `TouchDown` | `TouchMove` | `TouchUp` | `ClickKey` | `LongPressKey` | `KeyDown` | `KeyUp` | `InputText` | `BindTarget` | `StartApp` | `StopApp` | `StopTask` | `Command` | `Custom`\n\n详见 [动作类型](#动作类型)。"
                 },
                 "next": {
                     "title": "Next Property",

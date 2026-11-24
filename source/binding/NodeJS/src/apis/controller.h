@@ -58,6 +58,7 @@ struct ControllerImpl : public maajs::NativeClassBase
         maajs::OptionalParam<int32_t> pressure);
     maajs::ValueType post_click_key(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_input_text(maajs::ValueType self, maajs::EnvType env, std::string text);
+    maajs::ValueType post_bind_target(maajs::ValueType self, maajs::EnvType env, maajs::ObjectType target);
     maajs::ValueType post_start_app(maajs::ValueType self, maajs::EnvType env, std::string intent);
     maajs::ValueType post_stop_app(maajs::ValueType self, maajs::EnvType env, std::string intent);
     maajs::ValueType post_touch_down(maajs::ValueType self, maajs::EnvType env, int32_t contact, int32_t x, int32_t y, int32_t pressure);
@@ -132,7 +133,8 @@ struct IOSControllerImpl : public ControllerImpl
 };
 
 using Win32Device = std::tuple<uintptr_t, std::string, std::string>;
-using Win32ControllerCtorParam = std::tuple<uintptr_t, MaaWin32ScreencapMethod, MaaWin32InputMethod, MaaWin32InputMethod>;
+using Win32ControllerCtorParam =
+    std::tuple<std::optional<uintptr_t>, MaaWin32ScreencapMethod, MaaWin32InputMethod, MaaWin32InputMethod, maajs::OptionalParam<bool>>;
 
 struct Win32ControllerImpl : public ControllerImpl
 {

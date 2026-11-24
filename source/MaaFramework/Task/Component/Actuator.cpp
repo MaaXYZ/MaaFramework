@@ -93,6 +93,10 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         result = input_text(std::get<InputTextParam>(pipeline_data.action_param), pipeline_data.name);
         break;
 
+    case Type::BindTarget:
+        result = bind_target(std::get<BindTargetParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
+
     case Type::StartApp:
         result = start_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
         break;
@@ -612,6 +616,25 @@ ActionResult Actuator::screencap(const MAA_RES_NS::Action::ScreencapParam& param
         .box = cv::Rect { },
         .success = ret,
         .detail = json::value(detail),
+    };
+}
+
+ActionResult Actuator::bind_target(const MAA_RES_NS::Action::BindTargetParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return { };
+    }
+
+    auto target = param.to_json();
+    bool ret = controller()->bind_target(target.as_object());
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "BindTarget",
+        .box = cv::Rect { },
+        .success = ret,
+        .detail = std::move(target),
     };
 }
 

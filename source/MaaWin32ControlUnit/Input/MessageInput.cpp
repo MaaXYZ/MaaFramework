@@ -281,7 +281,8 @@ void MessageInput::stop_window_tracking()
     tracking_stop_generation_ = 0;
     tracking_stop_deadline_ticks_ = 0;
     tracking_active_ = false;
-    s_active_instance_ = nullptr;
+    MessageInput* expected = this;
+    s_active_instance_.compare_exchange_strong(expected, nullptr);
     pending_mouse_x_ = 0;
     pending_mouse_y_ = 0;
     has_pending_mouse_ = false;
@@ -821,6 +822,18 @@ void MessageInput::unblock_input()
         return;
     }
     BlockInput(FALSE);
+}
+
+void MessageInput::inactive_after_loss()
+{
+    // Drop saved positions and gesture destinations before normal cleanup so a
+    // recycled HWND or a new foreground window never receives movement or input.
+    gesture_target_ = nullptr;
+    mouse_down_sent_ = false;
+    cursor_pos_saved_ = false;
+    window_pos_saved_ = false;
+    stop_window_tracking();
+    inactive();
 }
 
 void MessageInput::inactive()

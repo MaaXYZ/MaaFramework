@@ -69,6 +69,7 @@ from maa.pipeline import (
     JMultiSwipe,
     JTouch,
     JInputText,
+    JBindTarget,
     JStartApp,
     JStopApp,
     JScroll,
@@ -933,6 +934,13 @@ class PipelineTestRecognition(CustomRecognition):
         param = obj.action.param
         assert_true(isinstance(param, JStopApp), "StopApp param")
         assert_eq(param.package, "com.example.app", "package")
+
+        # BindTarget
+        new_ctx.override_pipeline({"ActBind": {"action": "BindTarget", "win32": {"method": "Desktop"}}})
+        param = new_ctx.get_node_object("ActBind").action.param
+        assert_true(isinstance(param, JBindTarget), "BindTarget param")
+        assert_eq(param.win32, {"method": "Desktop"}, "desktop selector")
+        assert_eq(param.bind_timeout, 20000, "default bind_timeout")
 
         # Command
         new_ctx.override_pipeline(

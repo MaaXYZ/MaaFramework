@@ -311,6 +311,14 @@ bool AnchoredTouchInput::scroll(int dx, int dy)
     return false;
 }
 
+void AnchoredTouchInput::inactive_after_loss()
+{
+    target_lost_ = true;
+    // Destroy the original synthetic pointer device and its contacts. There is
+    // no live target window whose styles or position need restoring.
+    stop_worker();
+}
+
 void AnchoredTouchInput::inactive()
 {
     stop_worker();
@@ -1272,6 +1280,9 @@ void AnchoredTouchInput::release_window_if_idle()
 
 void AnchoredTouchInput::unprepare_window()
 {
+    if (target_lost_) {
+        return;
+    }
     std::lock_guard lock(window_mutex_);
 
     // 压制激活与借用各自记账：没走过借用路径的点击也会挂它，

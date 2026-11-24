@@ -311,6 +311,10 @@ declare global {
             Mode
         >
 
+        type ActionBindTarget<Mode> = Mode extends ModeFragment
+            ? { win32?: Partial<BindTargetParam['win32']>; bind_timeout?: number }
+            : BindTargetParam
+
         type ActionStartApp<Mode> = RequiredIfStrict<
             {
                 package?: string
@@ -401,6 +405,7 @@ declare global {
             | 'KeyDown'
             | 'KeyUp'
             | 'InputText'
+            | 'BindTarget'
             | 'StartApp'
             | 'StopApp'
             | 'Scroll'
@@ -434,6 +439,7 @@ declare global {
             | MixAct<'KeyDown', ActionSingleKey<Mode>, Mode>
             | MixAct<'KeyUp', ActionSingleKey<Mode>, Mode>
             | MixAct<'InputText', ActionInputText<Mode>, Mode>
+            | MixAct<'BindTarget', ActionBindTarget<Mode>, Mode>
             | MixAct<'StartApp', ActionStartApp<Mode>, Mode>
             | MixAct<'StopApp', ActionStopApp<Mode>, Mode>
             | MixAct<'Scroll', ActionScroll, Mode>

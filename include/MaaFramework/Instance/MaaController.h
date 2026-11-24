@@ -53,6 +53,12 @@ extern "C"
         MaaWin32InputMethod mouse_method,
         MaaWin32InputMethod keyboard_method);
 
+    /** Create a Win32 controller that connects to the host and awaits an explicit target. */
+    MAA_FRAMEWORK_API MaaController* MaaWin32ControllerCreateDeferred(
+        MaaWin32ScreencapMethod screencap_method,
+        MaaWin32InputMethod mouse_method,
+        MaaWin32InputMethod keyboard_method);
+
     /**
      * @brief Create a macOS controller for native macOS applications.
      *
@@ -258,6 +264,9 @@ extern "C"
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClickKey(MaaController* ctrl, int32_t keycode);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostInputText(MaaController* ctrl, const char* text);
+
+    /** Queue a target change using the same JSON object as the BindTarget action's parameters. */
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostBindTarget(MaaController* ctrl, const char* target_json);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostStartApp(MaaController* ctrl, const char* intent);
 

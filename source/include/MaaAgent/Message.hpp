@@ -21,8 +21,10 @@ struct StartUpRequest
     std::string version = MAA_VERSION;
     int protocol = kProtocolVersion;
 
+    bool supports_bind_target = false;
+
     MessageTypePlaceholder _StartUpRequest = 1;
-    MEO_JSONIZATION(version, protocol, _StartUpRequest);
+    MEO_JSONIZATION(version, protocol, MEO_OPT supports_bind_target, _StartUpRequest);
 };
 
 struct StartUpResponse
@@ -1316,6 +1318,23 @@ struct ControllerPostInputTextReverseResponse
 
     MessageTypePlaceholder _ControllerPostInputTextReverseResponse = 1;
     MEO_JSONIZATION(ctrl_id, _ControllerPostInputTextReverseResponse);
+};
+
+struct ControllerPostBindTargetReverseRequest
+{
+    std::string controller_id;
+    json::object target;
+
+    MessageTypePlaceholder _ControllerPostBindTargetReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, target, _ControllerPostBindTargetReverseRequest);
+};
+
+struct ControllerPostBindTargetReverseResponse
+{
+    int64_t ctrl_id = 0;
+
+    MessageTypePlaceholder _ControllerPostBindTargetReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostBindTargetReverseResponse);
 };
 
 struct ControllerPostStartAppReverseRequest

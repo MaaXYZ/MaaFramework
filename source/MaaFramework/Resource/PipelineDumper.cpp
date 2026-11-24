@@ -401,6 +401,10 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         };
     } break;
 
+    case Action::Type::BindTarget:
+        act.param = std::get<Action::BindTargetParam>(param);
+        break;
+
     case Action::Type::StartApp: {
         const auto& p = std::get<Action::AppParam>(param);
         act.param = PipelineV2::JStartApp {

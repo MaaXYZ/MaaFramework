@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass, field
-from typing import Any, Optional, Union, cast
+from typing import Any, Literal, Optional, TypedDict, Union, cast
 
 from strenum import StrEnum
 
@@ -37,6 +37,7 @@ class JActionType(StrEnum):
     KeyDown = "KeyDown"
     KeyUp = "KeyUp"
     InputText = "InputText"
+    BindTarget = "BindTarget"
     StartApp = "StartApp"
     StopApp = "StopApp"
     StopTask = "StopTask"
@@ -250,6 +251,18 @@ class JInputText:
     input_text: str
 
 
+class JWin32Target(TypedDict, total=False):
+    method: Literal["Window", "Desktop"]
+    class_regex: str
+    window_regex: str
+
+
+@dataclass
+class JBindTarget:
+    win32: JWin32Target
+    bind_timeout: int = 20000
+
+
 @dataclass
 class JStartApp:
     package: str
@@ -314,6 +327,7 @@ JActionParam = Union[
     JLongPressKey,
     JKey,
     JInputText,
+    JBindTarget,
     JStartApp,
     JStopApp,
     JStopTask,
@@ -445,6 +459,7 @@ class JPipelineParser:
             JActionType.KeyDown: JKey,
             JActionType.KeyUp: JKey,
             JActionType.InputText: JInputText,
+            JActionType.BindTarget: JBindTarget,
             JActionType.StartApp: JStartApp,
             JActionType.StopApp: JStopApp,
             JActionType.StopTask: JStopTask,
