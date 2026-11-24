@@ -23,6 +23,7 @@ public:
 
 public: // MaaAgentClient
     virtual std::string identifier() const override;
+    virtual bool valid() const override;
     virtual bool bind_resource(MaaResource* resource) override;
     virtual void register_resource_sink(MaaResource* res) override;
     virtual void register_controller_sink(MaaController* ctrl) override;
@@ -181,7 +182,7 @@ private:
 
     bool abort_connect();
     bool shutdown_remote_session(ShutdownMode mode);
-    void reset_socket_if_needed(std::chrono::milliseconds linger = std::chrono::milliseconds(0));
+    bool reset_socket_if_needed(std::chrono::milliseconds linger = std::chrono::milliseconds(0));
 
 public:
     static void res_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg);
@@ -203,6 +204,7 @@ private:
     MaaSinkId reg_ctrl_sink_id_ = MaaInvalidId;
 
     bool connected_ = false;
+    bool valid_ = false;
     bool remote_session_may_have_started_ = false;
     bool socket_needs_reset_ = false;
     std::string identifier_;

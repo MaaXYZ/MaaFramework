@@ -3,6 +3,7 @@
 #include <ranges>
 
 #include "MaaAgent/Message.hpp"
+#include "MaaAgent/ZmqProbe.h"
 #include "MaaUtils/Buffer/ImageBuffer.hpp"
 #include "MaaUtils/Buffer/StringBuffer.hpp"
 #include "MaaUtils/Encoding.h"
@@ -20,14 +21,27 @@ bool AgentServer::start_up(const std::string& identifier)
         return false;
     }
 
-    auto port_opt = parse_tcp_port(identifier);
+    if (!zmq_socket_available()) {
+        return false;
+    }
 
-    if (port_opt) {
+    if (auto port_opt = parse_tcp_port(identifier)) {
         LogInfo << "Using TCP mode" << VAR(*port_opt);
-        init_tcp_socket(*port_opt, false);
+        if (!init_tcp_socket(*port_opt, false)) {
+            LogError << "failed to connect TCP socket" << VAR(*port_opt);
+            return false;
+        }
     }
     else {
-        init_socket(identifier, false);
+        // Windows 上低完整性进程连高完整性 socket 会被内核直接拒绝，zmq 只表现为无限重连，
+        // 这里提前判掉并给出可执行的提示，避免用户对着 30 秒超时日志排查
+        if (!ipc_connect_permitted(ipc_socket_path(identifier))) {
+            return false;
+        }
+        if (!init_socket(identifier, false)) {
+            LogError << "failed to connect IPC socket" << VAR(identifier);
+            return false;
+        }
     }
 
     msg_loop_running_ = true;
@@ -51,7 +65,10 @@ void AgentServer::shut_down()
     }
 
     zmq_sock_.close();
-    zmq_ctx_.close();
+    if (zmq_ctx_) {
+        zmq_ctx_->close();
+    }
+    zmq_ctx_.reset();
 }
 
 void AgentServer::join()

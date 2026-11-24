@@ -50,9 +50,9 @@ protected:
     bool handle_image_header(const json::value& j);
     bool handle_image_encoded_header(const json::value& j);
 
-    void init_socket(const std::string& identifier, bool bind);
+    bool init_socket(const std::string& identifier, bool bind);
     void uninit_socket();
-    void reset_socket(std::chrono::milliseconds linger = std::chrono::milliseconds(0));
+    bool reset_socket(std::chrono::milliseconds linger = std::chrono::milliseconds(0));
 
     bool send(const json::value& j);
     bool send_no_wait(const json::value& j);
@@ -62,7 +62,7 @@ protected:
     void set_timeout(const std::chrono::milliseconds& timeout);
 
 private:
-    void create_pair_socket();
+    bool create_pair_socket();
     bool send_impl(const json::value& j);
     void handle_image(const ImageHeader& header);
     void handle_image_encoded(const ImageEncodedHeader& header);
@@ -75,8 +75,8 @@ private:
     void stash_response(int64_t resp_id, json::value msg);
 
 protected:
-    // 返回实际绑定的端口号，如果传入 0 则自动选择可用端口
-    uint16_t init_tcp_socket(uint16_t port, bool bind);
+    // 返回实际绑定的端口号，如果传入 0 则自动选择可用端口；失败返回 nullopt
+    std::optional<uint16_t> init_tcp_socket(uint16_t port, bool bind);
 
     // 纯数字 identifier 视为 TCP 端口号，范围限制为 1-65535
     static std::optional<uint16_t> parse_tcp_port(const std::string& identifier);
@@ -84,8 +84,21 @@ protected:
     // 检测 IPC 是否可能失败（Windows 下的路径问题等）
     static bool should_fallback_to_tcp();
 
+    // IPC socket 文件路径，需与 init_socket 内部保持一致
+    static std::filesystem::path ipc_socket_path(const std::string& identifier);
+
+    // Windows 上低完整性进程连不上高完整性的 socket（MAC no-write-up），
+    // 这种失败在 zmq 里只会表现为无限重连，无法从 connect 返回值看出来，需要提前判掉
+    static bool ipc_connect_permitted(const std::filesystem::path& sock_path);
+
+    // 工作目录是否处于更低的完整性等级（沙箱、受保护目录等）。
+    // 从这种目录启动的 agent 多半也是低完整性进程，连不上普通 IPC socket
+    static bool workdir_is_restricted();
+
 protected:
-    zmq::context_t zmq_ctx_;
+    // 延迟创建：受限环境下 zmq 上下文本身就可能让进程 abort（见 ZmqProbe.cpp），
+    // 探测通过之前不应该有 zmq 对象存在
+    std::optional<zmq::context_t> zmq_ctx_;
     zmq::socket_t zmq_sock_;
 
     std::string ipc_addr_;

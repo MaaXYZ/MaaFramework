@@ -14,7 +14,7 @@ struct NativeClassIDChain;
 
 struct QuickJSRuntimeBridgeData
 {
-    JSClassID nativePointerHolderClassId;
+    JSClassID nativePointerHolderClassId { };
     std::map<std::string, std::shared_ptr<maajs::NativeClassIDChain>> nativeClassId;
 
     static QuickJSRuntimeBridgeData* get(maajs::EnvType env);
