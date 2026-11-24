@@ -324,7 +324,10 @@ bool InterceptionInput::key_down(int key)
         return false;
     }
 
-    ensure_foreground();
+    // [PATCH-ZC-BGKEY] 键盘走真实后台：Interception 注入的是硬件级扫描码，
+    // 由驱动进入系统输入流，不需要目标窗口处于前台，也不需要置顶。
+    // 上游在此处调用 ensure_foreground() 会让窗口每次按键都跳到最前，
+    // 破坏「后台挂机不打扰用户」的核心诉求，故移除。
 
     LogInfo << VAR(key) << VAR(keyboard_device_index_) << VAR_VOIDP(hwnd_);
     if (!send_key(key, false)) {
@@ -347,7 +350,7 @@ bool InterceptionInput::key_up(int key)
         return false;
     }
 
-    ensure_foreground();
+    // [PATCH-ZC-BGKEY] 同上：释放按键同样不需要前台。
 
     LogInfo << VAR(key) << VAR(keyboard_device_index_) << VAR_VOIDP(hwnd_);
     if (!send_key(key, true)) {
