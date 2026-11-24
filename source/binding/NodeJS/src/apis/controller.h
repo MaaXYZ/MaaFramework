@@ -268,25 +268,33 @@ struct LinuxControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+struct PluginControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    constexpr static char name[] = "PluginController";
+
+    static PluginControllerImpl* ctor(const maajs::CallbackInfo& info);
+    static bool load(std::string path);
+    static std::optional<std::vector<std::string>> names();
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
 struct CustomControllerContext
 {
+    std::shared_ptr<maajs::ObjectRefType> actor;
+    static std::unique_ptr<CustomControllerContext> create(maajs::ObjectType object);
     std::map<std::string, maajs::CallbackContext*> callbacks;
 
     ~CustomControllerContext();
-    void add_bind(
-        maajs::EnvType env,
-        std::string name,
-        std::string func_name,
-        int argc,
-        std::shared_ptr<maajs::ObjectRefType> actor,
-        std::function<maajs::ValueType(maajs::EnvType)> fallback);
+    void add_bind(std::string name, const char* func_name, int argc, std::function<maajs::ValueType(maajs::EnvType)> fallback);
     void gc_mark(maajs::NativeMarkerFunc marker);
 };
 
 struct CustomControllerImpl : public ControllerImpl
 {
-    std::shared_ptr<maajs::ObjectRefType> actor;
     std::unique_ptr<CustomControllerContext> context;
+    ~CustomControllerImpl() override;
 
     using ControllerImpl::ControllerImpl;
 

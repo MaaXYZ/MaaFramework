@@ -55,6 +55,7 @@ from agent_test_utils import (
     signal_server_ready,
 )
 from remote_contract import REMOTE_CONTRACT_CASES
+from agent_controller_child import register_test_controller
 
 
 analyzed: bool = False
@@ -66,6 +67,7 @@ def main():
         print("Usage: python agent_main.py <socket_id>")
         exit(1)
 
+    register_test_controller()
     socket_id = sys.argv[-1]
     assert AgentServer.start_up(socket_id)
     signal_server_ready()
@@ -414,6 +416,12 @@ class MyAction(CustomAction):
         runned = True
 
         return CustomAction.RunResult(success=True)
+
+
+@AgentServer.custom_action("ClickAgentDevice")
+class ClickAgentDevice(CustomAction):
+    def run(self, context, argv):
+        return context.tasker.controller.post_click(7, 3).wait().succeeded
 
 
 @AgentServer.custom_action("RemoteContract")

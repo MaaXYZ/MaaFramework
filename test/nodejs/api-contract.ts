@@ -49,7 +49,7 @@ class RecordingActor implements maa.CustomControllerActor {
         this.calls.push(['touch_up', contact])
         return true
     }
-    click_key(key: number) {
+    click_key(key: number): maa.MaybePromise<boolean> {
         this.calls.push(['click_key', key])
         return true
     }
@@ -133,17 +133,19 @@ export async function runApiContractTests() {
             }
         })
 
-        await check('synchronous custom getter callback', () => {
-            const child = spawnSync(
-                process.execPath,
-                ['--expose-gc', fileURLToPath(import.meta.url), '--sync-controller-info'],
-                {
-                    timeout: 10000,
-                    encoding: 'utf8'
-                }
-            )
-            assert.equal(child.error, undefined, String(child.error) + child.stderr + child.stdout)
-            assert.equal(child.status, 0, child.stderr + child.stdout)
+        await check('custom controller callback completion', () => {
+            for (const probe of ['--sync-controller-info', '--controller-callback-failure']) {
+                const child = spawnSync(
+                    process.execPath,
+                    ['--expose-gc', fileURLToPath(import.meta.url), probe],
+                    {
+                        timeout: 10000,
+                        encoding: 'utf8'
+                    }
+                )
+                assert.equal(child.error, undefined, String(child.error) + child.stderr + child.stdout)
+                assert.equal(child.status, 0, child.stderr + child.stdout)
+            }
         })
 
         await check('nullable lookups and binding', () => {
@@ -492,6 +494,24 @@ export async function runApiContractTests() {
     }
 }
 
+async function runCallbackFailureProbe() {
+    const actor = new RecordingActor()
+    const controller = new maa.CustomController(actor)
+    try {
+        assert.equal(await controller.wait(controller.post_connection().id), maa.Status.Succeeded)
+        actor.click_key = () => {
+            throw new Error('device disconnected')
+        }
+        assert.equal(await controller.wait(controller.post_click_key(65).id), maa.Status.Failed)
+        actor.click_key = () => Promise.reject(true)
+        assert.equal(await controller.wait(controller.post_click_key(65).id), maa.Status.Failed)
+        actor.click_key = RecordingActor.prototype.click_key
+        assert.equal(await controller.wait(controller.post_click_key(65).id), maa.Status.Succeeded)
+    } finally {
+        controller.destroy()
+    }
+}
+
 async function runSynchronousInfoProbe() {
     const unhandled: unknown[] = []
     const onUnhandled = (reason: unknown) => {
@@ -531,6 +551,9 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
         await runSynchronousInfoProbe()
         global.gc?.()
         await nextTurn()
+    } else if (process.argv.includes('--controller-callback-failure')) {
+        await runCallbackFailureProbe()
+        process.exit(0)
     } else {
         await runApiContractTests()
         process.exit(0)

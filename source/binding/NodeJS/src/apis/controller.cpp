@@ -943,6 +943,45 @@ maajs::ValueType load_wlroots_controller(maajs::EnvType env)
     return ctor;
 }
 
+#ifdef MAA_JS_BUILD_CLIENT
+PluginControllerImpl* PluginControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [controller_name, config] = maajs::UnWrapArgs<std::tuple<std::string, maajs::OptionalParam<std::string>>>(info);
+    auto ctrl = MaaPluginControllerCreate(controller_name.c_str(), config.value_or("{}").c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new PluginControllerImpl(ctrl, true);
+}
+
+bool PluginControllerImpl::load(std::string path)
+{
+    return MaaGlobalLoadPlugin(path.c_str());
+}
+
+std::optional<std::vector<std::string>> PluginControllerImpl::names()
+{
+    StringListBuffer buffer;
+    if (!MaaGlobalGetPluginControllerList(buffer)) {
+        return std::nullopt;
+    }
+    return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
+}
+
+void PluginControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
+{
+    MAA_BIND_FUNC(ctor, "load", PluginControllerImpl::load);
+    MAA_BIND_GETTER(ctor, "names", PluginControllerImpl::names);
+}
+
+maajs::ValueType load_plugin_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<PluginControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    return ctor;
+}
+#endif
+
 CustomControllerContext::~CustomControllerContext()
 {
     for (const auto& [_, ctx] : callbacks) {
@@ -951,19 +990,17 @@ CustomControllerContext::~CustomControllerContext()
 }
 
 void CustomControllerContext::add_bind(
-    maajs::EnvType env,
     std::string name,
-    std::string func_name,
+    const char* func_name,
     int argc,
-    std::shared_ptr<maajs::ObjectRefType> actor,
     std::function<maajs::ValueType(maajs::EnvType)> fallback)
 {
     callbacks[name] = new maajs::CallbackContext(
         maajs::MakeFunction(
-            env,
-            func_name.c_str(),
+            actor->Value().Env(),
+            func_name,
             argc,
-            [actor, name, fallback](const auto& info) -> maajs::ValueType {
+            [actor = actor, name, fallback](const auto& info) -> maajs::ValueType {
                 auto func = actor->Value()[name].AsValue();
                 if (func.IsFunction()) {
                     std::vector<maajs::ValueType> args;
@@ -978,11 +1015,12 @@ void CustomControllerContext::add_bind(
                 }
             },
             actor),
-        func_name.c_str());
+        func_name);
 }
 
 void CustomControllerContext::gc_mark(maajs::NativeMarkerFunc marker)
 {
+    marker(actor->Value());
     for (const auto& [_, ctx] : callbacks) {
         marker(ctx->fn);
     }
@@ -992,26 +1030,15 @@ void CustomControllerImpl::gc_mark(maajs::NativeMarkerFunc marker)
 {
     ControllerImpl::gc_mark(marker);
 
-    if (actor) {
-        marker(actor->Value());
-    }
     if (context) {
         context->gc_mark(marker);
     }
 }
 
-CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info)
+std::unique_ptr<CustomControllerContext> CustomControllerContext::create(maajs::ObjectType object)
 {
-    if (info.Length() != 1) {
-        return nullptr;
-    }
-
-    auto actor = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(info[0].As<maajs::ObjectType>()));
     auto context = std::make_unique<CustomControllerContext>();
-    auto ctrl = MaaCustomControllerCreate(&CustomCallbacks, context.get());
-    if (!ctrl) {
-        return nullptr;
-    }
+    context->actor = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(object));
 
     auto ret_false = [](maajs::EnvType env2) {
         return maajs::BooleanType::New(env2, false);
@@ -1023,30 +1050,47 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
         return env2.Null();
     };
 
-    context->add_bind(info.Env(), "connect", "CustomConnect", 0, actor, ret_false);
-    // context->add_bind(info.Env(), "connected", "CustomConnected", 0, actor, ret_true);
-    context->add_bind(info.Env(), "request_uuid", "CustomRequestUuid", 0, actor, ret_null);
-    context->add_bind(info.Env(), "get_features", "CustomGetFeatures", 0, actor, ret_null);
-    context->add_bind(info.Env(), "start_app", "CustomStartApp", 1, actor, ret_false);
-    context->add_bind(info.Env(), "stop_app", "CustomStopApp", 1, actor, ret_false);
-    context->add_bind(info.Env(), "screencap", "CustomScreencap", 0, actor, ret_null);
-    context->add_bind(info.Env(), "click", "CustomClick", 2, actor, ret_false);
-    context->add_bind(info.Env(), "swipe", "CustomSwipe", 5, actor, ret_false);
-    context->add_bind(info.Env(), "touch_down", "CustomTouchDown", 4, actor, ret_false);
-    context->add_bind(info.Env(), "touch_move", "CustomTouchMove", 4, actor, ret_false);
-    context->add_bind(info.Env(), "touch_up", "CustomTouchUp", 1, actor, ret_false);
-    context->add_bind(info.Env(), "click_key", "CustomClickKey", 1, actor, ret_false);
-    context->add_bind(info.Env(), "input_text", "CustomInputText", 1, actor, ret_false);
-    context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor, ret_false);
-    context->add_bind(info.Env(), "key_up", "CustomKeyUp", 1, actor, ret_false);
-    context->add_bind(info.Env(), "scroll", "CustomScroll", 2, actor, ret_false);
-    context->add_bind(info.Env(), "relative_move", "CustomRelativeMove", 2, actor, ret_false);
-    context->add_bind(info.Env(), "shell", "CustomShell", 2, actor, ret_null);
-    context->add_bind(info.Env(), "inactive", "CustomInactive", 0, actor, ret_true);
-    context->add_bind(info.Env(), "get_info", "CustomGetInfo", 0, actor, ret_null);
+    context->add_bind("connect", "CustomConnect", 0, ret_false);
+    context->add_bind("request_uuid", "CustomRequestUuid", 0, ret_null);
+    context->add_bind("get_features", "CustomGetFeatures", 0, ret_null);
+    context->add_bind("start_app", "CustomStartApp", 1, ret_false);
+    context->add_bind("stop_app", "CustomStopApp", 1, ret_false);
+    context->add_bind("screencap", "CustomScreencap", 0, ret_null);
+    context->add_bind("click", "CustomClick", 2, ret_false);
+    context->add_bind("swipe", "CustomSwipe", 5, ret_false);
+    context->add_bind("touch_down", "CustomTouchDown", 4, ret_false);
+    context->add_bind("touch_move", "CustomTouchMove", 4, ret_false);
+    context->add_bind("touch_up", "CustomTouchUp", 1, ret_false);
+    context->add_bind("click_key", "CustomClickKey", 1, ret_false);
+    context->add_bind("input_text", "CustomInputText", 1, ret_false);
+    context->add_bind("key_down", "CustomKeyDown", 1, ret_false);
+    context->add_bind("key_up", "CustomKeyUp", 1, ret_false);
+    context->add_bind("scroll", "CustomScroll", 2, ret_false);
+    context->add_bind("relative_move", "CustomRelativeMove", 2, ret_false);
+    context->add_bind("shell", "CustomShell", 2, ret_null);
+    context->add_bind("inactive", "CustomInactive", 0, ret_true);
+    context->add_bind("get_info", "CustomGetInfo", 0, ret_null);
 
+    return context;
+}
+
+CustomControllerImpl::~CustomControllerImpl()
+{
+    // The native worker must stop before the JavaScript callback context is released.
+    destroy();
+}
+
+CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    if (info.Length() != 1) {
+        return nullptr;
+    }
+    auto context = CustomControllerContext::create(info[0].As<maajs::ObjectType>());
+    auto ctrl = MaaCustomControllerCreate(&CustomCallbacks, context.get());
+    if (!ctrl) {
+        return nullptr;
+    }
     auto impl = new CustomControllerImpl(ctrl, true);
-    impl->actor = actor;
     impl->context = std::move(context);
     return impl;
 }
@@ -1059,6 +1103,6 @@ maajs::ValueType load_custom_controller(maajs::EnvType env)
 {
     maajs::FunctionType ctor;
     maajs::NativeClass<CustomControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
-    ExtContext::get(env)->win32ControllerCtor = maajs::PersistentFunction(ctor);
+    ExtContext::get(env)->customControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }

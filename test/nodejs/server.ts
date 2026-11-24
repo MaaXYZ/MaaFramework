@@ -11,9 +11,14 @@ async function main() {
     console.log('AgentServer', maa.Server)
 
     maa.Server.register_custom_action('NodeServerAct', myAct)
+    maa.Server.register_custom_controller('NodeServerCtl', { connect: async () => true })
     maa.Server.register_custom_recognition('NodeServerRec', myReco)
 
     for (const { register, expectedMessage } of [
+        {
+            register: () => maa.Server.register_custom_controller('NodeServerCtl', {}),
+            expectedMessage: "Failed to register custom controller 'NodeServerCtl'"
+        },
         {
             register: () => maa.Server.register_custom_action('NodeServerAct', myAct),
             expectedMessage: "Custom name is already registered: 'NodeServerAct'"

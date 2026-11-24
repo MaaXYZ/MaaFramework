@@ -10,6 +10,7 @@ import maa.core;
 
 export using ::MaaAgentServerRegisterCustomRecognition;
 export using ::MaaAgentServerRegisterCustomAction;
+export using ::MaaAgentServerRegisterCustomController;
 export using ::MaaAgentServerStartUp;
 export using ::MaaAgentServerShutDown;
 export using ::MaaAgentServerJoin;

@@ -47,6 +47,7 @@ AgentClient::~AgentClient()
 {
     LogFunc << VAR(ipc_addr_);
 
+    close_controller_channel();
     clear_custom_registration();
     clear_controller_sink();
     clear_resource_sink();
@@ -164,18 +165,14 @@ bool AgentClient::connect()
 {
     LogFunc << VAR(ipc_addr_);
 
-    if (!bound_res_) {
-        LogError << "resource is not bound";
-        return false;
-    }
-
+    close_controller_channel();
     reset_socket_if_needed();
 
     clear_custom_registration();
     connected_ = false;
     remote_session_may_have_started_ = true;
 
-    auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest { });
+    auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest { .supports_controllers = true });
 
     if (!resp_opt) {
         LogError << "failed to send_and_recv";
@@ -191,6 +188,10 @@ bool AgentClient::connect()
         return abort_connect();
     }
 
+    if (!bound_res_ && (!resp.actions.empty() || !resp.recognitions.empty())) {
+        LogError << "resource is required for custom actions and recognitions";
+        return abort_connect();
+    }
     for (const auto& reco : resp.recognitions) {
         LogInfo << "register recognition" << VAR(reco);
         if (!bound_res_->register_custom_recognition(reco, reco_agent, this)) {
@@ -208,6 +209,16 @@ bool AgentClient::connect()
         registered_actions_.emplace_back(act);
     }
 
+    if (!resp.controllers.empty()) {
+        auto channel = ControllerChannel::open(resp.controller_endpoint, is_tcp_, resp.controllers);
+        if (!channel) {
+            return abort_connect();
+        }
+        std::scoped_lock lock(controller_channel_mutex_);
+        channel->set_timeout(controller_timeout_);
+        controller_channel_ = std::move(channel);
+    }
+
     connected_ = true;
     return true;
 }
@@ -215,6 +226,8 @@ bool AgentClient::connect()
 bool AgentClient::disconnect()
 {
     LogFunc << VAR(ipc_addr_);
+
+    close_controller_channel();
 
     clear_custom_registration();
     clear_controller_sink();
@@ -281,6 +294,32 @@ void AgentClient::reset_socket_if_needed(std::chrono::milliseconds linger)
 void AgentClient::set_timeout(const std::chrono::milliseconds& timeout)
 {
     Transceiver::set_timeout(timeout);
+    std::scoped_lock lock(controller_channel_mutex_);
+    controller_timeout_ = timeout;
+    if (controller_channel_) {
+        controller_channel_->set_timeout(timeout);
+    }
+}
+
+void AgentClient::close_controller_channel()
+{
+    std::scoped_lock lock(controller_channel_mutex_);
+    if (controller_channel_) {
+        controller_channel_->close();
+        controller_channel_.reset();
+    }
+}
+
+std::vector<std::string> AgentClient::get_custom_controller_list() const
+{
+    std::scoped_lock lock(controller_channel_mutex_);
+    return controller_channel_ ? controller_channel_->names() : std::vector<std::string> { };
+}
+
+MaaController* AgentClient::create_custom_controller(const std::string& name)
+{
+    std::scoped_lock lock(controller_channel_mutex_);
+    return controller_channel_ ? controller_channel_->create(name) : nullptr;
 }
 
 std::vector<std::string> AgentClient::get_custom_recognition_list() const

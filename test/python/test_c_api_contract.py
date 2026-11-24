@@ -14,6 +14,8 @@ from maa.context import Context
 from maa.controller import Controller
 from maa.define import (
     MaaBool,
+    MaaControllerHandle,
+    MaaCustomControllerCallbacks,
     MaaImageBufferHandle,
     MaaSize,
     MaaStatus,
@@ -263,6 +265,17 @@ class TaskerInputValidationTest(BoundTaskerTest):
         self.assertEqual(name.get(), "sentinel")
         self.assertEqual(count.value, 123)
         self.assertEqual(status.value, 456)
+
+
+class CustomControllerOwnershipTest(unittest.TestCase):
+    def test_failed_creation_releases_the_supplied_argument_once(self):
+        release_type = ctypes.CFUNCTYPE(None, ctypes.c_void_p)
+        released = []
+        create = Library.framework().MaaCustomControllerCreateWithRelease
+        create.restype = MaaControllerHandle
+        create.argtypes = [ctypes.POINTER(MaaCustomControllerCallbacks), ctypes.c_void_p, release_type]
+        self.assertFalse(create(None, 1234, release_type(released.append)))
+        self.assertEqual(released, [1234])
 
 
 class ControllerInputValidationTest(BoundTaskerTest):

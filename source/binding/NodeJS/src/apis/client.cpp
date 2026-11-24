@@ -111,6 +111,29 @@ std::optional<std::vector<std::string>> ClientImpl::get_custom_action_list()
     return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
 }
 
+std::optional<std::vector<std::string>> ClientImpl::get_custom_controller_list()
+{
+    StringListBuffer buffer;
+    if (!MaaAgentClientGetCustomControllerList(client, buffer)) {
+        return std::nullopt;
+    }
+    return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
+}
+
+maajs::ValueType ClientImpl::create_custom_controller(std::string controller_name)
+{
+    std::unique_ptr<MaaController, decltype(&MaaControllerDestroy)> ctrl(
+        MaaAgentClientCreateCustomController(client, controller_name.c_str()),
+        MaaControllerDestroy);
+    if (!ctrl) {
+        throw maajs::MaaError { std::format("Failed to create agent controller '{}'", controller_name) };
+    }
+    auto object = ControllerImpl::locate_object(env, ctrl.get());
+    maajs::NativeClass<ControllerImpl>::take(object)->own = true;
+    ctrl.release();
+    return object;
+}
+
 std::string ClientImpl::to_string()
 {
     return std::format(" handle = {:#018x} ", reinterpret_cast<uintptr_t>(client));
@@ -142,6 +165,8 @@ void ClientImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_SETTER(proto, "timeout", ClientImpl::set_timeout);
     MAA_BIND_GETTER(proto, "custom_recognition_list", ClientImpl::get_custom_recognition_list);
     MAA_BIND_GETTER(proto, "custom_action_list", ClientImpl::get_custom_action_list);
+    MAA_BIND_GETTER(proto, "custom_controller_list", ClientImpl::get_custom_controller_list);
+    MAA_BIND_FUNC(proto, "create_custom_controller", ClientImpl::create_custom_controller);
 }
 
 maajs::ValueType load_client(maajs::EnvType env)

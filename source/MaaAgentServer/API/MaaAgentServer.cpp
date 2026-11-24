@@ -61,6 +61,14 @@ MaaBool MaaAgentServerRegisterCustomAction(const char* name, MaaCustomActionCall
     return MAA_AGENT_SERVER_NS::AgentServer::get_instance().register_custom_action(name, action, trans_arg);
 }
 
+MaaBool MaaAgentServerRegisterCustomController(const char* name, const MaaCustomControllerCallbacks* callbacks, void* trans_arg)
+{
+    if (!name || !*name || !callbacks) {
+        return false;
+    }
+    return MAA_AGENT_SERVER_NS::AgentServer::get_instance().register_custom_controller(name, *callbacks, trans_arg);
+}
+
 MaaSinkId MaaAgentServerAddResourceSink(MaaEventCallback sink, void* trans_arg)
 {
     LogFunc << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);

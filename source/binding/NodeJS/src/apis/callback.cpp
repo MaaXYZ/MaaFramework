@@ -155,11 +155,9 @@ MaaBool CustomConnect(void* trans_arg)
 
 MaaBool CustomConnected(void* trans_arg)
 {
-    // auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
-    // auto ctx = customCtx->callbacks["connected"];
-    // return ctx->Call<bool>([&](maajs::FunctionType func) { return func.Call({}); });
-    std::ignore = trans_arg;
-    return true;
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto it = customCtx->callbacks.find("connected");
+    return it == customCtx->callbacks.end() || it->second->Call<bool>([](maajs::FunctionType func) { return func.Call({}); });
 }
 
 MaaBool CustomRequestUuid(void* trans_arg, MaaStringBuffer* buffer)
@@ -193,6 +191,9 @@ MaaControllerFeature CustomGetFeatures(void* trans_arg)
         }
         else if (key == "keyboard") {
             ret |= MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+        }
+        else if (key == "no_scaling_touch_points") {
+            ret |= MaaControllerFeature_NoScalingTouchPoints;
         }
     }
     return ret;

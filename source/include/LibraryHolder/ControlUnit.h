@@ -133,7 +133,7 @@ class CustomControlUnitLibraryHolder : public LibraryHolder<CustomControlUnitLib
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>
-        create_control_unit(MaaCustomControllerCallbacks* controller, void* controller_arg);
+        create_control_unit(MaaCustomControllerCallbacks* controller, void* controller_arg, std::shared_ptr<void> arg_owner = {});
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaCustomControlUnit");

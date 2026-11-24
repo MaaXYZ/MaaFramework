@@ -8,6 +8,8 @@
 #include <meojson/json.hpp>
 #include <zmq.hpp>
 
+#include "ControllerService.h"
+
 #include "Common/Conf.h"
 #include "MaaAgent/Transceiver.h"
 #include "MaaAgentServer/MaaAgentServerDef.h"
@@ -33,6 +35,7 @@ class AgentServer
     };
 
 public:
+    AgentServer();
     ~AgentServer() = default;
 
     bool start_up(const std::string& identifier);
@@ -42,6 +45,8 @@ public:
 
     bool register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg);
     bool register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg);
+
+    bool register_custom_controller(const std::string& name, const MaaCustomControllerCallbacks& callbacks, void* arg);
 
     MaaSinkId add_resource_sink(MaaEventCallback sink, void* trans_arg);
     MaaSinkId add_controller_sink(MaaEventCallback sink, void* trans_arg);
@@ -73,7 +78,13 @@ private:
     EventDispatcher tasker_notifier_;
     EventDispatcher ctx_notifier_;
 
-    bool msg_loop_running_ = false;
+    std::mutex state_mutex_;
+    std::mutex thread_mutex_;
+    std::map<std::string, ControllerRegistration> custom_controllers_;
+    std::unique_ptr<ControllerService> controller_service_;
+
+    std::atomic_bool msg_loop_finished_ = true;
+    std::atomic_bool msg_loop_running_ = false;
     std::thread msg_thread_;
 };
 

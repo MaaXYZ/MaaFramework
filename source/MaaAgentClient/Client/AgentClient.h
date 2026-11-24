@@ -6,6 +6,8 @@
 
 #include <meojson/json.hpp>
 
+#include "ControllerChannel.h"
+
 #include "Common/Conf.h"
 #include "Common/MaaTypes.h"
 #include "MaaAgent/Transceiver.h"
@@ -36,6 +38,9 @@ public: // MaaAgentClient
     virtual void set_timeout(const std::chrono::milliseconds& timeout) override;
     virtual std::vector<std::string> get_custom_recognition_list() const override;
     virtual std::vector<std::string> get_custom_action_list() const override;
+
+    virtual std::vector<std::string> get_custom_controller_list() const override;
+    virtual MaaController* create_custom_controller(const std::string& name) override;
 
 private: // Transceiver
     virtual bool handle_inserted_request(const json::value& j) override;
@@ -179,6 +184,7 @@ private:
         WaitForResponse,
     };
 
+    void close_controller_channel();
     bool abort_connect();
     bool shutdown_remote_session(ShutdownMode mode);
     void reset_socket_if_needed(std::chrono::milliseconds linger = std::chrono::milliseconds(0));
@@ -217,6 +223,10 @@ private:
     std::map<std::string, MaaTasker*> tasker_map_;
     std::map<std::string, MaaController*> controller_map_;
     std::map<std::string, MaaResource*> resource_map_;
+
+    mutable std::mutex controller_channel_mutex_;
+    std::shared_ptr<ControllerChannel> controller_channel_;
+    std::chrono::milliseconds controller_timeout_ = std::chrono::milliseconds::max();
 
     std::vector<std::string> registered_actions_;
     std::vector<std::string> registered_recognitions_;

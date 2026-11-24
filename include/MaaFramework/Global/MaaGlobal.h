@@ -40,6 +40,9 @@ extern "C"
     /// Destroy all framework objects first. Idempotent; retains DLLs and disables plugins.
     MAA_FRAMEWORK_API MaaBool MaaGlobalShutdownPlugins(void);
 
+    /// Replace buffer contents with the sorted controller names advertised by active plugins. Empty after shutdown.
+    MAA_FRAMEWORK_API MaaBool MaaGlobalGetPluginControllerList(/* out */ MaaStringListBuffer* buffer);
+
     MAA_DEPRECATED MAA_FRAMEWORK_API MaaBool
         MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value /**< byte array, int*, char*, bool* */, MaaOptionValueSize val_size);
 

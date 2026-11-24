@@ -8,11 +8,11 @@ from collections.abc import Sequence
 from ctypes import c_int32
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import numpy
 
-from .buffer import ImageBuffer, StringBuffer
+from .buffer import ImageBuffer, StringBuffer, StringListBuffer
 from .define import *
 from .event_sink import EventSink, NotificationType
 from .job import Job, JobWithResult
@@ -32,11 +32,12 @@ __all__ = [
     "AndroidNativeController",
     "IOSController",
     "CustomController",
+    "PluginController",
 ]
 
 
 class Controller:
-    _handle: MaaControllerHandle
+    _handle: MaaControllerHandle = MaaControllerHandle()
     _own: bool
 
     def __init__(
@@ -1434,12 +1435,50 @@ class GamepadController(Controller):
         ]
 
 
+class PluginController(Controller):
+    """按名称创建已加载插件提供的控制器 / Create a controller supplied by a loaded plugin."""
+
+    def __init__(self, name: str, config: Optional[dict[str, Any]] = None):
+        super().__init__()
+        create = Library.framework().MaaPluginControllerCreate
+        create.restype = MaaControllerHandle
+        create.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+        self._handle = create(name.encode(), json.dumps(config if config is not None else {}).encode())
+        if not self._handle:
+            raise RuntimeError(f"Failed to create plugin controller: {name!r}")
+
+    @staticmethod
+    def list_names() -> list[str]:
+        """列出已加载插件提供的控制器名称 / List the controller names exported by loaded plugins."""
+        get_names = Library.framework().MaaGlobalGetPluginControllerList
+        get_names.restype = MaaBool
+        get_names.argtypes = [MaaStringListBufferHandle]
+        buffer = StringListBuffer()
+        if not get_names(buffer._handle):
+            raise RuntimeError("Failed to get plugin controller list.")
+        return buffer.get()
+
+
+def _controller_callback(callback_type: Callable[..., Any]) -> Callable[[Callable[..., int]], Any]:
+    def decorate(callback: Callable[..., int]) -> Any:
+        def guarded(*args: Any) -> int:
+            # ctypes cannot propagate Python exceptions through a native callback.
+            try:
+                return callback(*args)
+            except Exception:
+                traceback.print_exc()
+                return 0
+
+        return callback_type(guarded)
+
+    return decorate
+
+
 class CustomController(Controller):
     _callbacks: MaaCustomControllerCallbacks
 
     def __init__(self):
         super().__init__()
-        self._set_custom_api_properties()
 
         self._callbacks = MaaCustomControllerCallbacks(
             CustomController._c_connect_agent,
@@ -1465,6 +1504,11 @@ class CustomController(Controller):
             CustomController._c_get_info_agent,
         )
 
+        # AgentServer keeps the callbacks and invokes them over IPC. The controller handle lives on the client.
+        if Library.is_agent_server():
+            return
+
+        self._set_custom_api_properties()
         self._handle = Library.framework().MaaCustomControllerCreate(
             self.c_handle,
             self.c_arg,
@@ -1589,7 +1633,7 @@ class CustomController(Controller):
         return {}
 
     @staticmethod
-    @MaaCustomControllerCallbacks.ConnectFunc
+    @_controller_callback(MaaCustomControllerCallbacks.ConnectFunc)
     def _c_connect_agent(
         trans_arg: ctypes.c_void_p,
     ) -> int:
@@ -1604,7 +1648,7 @@ class CustomController(Controller):
         return int(self.connect())
 
     @staticmethod
-    @MaaCustomControllerCallbacks.ConnectedFunc
+    @_controller_callback(MaaCustomControllerCallbacks.ConnectedFunc)
     def _c_connected_agent(
         trans_arg: ctypes.c_void_p,
     ) -> int:
@@ -1619,7 +1663,7 @@ class CustomController(Controller):
         return int(self.connected())
 
     @staticmethod
-    @MaaCustomControllerCallbacks.RequestUuidFunc
+    @_controller_callback(MaaCustomControllerCallbacks.RequestUuidFunc)
     def _c_request_uuid_agent(
         trans_arg: ctypes.c_void_p,
         c_buffer: MaaStringBufferHandle,
@@ -1634,12 +1678,10 @@ class CustomController(Controller):
 
         uuid = self.request_uuid()
 
-        uuid_buffer = StringBuffer(c_buffer)
-        uuid_buffer.set(uuid)
-        return int(True)
+        return int(StringBuffer(c_buffer).set(uuid))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.GetFeaturesFunc
+    @_controller_callback(MaaCustomControllerCallbacks.GetFeaturesFunc)
     def _c_get_features_agent(trans_arg: ctypes.c_void_p) -> int:
         if not trans_arg:
             return int(MaaControllerFeatureEnum.Null)
@@ -1652,7 +1694,7 @@ class CustomController(Controller):
         return int(self.get_features())
 
     @staticmethod
-    @MaaCustomControllerCallbacks.StartAppFunc
+    @_controller_callback(MaaCustomControllerCallbacks.StartAppFunc)
     def _c_start_app_agent(
         c_intent: bytes,
         trans_arg: ctypes.c_void_p,
@@ -1668,7 +1710,7 @@ class CustomController(Controller):
         return int(self.start_app(c_intent.decode()))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.StopAppFunc
+    @_controller_callback(MaaCustomControllerCallbacks.StopAppFunc)
     def _c_stop_app_agent(
         c_intent: bytes,
         trans_arg: ctypes.c_void_p,
@@ -1684,10 +1726,10 @@ class CustomController(Controller):
         return int(self.stop_app(c_intent.decode()))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.ScreencapFunc
+    @_controller_callback(MaaCustomControllerCallbacks.ScreencapFunc)
     def _c_screencap_agent(
         trans_arg: ctypes.c_void_p,
-        c_buffer: MaaStringBufferHandle,
+        c_buffer: MaaImageBufferHandle,
     ) -> int:
         if not trans_arg:
             return int(False)
@@ -1697,19 +1739,11 @@ class CustomController(Controller):
             ctypes.py_object,
         ).value
 
-        # 回调是 C 到 Python 的边界：这里逃逸的异常会被 ctypes 记为 "Exception ignored"
-        # 并返回默认值，所以集中转成受控的截图失败，同时保留堆栈便于定位自定义实现的问题
-        try:
-            image = self.screencap()
-
-            buffer = ImageBuffer(c_buffer)
-            return int(buffer.set(image))
-        except Exception:
-            traceback.print_exc()
-            return int(False)
+        image = self.screencap()
+        return int(ImageBuffer(c_buffer).set(image))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.ClickFunc
+    @_controller_callback(MaaCustomControllerCallbacks.ClickFunc)
     def _c_click_agent(
         c_x: ctypes.c_int32,
         c_y: ctypes.c_int32,
@@ -1726,7 +1760,7 @@ class CustomController(Controller):
         return int(self.click(int(c_x), int(c_y)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.SwipeFunc
+    @_controller_callback(MaaCustomControllerCallbacks.SwipeFunc)
     def _c_swipe_agent(
         c_x1: ctypes.c_int32,
         c_y1: ctypes.c_int32,
@@ -1746,7 +1780,7 @@ class CustomController(Controller):
         return int(self.swipe(int(c_x1), int(c_y1), int(c_x2), int(c_y2), int(c_duration)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.TouchDownFunc
+    @_controller_callback(MaaCustomControllerCallbacks.TouchDownFunc)
     def _c_touch_down_agent(
         c_contact: ctypes.c_int32,
         c_x: ctypes.c_int32,
@@ -1765,7 +1799,7 @@ class CustomController(Controller):
         return int(self.touch_down(int(c_contact), int(c_x), int(c_y), int(c_pressure)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.TouchMoveFunc
+    @_controller_callback(MaaCustomControllerCallbacks.TouchMoveFunc)
     def _c_touch_move_agent(
         c_contact: ctypes.c_int32,
         c_x: ctypes.c_int32,
@@ -1784,7 +1818,7 @@ class CustomController(Controller):
         return int(self.touch_move(int(c_contact), int(c_x), int(c_y), int(c_pressure)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.TouchUpFunc
+    @_controller_callback(MaaCustomControllerCallbacks.TouchUpFunc)
     def _c_touch_up_agent(
         c_contact: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
@@ -1800,7 +1834,7 @@ class CustomController(Controller):
         return int(self.touch_up(int(c_contact)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.ClickKeyFunc
+    @_controller_callback(MaaCustomControllerCallbacks.ClickKeyFunc)
     def _c_click_key_agent(
         c_keycode: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
@@ -1816,7 +1850,7 @@ class CustomController(Controller):
         return int(self.click_key(int(c_keycode)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.KeyDownFunc
+    @_controller_callback(MaaCustomControllerCallbacks.KeyDownFunc)
     def _c_key_down_agent(
         c_keycode: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
@@ -1832,7 +1866,7 @@ class CustomController(Controller):
         return int(self.key_down(int(c_keycode)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.KeyUpFunc
+    @_controller_callback(MaaCustomControllerCallbacks.KeyUpFunc)
     def _c_key_up_agent(
         c_keycode: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
@@ -1848,7 +1882,7 @@ class CustomController(Controller):
         return int(self.key_up(int(c_keycode)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.InputTextFunc
+    @_controller_callback(MaaCustomControllerCallbacks.InputTextFunc)
     def _c_input_text_agent(
         c_text: bytes,
         trans_arg: ctypes.c_void_p,
@@ -1864,7 +1898,7 @@ class CustomController(Controller):
         return int(self.input_text(c_text.decode()))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.ScrollFunc
+    @_controller_callback(MaaCustomControllerCallbacks.ScrollFunc)
     def _c_scroll_agent(
         c_dx: ctypes.c_int32,
         c_dy: ctypes.c_int32,
@@ -1881,7 +1915,7 @@ class CustomController(Controller):
         return int(self.scroll(int(c_dx), int(c_dy)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.RelativeMoveFunc
+    @_controller_callback(MaaCustomControllerCallbacks.RelativeMoveFunc)
     def _c_relative_move_agent(
         c_dx: ctypes.c_int32,
         c_dy: ctypes.c_int32,
@@ -1898,7 +1932,7 @@ class CustomController(Controller):
         return int(self.relative_move(int(c_dx), int(c_dy)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.ShellFunc
+    @_controller_callback(MaaCustomControllerCallbacks.ShellFunc)
     def _c_shell_agent(
         c_cmd: bytes,
         c_timeout: ctypes.c_int64,
@@ -1917,12 +1951,10 @@ class CustomController(Controller):
         if result is None:
             return int(False)
 
-        output_buffer = StringBuffer(c_buffer)
-        output_buffer.set(result)
-        return int(True)
+        return int(StringBuffer(c_buffer).set(result))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.InactiveFunc
+    @_controller_callback(MaaCustomControllerCallbacks.InactiveFunc)
     def _c_inactive_agent(
         trans_arg: ctypes.c_void_p,
     ) -> int:
@@ -1937,7 +1969,7 @@ class CustomController(Controller):
         return int(self.inactive())
 
     @staticmethod
-    @MaaCustomControllerCallbacks.GetInfoFunc
+    @_controller_callback(MaaCustomControllerCallbacks.GetInfoFunc)
     def _c_get_info_agent(
         trans_arg: ctypes.c_void_p,
         c_buffer: MaaStringBufferHandle,
@@ -1952,9 +1984,7 @@ class CustomController(Controller):
 
         info = self.get_custom_info()
 
-        info_buffer = StringBuffer(c_buffer)
-        info_buffer.set(json.dumps(info, ensure_ascii=False))
-        return int(True)
+        return int(StringBuffer(c_buffer).set(json.dumps(info, ensure_ascii=False)))
 
     def _set_custom_api_properties(self):
         Library.framework().MaaCustomControllerCreate.restype = MaaControllerHandle

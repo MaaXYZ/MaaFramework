@@ -301,8 +301,10 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI> ReplayControlUnitLibraryHo
     return std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>
-    CustomControlUnitLibraryHolder::create_control_unit(MaaCustomControllerCallbacks* controller, void* controller_arg)
+std::shared_ptr<MAA_CTRL_UNIT_NS::CustomControlUnitAPI> CustomControlUnitLibraryHolder::create_control_unit(
+    MaaCustomControllerCallbacks* controller,
+    void* controller_arg,
+    std::shared_ptr<void> arg_owner)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -330,7 +332,12 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>
         return nullptr;
     }
 
-    return std::shared_ptr<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>(
+        control_unit_handle,
+        [destroy_control_unit_func, arg_owner = std::move(arg_owner)](MaaCustomControlUnitHandle unit) mutable {
+            destroy_control_unit_func(unit);
+            arg_owner.reset();
+        });
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>

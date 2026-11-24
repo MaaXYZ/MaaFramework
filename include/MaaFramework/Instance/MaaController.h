@@ -20,6 +20,7 @@ extern "C"
 #endif
 
     typedef struct MaaCustomControllerCallbacks MaaCustomControllerCallbacks;
+    typedef void (*MaaCustomControllerReleaseCallback)(void* controller_arg);
 
     MAA_FRAMEWORK_API MaaController* MaaAdbControllerCreate(
         const char* adb_path,
@@ -89,6 +90,20 @@ extern "C"
     MAA_FRAMEWORK_API MaaController* MaaAndroidNativeControllerCreate(const char* config_json);
 
     MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg);
+
+    /**
+     * Like MaaCustomControllerCreate, with an optional release callback for controller_arg.
+     * If supplied, release(controller_arg) runs once after the last control unit reference is
+     * destroyed, or before returning on creation failure. Keep the callback table valid until release.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreateWithRelease(
+        MaaCustomControllerCallbacks* controller,
+        void* controller_arg,
+        MaaCustomControllerReleaseCallback release);
+
+    /// Create a controller from a loaded plugin by its advertised name. A NULL config_json defaults to "{}".
+    /// The caller owns the returned handle and must call MaaControllerDestroy. Returns NULL on failure.
+    MAA_FRAMEWORK_API MaaController* MaaPluginControllerCreate(const char* name, const char* config_json);
 
     /**
      * @brief Create a debug controller that serves images from a directory.

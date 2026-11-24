@@ -30,6 +30,12 @@ extern "C"
     MAA_AGENT_CLIENT_API MaaBool MaaAgentClientGetCustomRecognitionList(MaaAgentClient* client, /* out */ MaaStringListBuffer* buffer);
     MAA_AGENT_CLIENT_API MaaBool MaaAgentClientGetCustomActionList(MaaAgentClient* client, /* out */ MaaStringListBuffer* buffer);
 
+    MAA_AGENT_CLIENT_API MaaBool MaaAgentClientGetCustomControllerList(MaaAgentClient* client, /* out */ MaaStringListBuffer* buffer);
+
+    /// Create a controller for a device advertised by this session. Release it with MaaControllerDestroy.
+    /// Disconnecting or destroying the client permanently closes the session for existing controllers.
+    MAA_AGENT_CLIENT_API MaaController* MaaAgentClientCreateCustomController(MaaAgentClient* client, const char* name);
+
     MAA_DEPRECATED MAA_AGENT_CLIENT_API MaaAgentClient* MaaAgentClientCreate();
     MAA_DEPRECATED MAA_AGENT_CLIENT_API MaaBool MaaAgentClientCreateSocket(MaaAgentClient* client, MaaStringBuffer* identifier);
 

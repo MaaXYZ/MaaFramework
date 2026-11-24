@@ -42,6 +42,7 @@ static maajs::ObjectType init(maajs::EnvType env)
 
 #ifdef MAA_JS_BUILD_CLIENT
     maajs::BindValue(maa, "Client", load_client(env));
+    maajs::BindValue(maa, "PluginController", load_plugin_controller(env));
 #endif
 
 #ifdef MAA_JS_BUILD_SERVER
