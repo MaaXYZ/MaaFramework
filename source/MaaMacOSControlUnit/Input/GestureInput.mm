@@ -36,12 +36,17 @@ bool GestureInput::touch_down(int contact, int x, int y, int pressure)
     if (!post_gesture(kCGScrollPhaseBegan, x, y, 1, 0)) {
         return false;
     }
+    touch_origin_ = CGPointMake(x, y);
     latest_touch_x_ = x;
     latest_touch_y_ = y;
     touching_ = true;
     seed_pending_ = true;
     return true;
 }
+
+// Empirical window-point to ScrollDrag gain for native iOS apps on Mac.
+static constexpr double GestureScaleX = 620.0 / 463.0;
+static constexpr double GestureScaleY = 292.0 / 232.0;
 
 bool GestureInput::touch_move(int contact, int x, int y, int pressure)
 {
@@ -51,8 +56,8 @@ bool GestureInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    const double dx = static_cast<double>(x) - latest_touch_x_ - (seed_pending_ ? 1 : 0);
-    const double dy = static_cast<double>(y) - latest_touch_y_;
+    const double dx = (static_cast<double>(x) - latest_touch_x_) * GestureScaleX - (seed_pending_ ? 1 : 0);
+    const double dy = (static_cast<double>(y) - latest_touch_y_) * GestureScaleY;
     if (!post_gesture(kCGScrollPhaseChanged, x, y, dx, dy)) {
         return false;
     }
@@ -111,7 +116,7 @@ constexpr CGEventField TargetWindow = static_cast<CGEventField>(51);
 constexpr int64_t SyntheticTag = 0x4D41414745535452LL;
 }
 
-bool GestureInput::post_gesture(CGScrollPhase phase, int x, int y, double dx, double dy)
+bool GestureInput::post_gesture(CGScrollPhase phase, double x, double y, double dx, double dy)
 {
     using namespace GestureEventFields;
     auto& route = GestureRoute::get_instance();
@@ -132,6 +137,10 @@ bool GestureInput::post_gesture(CGScrollPhase phase, int x, int y, double dx, do
     }
 
     // MaaFramework's ScreenCaptureKit output uses window points, with top-left origin.
+    if (phase != kCGScrollPhaseBegan) {
+        x = touch_origin_.x + (x - touch_origin_.x) * GestureScaleX;
+        y = touch_origin_.y + (y - touch_origin_.y) * GestureScaleY;
+    }
     const CGPoint local = CGPointMake(x, y);
     const CGPoint screen = CGPointMake(info.bounds.origin.x + x, info.bounds.origin.y + y);
     EventOwner scroll(CGEventCreateScrollWheelEvent(

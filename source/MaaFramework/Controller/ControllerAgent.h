@@ -171,10 +171,17 @@ struct Action
     Param param;
 };
 
+struct SwipeTiming
+{
+    unsigned steps = 0; // Zero uses the default 10 ms sampling interval.
+    unsigned press_hold_ms = 0;
+    unsigned release_hold_ms = 0;
+};
+
 class ControllerAgent : public MaaController
 {
 public:
-    ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit);
+    ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit, SwipeTiming swipe_timing = { });
     virtual ~ControllerAgent() override;
 
 public: // MaaController
@@ -315,6 +322,7 @@ private:
 
 private:
     const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;
+    const SwipeTiming swipe_timing_;
     EventDispatcher notifier_ = EventDispatcher(false);
 
     mutable std::mutex image_mutex_;
