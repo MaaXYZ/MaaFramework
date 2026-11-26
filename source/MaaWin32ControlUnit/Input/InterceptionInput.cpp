@@ -499,7 +499,7 @@ bool InterceptionInput::ensure_foreground()
     }
 
     ensure_foreground_and_topmost(hwnd_);
-    if (hwnd_ != GetForegroundWindow()) {
+    if (!is_foreground_or_owned(hwnd_)) {
         LogWarn << "Failed to ensure foreground window before Interception keyboard input" << VAR_VOIDP(hwnd_);
         return false;
     }
