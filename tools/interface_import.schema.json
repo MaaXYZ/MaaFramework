@@ -403,6 +403,12 @@
                             "title": "最大选择数量",
                             "description": "💡 v2.10.1 可选。用户最多可以选中的 case 数量。不设置表示不限制（最多可选中全部 case）。不应大于 cases 长度；若同时设置 min_count，则不应小于 min_count",
                             "minimum": 0
+                        },
+                        "sortable": {
+                            "type": "boolean",
+                            "title": "可排序",
+                            "description": "💡 v2.12.0 可选，默认 false。为 true 时用户可调整选中 case 的顺序，选中 case 的 pipeline_override 按该顺序合并，其顶层节点名与字符串值中的 {order} 替换为该 case 的序号（从 1 开始）",
+                            "default": false
                         }
                     },
                     "required": [
