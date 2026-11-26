@@ -34,7 +34,6 @@ private:
     };
 
     bool post_gesture(CGScrollPhase phase, double x, double y, double dx, double dy);
-    CGPoint touch_origin_ { };
     bool touching_ = false;
     bool seed_pending_ = false;
 

@@ -36,7 +36,6 @@ bool GestureInput::touch_down(int contact, int x, int y, int pressure)
     if (!post_gesture(kCGScrollPhaseBegan, x, y, 1, 0)) {
         return false;
     }
-    touch_origin_ = CGPointMake(x, y);
     latest_touch_x_ = x;
     latest_touch_y_ = y;
     touching_ = true;
@@ -136,11 +135,8 @@ bool GestureInput::post_gesture(CGScrollPhase phase, double x, double y, double 
         return false;
     }
 
-    // MaaFramework's ScreenCaptureKit output uses window points, with top-left origin.
-    if (phase != kCGScrollPhaseBegan) {
-        x = touch_origin_.x + (x - touch_origin_.x) * GestureScaleX;
-        y = touch_origin_.y + (y - touch_origin_.y) * GestureScaleY;
-    }
+    // The event location is already in ScreenCaptureKit window points.
+    // Only ScrollDrag's relative translation needs the calibrated gain.
     const CGPoint local = CGPointMake(x, y);
     const CGPoint screen = CGPointMake(info.bounds.origin.x + x, info.bounds.origin.y + y);
     EventOwner scroll(CGEventCreateScrollWheelEvent(
