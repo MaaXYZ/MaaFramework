@@ -119,4 +119,25 @@ inline bool contact_to_mouse_up_info(int contact, MouseEventInfo& info)
     }
 }
 
+class EventOwner
+{
+public:
+    explicit EventOwner(CGEventRef event = nullptr)
+        : m_event(event)
+    {
+    }
+    ~EventOwner()
+    {
+        if (m_event) {
+            CFRelease(m_event);
+        }
+    }
+    EventOwner(const EventOwner&) = delete;
+    EventOwner& operator=(const EventOwner&) = delete;
+    CGEventRef get() const { return m_event; }
+
+private:
+    CGEventRef m_event = nullptr;
+};
+
 MAA_CTRL_UNIT_NS_END

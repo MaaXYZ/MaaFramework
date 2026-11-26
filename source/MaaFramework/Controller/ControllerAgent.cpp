@@ -9,8 +9,9 @@
 
 MAA_CTRL_NS_BEGIN
 
-ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit)
+ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit, SwipeTiming swipe_timing)
     : control_unit_(std::move(control_unit))
+    , swipe_timing_(swipe_timing)
 {
     LogFunc << VAR(control_unit_);
 
@@ -494,6 +495,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
     if (!param.only_hover && use_touch_down_up) {
         remember_touch_down(param.contact, true);
         ret &= control_unit_->touch_down(param.contact, begin.x, begin.y, param.pressure);
+        std::this_thread::sleep_for(std::chrono::milliseconds(swipe_timing_.press_hold_ms));
     }
 
     bool stopped = false;
@@ -508,14 +510,18 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         const uint end_hold = param.end_hold.empty() ? 0 : (i < param.end_hold.size()) ? param.end_hold.at(i) : param.end_hold.back();
 
         if (use_touch_down_up) {
-            constexpr double kInterval = 10; // ms
-            const std::chrono::milliseconds delay(static_cast<int>(kInterval));
-
-            const double total_step = duration / kInterval;
+            // Keep long swipes interruptible while using the backend's preferred sampling for ordinary drags.
+            const double total_step =
+                swipe_timing_.steps ? std::max<double>(swipe_timing_.steps, std::ceil(duration / 50.0)) : std::max(1.0, duration / 10.0);
+            const auto delay = swipe_timing_.steps ? std::chrono::microseconds(static_cast<int64_t>(duration * 1000.0 / total_step))
+                                                   : std::chrono::milliseconds(10);
             const double x_step_len = (end.x - begin.x) / total_step;
             const double y_step_len = (end.y - begin.y) / total_step;
 
             auto now = std::chrono::steady_clock::now();
+            if (swipe_timing_.steps) {
+                now -= delay; // The down phase has already provided the initial hold.
+            }
 
             for (int step = 1; step < total_step; ++step) {
                 std::this_thread::sleep_until(now + delay);
@@ -550,7 +556,8 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
             ret &= control_unit_->swipe(begin.x, begin.y, end.x, end.y, duration);
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(end_hold));
+        const auto release_hold = !param.only_hover && i + 1 == param.end.size() ? swipe_timing_.release_hold_ms : 0U;
+        std::this_thread::sleep_for(std::chrono::milliseconds(std::max(end_hold, release_hold)));
         if (need_to_stop_) {
             stopped = true;
             break;

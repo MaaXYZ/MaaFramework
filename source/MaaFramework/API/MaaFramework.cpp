@@ -118,7 +118,11 @@ MaaController* MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMet
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+    MAA_CTRL_NS::SwipeTiming timing;
+    if (input_method == MaaMacOSInputMethod_Gesture) {
+        timing = { .steps = 16, .press_hold_ms = 100, .release_hold_ms = 400 };
+    }
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit), timing);
 #endif
 }
 
