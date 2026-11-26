@@ -415,7 +415,7 @@
                         "cases": {
                             "type": "array",
                             "title": "可选项列表",
-                            "description": "用户可同时选中多个 case，所有被选中的 case 的 pipeline_override 会按照 cases 数组中的定义顺序依次合并生效",
+                            "description": "用户可同时选中多个 case，所有被选中的 case 的 pipeline_override 会按照 cases 数组中的定义顺序依次合并生效。💡 v2.12.0 sortable 为 true 时改为按用户排列的顺序合并",
                             "items": {
                                 "$ref": "#/definitions/caseItem"
                             }
