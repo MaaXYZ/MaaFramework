@@ -6,6 +6,7 @@
 #include "Input/VkToEvdev.h"
 #include "Input/WlrInput.h"
 #include "Screencap/NoneScreencap.h"
+#include "Screencap/ExtImageScreencap.h"
 #include "Screencap/PipeWireScreencap.h"
 #include "Screencap/WlrScreencap.h"
 
@@ -33,7 +34,8 @@ bool LinuxControlUnitMgr::connect()
         }
     });
 
-    if (config_.screencap_method == MaaLinuxScreencapMethod_Wlr || config_.input_method == MaaLinuxInputMethod_Wlr) {
+    if (config_.screencap_method == MaaLinuxScreencapMethod_Wlr || config_.screencap_method == MaaLinuxScreencapMethod_ExtImage
+        || config_.input_method == MaaLinuxInputMethod_Wlr) {
         if (!create_wl_client()) {
             LogError << "Failed to create WaylandClient";
             return false;
@@ -292,6 +294,9 @@ bool LinuxControlUnitMgr::create_screencap()
     case MaaLinuxScreencapMethod_Wlr:
         screencap_ = std::make_shared<WlrScreencap>(wl_client_);
         return true;
+    case MaaLinuxScreencapMethod_ExtImage:
+        screencap_ = std::make_shared<ExtImageScreencap>(wl_client_);
+        return true;
     case MaaLinuxScreencapMethod_PipeWire:
         if (config_.pw_socket_fd < 0 && config_.pw_node_id == 0) {
             // 无 portal fd 时必须显式指定节点, 否则会误连到任意节点
@@ -332,8 +337,20 @@ bool LinuxControlUnitMgr::create_wl_client()
     if (wl_client_ != nullptr) {
         return true;
     }
+
+    uint32_t requirements = WlProtocolRequirement_None;
+    if (config_.screencap_method == MaaLinuxScreencapMethod_Wlr) {
+        requirements |= WlProtocolRequirement_WlrScreencopy;
+    }
+    if (config_.screencap_method == MaaLinuxScreencapMethod_ExtImage) {
+        requirements |= WlProtocolRequirement_ExtImageCapture;
+    }
+    if (config_.input_method == MaaLinuxInputMethod_Wlr) {
+        requirements |= WlProtocolRequirement_VirtualKeyboard | WlProtocolRequirement_VirtualPointer;
+    }
+
     wl_client_ = std::make_shared<WaylandClient>();
-    return wl_client_->connect(config_.wlr_socket_path);
+    return wl_client_->connect(config_.wlr_socket_path, requirements);
 }
 
 int LinuxControlUnitMgr::translate_key(int key) const

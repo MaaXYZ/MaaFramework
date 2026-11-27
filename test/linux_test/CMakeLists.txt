@@ -25,3 +25,19 @@ target_include_directories(manager_cleanup_test PRIVATE
 target_link_libraries(manager_cleanup_test PRIVATE MaaControlUnit ${OpenCV_LIBS})
 add_test(NAME manager_cleanup COMMAND manager_cleanup_test)
 set_tests_properties(manager_cleanup PROPERTIES TIMEOUT 30)
+
+# Manual benchmark: needs a live compositor with ext-image-copy-capture-v1
+# (e.g. wlroots/sway >= 0.19), so it is not registered with CTest.
+set(MAA_EXT_PROTOCOL_DIR "${CMAKE_SOURCE_DIR}/source/MaaLinuxControlUnit/Wayland/Protocol")
+find_library(ExtBench_Wayland_LIBS wayland-client)
+find_library(ExtBench_FFI_LIBS ffi)
+add_executable(ext_image_screencap_bench
+    ext_image_screencap_bench.cpp
+    "${MAA_EXT_PROTOCOL_DIR}/ext-image-capture-source-priv.c"
+    "${MAA_EXT_PROTOCOL_DIR}/ext-image-copy-capture-priv.c"
+    "${MAA_EXT_PROTOCOL_DIR}/ext-foreign-toplevel-list-priv.c")
+target_include_directories(ext_image_screencap_bench PRIVATE "${MAA_EXT_PROTOCOL_DIR}")
+# wayland-client.h lives in the MaaDeps vcpkg install prefix, next to OpenCV.
+target_include_directories(ext_image_screencap_bench SYSTEM PRIVATE
+    "${MAADEPS_DIR}/vcpkg/installed/${MAADEPS_TRIPLET}/include")
+target_link_libraries(ext_image_screencap_bench PRIVATE ${ExtBench_Wayland_LIBS} ${ExtBench_FFI_LIBS})

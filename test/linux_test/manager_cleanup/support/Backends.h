@@ -65,11 +65,23 @@ private:
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+// Mirrors WlProtocolRequirement from the real Wayland/WaylandClient.h; the
+// shadow header hides it from the manager translation unit.
+enum WlProtocolRequirement : uint32_t
+{
+    WlProtocolRequirement_None = 0,
+    WlProtocolRequirement_WlrScreencopy = 1 << 0,
+    WlProtocolRequirement_ExtImageCapture = 1 << 1,
+    WlProtocolRequirement_VirtualKeyboard = 1 << 2,
+    WlProtocolRequirement_VirtualPointer = 1 << 3,
+};
+
 class WaylandClient
 {
 public:
-    bool connect(const std::filesystem::path&)
+    bool connect(const std::filesystem::path&, [[maybe_unused]] uint32_t requirements)
     {
+        std::ignore = requirements;
         ++ManagerCleanupTest::state.wayland_connections;
         return ManagerCleanupTest::state.connect_wayland;
     }
@@ -154,6 +166,7 @@ private:
 
 using NoneScreencap = TestScreencap;
 using WlrScreencap = TestScreencap;
+using ExtImageScreencap = TestScreencap;
 using PipeWireScreencap = TestScreencap;
 using NoneInput = TestInput;
 using WlrInput = TestInput;

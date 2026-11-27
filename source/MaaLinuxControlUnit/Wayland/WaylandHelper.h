@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Common/Conf.h"
+#include "Protocol/ext-image-capture-source-v1.h"
+#include "Protocol/ext-image-copy-capture-v1.h"
 #include "Protocol/virtual-keyboard.h"
 #include "Protocol/wlr-screencopy.h"
 #include "Protocol/wlr-virtual-pointer.h"
@@ -32,6 +34,11 @@ DEFAULT_DELETER_FDECL(zwlr_virtual_pointer_manager_v1)
 DEFAULT_DELETER_FDECL(zwlr_virtual_pointer_v1)
 DEFAULT_DELETER_FDECL(zwp_virtual_keyboard_manager_v1)
 DEFAULT_DELETER_FDECL(zwp_virtual_keyboard_v1)
+DEFAULT_DELETER_FDECL(ext_image_copy_capture_manager_v1)
+DEFAULT_DELETER_FDECL(ext_image_copy_capture_session_v1)
+DEFAULT_DELETER_FDECL(ext_image_copy_capture_frame_v1)
+DEFAULT_DELETER_FDECL(ext_output_image_capture_source_manager_v1)
+DEFAULT_DELETER_FDECL(ext_image_capture_source_v1)
 MAA_CTRL_UNIT_NS_BEGIN
 
 class WaylandHelper
