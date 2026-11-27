@@ -543,7 +543,8 @@ typedef uint64_t MaaMacOSInputMethod;
  *
  * | Method          | Description                                                              |
  * |-----------------|--------------------------------------------------------------------------|
- * | Wlr             | Screencap using `wlr-screencopy-unstable-v1` protocol                    |
+ * | Wlr             | Screencap using `wlr-screencopy-unstable-v1` protocol (deprecated upstream, prefer ExtImage) |
+ * | ExtImage        | Screencap using `ext-image-copy-capture-v1` protocol                    |
  * | PipeWire        | Screencap using PipeWire (portal fd or session-daemon node)              |
  */
 typedef uint64_t MaaLinuxScreencapMethod;

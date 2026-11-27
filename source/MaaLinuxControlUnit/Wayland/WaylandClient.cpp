@@ -13,13 +13,14 @@ WaylandClient::~WaylandClient()
     close();
 }
 
-bool WaylandClient::connect(const std::filesystem::path& socket_path)
+bool WaylandClient::connect(const std::filesystem::path& socket_path, uint32_t requirements)
 {
     if (socket_path_ != socket_path) {
         LogInfo << "Closing old socket" << socket_path_;
         close();
         socket_path_ = socket_path;
     }
+    requirements_ = requirements;
 
     return open();
 }
@@ -60,6 +61,8 @@ void WaylandClient::close()
     // Release protocol objects first, then disconnect display.
     pointer_manager_.reset();
     keyboard_manager_.reset();
+    ext_capture_manager_.reset();
+    ext_source_manager_.reset();
     screencopy_manager_.reset();
     seat_.reset();
     shm_.reset();
@@ -94,6 +97,8 @@ bool WaylandClient::bind_protocol()
         BIND(wl_shm, shm_);
         BIND(wl_seat, seat_);
         BIND(zwlr_screencopy_manager_v1, screencopy_manager_);
+        BIND(ext_output_image_capture_source_manager_v1, ext_source_manager_);
+        BIND(ext_image_copy_capture_manager_v1, ext_capture_manager_);
         BIND(zwp_virtual_keyboard_manager_v1, keyboard_manager_);
         BIND(zwlr_virtual_pointer_manager_v1, pointer_manager_);
 
@@ -111,17 +116,29 @@ bool WaylandClient::bind_protocol()
         LogError << "Compositor doesn't support wayland core protocol";
         return false;
     }
-    if (!screencopy_manager_) {
-        LogError << "Compositor doesn't support wlr_screencopy_unstable_v1 protocol";
-        return false;
+    if (requirements_ & WlProtocolRequirement_WlrScreencopy) {
+        if (!screencopy_manager_) {
+            LogError << "Compositor doesn't support wlr_screencopy_unstable_v1 protocol";
+            return false;
+        }
     }
-    if (!keyboard_manager_) {
-        LogError << "Compositor doesn't support virtual_keyboard_unstable_v1 protocol";
-        return false;
+    if (requirements_ & WlProtocolRequirement_ExtImageCapture) {
+        if (!ext_source_manager_ || !ext_capture_manager_) {
+            LogError << "Compositor doesn't support ext_image_capture_source_v1 / ext_image_copy_capture_v1 protocol";
+            return false;
+        }
     }
-    if (!pointer_manager_) {
-        LogError << "Compositor doesn't support wlr_virtual_pointer_unstable_v1 protocol";
-        return false;
+    if (requirements_ & WlProtocolRequirement_VirtualKeyboard) {
+        if (!keyboard_manager_) {
+            LogError << "Compositor doesn't support virtual_keyboard_unstable_v1 protocol";
+            return false;
+        }
+    }
+    if (requirements_ & WlProtocolRequirement_VirtualPointer) {
+        if (!pointer_manager_) {
+            LogError << "Compositor doesn't support wlr_virtual_pointer_unstable_v1 protocol";
+            return false;
+        }
     }
 
     return true;
@@ -140,6 +157,18 @@ bool WaylandClient::process_requests() const
 std::shared_ptr<zwlr_screencopy_manager_v1> WaylandClient::get_screencopy_manager()
 {
     std::shared_ptr p(screencopy_manager_);
+    return p;
+}
+
+std::shared_ptr<ext_output_image_capture_source_manager_v1> WaylandClient::get_ext_image_source_manager()
+{
+    std::shared_ptr p(ext_source_manager_);
+    return p;
+}
+
+std::shared_ptr<ext_image_copy_capture_manager_v1> WaylandClient::get_ext_image_copy_manager()
+{
+    std::shared_ptr p(ext_capture_manager_);
     return p;
 }
 

@@ -154,7 +154,7 @@ extern "C"
      * @param config_json JSON config for the control unit. Required fields:
      *                    - screencap_method: screencap method to use, see MaaLinuxScreencapMethod.
      *                    - input_method: input method to use, see MaaLinuxInputMethod.
-     *                    Wlroots Required fields:
+     *                    Wlroots / ExtImage Required fields:
      *                    - wlr_socket_path: wayland socket path (e.g., "/run/user/1000/wayland-0").
      *                    PipeWire monitor capture (via xdg-desktop-portal):
      *                    - pw_socket_fd: The PipeWire socket FD (from the ScreenCast portal).

@@ -50,3 +50,28 @@ To run either standalone target with ASan/UBSan, configure a separate build with
 `-DCMAKE_CXX_FLAGS='-fsanitize=address,undefined -fno-omit-frame-pointer -g'`
 and `-DCMAKE_EXE_LINKER_FLAGS='-fsanitize=address,undefined'`, then build and run
 CTest as above.
+
+## ext-image-copy-capture session benchmark
+
+```sh
+cmake -S . -B build -G "Ninja Multi-Config" -DBUILD_LINUX_TEST=ON
+cmake --build build --config Debug --target ext_image_screencap_bench
+WAYLAND_DISPLAY=wayland-0 build/bin/Debug/ext_image_screencap_bench [wayland-socket] [iterations]
+```
+
+`ext_image_screencap_bench` is a manual benchmark, not a CTest case: it needs a
+live compositor that implements `ext-image-capture-source-v1` and
+`ext-image-copy-capture-v1` (e.g. wlroots/sway >= 0.19). It compares the two
+session strategies behind the `ExtImage` screencap method:
+
+- **A, fresh session per capture** — what `ExtImageScreencap` does. Every frame
+  is the session's first frame, which the compositor must copy immediately, so
+  captures return in single-digit milliseconds even on an idle screen.
+- **B, persistent session** — reused for comparison. After the first frame the
+  compositor may wait indefinitely for content changes; the benchmark shows
+  per-capture latency degrading to the compositor's damage cadence, plus a
+  bounded-timeout check on a static screen.
+
+The tool intentionally links the protocol code directly instead of the
+`MaaLinuxControlUnit` library so the strategy flows can diverge from the
+production code path.

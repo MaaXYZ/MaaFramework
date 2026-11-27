@@ -808,6 +808,7 @@
                             "description": "可选。Linux 控制器的截图方式，不提供则使用默认",
                             "enum": [
                                 "Wlr",
+                                "ExtImage",
                                 "PipeWire"
                             ]
                         },

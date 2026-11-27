@@ -620,10 +620,11 @@ class MaaLinuxScreencapMethodEnum(IntEnum):
 
     No default value. Client should choose one as default.
 
-    | Method          | Description                                           |
-    |-----------------|-------------------------------------------------------|
-    | Wlr             | Screencap using `wlr-screencopy-unstable-v1` protocol |
-    | PipeWire        | Screencap using PipeWire                              |
+    | Method          | Description                                                       |
+    |-----------------|-------------------------------------------------------------------|
+    | Wlr             | Screencap using `wlr-screencopy-unstable-v1` protocol (deprecated upstream, prefer ExtImage) |
+    | ExtImage        | Screencap using `ext-image-copy-capture-v1` protocol              |
+    | PipeWire        | Screencap using PipeWire                                          |
     """
 
     Null = 0

@@ -44,6 +44,14 @@ LinuxControlUnitConfig wayland_config()
     return config;
 }
 
+LinuxControlUnitConfig ext_image_config()
+{
+    LinuxControlUnitConfig config;
+    config.screencap_method = MaaLinuxScreencapMethod_ExtImage;
+    config.input_method = MaaLinuxInputMethod_UInput;
+    return config;
+}
+
 void require_disconnected(LinuxControlUnitMgr& manager)
 {
     require(!manager.connected(), "failed manager is marked connected");
@@ -156,6 +164,28 @@ void test_destructor_after_success()
     require(state.events.back() == "destroy wayland", "Wayland destroyed before its consumers");
 }
 
+void test_ext_image_lifecycle()
+{
+    const auto baseline = count_fds();
+    {
+        LinuxControlUnitMgr manager(ext_image_config());
+        require(manager.connect(), "ExtImage connection failed");
+        require(state.wayland_connections == 1, "ExtImage skipped Wayland client creation");
+        require(state.live_resources == 3, "ExtImage manager lost resources");
+        cv::Mat image;
+        require(manager.screencap(image), "ExtImage screencap failed");
+        state.init_screencap = false;
+        require(!manager.connect(), "ExtImage reconnect failure reported success");
+        require_disconnected(manager);
+        require(count_fds() == baseline, "failed ExtImage reconnect retains descriptors");
+        state.init_screencap = true;
+        require(manager.connect(), "ExtImage recovery failed");
+        require(manager.connected() && state.live_resources == 3, "ExtImage retry lost resources");
+    }
+    require(state.live_resources == 0, "destructor retains ExtImage connection resources");
+    require(count_fds() == baseline, "destructor retains ExtImage descriptors");
+}
+
 struct TestCase
 {
     const char* name;
@@ -174,6 +204,7 @@ int main()
         { "failure then success", test_failure_then_success },
         { "repeated success then failure", test_repeated_success_then_failure },
         { "destructor after success", test_destructor_after_success },
+        { "ExtImage lifecycle", test_ext_image_lifecycle },
     };
     for (const auto& test : tests) {
         state = { };
