@@ -259,6 +259,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaRacingMaster](https://github.com/d542Bb/MaaRacingMaster) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![C#](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/d542Bb/MaaRacingMaster) ![activity](https://img.shields.io/github/commit-activity/m/d542Bb/MaaRacingMaster?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/d542Bb/MaaRacingMaster?style=social)  
     A Racing Master assistant. Image recognition + simulated input, automating the full event loop, freeing your hands! Powered by MaaFramework.
 
+- [MaaEOV (Derivative)](https://github.com/xingchenquq/MaaEOV) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/xingchenquq/MaaEOV) ![activity](https://img.shields.io/github/commit-activity/m/xingchenquq/MaaEOV?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/xingchenquq/MaaEOV?style=social)  
+    Assistant for _Echoes Of Vision_ — an independently maintained derivative of the upstream [Tigerisu/MaaEOV](https://github.com/Tigerisu/MaaEOV). Rewrites and adds auto-battle for the Cognitive Sea, past-event sweeps, dual event tasks and the supply station, tracking game updates. Powered by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
