@@ -522,6 +522,7 @@ void MuMuPlayerExtras::disconnect_mumu()
     int ref = --s_mumu_handle_refs_[mumu_handle_];
     if (ref > 0) {
         LogDebug << "mumu_handle_ still has references" << VAR(ref);
+        mumu_handle_ = 0;
         return;
     }
     s_mumu_handle_refs_.erase(mumu_handle_);
