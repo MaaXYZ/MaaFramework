@@ -256,6 +256,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaRacingMaster](https://github.com/d542Bb/MaaRacingMaster) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![C#](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/d542Bb/MaaRacingMaster) ![activity](https://img.shields.io/github/commit-activity/m/d542Bb/MaaRacingMaster?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/d542Bb/MaaRacingMaster?style=social)  
     《巅峰极速》小助手。图像技术 + 模拟控制，自动完成活动全流程，解放双手！由 MaaFramework 强力驱动！
 
+- [MaaEOV (衍生版)](https://github.com/xingchenquq/MaaEOV) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/xingchenquq/MaaEOV) ![activity](https://img.shields.io/github/commit-activity/m/xingchenquq/MaaEOV?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/xingchenquq/MaaEOV?style=social)  
+    异象回声 小助手（上游 [Tigerisu/MaaEOV](https://github.com/Tigerisu/MaaEOV) 的独立衍生发行版）。在原架构上重写并新增认知海域自动战斗、往期活动、活动双任务与补给站等任务，随游戏版本自维护更新。由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。
